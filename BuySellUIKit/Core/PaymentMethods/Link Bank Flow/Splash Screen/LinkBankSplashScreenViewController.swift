@@ -41,6 +41,13 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
         closeTriggerred.onNext(())
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        set(barStyle: .darkContent(ignoresStatusBar: true, isTranslucent: true, background: .clear),
+            leadingButtonStyle: .none,
+            trailingButtonStyle: .close)
+    }
+
     // MARK: - LinkBankSplashScreenPresentable
 
     func connect(state: Driver<LinkBankSplashScreenInteractor.State>) -> Driver<LinkBankSplashScreenEffects> {

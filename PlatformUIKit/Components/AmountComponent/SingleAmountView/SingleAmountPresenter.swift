@@ -13,6 +13,9 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
+/// NOTE: Currently this is only used in the `Withdraw` flow. If you
+/// are using this outside of `Withdraw` you must create a `DisplayBundle`
+/// type class that holds analytic events and localized strings. 
 public final class SingleAmountPresenter {
 
     // MARK: - Types
@@ -66,7 +69,7 @@ public final class SingleAmountPresenter {
         case .underMinLimit(let minValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: minValue.value,
-                suffix: LocalizedString.Min.useMin,
+                suffix: LocalizedString.Withdraw.Min.useMin,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.min
             )
@@ -81,7 +84,7 @@ public final class SingleAmountPresenter {
         case .overMaxLimit(let maxValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: maxValue.value,
-                suffix: LocalizedString.Max.useMax,
+                suffix: LocalizedString.Withdraw.Max.useMax,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.max
             )

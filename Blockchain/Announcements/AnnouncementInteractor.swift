@@ -30,7 +30,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let nabuUser = dataRepository.nabuUserSingle
         let tiers = tiersService.tiers
         let countries = infoService.countries
-        let hasTrades = exchangeService.hasExecutedTrades()
         let simpleBuyOrderDetails = pendingOrderDetailsService
             .pendingActionOrderDetails
 
@@ -42,7 +41,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         return Single
             .zip(nabuUser,
                  tiers,
-                 hasTrades,
                  countries,
                  repository.authenticatorType,
                  Single.zip(
@@ -56,14 +54,12 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             .map { (arg) -> AnnouncementPreliminaryData in
                 let (user,
                      tiers,
-                     hasTrades,
                      countries,
                      authenticatorType,
                      (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)) = arg
                 return AnnouncementPreliminaryData(
                     user: user,
                     tiers: tiers,
-                    hasTrades: hasTrades,
                     hasLinkedBanks: hasLinkedBanks,
                     countries: countries,
                     authenticatorType: authenticatorType,
@@ -83,7 +79,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let dataRepository: BlockchainDataRepository
     private let tiersService: KYCTiersServiceAPI
     private let infoService: GeneralInformationServiceAPI
-    private let exchangeService: ExchangeService
     private let repository: AuthenticatorRepositoryAPI
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
@@ -96,7 +91,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          wallet: WalletProtocol = WalletManager.shared.wallet,
          dataRepository: BlockchainDataRepository = .shared,
          tiersService: KYCTiersServiceAPI = resolve(),
-         exchangeService: ExchangeService = .shared,
          infoService: GeneralInformationServiceAPI = resolve(),
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
@@ -108,7 +102,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.dataRepository = dataRepository
         self.tiersService = tiersService
         self.infoService = infoService
-        self.exchangeService = exchangeService
         self.supportedPairsInteractor = supportedPairsInteractor
         self.beneficiariesService = beneficiariesService
         self.pendingOrderDetailsService = pendingOrderDetailsService

@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Ini diperlukan agar aplikasi dapat memindai kode QR.";
-"NSMicrophoneUsageDescription" = "Diperlukan untuk pengambilan video.";
-"NSFaceIDUsageDescription" = "Mengaktifkan ID Wajah memungkinkan Anda untuk mengakses dompet Anda dengan aman.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain membutuhkan akses ke lokasi Anda untuk menunjukkan kepada Anda bisnis terdekat yang menerima Bitcoin.";
-"NSPhotoLibraryUsageDescription" = "Izin Anda diperlukan untuk mengunggah dokumen dari pustaka foto Anda.";

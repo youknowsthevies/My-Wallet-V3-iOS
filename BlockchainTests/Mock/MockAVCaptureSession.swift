@@ -70,16 +70,3 @@ class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
         didStopScanningCalled()
     }
 }
-
-class CaptureMetadataOutputMock: CaptureMetadataOutputProtocol {
-    var metadataObjectTypes: [AVMetadataObject.ObjectType]! = []
-    
-    var setMetadataObjectsDelegateCalled: ((AVCaptureMetadataOutputObjectsDelegate?, DispatchQueue?)) -> Void = { _ in }
-    var metadataObjects: [(AVCaptureMetadataOutputObjectsDelegate?, DispatchQueue?)] = []
-    func setMetadataObjectsDelegate(_ objectsDelegate: AVCaptureMetadataOutputObjectsDelegate?, queue objectsCallbackQueue: DispatchQueue?) {
-        metadataObjects.append((objectsDelegate, objectsCallbackQueue))
-        setMetadataObjectsDelegateCalled((objectsDelegate, objectsCallbackQueue))
-    }
-    
-    var current: AVCaptureOutput?
-}

@@ -48,6 +48,17 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        interactor.effect
+            .subscribe(onNext: { [weak self] effect in
+                switch effect {
+                case .failure:
+                    self?.router.showFailureAlert()
+                case .none:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
+        
         topSelectionButtonViewModel.tap
             .emit(weak: self) { (self) in
                 self.router.showCryptoSelectionScreen()
@@ -61,6 +72,12 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.preferredPaymentMethodType,
                 interactor.paymentMethodTypes.map { $0.count }
             )
+            .do(onError: { [weak self] _ in
+                self?.router.showFailureAlert()
+            })
+            .catchError { _ -> Observable<(PaymentMethodType?, Int)> in
+                .empty()
+            }
             .bindAndCatch(weak: self) { (self, payload) in
                 self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
             }
@@ -102,6 +119,12 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                             return .failure(error)
                         }
                     }
+            }
+            .do(onError: { [weak self] _ in
+                self?.router.showFailureAlert()
+            })
+            .catchError { error -> Observable<Result<CTAData, Error>> in
+                .just(.failure(error))
             }
             .share()
         
@@ -164,6 +187,12 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
+            .do(onError: { [weak self] _ in
+                self?.router.showFailureAlert()
+            })
+            .catchError { _ -> Observable<String?> in
+                .just(nil)
+            }
             .bindAndCatch(to: topSelectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
         
@@ -171,6 +200,9 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         
         interactor.pairsCalculationState
             .handle(loadingViewPresenter: loader)
+            .catchError { _ -> Observable<ValueCalculationState<SupportedPairs>> in
+                .just(.invalid(ValueCalculationState<SupportedPairs>.CalculationError.valueCouldNotBeCalculated))
+            }
             .bindAndCatch(weak: self) { (self, state) in
                 guard case .invalid(.valueCouldNotBeCalculated) = state else {
                     return
@@ -216,6 +248,9 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 let tuple: (fiat: FiatValue, crypto: CryptoCurrency) = payload
                 return "1 \(tuple.crypto.displayCode) = \(tuple.fiat.displayString) \(tuple.fiat.currencyCode)"
             }
+            .catchError { _ -> Observable<String?> in
+                .just(nil)
+            }
     }
     
     private func setup(preferredPaymentMethodType: PaymentMethodType?, methodCount: Int) {
@@ -227,7 +262,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         let trailingImageViewContent: ImageViewContent
         if methodCount > 1 {
             trailingImageViewContent = ImageViewContent(
-                imageName: "icon-disclosure-down-small"
+                imageName: "icon-disclosure-small"
             )
             viewModel.isButtonEnabledRelay.accept(true)
         } else {

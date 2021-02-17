@@ -65,19 +65,7 @@ typedef enum {
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:BC_STRING_DONE style:UIBarButtonItemStyleDone target:self action:@selector(dismiss)];
     self.navigationController.navigationBar.barTintColor = UIColor.brandPrimary;
-    NSString *presenter;
-    switch (self.presenter) {
-        case welcome:
-            presenter = DEBUG_STRING_WELCOME;
-            break;
-        case pin:
-            presenter = BC_STRING_SETTINGS_VERIFY;
-            break;
-        case settings:
-            presenter = BC_STRING_SETTINGS_ABOUT;
-            break;
-    }
-    self.navigationItem.title = [NSString stringWithFormat:@"%@ %@ %@", DEBUG_STRING_DEBUG, DEBUG_STRING_FROM_LOWERCASE, presenter];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@ %@ %@", DEBUG_STRING_DEBUG, DEBUG_STRING_FROM_LOWERCASE, DEBUG_STRING_WELCOME];
 }
 
 - (void)viewWillAppear:(BOOL)animated

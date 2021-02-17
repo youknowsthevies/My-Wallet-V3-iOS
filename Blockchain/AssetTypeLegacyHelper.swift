@@ -16,31 +16,6 @@ import PlatformKit
     static func convert(fromLegacy type: LegacyAssetType) -> LegacyCryptoCurrency {
         LegacyCryptoCurrency(CryptoCurrency(legacyAssetType: type))
     }
-
-    @objc
-    static func convert(toLegacy type: LegacyCryptoCurrency) -> LegacyAssetType {
-        type.legacy
-    }
-
-    @objc
-    static func name(for type: LegacyCryptoCurrency) -> String {
-        type.name
-    }
-    
-    @objc
-    static func name(from legacy: LegacyAssetType) -> String {
-        name(for: .init(legacy))
-    }
-
-    @objc
-    static func color(for type: LegacyAssetType) -> UIColor {
-        CryptoCurrency(legacyAssetType: type).brandColor
-    }
-
-    @objc
-    static func code(for type: LegacyAssetType) -> String {
-        CryptoCurrency(legacyAssetType: type).code
-    }
     
     @objc
     static func displayCode(for type: LegacyAssetType) -> String {

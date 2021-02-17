@@ -48,47 +48,6 @@ class StellarTransactionService: StellarTransactionAPI {
         self.repository = repository
         self.walletService = walletService
     }
-    
-    func get(transaction transactionHash: String, completion: @escaping ((Result<StellarTransactionResponse, Error>) -> Void)) {
-        service.subscribe(onSuccess: { service in
-            service.getTransactionDetails(transactionHash: transactionHash) { response -> Void in
-                switch response {
-                case .success(let details):
-                    let code = details.transactionResult.code.rawValue
-                    let result: TransactionResult = code == 0 ? .success : .error(StellarTransactionError(rawValue: Int(code)) ?? .internalError)
-                    var memo: String?
-                    if let detailsMemo = details.memo {
-                        switch detailsMemo {
-                        case .text(let value):
-                            memo = value
-                        case .id(let value):
-                            memo = String(describing: value)
-                        default:
-                            break
-                        }
-                    }
-                    
-                    let value = StellarTransactionResponse(
-                        identifier: details.id,
-                        result: result,
-                        transactionHash: details.transactionHash,
-                        createdAt: details.createdAt,
-                        sourceAccount: details.sourceAccount,
-                        feePaid: Int(details.feeCharged ?? "0") ?? 0,
-                        memo: memo
-                    )
-                    DispatchQueue.main.async {
-                        completion(.success(value))
-                    }
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                }
-            }
-        })
-        .disposed(by: bag)
-    }
 
     func send(_ paymentOperation: StellarPaymentOperation, sourceKeyPair: StellarKit.StellarKeyPair) -> Completable {
         let sourceAccount = accounts.accountResponse(for: sourceKeyPair.accountID)

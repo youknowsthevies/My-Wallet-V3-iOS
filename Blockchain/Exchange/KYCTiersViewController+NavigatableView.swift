@@ -21,11 +21,7 @@ extension KYCTiersViewController: NavigatableView {
 
     var leftNavControllerCTAType: NavigationCTAType {
         guard let navController = navigationController else { return .dismiss }
-        if parent is ExchangeContainerViewController && navController.viewControllers.count == 1 {
-            return .menu
-        } else {
-            return navController.viewControllers.count > 1 ? .back : .dismiss
-        }
+        return navController.viewControllers.count > 1 ? .back : .dismiss
     }
 
     var rightNavControllerCTAType: NavigationCTAType {
@@ -37,11 +33,6 @@ extension KYCTiersViewController: NavigatableView {
     }
 
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {
-        if parent is ExchangeContainerViewController && navController.viewControllers.count == 1 {
-            AppCoordinator.shared.toggleSideMenu()
-            return
-        }
-
         guard let navController = navigationController else {
             dismiss(animated: true, completion: nil)
             return

@@ -10,10 +10,5 @@ import RxSwift
 import StellarKit
 
 protocol StellarTransactionAPI {
-    
-    typealias CompletionHandler = ((Result<Bool, Error>) -> Void)
-    typealias AccountID = String
-
     func send(_ paymentOperation: StellarPaymentOperation, sourceKeyPair: StellarKit.StellarKeyPair) -> Completable
-    func get(transaction transactionHash: String, completion: @escaping ((Result<StellarTransactionResponse, Error>) -> Void))
 }

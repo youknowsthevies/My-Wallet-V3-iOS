@@ -35,7 +35,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
     
     private lazy var setup: Void = {
         portfolioObservable
-            .bind(to: rx.rx_portfolio)
+            .bindAndCatch(to: rx.rx_portfolio)
             .disposed(by: disposeBag)
     }()
     

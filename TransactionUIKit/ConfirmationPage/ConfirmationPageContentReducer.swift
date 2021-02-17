@@ -13,6 +13,7 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+import TransactionKit
 
 protocol ConfirmationPageContentReducing {
     /// The title of the checkout screen
@@ -32,24 +33,33 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     // MARK: - CheckoutScreenContentReducing
 
     let title: String
-    let cells: [DetailsScreen.CellType]
+    var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
 
     // MARK: - Private Properties
 
-    init(state: TransactionState) {
+    init() {
         title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
-        continueButtonViewModel = .primary(with: Self.confirmCtaText(state: state))
-        continueButtonViewModel.isEnabledRelay.accept(state.nextEnabled)
+        continueButtonViewModel = .primary(with: "")
+
+        cells = []
+    }
+
+    func setup(for state: TransactionState) {
+        
+        continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
         
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
             return
         }
 
-        let interactors = pendingTransaction.confirmations
+        let interactors: [DefaultLineItemCellPresenter] = pendingTransaction.confirmations
+            .filter { confirmations -> Bool in
+                !confirmations.isErrorNotice
+            }
             .compactMap(\.formatted)
             .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
                 (DefaultLabelContentInteractor(knownValue: data.0), DefaultLabelContentInteractor(knownValue: data.1))
@@ -61,10 +71,31 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
             }
 
-        let confirmationLineItems = interactors
+        let confirmationLineItems: [DetailsScreen.CellType] = interactors
             .reduce(into: [DetailsScreen.CellType]()) { (result, lineItem) in
                 result.append(.lineItem(lineItem))
                 result.append(.separator)
+            }
+
+        let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isErrorNotice)
+            .compactMap(\.formatted)
+            .map { (_: String, subtitle: String) -> BadgeAsset.Value.Interaction.BadgeItem in
+                .init(type: .destructive, description: subtitle)
+            }
+            .map { badgeItem -> DefaultBadgeAssetInteractor in
+                DefaultBadgeAssetInteractor(initialState: .loaded(next: badgeItem))
+            }
+            .map { interactor -> DefaultBadgeAssetPresenter in
+                DefaultBadgeAssetPresenter(interactor: interactor)
+            }
+            .map { presenter -> MultiBadgeViewModel in
+                let model = MultiBadgeViewModel()
+                model.badgesRelay.accept([presenter])
+                return model
+            }
+            .map { noticeViewModel -> DetailsScreen.CellType in
+                .badges(noticeViewModel)
             }
 
         var disclaimer: [DetailsScreen.CellType] = []
@@ -78,7 +109,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        cells = confirmationLineItems + disclaimer
+        cells = [.separator] + confirmationLineItems + errorModels + disclaimer
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -89,13 +120,24 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             let destination = (state.destination as? CryptoAccount)?.asset.displayCode ?? ""
             return String(format: LocalizedString.Swap.swapAForB, source, destination)
         case .send:
-            return "Send \(amount)"
+            return String(format: LocalizedString.Swap.send, amount)
         case .sell:
-            return "Sell \(amount)"
+            return String(format: LocalizedString.Swap.sell, amount)
         case .deposit:
-            return "Confirm Transfer"
+            return String(format: LocalizedString.Swap.deposit, amount)
         default:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
+        }
+    }
+}
+
+extension TransactionConfirmation {
+    var isErrorNotice: Bool {
+        switch self {
+        case .errorNotice:
+            return true
+        default:
+            return false
         }
     }
 }

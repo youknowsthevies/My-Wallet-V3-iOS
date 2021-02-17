@@ -26,9 +26,12 @@ final class EthereumAsset: CryptoAsset {
     }
     
     private let repository: EthereumWalletAccountRepositoryAPI
+    private let errorRecorder: ErrorRecording
 
-    init(repository: EthereumWalletAccountRepositoryAPI = resolve()) {
+    init(repository: EthereumWalletAccountRepositoryAPI = resolve(),
+         errorRecorder: ErrorRecording = resolve()) {
         self.repository = repository
+        self.errorRecorder = errorRecorder
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -74,5 +77,7 @@ final class EthereumAsset: CryptoAsset {
             .map { account -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: [ account ])
             }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
     }
 }

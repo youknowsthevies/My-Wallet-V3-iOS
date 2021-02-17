@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
@@ -18,7 +19,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
             .asObservable()
     }()
 
-    var actions: ReplaySubject<Action> = ReplaySubject.create(bufferSize: 1)
+    let actions: ReplaySubject<Action> = ReplaySubject.create(bufferSize: 1)
 
     private var disposeBag = DisposeBag()
     
@@ -39,14 +40,15 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
                 return action.reduce(oldState: oldState)
             }
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-            .do(onNext: { newState in
-                self.stateRelay.accept(newState)
-            })
-            .subscribe()
+            .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 
     func process(action: Action) {
         actions.on(.next(action))
+    }
+    
+    func destroy() {
+        disposeBag = DisposeBag()
     }
 }

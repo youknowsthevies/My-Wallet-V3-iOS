@@ -115,7 +115,7 @@ public final class StateService: StateServiceAPI {
         case pendingOrderCompleted(orderDetails: OrderDetails)
 
         /// The user will be taken to link a bank flow
-        case linkBank(CheckoutData)
+        case linkBank
         
         /// Inactive state - no buy flow is performed at the moment
         case inactive
@@ -260,7 +260,7 @@ public final class StateService: StateServiceAPI {
                     isOriginDeposit: false
                 )
             case .bankTransfer:
-                state = .linkBank(data)
+                state = .checkout(data)
             }
             apply(
                 action: .next(to: state),
@@ -370,11 +370,7 @@ public final class StateService: StateServiceAPI {
                         }
                     }
                 } else {
-                    if cache[.hasShownIntroScreen] {
-                        return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
-                    } else {
-                        return .just(.intro)
-                    }
+                    return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
                 }
             }
             .subscribe(
@@ -479,12 +475,17 @@ extension StateService {
         case .card where !checkoutData.isPaymentMethodFinalized:
             state = .addCard(checkoutData)
         case .bankTransfer where !checkoutData.isPaymentMethodFinalized:
-            state = .linkBank(checkoutData)
+            state = .linkBank
         default:
             state = .checkout(checkoutData)
         }
 
         let states = self.states(byAppending: state)
+        apply(action: .next(to: states.current), states: states)
+    }
+
+    public func nextFromBankLinkSelection() {
+        let states = self.states(byAppending: .linkBank)
         apply(action: .next(to: states.current), states: states)
     }
     

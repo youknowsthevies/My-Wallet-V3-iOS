@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -16,8 +17,10 @@ import ToolKit
 protocol TransactionFlowRouting: Routing {
     func pop()
     func closeFlow()
+    func showFailure()
     func didTapBack()
     func routeToConfirmation(transactionModel: TransactionModel)
+    func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToInProgress(transactionModel: TransactionModel)
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
@@ -26,12 +29,14 @@ protocol TransactionFlowRouting: Routing {
 
 protocol TransactionFlowListener: AnyObject {
     func presentKYCTiersScreen()
+    func dismissTransactionFlow()
 }
 
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
                                        TransactionFlowInteractable,
                                        AccountPickerListener,
-                                       TransactionFlowPresentableListener {
+                                       TransactionFlowPresentableListener,
+                                       TargetSelectionPageListener {
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
@@ -39,18 +44,28 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let action: AssetAction
     private let sourceAccount: CryptoAccount?
     private let target: TransactionTarget?
+    private let analyticsHook: TransactionAnalyticsHook
+    private let internalFeatureService: InternalFeatureFlagServiceAPI
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
          sourceAccount: CryptoAccount?,
          target: TransactionTarget?,
-         presenter: TransactionFlowPresentable) {
+         presenter: TransactionFlowPresentable,
+         internalFeatureService: InternalFeatureFlagServiceAPI = resolve(),
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
+        self.internalFeatureService = internalFeatureService
+        self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
         presenter.listener = self
+    }
+    
+    deinit {
+        transactionModel.destroy()
     }
 
     override func didBecomeActive() {
@@ -117,15 +132,17 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func didSelect(blockchainAccount: BlockchainAccount) {
         transactionModel.state
-            .map(\.step)
             .take(1)
             .asSingle()
-            .subscribe(onSuccess: { [weak self] step in
-                switch step {
+            .subscribe(onSuccess: { [weak self] state in
+                switch state.step {
                 case .selectSource:
                     self?.didSelectSourceAccount(account: blockchainAccount as! CryptoAccount)
                 case .selectTarget:
-                    self?.didSelectDestinationAccount(target: blockchainAccount as! TransactionTarget)
+                    let selectedSource = state.source!
+                    let selectedTarget = blockchainAccount as! TransactionTarget
+                    self?.didSelectDestinationAccount(target: selectedTarget)
+                    self?.analyticsHook.onPairConfirmed(selectedSource.currencyType, target: selectedTarget)
                 default:
                     break
                 }
@@ -139,6 +156,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func didTapClose() {
         router?.closeFlow()
+        analyticsHook.onClose()
     }
 
     func enterAmountDidTapBack() {
@@ -147,6 +165,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func closeFlow() {
         router?.closeFlow()
+        analyticsHook.onClose()
     }
 
     func checkoutDidTapBack() {
@@ -154,6 +173,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
     
     func didSelectSourceAccount(account: CryptoAccount) {
+        analyticsHook.onAccountSelected(account.currencyType)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
 
@@ -169,6 +189,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         listener?.presentKYCTiersScreen()
     }
 
+    func showGenericFailure() {
+        router?.showFailure()
+    }
+
     private var initialStep: Bool = true
     private func handleStateChange(newState: TransactionState) {
         if !initialStep, newState.step == TransactionStep.initial {
@@ -176,7 +200,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         } else {
             initialStep = false
             showFlowStep(newState: newState)
-            // analyticsHooks.onStepChanged(newState)
+            analyticsHook.onStepChanged(newState)
         }
     }
 
@@ -197,6 +221,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .enterPassword:
             unimplemented()
         case .selectTarget:
+            guard !internalFeatureService.isEnabled(.swapP2) else {
+                router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
+                return
+            }
             router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
         case .confirmDetail:
             router?.routeToConfirmation(transactionModel: transactionModel)
@@ -205,9 +233,13 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .selectSource:
             router?.routeToSourceAccountPicker(action: action)
         case .enterAddress:
-            unimplemented()
+            if internalFeatureService.isEnabled(.swapP2) {
+                router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
+            } else {
+                unimplemented()
+            }
         case .closed:
-            break // Close/Dismiss here?
+            transactionModel.destroy()
         }
     }
 }

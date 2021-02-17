@@ -42,8 +42,17 @@ final class AboutView: UIView {
     func setup() {
         fromNib(named: AboutView.objectName)
         logoImageView.tintColor = .textFieldText
+        var hash = ""
+        if let info = Bundle.main.infoDictionary {
+            hash = (info[Constants.commitHash] as? String ?? "")
+        }
+        var version = LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")"
+        #if SHOW_COMMIT_HASH
+        version = "\(version) (\(hash))"
+        #endif
+        
         versionLabel.content = .init(
-            text: LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")",
+            text: version,
             font: .main(.medium, 12.0),
             color: .textFieldPlaceholder,
             alignment: .center,

@@ -16,12 +16,14 @@ class QRCodeScannerViewModelTests: XCTestCase {
     var parser: MockParser!
     var textViewModel: MockScannerTextViewModel!
     var scanner: MockScanner!
+    var scannableArea: MockQRScannableArea!
     var completion: ((Result<MockParser.T, MockParser.U>) -> Void)!
 
     override func setUp() {
         parser = MockParser()
         textViewModel = MockScannerTextViewModel()
         scanner = MockScanner()
+        scannableArea = MockQRScannableArea()
         completion = { _ in }
         subject = QRCodeScannerViewModel(
             parser: parser,
@@ -79,7 +81,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
             expecationScanningStartedCalled.fulfill()
         }
         
-        subject.startReadingQRCode()
+        subject.startReadingQRCode(from: scannableArea)
         scanner.delegate?.didStartScanning()
         
         waitForExpectations(timeout: 5)

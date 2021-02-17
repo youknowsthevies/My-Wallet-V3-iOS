@@ -100,7 +100,7 @@ final class MobileCodeEntryScreenPresenter {
         
         interactor.state
             .map { $0.isReady }
-            .bind(to:
+            .bindAndCatch(to:
                 resendCodeViewModel.isEnabledRelay,
                 confirmViewModel.isEnabledRelay
             )

@@ -25,7 +25,6 @@ extension AnnouncementRecord {
         case buyBitcoin = "announcement-cache-buy-btc"
         case transferBitcoin = "announcement-cache-transfer-btc"
         case kycAirdrop = "announcement-cache-kyc-airdrop"
-        case swap = "announcement-cache-swap"
         case newSwap = "announcement-cache-new-swap"
         
         // MARK: - One Time

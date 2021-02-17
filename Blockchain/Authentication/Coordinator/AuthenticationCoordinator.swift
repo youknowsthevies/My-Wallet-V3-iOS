@@ -231,8 +231,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
         let sift: SiftServiceAPI = resolve()
         sift.removeUserId()
-        
-        SocketManager.shared.disconnectAll()
+
         StellarServiceProvider.shared.tearDown()
         sharedContainter.reset()
         appSettings.reset()

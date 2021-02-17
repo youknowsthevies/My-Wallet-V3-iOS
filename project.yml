@@ -6,6 +6,7 @@ configs:
   Debug Staging: debug
   Release: release
   Release Staging: release
+  Release Internal: release
 name: Blockchain
 options:
   bundleIdPrefix: com.rainydayapps
@@ -88,6 +89,12 @@ schemes:
       releaseConfig: Release Staging
     templates:
     - BlockchainScheme
+  Blockchain (Internal Production):
+    templateAttributes:
+      debugConfig: Debug Production
+      releaseConfig: Release Internal
+    templates:
+    - BlockchainScheme
 settingGroups:
   base_ios:
     base:
@@ -136,13 +143,15 @@ settings:
     VALID_ARCHS[sdk=iphonesimulator*]: x86_64
   configs:
     Debug Dev:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Debug Production:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Debug Staging:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
     Release Staging:
-      OTHER_SWIFT_FLAGS: -DDEBUG_MENU
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
+    Release Internal:
+      OTHER_SWIFT_FLAGS: -DDEBUG_MENU -DSHOW_COMMIT_HASH
 targetTemplates:
   Framework:
     platform: iOS
@@ -357,6 +366,7 @@ targets:
       Debug Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
       Release: Config/BlockchainConfig/Blockchain-Production.xcconfig
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
+      Release Internal: Config/BlockchainConfig/Blockchain-Production.xcconfig
     dependencies:
     - sdk: libicucore.tbd
     - sdk: AdSupport.framework
@@ -374,7 +384,6 @@ targets:
     - carthage: Differentiator
     - carthage: scrypt
     - carthage: secp256k1
-    - carthage: Starscream
     - carthage: stellarsdk
     - carthage: web3swift
     - carthage: Veriff
@@ -480,6 +489,7 @@ targets:
     settings:
       base:
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        COMMIT_HASH: ${COMMIT_HASH}
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
@@ -506,6 +516,10 @@ targets:
           - release_signing
           - base_ios
         Release Staging:
+          groups:
+          - release_signing
+          - base_ios
+        Release Internal:
           groups:
           - release_signing
           - base_ios
@@ -863,6 +877,7 @@ targets:
       Debug Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
       Release: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
+      Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
     dependencies:
     - carthage: RxSwift
     - carthage: DIKit
@@ -1044,6 +1059,9 @@ targets:
           groups:
           - release_signing_today_extension
         Release Staging:
+          groups:
+          - release_signing_today_extension
+        Release Internal:
           groups:
           - release_signing_today_extension
     sources:

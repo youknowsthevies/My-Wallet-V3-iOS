@@ -144,17 +144,9 @@ extension LocalizationConstants.Settings {
             "Login to Web Wallet",
             comment: "Login to Web Wallet"
         )
-        public static let securityMessageHidden = NSLocalizedString(
-            "Keep this QR code hidden until you’re ready.",
-            comment: "Keep this QR code hidden until you’re ready."
-        )
-        public static let securityMessageVisible1 = NSLocalizedString(
-            "Keep this QR code safe!",
-            comment: "Keep this QR code safe!"
-        )
-        public static let securityMessageVisible2 = NSLocalizedString(
-            "Do not share it with others.",
-            comment: "Do not share it with others."
+        public static let notice = NSLocalizedString(
+            "Never share your mobile pairing QR code with anyone. Anyone who can view this QR code can withdraw funds.\nBlockchain.com will never ask to view or receive your mobile pairing QR code.",
+            comment: "Warning regarding QR code security."
         )
         public static let showQRCode = NSLocalizedString("Show QR Code", comment: "Show QR Code")
         public static let hideQRCode = NSLocalizedString("Hide QR Code", comment: "Hide QR Code")

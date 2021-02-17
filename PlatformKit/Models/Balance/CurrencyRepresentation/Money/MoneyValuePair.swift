@@ -88,10 +88,10 @@ public struct MoneyValuePair: Equatable {
     /// - Parameter percentageChange: The percentage of change from 100% = 1.0
     /// - Throws: Computation error.
     /// - Returns: The result. e.g: value = 15, percentageChange = 0.5 ~ 50% -> result = 10
-    public func value(before percentageChange: Double) throws -> MoneyValuePair {
+    public func value(before percentageChange: Double) -> MoneyValuePair {
         MoneyValuePair(
-            base: try base.value(before: percentageChange),
-            quote: try quote.value(before: percentageChange)
+            base: base.value(before: percentageChange),
+            quote: quote.value(before: percentageChange)
         )
     }
 }

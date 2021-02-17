@@ -8,6 +8,32 @@
 
 import Foundation
 
+final class OrderTransactionLegacy: NSObject {
+    @objc let legacyAssetType: LegacyAssetType
+    @objc let from: Int32
+    @objc let to: String
+    @objc let amount: String
+    @objc var fees: String?
+    @objc var gasLimit: String?
+
+    init(
+        legacyAssetType: LegacyAssetType,
+        from: Int32,
+        to: String,
+        amount: String,
+        fees: String?,
+        gasLimit: String?
+    ) {
+        self.legacyAssetType = legacyAssetType
+        self.from = from
+        self.to = to
+        self.amount = amount
+        self.fees = fees
+        self.gasLimit = gasLimit
+        super.init()
+    }
+}
+
 protocol LegacyWalletAPI: AnyObject {
 
     func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy,

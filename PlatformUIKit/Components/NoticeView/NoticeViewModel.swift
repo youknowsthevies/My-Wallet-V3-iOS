@@ -6,10 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxCocoa
-import RxRelay
-import RxSwift
-
 public struct NoticeViewModel: Equatable {
     
     public enum Alignement {
@@ -19,6 +15,9 @@ public struct NoticeViewModel: Equatable {
     
     /// The image content
     public let imageViewContent: ImageViewContent
+
+    /// The image size
+    public let imageViewSize: CGSize
     
     /// The label content
     public let labelContents: [LabelContent]
@@ -27,17 +26,21 @@ public struct NoticeViewModel: Equatable {
     public let verticalAlignment: Alignement
     
     public init(imageViewContent: ImageViewContent,
+                imageViewSize: CGSize = .init(edge: 20),
                 labelContents: [LabelContent],
                 verticalAlignment: Alignement) {
         self.imageViewContent = imageViewContent
+        self.imageViewSize = imageViewSize
         self.labelContents = labelContents
         self.verticalAlignment = verticalAlignment
     }
     
     public init(imageViewContent: ImageViewContent,
+                imageViewSize: CGSize = .init(edge: 20),
                 labelContents: LabelContent...,
                 verticalAlignment: Alignement) {
         self.imageViewContent = imageViewContent
+        self.imageViewSize = imageViewSize
         self.labelContents = labelContents
         self.verticalAlignment = verticalAlignment
     }

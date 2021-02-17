@@ -71,17 +71,9 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         return .just(value)
     }
 
-    var fetchETHHistoryIfNeeded: Single<Void> {
-        ethereumWalletService.fetchHistoryIfNeeded
-    }
-
     // MARK: Public Methods
 
-    func accounts(for assetType: CryptoCurrency) -> Single<[AssetAccount]> {
-        accounts(for: assetType, fromCache: true)
-    }
-
-    func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
+    private func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
         guard wallet.isInitialized() else {
             return .just([])
         }
@@ -105,17 +97,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    func nameOfAccountContaining(address: String, currencyType: CryptoCurrency) -> Single<String> {
-        accounts
-            .flatMap { output -> Single<String> in
-                guard let result = output.first(where: { $0.address.publicKey == address && $0.balance.currencyType == currencyType }) else {
-                    return .error(AssetAccountRepositoryError.unknown)
-                }
-                return .just(result.name)
-            }
-    }
-
-    func fetchAccounts() -> Single<[AssetAccount]> {
+    private func fetchAccounts() -> Single<[AssetAccount]> {
         let observables: [Observable<[AssetAccount]>] = enabledCurrenciesService.allEnabledCryptoCurrencies.map {
             accounts(for: $0, fromCache: false).asObservable()
         }

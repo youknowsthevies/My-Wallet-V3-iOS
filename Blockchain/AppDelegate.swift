@@ -24,6 +24,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import RIBs
 import ToolKit
 import TransactionUIKit
 import WalletPayloadKit
@@ -113,10 +114,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Lifecycle Methods
 
     func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions
-                     launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        if ProcessInfo.processInfo.environmentBoolean(for: "automation_erase_data") == true {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if #available(iOS 13.0, *) {
+            // Do not disable LeakDetector  
+        } else {
+            LeakDetector.disableLeakDetectorOverride = true
+        }
+
+        if ProcessInfo.processInfo.environmentBoolean(for: .eraseWallet) == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
             // This behaviour happens even on non-debug builds, this is necessary because our UI tests
             //   run on real devices with 'release-staging' builds.
@@ -189,10 +194,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         appCoordinator.start()
         WalletActionSubscriber.shared.subscribe()
         
-        // TODO: Remove this before Swap 2.0 launch
-        let featureFlags: InternalFeatureFlagServiceAPI = resolve()
-        featureFlags.enable(.newSwap)
-
         return true
     }
 
@@ -222,8 +223,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
             WalletManager.shared.close()
         }
-
-        SocketManager.shared.disconnectAll()
 
         // UI-related background actions
         ModalPresenter.shared.closeAllModals()

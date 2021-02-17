@@ -42,6 +42,11 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
         }
     }
+
+    enum Effect {
+        case failure
+        case none
+    }
     
     // MARK: - Properties
 
@@ -117,6 +122,12 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         paymentMethodTypesService.preferredPaymentMethodType
     }
+
+    /// An observable stream with a value of an effect.
+    var effect: Observable<Effect> {
+        effectRelay
+            .asObservable()
+    }
     
     // MARK: - Dependencies
         
@@ -138,7 +149,10 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     
     /// The state of the screen
     private let stateRelay = BehaviorRelay<State>(value: .empty(currency: FiatCurrency.default))
-    
+
+    /// A relay that streams an effect, such as a failure
+    private let effectRelay = BehaviorRelay<Effect>(value: .none)
+
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
@@ -169,8 +183,14 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Interactor
     
     override func didLoad() {
+        
         let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
         let fiatCurrencyService = self.fiatCurrencyService
+        
+        amountTranslationInteractor.effect
+            .map(\.toBuyCryptoInteractorEffect)
+            .bindAndCatch(to: effectRelay)
+            .disposed(by: disposeBag)
         
         state
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountTranslationInteractor.State> in
@@ -327,5 +347,16 @@ extension SelectionItemViewModel {
 
     var cryptoCurrency: CryptoCurrency {
         CryptoCurrency(code: id)!
+    }
+}
+
+extension AmountTranslationInteractor.Effect {
+    var toBuyCryptoInteractorEffect: BuyCryptoScreenInteractor.Effect {
+        switch self {
+        case .failure:
+            return .failure
+        case .none:
+            return .none
+        }
     }
 }

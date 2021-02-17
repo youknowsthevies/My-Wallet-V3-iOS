@@ -48,8 +48,14 @@ public final class AmountTranslationInteractor {
         case empty
         case inBounds
         case warning(message: String, action: () -> Void)
+        case error(message: String)
         case maxLimitExceeded(MoneyValue)
         case minLimitExceeded(MoneyValue)
+    }
+
+    public enum Effect {
+        case failure(error: Error)
+        case none
     }
         
     // MARK: - Properties
@@ -78,6 +84,12 @@ public final class AmountTranslationInteractor {
     public let stateRelay = BehaviorRelay<State>(value: .empty)
     public var state: Observable<State> {
         stateRelay.asObservable()
+    }
+
+    public var effect: Observable<Effect> {
+        effectRelay
+            .asObservable()
+            .distinctUntilChanged()
     }
     
     /// The active input relay
@@ -129,6 +141,9 @@ public final class AmountTranslationInteractor {
     
     /// The amount as `CryptoValue`
     private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
+
+    /// A relay that streams an effect, such as a failure
+    private let effectRelay = BehaviorRelay<Effect>(value: .none)
     
     // MARK: - Injected
     
@@ -164,33 +179,43 @@ public final class AmountTranslationInteractor {
         /// modify the fiat / crypto value
         
         // Fiat changes affect crypto
-
-        let fiatCurrency = fiatCurrencyService.fiatCurrencyObservable
+        let failibleFiatCurrency = fiatCurrencyService.fiatCurrencyObservable
             .map { $0 as Currency }
+            
+        let failibleCryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
+            .map { $0 as Currency }
+        
+        let fiatCurrency = failibleFiatCurrency
+            .catchError { _ -> Observable<Currency> in
+                .empty()
+            }
             .share(replay: 1, scope: .whileConnected)
-
-        let cryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
-            .map { $0 as Currency }
+            
+        let cryptoCurrency = failibleCryptoCurrency
+            .catchError { _ -> Observable<Currency> in
+                .empty()
+            }
             .share(replay: 1, scope: .whileConnected)
         
         fiatCurrency
-            .bind(to: fiatInteractor.interactor.currencyRelay)
+            .bindAndCatch(to: fiatInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
 
         cryptoCurrency
-            .bind(to: cryptoInteractor.interactor.currencyRelay)
+            .bindAndCatch(to: cryptoInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
 
         // We need to keep any currency selection changes up to date with the input values
         // and eventually update the `cryptoAmountRelay` and `fiatAmountRelay`
-        let currenciesMerged = Observable.merge(fiatCurrency, cryptoCurrency)
+        let currenciesMerged = Observable.merge(failibleFiatCurrency, failibleCryptoCurrency)
+            .consumeErrorToEffect(on: self)
             .share(replay: 1, scope: .whileConnected)
 
         // Make fiat amount zero after any currency change
         currenciesMerged
             .mapToVoid()
             .map { "" }
-            .bind(to: fiatInteractor.scanner.rawInputRelay, cryptoInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay, cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
         // Bind of the edit values to the scanner depending on the currently edited currency type
@@ -210,6 +235,7 @@ public final class AmountTranslationInteractor {
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromFiatInput(amount: value.amount).asObservable()
             }
+            .consumeErrorToEffect(on: self)
         
         let pairFromCryptoInput = currenciesMerged
             .flatMap(weak: self) { (self, _) -> Observable<MoneyValueInputScanner.Input> in
@@ -225,21 +251,22 @@ public final class AmountTranslationInteractor {
             .flatMapLatest(weak: self) { (self, value) -> Observable<MoneyValuePair> in
                 self.pairFromCryptoInput(amount: value.amount).asObservable()
             }
-        
+            .consumeErrorToEffect(on: self)
+
         // Merge the output of the scanner from edited amount to the other scanner input relay
-                
+
         pairFromFiatInput
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
-            .bind(to: cryptoInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
 
         pairFromCryptoInput
             .map(\.quote)
             .map(\.displayMajorValue)
             .map { "\($0)" }
-            .bind(to: fiatInteractor.scanner.rawInputRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
         
         let anyPair = Observable
@@ -259,7 +286,6 @@ public final class AmountTranslationInteractor {
                     self.fiatAmountRelay.accept(value.base)
                     self.cryptoAmountRelay.accept(value.quote)
                 }
-
             }
             .disposed(by: disposeBag)
  
@@ -273,14 +299,14 @@ public final class AmountTranslationInteractor {
             .filter { $0 == .fiat }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
-            .bind(to: fiatInteractor.scanner.actionRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         deleteAction
             .filter { $0 == .crypto }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
-            .bind(to: cryptoInteractor.scanner.actionRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         // Bind insertion events
@@ -297,13 +323,13 @@ public final class AmountTranslationInteractor {
         insertAction
             .filter { $0.0 == .fiat }
             .map { $0.1 }
-            .bind(to: fiatInteractor.scanner.actionRelay)
+            .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         insertAction
             .filter { $0.0 == .crypto }
             .map { $0.1 }
-            .bind(to: cryptoInteractor.scanner.actionRelay)
+            .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
         
         state
@@ -311,7 +337,7 @@ public final class AmountTranslationInteractor {
                 switch state {
                 case .empty, .inBounds:
                     return .valid
-                case .maxLimitExceeded, .minLimitExceeded, .warning:
+                case .maxLimitExceeded, .minLimitExceeded, .warning, .error:
                     return .invalid
                 }
             }
@@ -346,14 +372,14 @@ public final class AmountTranslationInteractor {
         input
             .compactMap(\.character)
             .asObservable()
-            .bind(to: self.appendNewRelay)
+            .bindAndCatch(to: self.appendNewRelay)
             .disposed(by: disposeBag)
         
         input
             .filter { $0.character == nil }
             .asObservable()
             .mapToVoid()
-            .bind(to: self.deleteLastRelay)
+            .bindAndCatch(to: self.deleteLastRelay)
             .disposed(by: disposeBag)
 
         return state
@@ -370,11 +396,35 @@ public final class AmountTranslationInteractor {
     }
 
     public func set(amount: MoneyValue) {
-        Single.zip(normalizeSet(amount: amount), currentInteractor)
-            .subscribe { (amount, interactor) in
+        invertInputIfNeeded(for: amount)
+            .andThen(currentInteractor)
+            .subscribe { interactor in
                 interactor.scanner.reset(to: amount)
             }
             .disposed(by: disposeBag)
+    }
+
+    private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {
+        activeInput.take(1)
+            .asSingle()
+            .flatMapCompletable(weak: self) { (self, activeInput) -> Completable in
+                switch (activeInput, amount.isFiat) {
+                case (.fiat, true), (.crypto, false):
+                    return .empty()
+                case (.fiat, false), (.crypto, true):
+                    return self.invertInput(from: activeInput)
+                }
+            }
+    }
+
+    private func invertInput(from activeInput: ActiveAmountInput) -> Completable {
+        Single.just(activeInput)
+            .map(\.inverted)
+            .observeOn(MainScheduler.asyncInstance)
+            .do(onSuccess: { [weak self] input in
+                self?.activeInputRelay.accept(input)
+            })
+            .asCompletable()
     }
 
     private func pairFromFiatInput(amount: String) -> Single<MoneyValuePair> {
@@ -407,23 +457,13 @@ public final class AmountTranslationInteractor {
             }
     }
 
-    // If amount: MoneyValue is not in the current active input currency, convert it.
-    private func normalizeSet(amount: MoneyValue) -> Single<MoneyValue> {
-        activeInput
-            .take(1)
-            .asSingle()
-            .flatMap(weak: self) { (self, activeInput) -> Single<MoneyValue> in
-                switch (activeInput, amount.isFiat) {
-                case (.fiat, false):
-                    return self.pairFromCryptoInput(amount: "\(amount.displayMajorValue)")
-                        .map(\.quote)
-                case (.crypto, true):
-                    return self.pairFromFiatInput(amount: "\(amount.displayMajorValue)")
-                        .map(\.quote)
-                default:
-                    return .just(amount)
-                }
-            }
+    /// Provides a mechanism to handle an error as produced by an observable stream
+    ///
+    /// - Parameter error: An `Error` object describing the issue
+    fileprivate func handleCurrency(error: Error) {
+        if case .none = effectRelay.value {
+            effectRelay.accept(.failure(error: error))
+        }
     }
 }
 
@@ -435,8 +475,33 @@ extension AmountTranslationInteractor.State {
         case .empty,
              .maxLimitExceeded,
              .minLimitExceeded,
-             .warning:
+             .warning,
+             .error:
             return .invalid
+        }
+    }
+}
+
+extension AmountTranslationInteractor.Effect: Equatable {
+    public static func == (lhs: AmountTranslationInteractor.Effect, rhs: AmountTranslationInteractor.Effect) -> Bool {
+        switch (lhs, rhs) {
+        case (.failure, .failure):
+            return true
+        case (.none, .none):
+            return true
+        default:
+            return false
+        }
+    }
+}
+
+extension Observable {
+    fileprivate func consumeErrorToEffect(on handler: AmountTranslationInteractor) -> Observable<Element> {
+        self.do(onError: { [weak handler] error in
+            handler?.handleCurrency(error: error)
+        })
+        .catchError { _ in
+            Observable<Element>.empty()
         }
     }
 }

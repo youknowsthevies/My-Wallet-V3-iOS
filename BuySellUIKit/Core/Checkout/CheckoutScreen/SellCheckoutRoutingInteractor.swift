@@ -12,7 +12,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-final public class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
+public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
     
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     

@@ -505,7 +505,7 @@ extension SendLumensViewController: SendXLMInterface {
     }
 
     func present(viewController: UIViewController) {
-        AppCoordinator.shared.tabControllerManager?.tabViewController.present(viewController, animated: true)
+        navigationController?.present(viewController, animated: true, completion: nil)
     }
 }
 

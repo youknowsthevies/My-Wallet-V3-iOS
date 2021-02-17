@@ -13,46 +13,47 @@ import TransactionKit
 struct TransactionState: Equatable {
 
     var action: AssetAction = .send
+    var allowFiatInput: Bool = false
+    var availableSources: [CryptoAccount] = []
+    var availableTargets: [TransactionTarget] = []
+    var destination: TransactionTarget?
+    var destinationToFiatPair: MoneyValuePair?
+    var errorState: TransactionErrorState = .none
+    var executionStatus: TransactionExecutionStatus = .notStarted
+    var isGoingBack: Bool = false
+    var nextEnabled: Bool = false
+    var passwordRequired: Bool = false
+    var pendingTransaction: PendingTransaction?
+    var secondPassword: String = ""
+    var source: CryptoAccount?
+    var sourceDestinationPair: MoneyValuePair?
+    var sourceToFiatPair: MoneyValuePair?
     var step: TransactionStep = .initial {
         didSet {
             isGoingBack = false
         }
     }
-    var isGoingBack: Bool = false
-    var source: CryptoAccount?
-    var destination: TransactionTarget?
-    var passwordRequired: Bool = false
-    var allowFiatInput: Bool = false
-    var secondPassword: String = ""
-    var nextEnabled: Bool = false
-    var errorState: TransactionErrorState = .none
-    var pendingTransaction: PendingTransaction?
-    var executionStatus: TransactionExecutionStatus = .notStarted
     var stepsBackStack: [TransactionStep] = []
-    var availableTargets: [TransactionTarget] = []
-    var availableSources: [CryptoAccount] = []
-    var sourceDestinationPair: MoneyValuePair?
-    var sourceToFiatPair: MoneyValuePair?
-    var destinationToFiatPair: MoneyValuePair?
 
     static func == (lhs: TransactionState, rhs: TransactionState) -> Bool {
-        // TODO: Expand
         lhs.action == rhs.action
-            && lhs.step == rhs.step
-            && lhs.source?.id == rhs.source?.id
-            && lhs.destination?.label == rhs.destination?.label // TODO: Fix
-            && lhs.passwordRequired == rhs.passwordRequired
-            && lhs.secondPassword == rhs.secondPassword
-            && lhs.nextEnabled == rhs.nextEnabled
+            && lhs.allowFiatInput == rhs.allowFiatInput
+            && lhs.destination?.label == rhs.destination?.label
+            && lhs.destinationToFiatPair == rhs.destinationToFiatPair
             && lhs.errorState == rhs.errorState
-            && lhs.pendingTransaction == rhs.pendingTransaction
             && lhs.executionStatus == rhs.executionStatus
+            && lhs.isGoingBack == rhs.isGoingBack
+            && lhs.nextEnabled == rhs.nextEnabled
+            && lhs.passwordRequired == rhs.passwordRequired
+            && lhs.pendingTransaction == rhs.pendingTransaction
+            && lhs.secondPassword == rhs.secondPassword
+            && lhs.source?.id == rhs.source?.id
             && lhs.sourceDestinationPair == rhs.sourceDestinationPair
             && lhs.sourceToFiatPair == rhs.sourceToFiatPair
-            && lhs.destinationToFiatPair == rhs.destinationToFiatPair
+            && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
-            && lhs.allowFiatInput == rhs.allowFiatInput
-        // && lhs.availableTargets == rhs.availableTargets
+            && lhs.availableSources.map(\.id) == rhs.availableSources.map(\.id)
+            && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
     }
 
     /// The source account `CryptoCurrency`.
@@ -65,13 +66,13 @@ struct TransactionState: Equatable {
 
     /// The amount the user is swapping from.
     var amount: MoneyValue {
-        pendingTransaction?.amount ?? .zero(currency: asset) // TODO: Better default required
+        pendingTransaction?.amount ?? .zero(currency: asset)
     }
-    
+
     var minSpendable: MoneyValue {
         pendingTransaction?.minimumLimit ?? .zero(currency: asset)
     }
-    
+
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maxLimit` as `CryptoValues` and return whichever is smaller.
     var maxSpendable: MoneyValue {
@@ -115,7 +116,7 @@ struct TransactionState: Equatable {
         }
         return .zero(currency: currencyType)
     }
-    
+
     func moneyValueFromDestination() throws -> MoneyValue {
         guard let destination = destination as? SingleAccount else {
             throw TransactionUIKitError.unexpectedDestinationAccountType
@@ -132,7 +133,7 @@ struct TransactionState: Equatable {
         guard let destinationQuote = destinationToFiatPair?.quote.fiatValue else {
             throw TransactionUIKitError.emptyDestinationExchangeRate
         }
-        
+
         switch (amount.cryptoValue,
                 amount.fiatValue,
                 exchange.quote.cryptoValue) {
@@ -157,9 +158,8 @@ struct TransactionState: Equatable {
                 )
                 .moneyValue
         default:
-            break
+            return .zero(currency: currency)
         }
-        return .zero(currency: currency)
     }
 
     /// Converts an FiatValue `available` into CryptoValue if necessary.
@@ -226,7 +226,7 @@ enum TransactionExecutionStatus {
     case inProgress
     case error
     case completed
-    
+
     var isComplete: Bool {
         self == .completed
     }

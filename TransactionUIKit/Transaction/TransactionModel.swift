@@ -39,7 +39,7 @@ final class TransactionModel {
         )
     }
     
-    // MARK: - Public
+    // MARK: - Internal methods
     
     func process(action: TransactionAction) {
         mviModel.process(action: action)
@@ -72,10 +72,20 @@ final class TransactionModel {
         case let .initialiseWithSourceAccount(action, sourceAccount, _):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
+            guard let source = previousState.source else {
+                fatalError("You should have a sourceAccount.")
+            }
+            let sourceCurrency = source.currencyType
+            let isAmountValid = previousState.amount.currencyType == sourceCurrency
+            let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
+            /// If the `amount` `currencyType` differs from the source, we should
+            /// use `zero` as the amount. If not, it is safe to use the
+            /// `previousState.amount`.
+            /// The `amount` should always be the same `currencyType` as the `source`.
             return processTargetSelectionConfirmed(
-                sourceAccount: previousState.source!,
+                sourceAccount: source,
                 transactionTarget: destinationAccount,
-                amount: previousState.amount,
+                amount: amount,
                 action: previousState.action
             )
         case .updateAmount(let amount):
@@ -109,6 +119,12 @@ final class TransactionModel {
             return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
         }
     }
+    
+    func destroy() {
+        mviModel.destroy()
+    }
+    
+    // MARK: - Private methods
 
     private func processSourceAccountsListUpdate(action: AssetAction) -> Disposable {
         interactor.getAvailableSourceAccounts(action: action)

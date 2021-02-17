@@ -14,8 +14,6 @@ extension UIColor {
 
     // MARK: - Brand-specific Colors
 
-    static let aqua = #colorLiteral(red: 0, green: 0.7294117647, blue: 0.737254902, alpha: 1)
-
     static let brandPrimary = #colorLiteral(red: 0, green: 0.2901960784, blue: 0.4862745098, alpha: 1)
 
     static let brandTertiary = #colorLiteral(red: 0.6980392157, green: 0.8352941176, blue: 0.8980392157, alpha: 1)
@@ -27,8 +25,6 @@ extension UIColor {
     static let darkGray = #colorLiteral(red: 0.26, green: 0.26, blue: 0.26, alpha: 1)
     
     static let gray6 = #colorLiteral(red: 0.2196078431, green: 0.2196078431, blue: 0.2196078431, alpha: 1)
-    
-    static let grayBlue = #colorLiteral(red: 0.4745098039, green: 0.6196078431, blue: 0.6980392157, alpha: 1)
 
     static let green = #colorLiteral(red: 0, green: 0.6549019608, blue: 0.4352941176, alpha: 1)
 

@@ -58,7 +58,8 @@ public final class Coincore {
         action: AssetAction
     ) -> Single<[SingleAccount]> {
         switch action {
-        case .swap:
+        case .swap,
+             .send:
             return allAccounts
                 .map(\.accounts)
                 .map(weak: self) { (self, accounts) -> [SingleAccount] in
@@ -73,7 +74,6 @@ public final class Coincore {
         case .deposit,
              .receive,
              .sell,
-             .send,
              .viewActivity,
              .withdraw:
             unimplemented()

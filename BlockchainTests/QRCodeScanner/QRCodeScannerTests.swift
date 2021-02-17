@@ -14,7 +14,6 @@ class QRCodeScannerTests: XCTestCase {
     var subject: QRCodeScanner!
     var deviceInputMock: DeviceInputMock!
     var captureSession: CaptureSessionMock!
-    var captureMetadataOutput: CaptureMetadataOutputMock!
     weak var delegate: QRCodeScannerDelegateMock!
 
     override func setUp() {
@@ -22,22 +21,17 @@ class QRCodeScannerTests: XCTestCase {
         
         deviceInputMock = DeviceInputMock()
         captureSession = CaptureSessionMock()
-        captureMetadataOutput = CaptureMetadataOutputMock()
         delegate = QRCodeScannerDelegateMock()
         
         subject = QRCodeScanner(
             deviceInput: deviceInputMock,
-            captureSession: captureSession,
-            captureMetadataOutputBuilder: { [unowned self] in
-                self.captureMetadataOutput
-            }
+            captureSession: captureSession
         )
         subject.delegate = delegate
     }
 
     override func tearDown() {
         delegate = nil
-        captureMetadataOutput = nil
         captureSession = nil
         deviceInputMock = nil
         subject = nil

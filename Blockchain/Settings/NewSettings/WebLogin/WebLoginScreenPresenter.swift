@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
-import RxRelay
 import RxSwift
 
 final class WebLoginScreenPresenter {
@@ -63,9 +63,7 @@ final class WebLoginScreenPresenter {
         }
     }()
 
-    let securityAlert: LabelContent
-    let qrCodeSecurityAlertTop: LabelContent
-    let qrCodeSecurityAlertBottom: LabelContent
+    let noticeViewModel: NoticeViewModel
     let actionButtonModel: ButtonViewModel
 
     // MARK: - Private Properties
@@ -77,30 +75,22 @@ final class WebLoginScreenPresenter {
 
     // MARK: - Init
 
-    init(alertPresenter: AlertViewPresenter = .shared,
+    init(alertPresenter: AlertViewPresenter = resolve(),
          service: WebLoginQRCodeServiceAPI = WebLoginQRCodeService()) {
         self.alertPresenter = alertPresenter
         self.service = service
-        securityAlert = .init(
-            text: LocalizedString.securityMessageHidden,
-            font: .main(.medium, 14),
-            color: .descriptionText,
-            alignment: .center,
-            accessibility: .id(AccessibilityIDs.securityAlertLabel)
+
+        let noticeLabel = LabelContent(
+            text: LocalizedString.notice,
+            font: .main(.semibold, 14),
+            color: .destructiveButton,
+            accessibility: .id(AccessibilityIDs.notice)
         )
-        qrCodeSecurityAlertTop = .init(
-            text: LocalizedString.securityMessageVisible1,
-            font: .main(.medium, 14),
-            color: .descriptionText,
-            alignment: .center,
-            accessibility: .id(AccessibilityIDs.securityAlertTopLabel)
-        )
-        qrCodeSecurityAlertBottom = .init(
-            text: LocalizedString.securityMessageVisible2,
-            font: .main(.medium, 14),
-            color: .descriptionText,
-            alignment: .center,
-            accessibility: .id(AccessibilityIDs.securityAlertBottomLabel)
+        noticeViewModel = NoticeViewModel(
+            imageViewContent: .init(imageName: "icon-alert"),
+            imageViewSize: .edge(40),
+            labelContents: noticeLabel,
+            verticalAlignment: .center
         )
 
         actionButtonModel = .primary(with: LocalizedString.hideQRCode, accessibilityId: AccessibilityIDs.showQRCodeButton)

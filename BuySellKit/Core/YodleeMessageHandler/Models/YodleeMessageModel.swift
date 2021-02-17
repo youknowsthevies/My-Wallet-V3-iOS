@@ -23,7 +23,7 @@ public struct DataMessage: Decodable {
     public struct SiteData: Decodable {
         public let reason: String?
         public let status: MessageStatus?
-        public let accountId: Int?
+        public let accountId: String?
         public let providerId: Int?
         public let providerAccountId: Int?
         public let providerName: String?
@@ -31,7 +31,7 @@ public struct DataMessage: Decodable {
     public let action: MessageAction?
     public let status: MessageStatus?
     public let sites: [SiteData]?
-    public let accountId: Int?
+    public let providerId: Int?
     public let providerAccountId: Int?
     public let providerName: String?
     public let additionalStatus: String?

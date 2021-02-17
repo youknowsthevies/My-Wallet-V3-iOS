@@ -29,8 +29,10 @@ final class TabControllerManager: NSObject {
     private var sendNavigationViewController: UINavigationController!
     private var receiveNavigationViewController: UINavigationController!
     private var buySellViewController: UINavigationController!
+    private var sendViewController: UIViewController!
     private var swapViewController: UIViewController!
     private var swapRouter: ViewableRouting!
+    private var sendRouter: ViewableRouting!
 
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let sendControllerManager: SendControllerManager
@@ -84,20 +86,7 @@ final class TabControllerManager: NSObject {
             router.interactable.activate()
             router.load()
         }
-        func populateLegacySwap() {
-            swapViewController = ExchangeContainerViewController.makeFromStoryboard()
-        }
-        if internalFeatureFlag.isEnabled(.newSwap) {
-            populateNewSwap()
-        } else {
-            populateLegacySwap()
-        }
-        // TODO: When New Swap is ready, use Feature Flag to decide which one should be displayed:
-        // if featureConfigurator.configuration(for: .newSwapEnabled).isEnabled {
-        //     populateNewSwap()
-        // } else {
-        //     populateLegacySwap()
-        // }
+        populateNewSwap()
     }
 
     func showSwap() {
@@ -108,27 +97,63 @@ final class TabControllerManager: NSObject {
             index: Constants.Navigation.tabSwap
         )
     }
+    
+    private func loadSend() {
+        guard self.sendViewController == nil else { return }
+        guard sendRouter == nil else { return }
+        
+        func populateNewSend() {
+            let router = SendRootBuilder().build()
+            sendViewController = router.viewControllable.uiviewController
+            sendRouter = router
+            router.interactable.activate()
+            router.load()
+        }
+        func populateLegacySend() {
+            sendViewController = sendReceiveCoordinator.builder.send()
+        }
+        
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            populateNewSend()
+        } else {
+            // TODO: Feature Flag Send P2 in Firebase
+            populateLegacySend()
+        }
+    }
 
     func showSend(cryptoCurrency: CryptoCurrency) {
-        UIView.animate(
-            withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
-            },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.showSend(cryptoCurrency)
-            }
-        )
+        // TODO: Handle deeplinking to a preselected source account.
+        loadSend()
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            tabViewController.setActiveViewController(
+                sendViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        } else {
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
     }
 
     func showSend() {
-        if sendNavigationViewController == nil {
-            let send = sendReceiveCoordinator.builder.send()
-            sendNavigationViewController = UINavigationController(rootViewController: send)
+        loadSend()
+        if internalFeatureFlag.isEnabled(.sendP2) {
+            tabViewController.setActiveViewController(
+                sendViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        } else {
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
         }
-        tabViewController.setActiveViewController(sendNavigationViewController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabSend)
     }
 
     func showReceive() {
@@ -272,21 +297,6 @@ extension TabControllerManager: WalletTransactionDelegate {
     }
 }
 
-// MARK: - WalletExchangeIntermediateDelegate
-
-extension TabControllerManager: WalletExchangeIntermediateDelegate {
-
-    /// This callback happens when an ETH account is created. This happens when a user goes to
-    /// swap for the first time. This is a delegate callback from the JS layer. This needs to be
-    /// refactored so that it is in a completion handler and only in `ExchangeContainerViewController`
-    func didCreateEthAccountForExchange() {
-        guard let exchangeContainer = swapViewController as? ExchangeContainerViewController else {
-            return
-        }
-        exchangeContainer.showExchange()
-    }
-}
-
 // MARK: - WalletSendEtherDelegate
 
 extension TabControllerManager: WalletSendEtherDelegate {
@@ -317,7 +327,6 @@ extension TabControllerManager: TabViewControllerDelegate {
         walletManager.settingsDelegate = self
         walletManager.sendBitcoinDelegate = self.sendControllerManager
         walletManager.sendEtherDelegate = self
-        walletManager.partnerExchangeIntermediateDelegate = self
         walletManager.transactionDelegate = self
     }
 

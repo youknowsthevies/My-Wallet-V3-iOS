@@ -57,7 +57,7 @@ import DIKit
                 print("config fetch error")
                 return
             }
-            self?.remoteConfig.activate(completionHandler: nil)
+            self?.remoteConfig.activate(completion: nil)
         }
     }
 }
@@ -111,9 +111,7 @@ extension AppFeatureConfigurator: FeatureFetching {
         guard let keyRawValue = key.remoteEnabledKey else {
             return .error(ConfigurationError.missingKeyRawValue)
         }
-        guard let number = remoteConfig.configValue(forKey: keyRawValue).numberValue?.intValue else {
-            return .error(ConfigurationError.missingValue)
-        }
+        let number = remoteConfig.configValue(forKey: keyRawValue).numberValue.intValue
         return .just(number)
     }
     

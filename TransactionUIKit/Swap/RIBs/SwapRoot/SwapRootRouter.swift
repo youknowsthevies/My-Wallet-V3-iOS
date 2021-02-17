@@ -20,14 +20,27 @@ struct SwapTrendingPair {
 }
 
 protocol SwapRootRouting: ViewableRouting {
+    /// Bootstrap determines if the user
+    /// should see KYC or Swap.
     func routeToSwapBootstrap()
+    
+    /// Landing shows trending pairs
     func routeToSwapLanding()
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
     func routeToKYC()
     func routeToSwap(with pair: SwapTrendingPair?)
+    func dismissTransactionFlow()
 }
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
+    
+    private var transactionFlowRouting: TransactionFlowRouting? {
+        children
+            .first(where: { $0 is TransactionFlowRouting })
+            .map { child -> TransactionFlowRouting in
+                child as! TransactionFlowRouting
+            }
+    }
 
     private weak var bootstrap: SwapBootstrapRouting?
 
@@ -67,6 +80,8 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
     }
     
     func routeToSwap(with pair: SwapTrendingPair?) {
+        dismissTransactionFlow()
+        precondition(transactionFlowRouting == nil, "There should be no TransactionFlowRouting child here.")
         let builder = TransactionFlowBuilder()
         let router = builder.build(
             withListener: interactor,
@@ -75,12 +90,13 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
             target: pair?.destinationAccount
         )
         let viewControllable = router.viewControllable
-        children.forEach { child in
-            if child is TransactionFlowRouting {
-                detachChild(child)
-            }
-        }
         attachChild(router)
         viewController.present(viewController: viewControllable)
+    }
+    
+    func dismissTransactionFlow() {
+        if let transationFlowRouting = transactionFlowRouting {
+            detachChild(transationFlowRouting)
+        }
     }
 }

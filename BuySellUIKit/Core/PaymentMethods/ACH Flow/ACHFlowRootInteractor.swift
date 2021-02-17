@@ -89,6 +89,7 @@ final class ACHFlowRootInteractor: Interactor,
             router?.closeFlow()
         case .bankTransfer:
             self.stateService.previousRelay.accept(())
+            self.stateService.nextFromBankLinkSelection()
             router?.closeFlow()
         case .funds(.fiat(let currency)):
             self.showFundsTransferDetailsIfNeeded(for: currency)

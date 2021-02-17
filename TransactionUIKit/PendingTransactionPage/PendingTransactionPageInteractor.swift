@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
-import StoreKit
 import TransactionKit
 
 protocol PendingTransactionPageRouting: Routing {
@@ -32,10 +32,13 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     weak var listener: PendingTransactionPageListener?
     
     private let transactionModel: TransactionModel
+    private let analyticsHook: TransactionAnalyticsHook
     
     init(transactionModel: TransactionModel,
-         presenter: PendingTransactionPagePresentable) {
+         presenter: PendingTransactionPagePresentable,
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.transactionModel = transactionModel
+        self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
     }
 
@@ -73,6 +76,21 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 }
             }
             .asDriverCatchError()
+
+        executionStatus
+            .asObservable()
+            .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .subscribe(onNext: { [weak self] (executionStatus, transcationState) in
+                switch executionStatus {
+                case .inProgress, .notStarted:
+                    break
+                case .error:
+                    self?.analyticsHook.onTransactionFailure(with: transcationState)
+                case .completed:
+                    self?.analyticsHook.onTransactionSuccess(with: transcationState)
+                }
+            })
+            .disposeOnDeactivate(interactor: self)
         
         let completion = executionStatus
             .map(\.isComplete)
@@ -94,7 +112,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     // MARK: - Private methods
     
     private func requestReview() {
-        SKStoreReviewController.requestReview()
+        StoreReviewController.requestReview()
     }
 
     private func handle(effects: Effects) {

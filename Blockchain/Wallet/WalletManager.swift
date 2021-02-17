@@ -46,7 +46,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     @objc weak var backupDelegate: WalletBackupDelegate?
     @objc weak var sendBitcoinDelegate: WalletSendBitcoinDelegate?
     @objc weak var sendEtherDelegate: WalletSendEtherDelegate?
-    @objc weak var partnerExchangeIntermediateDelegate: WalletExchangeIntermediateDelegate?
     @objc weak var transactionDelegate: WalletTransactionDelegate?
     @objc weak var transferAllDelegate: WalletTransferAllDelegate?
     @objc weak var upgradeWalletDelegate: WalletUpgradeDelegate?
@@ -388,14 +387,6 @@ extension WalletManager: WalletDelegate {
     func didFailRecovery() {
         DispatchQueue.main.async { [unowned self] in
             self.recoveryDelegate?.didFailRecovery()
-        }
-    }
-
-    // MARK: - Exchange
-
-    func didCreateEthAccountForExchange() {
-        DispatchQueue.main.async {
-            self.partnerExchangeIntermediateDelegate?.didCreateEthAccountForExchange()
         }
     }
 

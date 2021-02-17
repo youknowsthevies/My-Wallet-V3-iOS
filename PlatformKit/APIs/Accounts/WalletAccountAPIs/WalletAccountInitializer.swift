@@ -16,16 +16,3 @@ public protocol WalletAccountInitializer {
     // Initialize WalletAccount, get mnemonic if needed and prompt for 2nd password if needed
     func initializeMetadataMaybe() -> Maybe<Account>
 }
-
-public final class AnyWalletAccountInitializer<Account: WalletAccount>: WalletAccountInitializer {
-
-    private let initializerClosure: () -> Maybe<Account>
-
-    public func initializeMetadataMaybe() -> Maybe<Account> {
-        initializerClosure()
-    }
-
-    public init<I: WalletAccountInitializer>(initializer: I) where I.Account == Account {
-        self.initializerClosure = initializer.initializeMetadataMaybe
-    }
-}

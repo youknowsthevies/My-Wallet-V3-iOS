@@ -107,11 +107,15 @@ extension SelectionButtonViewModel {
                 .init(name: "icon-bank",
                       background: .lightBlueBackground,
                       cornerRadius: .round,
-                      size: .init(edge: 32))
+                      size: .init(edge: 32),
+                      renderingMode: .template(.defaultBadge))
             )
             title = LocalizedString.Types.bankAccount
-            let accountName = data.account?.name ?? ""
-            subtitleRelay.accept(accountName)
+            let bankName = data.account?.bankName ?? ""
+            let accountType = data.account?.type.title ?? ""
+            let accountNumber = data.account?.number ?? ""
+            let subtitle = "\(bankName) \(accountType) \(accountNumber)"
+            subtitleRelay.accept(subtitle)
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title

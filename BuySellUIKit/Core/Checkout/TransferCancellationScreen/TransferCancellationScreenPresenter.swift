@@ -70,11 +70,11 @@ final class TransferCancellationScreenPresenter {
         )
         
         noButtonViewModel = .cancel(
-            with: LocalizationConstants.ObjCStrings.BC_STRING_NO,
+            with: LocalizationConstants.no,
             accessibilityId: AccessibilityIDs.noButton
         )
         yesButtonViewModel = .primary(
-            with: LocalizationConstants.ObjCStrings.BC_STRING_YES,
+            with: LocalizationConstants.yes,
             accessibilityId: AccessibilityIDs.yesButton
         )
         

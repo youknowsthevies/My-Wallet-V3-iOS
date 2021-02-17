@@ -164,11 +164,11 @@ extension LocalizationConstants.SimpleBuy {
         }
         public struct Card {
             public static let title = NSLocalizedString(
-                "Add Credit or Debit Card",
+                "Credit or Debit Card",
                 comment: "Simple Buy: Add Payment method selection screen: card title"
             )
             public static let descriptionLimit = NSLocalizedString(
-                "Limit",
+                "Instantly Available",
                 comment: "Simple Buy: Add Payment method selection screen: description of card payment max limit"
             )
             public static let descriptionInfo = NSLocalizedString(
@@ -247,22 +247,43 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Simple Buy: Buy Crypto Screen - payment method title label"
         )
         public enum LimitView {
-            public static let upperLimit = NSLocalizedString(
-                "Up to %@",
-                comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
-            )
-            public enum Min {
-                public static let useMin = NSLocalizedString(
-                    "Min",
-                    comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+            public enum Buy {
+                public static let upperLimit = NSLocalizedString(
+                    "Up to %@",
+                    comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
                 )
-            }
+                public enum Min {
+                    public static let useMin = NSLocalizedString(
+                        "%@ Min",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+                    )
+                }
 
-            public enum Max {
-                public static let useMax = NSLocalizedString(
-                    "Max",
-                    comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                public enum Max {
+                    public static let useMax = NSLocalizedString(
+                        "%@ Max",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                    )
+                }
+            }
+            public enum Withdraw {
+                public static let upperLimit = NSLocalizedString(
+                    "Up to %@",
+                    comment: "Simple Buy: Buy Crypto Screen - Amount upper limit"
                 )
+                public enum Min {
+                    public static let useMin = NSLocalizedString(
+                        "%@ Min",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too low suffix"
+                    )
+                }
+
+                public enum Max {
+                    public static let useMax = NSLocalizedString(
+                        "%@ Max",
+                        comment: "Simple Buy: Buy Crypto Screen - Amount too high suffix"
+                    )
+                }
             }
         }
     }
@@ -541,8 +562,8 @@ extension LocalizationConstants.SimpleBuy {
                 )
                 public static let buyOrder = NSLocalizedString("Buy order.", comment: "Buy order.")
             }
-            public static let no = NSLocalizedString("No", comment: "No")
-            public static let yes = NSLocalizedString("Yes", comment: "Yes")
+            public static let no = LocalizationConstants.no
+            public static let yes = LocalizationConstants.yes
         }
     }
 
@@ -845,6 +866,10 @@ extension LocalizationConstants.SimpleBuy {
     }
 
     public enum YodleeWebScreen {
+        public static let title = NSLocalizedString(
+            "Link a Bank",
+            comment: "Yodlee Web Screen: Link a Bank title"
+        )
         public enum WebViewPendingContent {
             public static let title = NSLocalizedString(
                 "Taking you to Yodlee...",
@@ -891,6 +916,14 @@ extension LocalizationConstants.SimpleBuy {
         }
 
         public enum FailurePendingContent {
+            public static let contactSupport = NSLocalizedString(
+                " contact support.",
+                comment: "Yodlee Web Screen: likning bank contact support."
+            )
+            public static let contactUs = NSLocalizedString(
+                " contact us",
+                comment: "Yodlee Web Screen: likning bank contact us."
+            )
             public enum Generic {
                 public static let title = NSLocalizedString(
                     "Oops! Something went wrong.",
@@ -898,7 +931,7 @@ extension LocalizationConstants.SimpleBuy {
                 )
                 
                 public static let subtitle = NSLocalizedString(
-                    "Please try linking your bank again. If this keeps happening, please contact support.",
+                    "Please try linking your bank again. If this keeps happening, please",
                     comment: "Yodlee Web Screen: likning bank error state subtitle"
                 )
                 public static let mainActionButtonTitle = NSLocalizedString(
@@ -906,7 +939,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error try again button title"
                 )
                 public static let cancelActionButtonTitle = NSLocalizedString(
-                    "Cancel",
+                    "Cancel & Go Back",
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
@@ -937,17 +970,14 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error state title"
                 )
 
+                public static let immediately = NSLocalizedString(" immediately.", comment: "immediately")
                 public static let subtitle = NSLocalizedString(
-                    "To link this bank, please log into your other Wallets and remove it. If this doesnt look right to you, please contact us immediately.",
+                    "To link this bank, please log into your other Wallets and remove it. If this doesnt look right to you, please",
                     comment: "Yodlee Web Screen: likning bank error state subtitle"
                 )
                 public static let mainActionButtonTitle = NSLocalizedString(
-                    "Try a Different Account",
+                    "OK",
                     comment: "Yodlee Web Screen: likning bank error try again button title"
-                )
-                public static let cancelActionButtonTitle = NSLocalizedString(
-                    "Cancel",
-                    comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
 
@@ -973,7 +1003,7 @@ extension LocalizationConstants.SimpleBuy {
 
             public enum AccountNamesMismatched {
                 public static let title = NSLocalizedString(
-                    "Oops! Something went wrong.",
+                    "Is this your bank?",
                     comment: "Yodlee Web Screen: likning bank error state title"
                 )
 
@@ -990,6 +1020,19 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
+        }
+    }
+
+    public enum LinkedBank {
+        public enum AccountType {
+            public static let savings = NSLocalizedString(
+                "Savings",
+                comment: "Savings account type"
+            )
+            public static let checking = NSLocalizedString(
+                "Checking",
+                comment: "Checking account type"
+            )
         }
     }
 }

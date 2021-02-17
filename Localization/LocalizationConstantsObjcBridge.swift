@@ -92,11 +92,6 @@ import Foundation
 
     @objc public class func invalidXAddressY() -> String { LocalizationConstants.SendAsset.invalidXAddressY }
 
-    @objc public class func reminderBackupMessageFirstBitcoin() -> String { LocalizationConstants.Backup.reminderBackupMessageFirstBitcoin
-    }
-
-    @objc public class func reminderBackupMessageHasFunds() -> String { LocalizationConstants.Backup.reminderBackupMessageHasFunds }
-
     @objc public class func upgradeSuccess() -> String { LocalizationConstants.LegacyUpgrade.upgradeSuccess }
 
     @objc public class func upgradeSuccessTitle() -> String { LocalizationConstants.LegacyUpgrade.upgradeSuccessTitle }

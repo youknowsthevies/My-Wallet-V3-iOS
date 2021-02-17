@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Toto vyžaduje aplikace pro načtení QR kódů.";
-"NSMicrophoneUsageDescription" = "Požadováno pro zachycení videa.";
-"NSFaceIDUsageDescription" = "Povolením funkce Face ID můžete bezpečně přistupovat k peněženkám.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain potřebuje přístup k vaší lokalitě, aby vám ukázal pobočky společnosti Bitcoin v okolí.";
-"NSPhotoLibraryUsageDescription" = "Vaše oprávnění je nutné k nahrání dokumentů z knihovny fotografií.";

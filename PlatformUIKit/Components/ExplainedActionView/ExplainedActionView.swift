@@ -21,7 +21,7 @@ public final class ExplainedActionView: UIView {
             contentStackView.removeSubviews()
             
             button.rx.tap
-                .bind(to: viewModel.tapRelay)
+                .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
             
             let descriptionLabels: [UILabel] = viewModel.descriptionLabelContents
@@ -93,7 +93,7 @@ public final class ExplainedActionView: UIView {
         titleLabel.layout(edge: .trailing, to: .leading, of: disclosureImageView, offset: -16)
         titleLabel.verticalContentHuggingPriority = .penultimateHigh
         
-        contentStackView.layout(edge: .top, to: .bottom, of: titleLabel, offset: 16)
+        contentStackView.layout(edge: .top, to: .bottom, of: titleLabel, offset: 8)
         contentStackView.layout(to: .leading, of: titleLabel)
         contentStackView.layout(to: .trailing, of: titleLabel)
         contentStackView.layoutToSuperview(.bottom, offset: -24, priority: .penultimateHigh)
@@ -103,7 +103,7 @@ public final class ExplainedActionView: UIView {
         contentStackView.alignment = .leading
         contentStackView.distribution = .fillProportionally
         contentStackView.axis = .vertical
-        contentStackView.spacing = 16
+        contentStackView.spacing = 8
         
         disclosureImageView.contentMode = .scaleAspectFit
         disclosureImageView.image = UIImage(named: "icon-disclosure-small", in: bundle, compatibleWith: .none)

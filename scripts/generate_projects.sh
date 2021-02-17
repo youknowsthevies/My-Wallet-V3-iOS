@@ -7,6 +7,7 @@
 #  Generate projects with xcodegen.
 #
 
+export COMMIT_HASH=$(git rev-parse --short HEAD)
 if command -v xcodegen 2> /dev/null; then
     xcodegen
 else

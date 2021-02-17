@@ -78,7 +78,6 @@
 - (void)didGetSwipeAddresses:(NSArray *)newSwipeAddresses assetType:(LegacyAssetType)assetType;
 - (void)didGetEtherAddressWithSecondPassword;
 - (void)didGetAvailableBtcBalance:(NSDictionary *)result;
-- (void)didCreateEthAccountForExchange;
 - (void)didFetchBitcoinCashHistory;
 - (void)walletDidGetAccountInfo:(Wallet *)wallet;
 - (void)walletDidGetBtcExchangeRates:(Wallet *)wallet;

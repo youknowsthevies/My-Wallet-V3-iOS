@@ -62,11 +62,11 @@ class DebugViewController: UIViewController {
 
         tableView.rx
             .modelSelected(DebugItem.self)
-            .bind(to: viewModel.itemTapped)
+            .bindAndCatch(to: viewModel.itemTapped)
             .disposed(by: disposeBag)
 
         navigationItem.rightBarButtonItem?.rx.tap
-            .bind(to: viewModel.closeButtonTapped)
+            .bindAndCatch(to: viewModel.closeButtonTapped)
             .disposed(by: disposeBag)
     }
 }

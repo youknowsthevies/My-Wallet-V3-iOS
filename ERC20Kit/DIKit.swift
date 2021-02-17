@@ -8,6 +8,7 @@
 
 import DIKit
 import PlatformKit
+import ToolKit
 import TransactionKit
 
 extension DependencyContainer {
@@ -15,7 +16,11 @@ extension DependencyContainer {
     // MARK: - ERC20Kit Module
 
     public static var erc20Kit = module {
-
+        
+        single(tag: Tags.ERC20AccountService.addressCache) {
+            Atomic<[String: Bool]>([:])
+        }
+        
         // MARK: - PAX
 
         factory(tag: CryptoCurrency.pax) { ERC20Asset<PaxToken>() as CryptoAsset }
@@ -41,6 +46,8 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<PaxToken>() }
+        
+        factory { ERC20AccountService<PaxToken>() }
 
         factory(tag: CryptoCurrency.pax) { ERC20AssetBalanceFetcher<PaxToken>() as CryptoAccountBalanceFetching }
         
@@ -78,10 +85,19 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<TetherToken>() }
+        
+        factory { ERC20AccountService<TetherToken>() }
 
         factory(tag: CryptoCurrency.tether) { ERC20AssetBalanceFetcher<TetherToken>() as CryptoAccountBalanceFetching }
 
         factory { AnyERC20HistoricalTransactionService<TetherToken>() }
+
+        factory { ERC20Service<TetherToken>() }
+
+        factory { () -> AnyERC20Service<TetherToken> in
+            let service: ERC20Service<TetherToken> = DIKit.resolve()
+            return AnyERC20Service<TetherToken>(service)
+        }
 
         // MARK: - WDGLD
 
@@ -108,9 +124,29 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<WDGLDToken>() }
+        
+        factory { ERC20AccountService<WDGLDToken>() }
 
         factory(tag: CryptoCurrency.wDGLD) { ERC20AssetBalanceFetcher<WDGLDToken>() as CryptoAccountBalanceFetching }
 
         factory { AnyERC20HistoricalTransactionService<WDGLDToken>() }
+
+        factory { ERC20Service<WDGLDToken>() }
+
+        factory { () -> AnyERC20Service<WDGLDToken> in
+            let service: ERC20Service<WDGLDToken> = DIKit.resolve()
+            return AnyERC20Service<WDGLDToken>(service)
+        }
+    }
+}
+
+extension DependencyContainer {
+    
+    struct Tags {
+        
+        struct ERC20AccountService {
+            
+            static let addressCache = String(describing: Self.self)
+        }
     }
 }

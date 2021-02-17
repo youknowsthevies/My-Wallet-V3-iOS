@@ -12,7 +12,7 @@ import RxSwift
 import ToolKit
 
 class BitcoinCashAsset: CryptoAsset {
-
+    
     let asset: CryptoCurrency = .bitcoinCash
 
     var defaultAccount: Single<SingleAccount> {
@@ -21,9 +21,12 @@ class BitcoinCashAsset: CryptoAsset {
     }
 
     private let repository: BitcoinCashWalletAccountRepository
+    private let errorRecorder: ErrorRecording
 
-    init(repository: BitcoinCashWalletAccountRepository = resolve()) {
+    init(repository: BitcoinCashWalletAccountRepository = resolve(),
+         errorRecorder: ErrorRecording = resolve()) {
         self.repository = repository
+        self.errorRecorder = errorRecorder
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -78,5 +81,7 @@ class BitcoinCashAsset: CryptoAsset {
             .map { accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
+            .recordErrors(on: errorRecorder)
+            .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
     }
 }

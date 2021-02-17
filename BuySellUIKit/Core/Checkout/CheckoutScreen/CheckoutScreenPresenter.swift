@@ -73,8 +73,8 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
         // MARK: Buttons Setup
 
         buttons = [
-            contentReducer.continueButtonViewModel,
-            contentReducer.cancelButtonViewModel
+            contentReducer.cancelButtonViewModel,
+            contentReducer.continueButtonViewModel
             ]
             .compactMap { $0 }
 

@@ -18,7 +18,7 @@ final class YodleePendingView: UIView {
         CompositeStatusView(edge: 80, mainContainerViewRatio: 1.0, sizeContainerViewRatio: 0.45)
     }()
     private(set) lazy var mainTitle = UILabel()
-    private(set) lazy var subtitle = UILabel()
+    private(set) lazy var subtitle = InteractableTextView()
     private(set) lazy var mainActionButton = ButtonView()
     private(set) lazy var cancelActionButton = ButtonView()
 
@@ -33,8 +33,10 @@ final class YodleePendingView: UIView {
 
     private func setupUI() {
         backgroundColor = .white
-        mainTitle.numberOfLines = 1
-        subtitle.numberOfLines = 0
+        mainTitle.numberOfLines = 0
+        mainTitle.textAlignment = .center
+        mainTitle.translatesAutoresizingMaskIntoConstraints = false
+        subtitle.translatesAutoresizingMaskIntoConstraints = false
 
         stackView.addArrangedSubview(compositeView)
         stackView.addArrangedSubview(mainTitle)
@@ -48,8 +50,8 @@ final class YodleePendingView: UIView {
         addSubview(stackView)
         compositeView.layout(size: .edge(80))
         stackView.layoutToSuperview(.centerY, offset: -Spacing.inner)
-        stackView.layoutToSuperview(.leading, offset: Spacing.inner)
-        stackView.layoutToSuperview(.trailing, offset: -Spacing.inner)
+        stackView.layoutToSuperview(.leading, offset: Spacing.outer)
+        stackView.layoutToSuperview(.trailing, offset: -Spacing.outer)
 
         let buttonStackView = UIStackView(arrangedSubviews: [mainActionButton, cancelActionButton])
         buttonStackView.axis = .vertical
@@ -61,19 +63,20 @@ final class YodleePendingView: UIView {
         buttonStackView.layout(edge: .top, to: .bottom, of: stackView, relation: .greaterThanOrEqual, offset: Spacing.outer)
         buttonStackView.layoutToSuperview(.leading, offset: Spacing.outer)
         buttonStackView.layoutToSuperview(.trailing, offset: -Spacing.outer)
-        buttonStackView.layoutToSuperview(.bottom, offset: -Spacing.outer)
+        buttonStackView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
     }
 
     fileprivate func configureButtons(using content: YodleeButtonsContent) {
         if let continueViewModel = content.continueButtonViewModel {
             self.mainActionButton.viewModel = continueViewModel
+            self.mainActionButton.isHidden = false
         } else if let tryAgainViewModel = content.tryAgainButtonViewModel {
             self.mainActionButton.viewModel = tryAgainViewModel
+            self.mainActionButton.isHidden = false
         }
         if let cancelViewModel = content.cancelActionButtonViewModel {
             self.cancelActionButton.viewModel = cancelViewModel
         }
-        self.mainActionButton.isHidden = !(content.isTryAgainButtonHidden || content.isContinueButtonHidden)
         self.cancelActionButton.isHidden = content.isCancelButtonHidden
     }
 }
@@ -83,7 +86,7 @@ extension Reactive where Base: YodleePendingView {
         Binder<YodleePendingContent>(self.base) { base, model in
             base.compositeView.currentTypeRelay.accept(model.compositeViewType)
             base.mainTitle.content = model.mainTitleContent
-            base.subtitle.content = model.subtTitleContent
+            base.subtitle.viewModel = model.subtitleTextViewModel
             if let buttonContent = model.buttonContent {
                 base.configureButtons(using: buttonContent)
             } else {

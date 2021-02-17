@@ -75,6 +75,11 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         presentingController?.dismiss(animated: true, completion: nil)
     }
 
+    func returnToSplashScreen() {
+        detachCurrentChild()
+        self.navigationController?.popViewController(animated: true)
+    }
+
     func closeFlow() {
         stateService.previousRelay.accept(())
         presentingController?.dismiss(animated: true, completion: { [weak self] in

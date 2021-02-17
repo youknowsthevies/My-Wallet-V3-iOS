@@ -23,6 +23,7 @@ protocol EnterAmountPageListener: AnyObject {
     func enterAmountDidTapBack()
     func closeFlow()
     func continueToKYCTiersScreen()
+    func showGenericFailure()
 }
 
 protocol EnterAmountPagePresentable: Presentable {
@@ -45,16 +46,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let alertViewPresenter: AlertViewPresenterAPI
     private let priceService: PriceServiceAPI
     private let transactionModel: TransactionModel
+    private let analyticsHook: TransactionAnalyticsHook
 
     init(transactionModel: TransactionModel,
          presenter: EnterAmountPagePresentable,
          amountInteractor: AmountTranslationInteractor,
+         analyticsHook: TransactionAnalyticsHook = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          alertViewPresenter: AlertViewPresenterAPI = resolve(),
          priceService: PriceServiceAPI = resolve()) {
         self.transactionModel = transactionModel
         self.amountInteractor = amountInteractor
         self.priceService = priceService
+        self.analyticsHook = analyticsHook
         self.auxiliaryViewInteractor = SendAuxililaryViewInteractor()
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -67,6 +71,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let transactionState: Observable<TransactionState> = transactionModel
             .state
             .share(replay: 1, scope: .whileConnected)
+        
+        amountInteractor
+            .effect
+            .subscribe(onNext: { [weak self] effect  in
+                self?.handleAmountTranslation(effect: effect)
+            })
+            .disposeOnDeactivate(interactor: self)
 
         amountInteractor
             .amount
@@ -149,16 +160,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                     .update(\.canContinue, value: updater.nextEnabled)
                     .update(\.topSelection, value: topSelection)
                     .update(\.topSelection.title,
-                            value: try TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater))
+                            value: TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater))
                     .update(\.topSelection.subtitle,
-                            value: try TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater))
+                            value: TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater))
             }
             .asDriverCatchError()
 
         presenter.continueButtonTapped
-            .emit(weak: self) { (self, _) in
-                self.transactionModel.process(action: .prepareTransaction)
-            }
+            .asObservable()
+            .withLatestFrom(transactionModel.state)
+            .subscribe(onNext: { [weak self] state in
+                self?.transactionModel.process(action: .prepareTransaction)
+                self?.analyticsHook.onEnterAmountContinue(with: state)
+            })
             .disposeOnDeactivate(interactor: self)
 
         presenter.connect(state: interactorState)
@@ -174,6 +188,15 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             listener?.enterAmountDidTapBack()
         case .close:
             listener?.closeFlow()
+        case .none:
+            break
+        }
+    }
+
+    private func handleAmountTranslation(effect: AmountTranslationInteractor.Effect) {
+        switch effect {
+        case .failure:
+            listener?.showGenericFailure()
         case .none:
             break
         }
@@ -282,7 +305,7 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 }
 
 extension TransactionErrorState {
-    private typealias LocalizedString = LocalizationConstants.Transaction.Swap.KYC
+    private typealias LocalizedString = LocalizationConstants.Transaction
     func toAmountInteractorState(min: MoneyValue,
                                  max:  MoneyValue,
                                  exchangeRate: MoneyValuePair?,
@@ -292,9 +315,13 @@ extension TransactionErrorState {
         switch self {
         case .none:
             return .inBounds
+        case .insufficientGas:
+            return .error(
+                message: LocalizedString.Confirmation.Error.insufficientGas
+            )
         case .overSilverTierLimit:
             return .warning(
-                message: LocalizedString.overSilverLimitWarning,
+                message: LocalizedString.Swap.KYC.overSilverLimitWarning,
                 action: { [weak listener] in
                     listener?.continueToKYCTiersScreen()
                 }
@@ -312,7 +339,6 @@ extension TransactionErrorState {
             let result = convertToInputCurrency(min, exchangeRate: exchangeRate, input: activeInput)
             return .minLimitExceeded(result)
         case .addressIsContract,
-             .insufficientGas,
              .invalidAddress,
              .invalidAmount,
              .invalidPassword,

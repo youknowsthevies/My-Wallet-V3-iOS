@@ -7,7 +7,7 @@
 //
 
 import BigInt
-import ERC20Kit
+@testable import ERC20Kit
 import EthereumKit
 import PlatformKit
 import RxSwift
@@ -19,7 +19,11 @@ class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
     func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<PaxToken>> {
         fetchTransactionsResponse
     }
-
+    
+    func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
+        .just(ERC20IsContractResponse<Token>(contract: false))
+    }
+    
     var fetchAccountSummaryResponse: Single<ERC20AccountSummaryResponse<PaxToken>> = .just(.accountResponseMock)
     func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<PaxToken>> {
         fetchAccountSummaryResponse

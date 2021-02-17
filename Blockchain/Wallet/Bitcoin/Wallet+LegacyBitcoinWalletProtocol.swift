@@ -23,17 +23,33 @@ protocol LegacyBitcoinWalletProtocol: class {
 
     func saveBitcoinMemo(for transaction: String, memo: String?)
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> String?
+    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
+}
+
+enum BitcoinReceiveAddressError: Error {
+    case uninitialized
+    case jsReturnedNil
+    case jsValueNotString
+    case jsValueEmptyString
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> String? {
+    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError> {
         guard isInitialized() else {
-            return nil
+            return .failure(.uninitialized)
         }
         let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\")"
-        return context.evaluateScript(function)?.toString()
+        guard let jsResult = context.evaluateScript(function) else {
+            return .failure(.jsReturnedNil)
+        }
+        guard let result: String = jsResult.toString() else {
+            return .failure(.jsValueNotString)
+        }
+        guard !result.isEmpty else {
+            return .failure(.jsValueEmptyString)
+        }
+        return .success(result)
     }
 
     func saveBitcoinMemo(for transaction: String, memo: String?) {

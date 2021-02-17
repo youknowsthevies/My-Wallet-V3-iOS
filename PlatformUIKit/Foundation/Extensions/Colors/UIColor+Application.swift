@@ -73,7 +73,7 @@ public extension UIColor {
     
     static let normalPassword = green600
     static let strongPassword = blue600
-    static let destructive = red600
+    static let destructive = red500
     
     static let darkTitleText = grey900
     static let titleText = grey800

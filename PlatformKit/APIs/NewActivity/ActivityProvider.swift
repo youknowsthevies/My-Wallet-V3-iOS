@@ -77,23 +77,31 @@ public final class ActivityProvider: ActivityProviding {
     }
     
     private var cryptoActivityItemsLoadingState: Observable<ActivityItemEventsLoadingStates> {
-        Observable.combineLatest(
+        let bitcoins = Observable.zip(services[.crypto(.bitcoin)]!.activityLoadingStateObservable,
+                                      services[.crypto(.bitcoinCash)]!.activityLoadingStateObservable)
+        let erc20 = Observable.zip(services[.crypto(.wDGLD)]!.activityLoadingStateObservable,
+                                   services[.crypto(.pax)]!.activityLoadingStateObservable,
+                                   services[.crypto(.algorand)]!.activityLoadingStateObservable)
+        return Observable.combineLatest(
             services[.crypto(.ethereum)]!.activityLoadingStateObservable,
-            services[.crypto(.pax)]!.activityLoadingStateObservable,
             services[.crypto(.stellar)]!.activityLoadingStateObservable,
-            services[.crypto(.bitcoin)]!.activityLoadingStateObservable,
-            services[.crypto(.bitcoinCash)]!.activityLoadingStateObservable,
-            services[.crypto(.wDGLD)]!.activityLoadingStateObservable
+            bitcoins,
+            erc20
         )
-        .map {
-            ActivityItemEventsLoadingStates(
+        .map { values in
+            let ethereum = values.0
+            let stellar = values.1
+            let bitcoins = (btc: values.2.0, bch: values.2.1)
+            let erc20 = (wDGLD: values.3.0, pax: values.3.1, algo: values.3.2)
+            return ActivityItemEventsLoadingStates(
                 statePerCurrency: [
-                    .crypto(.ethereum): $0.0,
-                    .crypto(.pax): $0.1,
-                    .crypto(.stellar): $0.2,
-                    .crypto(.bitcoin): $0.3,
-                    .crypto(.bitcoinCash): $0.4,
-                    .crypto(.wDGLD): $0.5
+                    .crypto(.ethereum): ethereum,
+                    .crypto(.stellar): stellar,
+                    .crypto(.bitcoin): bitcoins.btc,
+                    .crypto(.bitcoinCash): bitcoins.bch,
+                    .crypto(.wDGLD): erc20.wDGLD,
+                    .crypto(.pax): erc20.pax,
+                    .crypto(.algorand): erc20.algo
                 ]
             )
         }

@@ -335,90 +335,17 @@ extension AnalyticsEvents {
     
     enum Swap: AnalyticsEvent {
         case swapTabItemClick
-        case swapIntroStartButtonClick
-        case swapFormConfirmClick
-        case swapFormConfirmSuccess
-        case swapFormConfirmError(message: String)
-        case swapFormConfirmErrorAppear
-        case swapFormConfirmErrorClick(error: ExchangeError)
-        case swapSummaryConfirmClick
-        case swapSummaryConfirmFailure
-        case swapSummaryConfirmSuccess
-        case swapReversePairClick
-        case swapLeftAssetClick
-        case swapRightAssetClick
-        case swapExchangeChangeReceived
-        case swapInputValueChanged(crypto: String, fiat: String, fiatAmount: String)
-        case swapViewHistoryButtonClick
-        case swapHistoryOrderClick
-        case swapHistoryOrderIdCopied
         
         var name: String {
             switch self {
             // Swap - tab item click
             case .swapTabItemClick:
                 return "swap_tab_item_click"
-            // Swap - intro start button clicked
-            case .swapIntroStartButtonClick:
-                return "swap_intro_start_button_click"
-            // Swap - confirm amount click
-            case .swapFormConfirmClick:
-                return "swap_form_confirm_click"
-            // Swap - confirm amount success
-            case .swapFormConfirmSuccess:
-                return "swap_form_confirm_success"
-            // Swap - confirm amount error
-            case .swapFormConfirmError:
-                return "swap_form_confirm_error"
-            // Swap - error appears (⚠️)
-            case .swapFormConfirmErrorAppear:
-                return "swap_form_confirm_error_appear"
-            // Swap - error click (⚠️)
-            case .swapFormConfirmErrorClick:
-                return "swap_form_confirm_error_click"
-            // Swap - summary final confirmation click confirm
-            case .swapSummaryConfirmClick:
-                return "swap_summary_confirm_click"
-            // Swap - summary final confirmation failure
-            case .swapSummaryConfirmFailure:
-                return "swap_summary_confirm_failure"
-            // Swap - summary final confirmation success
-            case .swapSummaryConfirmSuccess:
-                return "swap_summary_confirm_success"
-            // Swap - reverse pair button clicked
-            case .swapReversePairClick:
-                return "swap_reverse_pair_click"
-            // Swap - left asset button clicked
-            case .swapLeftAssetClick:
-                return "swap_left_asset_click"
-            // Swap - right asset button clicked
-            case .swapRightAssetClick:
-                return "swap_right_asset_click"
-            // Swap - exchange receive change
-            case .swapExchangeChangeReceived:
-                return "swap_exchange_change_received"
-            // Swap - input swap value
-            case .swapInputValueChanged:
-                return "swap_input_value_changed"
-            // Swap - history button clicked
-            case .swapViewHistoryButtonClick:
-                return "swap_view_history_button_click"
-            // Swap - history specific order clicked
-            case .swapHistoryOrderClick:
-                return "swap_history_order_click"
-            // Swap - history order id coptied
-            case .swapHistoryOrderIdCopied:
-                return "swap_history_order_id_copied"
             }
         }
         
         var params: [String : String]? {
-            switch self {
-            case .swapFormConfirmError(message: let message):
-                return ["message": message]
-            default:
-                return nil
-            }
+            nil
         }
     }
     

@@ -132,7 +132,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .asObservable()
                 .compactMap { "\($0)% \(LocalizationId.annually)" }
                 .map { .loaded(next: .init(text: $0)) }
-                .bind(to: stateRelay)
+                .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
         

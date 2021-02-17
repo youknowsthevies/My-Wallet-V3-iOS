@@ -10,6 +10,10 @@ import BigInt
 import PlatformKit
 
 public struct EthereumTransactionFee: TransactionFee, Decodable {
+    public enum FeeLevel {
+        case regular
+        case priority
+    }
     public static var cryptoType: HasPathComponent = CryptoCurrency.ethereum
     public static let `default` = EthereumTransactionFee(
         limits: EthereumTransactionFee.defaultLimits,
@@ -78,6 +82,22 @@ public extension EthereumTransactionFee {
     /// Fees must be provided in `gwei`.
     var regularGweiValue: String {
         regular.gwei
+    }
+
+    func absoluteFee(with feeLevel: FeeLevel, isContract: Bool) -> CryptoValue {
+        let gasLimit = BigUInt(isContract ? gasLimitContract : self.gasLimit)
+        let price: BigUInt
+        switch feeLevel {
+        case .priority:
+            price = BigUInt(priority.amount)
+        case .regular:
+            price = BigUInt(regular.amount)
+        }
+        let amount = price * gasLimit
+        guard let absoluteFee = CryptoValue.create(minor: "\(amount)", currency: .ethereum) else {
+            fatalError("Error calculating fee. price: \(price). gasLimit: \(gasLimit). amount: \(amount).")
+        }
+        return absoluteFee
     }
 }
 

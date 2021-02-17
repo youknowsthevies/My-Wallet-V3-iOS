@@ -81,7 +81,7 @@ final class BackupFundsSettingsRouter: BackupRouterAPI {
     
     private func showBackupFunds(presentationType: PresentationType, entry: BackupRouterEntry) {
         let presenter = BackupFundsScreenPresenter(stateService: stateService, entry: entry)
-        let controller = BackupFundsViewController(presenter: presenter)
+        let controller = DetailsScreenViewController(presenter: presenter)
         if #available(iOS 13.0, *) {
             controller.isModalInPresentation = true
         }

@@ -47,6 +47,7 @@ enum YodleeScreen {
     enum Effect: Equatable {
         case link(url: URL)
         case closeFlow
+        case back
         case none
     }
 }
@@ -61,6 +62,7 @@ protocol YodleeScreenPresentable: Presentable {
 
 protocol YodleeScreenListener: class {
     func closeFlow()
+    func returnToSplashScreen()
 }
 
 final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentable>, YodleeScreenInteractable {
@@ -69,7 +71,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     weak var listener: YodleeScreenListener?
 
     private let bankLinkageData: BankLinkageData
-    private let checkoutData: CheckoutData
     private let stateService: StateServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let yodleeRequestProvider: YodleeRequestProvider
@@ -79,7 +80,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
     init(presenter: YodleeScreenPresentable,
          bankLinkageData: BankLinkageData,
-         checkoutData: CheckoutData,
          stateService: StateServiceAPI,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          yodleeRequestProvider: YodleeRequestProvider,
@@ -87,7 +87,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
          yodleeActivationService: YodleeActivateService,
          contentReducer: YodleeScreenContentReducer) {
         self.bankLinkageData = bankLinkageData
-        self.checkoutData = checkoutData
         self.stateService = stateService
         self.analyticsRecorder = analyticsRecorder
         self.yodleeRequestProvider = yodleeRequestProvider
@@ -137,7 +136,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .share(replay: 1, scope: .whileConnected)
 
         let activationContentAction = activationResult
-            .filter(\.isActive)
+            .distinctUntilChanged()
             .do(onNext: { [weak self] state in
                 self?.recordAnalytics(for: state)
             })
@@ -168,16 +167,14 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .asObservable()
             .withLatestFrom(activationResult)
             .filter(\.isActive)
-            .compactMap(\.data)
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { data in
-                let updateData = self.checkoutData.checkoutData(byAppending: data)
+            .subscribe(onNext: { _ in
                 self.listener?.closeFlow()
-                self.stateService.nextFromBuyCrypto(with: updateData)
             })
             .disposeOnDeactivate(interactor: self)
 
-        let retryContentFromTap = contentReducer.tryAgainButtonViewModel.tap
+        let retryContentFromTap = Signal.merge(contentReducer.tryAgainButtonViewModel.tap,
+                                               contentReducer.tryDifferentBankButtonViewModel.tap)
             .map { [contentReducer] _ in
                 YodleeScreen.Action.pending(content: contentReducer.webviewPendingContent())
             }
@@ -190,7 +187,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             })
             .map(YodleeScreen.Action.load)
 
-        contentReducer.cancelButtonViewModel.tap
+        Signal.merge(contentReducer.cancelButtonViewModel.tap,
+                     contentReducer.okButtonViewModel.tap)
             .map { _ in YodleeScreen.Effect.closeFlow }
             .emit(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
@@ -213,6 +211,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         case .closeFlow:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
             listener?.closeFlow()
+        case .back:
+            listener?.returnToSplashScreen()
         case .none:
             break
         }

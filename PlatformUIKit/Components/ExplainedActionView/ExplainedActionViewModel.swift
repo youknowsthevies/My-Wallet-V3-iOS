@@ -9,6 +9,18 @@
 import RxSwift
 import RxCocoa
 
+public struct DescriptionTitle {
+    public var title: String
+    public var titleColor: UIColor
+    public var titleFontSize: CGFloat
+
+    public init(title: String, titleColor: UIColor, titleFontSize: CGFloat) {
+        self.title = title
+        self.titleColor = titleColor
+        self.titleFontSize = titleFontSize
+    }
+}
+
 public struct ExplainedActionViewModel {
     
     // MARK: - Types
@@ -34,7 +46,7 @@ public struct ExplainedActionViewModel {
     
     public init(thumbImage: String,
                 title: String,
-                descriptions: [String],
+                descriptions: [DescriptionTitle],
                 badgeTitle: String?,
                 uniqueAccessibilityIdentifier: String) {
         thumbBadgeImageViewModel = .primary(
@@ -53,9 +65,9 @@ public struct ExplainedActionViewModel {
             .enumerated()
             .map { payload in
                 .init(
-                    text: payload.element,
+                    text: payload.element.title,
                     font: .main(.medium, 14),
-                    color: .descriptionText,
+                    color: payload.element.titleColor,
                     accessibility: .id(uniqueAccessibilityIdentifier + AccessibilityId.descriptionLabel + ".\(payload.offset)")
                 )
             }

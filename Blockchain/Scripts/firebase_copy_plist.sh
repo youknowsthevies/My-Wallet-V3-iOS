@@ -51,7 +51,7 @@ if [ "${CONFIGURATION}" == "Debug Dev" ]; then
     GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_DEV}
 elif [ "${CONFIGURATION}" == "Debug Staging" ] || [ "${CONFIGURATION}" == "Release Staging" ]; then
     GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_STAG}
-elif [ "${CONFIGURATION}" == "Debug Production" ] || [ "${CONFIGURATION}" == "Release" ]; then
+elif [ "${CONFIGURATION}" == "Debug Production" ] || [ "${CONFIGURATION}" == "Release" ] || [ "${CONFIGURATION}" == "Release Internal" ]; then
     GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_PROD}
 else
     echo "Unexpected configuration: ${CONFIGURATION}. Aborting."

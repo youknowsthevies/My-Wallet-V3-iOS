@@ -21,6 +21,7 @@ public protocol RouterAPI: class {
     func next(to state: StateService.State)
     func previous(from state: StateService.State)
     func showCryptoSelectionScreen()
+    func showFailureAlert()
 }
 
 /// This object is used as a router for Simple-Buy flow
@@ -40,6 +41,7 @@ public final class Router: RouterAPI {
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+    private let alertViewPresenter: AlertViewPresenterAPI
     
     private var cardRouter: CardRouter!
     
@@ -63,11 +65,14 @@ public final class Router: RouterAPI {
                 settingsService: CompleteSettingsServiceAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+                alertViewPresenter: AlertViewPresenterAPI = resolve(),
                 builder: Buildable,
-                kycRouter: KYCRouterAPI) {
+                kycRouter: KYCRouterAPI,
+                currency: CryptoCurrency) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
+        self.alertViewPresenter = alertViewPresenter
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
         self.builder = builder
@@ -75,7 +80,7 @@ public final class Router: RouterAPI {
         
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
-            defaultSelectedData: CryptoCurrency.bitcoin
+            defaultSelectedData: currency
         )
         self.paymentMethodTypesService = paymentMethodTypesService
         self.cryptoSelectionService = cryptoSelectionService
@@ -92,6 +97,12 @@ public final class Router: RouterAPI {
         let viewController = SelectionScreenViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
+    }
+
+    public func showFailureAlert() {
+        alertViewPresenter.error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
+            self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+        }
     }
             
     /// Should be called once
@@ -121,7 +132,8 @@ public final class Router: RouterAPI {
     public func next(to state: StateService.State) {
         switch state {
         case .intro:
-            showIntroScreen()
+            // not used anymore, will be navigated directly to enter ammount screen
+            break
         case .changeFiat:
             settingsService
                 .fiatCurrency
@@ -169,8 +181,8 @@ public final class Router: RouterAPI {
             /// Show pending KYC approval for `ineligible` state as well, since the expected poll result would be
             /// ineligible anyway
             showPendingKycApprovalScreen()
-        case .linkBank(let checkoutData):
-            showLinkBankFlow(with: checkoutData)
+        case .linkBank:
+            showLinkBankFlow()
         case .addCard(let data):
             startCardAdditionFlow(with: data)
         case .inactive:
@@ -375,8 +387,8 @@ public final class Router: RouterAPI {
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
     }
 
-    private func showLinkBankFlow(with checkoutData: CheckoutData) {
-        let builder = LinkBankFlowRootBuilder(stateService: stateService, checkoutData: checkoutData)
+    private func showLinkBankFlow() {
+        let builder = LinkBankFlowRootBuilder(stateService: stateService)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
         self.linkBankFlowRouter = router

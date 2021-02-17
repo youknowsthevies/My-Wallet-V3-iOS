@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Dit is nodig zodat de app QR-codes kan scannen.";
-"NSMicrophoneUsageDescription" = "Vereist voor video-opname.";
-"NSFaceIDUsageDescription" = "Als u Face ID inschakelt, kunt u veilig toegang krijgen tot uw portefeuille.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain heeft toegang tot uw locatie nodig om u in de buurt bedrijven te tonen die Bitcoin accepteren.";
-"NSPhotoLibraryUsageDescription" = "Uw toestemming is nodig om documenten vanuit uw fotobibliotheek te uploaden.";

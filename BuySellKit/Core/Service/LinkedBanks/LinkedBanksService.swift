@@ -25,6 +25,9 @@ public protocol LinkedBanksServiceAPI {
 
     /// Returns the requested linked bank for the given id
     func linkedBank(for id: String) -> Single<LinkedBankData?>
+
+    /// Fetches and updates the underlying cached value
+    func fetchLinkedBanks() -> Single<[LinkedBankData]>
 }
 
 final class LinkedBanksService: LinkedBanksServiceAPI {
@@ -69,6 +72,10 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
     func linkedBank(for id: String) -> Single<LinkedBankData?> {
         linkedBanks
             .map { $0.first(where: { $0.identifier == id }) }
+    }
+
+    func fetchLinkedBanks() -> Single<[LinkedBankData]> {
+        cachedValue.fetchValue
     }
 }
 

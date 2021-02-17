@@ -17,6 +17,7 @@ public final class NoticeView: UIView {
     
     private var topAlignmentConstraint: NSLayoutConstraint!
     private var centerAlignmentConstraint: NSLayoutConstraint!
+    private var sizeConstraints: LayoutForm.Constraints!
     
     // MARK: - Injected
     
@@ -24,6 +25,10 @@ public final class NoticeView: UIView {
         didSet {
             guard let viewModel = viewModel else { return }
             imageView.set(viewModel.imageViewContent)
+            sizeConstraints.setConstant(
+                horizontal: viewModel.imageViewSize.width,
+                vertical: viewModel.imageViewSize.height
+            )
             stackView.removeSubviews()
             
             viewModel.labelContents
@@ -73,7 +78,7 @@ public final class NoticeView: UIView {
         addSubview(stackView)
         
         imageView.layoutToSuperview(.leading)
-        imageView.layout(size: .init(edge: 20))
+        sizeConstraints = imageView.layout(size: .init(edge: 20))
         
         topAlignmentConstraint = imageView.layout(to: .top, of: stackView, priority: .penultimateHigh)
         centerAlignmentConstraint = imageView.layout(to: .centerY, of: stackView, priority: .defaultLow)

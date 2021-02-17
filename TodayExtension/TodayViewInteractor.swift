@@ -67,7 +67,7 @@ final class TodayViewInteractor {
                 localizedReason: "See your balances",
                 reply: { authenticated, error in
                     if let error = error {
-                        let biometryError = Biometry.BiometryError(with: error)
+                        let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
                         observer(.error(Biometry.EvaluationError.system(biometryError)))
                     } else if !authenticated {
                         observer(.error(Biometry.EvaluationError.notAllowed))

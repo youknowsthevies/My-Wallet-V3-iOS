@@ -41,6 +41,7 @@ public struct PendingStateViewModel {
     let subtitleTextViewModel: InteractableTextViewModel
     let button: ButtonViewModel?
     let supplementaryButton: ButtonViewModel?
+    let displayCloseButton: Bool
     
     /// Steams the url upon each tap
     public var tap: Observable<URL> {
@@ -63,7 +64,8 @@ public struct PendingStateViewModel {
                 interactibleText: String? = nil,
                 url: String? = nil,
                 button: ButtonViewModel? = nil,
-                supplementaryButton: ButtonViewModel? = nil) {
+                supplementaryButton: ButtonViewModel? = nil,
+                displayCloseButton: Bool = false) {
         self.compositeStatusViewType = compositeStatusViewType
         self.title = Self.title(title)
         var inputs: [InteractableTextViewModel.Input] = [.text(string: subtitle)]
@@ -86,5 +88,6 @@ public struct PendingStateViewModel {
         )
         self.button = button
         self.supplementaryButton = supplementaryButton
+        self.displayCloseButton = displayCloseButton
     }
 }

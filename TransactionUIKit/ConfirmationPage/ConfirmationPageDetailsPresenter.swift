@@ -39,7 +39,9 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
 
     // MARK: - Actions
     var continueButtonTapped: Signal<Void> {
-        continueButtonPressed.asSignal()
+        contentReducer
+            .continueButtonViewModel
+            .tap
     }
 
     // MARK: - Screen Properties
@@ -52,8 +54,9 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     private let disposeBag = DisposeBag()
     private let navigationCloseRelay = PublishRelay<Void>()
     private let backButtonPressed = PublishRelay<Void>()
-    private let cancelButtonPressed = PublishRelay<Void>()
     private let continueButtonPressed = PublishRelay<Void>()
+
+    private let contentReducer = ConfirmationPageContentReducer()
 
     // MARK: - Injected
 
@@ -66,6 +69,11 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
         navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
             backButtonPressed.accept(())
         }
+
+        buttons = [
+            contentReducer.cancelButtonViewModel,
+            contentReducer.continueButtonViewModel
+        ]
     }
 
     func connect(action: Driver<ConfirmationPageInteractor.Action>) -> Driver<ConfirmationPageInteractor.Effects> {
@@ -80,13 +88,20 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
                 }
             }
 
+        details.map(\.nextEnabled)
+            .drive(contentReducer.continueButtonViewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+
         details
             .drive(weak: self, onNext: { (self, state) in
                 self.setup(state: state)
             })
             .disposed(by: disposeBag)
 
-        let closeTapped = cancelButtonPressed
+        let closeTapped = contentReducer
+            .cancelButtonViewModel
+            .tap
+            .asObservable()
             .map { ConfirmationPageInteractor.Effects.close }
             .asDriverCatchError()
 
@@ -98,24 +113,10 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
     }
 
     private func setup(state: TransactionState) {
-        let contentReducer = ConfirmationPageContentReducer(state: state)
+
+        contentReducer.setup(for: state)
 
         titleViewRelay.accept(.text(value: contentReducer.title))
-
-        buttons = [
-            contentReducer.cancelButtonViewModel,
-            contentReducer.continueButtonViewModel
-        ]
-
-        contentReducer.cancelButtonViewModel
-            .tap
-            .emit(to: cancelButtonPressed)
-            .disposed(by: disposeBag)
-
-        contentReducer.continueButtonViewModel
-            .tap
-            .emit(to: continueButtonPressed)
-            .disposed(by: disposeBag)
 
         cells = contentReducer.cells
 

@@ -12,42 +12,42 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
+public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
     private typealias AccessibilityId = Accessibility.Identifier.AccountPicker.AccountCell
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
 
-    var iconImageViewContent: Driver<ImageViewContent> {
+    public var iconImageViewContent: Driver<ImageViewContent> {
         iconImageViewContentRelay.asDriver()
     }
 
-    var badgeImageViewModel: Driver<BadgeImageViewModel> {
+    public var badgeImageViewModel: Driver<BadgeImageViewModel> {
         badgeRelay.asDriver()
     }
 
     /// Returns the description of the balance
-    var title: Driver<String> {
+    public var title: Driver<String> {
         titleRelay.asDriver()
     }
 
     /// Returns the description of the balance
-    var description: Driver<String> {
+    public var description: Driver<String> {
         descriptionRelay.asDriver()
     }
     
-    var pending: Driver<String> {
+    public var pending: Driver<String> {
        .empty()
     }
     
-    var pendingLabelVisibility: Driver<Visibility> {
+    public var pendingLabelVisibility: Driver<Visibility> {
         .just(.hidden)
     }
 
-    var separatorVisibility: Driver<Visibility> {
+    public var separatorVisibility: Driver<Visibility> {
         separatorVisibilityRelay.asDriver()
     }
 
-    let multiBadgeViewModel = MultiBadgeViewModel(
+    public let multiBadgeViewModel = MultiBadgeViewModel(
         layoutMargins: UIEdgeInsets(
             top: 8,
             left: 72,
@@ -57,11 +57,11 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         height: 24
     )
     
-    let titleAccessibilitySuffix: String
-    let descriptionAccessibilitySuffix: String
-    let pendingAccessibilitySuffix: String
+    public let titleAccessibilitySuffix: String
+    public let descriptionAccessibilitySuffix: String
+    public let pendingAccessibilitySuffix: String
 
-    let assetBalanceViewPresenter: AssetBalanceViewPresenter
+    public let assetBalanceViewPresenter: AssetBalanceViewPresenter
 
     // MARK: - Private Properties
 
@@ -74,10 +74,10 @@ final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     private let badgeFactory = SingleAccountBadgeFactory()
     private let account: SingleAccount
 
-    init(account: SingleAccount,
-         assetAction: AssetAction,
-         interactor: AssetBalanceViewInteracting,
-         separatorVisibility: Visibility = .visible) {
+    public init(account: SingleAccount,
+                assetAction: AssetAction,
+                interactor: AssetBalanceViewInteracting,
+                separatorVisibility: Visibility = .visible) {
         self.account = account
         self.separatorVisibilityRelay = BehaviorRelay<Visibility>(value: separatorVisibility)
         titleAccessibilitySuffix = "\(AccessibilityId.titleLabel)"

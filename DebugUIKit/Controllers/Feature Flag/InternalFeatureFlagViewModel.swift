@@ -17,10 +17,12 @@ struct InternalFeatureItem: Equatable {
 
     var title: String {
         switch type {
-        case .newSwap:
-            return "Swap 2.0"
         case .achFlow:
             return "ACH Payment Flow"
+        case .swapP2:
+            return "Swap P2"
+        case .sendP2:
+            return "Send P2"
         }
     }
 }

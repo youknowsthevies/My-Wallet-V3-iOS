@@ -6,7 +6,6 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import PlatformKit
 
 protocol QRCodeScannerTextViewModel {
@@ -43,12 +42,14 @@ protocol QRCodeScannerViewModelProtocol: class {
     var videoPreviewLayer: CALayer? { get }
     var loadingText: String? { get }
     var headerText: String { get }
+    var overlayViewModel: QRCodeScannerOverlayViewModel { get }
     
     func closeButtonPressed()
-    func startReadingQRCode()
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea)
     func handleDismissCompleted(with scanResult: Result<String, QRScannerError>)
     
     func viewWillDisappear()
+    func handleSelectedQRImage(_ image: UIImage)
 }
 
 final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewModelProtocol {
@@ -66,6 +67,8 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     var scanningStopped: (() -> Void)?
     var closeButtonTapped: (() -> Void)?
     var scanComplete: ((Result<String, QRScannerError>) -> Void)?
+    
+    let overlayViewModel: QRCodeScannerOverlayViewModel
     
     var videoPreviewLayer: CALayer? {
         scanner.videoPreviewLayer
@@ -104,6 +107,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         self.textViewModel = textViewModel
         self.scanner = scanner
         self.completed = completed
+        self.overlayViewModel = .init(supportsCameraRoll: parser is AddressQRCodeParser)
         self.scanner.delegate = self
     }
     
@@ -116,8 +120,12 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         closeButtonTapped?()
     }
     
-    func startReadingQRCode() {
-        scanner.startReadingQRCode()
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
+        scanner.startReadingQRCode(from: scannableArea)
+    }
+    
+    func handleSelectedQRImage(_ image: UIImage) {
+        scanner.handleSelectedQRImage(image)
     }
     
     func handleDismissCompleted(with scanResult: Result<String, QRScannerError>) {

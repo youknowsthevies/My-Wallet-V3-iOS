@@ -62,7 +62,7 @@ public final class BiometryProvider: BiometryProviding {
             error: &error
         )
         if let error = error {
-            let biometryError = Biometry.BiometryError(with: error)
+            let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
             return .failure(.system(biometryError))
         } else if !canEvaluate {
             return .failure(.notAllowed)
@@ -107,7 +107,7 @@ public final class BiometryProvider: BiometryProviding {
                 localizedReason: reason.localized,
                 reply: { authenticated, error in
                     if let error = error {
-                        let biometryError = Biometry.BiometryError(with: error)
+                        let biometryError = Biometry.BiometryError(with: error, type: Biometry.BiometryType(with: context.biometryType))
                         observer(.error(Biometry.EvaluationError.system(biometryError)))
                     } else if !authenticated {
                         observer(.error(Biometry.EvaluationError.notAllowed))

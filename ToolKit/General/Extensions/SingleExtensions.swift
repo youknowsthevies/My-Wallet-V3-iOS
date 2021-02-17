@@ -100,11 +100,15 @@ extension PrimitiveSequence where Trait == SingleTrait {
 }
 
 extension PrimitiveSequence where Trait == SingleTrait {
-    public func recordErrors(on recorder: Recording?, enabled: Bool = true) -> Single<Element> {
-        guard enabled else { return self }
-        return self.do(onError: { error in
+    public func recordErrors(on recorder: ErrorRecording?) -> Single<Element> {
+        self.do(onError: { error in
             recorder?.error(error)
         })
+    }
+    
+    public func recordErrors(on recorder: ErrorRecording?, enabled: Bool) -> Single<Element> {
+        guard enabled else { return self }
+        return recordErrors(on: recorder)
     }
 }
 

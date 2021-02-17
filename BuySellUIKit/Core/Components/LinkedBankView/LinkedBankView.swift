@@ -30,13 +30,13 @@ final class LinkedBankView: UIView {
                 button.rx
                     .controlEvent(.touchDown)
                     .map { _ in UIColor.hightlightedBackground }
-                    .bind(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: self.rx.backgroundColor)
                     .disposed(by: disposeBag)
 
                 button.rx
                     .controlEvent(.touchCancel)
                     .map { _ in UIColor.white }
-                    .bind(to: self.rx.backgroundColor)
+                    .bindAndCatch(to: self.rx.backgroundColor)
                     .disposed(by: disposeBag)
                     
             }
@@ -73,7 +73,7 @@ final class LinkedBankView: UIView {
         addSubview(button)
         
         badgeImageView.layoutToSuperview(.centerY)
-        badgeImageView.layout(size: CGSize(width: 32, height: 20))
+        badgeImageView.layout(size: CGSize(width: 32, height: 32))
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
 
         accountLabel.layoutToSuperview(.centerY)

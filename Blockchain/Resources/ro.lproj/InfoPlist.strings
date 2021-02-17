@@ -1,5 +1,0 @@
-"NSCameraUsageDescription" = "Acest lucru este necesar pentru app pentru a scana Codurile QR.";
-"NSMicrophoneUsageDescription" = "Obligatoriu pentru captura video.";
-"NSFaceIDUsageDescription" = "Activarea funcției Face ID vă permite să vă accesați în siguranță portofelul.";
-"NSLocationWhenInUseUsageDescription" = "Blockchain are nevoie de acces la locația dvs. pentru a vă arăta companiile din apropiere care acceptă Bitcoin.";
-"NSPhotoLibraryUsageDescription" = "Este necesară permisiunea dvs. pentru a încărca documente din biblioteca foto.";

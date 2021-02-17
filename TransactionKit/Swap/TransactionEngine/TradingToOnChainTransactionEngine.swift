@@ -1,0 +1,195 @@
+//
+//  TradingToOnChainTransactionEngine.swift
+//  TransactionKit
+//
+//  Created by Alex McGregor on 2/2/21.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import DIKit
+import PlatformKit
+import RxSwift
+import ToolKit
+
+final class TradingToOnChainTransactionEngine: TransactionEngine {
+    
+    var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
+        sourceExchangeRatePair
+            .map { pair -> TransactionMoneyValuePairs in
+                TransactionMoneyValuePairs(
+                    source: pair,
+                    destination: pair
+                )
+            }
+            .asObservable()
+    }
+    
+    let fiatCurrencyService: FiatCurrencyServiceAPI
+    let priceService: PriceServiceAPI
+    let requireSecondPassword: Bool = false
+    let isNoteSupported: Bool
+    var askForRefreshConfirmation: ((Bool) -> Completable)!
+    var sourceAccount: CryptoAccount!
+    var transactionTarget: TransactionTarget!
+    
+    var target: CryptoAccount { transactionTarget as! CryptoAccount }
+    var targetAsset: CryptoCurrency { target.asset }
+    var sourceAsset: CryptoCurrency { sourceAccount.asset }
+    
+    // MARK: - Private Properties
+    
+    private let transferService: InternalTransferServiceAPI
+    
+    // MARK: - Init
+
+    init(isNoteSupported: Bool = false,
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+         priceService: PriceServiceAPI = resolve(),
+         transferService: InternalTransferService = resolve()) {
+        self.fiatCurrencyService = fiatCurrencyService
+        self.priceService = priceService
+        self.isNoteSupported = isNoteSupported
+        self.transferService = transferService
+    }
+    
+    func assertInputsValid() {
+        precondition(target is CryptoTradingAccount)
+        precondition(sourceAccount is NonCustodialAccount)
+        precondition((target as! CryptoTradingAccount).asset != sourceAccount.asset)
+    }
+
+    func initializeTransaction() -> Single<PendingTransaction> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<PendingTransaction> in
+                .just(
+                    .init(
+                        amount: .zero(currency: self.sourceAsset),
+                        available: .zero(currency: self.sourceAsset),
+                        fees: .zero(currency: self.sourceAsset),
+                        feeLevel: .none,
+                        selectedFiatCurrency: fiatCurrency
+                    )
+                )
+            }
+    }
+    
+    func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        guard sourceAccount != nil else {
+            return .just(pendingTransaction)
+        }
+        return sourceAccount
+            .actionableBalance
+            .map { actionableBalance -> PendingTransaction in
+                pendingTransaction.update(amount: amount, available: actionableBalance)
+            }
+    }
+    
+    func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        fiatAmountAndFees(from: pendingTransaction)
+            .map(weak: self) { (self, input) -> [TransactionConfirmation] in
+                let (amount, fees) = input
+                var values: [TransactionConfirmation] = [
+                    .source(.init(value: self.sourceAccount.label)),
+                    .destination(.init(value: self.target.label)),
+                    .feedTotal(
+                        .init(
+                            amount: pendingTransaction.amount,
+                            fee: pendingTransaction.fees,
+                            exchangeAmount: amount.moneyValue,
+                            exchangeFee: fees.moneyValue
+                        )
+                    )
+                ]
+                if self.isNoteSupported {
+                    values.append(.destination(.init(value: "")))
+                }
+                return values
+            }
+            .map { pendingTransaction.insert(confirmations: $0) }
+    }
+    
+    func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmounts(pendingTransaction: pendingTransaction)
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+    }
+    
+    func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
+        validateAmounts(pendingTransaction: pendingTransaction)
+            .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
+    }
+
+    func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
+        target
+            .receiveAddress
+            .map(\.address)
+            .flatMap(weak: self) { (self, destination) -> Single<TransactionResult> in
+                self.transferService
+                    .transfer(
+                        moneyValue: pendingTransaction.amount,
+                        destination: destination
+                    )
+                    .map(\.identifier)
+                    .map { (identifier) -> TransactionResult in
+                        TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
+                    }
+            }
+    }
+    
+    func doPostExecute(transactionResult: TransactionResult) -> Completable {
+        target.onTxCompleted(transactionResult)
+    }
+    
+    // MARK: - Private Functions
+    
+    private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
+        sourceAccount
+            .actionableBalance
+            .flatMapCompletable { balance -> Completable in
+                guard try balance <= pendingTransaction.amount else {
+                    throw TransactionValidationFailure(state: .insufficientFunds)
+                }
+                return .just(event: .completed)
+            }
+    }
+    
+    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
+        fiatAmountAndFees(from: pendingTransaction)
+            .map { ($0.fees) }
+            .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
+                /// Fees are zero in this case
+                .init(feeState: .valid(absoluteFee: pendingTransaction.fees),
+                      exchange: fees.moneyValue,
+                      selectedFeeLevel: pendingTransaction.feeLevel,
+                      customFeeAmount: .zero(currency: fees.currency),
+                      availableLevels: [.none],
+                      asset: self.sourceAccount.asset)
+            }
+    }
+    
+    private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
+        Single.zip(
+            sourceExchangeRatePair,
+            Single.just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceAsset)),
+            Single.just(pendingTransaction.fees.cryptoValue ?? .zero(currency: sourceAsset))
+        )
+        .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
+        .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
+            let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
+            let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+            return (fiatAmount, fiatFees)
+        }
+        .map { (amount: $0.0, fees: $0.1) }
+    }
+    
+    private var sourceExchangeRatePair: Single<MoneyValuePair> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
+                self.priceService
+                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .map(\.moneyValue)
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+            }
+    }
+}

@@ -36,7 +36,7 @@ public struct InteractableTextViewModel {
     
     /// An input with either a url or a string.
     /// Each input is formatted according to its nature
-    public enum Input {
+    public enum Input: Equatable {
         /// A linkable url string
         case url(string: String, url: String)
         
@@ -69,6 +69,12 @@ public struct InteractableTextViewModel {
         self.linkStyle = linkStyle
         self.lineSpacing = lineSpacing
         self.alignment = alignment
+    }
+}
+
+extension InteractableTextViewModel: Equatable {
+    public static func == (lhs: InteractableTextViewModel, rhs: InteractableTextViewModel) -> Bool {
+        lhs.inputsRelay.value == rhs.inputsRelay.value
     }
 }
 

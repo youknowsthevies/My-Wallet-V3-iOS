@@ -160,8 +160,6 @@ final class AnnouncementPresenter {
                 )
             case .verifyIdentity:
                 announcement = verifyIdentity(using: preliminaryData.user)
-            case .swap:
-                announcement = swap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
             case .exchangeLinking:
                 announcement = exchangeLinking(user: preliminaryData.user)
             case .bitpay:
@@ -348,7 +346,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
+                appCoordinator?.handleBuyCrypto(currency: .algorand)
             }
         )
     }
@@ -360,7 +358,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
+                appCoordinator?.handleBuyCrypto(currency: .tether)
             }
         )
     }
@@ -434,22 +432,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto()
-            }
-        )
-    }
-
-    /// Computes Swap card announcement
-    private func swap(using data: AnnouncementPreliminaryData,
-                      reappearanceTimeInterval: TimeInterval) -> Announcement {
-        SwapAnnouncement(
-            hasTrades: data.hasTrades,
-            reappearanceTimeInterval: reappearanceTimeInterval,
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak appCoordinator] in
-                appCoordinator?.switchTabToSwap()
+                appCoordinator?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }

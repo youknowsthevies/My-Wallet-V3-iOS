@@ -24,6 +24,7 @@ public protocol StateReceiverServiceAPI: class {
 public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
     func nextFromBuyCrypto(with checkoutData: CheckoutData)
+    func nextFromBankLinkSelection()
     func ineligible(with checkoutData: CheckoutData)
     func ineligible()
     func kyc(with checkoutData: CheckoutData)

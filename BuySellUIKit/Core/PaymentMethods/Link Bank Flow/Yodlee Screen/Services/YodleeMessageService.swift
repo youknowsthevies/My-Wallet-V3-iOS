@@ -88,27 +88,23 @@ final class YodleeMessageService {
 // MARK: - Yodlee Message Parsing
 
 func yodleeMessageParser(data: DataMessage) -> YodleeMessageService.Effect {
-    guard let action = data.action, action == .exit else {
-        // handle the case where action is nil but we have a provideAccountId
-        if let providerId = data.providerAccountId, let accountId = data.accountId {
-            return .success(data: .init(providerAccountId: String(providerId), accountId: String(accountId)))
-        }
-        return .error(.generic)
-    }     
-    if let status = data.status {
-        return parse(status: status, reason: data.reason, providerAccountId: data.providerAccountId, accountId: data.accountId)
-    } else if let sites = data.sites, !sites.isEmpty {
-        if let siteData = sites.first, let siteStatus = siteData.status {
+    guard data.action != nil else {
+        return .none
+    }
+    if let sites = data.sites, !sites.isEmpty {
+        if let siteData = sites.first, let siteStatus = siteData.status, siteStatus == .success {
             return parse(status: siteStatus, reason: siteData.reason, providerAccountId: siteData.providerAccountId, accountId: siteData.accountId)
         } else {
             return .error(.generic)
         }
+    } else if let status = data.status {
+        return parse(status: status, reason: data.reason, providerAccountId: data.providerAccountId, accountId: nil)
     } else {
         return .error(.generic)
     }
 }
 
-private func parse(status: MessageStatus, reason: String?, providerAccountId: Int?, accountId: Int?) -> YodleeMessageService.Effect {
+private func parse(status: MessageStatus, reason: String?, providerAccountId: Int?, accountId: String?) -> YodleeMessageService.Effect {
     guard case .success = status else {
         return .closed(reason: reason ?? "unknown reason")
     }
@@ -118,5 +114,5 @@ private func parse(status: MessageStatus, reason: String?, providerAccountId: In
     guard let accountId = accountId else {
         return .error(.accountIdNotFound)
     }
-    return .success(data: .init(providerAccountId: String(providerAccountId), accountId: String(accountId)))
+    return .success(data: .init(providerAccountId: String(providerAccountId), accountId: accountId))
 }

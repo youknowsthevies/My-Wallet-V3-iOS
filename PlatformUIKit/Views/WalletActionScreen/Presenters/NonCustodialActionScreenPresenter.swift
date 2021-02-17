@@ -67,25 +67,26 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         
         guard case let .crypto(crypto) = currency else { return }
         var actionPresenters: [DefaultWalletActionCellPresenter] = []
-        
-        let hasActivity = crypto.hasNonCustodialActivitySupport
-        let hasSwap = crypto.hasNonCustodialTradeSupport
-        let hasSend = crypto.hasNonCustodialWithdrawalSupport
-        
-        if hasSend {
-            actionPresenters.append(contentsOf: [
-                .init(currencyType: currency, action: .send),
-                .init(currencyType: currency, action: .receive)]
+
+        if crypto.hasLegacySendSupport {
+            actionPresenters.append(
+                .init(currencyType: currency, action: .send)
+            )
+        }
+
+        if crypto.hasNonCustodialReceiveSupport {
+            actionPresenters.append(
+                .init(currencyType: currency, action: .receive)
             )
         }
         
-        if hasSwap {
+        if crypto.hasSwapSupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .swap)
             )
         }
         
-        if hasActivity {
+        if crypto.hasNonCustodialActivitySupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .activity)
             )
