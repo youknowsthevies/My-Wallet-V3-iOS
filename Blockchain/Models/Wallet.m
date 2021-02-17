@@ -190,7 +190,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)loadJS {
     self.context = [[JSContext alloc] init];
 
-    [self.context evaluateScript:[self getConsoleScript]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[self getConsoleScript]];
 
     NSSet *names = [self getConsoleFunctionNames];
 
@@ -680,7 +680,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_get_available_balance_error:[result toString] symbol:CURRENCY_SYMBOL_BTC];
     };
 
-    [self.context evaluateScript:[self getJSSource]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[self getJSSource]];
 
     self.context[@"XMLHttpRequest"] = [ModuleXMLHttpRequest class];
     self.context[@"Bitcoin"][@"HDNode"] = [HDNode class];
@@ -853,7 +853,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     sessionToken = sessionToken == nil ? @"" : [sessionToken escapedForJS];
 
     NSString *script = [NSString stringWithFormat:@"MyWalletPhone.login(\"%@\", \"%@\", false, \"%@\", \"%@\")", escapedGuid, escapedSharedKey, escapedPassword, sessionToken];
-    [self.context evaluateScript:script];
+    [self.context evaluateScriptCheckIsOnMainQueue:script];
 }
 
 - (void)fetchWalletWith:(nonnull NSString *)password {
@@ -864,7 +864,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self loadJSIfNeeded];
 
     NSString *escapedPassword = [password escapedForJS];
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.loginAfterPairing(\"%@\")", escapedPassword]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.loginAfterPairing(\"%@\")", escapedPassword]];
 }
 
 - (void)resetSyncStatus
@@ -896,14 +896,14 @@ NSString * const kLockboxInvitation = @"lockbox";
         [self.pendingEthSocketMessages removeAllObjects];
     } else if (webSocket == self.btcSocket) {
         DLog(@"btc websocket opened");
-        NSString *message = self.btcSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self.btcSwipeAddressToSubscribe escapedForJS]] : [[self.context evaluateScript:@"MyWallet.getSocketOnOpenMessage()"] toString];
+        NSString *message = self.btcSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self.btcSwipeAddressToSubscribe escapedForJS]] : [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.getSocketOnOpenMessage()"] toString];
 
         NSError *error;
         [webSocket sendString:message error:&error];
         if (error) DLog(@"Error subscribing to address: %@", [error localizedDescription]);
     } else if (webSocket == self.bchSocket) {
         DLog(@"bch websocket opened");
-        NSString *message = self.bchSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self fromBitcoinCash:[self.bchSwipeAddressToSubscribe escapedForJS]]] : [[self.context evaluateScript:@"MyWalletPhone.bch.getSocketOnOpenMessage()"] toString];
+        NSString *message = self.bchSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self fromBitcoinCash:[self.bchSwipeAddressToSubscribe escapedForJS]]] : [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getSocketOnOpenMessage()"] toString];
         NSError *error;
         [webSocket sendString:message error:&error];
         if (error) DLog(@"Error subscribing to address: %@", [error localizedDescription]);
@@ -947,14 +947,14 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     if (webSocket == self.ethSocket) {
         DLog(@"received eth socket message string");
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.didReceiveEthSocketMessage(\"%@\")", [string escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.didReceiveEthSocketMessage(\"%@\")", [string escapedForJS]]];
     } else {
         DLog(@"received websocket message string");
 
         if (webSocket == self.btcSocket) {
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.getSocketOnMessage(\"%@\", { checksum: null })", [string escapedForJS]]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.getSocketOnMessage(\"%@\", { checksum: null })", [string escapedForJS]]];
         } else if (webSocket == self.bchSocket) {
-            [self.context evaluateScript:@"MyWalletPhone.bch.didGetTxMessage()"];
+            [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.didGetTxMessage()"];
         }
 
         NSDictionary *message = [string getJSONObject];
@@ -1030,7 +1030,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (BOOL)isInitialized
 {
     // Initialized when the webView is loaded and the wallet is initialized (decrypted and in-memory wallet built)
-    BOOL isInitialized = [[self.context evaluateScript:@"MyWallet.getIsInitialized()"] toBool];
+    BOOL isInitialized = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.getIsInitialized()"] toBool];
     if (!isInitialized) {
         DLog(@"Warning: Wallet not initialized!");
     }
@@ -1040,34 +1040,34 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (float)getStrengthForPassword:(NSString *)passwordString
 {
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getPasswordStrength(\"%@\")", [passwordString escapedForJS]]] toDouble];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getPasswordStrength(\"%@\")", [passwordString escapedForJS]]] toDouble];
 }
 
 - (void)loadMetadata
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.loadMetadata()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.loadMetadata()"];
     }
 }
 
 - (void)getHistoryForAllAssets
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.getHistoryForAllAssets()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getHistoryForAllAssets()"];
     }
 }
 
 - (void)getHistory
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.get_history()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.get_history()"];
     }
 }
 
 - (void)getHistoryWithoutBusyView
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.get_history(true)"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.get_history(true)"];
     }
 }
 
@@ -1093,7 +1093,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return 0;
     }
 
-    return [[[self.context evaluateScript:@"MyWalletPhone.getAllTransactionsCount()"] toNumber] intValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getAllTransactionsCount()"] toNumber] intValue];
 }
 
 - (void)changeLocalCurrency:(NSString *)currencyCode
@@ -1102,7 +1102,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeLocalCurrency(\"%@\")", [currencyCode escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeLocalCurrency(\"%@\")", [currencyCode escapedForJS]]];
 }
 
 - (void)changeBtcCurrency:(NSString *)btcCode
@@ -1111,7 +1111,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeBtcCurrency(\"%@\")", [btcCode escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeBtcCurrency(\"%@\")", [btcCode escapedForJS]]];
 }
 
 - (double)conversionForBitcoinAssetType:(LegacyAssetType)assetType
@@ -1130,7 +1130,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"JSON.stringify(MyWalletPhone.getAccountInfo())"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.getAccountInfo())"];
 }
 
 - (void)getAccountInfoAndExchangeRates
@@ -1139,7 +1139,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
     
-    [self.context evaluateScript:@"MyWalletPhone.getAccountInfoAndExchangeRates()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getAccountInfoAndExchangeRates()"];
 }
 
 - (NSString *)getEmail
@@ -1148,7 +1148,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    return [[self.context evaluateScript:@"MyWalletPhone.getEmail()"] toString];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getEmail()"] toString];
 }
 
 - (NSString *)getSMSNumber
@@ -1157,7 +1157,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    JSValue *smsNumber = [self.context evaluateScript:@"MyWalletPhone.getSMSNumber()"];
+    JSValue *smsNumber = [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getSMSNumber()"];
 
     if ([smsNumber isUndefined]) return @"";
 
@@ -1170,7 +1170,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWalletPhone.getSMSVerifiedStatus()"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getSMSVerifiedStatus()"] toBool];
 }
 
 - (BOOL)getEmailVerifiedStatus
@@ -1179,7 +1179,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWalletPhone.getEmailVerifiedStatus()"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getEmailVerifiedStatus()"] toBool];
 }
 
 - (void)changeEmail:(NSString *)newEmail
@@ -1188,7 +1188,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeEmail(\"%@\")", [newEmail escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeEmail(\"%@\")", [newEmail escapedForJS]]];
 }
 
 - (void)resendVerificationEmail:(NSString *)email
@@ -1197,7 +1197,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.resendEmailConfirmation(\"%@\")", [email escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.resendEmailConfirmation(\"%@\")", [email escapedForJS]]];
 }
 
 - (void)changeMobileNumber:(NSString *)newMobileNumber success:(void (^ _Nonnull)(void))success error:(void (^ _Nonnull)(void))error
@@ -1211,7 +1211,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context invokeOnceWithFunctionBlock:error forJsFunctionName:@"objc_on_change_mobile_number_error"];
 
     // Invoke function in wallet
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeMobileNumber(\"%@\")", [newMobileNumber escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeMobileNumber(\"%@\")", [newMobileNumber escapedForJS]]];
 }
 
 - (void)verifyMobileNumber:(NSString *)code success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error
@@ -1225,7 +1225,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context invokeOnceWithFunctionBlock:error forJsFunctionName:@"objc_on_verify_mobile_number_error"];
 
     // Invoke function in wallet
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.verifyMobile(\"%@\")", [code escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.verifyMobile(\"%@\")", [code escapedForJS]]];
 }
 
 - (void)enableTwoStepVerificationForSMS
@@ -1234,7 +1234,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.setTwoFactorSMS()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.setTwoFactorSMS()"];
 }
 
 - (void)disableTwoStepVerification
@@ -1243,7 +1243,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.unsetTwoFactor()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.unsetTwoFactor()"];
 }
 
 - (BOOL)isCorrectPassword:(NSString *)inputedPassword
@@ -1252,7 +1252,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isCorrectMainPassword(\"%@\")", [inputedPassword escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isCorrectMainPassword(\"%@\")", [inputedPassword escapedForJS]]] toBool];
 }
 
 - (void)signBitcoinPaymentWithSecondPassword:(NSString *_Nullable)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error
@@ -1266,9 +1266,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     } forJsFunctionName:@"objc_on_btc_tx_signed_error"];
     
     if (secondPassword) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment(\"%@\")", [secondPassword escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment(\"%@\")", [secondPassword escapedForJS]]];
     } else {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment()"]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment()"]];
     }
 }
 
@@ -1283,45 +1283,45 @@ NSString * const kLockboxInvitation = @"lockbox";
     } forJsFunctionName:@"objc_on_bch_tx_signed_error"];
     
     if (secondPassword) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinCashPayment(\"%@\")", [secondPassword escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinCashPayment(\"%@\")", [secondPassword escapedForJS]]];
     } else {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinCashPayment()"]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinCashPayment()"]];
     }
 }
 
 - (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
 {
-    NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
+    NSString * txProgressID = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.createTxProgressId()"] toString];
 
     if (listener) {
         [self.transactionProgressListeners setObject:listener forKey:txProgressID];
     }
 
     if (secondPassword) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", true, \"%@\")", [txProgressID escapedForJS], [secondPassword escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", true, \"%@\")", [txProgressID escapedForJS], [secondPassword escapedForJS]]];
     } else {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", true)", [txProgressID escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", true)", [txProgressID escapedForJS]]];
     }
 }
 
 - (void)transferFundsBackupWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword
 {
-    NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
+    NSString * txProgressID = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.createTxProgressId()"] toString];
 
     if (listener) {
         [self.transactionProgressListeners setObject:listener forKey:txProgressID];
     }
 
     if (secondPassword) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false, \"%@\")", [txProgressID escapedForJS], [secondPassword escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false, \"%@\")", [txProgressID escapedForJS], [secondPassword escapedForJS]]];
     } else {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false)", [txProgressID escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.quickSendBtc(\"%@\", false)", [txProgressID escapedForJS]]];
     }
 }
 
 - (void)newAccount:(NSString*)__password email:(NSString *)__email
 {
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")", [__password escapedForJS], [__email escapedForJS], BC_STRING_MY_BITCOIN_WALLET]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")", [__password escapedForJS], [__email escapedForJS], BC_STRING_MY_BITCOIN_WALLET]];
 }
 
 - (BOOL)needsSecondPassword
@@ -1330,7 +1330,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.isDoubleEncrypted"]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.isDoubleEncrypted"]] toBool];
 }
 
 - (BOOL)validateSecondPassword:(NSString*)secondPassword
@@ -1339,7 +1339,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.validateSecondPassword(\"%@\")", [secondPassword escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.validateSecondPassword(\"%@\")", [secondPassword escapedForJS]]] toBool];
 }
 
 - (BOOL)isWatchOnlyLegacyAddress:(NSString*)address
@@ -1349,7 +1349,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if ([self checkIfWalletHasAddress:address]) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.key(\"%@\").isWatchOnly", [address escapedForJS]]] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.key(\"%@\").isWatchOnly", [address escapedForJS]]] toBool];
     } else {
         return NO;
     }
@@ -1365,7 +1365,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         if ([self.addressBook[address] length] > 0) {
             return self.addressBook[address];
         } else if ([[self allLegacyAddresses:assetType] containsObject:address]) {
-            NSString *label = [self checkIfWalletHasAddress:address] ? [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.labelForLegacyAddress(\"%@\")", [address escapedForJS]]] toString] : nil;
+            NSString *label = [self checkIfWalletHasAddress:address] ? [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.labelForLegacyAddress(\"%@\")", [address escapedForJS]]] toString] : nil;
             if (label && ![label isEqualToString:@""])
                 return label;
         }
@@ -1382,7 +1382,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return FALSE;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isArchived(\"%@\")", [address escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isArchived(\"%@\")", [address escapedForJS]]] toBool];
 }
 
 - (BOOL)isAccountArchived:(int)account assetType:(LegacyAssetType)assetType
@@ -1392,9 +1392,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isArchived(%d)", account]] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isArchived(%d)", account]] toBool];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.isArchived(%d)", account]] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.isArchived(%d)", account]] toBool];
     }
     return NO;
 }
@@ -1428,10 +1428,10 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSString *allAddressesJSON;
     if (assetType == LegacyAssetTypeBitcoin) {
-        allAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWallet.wallet.addresses)"] toString];
+        allAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWallet.wallet.addresses)"] toString];
         return [allAddressesJSON getJSONObject];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        allAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWalletPhone.bch.getActiveLegacyAddresses())"] toString];
+        allAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.bch.getActiveLegacyAddresses())"] toString];
         return [allAddressesJSON getJSONObject];
     }
     return nil;
@@ -1445,9 +1445,9 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSString *activeAddressesJSON;
     if (assetType == LegacyAssetTypeBitcoin) {
-        activeAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWallet.wallet.activeAddresses)"] toString];
+        activeAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWallet.wallet.activeAddresses)"] toString];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        activeAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWalletPhone.bch.getActiveLegacyAddresses())"] toString];
+        activeAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.bch.getActiveLegacyAddresses())"] toString];
     }
 
     return [activeAddressesJSON getJSONObject];
@@ -1459,7 +1459,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    NSString *spendableActiveAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWallet.wallet.spendableActiveAddresses)"] toString];
+    NSString *spendableActiveAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWallet.wallet.spendableActiveAddresses)"] toString];
 
     return [spendableActiveAddressesJSON getJSONObject];
 }
@@ -1470,7 +1470,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    NSString *activeAddressesJSON = [[self.context evaluateScript:@"JSON.stringify(MyWalletPhone.getLegacyArchivedAddresses())"] toString];
+    NSString *activeAddressesJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.getLegacyArchivedAddresses())"] toString];
 
     return [activeAddressesJSON getJSONObject];
 }
@@ -1488,7 +1488,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.isSyncing = YES;
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.setLabelForAddress(\"%@\", \"%@\")", [address escapedForJS], [label escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setLabelForAddress(\"%@\", \"%@\")", [address escapedForJS], [label escapedForJS]]];
 }
 
 - (void)toggleArchiveLegacyAddress:(NSString*)address
@@ -1504,7 +1504,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.isSyncing = YES;
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.toggleArchived(\"%@\")", [address escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.toggleArchived(\"%@\")", [address escapedForJS]]];
 }
 
 - (void)toggleArchiveAccount:(int)account assetType:(LegacyAssetType)assetType
@@ -1521,9 +1521,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     self.isSyncing = YES;
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.toggleArchived(%d)", account]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.toggleArchived(%d)", account]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.toggleArchived(%d)", account]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.toggleArchived(%d)", account]];
         [self reload];
     }
 }
@@ -1534,7 +1534,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.archiveTransferredAddresses(\"%@\")", [[transferredAddresses jsonString] escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.archiveTransferredAddresses(\"%@\")", [[transferredAddresses jsonString] escapedForJS]]];
 }
 
 - (id)getLegacyAddressBalance:(NSString*)address assetType:(LegacyAssetType)assetType
@@ -1546,13 +1546,13 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     if (assetType == LegacyAssetTypeBitcoin) {
         if ([self checkIfWalletHasAddress:address]) {
-            return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.key(\"%@\").balance", [address escapedForJS]]] toNumber];
+            return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.key(\"%@\").balance", [address escapedForJS]]] toNumber];
         } else {
             DLog(@"Wallet error: Tried to get balance of address %@, which was not found in this wallet", address);
             return errorBalance;
         }
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getBalanceForAddress(\"%@\")", [address escapedForJS]]] toNumber];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getBalanceForAddress(\"%@\")", [address escapedForJS]]] toNumber];
     }
     return 0;
 }
@@ -1563,7 +1563,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.addKey(\"%@\")", [privateKeyString escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.addKey(\"%@\")", [privateKeyString escapedForJS]]] toBool];
 }
 
 - (BOOL)addKey:(NSString*)privateKeyString toWatchOnlyAddress:(NSString *)watchOnlyAddress
@@ -1572,7 +1572,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.addKeyToLegacyAddress(\"%@\", \"%@\")", [privateKeyString escapedForJS], [watchOnlyAddress escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.addKeyToLegacyAddress(\"%@\", \"%@\")", [privateKeyString escapedForJS], [watchOnlyAddress escapedForJS]]] toBool];
 }
 
 - (NSDictionary*)addressBook
@@ -1581,7 +1581,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return [[NSDictionary alloc] init];
     }
 
-    NSString * addressBookJSON = [[self.context evaluateScript:@"JSON.stringify(MyWallet.wallet.addressBook)"] toString];
+    NSString * addressBookJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWallet.wallet.addressBook)"] toString];
 
     return [addressBookJSON getJSONObject];
 }
@@ -1592,7 +1592,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.addAddressBookEntry(\"%@\", \"%@\")", [address escapedForJS], [label escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.addAddressBookEntry(\"%@\", \"%@\")", [address escapedForJS], [label escapedForJS]]];
 }
 
 - (NSString*)detectPrivateKeyFormat:(NSString*)privateKeyString
@@ -1601,7 +1601,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.detectPrivateKeyFormat(\"%@\")", [privateKeyString escapedForJS]]] toString];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.detectPrivateKeyFormat(\"%@\")", [privateKeyString escapedForJS]]] toString];
 }
 
 - (void)createNewPayment:(LegacyAssetType)assetType
@@ -1611,7 +1611,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:@"MyWalletPhone.createNewBitcoinPayment()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.createNewBitcoinPayment()"];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
         DLog(@"Bitcoin cash - creating payment is done in selecting from");
     }
@@ -1620,9 +1620,9 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)changePaymentFromAddress:(NSString *)address isAdvanced:(BOOL)isAdvanced assetType:(LegacyAssetType)assetType
 {
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePaymentFrom(\"%@\", %d)", [address escapedForJS], isAdvanced]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changePaymentFrom(\"%@\", %d)", [address escapedForJS], isAdvanced]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:@"MyWalletPhone.bch.changePaymentFromImportedAddresses()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.changePaymentFromImportedAddresses()"];
     }
 }
 
@@ -1633,9 +1633,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePaymentFrom(%d, %d)", fromInt, isAdvanced]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changePaymentFrom(%d, %d)", fromInt, isAdvanced]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentFromAccount(\"%d\")", fromInt]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentFromAccount(\"%d\")", fromInt]];
     }
 }
 
@@ -1646,9 +1646,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePaymentTo(%d)", toInt]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changePaymentTo(%d)", toInt]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentToAccount(%d)", toInt]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentToAccount(%d)", toInt]];
     }
 }
 
@@ -1659,9 +1659,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePaymentTo(\"%@\")", [toString escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changePaymentTo(\"%@\")", [toString escapedForJS]]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentToAddress(\"%@\")", [toString escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentToAddress(\"%@\")", [toString escapedForJS]]];
     }
 }
 
@@ -1672,9 +1672,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changePaymentAmount(%lld)", [amount longLongValue]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changePaymentAmount(%lld)", [amount longLongValue]]];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentAmount(%lld)", [amount longLongValue]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.changePaymentAmount(%lld)", [amount longLongValue]]];
     }
 }
 
@@ -1684,7 +1684,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.getInfoForTransferAllFundsToAccount()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getInfoForTransferAllFundsToAccount()"];
 }
 
 - (void)setupFirstTransferForAllFundsToAccount:(int)account address:(NSString *)address secondPassword:(NSString *)secondPassword useSendPayment:(BOOL)useSendPayment
@@ -1693,7 +1693,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.transferAllFundsToAccount(%d, true, \"%@\", \"%@\", %d)", account, [address escapedForJS], [secondPassword escapedForJS], useSendPayment]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.transferAllFundsToAccount(%d, true, \"%@\", \"%@\", %d)", account, [address escapedForJS], [secondPassword escapedForJS], useSendPayment]];
 }
 
 - (void)setupFollowingTransferForAllFundsToAccount:(int)account address:(NSString *)address secondPassword:(NSString *)secondPassword useSendPayment:(BOOL)useSendPayment
@@ -1702,7 +1702,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.transferAllFundsToAccount(%d, false, \"%@\", \"%@\", %d)", account, [address escapedForJS], [secondPassword escapedForJS], useSendPayment]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.transferAllFundsToAccount(%d, false, \"%@\", \"%@\", %d)", account, [address escapedForJS], [secondPassword escapedForJS], useSendPayment]];
 }
 
 - (void)transferFundsToDefaultAccountFromAddress:(NSString *)address
@@ -1711,7 +1711,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.transferFundsToDefaultAccountFromAddress(\"%@\")", [address escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.transferFundsToDefaultAccountFromAddress(\"%@\")", [address escapedForJS]]];
 }
 
 - (void)changeLastUsedReceiveIndexOfDefaultAccount
@@ -1720,7 +1720,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeLastUsedReceiveIndexOfDefaultAccount()"]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeLastUsedReceiveIndexOfDefaultAccount()"]];
 }
 
 - (void)sweepPaymentRegular
@@ -1729,7 +1729,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.sweepPaymentRegular()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.sweepPaymentRegular()"];
 }
 
 - (void)sweepPaymentRegularThenConfirm
@@ -1738,7 +1738,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.sweepPaymentRegularThenConfirm()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.sweepPaymentRegularThenConfirm()"];
 }
 
 - (void)sweepPaymentAdvanced
@@ -1747,7 +1747,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.sweepPaymentAdvanced()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.sweepPaymentAdvanced()"];
 }
 
 - (void)sweepPaymentAdvancedThenConfirm:(uint64_t)fee
@@ -1756,7 +1756,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.sweepPaymentAdvancedThenConfirm(%lld)", fee]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.sweepPaymentAdvancedThenConfirm(%lld)", fee]];
 }
 
 - (void)sweepPaymentThenConfirm:(BOOL)willConfirm isAdvanced:(BOOL)isAdvanced
@@ -1765,7 +1765,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.sweepPaymentThenConfirm(%d, %d)", willConfirm, isAdvanced]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.sweepPaymentThenConfirm(%d, %d)", willConfirm, isAdvanced]];
 }
 
 - (void)checkIfOverspending
@@ -1774,7 +1774,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.checkIfUserIsOverSpending()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.checkIfUserIsOverSpending()"];
 }
 
 - (void)changeSatoshiPerByte:(uint64_t)satoshiPerByte updateType:(FeeUpdateType)updateType
@@ -1783,7 +1783,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeSatoshiPerByte(%lld, %ld)", satoshiPerByte, (long)updateType]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeSatoshiPerByte(%lld, %ld)", satoshiPerByte, (long)updateType]];
 }
 
 - (void)getTransactionFeeWithUpdateType:(FeeUpdateType)updateType
@@ -1792,7 +1792,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getTransactionFeeWithUpdateType(%ld)", (long)updateType]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getTransactionFeeWithUpdateType(%ld)", (long)updateType]];
 }
 
 - (void)updateTotalAvailableAndFinalFee
@@ -1801,7 +1801,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.updateTotalAvailableAndFinalFee()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.updateTotalAvailableAndFinalFee()"];
 }
 
 - (void)getSurgeStatus
@@ -1810,7 +1810,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.getSurgeStatus()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getSurgeStatus()"];
 }
 
 - (uint64_t)dust
@@ -1819,7 +1819,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return 0;
     }
 
-    return [[[self.context evaluateScript:@"MyWalletPhone.dust()"] toNumber] longLongValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.dust()"] toNumber] longLongValue];
 }
 
 - (void)generateNewKey
@@ -1828,7 +1828,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.generateNewAddress()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.generateNewAddress()"];
 }
 
 - (BOOL)checkIfWalletHasAddress:(NSString *)address
@@ -1837,7 +1837,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.checkIfWalletHasAddress(\"%@\")", [address escapedForJS]] ] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.checkIfWalletHasAddress(\"%@\")", [address escapedForJS]] ] toBool];
 }
 
 - (void)recoverWithEmail:(NSString *)email password:(NSString *)recoveryPassword passphrase:(NSString *)passphrase
@@ -1846,7 +1846,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.emptyAccountIndex = 0;
     self.recoveredAccountIndex = 0;
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.recoverWithPassphrase(\"%@\",\"%@\",\"%@\")", [email escapedForJS], [recoveryPassword escapedForJS], [passphrase escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.recoverWithPassphrase(\"%@\",\"%@\",\"%@\")", [email escapedForJS], [recoveryPassword escapedForJS], [passphrase escapedForJS]]];
 }
 
 - (void)enableEmailNotifications
@@ -1855,7 +1855,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.enableEmailNotifications()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.enableEmailNotifications()"];
 }
 
 - (void)disableEmailNotifications
@@ -1864,22 +1864,22 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:@"MyWalletPhone.disableEmailNotifications()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.disableEmailNotifications()"];
 }
 
 - (void)updateServerURL:(NSString *)newURL
 {
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.updateServerURL(\"%@\")", [newURL escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateServerURL(\"%@\")", [newURL escapedForJS]]];
 }
 
 - (void)updateWebSocketURL:(NSString *)newURL
 {
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.updateWebsocketURL(\"%@\")", [newURL escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateWebsocketURL(\"%@\")", [newURL escapedForJS]]];
 }
 
 - (void)updateAPIURL:(NSString *)newURL
 {
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.updateAPIURL(\"%@\")", [newURL escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateAPIURL(\"%@\")", [newURL escapedForJS]]];
 }
 
 - (NSDictionary *)filteredWalletJSON
@@ -1888,7 +1888,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return nil;
     }
 
-    NSString * filteredWalletJSON = [[self.context evaluateScript:@"JSON.stringify(MyWalletPhone.filteredWalletJSON())"] toString];
+    NSString * filteredWalletJSON = [[self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.filteredWalletJSON())"] toString];
 
     return [filteredWalletJSON getJSONObject];
 }
@@ -1900,9 +1900,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getXpubForAccount(%d)", accountIndex]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getXpubForAccount(%d)", accountIndex]] toString];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getXpubForAccount(%d)", accountIndex]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getXpubForAccount(%d)", accountIndex]] toString];
     }
     return nil;
 }
@@ -1913,7 +1913,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isAccountNameValid(\"%@\")", [name escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isAccountNameValid(\"%@\")", [name escapedForJS]]] toBool];
 }
 
 - (BOOL)isAddressAvailable:(NSString *)address
@@ -1922,7 +1922,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isAddressAvailable(\"%@\")", [address escapedForJS]]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isAddressAvailable(\"%@\")", [address escapedForJS]]] toBool];
 }
 
 - (BOOL)isAccountAvailable:(int)account
@@ -1931,7 +1931,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.isAccountAvailable(%d)", account]] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isAccountAvailable(%d)", account]] toBool];
 }
 
 - (int)getIndexOfActiveAccount:(int)account assetType:(LegacyAssetType)assetType
@@ -1941,9 +1941,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getIndexOfActiveAccount(%d)", account]] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getIndexOfActiveAccount(%d)", account]] toNumber] intValue];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getIndexOfActiveAccount(%d)", account]] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getIndexOfActiveAccount(%d)", account]] toNumber] intValue];
     }
     return 0;
 }
@@ -1954,43 +1954,43 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWalletPhone.emailNotificationsEnabled()"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.emailNotificationsEnabled()"] toBool];
 }
 
 - (void)saveNote:(NSString *)note forTransaction:(NSString *)hash
 {
     NSString *text = [note stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     if (text.length == 0) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.deleteNote(\"%@\")", [hash escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.deleteNote(\"%@\")", [hash escapedForJS]]];
     } else {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWallet.wallet.setNote(\"%@\", \"%@\")", [hash escapedForJS], [note escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.wallet.setNote(\"%@\", \"%@\")", [hash escapedForJS], [note escapedForJS]]];
     }
 }
 
 - (void)saveEtherNote:(NSString *)note forTransaction:(NSString *)hash
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.saveEtherNote(\"%@\", \"%@\")", [hash escapedForJS], [note escapedForJS]]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.saveEtherNote(\"%@\", \"%@\")", [hash escapedForJS], [note escapedForJS]]];
     }
 }
 
 - (NSString *)getBitcoinNotePlaceholderForTransactionHash:(NSString *)myHash
 {
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getNotePlaceholder(\"%@\")", myHash]] toString];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getNotePlaceholder(\"%@\")", myHash]] toString];
 }
 
 - (void)getSwipeAddresses:(int)numberOfAddresses assetType:(LegacyAssetType)assetType
 {
     if (assetType == LegacyAssetTypeBitcoin) {
-        [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%d)", numberOfAddresses]] toArray];
+        [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%d)", numberOfAddresses]] toArray];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getSwipeAddresses(%d)", numberOfAddresses]] toArray];
+        [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getSwipeAddresses(%d)", numberOfAddresses]] toArray];
     }
 }
 
 - (int)getDefaultAccountLabelledAddressesCount
 {
-    return [[[self.context evaluateScript:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
 }
 
 - (BOOL)isLockboxEnabled
@@ -2006,13 +2006,13 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (JSValue *)executeJSSynchronous:(NSString *)command
 {
-    return [self.context evaluateScript:command];
+    return [self.context evaluateScriptCheckIsOnMainQueue:command];
 }
 
 - (NSString *)getMobileMessage
 {
     if ([self isInitialized]) {
-        JSValue *message = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getMobileMessage(\"%@\")", [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]]];
+        JSValue *message = [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getMobileMessage(\"%@\")", [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode]]];
         if ([message isUndefined] || [message isNull]) return nil;
         return [message toString];
     }
@@ -2027,7 +2027,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     if (!self.isInitialized) {
         return [[NSArray alloc] init];
     }
-    JSValue *devicesJsValue = [self.context evaluateScript:@"MyWalletPhone.lockbox.devices()"];
+    JSValue *devicesJsValue = [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.lockbox.devices()"];
     return [devicesJsValue toArray];
 }
 
@@ -2038,7 +2038,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     if (!self.isInitialized) {
         return [[NSArray alloc] init];
     }
-    JSValue *xlmAccountsValue = [self.context evaluateScript:@"MyWalletPhone.xlm.accounts()"];
+    JSValue *xlmAccountsValue = [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.xlm.accounts()"];
     return [xlmAccountsValue toArray];
 }
 
@@ -2051,7 +2051,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
     [self.context invokeOnceWithFunctionBlock:success forJsFunctionName:@"objc_xlmSaveAccount_success"];
     [self.context invokeOnceWithStringFunctionBlock:error forJsFunctionName:@"objc_xlmSaveAccount_error"];
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.xlm.saveAccount(\"%@\", \"%@\")", [publicKey escapedForJS], [label escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.xlm.saveAccount(\"%@\", \"%@\")", [publicKey escapedForJS], [label escapedForJS]]];
 }
 
 # pragma mark - Retail Core
@@ -2105,7 +2105,7 @@ NSString * const kLockboxInvitation = @"lockbox";
                         [formattedAmount escapedForJS],
                         [formattedFee escapedForJS],
                         [orderTransaction.gasLimit escapedForJS]];
-    [self.context evaluateScript:script];
+    [self.context evaluateScriptCheckIsOnMainQueue:script];
 }
 
 - (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType secondPassword:(NSString* _Nullable)secondPassword completion:(void (^ _Nonnull)(void))completion success:(void (^ _Nonnull)(NSString *_Nonnull))success error:(void (^ _Nonnull)(NSString *_Nonnull))error cancel:(void (^ _Nonnull)(void))cancel
@@ -2138,7 +2138,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
     
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.send(\"%@\")", tradeExecutionType, [secondPassword escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.send(\"%@\")", tradeExecutionType, [secondPassword escapedForJS]]];
 }
 
 # pragma mark - Ethereum
@@ -2152,7 +2152,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     if ([self isInitialized]) {
         NSString *setupHelperText = [LocalizationConstantsObjcBridge etherSecondPasswordPrompt];
-        JSValue *result = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getEtherAddress(\"%@\")", [setupHelperText escapedForJS]]];
+        JSValue *result = [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getEtherAddress(\"%@\")", [setupHelperText escapedForJS]]];
         if ([result isUndefined]) return nil;
         NSString *etherAddress = [result toString];
         return etherAddress;
@@ -2176,7 +2176,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (BOOL)hasEthAccount
 {
     if ([self isInitialized]) {
-        return [[self.context evaluateScript:@"MyWalletPhone.hasEthAccount()"] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.hasEthAccount()"] toBool];
     }
 
     return NO;
@@ -2185,7 +2185,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (NSString *)getLabelForDefaultBchAccount
 {
     if ([self isInitialized] && [self hasBchAccount]) {
-        return [[self.context evaluateScript:@"MyWalletPhone.bch.getLabelForDefaultAccount()"] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getLabelForDefaultAccount()"] toString];
     }
     return nil;
 }
@@ -2194,12 +2194,12 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (NSString *)fromBitcoinCash:(NSString *)address
 {
-    return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.fromBitcoinCash(\"%@\")", [address escapedForJS]]] toString];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.fromBitcoinCash(\"%@\")", [address escapedForJS]]] toString];
 }
 
 - (NSString *)toBitcoinCash:(NSString *)address includePrefix:(BOOL)includePrefix
 {
-    JSValue *result = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.toBitcoinCash(\"%@\", %d)", [address escapedForJS], includePrefix]];
+    JSValue *result = [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.toBitcoinCash(\"%@\", %d)", [address escapedForJS], includePrefix]];
     if ([result isUndefined]) return nil;
     NSString *bitcoinCashAddress = [result toString];
     return includePrefix ? bitcoinCashAddress : [bitcoinCashAddress substringFromIndex:[[ConstantsObjcBridge bitcoinCashUriPrefix] length]+1];
@@ -2208,21 +2208,21 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)getBitcoinCashHistoryAndRates
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.bch.getHistoryAndRates()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getHistoryAndRates()"];
     }
 }
 
 - (void)fetchBitcoinCashExchangeRates
 {
     if ([self isInitialized]) {
-        [self.context evaluateScript:@"MyWalletPhone.bch.fetchExchangeRates()"];
+        [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.fetchExchangeRates()"];
     }
 }
 
 - (NSString *)getLabelForBitcoinCashAccount:(int)account
 {
     if ([self isInitialized]) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getLabelForAccount(\"%d\")", account]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getLabelForAccount(\"%d\")", account]] toString];
     }
     return nil;
 }
@@ -2231,22 +2231,22 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     if ([self isInitialized]) {
         if ([to isKindOfClass:[NSString class]]) {
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.buildPayment(\"%@\", %lld)", [to escapedForJS], amount]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.buildPayment(\"%@\", %lld)", [to escapedForJS], amount]];
         } else {
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.buildPayment(%d, %lld)", [to intValue], amount]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.buildPayment(%d, %lld)", [to intValue], amount]];
         }
     }
 }
 
 - (void)sendBitcoinCashPaymentWithListener:(TransactionProgressListeners *)listener
 {
-    NSString * txProgressID = [[self.context evaluateScript:@"MyWalletPhone.createTxProgressId()"] toString];
+    NSString * txProgressID = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.createTxProgressId()"] toString];
 
     if (listener) {
         [self.transactionProgressListeners setObject:listener forKey:txProgressID];
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.quickSend(\"%@\", true)", [txProgressID escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.quickSend(\"%@\", true)", [txProgressID escapedForJS]]];
 }
 
 - (NSString *)bitcoinCashExchangeRate
@@ -2274,7 +2274,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (BOOL)hasBchAccount
 {
     if ([self isInitialized]) {
-        return [[self.context evaluateScript:@"MyWalletPhone.bch.hasAccount()"] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.hasAccount()"] toBool];
     }
     return NO;
 }
@@ -2282,7 +2282,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (uint64_t)getBchBalance
 {
     if ([self isInitialized] && [self hasBchAccount]) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.bch.getBalance()"] toNumber] longLongValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getBalance()"] toNumber] longLongValue];
     }
     DLog(@"Warning: getting bch balance when not initialized - returning 0");
     return 0;
@@ -2459,7 +2459,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     NSString *filter = @"";
 
-    NSString *multiAddrJSON = [[self.context evaluateScript:[NSString stringWithFormat:@"JSON.stringify(MyWalletPhone.getMultiAddrResponse(\"%@\"))", filter]] toString];
+    NSString *multiAddrJSON = [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"JSON.stringify(MyWalletPhone.getMultiAddrResponse(\"%@\"))", filter]] toString];
 
     MultiAddressResponse *response = [[MultiAddressResponse alloc] initWithJsonString:multiAddrJSON];
 
@@ -2622,8 +2622,8 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     [self setupEthSocket];
 
-    NSString *sharedKey = [[self.context evaluateScript:@"MyWallet.wallet.sharedKey"] toString];
-    NSString *guid = [[self.context evaluateScript:@"MyWallet.wallet.guid"] toString];
+    NSString *sharedKey = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.sharedKey"] toString];
+    NSString *guid = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.guid"] toString];
 
     if ([delegate respondsToSelector:@selector(walletDidDecryptWithSharedKey:guid:)]) {
         [delegate walletDidDecryptWithSharedKey:sharedKey guid:guid];
@@ -3233,7 +3233,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     DLog(@"Creating HD Wallet");
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.upgradeToV3(\"%@\");", [LocalizationConstantsObjcBridge myBitcoinWallet], nil]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.upgradeToV3(\"%@\");", [LocalizationConstantsObjcBridge myBitcoinWallet], nil]];
 }
 
 - (BOOL)hasAccount
@@ -3242,7 +3242,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWallet.wallet.isUpgradedToHD"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.isUpgradedToHD"] toBool];
 }
 
 - (BOOL)didUpgradeToHd
@@ -3251,7 +3251,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWallet.wallet.isUpgradedToHD"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.isUpgradedToHD"] toBool];
 }
 
 - (void)getRecoveryPhrase:(NSString *)secondPassword
@@ -3260,7 +3260,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getRecoveryPhrase(\"%@\")", [secondPassword escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getRecoveryPhrase(\"%@\")", [secondPassword escapedForJS]]];
 }
 
 - (NSString *_Nullable)getMnemonic:(NSString *_Nullable)secondPassword
@@ -3268,7 +3268,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     if (!self.isInitialized) {
         return nil;
     }
-    JSValue *mnemonicValue = [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getMnemonicPhrase(\"%@\")", [secondPassword escapedForJS]]];
+    JSValue *mnemonicValue = [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getMnemonicPhrase(\"%@\")", [secondPassword escapedForJS]]];
     return [mnemonicValue toString];
 }
 
@@ -3281,7 +3281,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return NO;
     }
 
-    return [[self.context evaluateScript:@"MyWallet.wallet.hdwallet.isMnemonicVerified"] toBool];
+    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.hdwallet.isMnemonicVerified"] toBool];
 }
 
 - (void)markRecoveryPhraseVerifiedWithCompletion:(void (^ _Nullable)(void))completion error: (void (^ _Nullable)(void))error
@@ -3298,7 +3298,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         }
     } forJsFunctionName:@"objc_wallet_mnemonic_verification_error"];
     
-    [self.context evaluateScript:@"MyWalletPhone.markMnemonicAsVerified()"];
+    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.markMnemonicAsVerified()"];
 }
 
 - (int)getActiveAccountsCount:(LegacyAssetType)assetType
@@ -3308,9 +3308,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.getActiveAccountsCount()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getActiveAccountsCount()"] toNumber] intValue];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.bch.getActiveAccountsCount()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getActiveAccountsCount()"] toNumber] intValue];
     }
     return 0;
 
@@ -3323,9 +3323,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.getAllAccountsCount()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getAllAccountsCount()"] toNumber] intValue];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.bch.getAllAccountsCount()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getAllAccountsCount()"] toNumber] intValue];
     }
     return 0;
 }
@@ -3337,9 +3337,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.getDefaultAccountIndex()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getDefaultAccountIndex()"] toNumber] intValue];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.bch.getDefaultAccountIndex()"] toNumber] intValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getDefaultAccountIndex()"] toNumber] intValue];
     }
     return 0;
 }
@@ -3351,10 +3351,10 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.setDefaultAccount(%d)", index]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setDefaultAccount(%d)", index]];
         self.isSettingDefaultAccount = YES;
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.setDefaultAccount(%d)", index]];
+        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.setDefaultAccount(%d)", index]];
         [self getHistory];
         if ([self.delegate respondsToSelector:@selector(didSetDefaultAccount)]) {
             [self.delegate didSetDefaultAccount];
@@ -3371,9 +3371,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:@"MyWallet.wallet.addresses.length > 0"] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.addresses.length > 0"] toBool];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:@"MyWalletPhone.bch.hasLegacyAddresses()"] toBool];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.hasLegacyAddresses()"] toBool];
     }
     return NO;
 }
@@ -3384,7 +3384,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return 0;
     }
 
-    return [[[self.context evaluateScript:@"MyWalletPhone.totalActiveBalance()"] toNumber] longLongValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.totalActiveBalance()"] toNumber] longLongValue];
 }
 
 - (uint64_t)getWatchOnlyBalance
@@ -3393,7 +3393,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return 0;
     }
 
-    return [[[self.context evaluateScript:@"MyWalletPhone.watchOnlyBalance()"] toNumber] longLongValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.watchOnlyBalance()"] toNumber] longLongValue];
 }
 
 - (uint64_t)getTotalBalanceForActiveLegacyAddresses:(LegacyAssetType)assetType
@@ -3403,9 +3403,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[[self.context evaluateScript:@"MyWallet.wallet.balanceActiveLegacy"] toNumber] longLongValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.balanceActiveLegacy"] toNumber] longLongValue];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[[self.context evaluateScript:@"MyWalletPhone.bch.balanceActiveLegacy()"] toNumber] longLongValue];
+        return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.balanceActiveLegacy()"] toNumber] longLongValue];
     }
     DLog(@"Error getting total balance for active legacy addresses: unsupported asset type!");
     return 0;
@@ -3417,7 +3417,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         return 0;
     }
 
-    return [[[self.context evaluateScript:@"MyWallet.wallet.balanceSpendableActiveLegacy"] toNumber] longLongValue];
+    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.balanceSpendableActiveLegacy"] toNumber] longLongValue];
 }
 
 - (id)getBalanceForAccount:(int)account assetType:(LegacyAssetType)assetType
@@ -3426,12 +3426,12 @@ NSString * const kLockboxInvitation = @"lockbox";
         if (![self isInitialized]) {
             return @0;
         }
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getBalanceForAccount(%d)", account]] toNumber];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getBalanceForAccount(%d)", account]] toNumber];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
         if (![self isInitialized]) {
             return @0;
         }
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getBalanceForAccount(%d)", account]] toNumber];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getBalanceForAccount(%d)", account]] toNumber];
     }
     return nil;
 }
@@ -3443,11 +3443,11 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getLabelForAccount(%d)", account]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getLabelForAccount(%d)", account]] toString];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getLabelForAccount(%d)", account]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getLabelForAccount(%d)", account]] toString];
     } else if (assetType == LegacyAssetTypeEther) {
-        return [[self.context evaluateScript:@"MyWalletPhone.getLabelForEthAccount()"] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getLabelForEthAccount()"] toString];
     }
     return nil;
 }
@@ -3462,10 +3462,10 @@ NSString * const kLockboxInvitation = @"lockbox";
     if ([self isInitialized]) {
         if (assetType == LegacyAssetTypeBitcoin) {
             self.isSyncing = YES;
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetLabelForAccount) name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
         } else if (assetType == LegacyAssetTypeBitcoinCash) {
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
             [self getHistory];
         }
     }
@@ -3488,7 +3488,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
         // Wait a little bit to make sure the loading text is showing - then execute the blocking and kind of long create account
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.createAccount(\"%@\")", [label escapedForJS]]];
+            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.createAccount(\"%@\")", [label escapedForJS]]];
         });
     }
 }
@@ -3496,9 +3496,9 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (NSString *)getReceiveAddressOfDefaultAccount:(LegacyAssetType)assetType
 {
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:@"MyWalletPhone.getReceiveAddressOfDefaultAccount()"] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getReceiveAddressOfDefaultAccount()"] toString];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:@"MyWalletPhone.bch.getReceiveAddressOfDefaultAccount()"] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getReceiveAddressOfDefaultAccount()"] toString];
     } else if (assetType == LegacyAssetTypeEther) {
         return [self getEtherAddress];
     }
@@ -3513,9 +3513,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 
     if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.getReceivingAddressForAccount(%d)", account]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getReceivingAddressForAccount(%d)", account]] toString];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.bch.getReceivingAddressForAccount(%d)", account]] toString];
+        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getReceivingAddressForAccount(%d)", account]] toString];
     } else if (assetType == LegacyAssetTypeEther) {
         return [self getEtherAddress];
     }
@@ -3527,7 +3527,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     DLog(@"Setting PBKDF2 Iterations");
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.setPbkdf2Iterations(%d)", iterations]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setPbkdf2Iterations(%d)", iterations]];
 }
 
 #pragma mark - Callbacks from JS to Obj-C for HD wallet
@@ -3728,7 +3728,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         network = NETWORK_MAINNET;
     }
 
-    [self.context evaluateScript:[NSString stringWithFormat:@"MyWalletPhone.changeNetwork(\"%@\")", [network escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeNetwork(\"%@\")", [network escapedForJS]]];
 #endif
 }
 
