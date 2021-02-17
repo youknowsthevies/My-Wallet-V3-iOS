@@ -308,6 +308,10 @@ extension LocalizationConstants.SimpleBuy {
             "Available",
             comment: "Sell Crypto Screen - Available balance title"
         )
+        public static let useMin = NSLocalizedString(
+            "%@ Min",
+            comment: "Simple Buy: Sell Crypto Screen - Amount too low suffix"
+        )
         public static let useMax = NSLocalizedString(
             "Sell Max",
             comment: "Simple Buy: Sell Crypto Screen - Amount too high suffix"

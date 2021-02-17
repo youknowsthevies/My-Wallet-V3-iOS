@@ -52,7 +52,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                     max: AnalyticsEvent.sbBuyFormMaxClicked
                 ),
                 strings: .init(
-                    useMin: "",
+                    useMin: LocalizedString.useMin,
                     useMax: LocalizedString.useMax
                 ),
                 accessibilityIdentifiers: .init()
