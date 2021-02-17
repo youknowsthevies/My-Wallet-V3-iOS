@@ -136,7 +136,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .share(replay: 1, scope: .whileConnected)
 
         let activationContentAction = activationResult
-            .filter(\.isActive)
+            .distinctUntilChanged()
             .do(onNext: { [weak self] state in
                 self?.recordAnalytics(for: state)
             })
@@ -173,7 +173,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             })
             .disposeOnDeactivate(interactor: self)
 
-        let retryContentFromTap = contentReducer.tryAgainButtonViewModel.tap
+        let retryContentFromTap = Signal.merge(contentReducer.tryAgainButtonViewModel.tap,
+                                               contentReducer.tryDifferentBankButtonViewModel.tap)
             .map { [contentReducer] _ in
                 YodleeScreen.Action.pending(content: contentReducer.webviewPendingContent())
             }
@@ -186,7 +187,8 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             })
             .map(YodleeScreen.Action.load)
 
-        contentReducer.cancelButtonViewModel.tap
+        Signal.merge(contentReducer.cancelButtonViewModel.tap,
+                     contentReducer.okButtonViewModel.tap)
             .map { _ in YodleeScreen.Effect.closeFlow }
             .emit(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)

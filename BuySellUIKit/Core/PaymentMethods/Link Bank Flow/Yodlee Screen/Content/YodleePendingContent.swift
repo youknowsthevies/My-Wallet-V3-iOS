@@ -7,10 +7,16 @@
 //
 
 import PlatformUIKit
+import RxCocoa
 
 struct YodleePendingContent: Equatable {
     let compositeViewType: CompositeStatusViewType
     let mainTitleContent: LabelContent
-    let subtTitleContent: LabelContent
+    let subtitleTextViewModel: InteractableTextViewModel
     let buttonContent: YodleeButtonsContent?
+
+    var subtitleLinkTap: Signal<TitledLink> {
+        subtitleTextViewModel.tap
+            .asSignal(onErrorSignalWith: .empty())
+    }
 }

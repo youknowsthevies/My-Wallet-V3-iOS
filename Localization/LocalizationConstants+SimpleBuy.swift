@@ -916,6 +916,14 @@ extension LocalizationConstants.SimpleBuy {
         }
 
         public enum FailurePendingContent {
+            public static let contactSupport = NSLocalizedString(
+                " contact support.",
+                comment: "Yodlee Web Screen: likning bank contact support."
+            )
+            public static let contactUs = NSLocalizedString(
+                " contact us",
+                comment: "Yodlee Web Screen: likning bank contact us."
+            )
             public enum Generic {
                 public static let title = NSLocalizedString(
                     "Oops! Something went wrong.",
@@ -923,7 +931,7 @@ extension LocalizationConstants.SimpleBuy {
                 )
                 
                 public static let subtitle = NSLocalizedString(
-                    "Please try linking your bank again. If this keeps happening, please contact support.",
+                    "Please try linking your bank again. If this keeps happening, please",
                     comment: "Yodlee Web Screen: likning bank error state subtitle"
                 )
                 public static let mainActionButtonTitle = NSLocalizedString(
@@ -931,7 +939,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error try again button title"
                 )
                 public static let cancelActionButtonTitle = NSLocalizedString(
-                    "Cancel",
+                    "Cancel & Go Back",
                     comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
@@ -962,17 +970,14 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Yodlee Web Screen: likning bank error state title"
                 )
 
+                public static let immediately = NSLocalizedString(" immediately.", comment: "immediately")
                 public static let subtitle = NSLocalizedString(
-                    "To link this bank, please log into your other Wallets and remove it. If this doesnt look right to you, please contact us immediately.",
+                    "To link this bank, please log into your other Wallets and remove it. If this doesnt look right to you, please",
                     comment: "Yodlee Web Screen: likning bank error state subtitle"
                 )
                 public static let mainActionButtonTitle = NSLocalizedString(
-                    "Try a Different Account",
+                    "OK",
                     comment: "Yodlee Web Screen: likning bank error try again button title"
-                )
-                public static let cancelActionButtonTitle = NSLocalizedString(
-                    "Cancel",
-                    comment: "Yodlee Web Screen: likning bank error cancel button title"
                 )
             }
 
@@ -998,7 +1003,7 @@ extension LocalizationConstants.SimpleBuy {
 
             public enum AccountNamesMismatched {
                 public static let title = NSLocalizedString(
-                    "Oops! Something went wrong.",
+                    "Is this your bank?",
                     comment: "Yodlee Web Screen: likning bank error state title"
                 )
 

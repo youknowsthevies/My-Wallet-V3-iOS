@@ -96,7 +96,16 @@ final class YodleeScreenViewController: BaseScreenViewController,
             .map { _ in YodleeScreen.Effect.back }
             .asDriverCatchError()
 
-        return .merge(closeTapped, backTapped)
+        let linkTapped = contentAction
+            .flatMap { content -> Driver<TitledLink> in
+                content.subtitleLinkTap
+                    .asDriver(onErrorDriveWith: .empty())
+            }
+            .map { link -> YodleeScreen.Effect in
+                .link(url: link.url)
+            }
+
+        return .merge(closeTapped, backTapped, linkTapped)
     }
 
     // MARK: - Private
