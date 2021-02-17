@@ -198,26 +198,19 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 
     func receiveAddress(forXPub xpub: String) -> Single<String> {
-        let addressSingle: Single<String?> = Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                guard let wallet = self.wallet else {
-                    return Disposables.create()
-                }
-                let address = wallet.getBitcoinReceiveAddress(forXPub: xpub)
-                observer(.success(address))
-                return Disposables.create()
-            }
-
-        return reactiveWallet
+        reactiveWallet
             .waitUntilInitializedSingle
-            .flatMap { () -> Single<String?> in
-                addressSingle
-            }
-            .map { address -> String in
-                guard let address = address else {
-                    throw ReceiveAddressError.notSupported
+            .map(weak: self) { (self, _) -> String in
+                guard let wallet = self.wallet else {
+                    fatalError("Wallet was nil")
                 }
-                return address
+                let result = wallet.getBitcoinReceiveAddress(forXPub: xpub)
+                switch result {
+                case .success(let address):
+                    return address
+                case .failure(let error):
+                    fatalError(error.localizedDescription)
+                }
             }
     }
 

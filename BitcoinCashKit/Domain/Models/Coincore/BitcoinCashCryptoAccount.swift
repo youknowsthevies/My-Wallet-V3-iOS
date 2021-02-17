@@ -43,10 +43,11 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        let account = bridge
+        let receiveAddress: Single<String> = bridge.receiveAddress(forXPub: id)
+        let account: Single<BitcoinCashWalletAccount> = bridge
             .wallets
-            .map(weak: self) { (self, wallets) in 
-                wallets.filter { $0.label == self.label }
+            .map { [id] wallets in
+                wallets.filter { $0.publicKey == id }
             }
             .map { accounts -> BitcoinCashWalletAccount in
                 guard let account = accounts.first else {
@@ -55,13 +56,12 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 return account
             }
         
-        return Single.zip(bridge.receiveAddress(forXPub: id), account)
-            .map(weak: self) { (self, values) -> ReceiveAddress in
-                let (address, account) = values
-                return BitcoinChainReceiveAddress<BitcoinCashToken>(
+        return Single.zip(receiveAddress, account)
+            .map { [label, onTxCompleted] (address, account) -> ReceiveAddress in
+                BitcoinChainReceiveAddress<BitcoinCashToken>(
                     address: address,
-                    label: self.label,
-                    onTxCompleted: self.onTxCompleted,
+                    label: label,
+                    onTxCompleted: onTxCompleted,
                     index: Int32(account.index)
                 )
             }

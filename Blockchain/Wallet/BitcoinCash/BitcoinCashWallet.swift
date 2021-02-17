@@ -44,28 +44,20 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
     }
 
     func receiveAddress(forXPub xpub: String) -> Single<String> {
-        let addressSingle = Single<String?>
-            .create(weak: self) { (self, observer) -> Disposable in
-                let address = self.wallet
-                    .getBitcoinCashReceiveAddress(forXPub: xpub)
-                observer(.success(address))
-                return Disposables.create()
-            }
-            .map { $0?.replacingOccurrences(of: "bitcoincash:", with: "") }
-
-        return reactiveWallet
+        reactiveWallet
             .waitUntilInitializedSingle
-            .flatMap { () -> Single<String?> in
-                addressSingle
-            }
-            .map { address -> String in
-                guard let address = address else {
-                    throw ReceiveAddressError.notSupported
+            .map(weak: self) { (self, _) -> String in
+                let result = self.wallet.getBitcoinCashReceiveAddress(forXPub: xpub)
+                switch result {
+                case .success(let address):
+                    return address
+                case .failure(let error):
+                    fatalError(error.localizedDescription)
                 }
-                return address
             }
+            .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }
     }
-    
+
     // MARK: - Private
 
     private func fetchAllWallets() -> Single<[BitcoinCashWalletAccount]> {
