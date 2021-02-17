@@ -370,11 +370,7 @@ public final class StateService: StateServiceAPI {
                         }
                     }
                 } else {
-                    if cache[.hasShownIntroScreen] {
-                        return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
-                    } else {
-                        return .just(.intro)
-                    }
+                    return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
                 }
             }
             .subscribe(
