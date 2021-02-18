@@ -16,10 +16,15 @@ set -u
 WALLETJS="./Submodules/My-Wallet-V3/dist/my-wallet.js"
 
 if [ -e "$WALLETJS" ]; then
-    echo "Skiping My-Wallet-V3 build"
-    exit 0
+	shasum -a 256 -c ./my-wallet.js.sha256
+	if [ $? -eq 0 ]; then
+		echo "$WALLETJS SHA256 match. Skipping..."
+		exit 0
+	else
+		echo "$WALLETJS SHA256 doesn't match. Building..."
+	fi
 else
-    echo "$WALLETJS does not exists"
+	echo "$WALLETJS does not exists. Building..."
 fi
 
 # Install Node
@@ -31,7 +36,7 @@ git checkout v0.33.11
 nvm install $NODE_VERSION
 nvm use $NODE_VERSION
 if [[ $(npm -v | grep -v "5.6.0") ]]; then
-    npm install -g npm@5.6.0
+	npm install -g npm@5.6.0
 fi
 cd ..
 
