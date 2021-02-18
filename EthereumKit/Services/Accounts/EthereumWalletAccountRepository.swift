@@ -55,8 +55,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
             .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(
-                        mnemonic: mnemonic,
-                        password: ""
+                        mnemonic: mnemonic
                     )
                 )
                 .single
@@ -68,8 +67,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
             .flatMap(weak: self) { (self, mnemonic) -> Single<KeyPair> in
                 self.deriver.derive(
                     input: EthereumKeyDerivationInput(
-                        mnemonic: mnemonic,
-                        password: ""
+                        mnemonic: mnemonic
                     )
                 )
                 .single
@@ -79,17 +77,17 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
     // MARK: - Private Properties
     
     private let bridge: Bridge
-    private let deriver: AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>
+    private let deriver: AnyEthereumKeyPairDeriver
     
     // MARK: - Init
     
     convenience init(with bridge: Bridge = resolve()) {
-        self.init(with: bridge, deriver: AnyEthereumKeyPairDeriver())
+        self.init(with: bridge, deriver: AnyEthereumKeyPairDeriver(deriver: EthereumKeyPairDeriver()))
     }
 
-    init<D: KeyPairDeriverAPI>(with bridge: Bridge, deriver: D) where D.Pair == EthereumKeyPair, D.Input == EthereumKeyDerivationInput {
+    init(with bridge: Bridge, deriver: AnyEthereumKeyPairDeriver) {
         self.bridge = bridge
-        self.deriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>(deriver: deriver)
+        self.deriver = deriver
     }
 }
 

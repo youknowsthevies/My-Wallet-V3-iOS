@@ -11,7 +11,6 @@ import BigInt
 import Foundation
 import PlatformKit
 import RxSwift
-import web3swift
 
 class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
     

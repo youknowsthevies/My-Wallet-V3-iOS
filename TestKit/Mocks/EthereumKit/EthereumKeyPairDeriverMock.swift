@@ -10,17 +10,14 @@ import BigInt
 @testable import EthereumKit
 @testable import PlatformKit
 import RxSwift
-import web3swift
 
 class EthereumKeyPairDeriverMock: KeyPairDeriverAPI {
     var deriveResult: Result<EthereumKeyPair, Error> = .success(
         MockEthereumWalletTestData.keyPair
     )
     var lastMnemonic: String?
-    var lastPassword: String?
     func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, Error> {
         lastMnemonic = input.mnemonic
-        lastPassword = input.password
         return deriveResult
     }
 }

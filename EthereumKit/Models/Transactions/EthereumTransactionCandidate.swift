@@ -7,35 +7,30 @@
 //
 
 import BigInt
-import PlatformKit
-import web3swift
 
-public struct EthereumTransactionCandidate {
+public struct EthereumTransactionCandidate: Equatable {
+    public enum TransferType: Equatable {
+        case transfer
+        case erc20Transfer(contract: EthereumAddress)
+    }
     public let to: EthereumAddress
     public let gasPrice: BigUInt
     public let gasLimit: BigUInt
     public let value: BigUInt
     public let data: Data?
+    public let transferType: TransferType
     
     public init(to: EthereumAddress,
                 gasPrice: BigUInt,
                 gasLimit: BigUInt,
                 value: BigUInt,
-                data: Data?) {
+                data: Data?,
+                transferType: TransferType = .transfer) {
         self.to = to
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
         self.value = value
         self.data = data
-    }
-}
-
-extension EthereumTransactionCandidate: Equatable {
-    public static func == (lhs: EthereumTransactionCandidate, rhs: EthereumTransactionCandidate) -> Bool {
-        lhs.gasLimit == rhs.gasLimit
-            && lhs.gasPrice == rhs.gasPrice
-            && lhs.to == rhs.to
-            && lhs.value == rhs.value
-            && lhs.data == rhs.data
+        self.transferType = transferType
     }
 }

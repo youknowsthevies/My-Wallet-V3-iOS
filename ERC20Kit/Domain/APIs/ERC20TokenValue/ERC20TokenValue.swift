@@ -9,7 +9,6 @@
 import BigInt
 import EthereumKit
 import PlatformKit
-import web3swift
 
 public enum ERC20TokenValueError: Error {
     case invalidCryptoValue

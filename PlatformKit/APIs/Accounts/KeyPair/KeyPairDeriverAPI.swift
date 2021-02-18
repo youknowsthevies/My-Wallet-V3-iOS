@@ -21,7 +21,7 @@ public protocol KeyPairDeriverAPI {
     func derive(input: Input) -> Result<Pair, Error>
 }
 
-public final class AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput>: KeyPairDeriverAPI {
+public struct AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput>: KeyPairDeriverAPI {
     
     public typealias Deriver = (I) -> Result<P, Error>
     

@@ -15,7 +15,7 @@ import RxSwift
 class PaxERC20ServiceMock: ERC20ServiceAPI {
     func evaluate(amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<ERC20TransactionEvaluationResult<PaxToken>> {
         let addressString = MockEthereumWalletTestData.account
-        let address = EthereumKit.EthereumAddress(stringLiteral: addressString)
+        let address = EthereumAddress(stringLiteral: addressString)
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit
         // swiftlint:disable:next force_try
@@ -29,7 +29,7 @@ class PaxERC20ServiceMock: ERC20ServiceAPI {
         return Single.just(.valid(proposal))
     }
 
-    func transfer(to: EthereumKit.EthereumAddress, amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<EthereumTransactionCandidate> {
+    func transfer(to: EthereumAddress, amount cryptoValue: ERC20TokenValue<PaxToken>) -> Single<EthereumTransactionCandidate> {
         let candidate = EthereumTransactionCandidateBuilder().build()!
         return Single.just(candidate)
     }

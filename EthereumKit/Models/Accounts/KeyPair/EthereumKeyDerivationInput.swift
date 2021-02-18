@@ -8,12 +8,12 @@
 
 import PlatformKit
 
+// Derivation Input for a HDWallet given a BIP39 mnemonic
+// BIP39 Passphrase is currently not supported.
 public struct EthereumKeyDerivationInput: KeyDerivationInput, Equatable {
     public let mnemonic: String
-    public let password: String
     
-    public init(mnemonic: String, password: String) {
+    public init(mnemonic: String) {
         self.mnemonic = mnemonic
-        self.password = password
     }
 }

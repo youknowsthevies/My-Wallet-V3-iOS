@@ -7,28 +7,14 @@
 //
 
 @testable import EthereumKit
-import web3swift
 
 class EthereumTransactionFinalisedBuilder {
-    var signed: EthereumTransactionCandidateSigned? {
-        didSet {
-            web3swiftTransaction = signed?.transaction
-        }
-    }
 
-    var web3swiftTransaction: web3swift.EthereumTransaction?
-
+    var signed: EthereumTransactionCandidateSigned?
     var candidate: EthereumTransactionCandidate? {
         didSet {
             candidateUpdated()
         }
-    }
-
-    init() {}
-
-    init(candidate: EthereumTransactionCandidate) {
-        self.candidate = candidate
-        candidateUpdated()
     }
 
     func with(candidate: EthereumTransactionCandidate) -> Self {
@@ -42,23 +28,11 @@ class EthereumTransactionFinalisedBuilder {
         return self
     }
 
-    func with(web3swiftTransaction: web3swift.EthereumTransaction) -> Self {
-        self.web3swiftTransaction = web3swiftTransaction
-        return self
-    }
-
     func build() -> EthereumTransactionFinalised? {
-        guard let web3swiftTransaction = web3swiftTransaction else {
+        guard let signed = self.signed else {
             return nil
         }
-        guard let encodedData = web3swiftTransaction.encode() else {
-            return nil
-        }
-        let rawTxHexString = encodedData.hex.withHex.lowercased()
-        return EthereumTransactionFinalised(
-            transaction: web3swiftTransaction,
-            rawTx: rawTxHexString
-        )
+        return EthereumTransactionFinalised(transaction: signed)
     }
 
     private func candidateUpdated() {

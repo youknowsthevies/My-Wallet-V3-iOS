@@ -8,23 +8,18 @@
 
 import BigInt
 import PlatformKit
-import web3swift
-
-enum EthereumTransactionCandidateSignedError: Error {
-    case invalidTransaction
-}
+import WalletCore
 
 public struct EthereumTransactionCandidateSigned {
-    
     public let transactionHash: String
-    
-    let transaction: web3swift.EthereumTransaction
-    
-    init(transaction: web3swift.EthereumTransaction) throws {
-        guard let txHash = transaction.txhash else {
-            throw EthereumTransactionCandidateSignedError.invalidTransaction
-        }
-        self.transactionHash = txHash
-        self.transaction = transaction
+    let encodedTransaction: Data
+
+    init(transaction: WalletCore.EthereumSigningOutput) {
+        self.init(encodedTransaction: transaction.encoded)
+    }
+
+    init(encodedTransaction: Data) {
+        self.transactionHash = Hash.keccak256(data: encodedTransaction).hexString.withHex
+        self.encodedTransaction = encodedTransaction
     }
 }

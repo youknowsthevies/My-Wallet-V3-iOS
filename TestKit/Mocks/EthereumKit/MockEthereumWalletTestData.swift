@@ -14,9 +14,8 @@ struct MockEthereumWalletTestData {
     static let walletId = MockWalletTestData.walletId
     static let email = MockWalletTestData.email
 
-    static let mnemonic = MockWalletTestData.mnemonic
-    static let password = MockWalletTestData.password
-    static let account = "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e".lowercased()
+    static let mnemonic = MockWalletTestData.Bip39.mnemonic
+    static let account = "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e"
 
     static let privateKeyHex = "de6e182c9456edeb1148387dadc8f981905377279feb9547d095152ef0f569d9"
     static let privateKeyBase64 = "3m4YLJRW7esRSDh9rcj5gZBTdyef65VH0JUVLvD1adk="
@@ -24,7 +23,6 @@ struct MockEthereumWalletTestData {
 
     static let privateKey = EthereumPrivateKey(
         mnemonic: MockEthereumWalletTestData.mnemonic,
-        password: MockEthereumWalletTestData.password,
         data: MockEthereumWalletTestData.privateKeyData
     )
     static let keyPair = EthereumKeyPair(

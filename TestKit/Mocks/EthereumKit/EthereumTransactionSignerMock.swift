@@ -13,13 +13,17 @@ import PlatformKit
 
 class EthereumTransactionSignerMock: EthereumTransactionSignerAPI {
     var lastTransactionForSignature: EthereumTransactionCandidateCosted?
-    var lastNonce: BigUInt?
     var lastKeyPair: EthereumKeyPair?
+
     var signTransactionResult:  Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> = Result.failure(.incorrectChainId)
-    func sign(transaction: EthereumTransactionCandidateCosted, nonce: BigUInt, keyPair: EthereumKeyPair) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> {
+
+    func sign(
+        transaction: EthereumTransactionCandidateCosted,
+        keyPair: EthereumKeyPair
+    ) -> Result<EthereumTransactionCandidateSigned, EthereumTransactionSignerError> {
         lastTransactionForSignature = transaction
-        lastNonce = nonce
         lastKeyPair = keyPair
         return signTransactionResult
     }
+
 }

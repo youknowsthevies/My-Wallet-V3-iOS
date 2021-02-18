@@ -20,12 +20,12 @@ public struct ERC20TransactionProposal<Token: ERC20Token> {
         value.amount >= Token.smallestSpendableValue.amount
     }
     
-    public let from: EthereumKit.EthereumAddress
+    public let from: EthereumAddress
     public let gasPrice: BigUInt
     public let gasLimit: BigUInt
     public let value: ERC20TokenValue<Token>
     
-    public init(from: EthereumKit.EthereumAddress,
+    public init(from: EthereumAddress,
                 gasPrice: BigUInt,
                 gasLimit: BigUInt,
                 value: ERC20TokenValue<Token>) {

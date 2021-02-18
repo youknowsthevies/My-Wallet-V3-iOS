@@ -19,7 +19,7 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
     
     var bridge: EthereumWalletBridgeMock!
     var ethereumDeriver: EthereumKeyPairDeriverMock!
-    var deriver: AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>!
+    var deriver: AnyEthereumKeyPairDeriver!
     var subject: EthereumWalletAccountRepository!
 
     override func setUp() {
@@ -30,7 +30,7 @@ class EthereumWalletAccountRepositoryTests: XCTestCase {
         
         bridge = EthereumWalletBridgeMock()
         ethereumDeriver = EthereumKeyPairDeriverMock()
-        deriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>(deriver: AnyEthereumKeyPairDeriver(with: ethereumDeriver))
+        deriver = AnyEthereumKeyPairDeriver(deriver: ethereumDeriver)
         
         subject = EthereumWalletAccountRepository(
             with: bridge,

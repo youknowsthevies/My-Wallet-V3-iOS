@@ -39,8 +39,8 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
         let expectedPrivateKey = "xprv9s21ZrQH143K3fSXNaonDA6T8ZmP8JUMhTCZKhrFtZCxZX9DddfQ4wsUTWd7HgUPQB7TKg6eicuwWMdpC7TimacYb464NE4YdaaNnCya6e6"
         let expectedPublicKey = "xpub661MyMwAqRbcG9WzUcLnaJ3BgbbsXmCD4g8A86FsStjwSKUNBAyeckBxJoSQUaBe286hzUU7vtDku75jrvVcZ8JMMZfLqDZQV8dzbEDCYeL"
         
-        let password = MockWalletTestData.password
-        let mnemonic =  MockWalletTestData.mnemonic
+        let password = MockWalletTestData.Bip39.passphrase
+        let mnemonic =  MockWalletTestData.Bip39.mnemonic
         let passphrase = Passphrase(rawValue: password)
         let words = try Words(words: mnemonic)
         let mnemonics = try Mnemonic(words: words, passphrase: passphrase)
@@ -53,8 +53,8 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
     
     func test_derive() throws {
         // Arrange
-        let password = MockWalletTestData.password
-        let mnemonic =  MockWalletTestData.mnemonic
+        let password = MockWalletTestData.Bip39.emptyPassphrase
+        let mnemonic =  MockWalletTestData.Bip39.mnemonic
         let passphrase = Passphrase(rawValue: password)
         let words = try Words(words: mnemonic.components(separatedBy: " "))
         let mnemonics = try Mnemonic(words: words, passphrase: passphrase)

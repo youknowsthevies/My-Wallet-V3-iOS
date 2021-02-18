@@ -17,6 +17,9 @@ public enum EthereumKitValidationError: TransactionValidationError {
     case insufficientFeeCoverage
     case insufficientFunds
     case invalidAmount
+    case noGasPrice
+    case noGasLimit
+    case unknown
 }
 
 public enum EthereumWalletServiceError: Error {

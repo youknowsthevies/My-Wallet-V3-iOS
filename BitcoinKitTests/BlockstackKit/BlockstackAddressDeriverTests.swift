@@ -37,8 +37,8 @@ class BlockstackAddressDeriverTests: XCTestCase {
     func test_derive() throws {
         // Arrange
         let expectedAddress = BlockstackAddress(rawValue: "1EpGdGDjLgxVWU925a81R2aApsKgvFKPXD")!
-        let password = MockWalletTestData.password
-        let mnemonic =  MockWalletTestData.mnemonic
+        let password = MockWalletTestData.Bip39.passphrase
+        let mnemonic =  MockWalletTestData.Bip39.mnemonic
         
         let deriveAddressObservable = subject
             .deriveAddress(mnemonic: mnemonic, password: password)

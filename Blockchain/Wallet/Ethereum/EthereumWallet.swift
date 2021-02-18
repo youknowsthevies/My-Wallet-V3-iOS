@@ -214,13 +214,17 @@ extension EthereumWallet: ERC20BridgeAPI {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
-            guard let jsonData = try? JSONEncoder().encode(erc20TokenAccounts) else {
+            guard let data = try? JSONEncoder().encode(erc20TokenAccounts) else {
+                observer(.error(EthereumWalletError.encodingERC20TokenAccountsFailed))
+                return Disposables.create()
+            }
+            guard let dataSring = String(data: data, encoding: .utf8) else {
                 observer(.error(EthereumWalletError.encodingERC20TokenAccountsFailed))
                 return Disposables.create()
             }
             wallet.saveERC20Tokens(
                 with: nil,
-                tokensJSONString: jsonData.string,
+                tokensJSONString: dataSring,
                 success: {
                     observer(.success(()))
                 },
@@ -302,7 +306,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    var address: Single<EthereumKit.EthereumAddress> {
+    var address: Single<EthereumAddress> {
         reactiveWallet.waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) in
                 self.secondPasswordIfAccountCreationNeeded
@@ -310,7 +314,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
             }
-            .map { EthereumKit.EthereumAddress(stringLiteral: $0) }
+            .map { EthereumAddress(stringLiteral: $0) }
     }
     
     var account: Single<EthereumAssetAccount> {

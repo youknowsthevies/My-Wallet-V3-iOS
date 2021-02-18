@@ -7,25 +7,18 @@
 //
 
 import PlatformKit
+import WalletCore
 
 public struct EthereumPrivateKey: Equatable {
     public let mnemonic: String
-    public let password: String
     public let data: Data
-    
-    init(mnemonic: String, password: String, data: Data) {
+
+    init(mnemonic: String, data: Data) {
         self.mnemonic = mnemonic
-        self.password = password
         self.data = data
     }
-}
 
-extension EthereumPrivateKey {
-    public var base58Encoded: Data? {
-        data.string.base58DecodedData
-    }
-    
     public var base58EncodedString: String? {
-        data.string.base58EncodedString
+        Base58.encode(data: data)
     }
 }

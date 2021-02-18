@@ -33,7 +33,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-
+        
         bridge = EthereumWalletBridgeMock()
         client = EthereumAPIClientMock()
         feeService = AnyCryptoFeeService(

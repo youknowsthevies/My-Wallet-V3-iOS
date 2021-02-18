@@ -9,39 +9,18 @@
 import BigInt
 @testable import EthereumKit
 import Foundation
-import web3swift
 
 class EthereumTransactionPublishedBuilder {
-
-    var finalised: EthereumTransactionFinalised? =
-        EthereumTransactionFinalisedBuilder().build()
-
+    
+    var finalised: EthereumTransactionFinalised?
     var candidate: EthereumTransactionCandidate? {
         didSet {
             candidateUpdated()
         }
     }
 
-    var transactionHash: String?
-
-    init(candidate: EthereumTransactionCandidate = EthereumTransactionCandidateBuilder().build()!) {
-        self.candidate = candidate
-        candidateUpdated()
-    }
-
     func with(candidate: EthereumTransactionCandidate) -> Self {
         self.candidate = candidate
-        candidateUpdated()
-        return self
-    }
-
-    func with(finalised: EthereumTransactionFinalised) -> Self {
-        self.finalised = finalised
-        return self
-    }
-
-    func with(transactionHash: String) -> Self {
-        self.transactionHash = transactionHash
         return self
     }
 
@@ -49,15 +28,9 @@ class EthereumTransactionPublishedBuilder {
         guard let finalised = finalised else {
             return nil
         }
-        guard let transactionHash = transactionHash else {
-            return EthereumTransactionPublished(
-                finalisedTransaction: finalised,
-                transactionHash: finalised.transactionHash
-            )
-        }
         return EthereumTransactionPublished(
             finalisedTransaction: finalised,
-            transactionHash: transactionHash
+            transactionHash: finalised.transactionHash
         )
     }
 

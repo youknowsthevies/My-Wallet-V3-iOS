@@ -7,9 +7,6 @@
 //
 
 import BigInt
-import PlatformKit
-import RxSwift
-import web3swift
 
 public enum EthereumTransactionEncoderError: Error {
     case encodingError
@@ -19,22 +16,12 @@ public protocol EthereumTransactionEncoderAPI {
     func encode(signed: EthereumTransactionCandidateSigned) -> Result<EthereumTransactionFinalised, EthereumTransactionEncoderError>
 }
 
-public class EthereumTransactionEncoder: EthereumTransactionEncoderAPI {
-    public static let shared = EthereumTransactionEncoder()
-    
+public struct EthereumTransactionEncoder: EthereumTransactionEncoderAPI {
     public func encode(signed: EthereumTransactionCandidateSigned) -> Result<EthereumTransactionFinalised, EthereumTransactionEncoderError> {
-        let transaction = signed.transaction
-        
-        guard let encodedData = transaction.encode() else {
-            return .failure(.encodingError)
-        }
-        
-        let rawTxHexString = encodedData.hex.withHex.lowercased()
         
         return .success(
             EthereumTransactionFinalised(
-                transaction: transaction,
-                rawTx: rawTxHexString
+                transaction: signed
             )
         )
     }

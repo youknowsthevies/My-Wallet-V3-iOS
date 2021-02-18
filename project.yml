@@ -373,22 +373,19 @@ targets:
     - carthage: BigInt
     - carthage: Charts
     - carthage: DIKit
-    - carthage: keccak
     - carthage: LibWally
     - carthage: PhoneNumberKit
-    - carthage: PromiseKit
     - carthage: RxCocoa
     - carthage: RxRelay
     - carthage: RxSwift
     - carthage: RxDataSources
     - carthage: Differentiator
-    - carthage: scrypt
-    - carthage: secp256k1
     - carthage: stellarsdk
-    - carthage: web3swift
     - carthage: Veriff
     - carthage: Zxcvbn
     - carthage: Sift
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: PlatformUIKit
@@ -672,15 +669,15 @@ targets:
     - target: NetworkKit
     - target: EthereumKit
     - target: PlatformKit
-    - target: Localization
     - target: ToolKit
     - target: TransactionKit
+    - carthage: BigInt
     - carthage: DIKit
     - carthage: RxCocoa
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: BigInt
-    - carthage: web3swift
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     scheme:
       testTargets:
       - ERC20KitTests
@@ -706,18 +703,14 @@ targets:
     dependencies:
     - target: NetworkKit
     - target: PlatformKit
-    - target: Localization
     - target: ToolKit
     - target: TransactionKit
-    - carthage: keccak
-    - carthage: PromiseKit
     - carthage: BigInt
     - carthage: DIKit
-    - carthage: secp256k1
-    - carthage: web3swift
-    - carthage: scrypt
     - carthage: RxRelay
     - carthage: RxSwift
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     scheme:
       testTargets:
       - EthereumKitTests

@@ -8,16 +8,13 @@
 
 import BigInt
 import PlatformKit
-import web3swift
 
 enum EthereumTransactionPublishedError: Error {
     case invalidResponseHash
 }
 
-public struct EthereumTransactionPublished {
+public struct EthereumTransactionPublished: Equatable {
     public let transactionHash: String
-    
-    let web3swiftTransaction: web3swift.EthereumTransaction
     
     init(finalisedTransaction: EthereumTransactionFinalised, responseHash: String) throws {
         guard finalisedTransaction.transactionHash == responseHash else {
@@ -30,7 +27,6 @@ public struct EthereumTransactionPublished {
     }
     
     init(finalisedTransaction: EthereumTransactionFinalised, transactionHash: String) {
-        self.web3swiftTransaction = finalisedTransaction.web3swiftTransaction
         self.transactionHash = transactionHash
     }
 }

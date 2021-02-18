@@ -6,20 +6,13 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import BigInt
-import PlatformKit
-import web3swift
-
-public struct EthereumTransactionFinalised {
+public struct EthereumTransactionFinalised: Equatable {
     
     public let transactionHash: String
-    public let rawTx: String
+    public let rawTransaction: String
     
-    let web3swiftTransaction: web3swift.EthereumTransaction
-    
-    init(transaction: web3swift.EthereumTransaction, rawTx: String) {
-        self.web3swiftTransaction = transaction
-        self.transactionHash = transaction.txhash!
-        self.rawTx = rawTx
+    init(transaction: EthereumTransactionCandidateSigned) {
+        transactionHash = transaction.transactionHash
+        rawTransaction = transaction.encodedTransaction.hexValue.withHex.lowercased()
     }
 }

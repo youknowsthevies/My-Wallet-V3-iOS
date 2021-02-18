@@ -100,7 +100,7 @@ final class APIClient: APIClientAPI {
     /// Pushes a transaction
     func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {
         let pushTxRequest = PushTxRequest(
-            rawTx: transaction.rawTx,
+            rawTx: transaction.rawTransaction,
             api_code: apiCode
         )
         let data = try? JSONEncoder().encode(pushTxRequest)

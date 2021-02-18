@@ -1,5 +1,5 @@
 //
-//  EthereumAddress.swift
+//  AddressValidationError.swift
 //  EthereumKit
 //
 //  Created by Jack on 20/05/2019.
@@ -8,6 +8,7 @@
 
 public enum AddressValidationError: Error {
     case unknown
+    case eip55ChecksumFailed
     case containsInvalidCharacters
     case invalidLength
 }

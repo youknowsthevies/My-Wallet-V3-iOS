@@ -9,7 +9,6 @@
 import BigInt
 import EthereumKit
 import PlatformKit
-import web3swift
 
 public protocol ERC20Token {
 

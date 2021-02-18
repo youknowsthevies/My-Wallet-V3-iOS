@@ -1,5 +1,5 @@
 //
-//  EthereumAddress.swift
+//  EthereumAddressProtocols.swift
 //  EthereumKit
 //
 //  Created by Jack on 20/05/2019.

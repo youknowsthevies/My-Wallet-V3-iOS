@@ -1,5 +1,5 @@
 //
-//  EthereumAddress.swift
+//  EthereumContractAddress.swift
 //  EthereumKit
 //
 //  Created by Jack on 20/05/2019.
@@ -7,7 +7,6 @@
 //
 
 import PlatformKit
-import web3swift
 
 public struct EthereumContractAddress: EthereumAddressProtocols, AssetAddress {
     public let cryptoCurrency: CryptoCurrency = .ethereum

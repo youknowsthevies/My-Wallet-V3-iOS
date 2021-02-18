@@ -7,7 +7,6 @@
 //
 
 import BigInt
-import Foundation
 
 extension BigInt {
     public static let one = BigInt(1)
@@ -18,8 +17,20 @@ extension BigUInt {
     public static let zero = BigUInt(0)
 }
 
+extension BigUInt {
+    /// Even-length hexadecimal string representation of this element.
+    public var hexString: String {
+        let string = String(self, radix: 16)
+        // Check odd length hex string
+        if string.count % 2 != 0 {
+            return "0" + string
+        }
+        return string
+    }
+}
+
 extension BigInt {
-    
+
     public func decimalDivision(divisor: BigInt) -> Decimal {
         let (quotient, remainder) = quotientAndRemainder(dividingBy: divisor)
         return Decimal(string: String(quotient))!
@@ -40,7 +51,7 @@ extension BigInt {
         let majorValue = decimalDivision(divisor: divisor)
         return majorValue.roundTo(places: roundingDecimalPlaces, roundingMode: roundingMode)
     }
-    
+
     public func toMinor(maxDecimalPlaces: Int) -> BigInt {
         let minorDecimal = self * BigInt(10).power(maxDecimalPlaces)
         return minorDecimal

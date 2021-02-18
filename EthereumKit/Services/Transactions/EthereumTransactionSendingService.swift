@@ -10,7 +10,6 @@ import BigInt
 import DIKit
 import PlatformKit
 import RxSwift
-import web3swift
 
 public enum EthereumTransactionCreationServiceError: Error {
     case transactionHashingError
@@ -51,22 +50,17 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
     func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
         finalise(transaction: transaction, keyPair: keyPair)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                assert(transaction.web3swiftTransaction.intrinsicChainID == NetworkId.mainnet.rawValue)
-                return self.publish(transaction: transaction)
+                self.publish(transaction: transaction)
             }
     }
 
     private func finalise(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionFinalised> {
         bridge.nonce
-            .flatMap(weak: self) { (self, nonce) -> Single<(EthereumTransactionCandidateCosted, BigUInt)> in
-                self.transactionBuilder.build(transaction: transaction).single
-                    .map { tx -> (EthereumTransactionCandidateCosted, BigUInt) in
-                        (tx, nonce)
-                    }
+            .flatMap(weak: self) { (self, nonce) -> Single<EthereumTransactionCandidateCosted> in
+                self.transactionBuilder.build(transaction: transaction, nonce: nonce).single
             }
-            .flatMap(weak: self) { (self, value) -> Single<EthereumTransactionCandidateSigned> in
-                let (transaction, nonce) = value
-                return self.transactionSigner.sign(transaction: transaction, nonce: nonce, keyPair: keyPair).single
+            .flatMap(weak: self) { (self, costed) -> Single<EthereumTransactionCandidateSigned> in
+                self.transactionSigner.sign(transaction: costed, keyPair: keyPair).single
             }
             .flatMap(weak: self) { (self, signedTransaction) -> Single<EthereumTransactionFinalised> in
                 self.transactionEncoder.encode(signed: signedTransaction).single

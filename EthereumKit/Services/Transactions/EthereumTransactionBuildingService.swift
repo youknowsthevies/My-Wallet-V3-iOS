@@ -1,5 +1,5 @@
 //
-//  EthereumTransactionCandidateBuilder.swift
+//  EthereumTransactionBuildingService.swift
 //  EthereumKit
 //
 //  Created by Jack on 17/05/2019.
@@ -11,7 +11,6 @@ import DIKit
 import PlatformKit
 import RxSwift
 import TransactionKit
-import web3swift
 
 protocol EthereumTransactionBuildingServiceAPI {
     

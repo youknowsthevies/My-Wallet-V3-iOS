@@ -7,14 +7,11 @@
 //
 
 import DIKit
-import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
 
 final class EthereumCryptoAccount: CryptoNonCustodialAccount {
-    private typealias LocalizedString = LocalizationConstants.Account
-
     let id: String
     let label: String
     let asset: CryptoCurrency

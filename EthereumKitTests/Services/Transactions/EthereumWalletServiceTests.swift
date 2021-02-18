@@ -11,69 +11,68 @@ import BigInt
 import PlatformKit
 import RxSwift
 import RxTest
-import web3swift
 import XCTest
 import TransactionKit
 
 class EthereumWalletServiceTests: XCTestCase {
-    
+
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
-    
+
     var bridge: EthereumWalletBridgeMock!
     var client: EthereumAPIClientMock!
     var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
-    
+
     var transactionBuilder: EthereumTransactionBuilder!
     var transactionSigner: EthereumTransactionSignerAPI!
     var transactionEncoder: EthereumTransactionEncoder!
-    
+
     var assetAccountDetailsService: EthereumAssetAccountDetailsService!
-    
+
     var ethereumAssetAccountRepository: EthereumAssetAccountRepository!
-    
+
     var walletAccountRepository: EthereumWalletAccountRepositoryMock!
-    
+
     var keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>!
-    
+
     var transactionBuildingService: EthereumTransactionBuildingService!
-    
+
     var transactionSendingService: EthereumTransactionSendingService!
-    
+
     var transactionValidationService: EthereumTransactionValidationService!
-    
+
     var subject: EthereumWalletService!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        
+
         bridge = EthereumWalletBridgeMock()
         client = EthereumAPIClientMock()
         feeService = AnyCryptoFeeService(
             service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
         )
-        
+
         transactionBuilder = EthereumTransactionBuilder()
         transactionSigner = EthereumTransactionSigner()
-        
+
         transactionEncoder = EthereumTransactionEncoder()
-        
+
         walletAccountRepository = EthereumWalletAccountRepositoryMock()
-        
+
         keyPairProvider = AnyKeyPairProvider<EthereumKeyPair>(provider: walletAccountRepository)
-        
+
         assetAccountDetailsService = EthereumAssetAccountDetailsService(
             with: bridge,
             client: client
         )
-        
+
         ethereumAssetAccountRepository = EthereumAssetAccountRepository(
             service: assetAccountDetailsService
         )
-        
+
         transactionSendingService = EthereumTransactionSendingService(
             with: bridge,
             client: client,
@@ -87,12 +86,12 @@ class EthereumWalletServiceTests: XCTestCase {
             with: feeService,
             repository: ethereumAssetAccountRepository
         )
-        
+
         transactionValidationService = EthereumTransactionValidationService(
             with: feeService,
             repository: ethereumAssetAccountRepository
         )
-        
+
         subject = EthereumWalletService(
             with: bridge,
             client: client,
@@ -103,7 +102,7 @@ class EthereumWalletServiceTests: XCTestCase {
             transactionValidationService: transactionValidationService
         )
     }
-    
+
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
@@ -121,10 +120,10 @@ class EthereumWalletServiceTests: XCTestCase {
         transactionBuildingService = nil
         transactionValidationService = nil
         subject = nil
-        
+
         super.tearDown()
     }
-    
+
     func test_send_successfully() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder().build()!
@@ -137,15 +136,15 @@ class EthereumWalletServiceTests: XCTestCase {
 
         bridge.recordLastTransactionValue = Single.just(expectedPublished)
         client.pushTransactionValue = Single.just(EthereumPushTxResponse(txHash: expectedPublished.transactionHash))
-        
+
         let sendObservable: Observable<EthereumTransactionPublished> = subject
             .send(transaction: candidate)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumTransactionPublished> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumTransactionPublished>>] = Recorded.events(
             .next(
@@ -154,7 +153,7 @@ class EthereumWalletServiceTests: XCTestCase {
             ),
             .completed(200)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
         XCTAssertNotNil(bridge.lastRecordedTransaction)
         guard let lastRecordedTransaction = bridge.lastRecordedTransaction else {
@@ -162,7 +161,7 @@ class EthereumWalletServiceTests: XCTestCase {
             return
         }
         XCTAssertEqual(lastRecordedTransaction, expectedPublished)
-        
+
         XCTAssertNotNil(client.lastPushedTransaction)
         guard let lastPushedTransaction = client.lastPushedTransaction else {
             XCTFail("Should have successfully pushed the finalised transaction")
@@ -170,34 +169,34 @@ class EthereumWalletServiceTests: XCTestCase {
         }
         XCTAssertEqual(lastPushedTransaction, expectedFinalised)
     }
-    
+
     func test_send_transaction_pending() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder().build()!
-        
+
         bridge.isWaitingOnTransactionValue = Single.just(true)
-        
+
         let sendObservable: Observable<EthereumTransactionPublished> = subject
             .send(transaction: candidate)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumTransactionPublished> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumTransactionPublished>>] = Recorded.events(
             .error(200, EthereumKitValidationError.waitingOnPendingTransaction)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
     }
-    
+
     func test_building_amount_over_balance() throws {
         // Arrange
         let cryptoValue = CryptoValue.ether(major: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
+        let toAddress = EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
 
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.1", nonce: 1))
 
@@ -216,12 +215,12 @@ class EthereumWalletServiceTests: XCTestCase {
 
         XCTAssertEqual(result.events, expectedEvents)
     }
-    
+
     func test_sending_fees_over_balance() throws {
         // Arrange
         let cryptoValue = CryptoValue.ether(major: "0.01")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
+        let toAddress = EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
         let limits = TransactionFeeLimits(
             min: 100,
             max: 1_100
@@ -238,7 +237,7 @@ class EthereumWalletServiceTests: XCTestCase {
         )
 
         client.balanceDetailsValue = .just(BalanceDetailsResponse(balance: "0.02", nonce: 1))
-        
+
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
             .buildTransaction(with: ethereumValue, to: toAddress, feeLevel: .regular)
             .asObservable()
@@ -254,7 +253,7 @@ class EthereumWalletServiceTests: XCTestCase {
 
         XCTAssertEqual(result.events, expectedEvents)
     }
-    
+
     func test_signing_error() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder()
@@ -266,7 +265,7 @@ class EthereumWalletServiceTests: XCTestCase {
 
         let transactionSignerMock = EthereumTransactionSignerMock()
         transactionSigner = transactionSignerMock
-        
+
         transactionSendingService = EthereumTransactionSendingService(
             with: bridge,
             client: client,
@@ -275,7 +274,7 @@ class EthereumWalletServiceTests: XCTestCase {
             transactionSigner: transactionSigner,
             transactionEncoder: transactionEncoder
         )
-        
+
         subject = EthereumWalletService(
             with: bridge,
             client: client,
@@ -285,62 +284,62 @@ class EthereumWalletServiceTests: XCTestCase {
             transactionSendingService: transactionSendingService,
             transactionValidationService: transactionValidationService
         )
-        
+
         let sendObservable: Observable<EthereumTransactionPublished> = subject
             .send(transaction: candidate)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumTransactionPublished> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumTransactionPublished>>] = Recorded.events(
             .error(200, EthereumTransactionSignerError.incorrectChainId)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
-        
+
         XCTAssertNotNil(transactionSignerMock.lastKeyPair)
         XCTAssertNotNil(transactionSignerMock.lastTransactionForSignature)
-        
+
         guard let lastKeyPair = transactionSignerMock.lastKeyPair else {
             XCTFail("Should have attempted to sign using the correct keyPair")
             return
         }
         XCTAssertEqual(lastKeyPair, MockEthereumWalletTestData.keyPair)
-        
+
         guard let lastTransactionForSignature = transactionSignerMock.lastTransactionForSignature else {
             XCTFail("Should have attempted to sign using the correct transaction")
             return
         }
         XCTAssertEqual(lastTransactionForSignature, expectedCandidateCosted)
     }
-    
+
     func test_failed_to_publish_transaction() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder()
             .with(value: 1)
             .build()!
-        
+
         client.pushTransactionValue = Single.error(EthereumAPIClientMockError.mockError)
-        
+
         let sendObservable: Observable<EthereumTransactionPublished> = subject
             .send(transaction: candidate)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumTransactionPublished> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumTransactionPublished>>] = Recorded.events(
             .error(200, EthereumAPIClientMockError.mockError)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
     }
-    
+
     func test_failed_to_record_transaction() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder()
@@ -349,7 +348,7 @@ class EthereumWalletServiceTests: XCTestCase {
         let expectedPublished = EthereumTransactionPublishedBuilder()
             .with(candidate: candidate)
             .build()!
-        
+
         client.pushTransactionValue = Single.just(EthereumPushTxResponse(txHash: expectedPublished.transactionHash))
         bridge.recordLastTransactionValue = Single.error(EthereumWalletBridgeMockError.mockError)
 
@@ -369,13 +368,13 @@ class EthereumWalletServiceTests: XCTestCase {
         XCTAssertEqual(result.events, expectedEvents)
         XCTAssertEqual(bridge.lastRecordedTransaction, expectedPublished)
     }
-    
+
     func test_failed_to_fetch_balance() throws {
         // Arrange
         let cryptoValue = CryptoValue.ether(major: "1.0")!
         let ethereumValue = try EthereumValue(crypto: cryptoValue)
-        let toAddress = EthereumKit.EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
-        
+        let toAddress = EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to)
+
         client.balanceDetailsValue = Single.error(EthereumWalletBridgeMockError.mockError)
 
         let buildObservable: Observable<EthereumTransactionCandidate> = subject
@@ -395,33 +394,13 @@ class EthereumWalletServiceTests: XCTestCase {
     }
 }
 
-extension EthereumTransactionPublished: Equatable {
-    public static func == (lhs: EthereumTransactionPublished, rhs: EthereumTransactionPublished) -> Bool {
-        lhs.transactionHash == rhs.transactionHash
-    }
-}
-
-extension EthereumTransactionFinalised: Equatable {
-    public static func == (lhs: EthereumTransactionFinalised, rhs: EthereumTransactionFinalised) -> Bool {
-        lhs.transactionHash == rhs.transactionHash
-            && lhs.rawTx == rhs.rawTx
-    }
-}
-
 extension EthereumTransactionCandidateCosted: Equatable {
     public static func == (lhs: EthereumTransactionCandidateCosted, rhs: EthereumTransactionCandidateCosted) -> Bool {
-        lhs.transaction.gasLimit == rhs.transaction.gasLimit
+        lhs.transaction.chainID == rhs.transaction.chainID
+            && lhs.transaction.nonce == rhs.transaction.nonce
             && lhs.transaction.gasPrice == rhs.transaction.gasPrice
-    }
-}
-
-class EthereumTransactionBuildingServiceMock: EthereumTransactionBuildingServiceAPI {
-    var lastAmount: EthereumValue?
-    var lastTo: EthereumKit.EthereumAddress?
-    var buildTransactionValue = Single.just(EthereumTransactionCandidateBuilder().build()!)
-    func buildTransaction(with amount: EthereumValue, to: EthereumKit.EthereumAddress, feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate> {
-        lastAmount = amount
-        lastTo = to
-        return buildTransactionValue
+            && lhs.transaction.gasLimit == rhs.transaction.gasLimit
+            && lhs.transaction.toAddress == rhs.transaction.toAddress
+            && lhs.transaction.privateKey == rhs.transaction.privateKey
     }
 }

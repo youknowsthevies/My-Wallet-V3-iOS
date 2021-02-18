@@ -7,7 +7,6 @@
 //
 
 import PlatformKit
-import web3swift
 
 public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
 
@@ -15,14 +14,15 @@ public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
     public let cryptoCurrency: CryptoCurrency = .ethereum
 
     public init(stringLiteral value: String) {
-        publicKey = Address.toChecksumAddress(value)!
+        publicKey = EthereumAddressValidator.toChecksumAddress(value)!
     }
 
     public var isValid: Bool {
-        web3swiftAddress.isValid
-    }
-
-    var web3swiftAddress: web3swift.Address {
-        web3swift.Address(publicKey)
+        do {
+            try EthereumAddressValidator.validate(address: publicKey)
+            return true
+        } catch {
+            return false
+        }
     }
 }

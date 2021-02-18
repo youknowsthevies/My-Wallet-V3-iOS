@@ -65,7 +65,7 @@ class DigitPadViewModelTests: XCTestCase {
         viewModel.reset(to: input)
         
         var expected = input
-        for _ in input.count + 1 {
+        for _ in 0..<(input.count + 1) {
             viewModel.backspaceButtonViewModel.tap()
             expected = String(expected.dropLast())
             XCTAssertEqual(viewModel.value, expected)

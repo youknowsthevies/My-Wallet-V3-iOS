@@ -8,9 +8,10 @@
 
 import Foundation
 
-// MARK: - Range
-
 public extension String {
+
+    // MARK: - Range
+
     func range(startingAt index: Int, length: Int) -> Range<String.Index>? {
         let range = NSRange(
             location: index,
@@ -30,9 +31,9 @@ public extension String {
         let end = index(startIndex, offsetBy: bounds.upperBound)
         return String(self[start..<end])
     }
-}
 
-public extension String {
+    // MARK: - Validation
+
     var isEmail: Bool {
         let types: NSTextCheckingResult.CheckingType = [.link]
         guard let detector = try? NSDataDetector(types: types.rawValue) else {
@@ -45,30 +46,41 @@ public extension String {
         }
         return validated
     }
-}
 
-public extension String {
-    
-    func count(of substring: String) -> Int {
-        let components = self.components(separatedBy: substring)
-        return components.count - 1
+    var isAlphanumeric: Bool {
+        guard !isEmpty else {
+            return false
+        }
+        guard rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) == nil else {
+            return false
+        }
+        return true
     }
-    
+
+    // MARK: - URL
+
     /// Returns query arguments from a string in URL format
     var queryArgs: [String: String] {
         var queryArgs = [String: String]()
         let components = self.components(separatedBy: "&")
         components.forEach {
             let paramValueArray = $0.components(separatedBy: "=")
-            
+
             if paramValueArray.count == 2,
-                let param = paramValueArray[0].removingPercentEncoding,
-                let value = paramValueArray[1].removingPercentEncoding {
+               let param = paramValueArray[0].removingPercentEncoding,
+               let value = paramValueArray[1].removingPercentEncoding {
                 queryArgs[param] = value
             }
         }
-        
+
         return queryArgs
+    }
+
+    // MARK: - Other
+
+    func count(of substring: String) -> Int {
+        let components = self.components(separatedBy: substring)
+        return components.count - 1
     }
     
     /// Removes last char safely
@@ -86,22 +98,10 @@ public extension String {
     var trimmingWhitespaces: String {
         trimmingCharacters(in: .whitespaces)
     }
-}
 
-extension String {
-    public var isAlphanumeric: Bool {
-        guard !isEmpty else {
-            return false
-        }
-        guard rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) == nil else {
-            return false
-        }
-        return true
-    }
-}
+    // MARK: - JS
 
-extension String {
-    public func escapedForJS(wrapInQuotes: Bool = false) -> String {
+    func escapedForJS(wrapInQuotes: Bool = false) -> String {
         var output = self
         let insensitive = NSString.CompareOptions.caseInsensitive
         output = output
@@ -114,5 +114,22 @@ extension String {
             .replacingOccurrences(of: "\r", with: "\\r", options: insensitive)     // Carriage return
             .replacingOccurrences(of: "\t", with: "\\t", options: insensitive)     // Horizontal tab
         return wrapInQuotes ? "\"\(output)\"" : output
+    }
+
+    // MARK: - Hex
+
+    /// Returns true if string starts with "0x"
+    var hasHexPrefix: Bool {
+        hasPrefix("0x")
+    }
+
+    /// Returns string with "0x" prefix (if !isHex)
+    var withHex: String {
+        hasHexPrefix ? self : "0x" + self
+    }
+
+    /// Returns string without "0x" prefix (if isHex)
+    var withoutHex: String {
+        hasHexPrefix ? String(self[index(startIndex, offsetBy: 2)...]) : self
     }
 }

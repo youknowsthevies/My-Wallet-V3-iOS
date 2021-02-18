@@ -7,43 +7,25 @@
 //
 
 import PlatformKit
-import RxSwift
-import web3swift
+import WalletCore
 
-public class EthereumKeyPairDeriver: EthereumKeyPairDeriverAPI {
-    static let shared = EthereumKeyPairDeriver()
-    
+public typealias AnyEthereumKeyPairDeriver = AnyKeyPairDeriver<EthereumKeyPair, EthereumKeyDerivationInput>
+
+public struct EthereumKeyPairDeriver: KeyPairDeriverAPI {
     public func derive(input: EthereumKeyDerivationInput) -> Result<EthereumKeyPair, Error> {
-        let mnemonic = input.mnemonic
-        let password = input.password
-        let mnemonics: Mnemonics
-        let keystore: BIP32Keystore
-        let privateKey: Data
-        let publicKey: Data
-        let accountAddress: String
-        do {
-            mnemonics = try Mnemonics(mnemonic)
-            keystore = try BIP32Keystore(
-                mnemonics: mnemonics,
-                password: password,
-                prefixPath: HDNode.defaultPathMetamaskPrefix
-            )
-            let address = keystore.addresses[0]
-            privateKey = try keystore.UNSAFE_getPrivateKeyData(password: password, account: address)
-            publicKey = try Web3Utils.privateToPublic(privateKey, compressed: true)
-            accountAddress = try Web3Utils.publicToAddressString(publicKey)
-        } catch {
-            return .failure(error)
-        }
-        return .success(
-            EthereumKeyPair(
-                accountID: accountAddress,
-                privateKey: EthereumPrivateKey(
-                    mnemonic: mnemonic,
-                    password: password,
-                    data: privateKey
-                )
-            )
+        let ethereumCoinType = CoinType.ethereum
+        // Hardcoding BIP39 passphrase as empty string as it is currently not  supported.
+        let hdWallet = HDWallet(mnemonic: input.mnemonic, passphrase: "")
+        let privateKey = hdWallet.getKeyForCoin(coin: ethereumCoinType)
+        let publicKey = hdWallet.getAddressForCoin(coin: ethereumCoinType)
+        let ethereumPrivateKey = EthereumPrivateKey(
+            mnemonic: input.mnemonic,
+            data: privateKey.data
         )
+        let keyPair = EthereumKeyPair(
+            accountID: publicKey,
+            privateKey: ethereumPrivateKey
+        )
+        return .success(keyPair)
     }
 }

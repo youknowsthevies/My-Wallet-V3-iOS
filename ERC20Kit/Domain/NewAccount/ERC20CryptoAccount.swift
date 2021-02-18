@@ -8,14 +8,11 @@
 
 import DIKit
 import EthereumKit
-import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
 
 final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
-    private typealias LocalizedString = LocalizationConstants.Account
-    
     let id: String
     let label: String
     let asset: CryptoCurrency = Token.assetType

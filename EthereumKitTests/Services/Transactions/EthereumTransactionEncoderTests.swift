@@ -9,70 +9,52 @@
 import BigInt
 @testable import EthereumKit
 @testable import PlatformKit
-import web3swift
+import ToolKit
 import XCTest
 
 class EthereumTransactionEncoderTests: XCTestCase {
-    
-    var subject: EthereumTransactionEncoder!
 
+    var signer: EthereumTransactionSigner!
+    var builder: EthereumTransactionBuilder!
+    var subject: EthereumTransactionEncoder!
+    
     override func setUp() {
         super.setUp()
-        
+        signer = EthereumTransactionSigner()
+        builder = EthereumTransactionBuilder()
         subject = EthereumTransactionEncoder()
     }
-
+    
     override func tearDown() {
         subject = nil
-        
+        signer = nil
+        builder = nil
         super.tearDown()
     }
-
+    
     func test_encode() throws {
-        let password = MockEthereumWalletTestData.password
-        let mnemonicsString = MockEthereumWalletTestData.mnemonic
-        let expectedAccountString = MockEthereumWalletTestData.account
-        let expectedRawTx = "0xf867091782520894353535353535353535353535353535353535353588016345785d8a0000801ca0b8f014137ec096f9c6500d018e55a5963c2af244e4248d2bf5f4b7e303865a72a04d7d0235e909b89f3efcd67f6687b1953e1f0ca564b55b2fee57d3c80e1e9e35"
+        let expectedRawTx = "0xf867091782520894353535353535353535353535353535353535353588016345785d8a00008026a0b51971506a39c26b1c584df3c9ccc15fb1f890b023c5a5861b01d0d8e61b9249a00d29b3a0a38119ca1fe971d270b32a31bec2037466c2d506c194b7924996a3e1"
         
-        let keyPair = EthereumKeyPair(
-            accountID: expectedAccountString,
-            privateKey: EthereumPrivateKey(
-                mnemonic: mnemonicsString,
-                password: password,
-                data: MockEthereumWalletTestData.privateKeyData
-            )
-        )
-        
-        let account = web3swift.Address(expectedAccountString)
-        let mnemonics = try Mnemonics(keyPair.privateKey.mnemonic)
-        let keystore = try BIP32Keystore(
-            mnemonics: mnemonics,
-            password: keyPair.privateKey.password,
-            prefixPath: HDNode.defaultPathMetamaskPrefix
-        )
-        
-        var transaction =  web3swift.EthereumTransaction(
-            nonce: BigUInt(9),
-            gasPrice: BigUInt(23),
-            gasLimit: BigUInt(21000),
-            to: Address("0x3535353535353535353535353535353535353535"),
+        let keyPair = MockEthereumWalletTestData.keyPair
+        let candidate = EthereumTransactionCandidate(
+            to: "0x3535353535353535353535353535353535353535",
+            gasPrice: 23,
+            gasLimit: 21_000,
             value: BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
-            data: Data()
+            data: nil
         )
-        
-        try Web3Signer.signTX(transaction: &transaction, keystore: keystore, account: account, password: password)
-        
-        let signedTransaction = try EthereumTransactionCandidateSigned(transaction: transaction)
-
-        guard case .success(let finalisedTransaction) = subject.encode(signed: signedTransaction) else {
+        guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
+            XCTFail("Transaction building failed")
+            return
+        }
+        guard case let .success(signed) = signer.sign(transaction: costed, keyPair: keyPair) else {
+            XCTFail("Transaction signing failed")
+            return
+        }
+        guard case let .success(finalised) = subject.encode(signed: signed) else {
             XCTFail("Transaction encoding failed")
             return
         }
-        
-        XCTAssertEqual(finalisedTransaction.rawTx, expectedRawTx)
-        
-        let transactionData = Data.fromHex(finalisedTransaction.rawTx)!
-        let rawTransaction = EthereumTransaction.fromRaw(transactionData)
-        XCTAssertNotNil(rawTransaction)
+        XCTAssertEqual(finalised.rawTransaction, expectedRawTx.lowercased())
     }
 }

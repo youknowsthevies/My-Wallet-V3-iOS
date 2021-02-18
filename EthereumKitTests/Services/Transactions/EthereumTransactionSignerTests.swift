@@ -9,118 +9,45 @@
 import BigInt
 @testable import EthereumKit
 @testable import PlatformKit
-import web3swift
 import XCTest
 
 class EthereumTransactionSignerTests: XCTestCase {
-    
+
     var subject: EthereumTransactionSigner!
+    var builder: EthereumTransactionBuilder!
 
     override func setUp() {
         super.setUp()
-        
+        builder = EthereumTransactionBuilder()
         subject = EthereumTransactionSigner()
     }
 
     override func tearDown() {
         subject = nil
-        
+        builder = nil
         super.tearDown()
     }
 
-    func test_sign_transaction_empty_password() throws {
-
-        func deriveKeyPair() throws -> EthereumKeyPair {
-            let derivationInput = EthereumKeyDerivationInput(
-                mnemonic: MockEthereumWalletTestData.mnemonic,
-                password: ""
-            )
-            let deriver = EthereumKeyPairDeriver()
-            let result = deriver.derive(input: derivationInput)
-            return try result.get()
-        }
-
-        let keyPair = try deriveKeyPair()
-        let publicKey = try Web3Utils.privateToPublic(keyPair.privateKey.data, compressed: true)
-        let accountAddress = try Web3Utils.publicToAddressString(publicKey)
-        XCTAssertEqual(accountAddress, MockEthereumWalletTestData.account)
-
-        let toAddress = EthereumKit.EthereumAddress.init(stringLiteral: "0x3535353535353535353535353535353535353535")
-        let amount: String = "0.1"
-        let nonce: BigUInt = 9
-        var web3transaction: web3swift.EthereumTransaction = EthereumTransaction(
-            nonce: nonce,
-            gasPrice: BigUInt(23),
-            gasLimit: BigUInt(21000),
-            to: Address(toAddress.publicKey),
-            value: BigUInt(amount, decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
-            data: Data()
-        )
-        web3transaction.UNSAFE_setChainID(NetworkId.mainnet)
-
-        // swiftlint:disable force_try
-        let costedTransaction = try! EthereumTransactionCandidateCosted(
-            transaction: web3transaction
-        )
-        // swiftlint:enable force_try
-
-        let result = subject
-            .sign(
-                transaction: costedTransaction,
-                nonce: nonce,
-                keyPair: keyPair
-            )
-
-        XCTAssertNoThrow(try result.get())
-
-        guard case .success(let signedTransaction) = result else {
-            XCTFail("Tx signing should succeed")
-            return
-        }
-
-        XCTAssertEqual(signedTransaction.transaction.v, 38)
-        XCTAssertEqual(signedTransaction.transaction.sender, web3swift.Address(accountAddress))
-        XCTAssertEqual(signedTransaction.transaction.intrinsicChainID, NetworkId.mainnet.rawValue)
-    }
-
     func test_sign_transaction() throws {
+        let amount = BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let toAddress: EthereumAddress = "0x3535353535353535353535353535353535353535"
         let keyPair = MockEthereumWalletTestData.keyPair
-        let account = MockEthereumWalletTestData.account
-        let toAddress = EthereumKit.EthereumAddress.init(stringLiteral: "0x3535353535353535353535353535353535353535")
-        let amount: String = "0.1"
-        let nonce: BigUInt = 9
-        var web3transaction: web3swift.EthereumTransaction = EthereumTransaction(
-            nonce: nonce,
-            gasPrice: BigUInt(23),
-            gasLimit: BigUInt(21000),
-            to: Address(toAddress.publicKey),
-            value: BigUInt(amount, decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
+        let candidate = EthereumTransactionCandidate(
+            to: toAddress,
+            gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
+            gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
+            value: amount,
             data: Data()
         )
-        web3transaction.UNSAFE_setChainID(NetworkId.mainnet)
-        
-        // swiftlint:disable force_try
-        let costedTransaction = try! EthereumTransactionCandidateCosted(
-            transaction: web3transaction
-        )
-        // swiftlint:enable force_try
-        
-        let result = subject
-            .sign(
-                transaction: costedTransaction,
-                nonce: nonce,
-                keyPair: keyPair
-            )
-        
-        XCTAssertNoThrow(try result.get())
-        
-        guard case .success(let signedTransaction) = result else {
-            XCTFail("Tx signing should succeed")
+        guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
+            XCTFail("Transaction building failed")
             return
         }
-        
-        XCTAssertEqual(signedTransaction.transaction.v, 38)
-        XCTAssertEqual(signedTransaction.transaction.sender, web3swift.Address(account))
-        XCTAssertEqual(signedTransaction.transaction.intrinsicChainID, NetworkId.mainnet.rawValue)
+        guard case let .success(signed) = subject.sign(transaction: costed, keyPair: keyPair) else {
+            XCTFail("Transaction signing failed")
+            return
+        }
+        let rawTransaction = "0xf86c0985028fa6ae0082520894353535353535353535353535353535353535353588016345785d8a00008026a0521f82fef48c80ca3245cc1d2be289f42f5119613fc1eea8c8e9e673d48c7b8ba017cfd25094a4f81e2c5f766e76686bc9270f22d24e8998fa1549d0c9a3d5f786"
+        XCTAssertEqual(signed.encodedTransaction, Data(hexString: rawTransaction))
     }
 }

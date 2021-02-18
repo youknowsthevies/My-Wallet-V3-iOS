@@ -10,14 +10,14 @@ import BigInt
 import EthereumKit
 
 class EthereumTransactionCandidateBuilder {
-    var to: EthereumKit.EthereumAddress? = EthereumKit.EthereumAddress(stringLiteral: "0x3535353535353535353535353535353535353535")
+    var to: EthereumAddress? = EthereumAddress(stringLiteral: "0x3535353535353535353535353535353535353535")
     var value: BigUInt? = MockEthereumWalletTestData.Transaction.value
     var gasPrice: BigUInt? = MockEthereumWalletTestData.Transaction.gasPrice
     var gasLimit: BigUInt? = MockEthereumWalletTestData.Transaction.gasLimit
     var data: Data?
 
     func with(toAccountAddress: String) -> Self {
-        self.to = EthereumKit.EthereumAddress(stringLiteral: toAccountAddress)
+        self.to = EthereumAddress(stringLiteral: toAccountAddress)
         return self
     }
 
