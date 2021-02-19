@@ -21,6 +21,11 @@ if [ -e "$WALLETJS" ]; then
 		echo "$WALLETJS SHA256 match. Skipping..."
 		exit 0
 	else
+		echo "$WALLETJS SHA256 doesn't match. Cleaning..."
+		cd ./Submodules/My-Wallet-V3/
+		git clean -xfd
+		git reset --hard
+		cd ../..
 		echo "$WALLETJS SHA256 doesn't match. Building..."
 	fi
 else
@@ -45,3 +50,13 @@ echo "run scripts/install-js.sh"
 sh scripts/install-js.sh
 echo "run scripts/build-js.sh"
 sh scripts/build-js.sh
+
+# Sanity Check
+shasum -a 256 -c ./my-wallet.js.sha256
+if [ $? -eq 0 ]; then
+	echo "$WALLETJS SHA256 match. Good to go..."
+	exit 0
+else
+	echo "$WALLETJS SHA256 doesn't match. Sanity Check failed..."
+	exit 1
+fi
