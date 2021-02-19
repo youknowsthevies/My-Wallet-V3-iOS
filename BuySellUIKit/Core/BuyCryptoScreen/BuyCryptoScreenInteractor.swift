@@ -230,6 +230,18 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     }
                     .asObservable()
             }
+            .do(onError: { [effectRelay] error in
+                if effectRelay.value == .none {
+                    effectRelay.accept(.failure)
+                }
+            })
+            .catchError { error -> Observable<AmountTranslationInteractor.State> in
+                .just(
+                    AmountTranslationInteractor.State.error(
+                        message: error.localizedDescription
+                    )
+                )
+            }
             .bindAndCatch(to: amountTranslationInteractor.stateRelay)
             .disposed(by: disposeBag)
         
@@ -323,7 +335,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 
                 return .inBounds(data: data, upperLimit: pair.maxFiatValue)
             }
-            // Handle posssible errors: it is unlikely to get here unless
+            // Handle possible errors: it is unlikely to get here unless
             // there was a connection / BE error
             .catchError { _ in
                 fiatCurrencyService.fiatCurrencyObservable
