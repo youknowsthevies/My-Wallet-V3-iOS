@@ -55,7 +55,7 @@ extension ObservableType {
         function: String = #function
     ) -> Disposable {
         self.do(onError: { error in
-            fatalError("Binding error: \(String(describing: error).prefix(150)). file: \(file), line: \(line), function: \(function)")
+            fatalError("Binding error. file: \(file), line: \(line), function: \(function), error: \(error).")
         })
         .bind(onNext: onNext)
     }
