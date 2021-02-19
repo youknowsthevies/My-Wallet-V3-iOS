@@ -6,8 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 /// A service that is responsible for the auto pairing process
 public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
@@ -25,17 +27,13 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
     public init(repository: WalletRepositoryAPI,
                 walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
                 walletPairingClient: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
-                jsContextProvider: JSContextProviderAPI,
-                recorder: Recording) {
+                walletCryptoService: WalletCryptoServiceAPI = resolve()) {
         self.walletPairingClient = walletPairingClient
-        walletPayloadService = WalletPayloadService(
+        self.walletPayloadService = WalletPayloadService(
             client: walletPayloadClient,
             repository: repository
         )
-        walletCryptoService = WalletCryptoService(
-            contextProvider: jsContextProvider,
-            recorder: recorder
-        )
+        self.walletCryptoService = walletCryptoService
     }
     
     /// Maps a QR pairing code of a wallet into its password, retrieve and cache the wallet data.

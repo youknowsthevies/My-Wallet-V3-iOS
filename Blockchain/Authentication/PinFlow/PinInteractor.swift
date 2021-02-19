@@ -10,6 +10,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 /// Interactor for the pin. This component interacts with the Blockchain API and the local
 /// pin data store. When the pin is updated, the pin is also stored on the keychain.

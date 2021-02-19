@@ -9,6 +9,7 @@
 import DIKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 public final class PinLoginService: PinLoginServiceAPI {
     
@@ -34,18 +35,14 @@ public final class PinLoginService: PinLoginServiceAPI {
     
     // MARK: - Setup
     
-    public init(jsContextProvider: JSContextProviderAPI = resolve(),
-                settings: AppSettingsAuthenticating,
+    public init(settings: AppSettingsAuthenticating,
                 service: WalletPayloadServiceAPI,
                 walletRepository: PasscodeRepositoryAPI,
-                recoder: Recording = resolve(tag: "CrashlyticsRecorder")) {
+                walletCryptoService: WalletCryptoServiceAPI = resolve()) {
         self.service = service
         self.settings = settings
         self.walletRepository = walletRepository
-        self.walletCryptoService = WalletCryptoService(
-            contextProvider: jsContextProvider,
-            recorder: recoder
-        )
+        self.walletCryptoService = walletCryptoService
     }
     
     public func password(from pinDecryptionKey: String) -> Single<String> {

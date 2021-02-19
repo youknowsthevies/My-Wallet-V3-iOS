@@ -148,8 +148,6 @@ extension DependencyContainer {
 
         factory { NSUbiquitousKeyValueStore.default as UbiquitousKeyValueStore }
 
-        factory { WalletCryptoService() as WalletCryptoServiceAPI }
-
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
 
         factory { PriceService() as PriceServiceAPI }

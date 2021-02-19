@@ -12,6 +12,7 @@ import PlatformKit
 import RxBlocking
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 import XCTest
 
 class MockRecorder: Recording {
@@ -35,6 +36,7 @@ class WalletCryptoServiceTests: XCTestCase {
         // Force JS initialization before hand
         let container = modules {
             DependencyContainer.platformKit;
+            DependencyContainer.walletPayloadKit;
             DependencyContainer.blockchain;
         }
         let walletManager: WalletManager = container.resolve()
