@@ -74,27 +74,31 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     // MARK: Public Methods
 
     private func accounts(for assetType: CryptoCurrency, fromCache: Bool) -> Single<[AssetAccount]> {
-        guard wallet.isInitialized() else {
-            return .just([])
-        }
+        Single.just([])
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap(weak: self) { (self, _) -> Single<[AssetAccount]> in
+                guard self.wallet.isInitialized() else {
+                    return .just([])
+                }
 
-        switch assetType {
-        case .algorand:
-            return .just([])
-        case .pax:
-            return paxAccount(fromCache: fromCache)
-        case .ethereum:
-            return ethereumAccount(fromCache: fromCache)
-        case .stellar:
-            return stellarAccount(fromCache: fromCache)
-        case .bitcoin,
-             .bitcoinCash:
-            return legacyAddress(assetType: assetType, fromCache: fromCache)
-        case .tether:
-            return tetherAccount(fromCache: fromCache)
-        case .wDGLD:
-            return wdgldAccount(fromCache: fromCache)
-        }
+                switch assetType {
+                case .algorand:
+                    return .just([])
+                case .pax:
+                    return self.paxAccount(fromCache: fromCache)
+                case .ethereum:
+                    return self.ethereumAccount(fromCache: fromCache)
+                case .stellar:
+                    return self.stellarAccount(fromCache: fromCache)
+                case .bitcoin,
+                     .bitcoinCash:
+                    return self.legacyAddress(assetType: assetType, fromCache: fromCache)
+                case .tether:
+                    return self.tetherAccount(fromCache: fromCache)
+                case .wDGLD:
+                    return self.wdgldAccount(fromCache: fromCache)
+                }
+            }
     }
 
     private func fetchAccounts() -> Single<[AssetAccount]> {
