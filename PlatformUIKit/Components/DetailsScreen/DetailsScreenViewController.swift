@@ -76,7 +76,7 @@ public final class DetailsScreenViewController: BaseTableViewController {
             .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.contentBottomConstraint.constant = state.payload.height - self.view.safeAreaInsets.bottom
+                    self.contentBottomConstraint.constant = -(state.payload.height + self.view.safeAreaInsets.bottom)
                 case .hidden:
                     self.contentBottomConstraint.constant = 0
                 }
