@@ -6,6 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -25,7 +26,9 @@ final class TargetSelectionPageService: TargetSelectionPageServiceAPI {
 
     let state: Driver<TargetSelectionPageInteractor.State>
 
-    init(accountProvider: SourceAndTargetAccountProviding) {
+    init(accountProvider: SourceAndTargetAccountProviding,
+         action: AssetAction,
+         coincore: Coincore = resolve()) {
         let sourceItem = accountProvider.sourceAccount
             .map { account -> [TargetSelectionPageCellItem.Interactor] in
                 guard let account = account else {
@@ -33,20 +36,26 @@ final class TargetSelectionPageService: TargetSelectionPageServiceAPI {
                 }
                 return [.singleAccount(account, AccountAssetBalanceViewInteractor(account: account))]
             }
-
-        let emptySelectionButton = Self.provideEmptySelectionButonViewModel()
-
-        let destinationItem = accountProvider.destinationAccount
-            .map { (target) -> [TargetSelectionPageCellItem.Interactor] in
-                guard let target = target else {
-                    return [.emptyDestination(emptySelectionButton)]
+        
+        let destinationItem = accountProvider
+            .sourceAccount
+            .map { account in
+                guard let crypto = account else {
+                    impossible()
                 }
-                if let target = target as? CryptoAccount {
-                    return [.singleAccount(target, AccountAssetBalanceViewInteractor(account: target))]
-                }
-                return [.emptyDestination(SelectionButtonViewModel())]
+                return crypto
             }
-
+            .flatMap { (source) -> Single<[SingleAccount]> in
+                coincore.getTransactionTargets(sourceAccount: source, action: action)
+            }
+            .map { accounts -> [TargetSelectionPageCellItem.Interactor] in
+                let cryptoAccounts = accounts.compactMap { $0 as? CryptoAccount }
+                return cryptoAccounts.map { crypto in
+                    .singleAccount(crypto, AccountAssetBalanceViewInteractor(account: crypto))
+                }
+            }
+            .asObservable()
+            
         state = Observable.combineLatest(sourceItem.asObservable(), destinationItem)
             .map { (sourceItems, destinationItems) -> TargetSelectionPageInteractor.State in
                 State(sourceInteractors: sourceItems, destinationInteractors: destinationItems, actionButtonEnabled: false)

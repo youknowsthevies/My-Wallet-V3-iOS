@@ -34,7 +34,12 @@ internal struct BadgeImageAttributes {
 public struct TransactionDescriptorViewModel {
     public var transactionTypeBadgeImageViewModel: Driver<BadgeImageViewModel> {
         guard adjustActionIconColor else {
-            return Driver.just(provideBadgeImageViewModel(accentColor: .primaryButton, backgroundColor: .lightBlueBackground))
+            return Driver.just(
+                provideBadgeImageViewModel(
+                    accentColor: .primaryButton,
+                    backgroundColor: .lightBlueBackground
+                )
+            )
         }
         return fromAccountRelay
             .compactMap(\.account)
@@ -43,11 +48,10 @@ public struct TransactionDescriptorViewModel {
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
             .map { (attributes) -> BadgeImageViewModel in
-                if attributes.isFiat {
-                    return provideBadgeImageViewModel(accentColor: attributes.brandColor,
-                                                      backgroundColor: attributes.brandColor.withAlphaComponent(0.15))
-                }
-                return provideBadgeImageViewModel(accentColor: .primaryButton, backgroundColor: .lightBlueBackground)
+                provideBadgeImageViewModel(
+                    accentColor: attributes.brandColor,
+                    backgroundColor: attributes.brandColor.withAlphaComponent(0.15)
+                )
             }
     }
     

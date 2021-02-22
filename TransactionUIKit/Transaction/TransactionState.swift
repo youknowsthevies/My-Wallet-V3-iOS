@@ -117,6 +117,8 @@ struct TransactionState: Equatable {
         return .zero(currency: currencyType)
     }
 
+    /// The `MoneyValue` representing the amount received
+    /// or the amount that is sent to the given destination.
     func moneyValueFromDestination() throws -> MoneyValue {
         guard let destination = destination as? SingleAccount else {
             throw TransactionUIKitError.unexpectedDestinationAccountType

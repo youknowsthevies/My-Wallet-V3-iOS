@@ -13,6 +13,7 @@ extension LocalizationConstants {
         public enum Confirmation {
             public enum Error { }
         }
+        public enum Send { }
         public enum Swap {
             public enum KYC { }
             public enum Completion {
@@ -99,9 +100,36 @@ public extension LocalizationConstants.Transaction {
         "New Swap",
         comment: "New Swap"
     )
+    static let from = NSLocalizedString(
+        "From",
+        comment: "From"
+    )
+    static let to = NSLocalizedString(
+        "To",
+        comment: "To"
+    )
+    static let orSelectAWallet = NSLocalizedString(
+        "or Select a Wallet",
+        comment: "or Select a Wallet"
+    )
+}
+
+public extension LocalizationConstants.Transaction.Send {
     static let send = NSLocalizedString(
         "Send",
         comment: "Send"
+    )
+    static let sendMax = NSLocalizedString(
+        "Send Max",
+        comment: "Send Max"
+    )
+    static let from = NSLocalizedString(
+        "From",
+        comment: "From"
+    )
+    static let to = NSLocalizedString(
+        "To",
+        comment: "To"
     )
 }
 

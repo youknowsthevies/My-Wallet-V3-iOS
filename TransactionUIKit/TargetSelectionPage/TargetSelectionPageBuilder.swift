@@ -58,7 +58,10 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
             action: action,
             selectionPageReducer: reducer
         )
-        let selectionPageService = TargetSelectionPageService(accountProvider: accountProvider)
+        let selectionPageService = TargetSelectionPageService(
+            accountProvider: accountProvider,
+            action: action
+        )
         let interactor = TargetSelectionPageInteractor(
             presenter: presenter,
             targetSelectionService: selectionPageService,

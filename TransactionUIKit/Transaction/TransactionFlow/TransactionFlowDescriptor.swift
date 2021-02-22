@@ -31,19 +31,52 @@ final class TransactionFlowDescriptor {
         }
 
         static func headerTitle(state: TransactionState) -> String {
-            let prefix = "\(LocalizedString.Swap.swap): "
-            guard let moneyValue = try? state.moneyValueFromSource() else {
-                return prefix
+            switch state.action {
+            case .swap:
+                let prefix = "\(LocalizedString.Swap.swap): "
+                guard let moneyValue = try? state.moneyValueFromSource() else {
+                    return prefix
+                }
+                return prefix + formatForHeader(moneyValue: moneyValue)
+            case .send:
+                let prefix = "\(LocalizedString.Send.from): "
+                guard let source = state.source else {
+                    return prefix
+                }
+                return prefix + source.label
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                unimplemented()
             }
-            return prefix + formatForHeader(moneyValue: moneyValue)
         }
 
         static func headerSubtitle(state: TransactionState) -> String {
-            let prefix = "\(LocalizedString.receive): "
-            guard let moneyValue = try? state.moneyValueFromDestination() else {
-                return prefix
+            switch state.action {
+            case .swap:
+                let prefix = "\(LocalizedString.receive): "
+                guard let moneyValue = try? state.moneyValueFromDestination() else {
+                    return prefix
+                }
+                return prefix + formatForHeader(moneyValue: moneyValue)
+            case .send:
+                let prefix = "\(LocalizedString.Send.to): "
+                guard let destination = state.destination else {
+                    return prefix
+                }
+                guard let account = destination as? BlockchainAccount else {
+                    return prefix
+                }
+                return prefix + account.label
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                unimplemented()
             }
-            return prefix + formatForHeader(moneyValue: moneyValue)
         }
     }
 
@@ -111,7 +144,7 @@ final class TransactionFlowDescriptor {
             case .swap:
                 return LocalizedString.newSwap
             case .send:
-                return LocalizedString.send
+                return LocalizedString.Send.send
             case .deposit,
                  .receive,
                  .sell,
@@ -124,6 +157,21 @@ final class TransactionFlowDescriptor {
 
     static let availableBalanceTitle = LocalizedString.available
     static let maxButtonTitle = LocalizedString.Swap.swapMax
+    
+    static func maxButtonTitle(action: AssetAction) -> String {
+        switch action {
+        case .swap:
+            return LocalizedString.Swap.swapMax
+        case .send:
+            return LocalizedString.Send.sendMax
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            unimplemented()
+        }
+    }
 
     static func confirmDisclaimerVisibility(action: AssetAction) -> Bool {
         switch action {

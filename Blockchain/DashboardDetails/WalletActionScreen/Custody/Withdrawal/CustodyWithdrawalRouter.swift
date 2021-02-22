@@ -17,6 +17,7 @@ protocol CustodyWithdrawalRouterAPI: AnyObject {
     func previous()
     func start(with currency: CryptoCurrency)
     var completionRelay: PublishRelay<Void> { get }
+    var internalSendRelay: PublishRelay<Void> { get }
 }
 
 final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
@@ -24,17 +25,21 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     // MARK: - `Router` Properties
     
     let completionRelay = PublishRelay<Void>()
+    let internalSendRelay = PublishRelay<Void>()
     
     private var stateService: CustodyWithdrawalStateService!
     private let dataProviding: DataProviding
     private let navigationRouter: NavigationRouterAPI
     private let webViewService: WebViewServiceAPI
+    private let internalFeatureService: InternalFeatureFlagServiceAPI
     private var currency: CryptoCurrency!
     private let disposeBag = DisposeBag()
     
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          dataProviding: DataProviding = DataProvider.default,
-         webViewService: WebViewServiceAPI = resolve()) {
+         webViewService: WebViewServiceAPI = resolve(),
+         internalFeatureService: InternalFeatureFlagServiceAPI = resolve()) {
+        self.internalFeatureService = internalFeatureService
         self.dataProviding = dataProviding
         self.navigationRouter = navigationRouter
         self.webViewService = webViewService
@@ -80,21 +85,25 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     }
     
     private func showWithdrawalScreen() {
-        let interactor = CustodyWithdrawalScreenInteractor(
-            currency: currency,
-            balanceFetching: dataProviding.balance[currency.currency],
-            accountRepository: AssetAccountRepository.shared
-        )
-        let presenter = CustodyWithdrawalScreenPresenter(
-            interactor: interactor,
-            currency: currency,
-            stateService: stateService
-        )
-        let controller = CustodyWithdrawalViewController(presenter: presenter)
-        if #available(iOS 13.0, *) {
-            controller.isModalInPresentation = true
+        if internalFeatureService.isEnabled(.sendP2) {
+            internalSendRelay.accept(())
+        } else {
+            let interactor = CustodyWithdrawalScreenInteractor(
+                currency: currency,
+                balanceFetching: dataProviding.balance[currency.currency],
+                accountRepository: AssetAccountRepository.shared
+            )
+            let presenter = CustodyWithdrawalScreenPresenter(
+                interactor: interactor,
+                currency: currency,
+                stateService: stateService
+            )
+            let controller = CustodyWithdrawalViewController(presenter: presenter)
+            if #available(iOS 13.0, *) {
+                controller.isModalInPresentation = true
+            }
+            navigationRouter.present(viewController: controller, using: .modalOverTopMost)
         }
-        navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
     private func showSummaryScreen() {

@@ -11,6 +11,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 /// Types adopting this should be able to provide a stream of presentable state of type `TargetSelectionPagePresenter.State` which is used by `TargetSelectionPagePresentable` that presents the neccessary sections define in the state.
 protocol TargetSelectionPageReducerAPI {
@@ -40,7 +41,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             }
             .flatMap { [weak self] items -> Driver<TargetSelectionPageSectionModel> in
                 guard let self = self else { return .empty() }
-                return .just(.source(header: self.provideSourceSectionHeader(), items: items))
+                return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
 
         let destinationSections = interactorState.map(\.destinationInteractors)
@@ -51,7 +52,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             }
             .flatMap { [weak self] items -> Driver<TargetSelectionPageSectionModel> in
                 guard let self = self else { return .empty() }
-                return .just(.destination(header: self.provideDestinationSectionHeader(), items: items))
+                return .just(.destination(header: self.provideDestinationSectionHeader(action: action), items: items))
             }
 
         let navigationModel = self.navigationModel
@@ -68,24 +69,58 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
 
     // MARK: - Static methods
 
-    private func provideSourceSectionHeader() -> TargetSelectionHeaderBuilder {
-        TargetSelectionHeaderBuilder(
-            headerType: .titledSection(
-                .init(
-                    title: LocalizationConstants.Transaction.Swap.newSwapDisclaimer,
-                    sectionTitle: LocalizationConstants.Transaction.Swap.swap
+    private func provideSourceSectionHeader(for action: AssetAction) -> TargetSelectionHeaderBuilder {
+        switch action {
+        case .swap:
+            return TargetSelectionHeaderBuilder(
+                headerType: .titledSection(
+                    .init(
+                        title: LocalizationConstants.Transaction.Swap.newSwapDisclaimer,
+                        sectionTitle: LocalizationConstants.Transaction.Swap.swap
+                    )
                 )
             )
-        )
+        case .send:
+            return TargetSelectionHeaderBuilder(
+                headerType: .section(
+                    .init(
+                        sectionTitle: LocalizationConstants.Transaction.from
+                    )
+                )
+            )
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            unimplemented()
+        }
     }
 
-    private func provideDestinationSectionHeader() -> TargetSelectionHeaderBuilder {
-        TargetSelectionHeaderBuilder(
-            headerType: .section(
-                .init(
-                    sectionTitle: LocalizationConstants.Transaction.receive
+    private func provideDestinationSectionHeader(action: AssetAction) -> TargetSelectionHeaderBuilder {
+        switch action {
+        case .swap:
+            return TargetSelectionHeaderBuilder(
+                headerType: .section(
+                    .init(
+                        sectionTitle: LocalizationConstants.Transaction.receive
+                    )
                 )
             )
-        )
+        case .send:
+            return TargetSelectionHeaderBuilder(
+                headerType: .section(
+                    .init(
+                        sectionTitle: LocalizationConstants.Transaction.orSelectAWallet
+                    )
+                )
+            )
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            unimplemented()
+        }
     }
 }

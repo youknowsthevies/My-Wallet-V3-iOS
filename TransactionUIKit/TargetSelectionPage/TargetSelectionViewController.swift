@@ -37,6 +37,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     private lazy var dataSource: RxDataSource = {
         RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
             guard let self = self else { return UITableViewCell() }
+            
             let cell: UITableViewCell
             switch item.presenter {
             case .singleAccount(let presenter):
@@ -120,6 +121,12 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         stateWait.map(\.actionButtonModel)
             .drive(actionButton.rx.viewModel)
             .disposed(by: disposeBag)
+        
+        let selectionEffect = tableView.rx
+            .modelSelected(TargetSelectionPageSectionModel.Item.self)
+            .compactMap(\.account)
+            .map { TargetSelectionPageInteractor.Effects.select($0) }
+            .asDriverCatchError()
 
         let backButtonEffect = backButtonRelay
             .map { TargetSelectionPageInteractor.Effects.back }
@@ -129,8 +136,9 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
             .map { TargetSelectionPageInteractor.Effects.closed }
             .asDriverCatchError()
 
-        return .merge(backButtonEffect, closeButtonEffect)
+        return .merge(backButtonEffect, closeButtonEffect, selectionEffect)
     }
+    
     // MARK: - Private Methods
 
     private func setupUI() {

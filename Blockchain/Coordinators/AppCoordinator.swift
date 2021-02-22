@@ -483,6 +483,11 @@ extension AppCoordinator: WalletHistoryDelegate {
 // MARK: - TabSwapping
 
 extension AppCoordinator: TabSwapping {
+    
+    func send(from account: BlockchainAccount) {
+        tabControllerManager?.send(from: account)
+    }
+    
     func switchToSend() {
         tabControllerManager?.showSend()
     }

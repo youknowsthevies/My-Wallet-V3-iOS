@@ -32,6 +32,7 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private let tabSwapping: TabSwapping
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let accountProviding: BlockchainAccountProviding
     private let disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
@@ -44,9 +45,10 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
          dataProviding: DataProviding = DataProvider.default,
          custodyWithdrawalRouter: CustodyWithdrawalRouterAPI = CustodyWithdrawalRouter(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+         accountProviding: BlockchainAccountProviding = resolve(),
          backupRouterAPI: BackupRouterAPI,
          tabSwapping: TabSwapping) {
-        
+        self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
         self.analyticsRecorder = analyticsRecorder
 
@@ -56,15 +58,23 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
 
         self.tabSwapping = tabSwapping
         
-        self.backupRouterAPI
+        backupRouterAPI
             .completionRelay
             .bindAndCatch(weak: self, onNext: { (self, _) in
                 self.stateService.nextRelay.accept(())
             })
             .disposed(by: disposeBag)
         
-        self.custodyWithdrawalRouter.completionRelay
+        custodyWithdrawalRouter
+            .completionRelay
             .bindAndCatch(to: completionRelay)
+            .disposed(by: disposeBag)
+        
+        custodyWithdrawalRouter
+            .internalSendRelay
+            .bindAndCatch(weak: self) { (self, _) in
+                self.showSend()
+            }
             .disposed(by: disposeBag)
     }
     
@@ -146,6 +156,22 @@ final class CustodyActionRouter: CustodyActionRouterAPI {
             }
         case .end:
             dismissTopMost()
+        }
+    }
+    
+    private func showSend() {
+        dismissTopMost { [unowned self] in
+            self.navigationRouter
+                .topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
+            self.accountProviding
+                .account(for: currency, accountType: .custodial(.trading))
+                .observeOn(MainScheduler.instance)
+                .subscribe(onSuccess: { [unowned self] account in
+                    self.tabSwapping.send(from: account)
+                })
+                .disposed(by: disposeBag)
         }
     }
     

@@ -13,6 +13,11 @@ import ToolKit
 
 final class TradingToOnChainTransactionEngine: TransactionEngine {
     
+    /// This might need to be `1:1` as there isn't a transaction pair.
+    var transactionExchangeRatePair: Observable<MoneyValuePair> {
+        .empty()
+    }
+    
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -45,7 +50,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     init(isNoteSupported: Bool = false,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
-         transferService: InternalTransferService = resolve()) {
+         transferService: InternalTransferServiceAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
@@ -53,9 +58,9 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
     
     func assertInputsValid() {
-        precondition(target is CryptoTradingAccount)
-        precondition(sourceAccount is NonCustodialAccount)
-        precondition((target as! CryptoTradingAccount).asset != sourceAccount.asset)
+        precondition(target is CryptoNonCustodialAccount)
+        precondition(sourceAccount is CryptoTradingAccount)
+        precondition((target as! CryptoNonCustodialAccount).asset == sourceAccount.asset)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -87,7 +92,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         fiatAmountAndFees(from: pendingTransaction)
-            .map(weak: self) { (self, input) -> [TransactionConfirmation] in
+            .map(weak: self) { (self, input) -> PendingTransaction in
+                var pendingTransaction = pendingTransaction
                 let (amount, fees) = input
                 var values: [TransactionConfirmation] = [
                     .source(.init(value: self.sourceAccount.label)),
@@ -104,9 +110,9 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 if self.isNoteSupported {
                     values.append(.destination(.init(value: "")))
                 }
-                return values
+                pendingTransaction.confirmations = values
+                return pendingTransaction
             }
-            .map { pendingTransaction.insert(confirmations: $0) }
     }
     
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -146,7 +152,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         sourceAccount
             .actionableBalance
             .flatMapCompletable { balance -> Completable in
-                guard try balance <= pendingTransaction.amount else {
+                guard try balance >= pendingTransaction.amount else {
                     throw TransactionValidationFailure(state: .insufficientFunds)
                 }
                 return .just(event: .completed)

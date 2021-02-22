@@ -56,4 +56,9 @@ class FiatAsset: Asset {
     private var nonCustodialGroup: Single<AccountGroup> {
         unimplemented()
     }
+    
+    func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
+        // TODO: Currently Android returns an empty array.
+        .just([])
+    }
 }

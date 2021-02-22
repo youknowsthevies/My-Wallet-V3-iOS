@@ -44,7 +44,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
 
         let initialActiveInput: ActiveAmountInput
         switch action {
-        case .swap:
+        case .swap,
+             .send:
             initialActiveInput = .fiat
         default:
             unimplemented()
@@ -84,7 +85,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         let interactor = EnterAmountPageInteractor(
             transactionModel: transactionModel,
             presenter: viewController,
-            amountInteractor: amountTranslationInteractor
+            amountInteractor: amountTranslationInteractor,
+            action: action
         )
         interactor.listener = listener
         let router = EnterAmountPageRouter(interactor: interactor,

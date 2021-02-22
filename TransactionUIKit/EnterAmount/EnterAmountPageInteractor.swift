@@ -47,14 +47,17 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let priceService: PriceServiceAPI
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
+    private let action: AssetAction
 
     init(transactionModel: TransactionModel,
          presenter: EnterAmountPagePresentable,
          amountInteractor: AmountTranslationInteractor,
+         action: AssetAction,
          analyticsHook: TransactionAnalyticsHook = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          alertViewPresenter: AlertViewPresenterAPI = resolve(),
          priceService: PriceServiceAPI = resolve()) {
+        self.action = action
         self.transactionModel = transactionModel
         self.amountInteractor = amountInteractor
         self.priceService = priceService
@@ -149,14 +152,26 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .bindAndCatch(to: amountInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
-
+        
+        let auxiliaryInteractor = auxiliaryViewInteractor
         let interactorState = transactionModel.state
+            .observeOn(MainScheduler.instance)
             .scan(initialState()) { (state, updater) -> State in
+                
                 let topSelection = TopSelectionState(
                     sourceAccount: updater.source,
-                    destinationAccount: updater.destination as? BlockchainAccount
+                    destinationAccount: updater.destination as? BlockchainAccount,
+                    action: updater.action
+                )
+                let bottomAuxillaryState: BottomAuxiliaryViewModelState = .maxAvailable(
+                    .init(
+                        interactor: auxiliaryInteractor,
+                        availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
+                        maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle(action: updater.action)
+                    )
                 )
                 return state
+                    .update(\.bottomAuxiliaryState, value: bottomAuxillaryState)
                     .update(\.canContinue, value: updater.nextEnabled)
                     .update(\.topSelection, value: topSelection)
                     .update(\.topSelection.title,
@@ -203,7 +218,11 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     }
     
     private func initialState() -> State {
-        let topSelectionState = TopSelectionState(sourceAccount: nil, destinationAccount: nil)
+        let topSelectionState = TopSelectionState(
+            sourceAccount: nil,
+            destinationAccount: nil,
+            action: action
+        )
         let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
             SendAuxililaryViewPresenter(interactor: auxiliaryViewInteractor,
                                         availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
@@ -247,12 +266,14 @@ extension EnterAmountPageInteractor {
             self.accessibilityContent = accessibilityContent
         }
 
-        init(sourceAccount: BlockchainAccount?, destinationAccount: BlockchainAccount?) {
-
+        init(sourceAccount: BlockchainAccount?,
+             destinationAccount: BlockchainAccount?,
+             action: AssetAction) {
             let transactionImageViewModel = TransactionDescriptorViewModel(
                 sourceAccount: sourceAccount as? SingleAccount,
-                destinationAccount: destinationAccount as? SingleAccount,
-                assetAction: .swap
+                destinationAccount: action == .swap ? destinationAccount as? SingleAccount : nil,
+                assetAction: action,
+                adjustActionIconColor: action == .swap ? false : true
             )
             self.init(
                 titleDescriptor: (font: .main(.medium, 12.0), textColor: .descriptionText),

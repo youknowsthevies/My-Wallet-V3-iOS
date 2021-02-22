@@ -221,7 +221,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .enterPassword:
             unimplemented()
         case .selectTarget:
-            guard !internalFeatureService.isEnabled(.swapP2) else {
+            let swapP2Enabled = internalFeatureService.isEnabled(.swapP2)
+            let sendP2Enabled = internalFeatureService.isEnabled(.sendP2)
+            guard !(swapP2Enabled || sendP2Enabled) else {
                 router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
                 return
             }

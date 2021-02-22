@@ -55,6 +55,19 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == Array<Sin
                 }
         }
     }
+    
+    public func flatMapFilter(excluding identifier: String) -> PrimitiveSequence<SingleTrait, Element> {
+        flatMap { accounts -> Single<Element> in
+            let elements: [Single<Element.Element?>] = accounts.map { account in
+                let value = account.id != identifier ? account : nil
+                return Single.just([value]).map { $0 as? Element.Element }
+            }
+            return Single.zip(elements)
+                .map { accounts -> Element in
+                    accounts.compactMap { $0 }
+                }
+        }
+    }
 }
 
 extension BlockchainAccount {

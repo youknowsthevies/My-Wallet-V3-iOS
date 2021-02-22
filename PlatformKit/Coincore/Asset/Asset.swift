@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import ToolKit
 
 public enum AssetFilter {
     case all
@@ -30,6 +31,8 @@ public typealias AvailableActions = Set<AssetAction>
 public protocol Asset {
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup>
+    
+    func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]>
 }
 
 public protocol CryptoAsset: Asset {
@@ -39,4 +42,24 @@ public protocol CryptoAsset: Asset {
 
 public enum CryptoAssetError: Error {
     case noDefaultAccount
+}
+
+extension CryptoAsset {
+    public func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
+        guard let crypto = account as? CryptoAccount else {
+            fatalError("Expected a CryptoAccount: \(account)")
+        }
+        precondition(crypto.asset == asset)
+        switch crypto {
+        case is CryptoTradingAccount:
+            return accountGroup(filter: .nonCustodial)
+                .map(\.accounts)
+        case is CryptoNonCustodialAccount:
+            return accountGroup(filter: .all)
+                .map(\.accounts)
+                .flatMapFilter(excluding: crypto.id)
+        default:
+            unimplemented()
+        }
+    }
 }

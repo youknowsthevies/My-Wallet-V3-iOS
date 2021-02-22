@@ -15,8 +15,7 @@ final class SwapTrendingPairTableViewCell: UITableViewCell {
             transactionDescriptorView.viewModel = .init(
                 sourceAccount: viewModel.sourceAccount,
                 destinationAccount: viewModel.destinationAccount,
-                assetAction: .swap,
-                adjustActionIconColor: true
+                assetAction: .swap
             )
             titleLabel.content = viewModel.titleLabel
             subtitleLabel.content = viewModel.subtitleLabel

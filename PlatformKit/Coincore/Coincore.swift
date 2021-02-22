@@ -53,15 +53,39 @@ public final class Coincore {
         self.reactiveWallet = reactiveWallet
     }
 
+    /// We are looking for targets of our action.
+    /// Action is considered what the source account wants to do.
     public func getTransactionTargets(
         sourceAccount: CryptoAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
+        let crypto = cryptoAssets.map { $0.value }
+        guard let sourceAsset = crypto.filter({ $0.asset == sourceAccount.asset }).first else {
+            fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
+        }
+        
+        let sameCurrencyTransactionTargets = sourceAsset.transactionTargets(account: sourceAccount)
+        let fiatTargets = fiatAsset
+            .accountGroup(filter: .all)
+            .map(\.accounts)
+        
+        let sameCurrencyPlusFiat = Single.zip(
+            sameCurrencyTransactionTargets,
+            fiatTargets
+        )
+        
         switch action {
         case .swap,
              .send:
             return allAccounts
                 .map(\.accounts)
+                .flatMap { accounts -> Single<[SingleAccount]> in
+                    if action == .send {
+                        return sameCurrencyPlusFiat.map { $0.0 + $0.1 }
+                    } else {
+                        return .just(accounts)
+                    }
+                }
                 .map(weak: self) { (self, accounts) -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         self.getActionFilter(

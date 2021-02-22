@@ -49,10 +49,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        balance
+        Single.zip(balance, pendingBalance)
+            .map { values -> MoneyValue in
+                let (balance, pending) = values
+                return try balance - pending
+            }
     }
 
-    // swiftlint:disable:next superfluous_disable_command
     // swiftlint:disable:next opening_brace
     public var onTxCompleted: (TransactionResult) -> Completable {
         { [weak self] result -> Completable in
@@ -86,6 +89,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         Single.zip(balance, eligibilityService.isEligible)
             .map { (balance, isEligible) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity]
+                if balance.isPositive {
+                    base.insert(.send)
+                }
                 if balance.isPositive && isEligible {
                     base.insert(.sell)
                     base.insert(.swap)
