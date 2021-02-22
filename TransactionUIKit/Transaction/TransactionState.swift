@@ -84,56 +84,57 @@ struct TransactionState: Equatable {
         pendingTransaction?.available ?? .zero(currency: asset)
     }
 
-    func moneyValueFromSource() throws -> MoneyValue {
+    func moneyValueFromSource() -> Result<MoneyValue, TransactionUIKitError> {
         guard let source = source?.currencyType else {
-            throw TransactionUIKitError.emptySourceAccount
+            return .failure(.emptySourceAccount)
         }
         guard let rate = sourceToFiatPair else {
-            return .zero(currency: source)
+            return .success(.zero(currency: source))
         }
         guard let currencyType = rate.base.cryptoValue?.currencyType else {
-            throw TransactionUIKitError.unexpectedMoneyValueType(rate.base)
+            return .failure(.unexpectedMoneyValueType(rate.base))
         }
         guard let quote = rate.quote.fiatValue else {
-            throw TransactionUIKitError.unexpectedMoneyValueType(rate.quote)
+            return .failure(.unexpectedMoneyValueType(rate.quote))
         }
         switch (amount.cryptoValue, amount.fiatValue) {
         case (.some(let amount), .none):
             /// Just show the `CryptoValue` that the user entered
             /// as this is the `source` currency.
-            return .init(cryptoValue: amount)
+            return .success(.init(cryptoValue: amount))
         case (.none, .some(let amount)):
             /// Convert the `FiatValue` to a `CryptoValue` given the
             /// `quote` from the `sourceToFiatPair` exchange rate.
-            return amount
+            return .success(amount
                 .convertToCryptoValue(
                     exchangeRate: quote,
                     cryptoCurrency: currencyType
                 )
                 .moneyValue
+            )
         default:
             break
         }
-        return .zero(currency: currencyType)
+        return .success(.zero(currency: currencyType))
     }
 
     /// The `MoneyValue` representing the amount received
     /// or the amount that is sent to the given destination.
-    func moneyValueFromDestination() throws -> MoneyValue {
+    func moneyValueFromDestination() -> Result<MoneyValue, TransactionUIKitError> {
         guard let destination = destination as? SingleAccount else {
-            throw TransactionUIKitError.unexpectedDestinationAccountType
+            return .failure(.unexpectedDestinationAccountType)
         }
         guard let exchange = sourceDestinationPair else {
-            return .zero(currency: destination.currencyType)
+            return .success(.zero(currency: destination.currencyType))
         }
         guard case let .crypto(currency) = exchange.quote.currencyType else {
-            throw TransactionUIKitError.unexpectedCurrencyType(exchange.quote.currencyType)
+            return .failure(.unexpectedCurrencyType(exchange.quote.currencyType))
         }
         guard let sourceQuote = sourceToFiatPair?.quote.fiatValue else {
-            throw TransactionUIKitError.emptySourceExchangeRate
+            return .failure(.emptySourceExchangeRate)
         }
         guard let destinationQuote = destinationToFiatPair?.quote.fiatValue else {
-            throw TransactionUIKitError.emptyDestinationExchangeRate
+            return .failure(.emptyDestinationExchangeRate)
         }
 
         switch (amount.cryptoValue,
@@ -142,25 +143,27 @@ struct TransactionState: Equatable {
         case (.none, .some(let fiat), .some(let cryptoPrice)):
             /// Conver the `fiatValue` amount entered into
             /// a `CryptoValue`
-            return fiat
-                .convertToCryptoValue(
+            return .success(
+                fiat.convertToCryptoValue(
                     exchangeRate: destinationQuote,
                     cryptoCurrency: cryptoPrice.currencyType
                 )
                 .moneyValue
+            )
         case (.some(let crypto), .none, _):
             /// Convert the `cryptoValue` input into a `fiatValue` type.
             let fiat = crypto.convertToFiatValue(exchangeRate: sourceQuote)
             /// Convert the `fiatValue` input into a `cryptoValue` type
             /// given the `quote` of the `destinationCurrencyType`.
-            return fiat
-                .convertToCryptoValue(
+            return .success(
+                fiat.convertToCryptoValue(
                     exchangeRate: destinationQuote,
                     cryptoCurrency: currency
                 )
                 .moneyValue
+            )
         default:
-            return .zero(currency: currency)
+            return .success(.zero(currency: currency))
         }
     }
 

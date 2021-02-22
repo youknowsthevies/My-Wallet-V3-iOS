@@ -47,11 +47,33 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         
         let sent = transactionModel
             .state
-            .map { try $0.moneyValueFromSource() }
+            .map { state -> MoneyValue in
+                switch state.moneyValueFromSource() {
+                case .success(let value):
+                    return value
+                case .failure(let error):
+                    #if DEBUG_MENU
+                    fatalError(error.localizedDescription)
+                    #else
+                    return .zero(currency: state.source!.currencyType)
+                    #endif
+                }
+            }
         
         let received = transactionModel
             .state
-            .map { try $0.moneyValueFromDestination() }
+            .map { state -> MoneyValue in
+                switch state.moneyValueFromDestination() {
+                case .success(let value):
+                    return value
+                case .failure(let error):
+                    #if DEBUG_MENU
+                    fatalError(error.localizedDescription)
+                    #else
+                    return .zero(currency: (state.destination as! CryptoTarget).asset.currency)
+                    #endif
+                }
+            }
         
         let destination = transactionModel
             .state
@@ -205,8 +227,22 @@ extension PendingTransactionPageInteractor {
         )
         
         static func pending(sent: MoneyValue, received: MoneyValue) -> State {
-            .init(
-                title: String(format: LocalizationId.Pending.title, sent.displayString, received.displayString),
+            var title = String(
+                format: LocalizationId.Pending.title,
+                sent.displayString,
+                received.displayString
+            )
+            let zeroSent = MoneyValue.zero(currency: sent.currencyType)
+            let zeroReceived = MoneyValue.zero(currency: received.currencyType)
+            if sent == zeroSent || received == zeroReceived {
+                title = String(
+                    format: LocalizationId.Pending.title,
+                    sent.displayCode,
+                    received.displayCode
+                )
+            }
+            return .init(
+                title: title,
                 subtitle: LocalizationId.Pending.description,
                 compositeViewType: .composite(
                     .init(

@@ -34,7 +34,7 @@ final class TransactionFlowDescriptor {
             switch state.action {
             case .swap:
                 let prefix = "\(LocalizedString.Swap.swap): "
-                guard let moneyValue = try? state.moneyValueFromSource() else {
+                guard let moneyValue = try? state.moneyValueFromSource().get() else {
                     return prefix
                 }
                 return prefix + formatForHeader(moneyValue: moneyValue)
@@ -57,7 +57,7 @@ final class TransactionFlowDescriptor {
             switch state.action {
             case .swap:
                 let prefix = "\(LocalizedString.receive): "
-                guard let moneyValue = try? state.moneyValueFromDestination() else {
+                guard let moneyValue = try? state.moneyValueFromDestination().get() else {
                     return prefix
                 }
                 return prefix + formatForHeader(moneyValue: moneyValue)
