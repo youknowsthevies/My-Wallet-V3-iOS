@@ -147,10 +147,6 @@ public final class BlockchainAPI: NSObject {
         "\(walletUrl)/Resources/wallet-options.json"
     }
     
-    @objc public var buyWebViewUrl: String? {
-        InfoDictionaryHelper.value(for: .buyWebviewURL, prefix: "https://")
-    }
-    
     @objc public var bitcoinExplorerUrl: String {
         "\(explorerUrl)/btc"
     }
@@ -233,7 +229,6 @@ public final class BlockchainAPI: NSObject {
 private struct InfoDictionaryHelper {
     enum Key: String {
         case apiURL = "API_URL"
-        case buyWebviewURL = "BUY_WEBVIEW_URL"
         case exchangeURL = "EXCHANGE_URL"
         case explorerServer = "EXPLORER_SERVER"
         case retailCoreSocketURL = "RETAIL_CORE_SOCKET_URL"
