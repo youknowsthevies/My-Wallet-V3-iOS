@@ -252,16 +252,20 @@ extension AssetAddressRepository {
     ///   - asset: asset type for the address. Currently only supports BTC and BCH.
     /// - Returns: A single with the address usage status
     func checkUsability(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
-        Single.create { [weak self] single in
-            guard let self = self else { return Disposables.create() }
-            
-            // Continue only if address reusability is not supported for the given asset type
-            guard !asset.shouldAddressesBeReused else {
-                Logger.shared.info("\(asset.name) addresses not supported for checking if it is unused.")
-                single(.success(.unused(address: address)))
-                return Disposables.create()
+        Single.just(())
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap(weak: self) { (self, _) -> Single<AddressUsageStatus> in
+                // Continue only if address reusability is not supported for the given asset type
+                guard !asset.shouldAddressesBeReused else {
+                    Logger.shared.info("\(asset.name) addresses not supported for checking if it is unused.")
+                    return .just(.unused(address: address))
+                }
+                return self.fetchAddressUsage(of: address, asset: asset)
             }
-            
+    }
+    
+    private func fetchAddressUsage(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
+        Single.create(weak: self) { (self, observer) -> Disposable in
             var assetAddress = AssetAddressFactory.create(fromAddressString: address, assetType: asset)
             if let bchAddress = assetAddress as? BitcoinCashAssetAddress,
                 let transformedBtcAddress = bchAddress.bitcoinAssetAddress(from: self.walletManager.wallet) {
@@ -270,22 +274,22 @@ extension AssetAddressRepository {
             
             guard let urlString = BlockchainAPI.shared.assetInfoURL(for: assetAddress), let url = URL(string: urlString) else {
                 Logger.shared.warning("Cannot construct URL to check if the address '\(address)' is unused.")
-                single(.success(.unknown(address: address)))
+                observer(.success(.unknown(address: address)))
                 return Disposables.create()
             }
             
             let task = self.urlSession.dataTask(with: url, completionHandler: { data, _, error in
                 guard error == nil else {
-                    single(.error(error!))
+                    observer(.error(error!))
                     return
                 }
                 guard let json = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String: AnyObject],
                     let transactions = json["txs"] as? [NSDictionary] else {
-                        single(.error(NetworkError.jsonParseError))
+                    observer(.error(NetworkError.jsonParseError))
                         return
                 }
                 let usage: AddressUsageStatus = transactions.isEmpty ? .unused(address: address) : .used(address: address)
-                single(.success(usage))
+                observer(.success(usage))
             })
             task.resume()
             return Disposables.create {

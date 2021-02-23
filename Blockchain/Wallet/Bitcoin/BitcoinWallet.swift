@@ -95,7 +95,53 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
     }
     
     func buildCandidate<Token>(with proposal: BitcoinChainTransactionProposal<Token>) -> Single<BitcoinChainTransactionCandidate<Token>> {
-        let legacy = OrderTransactionLegacy(
+        func buildCandidate(
+            with legacyOrderCandidate: OrderTransactionLegacy
+        ) -> Single<BitcoinChainTransactionCandidate<Token>> {
+            Single.create(weak: self) { (self, observer) -> Disposable in
+                self.wallet?.createOrderPayment(
+                    withOrderTransaction: legacyOrderCandidate,
+                    completion: {
+                        // NOTE: No-op
+                    },
+                    success: { json in
+                        let amounts = Self.extractAmounts(
+                            from: json,
+                            cryptoCurrency: Token.coin.cryptoCurrency
+                        )
+                        let candidate = BitcoinChainTransactionCandidate<Token>(
+                            proposal: proposal,
+                            fees: amounts.finalFee,
+                            sweepAmount: amounts.sweepAmount,
+                            sweepFee: amounts.sweepFee
+                        )
+                        observer(.success(candidate))
+                    },
+                    error: { json in
+                        Logger.shared.error("BTC Candidate build failure: \(json)")
+                        /// NOTE: This error is mapped from the value that is returned from JS.
+                        /// It's possible this error is not important and we always want to return
+                        /// `.insufficientFunds`. However, we may want a different
+                        ///  `TransactionValidationFailure.State` in the event that the user has the funds
+                        /// but cannot cover fees.
+                        let amounts = Self.extractAmounts(
+                            from: json,
+                            cryptoCurrency: Token.coin.cryptoCurrency
+                        )
+                        let errorMessage = json["error"] as? String ?? ""
+                        let transactionError = BitcoinChainTransactionError(
+                            stringValue: errorMessage,
+                            finalFee: amounts.finalFee,
+                            sweepAmount: amounts.sweepAmount,
+                            sweepFee: amounts.sweepFee
+                        )
+                        return observer(.error(transactionError))
+                    }
+                )
+                return Disposables.create()
+            }
+        }
+        let legacyOrderCandidate = OrderTransactionLegacy(
             legacyAssetType: Token.coin.cryptoCurrency.legacy,
             from: proposal.walletIndex,
             to: proposal.destination.address,
@@ -103,38 +149,11 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             fees: proposal.fees.toDisplayString(includeSymbol: false),
             gasLimit: nil
         )
-        return Single.create(weak: self) { (self, observer) -> Disposable in
-            self.wallet?.createOrderPayment(
-                withOrderTransaction: legacy,
-                completion: {
-                    // NOTE: No-op
-                },
-                success: { json in
-                    let amounts = Self.extractAmounts(from: json, cryptoCurrency: Token.coin.cryptoCurrency)
-                    let candidate = BitcoinChainTransactionCandidate<Token>(proposal: proposal,
-                                                                            fees: amounts.finalFee,
-                                                                            sweepAmount: amounts.sweepAmount,
-                                                                            sweepFee: amounts.sweepFee)
-                    observer(.success(candidate))
-                },
-                error: { json in
-                    Logger.shared.error("BTC Candidate build failure: \(json)")
-                    /// NOTE: This error is mapped from the value that is returned from JS.
-                    /// It's possible this error is not important and we always want to return
-                    /// `.insufficientFunds`. However, we may want a different
-                    ///  `TransactionValidationFailure.State` in the event that the user has the funds
-                    /// but cannot cover fees.
-                    let amounts = Self.extractAmounts(from: json, cryptoCurrency: Token.coin.cryptoCurrency)
-                    let errorMessage = json["error"] as? String ?? ""
-                    let transactionError = BitcoinChainTransactionError(stringValue: errorMessage,
-                                                                        finalFee: amounts.finalFee,
-                                                                        sweepAmount: amounts.sweepAmount,
-                                                                        sweepFee: amounts.sweepFee)
-                    return observer(.error(transactionError))
-                }
-            )
-            return Disposables.create()
-        }
+        return Single.just(())
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap { _ -> Single<BitcoinChainTransactionCandidate<Token>> in
+                buildCandidate(with: legacyOrderCandidate)
+            }
     }
 
     static private func extractAmounts(

@@ -34,13 +34,17 @@ extension Wallet: MnemonicAccessAPI {
     }
 
     public var mnemonic: Maybe<Mnemonic> {
-        guard !self.needsSecondPassword() else {
-            return Maybe.empty()
-        }
-        guard let mnemonic = self.getMnemonic(nil) else {
-            return Maybe.empty()
-        }
-        return Maybe.just(mnemonic)
+        Maybe.just(())
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap(weak: self) { (self, _) -> Maybe<Mnemonic> in
+                guard !self.needsSecondPassword() else {
+                    return Maybe.empty()
+                }
+                guard let mnemonic = self.getMnemonic(nil) else {
+                    return Maybe.empty()
+                }
+                return Maybe.just(mnemonic)
+            }
     }
     
     public var mnemonicForcePrompt: Maybe<Mnemonic> {

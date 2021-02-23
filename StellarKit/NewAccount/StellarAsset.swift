@@ -16,8 +16,11 @@ final class StellarAsset: CryptoAsset {
     let asset: CryptoCurrency = .stellar
 
     var defaultAccount: Single<SingleAccount> {
-        accountRepository
-            .initializeMetadataMaybe()
+        Single.just(())
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap(weak: self) { (self, _) -> Maybe<StellarWalletAccount> in
+                self.accountRepository.initializeMetadataMaybe()
+            }
             .asObservable()
             .first()
             .map { account -> StellarWalletAccount in
