@@ -54,9 +54,13 @@ extension JSContext {
     
     /// A helper method to enforce the execution of JSContext to be on a single thread, specifically on the MainThread
     @objc public func evaluateScriptCheckIsOnMainQueue(_ script: String!) -> JSValue! {
+        #if DEBUG_MENU
+        dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        #else
         ProbabilisticRunner.run(for: .fivePercent) {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
         }
+        #endif
         return self.evaluateScript(script)
     }
 }
