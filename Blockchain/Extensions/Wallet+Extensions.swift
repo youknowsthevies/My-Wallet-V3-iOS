@@ -72,11 +72,16 @@ extension Wallet: MnemonicAccessAPI {
 /// a `WalletAccountRepository`. This is how we save the users `StellarKeyPair`
 extension Wallet: StellarWalletBridgeAPI {
     public func save(keyPair: StellarKit.StellarKeyPair, label: String, completion: @escaping StellarWalletBridgeAPI.KeyPairSaveCompletion) {
-        self.saveXlmAccount(keyPair.accountID, label: label, sucess: {
-            completion(nil)
-        }, error: { errorMessage in
-            completion(errorMessage)
-        })
+        self.saveXlmAccount(
+            keyPair.accountID,
+            label: label,
+            success: {
+                completion(nil)
+            },
+            error: { errorMessage in
+                completion(errorMessage)
+            }
+        )
     }
     
     public func stellarWallets() -> [StellarKit.StellarWalletAccount] {

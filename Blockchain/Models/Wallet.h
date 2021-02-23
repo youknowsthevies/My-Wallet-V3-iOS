@@ -292,7 +292,7 @@
 
 // XLM
 - (NSArray *_Nullable)getXlmAccounts;
-- (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label sucess:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
+- (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
 
 /// Call this method to build an Exchange order.
 /// It constructs and stores a payment object with a given CryptoCurrency, to, from, and amount (properties of OrderTransactionLegacy).

@@ -17,6 +17,12 @@ import TransactionKit
 
 final class BitcoinWallet: NSObject {
     
+    fileprivate struct TransactionAmounts {
+        let finalFee: MoneyValue
+        let sweepAmount: MoneyValue
+        let sweepFee: MoneyValue
+    }
+    
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
     typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
     
@@ -159,7 +165,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
     static private func extractAmounts(
         from json: [AnyHashable: Any],
         cryptoCurrency: CryptoCurrency
-    ) -> (finalFee: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue) {
+    ) -> TransactionAmounts {
         let paymentJSON: [AnyHashable: Any] = json["payment"] as? [AnyHashable: Any] ?? [:]
 
         let finalFeeAny: Any = paymentJSON["finalFee"] ?? ""
@@ -173,7 +179,11 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
         let sweepFeeAny: Any = paymentJSON["sweepFee"] ?? ""
         let sweepFee = CryptoValue.create(minor: "\(sweepFeeAny)", currency: cryptoCurrency) ?? .zero(currency: cryptoCurrency)
 
-        return (finalFee.moneyValue, sweepAmount.moneyValue, sweepFee.moneyValue)
+        return TransactionAmounts(
+            finalFee: finalFee.moneyValue,
+            sweepAmount: sweepAmount.moneyValue,
+            sweepFee: sweepFee.moneyValue
+        )
     }
     
     func send(coin: BitcoinChainCoin, with secondPassword: String?) -> Single<String> {
@@ -380,11 +390,15 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
-            wallet.bitcoinDefaultWalletIndex(with: secondPassword, success: { defaultWalletIndex in
-                observer(.success(defaultWalletIndex))
-            }, error: { errorMessage in
-                observer(.error(WalletError.unknown))
-            })
+            wallet.bitcoinDefaultWalletIndex(
+                with: secondPassword,
+                success: { defaultWalletIndex in
+                    observer(.success(defaultWalletIndex))
+                },
+                error: { errorMessage in
+                    observer(.error(WalletError.unknown))
+                }
+            )
             return Disposables.create()
         }
     }

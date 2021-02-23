@@ -17,9 +17,8 @@ public final class ProbabilisticRunner {
         }
         
         // swiftlint:disable force_try
-        
         public static let onePercent = try! Percentage(percentage: 1)
-        public static let fivePercent = try! Percentage(percentage:  5)
+        public static let fivePercent = try! Percentage(percentage: 5)
         public static let tenPercent = try! Percentage(percentage: 10)
         public static let twentyPercent = try! Percentage(percentage: 20)
         public static let fiftyPercent = try! Percentage(percentage: 50)

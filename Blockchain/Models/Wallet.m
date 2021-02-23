@@ -2042,7 +2042,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [xlmAccountsValue toArray];
 }
 
-- (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label sucess:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error
+- (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error
 {
     if (!self.isInitialized) {
         DLog(@"Cannot save XLM account. Wallet is not yet initialized.");
