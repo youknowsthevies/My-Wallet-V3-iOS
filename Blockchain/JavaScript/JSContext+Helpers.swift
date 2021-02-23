@@ -7,6 +7,7 @@
 //
 
 import JavaScriptCore
+import ToolKit
 
 extension JSContext {
     /// Invokes the native block `functionBlock` for the provided JS function name `functionName`.
@@ -53,9 +54,9 @@ extension JSContext {
     
     /// A helper method to enforce the execution of JSContext to be on a single thread, specifically on the MainThread
     @objc public func evaluateScriptCheckIsOnMainQueue(_ script: String!) -> JSValue! {
-        // TICKET: IOS-4311: Reenable Main Thread pre condition after crashes are addressed.
-        // dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        ProbabilisticRunner.run(for: .fivePercent) {
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+        }
         return self.evaluateScript(script)
     }
-    
 }
