@@ -154,8 +154,8 @@ extension DependencyContainer {
         single { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
 
         single { () -> PaymentMethodsServiceAPI in
-            let internalFeatureService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-            if internalFeatureService.isEnabled(.achFlow) {
+            let featureConfiguring: FeatureConfiguring = DIKit.resolve()
+            if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled {
                 return EligiblePaymentMethodsService() as PaymentMethodsServiceAPI
             }
             return PaymentMethodsService() as PaymentMethodsServiceAPI

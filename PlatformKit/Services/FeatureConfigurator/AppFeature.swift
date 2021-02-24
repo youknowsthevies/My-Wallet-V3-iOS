@@ -42,6 +42,10 @@ public enum AppFeature: Int, CaseIterable {
     case wDGLDenabled
 
     case siftScienceEnabled
+
+    case achEnabled
+
+    case achBuyFlowEnabled
 }
 
 extension AppFeature {
@@ -68,6 +72,10 @@ extension AppFeature {
             return "wdgld_enabled"
         case .siftScienceEnabled:
             return "sift_science_enabled"
+        case .achEnabled:
+            return "ach_enabled"
+        case .achBuyFlowEnabled:
+            return "ach_buy_flow_enabled_ios"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:

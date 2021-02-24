@@ -17,8 +17,6 @@ struct InternalFeatureItem: Equatable {
 
     var title: String {
         switch type {
-        case .achFlow:
-            return "ACH Payment Flow"
         case .swapP2:
             return "Swap P2"
         case .sendP2:

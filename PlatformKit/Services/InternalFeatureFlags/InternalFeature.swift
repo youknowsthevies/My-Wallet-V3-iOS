@@ -12,7 +12,6 @@ import Foundation
 public enum InternalFeature: String, CaseIterable {
     case sendP2
     case swapP2
-    case achFlow
 
     internal var defaultsKey: String {
         "internal-flag-\(rawValue)-key"

@@ -131,7 +131,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let cardListService: CardListServiceAPI
     private let balanceProvider: BalanceProviding
     private let linkedBankService: LinkedBanksServiceAPI
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
+    private let featureConfiguring: FeatureConfiguring
         
     // MARK: - Setup
     
@@ -141,14 +141,14 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
          cardListService: CardListServiceAPI = resolve(),
          balanceProvider: BalanceProviding = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         featureConfiguring: FeatureConfiguring = resolve()) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
         self.cardListService = cardListService
         self.balanceProvider = balanceProvider
         self.linkedBankService = linkedBankService
-        self.internalFeatureFlag = internalFeatureFlag
+        self.featureConfiguring = featureConfiguring
     }
         
     func fetchCards(andPrefer cardId: String) -> Completable {
@@ -284,7 +284,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     private func provideMethodTypes() -> Observable<[PaymentMethodType]> {
-        if internalFeatureFlag.isEnabled(.achFlow) {
+        if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled {
             return methodTypesWithLinkedBanks()
         }
         return methodTypesWithoutLinkedBanks()

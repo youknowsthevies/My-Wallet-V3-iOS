@@ -42,6 +42,7 @@ public final class Router: RouterAPI {
     private let navigationRouter: NavigationRouterAPI
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let alertViewPresenter: AlertViewPresenterAPI
+    private let featureConfiguring: FeatureConfiguring
     
     private var cardRouter: CardRouter!
     
@@ -66,6 +67,7 @@ public final class Router: RouterAPI {
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 alertViewPresenter: AlertViewPresenterAPI = resolve(),
+                featureConfiguring: FeatureConfiguring = resolve(),
                 builder: Buildable,
                 kycRouter: KYCRouterAPI,
                 currency: CryptoCurrency) {
@@ -73,6 +75,7 @@ public final class Router: RouterAPI {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
+        self.featureConfiguring = featureConfiguring
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
         self.builder = builder
@@ -357,7 +360,7 @@ public final class Router: RouterAPI {
     }
     
     private func showPaymentMethodsScreen() {
-        guard internalFeatureFlagService.isEnabled(.achFlow) else {
+        guard featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled else {
             showOldPaymentMethodsScreen()
             return
         }
