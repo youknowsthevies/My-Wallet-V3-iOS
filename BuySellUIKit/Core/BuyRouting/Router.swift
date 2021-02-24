@@ -135,8 +135,7 @@ public final class Router: RouterAPI {
     public func next(to state: StateService.State) {
         switch state {
         case .intro:
-            // not used anymore, will be navigated directly to enter ammount screen
-            break
+            showIntroScreen()
         case .changeFiat:
             settingsService
                 .fiatCurrency
