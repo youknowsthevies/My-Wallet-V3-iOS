@@ -1,36 +1,17 @@
 //
 //  QRCodeScannerViewModel.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Jack on 15/02/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 
-protocol QRCodeScannerTextViewModel {
+public protocol QRCodeScannerTextViewModel {
     var loadingText: String? { get }
     var headerText: String { get }
-}
-
-struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
-    let loadingText: String?
-    let headerText: String
-    
-    init(loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey, headerText: String = LocalizationConstants.scanQRCode) {
-        self.loadingText = loadingText
-        self.headerText = headerText
-    }
-}
-
-struct PairingCodeQRCodeTextViewModel: QRCodeScannerTextViewModel {
-    let loadingText: String? = LocalizationConstants.parsingPairingCode
-    let headerText: String = LocalizationConstants.scanPairingCode
-}
-
-struct AddressQRCodeTextViewModel: QRCodeScannerTextViewModel {
-    let loadingText: String? = nil
-    let headerText: String = LocalizationConstants.scanQRCode
 }
 
 protocol QRCodeScannerViewModelProtocol: class {
@@ -52,9 +33,9 @@ protocol QRCodeScannerViewModelProtocol: class {
     func handleSelectedQRImage(_ image: UIImage)
 }
 
-final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewModelProtocol {
+public final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewModelProtocol {
     
-    enum ParsingOptions {
+    public enum ParsingOptions {
         
         /// Strict approach, only act on the link using the given parser
         case strict
@@ -82,17 +63,17 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         textViewModel.headerText
     }
     
-    private let parser: AnyQRCodeScannerParsing<P.T, P.U>
+    private let parser: AnyQRCodeScannerParsing<P.Success, P.Failure>
     private let textViewModel: QRCodeScannerTextViewModel
     private let scanner: QRCodeScannerProtocol
-    private let completed: ((Result<P.T, P.U>) -> Void)
+    private let completed: ((Result<P.Success, P.Failure>) -> Void)
     private let deepLinkQRCodeRouter: DeepLinkQRCodeRouter
     
-    init?(parser: P,
-          additionalParsingOptions: ParsingOptions = .strict,
-          textViewModel: QRCodeScannerTextViewModel,
-          scanner: QRCodeScannerProtocol,
-          completed: ((Result<P.T, P.U>) -> Void)?) {
+    public init?(parser: P,
+                 additionalParsingOptions: ParsingOptions = .strict,
+                 textViewModel: QRCodeScannerTextViewModel,
+                 scanner: QRCodeScannerProtocol,
+                 completed: ((Result<P.Success, P.Failure>) -> Void)?) {
         guard let completed = completed else { return nil }
         
         let additionalLinkRoutes: [DeepLinkRoute]
@@ -131,7 +112,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     func handleDismissCompleted(with scanResult: Result<String, QRScannerError>) {
         
         // In case the designate scan purpose was not fulfilled, try look for supported deeplink.
-        let completion = { [weak self] (result: Result<P.T, P.U>) in
+        let completion = { [weak self] (result: Result<P.Success, P.Failure>) in
             guard let self = self else { return }
             switch result {
             case .failure:
@@ -147,15 +128,15 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
 }
 
 extension QRCodeScannerViewModel: QRCodeScannerDelegate {
-    func scanComplete(with result: Result<String, QRScannerError>) {
+    public func scanComplete(with result: Result<String, QRScannerError>) {
         scanComplete?(result)
     }
     
-    func didStartScanning() {
+    public func didStartScanning() {
         scanningStarted?()
     }
     
-    func didStopScanning() {
+    public func didStopScanning() {
         scanningStopped?()
     }
 }

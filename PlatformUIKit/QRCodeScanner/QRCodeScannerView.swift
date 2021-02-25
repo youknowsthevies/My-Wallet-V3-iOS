@@ -1,6 +1,6 @@
 //
 //  QRCodeScannerView.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Jack on 15/02/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol QRCodeScannableArea {
+public protocol QRCodeScannableArea {
     var area: CGRect { get }
 }
 

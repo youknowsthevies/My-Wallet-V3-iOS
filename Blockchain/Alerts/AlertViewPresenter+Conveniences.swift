@@ -13,29 +13,7 @@ import RxSwift
 import ToolKit
 
 extension AlertViewPresenter {
-    
-    /// Displays an alert that the app requires permission to use the camera. The alert will display an
-    /// action which then leads the user to their settings so that they can grant this permission.
-    @objc func showNeedsCameraPermissionAlert() {
-        Execution.MainQueue.dispatch {
-            let alert = UIAlertController(
-                title: LocalizationConstants.Errors.cameraAccessDenied,
-                message: LocalizationConstants.Errors.cameraAccessDeniedMessage,
-                preferredStyle: .alert
-            )
-            alert.addAction(
-                UIAlertAction(title: LocalizationConstants.goToSettings, style: .default) { _ in
-                    guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else { return }
-                    UIApplication.shared.open(settingsURL)
-                }
-            )
-            alert.addAction(
-                UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
-            )
-            self.standardNotify(alert: alert)
-        }
-    }
-    
+
     /// Asks permission from the user to use values in the keychain. This is typically invoked
     /// on a new installation of the app (meaning the user previously installed the app, deleted it,
     /// and downloaded the app again).

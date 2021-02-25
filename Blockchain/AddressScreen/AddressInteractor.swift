@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -29,6 +29,7 @@ final class AddressInteractor: AddressInteracting {
     private let addressFetcherProvider: () -> AssetAddressFetching
     private let addressSubscriber: AssetAddressSubscribing
     private let recorder: ErrorRecording
+    private let urlFactory: AssetURLPayloadFactoryAPI
     
     // MARK: - Rx
 
@@ -53,10 +54,10 @@ final class AddressInteractor: AddressInteracting {
                 guard let self = self else {
                     throw AddressFetchingError.unretainedSelf
                 }
-                                
+
                 // Create a url
                 let qrUrl: String
-                if let url = AssetURLPayloadFactory.create(fromString: address, asset: self.asset) {
+                if let url = self.urlFactory.create(fromString: address, asset: self.asset) {
                     qrUrl = url.address
                 } else {
                     qrUrl = address
@@ -131,12 +132,14 @@ final class AddressInteractor: AddressInteracting {
          addressFetcherProvider: @escaping () -> AssetAddressFetching = { AssetAddressRepository.shared },
          transactionObserver: TransactionObserving = WalletManager.shared,
          addressSubscriber: AssetAddressSubscribing = WalletManager.shared.wallet,
-         recorder: ErrorRecording = CrashlyticsRecorder()) {
+         recorder: ErrorRecording = CrashlyticsRecorder(),
+         urlFactory: AssetURLPayloadFactoryAPI = resolve()) {
         self.asset = asset
         self.addressType = addressType
         self.addressFetcherProvider = addressFetcherProvider
         self.addressSubscriber = addressSubscriber
         self.recorder = recorder
+        self.urlFactory = urlFactory
         
         // Observe received payments for the associated asset.
         // Upon payment to that asset, removes the first swipe to receive address

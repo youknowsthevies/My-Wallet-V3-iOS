@@ -10,8 +10,8 @@ import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
 import BuySellKit
-import DIKit
 import DebugUIKit
+import DIKit
 import ERC20Kit
 import EthereumKit
 import KYCKit
@@ -33,6 +33,8 @@ extension DependencyContainer {
         single { OnboardingRouter() }
         
         factory { PaymentPresenter() }
+
+        factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
         
         factory { RecoveryPhraseVerifyingService() as RecoveryPhraseVerifyingServiceAPI }
 
@@ -42,7 +44,7 @@ extension DependencyContainer {
         
         factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
-        factory { DeepLinkRouter() }
+        factory { DeepLinkRouter() as DeepLinkRouting }
         
         factory { UIDevice.current as DeviceInfo }
 

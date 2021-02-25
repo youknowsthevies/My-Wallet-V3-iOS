@@ -60,7 +60,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private let sharedContainter: SharedContainerUserDefaults
 
-    private let deepLinkRouter: DeepLinkRouter
+    private let deepLinkRouter: DeepLinkRouting
     
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
@@ -91,7 +91,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          walletManager: WalletManager = WalletManager.shared,
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         deepLinkRouter: DeepLinkRouter = DeepLinkRouter(),
+         deepLinkRouter: DeepLinkRouting = resolve(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService

@@ -7,6 +7,7 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 
 /// Router for the send flow
 final class SendRouter {

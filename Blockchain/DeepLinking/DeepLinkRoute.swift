@@ -9,15 +9,6 @@
 import Foundation
 import PlatformKit
 
-enum DeepLinkRoute: CaseIterable {
-    case xlmAirdop
-    case kyc
-    case kycVerifyEmail
-    case kycDocumentResubmission
-    case exchangeVerifyEmail
-    case exchangeLinking
-}
-
 extension DeepLinkRoute {
 
     static func route(from url: String,

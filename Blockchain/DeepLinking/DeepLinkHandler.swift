@@ -12,7 +12,7 @@ import Firebase
 import PlatformKit
 import ToolKit
 
-class DeepLinkHandler {
+final class DeepLinkHandler: DeepLinkHandling {
 
     private let appSettings: BlockchainSettings.App
     private let kycSettings: KYCSettingsAPI

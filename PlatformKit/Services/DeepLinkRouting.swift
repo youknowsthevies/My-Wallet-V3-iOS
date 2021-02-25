@@ -9,7 +9,6 @@
 import Foundation
 
 public protocol DeepLinkRouting {
-
     /// Returns true if routing was performed
     func routeIfNeeded() -> Bool
 }

@@ -1,6 +1,6 @@
 //
 //  QRCodeScannerViewController.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Jack on 15/02/2019.
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
@@ -8,11 +8,10 @@
 
 import DIKit
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 import UIKit
 
-enum QRCodePresentationType {
+public enum QRCodePresentationType {
     case modal(dismissWithAnimation: Bool)
     case child
 }
@@ -24,7 +23,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             fatalError("Trying to get key window before it was set!")
         }
         let width = window.bounds.size.width
-        let height = window.bounds.size.height - Constants.Measurements.DefaultHeaderHeight
+        let height = window.bounds.size.height - 65 // Constants.Measurements.DefaultHeaderHeight
         return CGRect(x: 0, y: 0, width: width, height: height)
     }
     

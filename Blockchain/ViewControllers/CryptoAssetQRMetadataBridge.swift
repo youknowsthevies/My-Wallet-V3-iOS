@@ -34,8 +34,10 @@ import PlatformKit
 
     let metadata: CryptoAssetQRMetadata?
 
+    private let factory = AssetURLPayloadFactory()
+
     @objc init(metadata: AVMetadataMachineReadableCodeObject, assetType: LegacyAssetType) {
-        self.metadata = AssetURLPayloadFactory.create(fromString: metadata.stringValue, asset: CryptoCurrency(legacyAssetType: assetType))
+        self.metadata = factory.create(fromString: metadata.stringValue, asset: CryptoCurrency(legacyAssetType: assetType))
         super.init()
     }
 }

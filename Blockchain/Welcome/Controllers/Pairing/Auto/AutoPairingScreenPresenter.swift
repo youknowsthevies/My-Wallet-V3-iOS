@@ -13,6 +13,11 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
+struct PairingCodeQRCodeTextViewModel: QRCodeScannerTextViewModel {
+    let loadingText: String? = LocalizationConstants.parsingPairingCode
+    let headerText: String = LocalizationConstants.scanPairingCode
+}
+
 /// A presenter for auto pairing screen
 final class AutoPairingScreenPresenter {
     

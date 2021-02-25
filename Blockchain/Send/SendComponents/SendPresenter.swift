@@ -14,6 +14,11 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
+struct AddressQRCodeTextViewModel: QRCodeScannerTextViewModel {
+    let loadingText: String? = nil
+    let headerText: String = LocalizationConstants.scanQRCode
+}
+
 /// A class the is responsible for the send flow
 final class SendPresenter {
     
@@ -205,6 +210,7 @@ final class SendPresenter {
         
         let qrScannerViewModel = QRCodeScannerViewModel(
             parser: parser,
+            additionalParsingOptions: .strict,
             textViewModel: textViewModel,
             scanner: scanner,
             completed: { [weak self] result in

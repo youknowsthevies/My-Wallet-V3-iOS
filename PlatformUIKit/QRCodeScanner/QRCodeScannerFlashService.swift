@@ -1,11 +1,12 @@
 //
 //  QRCodeScannerFlashService.swift
-//  Blockchain
+//  PlatformUIKit
 //
 //  Created by Alex McGregor on 2/9/21.
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AVKit
 import RxCocoa
 import RxSwift
 

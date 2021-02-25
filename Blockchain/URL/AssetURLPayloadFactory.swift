@@ -13,9 +13,9 @@ import PlatformKit
 import StellarKit
 import ToolKit
 
-class AssetURLPayloadFactory: NSObject {
+final class AssetURLPayloadFactory: AssetURLPayloadFactoryAPI {
 
-    static func create(fromString string: String?, asset: CryptoCurrency) -> CryptoAssetQRMetadata? {
+    func create(fromString string: String?, asset: CryptoCurrency) -> CryptoAssetQRMetadata? {
         guard let string = string else { return nil }
         if string.contains(":") {
             guard let url = URL(string: string) else {
@@ -41,7 +41,7 @@ class AssetURLPayloadFactory: NSObject {
         }
     }
 
-    static func create(from url: URL) -> CryptoAssetQRMetadata? {
+    func create(from url: URL) -> CryptoAssetQRMetadata? {
         guard let scheme = url.scheme else {
             Logger.shared.warning("Cannot create AssetURLPayload. Scheme is nil.")
             return nil

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
 /// Legacy for old QR - should NOT be used in new components!
 @objc class BridgeDeepLinkQRCodeRouter: NSObject {

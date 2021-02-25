@@ -9,7 +9,8 @@
 import PlatformKit
 import KYCUIKit
 
-class DeepLinkRouter {
+/// The main `DeepLinkRouting`
+final class DeepLinkRouter: DeepLinkRouting {
 
     private let routers: [DeepLinkRouting]
 

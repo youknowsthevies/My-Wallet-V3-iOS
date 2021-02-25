@@ -11,6 +11,16 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 
+struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
+    let loadingText: String?
+    let headerText: String
+
+    init(loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey, headerText: String = LocalizationConstants.scanQRCode) {
+        self.loadingText = loadingText
+        self.headerText = headerText
+    }
+}
+
 @objc protocol PrivateKeyReaderDelegate: class {
     func didFinishScanning(_ privateKey: String, for address: String?)
     @objc optional func didFinishScanningWithError(_ error: PrivateKeyReaderError)
