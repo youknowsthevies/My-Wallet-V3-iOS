@@ -17,6 +17,10 @@ protocol LinkedBanksClientAPI: AnyObject {
     /// - Parameter id: A `String` representing the id of the linked bank
     func getLinkedBank(for id: String) -> Single<LinkedBankResponse>
 
+    /// Deletes the specified linked bank by the given id
+    /// - Parameter id: A `String` representing the id of the linked bank
+    func deleteLinkedBank(for id: String) -> Completable
+
     /// Starts the proccess of creating a bank linkage
     /// - Parameter currency: A `FiatCurrency` value of the linked bank
     func createBankLinkage(for currency: FiatCurrency) -> Single<CreateBankLinkageResponse>

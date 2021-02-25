@@ -49,11 +49,11 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
         badgeImageViewModel = .template(
             with: "icon-bank",
             templateColor: .secondary,
-            backgroundColor: .clear,
-            cornerRadius: .value(0),
+            backgroundColor: .lightBlueBackground,
+            cornerRadius: .round,
             accessibilityIdSuffix: data.identifier
         )
-        badgeImageViewModel.marginOffsetRelay.accept(0)
+        badgeImageViewModel.marginOffsetRelay.accept(6)
         
         nameLabelContent = LabelContent(
             text: data.name,

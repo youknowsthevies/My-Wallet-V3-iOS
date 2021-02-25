@@ -8,8 +8,8 @@
 
 import DIKit
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
@@ -31,51 +31,85 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 
     // MARK: - Properties
     
-    public var beneficiaries: Observable<[Beneficiary]> {
-        beneficiariesRelay
-            .flatMap(weak: self) { (self, beneficiaries) -> Observable<[Beneficiary]> in
-                guard let beneficiaries = beneficiaries else {
-                    return self.fetch().asObservable()
-                }
-                return .just(beneficiaries)
-            }
-            .distinctUntilChanged()
-    }
-        
-    var hasLinkedBank: Observable<Bool> {
-        beneficiaries.map { !$0.isEmpty }
-    }
-    
-    var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> {
-        Observable
-            .combineLatest(
-                beneficiaries,
-                paymentMethodTypesService.methodTypes
-            )
-            .map { (beneficiaries, methodTypes) in
-                let exisiting = beneficiaries.map(\.currency)
-                let suggested = methodTypes.suggestedFunds
-                return suggested.subtracting(exisiting)
-            }
-    }
+    public var beneficiaries: Observable<[Beneficiary]>
+
+    public let hasLinkedBank: Observable<Bool>
+
+    let availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>>
+
+    private let fetchBeneficiaries: Observable<[Beneficiary]>
 
     private let beneficiariesRelay = BehaviorRelay<[Beneficiary]?>(value: nil)
     private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let client: BeneficiariesClientAPI
+    private let linkedBankClient: LinkedBanksClientAPI
         
     // MARK: - Setup
     
     init(client: BeneficiariesClientAPI = resolve(),
+         linkedBankClient: LinkedBanksClientAPI = resolve(),
          featureFetcher: FeatureFetching = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
         self.client = client
+        self.linkedBankClient = linkedBankClient
         self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
         
         NotificationCenter.when(.logout) { [weak beneficiariesRelay] _ in
             beneficiariesRelay?.accept(nil)
         }
+
+        let fetchBeneficiaries: Observable<[Beneficiary]> = Observable
+            .combineLatest(
+                client.beneficiaries.asObservable(),
+                paymentMethodTypesService.methodTypes,
+                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
+            )
+            .map { (beneficiaries: [BeneficiaryResponse], methodTypes: [PaymentMethodType], isEnabled: Bool) in
+                guard isEnabled else { return [] }
+                var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
+                let topLimits = methodTypes.accounts.map { $0.topLimit }
+                for limit in topLimits {
+                    limitsByBaseFiat[limit.currencyType] = limit
+                }
+                let activeLinkedBank = methodTypes.linkedBanks
+                    .filter { $0.isActive }
+
+                let linkedBanksResult: [Beneficiary] = activeLinkedBank.map(Beneficiary.init(linkedBankData:))
+
+                let result: [Beneficiary] = beneficiaries.compactMap {
+                    guard let currency = FiatCurrency(code: $0.currency) else { return nil }
+                    return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
+                }
+                return result + linkedBanksResult
+            }
+            .do(afterNext: { [weak beneficiariesRelay] beneficiaries in
+                beneficiariesRelay?.accept(beneficiaries)
+            })
+            .catchErrorJustReturn([])
+            .share()
+
+        self.fetchBeneficiaries = fetchBeneficiaries
+
+        beneficiaries = beneficiariesRelay
+            .flatMap { (beneficiaries) -> Observable<[Beneficiary]> in
+                guard let beneficiaries = beneficiaries else {
+                    return fetchBeneficiaries.asObservable()
+                }
+                return .just(beneficiaries)
+            }
+            .distinctUntilChanged()
+            .share(replay: 1, scope: .whileConnected)
+
+        availableCurrenciesForBankLinkage = paymentMethodTypesService.methodTypes
+            .map { (methodTypes) in
+                Set(methodTypes.suggestedFunds)
+            }
+            .share(replay: 1, scope: .whileConnected)
+
+        hasLinkedBank = beneficiaries
+            .map { !$0.isEmpty }
     }
     
     func fetch() -> Observable<[Beneficiary]> {
@@ -87,7 +121,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
     
     func delete(by bankId: String) -> Completable {
         client.deleteBank(by: bankId)
-            .andThen(self.fetch())
+            .andThen(self.fetchBeneficiaries)
             .ignoreElements()
     }
         
@@ -97,20 +131,27 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         Observable
             .combineLatest(
                 client.beneficiaries.asObservable(),
-                paymentMethodTypesService.methodTypes.map { $0.accounts.map { $0.topLimit } },
+                paymentMethodTypesService.methodTypes,
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
             )
-            .map { (beneficiaries: [BeneficiaryResponse], topLimits: [FiatValue], isEnabled: Bool) in
+            .map { (beneficiaries: [BeneficiaryResponse], methodTypes: [PaymentMethodType], isEnabled: Bool) in
                 guard isEnabled else { return [] }
                 var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
+                let topLimits = methodTypes.accounts.map { $0.topLimit }
                 for limit in topLimits {
                     limitsByBaseFiat[limit.currencyType] = limit
                 }
+                let activeLinkedBank = methodTypes.linkedBanks.filter(\.isActive)
+
+                let linkedBanksResult: [Beneficiary] = activeLinkedBank.map {
+                    Beneficiary(linkedBankData: $0)
+                }
+
                 let result: [Beneficiary] = beneficiaries.compactMap {
                     guard let currency = FiatCurrency(code: $0.currency) else { return nil }
                     return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
                 }
-                return result
+                return result + linkedBanksResult
             }
             .catchErrorJustReturn([])
     }

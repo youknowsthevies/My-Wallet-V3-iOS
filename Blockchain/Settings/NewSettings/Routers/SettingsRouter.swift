@@ -6,9 +6,11 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
 import BuySellUIKit
+import DIKit
+import KYCKit
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -16,8 +18,6 @@ import RxRelay
 import RxSwift
 import SafariServices
 import ToolKit
-import KYCKit
-import KYCUIKit
 
 final class SettingsRouter: SettingsRouterAPI {
     
@@ -42,13 +42,14 @@ final class SettingsRouter: SettingsRouterAPI {
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
-    
+    private let featureConfiguring: FeatureConfiguring
+
     private let navigationRouter: NavigationRouterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private unowned let currencyRouting: CurrencyRouting
     private unowned let tabSwapping: TabSwapping
     private unowned let appCoordinator: AppCoordinator
-    
+
     private let builder: SettingsBuilding
     
     private let addCardCompletionRelay = PublishRelay<Void>()
@@ -63,6 +64,7 @@ final class SettingsRouter: SettingsRouterAPI {
          alertPresenter: AlertViewPresenter = resolve(),
          cardListService: CardListServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         featureConfiguring: FeatureConfiguring = resolve(),
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
         self.appCoordinator = appCoordinator
@@ -74,6 +76,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
         self.paymentMethodTypesService = paymentMethodTypesService
+        self.featureConfiguring = featureConfiguring
         
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -153,6 +156,10 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             cardRouter.load()
         case .showAddBankScreen(let fiatCurrency):
+            if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled && fiatCurrency == .USD {
+                // TODO: Present the ACH Flow
+                return
+            }
             appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: false)
         case .showAppStore:
             UIApplication.shared.openAppStore()

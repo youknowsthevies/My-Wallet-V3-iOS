@@ -7,25 +7,35 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxSwift
 
 final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
     
     private let beneficiariesService: BeneficiariesServiceAPI
+    private let featureConfiguring: FeatureConfiguring
     private let fiatCurrency: FiatCurrency
     
     var isAbleToAddNew: Observable<Bool> {
         let fiatCurrency = self.fiatCurrency
+        let featureConfiguring = self.featureConfiguring
         return beneficiariesService.availableCurrenciesForBankLinkage
-            .map { $0.contains(fiatCurrency) }
+            .map { currencies -> Bool in
+                if fiatCurrency == .USD {
+                    return featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled
+                }
+                return currencies.contains(fiatCurrency)
+            }
             .catchErrorJustReturn(false)
             .share(replay: 1)
     }
     
     init(beneficiariesService: BeneficiariesServiceAPI,
-         fiatCurrency: FiatCurrency) {
+         fiatCurrency: FiatCurrency,
+         featureConfiguring: FeatureConfiguring = resolve()) {
         self.fiatCurrency = fiatCurrency
         self.beneficiariesService = beneficiariesService
+        self.featureConfiguring = featureConfiguring
     }
 }

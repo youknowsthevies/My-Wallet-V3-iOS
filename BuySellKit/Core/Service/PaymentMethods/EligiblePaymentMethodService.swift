@@ -24,6 +24,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                 return .just(paymentMethods)
             }
             .distinctUntilChanged()
+            .share()
     }
 
     var paymentMethodsSingle: Single<[PaymentMethod]> {

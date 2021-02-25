@@ -407,6 +407,14 @@ final class APIClient: SimpleBuyClientAPI {
         return communicator.perform(request: request)
     }
 
+    func deleteLinkedBank(for id: String) -> Completable {
+        let request = requestBuilder.delete(
+            path: Path.linkedBanks + [id],
+            authenticated: true
+        )!
+        return communicator.perform(request: request)
+    }
+
     func createBankLinkage(for currency: FiatCurrency) -> Single<CreateBankLinkageResponse> {
         struct Payload: Encodable {
             let currency: String

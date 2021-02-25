@@ -29,6 +29,18 @@ public struct Beneficiary {
         }
         self.currency = currency
     }
+
+    init(linkedBankData: LinkedBankData) {
+        self.identifier = linkedBankData.identifier
+        self.currency = linkedBankData.currency
+        
+        let bankName = linkedBankData.account?.bankName ?? ""
+        let accountType = linkedBankData.account?.type.title ?? ""
+        let accountNumber = linkedBankData.account?.number ?? ""
+        self.name = "\(bankName)"
+        self.account = "\(accountType) \(accountNumber)"
+        self.limit = nil
+    }
 }
 
 extension Beneficiary: Equatable {

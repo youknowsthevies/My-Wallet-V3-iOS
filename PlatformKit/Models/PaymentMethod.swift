@@ -24,10 +24,10 @@ public struct PaymentMethod: Equatable {
         case card(Set<CardType>)
 
         /// Bank account payment method
-        case bankAccount
+        case bankAccount(CurrencyType)
 
         /// Bank transfer payment method
-        case bankTransfer
+        case bankTransfer(CurrencyType)
 
         /// Funds payment method
         case funds(CurrencyType)
@@ -93,9 +93,15 @@ public struct PaymentMethod: Equatable {
                 guard !cardTypes.isEmpty else { return nil }
                 self = .card(cardTypes)
             case .bankAccount:
-                self = .bankAccount
+                guard supportedFiatCurrencies.contains(currency) else {
+                    return nil
+                }
+                self = .bankAccount(currency.currency)
             case .bankTransfer:
-                self = .bankTransfer
+                guard supportedFiatCurrencies.contains(currency) else {
+                    return nil
+                }
+                self = .bankTransfer(currency.currency)
             case .funds:
                 guard supportedFiatCurrencies.contains(currency) else {
                     return nil
@@ -109,9 +115,9 @@ public struct PaymentMethod: Equatable {
             case .card:
                 self = .card([])
             case .bankAccount:
-                self = .bankAccount
+                self = .bankAccount(currency)
             case .bankTransfer:
-                self = .bankTransfer
+                self = .bankTransfer(currency)
             case .funds:
                 self = .funds(currency)
             }
@@ -128,10 +134,10 @@ public struct PaymentMethod: Equatable {
             switch (self, otherType) {
             case (.card(let lhs), .card(let rhs)):
                 return lhs == rhs
-            case (.bankAccount, .bankAccount):
-                return true
-            case (.bankTransfer, .bankTransfer):
-                return true
+            case (.bankAccount(let currencyLhs), .bankAccount(let currencyRhs)):
+                return currencyLhs == currencyRhs
+            case (.bankTransfer(let currencyLhs), .bankTransfer(let currencyRhs)):
+                return currencyLhs == currencyRhs
             case (.funds(let currencyLhs), .funds(let currencyRhs)):
                 return currencyLhs == currencyRhs
             default:

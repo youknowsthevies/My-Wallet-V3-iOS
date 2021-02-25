@@ -35,8 +35,8 @@ public enum PaymentMethodType: Equatable {
             return .funds(data.balance.base.currencyType)
         case .suggested(let method):
             return method.type
-        case .linkedBank:
-            return .bankTransfer
+        case .linkedBank(let data):
+            return .bankTransfer(data.currency.currency)
         }
     }
 
@@ -300,7 +300,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
             }
-            .share()
+            .share(replay: 1, scope: .whileConnected)
     }
 
     private func methodTypesWithLinkedBanks() -> Observable<[PaymentMethodType]> {
@@ -314,7 +314,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
             }
-            .share()
+            .share(replay: 1, scope: .whileConnected)
     }
 }
 
@@ -325,10 +325,17 @@ extension Array where Element == PaymentMethodType {
             guard case .suggested(let method) = paymentMethod else {
                 return nil
             }
-            guard case .funds(let currencyType) = method.type else {
+            switch method.type {
+            case .bankTransfer(let currencyType):
+                return FiatCurrency(code: currencyType.code)
+            case .funds(let currencyType):
+                guard currencyType != .fiat(.USD) else {
+                    return nil
+                }
+                return FiatCurrency(code: currencyType.code)
+            case .bankAccount, .card:
                 return nil
             }
-            return FiatCurrency(code: currencyType.code)
         }
         return Set(array)
     }
@@ -344,7 +351,7 @@ extension Array where Element == PaymentMethodType {
         }
     }
 
-    fileprivate var linkedBanks: [LinkedBankData] {
+    var linkedBanks: [LinkedBankData] {
         compactMap { paymentMethod in
             switch paymentMethod {
             case .linkedBank(let data):

@@ -7,6 +7,7 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -35,33 +36,13 @@ final class AddPaymentMethodInteractor {
     }
     
     /// Do all the checks and streams `true` if the user is able to add a new bank / card / whatever payment method
-    var isEnabledForUser: Observable<Bool> {
-        Observable
-            .combineLatest(isAbleToAddNew, isKYCVerified, isFeatureEnabled)
-            .map { $0.0 && $0.1 && $0.2 }
-            .share(replay: 1)
-    }
+    let isEnabledForUser: Observable<Bool>
     
-    var isAbleToAddNew: Observable<Bool> {
-        addNewInteractor.isAbleToAddNew
-            .catchErrorJustReturn(false)
-            .share(replay: 1)
-    }
+    let isAbleToAddNew: Observable<Bool>
     
-    var isKYCVerified: Observable<Bool> {
-        tiersLimitsProvider
-            .tiers
-            .map { $0.isTier2Approved }
-            .catchErrorJustReturn(false)
-            .share(replay: 1)
-    }
+    let isKYCVerified: Observable<Bool>
     
-    var isFeatureEnabled: Observable<Bool> {
-        featureFetcher
-            .fetchBool(for: paymentMethod.appFeature)
-            .catchErrorJustReturn(false)
-            .asObservable()
-    }
+    let isFeatureEnabled: Observable<Bool>
     
     let paymentMethod: PaymentMethod
     private let addNewInteractor: AddSpecificPaymentMethodInteractorAPI
@@ -76,5 +57,23 @@ final class AddPaymentMethodInteractor {
         self.featureFetcher = featureFetcher
         self.addNewInteractor = addNewInteractor
         self.tiersLimitsProvider = tiersLimitsProvider
+
+        isAbleToAddNew = addNewInteractor.isAbleToAddNew
+            .catchErrorJustReturn(false)
+            .share(replay: 1)
+
+        isKYCVerified = tiersLimitsProvider.tiers
+            .map { $0.isTier2Approved }
+            .catchErrorJustReturn(false)
+            .share(replay: 1)
+
+        isFeatureEnabled = featureFetcher.fetchBool(for: paymentMethod.appFeature)
+            .catchErrorJustReturn(false)
+            .asObservable()
+
+        isEnabledForUser = Observable.combineLatest(isAbleToAddNew, isKYCVerified, isFeatureEnabled)
+            .map { $0.0 && $0.1 && $0.2 }
+            .share(replay: 1)
+
     }
 }

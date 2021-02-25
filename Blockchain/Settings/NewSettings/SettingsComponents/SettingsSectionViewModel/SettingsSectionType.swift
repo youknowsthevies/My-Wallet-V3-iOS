@@ -51,6 +51,8 @@ enum SettingsSectionType: Int, Equatable {
                 return left == right
             case (.plain(let left), .plain(let right)):
                 return left == right
+            case (.banks(let left), .banks(let right)):
+                return left == right
             default:
                 return false
             }

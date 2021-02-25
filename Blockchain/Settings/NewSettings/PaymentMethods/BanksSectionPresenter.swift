@@ -14,41 +14,7 @@ import RxSwift
 final class BanksSectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .banks
     
-    var state: Observable<SettingsSectionLoadingState> {
-        interactor.state
-            .flatMap(weak: self) { (self, state) -> Observable<SettingsSectionLoadingState> in
-                switch state {
-                case .invalid:
-                    return .just(.loaded(next: .empty))
-                case .calculating:
-                    let cells = [SettingsCellViewModel(cellType: .banks(.skeleton(0)))]
-                    return .just(.loaded(next: .some(.init(sectionType: self.sectionType, items: cells))))
-                case .value(let data):
-                    let isAbleToAddNew = self.addPaymentMethodCellPresenters.map { $0.isAbleToAddNew }
-                    return Observable
-                        .zip(isAbleToAddNew)
-                        .take(1)
-                        .map { isAbleToAddNew -> [SettingsCellViewModel] in
-                            let presenters = zip(isAbleToAddNew, self.addPaymentMethodCellPresenters)
-                                .filter { $0.0 }
-                                .map { $0.1 }
-                            
-                            return Array.init(data) + Array.init(presenters)
-                        }
-                        .map { viewModels in
-                            guard !viewModels.isEmpty else {
-                                return .loaded(next: .empty)
-                            }
-                            let sectionViewModel = SettingsSectionViewModel(
-                                sectionType: self.sectionType,
-                                items: viewModels
-                            )
-                            return .loaded(next: .some(sectionViewModel))
-                        }
-                }
-            }
-            .share()
-    }
+    let state: Observable<SettingsSectionLoadingState>
     
     // MARK: - Private Properties
 
@@ -59,10 +25,47 @@ final class BanksSectionPresenter: SettingsSectionPresenting {
     
     init(interactor: BanksSettingsSectionInteractor) {
         self.interactor = interactor
-        addPaymentMethodCellPresenters = interactor.addPaymentMethodInteractors
+        let addPaymentMethodCellPresenters = interactor.addPaymentMethodInteractors
             .map {
                 AddPaymentMethodCellPresenter(interactor: $0)
             }
+
+        self.addPaymentMethodCellPresenters = addPaymentMethodCellPresenters
+
+        let sectionType = self.sectionType
+        state = interactor.state
+            .flatMap { (state) -> Observable<SettingsSectionLoadingState> in
+                switch state {
+                case .invalid:
+                    return .just(.loaded(next: .empty))
+                case .calculating:
+                    let cells = [SettingsCellViewModel(cellType: .banks(.skeleton(0)))]
+                    return .just(.loaded(next: .some(.init(sectionType: sectionType, items: cells))))
+                case .value(let data):
+                    let isAbleToAddNew = addPaymentMethodCellPresenters.map { $0.isAbleToAddNew }
+                    return Observable
+                        .zip(isAbleToAddNew)
+                        .take(1)
+                        .map { isAbleToAddNew -> [SettingsCellViewModel] in
+                            let presenters = zip(isAbleToAddNew, addPaymentMethodCellPresenters)
+                                .filter { $0.0 }
+                                .map { $0.1 }
+
+                            return Array.init(data) + Array.init(presenters)
+                        }
+                        .map { viewModels in
+                            guard !viewModels.isEmpty else {
+                                return .loaded(next: .empty)
+                            }
+                            let sectionViewModel = SettingsSectionViewModel(
+                                sectionType: sectionType,
+                                items: viewModels
+                            )
+                            return .loaded(next: .some(sectionViewModel))
+                        }
+                }
+            }
+            .share(replay: 1, scope: .whileConnected)
     }
 }
 
