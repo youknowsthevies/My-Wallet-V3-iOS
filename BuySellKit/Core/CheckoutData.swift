@@ -95,6 +95,10 @@ public struct CheckoutData {
     public var isPendingDepositBankWire: Bool {
         order.isPendingDepositBankWire
     }
+
+    public var isPendingDeposit: Bool {
+        order.isPendingDeposit
+    }
     
     public var isPending3DS: Bool {
         order.isPending3DSCardOrder

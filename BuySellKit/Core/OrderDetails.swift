@@ -173,7 +173,11 @@ public struct OrderDetails {
     }
     
     public var isPendingDepositBankWire: Bool {
-        state == .pendingDeposit && isBankWire
+        isPendingDeposit && isBankWire
+    }
+
+    public var isPendingDeposit: Bool {
+        state == .pendingDeposit
     }
     
     public var isPending3DSCardOrder: Bool {

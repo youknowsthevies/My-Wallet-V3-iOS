@@ -712,6 +712,10 @@ extension LocalizationConstants.SimpleBuy {
                         "Buy In Progress",
                         comment: "Pending active card error screen: title"
                     )
+                    public static let achTitleSuffix = NSLocalizedString(
+                        "Buy Started",
+                        comment: "Pending active ach timeout screen: title"
+                    )
                 }
                 public enum Sell {
                     public static let titleSuffix = NSLocalizedString(
@@ -722,6 +726,10 @@ extension LocalizationConstants.SimpleBuy {
                 public static let subtitle = NSLocalizedString(
                     "We’ll notify you when your order is complete.",
                     comment: "Pending active card error screen: subtitle"
+                )
+                public static let achSubtitle = NSLocalizedString(
+                    "We are completing your purchase now. Expect the funds to be withdrawn from your bank by %@. Check the status of your order at anytime from Wallet’s Activity.",
+                    comment: "Pending active ach timeout screen: subtitle"
                 )
             }
 

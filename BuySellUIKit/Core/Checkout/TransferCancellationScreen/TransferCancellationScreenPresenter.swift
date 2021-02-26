@@ -109,11 +109,6 @@ final class TransferCancellationScreenPresenter {
             .disposed(by: disposeBag)
 
         cancellationResult
-            .mapToVoid()
-            .bindAndCatch(to: dismissalRelay)
-            .disposed(by: disposeBag)
-            
-        cancellationResult
             .filter { $0.isFailure }
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
@@ -123,7 +118,9 @@ final class TransferCancellationScreenPresenter {
     }
     
     private func cancellationDidFail() {
-        alert.error(in: nil, action: nil)
+        alert.error(in: nil) { [dismissalRelay] in
+            dismissalRelay.accept(())
+        }
         analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderError)
     }
     

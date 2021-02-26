@@ -121,7 +121,19 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             .map { .pending(order) }
             .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
-        let title = interactor.isBuy ? LocalizedString.Timeout.Buy.titleSuffix : LocalizedString.Timeout.Sell.titleSuffix
+        var title = ""
+        var subtitle = LocalizedString.Timeout.subtitle
+        if order.isBuy {
+            switch order.paymentMethod {
+            case .bankTransfer:
+                title = LocalizedString.Timeout.Buy.achTitleSuffix
+                subtitle = String(format: LocalizedString.Timeout.achSubtitle, getEstimateTransactionCompletionTime())
+            case .bankAccount, .card, .funds:
+                title = LocalizedString.Timeout.Buy.titleSuffix
+            }
+        } else {
+            title = LocalizedString.Timeout.Sell.titleSuffix
+        }
         
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
@@ -131,7 +143,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 )
             ),
             title: "\(amount) \(title)",
-            subtitle: LocalizedString.Timeout.subtitle,
+            subtitle: subtitle,
             button: button,
             displayCloseButton: true
         )
@@ -191,5 +203,12 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         case .cancel:
             break
         }
+    }
+
+    private func getEstimateTransactionCompletionTime() -> String {
+        guard let fiveDaysFromNow = Calendar.current.date(byAdding: .day, value: 5, to: Date()) else {
+            return ""
+        }
+        return DateFormatter.medium.string(from: fiveDaysFromNow)
     }
 }

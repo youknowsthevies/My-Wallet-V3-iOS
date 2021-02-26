@@ -131,13 +131,15 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
     }
 
     private static func cancelButton(data: CheckoutData) -> ButtonViewModel? {
-        switch (data.order.paymentMethod, data.hasCardCheckoutMade) {
-        case (.card, true):
+        switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDeposit) {
+        case (.card, true, _):
             return nil
-        case (.card, false),
-             (.bankAccount, _),
-             (.bankTransfer, _),
-             (.funds, _):
+        case (.bankTransfer, _, true):
+            return nil
+        case (.card, false, _),
+             (.bankAccount, _, _),
+             (.bankTransfer, _, _),
+             (.funds, _, _):
             return .cancel(with: LocalizationConstants.cancel)
         }
     }
@@ -232,8 +234,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         let badgesModel = MultiBadgeViewModel()
         badgesModel.badgesRelay.accept([statusBadge])
 
-        switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire) {
-        case (.card, true, _):
+        switch (data.order.paymentMethod, data.hasCardCheckoutMade, data.isPendingDepositBankWire, data.isPendingDeposit) {
+        case (.card, true, _, _):
 
             // MARK: Cells Setup
 
@@ -256,8 +258,8 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .lineItem(statusLineItemCellPresenter),
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
-        case (.card, false, _),
-             (.bankAccount, _, false):
+        case (.card, false, _, _),
+             (.bankAccount, _, false, _):
 
             // MARK: Cells Setup
 
@@ -277,7 +279,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
-        case (.funds, _, _):
+        case (.funds, _, _, _):
             
             cells = [
                 .label(cryptoAmountLabelPresenter),
@@ -296,7 +298,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
             
-        case (.bankAccount, _, true):
+        case (.bankAccount, _, true, _):
 
             // MARK: Cells Setup
 
@@ -322,7 +324,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
-        case (.bankTransfer, _, _):
+        case (.bankTransfer, _, _, false):
             cells = [
                 .label(cryptoAmountLabelPresenter),
                 .separator,
@@ -335,6 +337,25 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
                 .lineItem(availableToTradeInstantlyItemCellPresenter),
+                .separator,
+                .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
+            ]
+        case (.bankTransfer, _, _, true):
+            cells = [
+                .label(cryptoAmountLabelPresenter),
+                .badges(badgesModel),
+                .separator,
+                .lineItem(orderIdLineItemCellPresenter),
+                .separator,
+                .lineItem(dateLineItemCellPresenter),
+                .separator,
+                .lineItem(cryptoPriceItemCellPresenter),
+                .separator,
+                .lineItem(feeLineItemCellPresenter),
+                .separator,
+                .lineItem(totalLineItemCellPresenter),
+                .separator,
+                .lineItem(paymentMethodLineItemCellPresenter),
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
