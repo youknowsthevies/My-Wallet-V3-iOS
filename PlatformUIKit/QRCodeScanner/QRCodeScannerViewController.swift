@@ -23,7 +23,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             fatalError("Trying to get key window before it was set!")
         }
         let width = window.bounds.size.width
-        let height = window.bounds.size.height - 65 // Constants.Measurements.DefaultHeaderHeight
+        let height = window.bounds.size.height - 65
         return CGRect(x: 0, y: 0, width: width, height: height)
     }
     
