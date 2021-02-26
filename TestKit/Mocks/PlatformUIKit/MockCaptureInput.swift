@@ -7,7 +7,7 @@
 //
 
 import AVKit
-import PlatformUIKit
+@testable import PlatformUIKit
 
 final class MockCaptureInput: CaptureInputProtocol {
     var current: AVCaptureInput?

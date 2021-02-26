@@ -203,16 +203,11 @@ final class SendPresenter {
     /// Scan a QR code. This method builds the QR code controller builder and interacts with
     /// the router in order to present the view controller
     func scanQRCode() {
-        guard let scanner = QRCodeScanner() else { return }
-        
         let parser = AddressQRCodeParser(assetType: asset)
         let textViewModel = AddressQRCodeTextViewModel()
-        
-        let qrScannerViewModel = QRCodeScannerViewModel(
+        let builder = QRCodeScannerViewControllerBuilder(
             parser: parser,
-            additionalParsingOptions: .strict,
             textViewModel: textViewModel,
-            scanner: scanner,
             completed: { [weak self] result in
                 guard let self = self else { return }
                 guard case .success(let assetURL) = result else {
@@ -222,8 +217,8 @@ final class SendPresenter {
                 if let amount = assetURL.payload.amount {
                     self.amountPresenter.cryptoFieldEdited(rawValue: amount, shouldPublish: true)
                 }
-            })
-        let builder = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)!
+            }
+        )
         router.presentQRScan(using: builder)
     }
     

@@ -8,10 +8,10 @@
 
 import AVKit
 
-public protocol CaptureOutputProtocol: AnyObject {
+protocol CaptureOutputProtocol: AnyObject {
     var current: AVCaptureOutput? { get }
 }
 
 extension AVCaptureOutput: CaptureOutputProtocol {
-    public var current: AVCaptureOutput? { self }
+    var current: AVCaptureOutput? { self }
 }

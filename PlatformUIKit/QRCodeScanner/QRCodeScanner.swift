@@ -11,9 +11,9 @@ import DIKit
 import Localization
 import PlatformKit
 
-public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
+final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
 
-    public static var defaultSessionQueue: DispatchQueue {
+    static var defaultSessionQueue: DispatchQueue {
         DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.sessionQueue", qos: .background)
     }
 
@@ -21,9 +21,9 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.captureQueue")
     }
     
-    public weak var delegate: QRCodeScannerDelegate?
+    weak var delegate: QRCodeScannerDelegate?
     
-    public let videoPreviewLayer: CALayer
+    let videoPreviewLayer: CALayer
     
     var captureVideoPreviewLayer: AVCaptureVideoPreviewLayer {
         videoPreviewLayer as! AVCaptureVideoPreviewLayer
@@ -33,7 +33,7 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
     private let captureMetadataOutput: AVCaptureMetadataOutput = .init()
     private let sessionQueue: DispatchQueue
     
-    public init?(
+    init?(
         deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(),
         captureSession: CaptureSessionProtocol = AVCaptureSession(),
         sessionQueue: DispatchQueue = QRCodeScanner.defaultSessionQueue
@@ -55,7 +55,7 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         }
     }
     
-    public func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
+    func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
         let frame = scannableArea.area
         sessionQueue.async { [weak self] in
             self?.captureSession.current?.commitConfiguration()
@@ -68,7 +68,7 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         }
     }
     
-    public func stopReadingQRCode(complete: (() -> Void)? = nil) {
+    func stopReadingQRCode(complete: (() -> Void)? = nil) {
         sessionQueue.async { [weak self] in
             self?.captureSession.stopRunning()
 
@@ -79,7 +79,7 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         }
     }
     
-    public func handleSelectedQRImage(_ image: UIImage) {
+    func handleSelectedQRImage(_ image: UIImage) {
         guard let cgImage = image.cgImage else {
             handleQRImageSelectionError()
             return
@@ -98,12 +98,25 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         }
     }
     
+    // MARK: - Private methods
+    
     private func handleQRImageSelectionError() {
         delegate?.scanComplete(with: .failure(.unknown))
     }
     
+    private func configure(with deviceInput: CaptureInputProtocol) {
+        captureSession.add(input: deviceInput)
+        captureSession.add(output: captureMetadataOutput)
+        
+        let captureQueue = QRCodeScanner.defaultCaptureQueue
+        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: captureQueue)
+        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
+    }
+    
+    // MARK: - Private static methods
+    
     /// Check if the device input is accessible for scanning QR codes
-    public static func runDeviceInputChecks(alertViewPresenter: AlertViewPresenter = resolve()) -> AVCaptureDeviceInput? {
+    private static func runDeviceInputChecks(alertViewPresenter: AlertViewPresenter = resolve()) -> AVCaptureDeviceInput? {
         switch QRCodeScanner.deviceInput() {
         case .success(let deviceInput):
             return deviceInput
@@ -134,15 +147,6 @@ public final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             }
             return .failure(.avCaptureError(error))
         }
-    }
-    
-    private func configure(with deviceInput: CaptureInputProtocol) {
-        captureSession.add(input: deviceInput)
-        captureSession.add(output: captureMetadataOutput)
-        
-        let captureQueue = QRCodeScanner.defaultCaptureQueue
-        captureMetadataOutput.setMetadataObjectsDelegate(self, queue: captureQueue)
-        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
     }
 }
 

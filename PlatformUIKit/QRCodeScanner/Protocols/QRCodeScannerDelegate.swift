@@ -8,12 +8,12 @@
 
 import PlatformKit
 
-public protocol QRCodeScannerDelegate: AnyObject {
+protocol QRCodeScannerDelegate: AnyObject {
     func scanComplete(with result: Result<String, QRScannerError>)
     func didStartScanning()
     func didStopScanning()
 }
 
 extension QRCodeScannerDelegate {
-    public func didStartScanning() { }
+    func didStartScanning() { }
 }

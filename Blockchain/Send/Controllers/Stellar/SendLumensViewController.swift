@@ -110,8 +110,6 @@ protocol SendXLMViewControllerDelegate: class {
     private var xlmFee: Decimal?
     private var baseReserve: Decimal?
     
-    private var qrScannerViewModel: QRCodeScannerViewModel<AddressQRCodeParser>?
-    
     // MARK: Factory
     
     @objc class func make(with provider: StellarServiceProvider) -> SendLumensViewController {
@@ -162,25 +160,21 @@ protocol SendXLMViewControllerDelegate: class {
 
     func scanQrCodeForDestinationAddress() {
         analyticsRecorder.record(event: AnalyticsEvents.Send.sendFormQrButtonClick(asset: .stellar))
-        guard let scanner = QRCodeScanner() else { return }
         
         let parser = AddressQRCodeParser(assetType: .stellar)
         let textViewModel = AddressQRCodeTextViewModel()
         
-        qrScannerViewModel = QRCodeScannerViewModel(
-            parser: parser,
-            additionalParsingOptions: .lax(routes: [.exchangeLinking]),
-            textViewModel: textViewModel,
-            scanner: scanner,
-            completed: { [weak self] result in
-                self?.handleAddressScan(result: result)
-            }
-        )
-        
-        let builder = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
+        let builder = QRCodeScannerViewControllerBuilder(
+                parser: parser,
+                textViewModel: textViewModel,
+                completed: { [weak self] result in
+                    self?.handleAddressScan(result: result)
+                }
+            )
+            .with(additionalParsingOptions: .lax(routes: [.exchangeLinking]))
             .with(presentationType: .modal(dismissWithAnimation: false))
         
-        guard let viewController = builder?.build() else { return }
+        guard let viewController = builder.build() else { return }
         
         DispatchQueue.main.async { [weak self] in
             self?.navigationController?.present(viewController, animated: true, completion: nil)

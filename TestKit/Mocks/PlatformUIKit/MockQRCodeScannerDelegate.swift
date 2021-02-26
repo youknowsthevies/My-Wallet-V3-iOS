@@ -7,7 +7,7 @@
 //
 
 import PlatformKit
-import PlatformUIKit
+@testable import PlatformUIKit
 
 final class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
     var scanCompleteCalled: (Result<String, QRScannerError>) -> Void = { _ in }

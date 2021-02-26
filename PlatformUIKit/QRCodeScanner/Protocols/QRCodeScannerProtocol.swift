@@ -6,7 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-public protocol QRCodeScannerProtocol: AnyObject {
+protocol QRCodeScannerProtocol: AnyObject {
     var videoPreviewLayer: CALayer { get }
     var delegate: QRCodeScannerDelegate? { get set }
 

@@ -7,7 +7,7 @@
 //
 
 import AVKit
-import PlatformUIKit
+@testable import PlatformUIKit
 
 final class CaptureSessionMock: CaptureSessionProtocol {
     var sessionPreset = AVCaptureSession.Preset.high

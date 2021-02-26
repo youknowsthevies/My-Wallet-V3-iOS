@@ -6,7 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformUIKit
+@testable import PlatformUIKit
 
 final class MockQRScannableArea: QRCodeScannableArea {
     var area: CGRect = .zero

@@ -8,7 +8,7 @@
 
 import UIKit
 
-public protocol QRCodeScannableArea {
+protocol QRCodeScannableArea {
     var area: CGRect { get }
 }
 

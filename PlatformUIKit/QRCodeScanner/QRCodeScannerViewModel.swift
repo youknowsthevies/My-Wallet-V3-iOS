@@ -33,16 +33,18 @@ protocol QRCodeScannerViewModelProtocol: class {
     func handleSelectedQRImage(_ image: UIImage)
 }
 
-public final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewModelProtocol {
+public enum QRCodeScannerParsingOptions {
     
-    public enum ParsingOptions {
-        
-        /// Strict approach, only act on the link using the given parser
-        case strict
-        
-        /// Lax parsing, allow acting on other routes at well
-        case lax(routes: [DeepLinkRoute])
-    }
+    /// Strict approach, only act on the link using the given parser
+    case strict
+    
+    /// Lax parsing, allow acting on other routes at well
+    case lax(routes: [DeepLinkRoute])
+}
+
+final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewModelProtocol {
+    
+    typealias CompletionHandler = ((Result<P.Success, P.Failure>) -> Void)
     
     var scanningStarted: (() -> Void)?
     var scanningStopped: (() -> Void)?
@@ -69,11 +71,11 @@ public final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScanne
     private let completed: ((Result<P.Success, P.Failure>) -> Void)
     private let deepLinkQRCodeRouter: DeepLinkQRCodeRouter
     
-    public init?(parser: P,
-                 additionalParsingOptions: ParsingOptions = .strict,
-                 textViewModel: QRCodeScannerTextViewModel,
-                 scanner: QRCodeScannerProtocol,
-                 completed: ((Result<P.Success, P.Failure>) -> Void)?) {
+    init?(parser: P,
+          additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
+          textViewModel: QRCodeScannerTextViewModel,
+          scanner: QRCodeScannerProtocol,
+          completed: CompletionHandler?) {
         guard let completed = completed else { return nil }
         
         let additionalLinkRoutes: [DeepLinkRoute]
@@ -128,15 +130,15 @@ public final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScanne
 }
 
 extension QRCodeScannerViewModel: QRCodeScannerDelegate {
-    public func scanComplete(with result: Result<String, QRScannerError>) {
+    func scanComplete(with result: Result<String, QRScannerError>) {
         scanComplete?(result)
     }
     
-    public func didStartScanning() {
+    func didStartScanning() {
         scanningStarted?()
     }
     
-    public func didStopScanning() {
+    func didStopScanning() {
         scanningStopped?()
     }
 }

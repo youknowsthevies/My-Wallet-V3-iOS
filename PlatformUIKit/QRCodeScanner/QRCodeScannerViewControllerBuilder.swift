@@ -11,45 +11,23 @@ import Foundation
 import PlatformKit
 
 public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
-    
-    private struct Dependencies<P: QRCodeScannerParsing> {
-        let parser: P
-        let textViewModel: QRCodeScannerTextViewModel
-        let completed: CompletionHandler
-    }
-    
-    private enum SetupType<P: QRCodeScannerParsing> {
-        case viewModel(QRCodeScannerViewModel<P>)
-        case dependencies(Dependencies<P>)
-    }
-    
+
     public typealias CompletionHandler = ((Result<P.Success, P.Failure>) -> Void)
     
     private var scanner: QRCodeScanner? = QRCodeScanner()
     private var loadingViewPresenter: LoadingViewPresenting = resolve()
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
+    private var additionalParsingOptions: QRCodeScannerParsingOptions = .strict
     
-    private let setupType: SetupType<P>
+    private let parser: P
+    private let textViewModel: QRCodeScannerTextViewModel
+    private let completed: CompletionHandler
     
     public init(parser: P, textViewModel: QRCodeScannerTextViewModel, completed: @escaping CompletionHandler) {
-        self.setupType = .dependencies(
-            Dependencies(
-                parser: parser,
-                textViewModel: textViewModel,
-                completed: completed
-            )
-        )
-    }
-    
-    public init?(viewModel: QRCodeScannerViewModel<P>?) {
-        guard let viewModel = viewModel else { return nil }
-        self.setupType = .viewModel(viewModel)
-    }
-    
-    public func with(scanner: QRCodeScanner?) -> QRCodeScannerViewControllerBuilder {
-        self.scanner = scanner
-        return self
+        self.parser = parser
+        self.textViewModel = textViewModel
+        self.completed = completed
     }
     
     public func with(loadingViewPresenter: LoadingViewPresenting,
@@ -64,45 +42,36 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
         return self
     }
     
+    public func with(additionalParsingOptions: QRCodeScannerParsingOptions) -> QRCodeScannerViewControllerBuilder {
+        self.additionalParsingOptions = additionalParsingOptions
+        return self
+    }
+    
     public func build() -> UIViewController? {
-        var scannerViewController: QRCodeScannerViewController?
-        switch setupType {
-        case .dependencies(let dependencies):
-            guard let scanner = scanner else { return nil }
-            
-            let vm = QRCodeScannerViewModel<P>(
-                parser: dependencies.parser,
-                additionalParsingOptions: .lax(routes: [.exchangeLinking]),
-                textViewModel: dependencies.textViewModel,
-                scanner: scanner,
-                completed: dependencies.completed
-            )
-
-            guard let qrCodeScannerViewModel = vm else { return nil }
-            
-            scannerViewController = QRCodeScannerViewController(
-                presentationType: presentationType,
-                viewModel: qrCodeScannerViewModel,
-                loadingViewPresenter: loadingViewPresenter,
-                loadingViewStyle: loadingViewStyle
-            )
-        case .viewModel(let qrCodeScannerViewModel):
-            scannerViewController = QRCodeScannerViewController(
-                presentationType: presentationType,
-                viewModel: qrCodeScannerViewModel,
-                loadingViewPresenter: loadingViewPresenter,
-                loadingViewStyle: loadingViewStyle
-            )
-        }
-        guard let scannerVC = scannerViewController else {
-            return nil
-        }
+        guard let scanner = scanner else { return nil }
+        
+        let vm = QRCodeScannerViewModel<P>(
+            parser: parser,
+            additionalParsingOptions: additionalParsingOptions,
+            textViewModel: textViewModel,
+            scanner: scanner,
+            completed: completed
+        )
+        
+        guard let qrCodeScannerViewModel = vm else { return nil }
+        
+        let scannerViewController = QRCodeScannerViewController(
+            presentationType: presentationType,
+            viewModel: qrCodeScannerViewModel,
+            loadingViewPresenter: loadingViewPresenter,
+            loadingViewStyle: loadingViewStyle
+        )
+        
         switch presentationType {
         case .modal:
-            let viewController = UINavigationController(rootViewController: scannerVC)
-            return viewController
+            return UINavigationController(rootViewController: scannerViewController)
         case .child:
-            return scannerVC
+            return scannerViewController
         }
     }
 }

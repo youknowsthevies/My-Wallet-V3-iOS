@@ -77,7 +77,6 @@ class SendPaxViewController: UIViewController {
     private var coordinator: SendPaxCoordinator!
     private let alertViewPresenter: AlertViewPresenter = AlertViewPresenter.shared
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    private var qrScannerViewModel: QRCodeScannerViewModel<AddressQRCodeParser>?
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
     
     private var maxAvailableTrigger: ActionableTrigger? {
@@ -437,25 +436,19 @@ extension SendPaxViewController {
 
 extension SendPaxViewController {
     func scanQrCodeForDestinationAddress() {
-        guard let scanner = QRCodeScanner() else { return }
-        
         let parser = AddressQRCodeParser(assetType: .pax)
         let textViewModel = AddressQRCodeTextViewModel()
-        
-        qrScannerViewModel = QRCodeScannerViewModel(
-            parser: parser,
-            additionalParsingOptions: .lax(routes: [.exchangeLinking]),
-            textViewModel: textViewModel,
-            scanner: scanner,
-            completed: { [weak self] result in
-                self?.handleAddressScan(result: result)
-            }
-        )
-        
-        let builder = QRCodeScannerViewControllerBuilder(viewModel: qrScannerViewModel)?
+        let builder = QRCodeScannerViewControllerBuilder(
+                parser: parser,
+                textViewModel: textViewModel,
+                completed: { [weak self] result in
+                    self?.handleAddressScan(result: result)
+                }
+            )
+            .with(additionalParsingOptions: .lax(routes: [.exchangeLinking]))
             .with(presentationType: .modal(dismissWithAnimation: false))
         
-        guard let viewController = builder?.build() else { return }
+        guard let viewController = builder.build() else { return }
         
         DispatchQueue.main.async { [weak self] in
             self?.navigationController?.present(viewController, animated: true, completion: nil)

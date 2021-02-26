@@ -8,7 +8,7 @@
 
 import AVKit
 
-public protocol CaptureSessionProtocol: AnyObject {
+protocol CaptureSessionProtocol: AnyObject {
     var current: AVCaptureSession? { get }
     var sessionPreset: AVCaptureSession.Preset { get set }
 
@@ -20,13 +20,13 @@ public protocol CaptureSessionProtocol: AnyObject {
 }
 
 extension AVCaptureSession: CaptureSessionProtocol {
-    public var current: AVCaptureSession? { self }
+    var current: AVCaptureSession? { self }
 
-    public func add(input: CaptureInputProtocol) {
+    func add(input: CaptureInputProtocol) {
         addInput(input.current!)
     }
 
-    public func add(output: CaptureOutputProtocol) {
+    func add(output: CaptureOutputProtocol) {
         addOutput(output.current!)
     }
 }
