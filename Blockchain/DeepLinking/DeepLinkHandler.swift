@@ -7,8 +7,8 @@
 //
 
 import DIKit
-import KYCKit
 import Firebase
+import KYCKit
 import PlatformKit
 import ToolKit
 

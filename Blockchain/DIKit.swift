@@ -44,6 +44,8 @@ extension DependencyContainer {
         
         factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
+        factory { DeepLinkHandler() as DeepLinkHandling }
+
         factory { DeepLinkRouter() as DeepLinkRouting }
         
         factory { UIDevice.current as DeviceInfo }
