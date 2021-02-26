@@ -1,18 +1,24 @@
 //
 //  DeepLinkRoute.swift
-//  Blockchain
+//  PlatformKit
 //
 //  Created by Chris Arriola on 10/29/18.
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import PlatformKit
+public enum DeepLinkRoute: CaseIterable {
+    case xlmAirdop
+    case kyc
+    case kycVerifyEmail
+    case kycDocumentResubmission
+    case exchangeVerifyEmail
+    case exchangeLinking
+}
 
 extension DeepLinkRoute {
 
-    static func route(from url: String,
-                      supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) -> DeepLinkRoute? {
+    public static func route(from url: String,
+                             supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) -> DeepLinkRoute? {
         guard let lastPathWithProperties = url.components(separatedBy: "/").last else {
             return nil
         }
@@ -28,7 +34,7 @@ extension DeepLinkRoute {
         parameterPairs?.forEach { pair in
             let paramComponents = pair.components(separatedBy: "=")
             guard let key = paramComponents.first,
-                let value = paramComponents.last?.removingPercentEncoding else {
+                  let value = paramComponents.last?.removingPercentEncoding else {
                 return
             }
             parameters[key] = value
@@ -45,12 +51,12 @@ extension DeepLinkRoute {
         supportedRoutes.first { route -> Bool in
             if route.supportedPath == path {
                 if let key = route.requiredKeyParam,
-                    let value = route.requiredValueParam,
-                    let routeParameters = parameters {
-                    
+                   let value = route.requiredValueParam,
+                   let routeParameters = parameters {
+
                     if let optionalKey = route.optionalKeyParameter,
-                        let value = routeParameters[optionalKey],
-                        let context = FlowContext(rawValue: value) {
+                       let value = routeParameters[optionalKey],
+                       let context = FlowContext(rawValue: value) {
                         return route == .exchangeVerifyEmail && context == .exchangeSignup
                     } else {
                         return routeParameters[key] == value
@@ -106,7 +112,7 @@ extension DeepLinkRoute {
             return nil
         }
     }
-    
+
     private var optionalKeyParameter: String? {
         switch self {
         case .exchangeVerifyEmail,

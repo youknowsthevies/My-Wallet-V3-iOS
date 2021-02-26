@@ -1,19 +1,10 @@
 //
-//  DeepLink.swift
+//  DeepLinkHandling.swift
 //  PlatformKit
 //
-//  Created by Paulo on 25/02/2021.
+//  Created by Paulo on 26/02/2021.
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
-
-public enum DeepLinkRoute: CaseIterable {
-    case xlmAirdop
-    case kyc
-    case kycVerifyEmail
-    case kycDocumentResubmission
-    case exchangeVerifyEmail
-    case exchangeLinking
-}
 
 public protocol DeepLinkHandling {
     func handle(deepLink: String)

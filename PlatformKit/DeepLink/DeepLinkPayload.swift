@@ -1,20 +1,18 @@
 //
 //  DeepLinkPayload.swift
-//  Blockchain
+//  PlatformKit
 //
 //  Created by Fred Cheng on 11/21/18.
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
-
-struct DeepLinkPayload {
-    let route: DeepLinkRoute
-    let params: [String: String]
+public struct DeepLinkPayload {
+    public let route: DeepLinkRoute
+    public let params: [String: String]
 }
 
 extension DeepLinkPayload {
-    static func create(from url: String, supportedRoutes: [DeepLinkRoute]) -> DeepLinkPayload? {
+    public static func create(from url: String, supportedRoutes: [DeepLinkRoute]) -> DeepLinkPayload? {
         guard let route = DeepLinkRoute.route(from: url, supportedRoutes: supportedRoutes) else { return nil }
         return DeepLinkPayload(route: route, params: extractParams(from: url))
     }
@@ -31,8 +29,8 @@ extension DeepLinkPayload {
         parameterPairs?.forEach { pair in
             let paramComponents = pair.components(separatedBy: "=")
             guard let key = paramComponents.first,
-                let value = paramComponents.last?.removingPercentEncoding else {
-                    return
+                  let value = paramComponents.last?.removingPercentEncoding else {
+                return
             }
             parameters[key] = value
         }
