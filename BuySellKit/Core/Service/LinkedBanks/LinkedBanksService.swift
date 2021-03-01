@@ -28,6 +28,10 @@ public protocol LinkedBanksServiceAPI {
 
     /// Fetches and updates the underlying cached value
     func fetchLinkedBanks() -> Single<[LinkedBankData]>
+
+    /// Deletes a linked bank by its id
+    /// - Parameter id: A `String` representing the bank id.
+    func deleteBank(by id: String) -> Completable
 }
 
 final class LinkedBanksService: LinkedBanksServiceAPI {
@@ -76,6 +80,10 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
 
     func fetchLinkedBanks() -> Single<[LinkedBankData]> {
         cachedValue.fetchValue
+    }
+
+    func deleteBank(by id: String) -> Completable {
+        client.deleteLinkedBank(for: id)
     }
 }
 

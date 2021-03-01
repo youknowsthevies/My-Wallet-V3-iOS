@@ -9,7 +9,11 @@
 import PlatformKit
 
 public struct Beneficiary {
-
+    public enum AccountType: Equatable {
+        case funds
+        case linkedBank
+    }
+    public let type: AccountType
     public let currency: FiatCurrency
     public let name: String
     public let identifier: String
@@ -17,13 +21,13 @@ public struct Beneficiary {
     public let limit: FiatValue?
     
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
+        self.type = .funds
         self.identifier = response.id
         self.name = response.name
         var address = response.address
         address.removeAll { $0 == "*" }
         self.account = address
         self.limit = limit
-        
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
@@ -33,7 +37,7 @@ public struct Beneficiary {
     init(linkedBankData: LinkedBankData) {
         self.identifier = linkedBankData.identifier
         self.currency = linkedBankData.currency
-        
+        self.type = .linkedBank
         let bankName = linkedBankData.account?.bankName ?? ""
         let accountType = linkedBankData.account?.type.title ?? ""
         let accountNumber = linkedBankData.account?.number ?? ""

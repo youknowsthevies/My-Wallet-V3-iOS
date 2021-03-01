@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -41,7 +41,7 @@ final class RemovePaymentMethodScreenInteractor {
         
         triggerRelay
             .flatMap(weak: self) { (self, _) -> Observable<State> in
-                self.remove(identifier: self.data.id)
+                self.remove(data: self.data)
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
@@ -59,8 +59,8 @@ final class RemovePaymentMethodScreenInteractor {
         self.data = data
     }
     
-    private func remove(identifier: String) -> Observable<State> {
-        deletionService.delete(by: identifier)
+    private func remove(data: PaymentMethodRemovalData) -> Observable<State> {
+        deletionService.delete(by: data)
             .andThen(.just(.value(())))
             .startWith(.calculating)
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))

@@ -30,70 +30,62 @@ public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
 final class BeneficiariesService: BeneficiariesServiceAPI {
 
     // MARK: - Properties
-    
-    public var beneficiaries: Observable<[Beneficiary]>
+
+    public let beneficiaries: Observable<[Beneficiary]>
 
     public let hasLinkedBank: Observable<Bool>
 
     let availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>>
 
-    private let fetchBeneficiaries: Observable<[Beneficiary]>
-
     private let beneficiariesRelay = BehaviorRelay<[Beneficiary]?>(value: nil)
     private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let client: BeneficiariesClientAPI
-    private let linkedBankClient: LinkedBanksClientAPI
+    private let linkedBankService: LinkedBanksServiceAPI
+    private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
         
     // MARK: - Setup
     
     init(client: BeneficiariesClientAPI = resolve(),
-         linkedBankClient: LinkedBanksClientAPI = resolve(),
+         linkedBankService: LinkedBanksServiceAPI = resolve(),
          featureFetcher: FeatureFetching = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
         self.client = client
-        self.linkedBankClient = linkedBankClient
+        self.linkedBankService = linkedBankService
         self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
-        
+        self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
+
         NotificationCenter.when(.logout) { [weak beneficiariesRelay] _ in
             beneficiariesRelay?.accept(nil)
         }
 
+        let paymentMethodsShared = paymentMethodTypesService.methodTypes
+            .share(replay: 1, scope: .whileConnected)
+
         let fetchBeneficiaries: Observable<[Beneficiary]> = Observable
             .combineLatest(
                 client.beneficiaries.asObservable(),
-                paymentMethodTypesService.methodTypes,
+                paymentMethodsShared,
+                linkedBankService.fetchLinkedBanks().asObservable(),
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
             )
-            .map { (beneficiaries: [BeneficiaryResponse], methodTypes: [PaymentMethodType], isEnabled: Bool) in
-                guard isEnabled else { return [] }
-                var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
-                let topLimits = methodTypes.accounts.map { $0.topLimit }
-                for limit in topLimits {
-                    limitsByBaseFiat[limit.currencyType] = limit
-                }
-                let activeLinkedBank = methodTypes.linkedBanks
-                    .filter { $0.isActive }
-
-                let linkedBanksResult: [Beneficiary] = activeLinkedBank.map(Beneficiary.init(linkedBankData:))
-
-                let result: [Beneficiary] = beneficiaries.compactMap {
-                    guard let currency = FiatCurrency(code: $0.currency) else { return nil }
-                    return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
-                }
-                return result + linkedBanksResult
-            }
-            .do(afterNext: { [weak beneficiariesRelay] beneficiaries in
+            .map(concat(beneficiaries:methodTypes:linkedBanks:isEnabled:))
+            .do(onNext: { _ in
+                beneficiariesServiceUpdater.reset()
+            },
+            afterNext: { [weak beneficiariesRelay] beneficiaries in
                 beneficiariesRelay?.accept(beneficiaries)
             })
             .catchErrorJustReturn([])
-            .share()
-
-        self.fetchBeneficiaries = fetchBeneficiaries
 
         beneficiaries = beneficiariesRelay
-            .flatMap { (beneficiaries) -> Observable<[Beneficiary]> in
+            .withLatestFrom(beneficiariesServiceUpdater.shouldRefresh) { ($0, $1) }
+            .flatMap { (beneficiaries, shouldUpdate) -> Observable<[Beneficiary]> in
+                guard !shouldUpdate else {
+                    return fetchBeneficiaries.asObservable()
+                }
                 guard let beneficiaries = beneficiaries else {
                     return fetchBeneficiaries.asObservable()
                 }
@@ -102,7 +94,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .distinctUntilChanged()
             .share(replay: 1, scope: .whileConnected)
 
-        availableCurrenciesForBankLinkage = paymentMethodTypesService.methodTypes
+        availableCurrenciesForBankLinkage = paymentMethodsShared
             .map { (methodTypes) in
                 Set(methodTypes.suggestedFunds)
             }
@@ -114,14 +106,20 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
     
     func fetch() -> Observable<[Beneficiary]> {
         performFetch()
-            .do(onNext: { [weak self] beneficiaries in
+            .do(afterNext: { [weak self] beneficiaries in
                 self?.beneficiariesRelay.accept(beneficiaries)
             })
     }
     
-    func delete(by bankId: String) -> Completable {
-        client.deleteBank(by: bankId)
-            .andThen(self.fetchBeneficiaries)
+    func delete(by data: PaymentMethodRemovalData) -> Completable {
+        guard case .beneficiary(let accountType) = data.type else {
+            return .just(event: .completed)
+        }
+        return deleteBank(by: data.id, for: accountType)
+            .andThen(self.fetch().take(1))
+            .do(onNext: { [weak self] _ in
+                self?.paymentMethodTypesService.clearPreferredPaymentIfNeeded(by: data.id)
+            })
             .ignoreElements()
     }
         
@@ -132,27 +130,48 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .combineLatest(
                 client.beneficiaries.asObservable(),
                 paymentMethodTypesService.methodTypes,
+                linkedBankService.fetchLinkedBanks().asObservable(),
                 featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
             )
-            .map { (beneficiaries: [BeneficiaryResponse], methodTypes: [PaymentMethodType], isEnabled: Bool) in
-                guard isEnabled else { return [] }
-                var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
-                let topLimits = methodTypes.accounts.map { $0.topLimit }
-                for limit in topLimits {
-                    limitsByBaseFiat[limit.currencyType] = limit
-                }
-                let activeLinkedBank = methodTypes.linkedBanks.filter(\.isActive)
-
-                let linkedBanksResult: [Beneficiary] = activeLinkedBank.map {
-                    Beneficiary(linkedBankData: $0)
-                }
-
-                let result: [Beneficiary] = beneficiaries.compactMap {
-                    guard let currency = FiatCurrency(code: $0.currency) else { return nil }
-                    return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
-                }
-                return result + linkedBanksResult
-            }
+            .map(concat(beneficiaries:methodTypes:linkedBanks:isEnabled:))
             .catchErrorJustReturn([])
     }
+
+    private func deleteBank(by id: String, for accountType: Beneficiary.AccountType) -> Completable {
+        switch accountType {
+        case .funds:
+            return client.deleteBank(by: id)
+        case .linkedBank:
+            return linkedBankService.deleteBank(by: id)
+        }
+    }
+}
+
+/// Concatenates any beneficiaries and any linked banks from `methodTypes` into a single array of `Beneficiary`
+/// - Parameters:
+///   - beneficiaries: An array containing beneficiaries responses
+///   - methodTypes: An array containing payment method tyoes
+///   - isEnabled: `True` if the `simpleBuyFundsEnabled` flag is enabled, otherwise `false`
+/// - Returns: An array of `Beneficiary` elements as a result of the contatenation
+private func concat(beneficiaries: [BeneficiaryResponse],
+                    methodTypes: [PaymentMethodType],
+                    linkedBanks: [LinkedBankData],
+                    isEnabled: Bool) -> [Beneficiary] {
+    guard isEnabled else { return [] }
+    var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
+    let topLimits = methodTypes.accounts.map { $0.topLimit }
+    for limit in topLimits {
+        limitsByBaseFiat[limit.currencyType] = limit
+    }
+    let activeLinkedBank = linkedBanks.filter(\.isActive)
+
+    let linkedBanksResult: [Beneficiary] = activeLinkedBank.map {
+        Beneficiary(linkedBankData: $0)
+    }
+
+    let result: [Beneficiary] = beneficiaries.compactMap {
+        guard let currency = FiatCurrency(code: $0.currency) else { return nil }
+        return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
+    }
+    return result + linkedBanksResult
 }

@@ -12,8 +12,8 @@ import RxSwift
 import ToolKit
 
 public protocol PaymentMethodDeletionServiceAPI: AnyObject {
-    /// Deletes a payment-method with a given identifier
-    func delete(by id: String) -> Completable
+    /// Deletes a payment-method with a given removal data
+    func delete(by data: PaymentMethodRemovalData) -> Completable
 }
 
 final class CardDeletionService: PaymentMethodDeletionServiceAPI {
@@ -22,19 +22,25 @@ final class CardDeletionService: PaymentMethodDeletionServiceAPI {
     
     private let client: CardDeletionClientAPI
     private let cardListService: CardListServiceAPI
-    
+    private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
+
     // MARK: - Setup
     
     init(client: CardDeletionClientAPI = resolve(),
-         cardListService: CardListServiceAPI = resolve()) {
-        self.cardListService = cardListService
+         cardListService: CardListServiceAPI = resolve(),
+         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
         self.client = client
+        self.cardListService = cardListService
+        self.paymentMethodTypesService = paymentMethodTypesService
     }
     
-    func delete(by id: String) -> Completable {
+    func delete(by data: PaymentMethodRemovalData) -> Completable {
         client
-            .deleteCard(by: id)
+            .deleteCard(by: data.id)
             .andThen(cardListService.fetchCards())
+            .do(onSuccess: { [weak self] _ in
+                self?.paymentMethodTypesService.clearPreferredPaymentIfNeeded(by: data.id)
+            })
             .asCompletable()
     }
 }

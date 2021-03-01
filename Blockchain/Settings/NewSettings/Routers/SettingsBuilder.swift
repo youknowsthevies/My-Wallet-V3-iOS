@@ -15,6 +15,15 @@ protocol SettingsBuilding: AnyObject {
 }
 
 final class SettingsBuilder: SettingsBuilding {
+
+    private let cardDeletionService: PaymentMethodDeletionServiceAPI
+    private let beneficiariesService: BeneficiariesServiceAPI
+
+    init(cardDeletionService: PaymentMethodDeletionServiceAPI = resolve(),
+         beneficiariesService: BeneficiariesServiceAPI = resolve()) {
+        self.cardDeletionService = cardDeletionService
+        self.beneficiariesService = beneficiariesService
+    }
     
     /// Generate remove card payment method view controller
     /// - Parameter cardData: CC data
@@ -23,7 +32,8 @@ final class SettingsBuilder: SettingsBuilding {
         let data = PaymentMethodRemovalData(cardData: cardData)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Card.remove,
-            removalData: data
+            removalData: data,
+            deletionService: cardDeletionService
         )
     }
     
@@ -34,13 +44,14 @@ final class SettingsBuilder: SettingsBuilding {
         let data = PaymentMethodRemovalData(beneficiary: beneficiary)
         return removePaymentMethodViewController(
             buttonLocalizedString: LocalizationConstants.Settings.Bank.remove,
-            removalData: data
+            removalData: data,
+            deletionService: beneficiariesService
         )
     }
     
     private func removePaymentMethodViewController(buttonLocalizedString: String,
                                                    removalData: PaymentMethodRemovalData,
-                                                   deletionService: PaymentMethodDeletionServiceAPI = resolve()) -> UIViewController {
+                                                   deletionService: PaymentMethodDeletionServiceAPI) -> UIViewController {
         let interactor = RemovePaymentMethodScreenInteractor(
             data: removalData,
             deletionService: deletionService

@@ -65,6 +65,7 @@ final class RemovePaymentMethodScreenPresenter {
             with: interactor.data.image,
             accessibilityIdSuffix: AccessibilityIDs.badge
         )
+        badgeImageViewModel.marginOffsetRelay.accept(Spacing.standard)
         
         removeButtonViewModel = .destructive(with: buttonLocalizedString)
     }

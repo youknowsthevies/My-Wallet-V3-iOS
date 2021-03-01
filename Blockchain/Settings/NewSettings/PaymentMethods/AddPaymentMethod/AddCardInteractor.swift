@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
 import BuySellKit
+import RxSwift
 
 final class AddCardInteractor: AddSpecificPaymentMethodInteractorAPI {
     

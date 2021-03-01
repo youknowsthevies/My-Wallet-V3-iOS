@@ -8,8 +8,8 @@
 
 import DIKit
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 public protocol CardListServiceAPI: class {

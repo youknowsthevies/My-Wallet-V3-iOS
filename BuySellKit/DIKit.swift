@@ -145,9 +145,11 @@ extension DependencyContainer {
         
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
-        factory { LinkedBanksService() as LinkedBanksServiceAPI }
+        single { LinkedBanksService() as LinkedBanksServiceAPI }
 
         // MARK: - Services - Payment Methods
+
+        single { BeneficiariesServiceUpdater() as BeneficiariesServiceUpdaterAPI }
 
         single { BeneficiariesService() as BeneficiariesServiceAPI }
 

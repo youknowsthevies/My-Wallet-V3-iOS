@@ -57,8 +57,8 @@ public enum PaymentMethodType: Equatable {
             return card.identifier
         case .suggested:
             return nil
-        case .linkedBank:
-            return nil
+        case .linkedBank(let data):
+            return data.identifier
         case .account:
             return nil
         }
@@ -66,31 +66,48 @@ public enum PaymentMethodType: Equatable {
 }
 
 public protocol PaymentMethodTypesServiceAPI {
-    
+
+    /// Streams the current payment method types
     var methodTypes: Observable<[PaymentMethodType]> { get }
-        
+
+    /// Streams any linked card
     var cards: Observable<[CardData]> { get }
 
+    /// Streams any linked banks
     var linkedBanks: Observable<[LinkedBankData]> { get }
-        
+
+    /// A `BehaviorRelay` to adjust the preferred method type
     var preferredPaymentMethodTypeRelay: BehaviorRelay<PaymentMethodType?> { get }
-    
+
+    /// Streams the preferred method type
     var preferredPaymentMethodType: Observable<PaymentMethodType?> { get }
-    
+
+    /// Fetches any linked cards and marks the given cardId as the preferred payment method
+    ///
+    /// - Parameter cardId: A `String` for the bank account to be preferred
+    /// - Returns: A `Completable` trait indicating the action is completed
     func fetchCards(andPrefer cardId: String) -> Completable
 
+    /// Fetches any linked banks and marks the given bankId as the preferred payment method
+    ///
+    /// - Parameter bankId: A `String` for the bank account to be preferred
+    /// - Returns: A `Completable` trait indicating the action is completed
     func fetchLinkBanks(andPrefer bankId: String) -> Completable
+
+    /// Clears a previously preferred payment, if needed, useful when deleting a card or linked bank.
+    /// If the given id doesn't match the current payment method, this will do nothing
+    func clearPreferredPaymentIfNeeded(by id: String)
 }
 
 /// A service that aggregates all the payment method types and possible methods.
 final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
-    
+
     var methodTypes: Observable<[PaymentMethodType]> {
         provideMethodTypes()
     }
-    
+
     var cards: Observable<[CardData]> {
         methodTypes.map { $0.cards }
     }
@@ -132,7 +149,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let balanceProvider: BalanceProviding
     private let linkedBankService: LinkedBanksServiceAPI
     private let featureConfiguring: FeatureConfiguring
-        
+    private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     // MARK: - Setup
     
     init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -141,7 +158,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
          cardListService: CardListServiceAPI = resolve(),
          balanceProvider: BalanceProviding = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
-         featureConfiguring: FeatureConfiguring = resolve()) {
+         featureConfiguring: FeatureConfiguring = resolve(),
+         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
@@ -149,6 +167,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.balanceProvider = balanceProvider
         self.linkedBankService = linkedBankService
         self.featureConfiguring = featureConfiguring
+        self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
     }
         
     func fetchCards(andPrefer cardId: String) -> Completable {
@@ -201,12 +220,21 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     }
                     .first(where: { $0.identifier == bankId })
             }
-            .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] linkedBank in
+            .do(onSuccess: { [weak preferredPaymentMethodTypeRelay, beneficiariesServiceUpdater] linkedBank in
                 guard let data = linkedBank else { return }
+                beneficiariesServiceUpdater.markForRefresh()
                 preferredPaymentMethodTypeRelay?.accept(.linkedBank(data))
             })
             .asCompletable()
     }
+
+    func clearPreferredPaymentIfNeeded(by id: String) {
+        if preferredPaymentMethodTypeRelay.value?.methodId == id {
+            preferredPaymentMethodTypeRelay.accept(nil)
+        }
+    }
+
+    // MARK: - Private
     
     private func merge(paymentMethods: [PaymentMethod],
                        cards: [CardData],
@@ -300,7 +328,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
             }
-            .share(replay: 1, scope: .whileConnected)
     }
 
     private func methodTypesWithLinkedBanks() -> Observable<[PaymentMethodType]> {
@@ -314,7 +341,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
             }
-            .share(replay: 1, scope: .whileConnected)
     }
 }
 
