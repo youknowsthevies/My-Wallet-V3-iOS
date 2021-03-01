@@ -18,12 +18,6 @@ protocol YodleeScreenBuildable {
 
 final class YodleeScreenBuilder: YodleeScreenBuildable {
 
-    private let stateService: StateServiceAPI
-
-    init(stateService: StateServiceAPI) {
-        self.stateService = stateService
-    }
-
     func build(withListener listener: YodleeScreenListener, data: BankLinkageData) -> YodleeScreenRouting {
         let webConfiguration = provideYodleeConfiguration()
         let messageHandler = YodleeMessageHandler(webViewConfiguration: webConfiguration)
@@ -34,7 +28,6 @@ final class YodleeScreenBuilder: YodleeScreenBuildable {
         let viewController = YodleeScreenViewController(webConfiguration: webConfiguration)
         let interactor = YodleeScreenInteractor(presenter: viewController,
                                                 bankLinkageData: data,
-                                                stateService: stateService,
                                                 yodleeRequestProvider: yodleeRequestProvider,
                                                 yodleeMessageService: messageService,
                                                 yodleeActivationService: activationService,

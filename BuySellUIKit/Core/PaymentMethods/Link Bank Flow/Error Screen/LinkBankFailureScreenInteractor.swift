@@ -16,7 +16,7 @@ protocol LinkBankFailureScreenPresentable: Presentable {}
 
 protocol LinkBankFailureScreenListener: class {
     var retryAction: PublishRelay<LinkBankFlow.Action> { get }
-    func closeFlow()
+    func closeFlow(isInteractive: Bool)
 }
 
 final class LinkBankFailureScreenInteractor: Interactor, LinkBankFailureScreenInteractable {
@@ -38,7 +38,7 @@ final class LinkBankFailureScreenInteractor: Interactor, LinkBankFailureScreenIn
 
         cancelTapped
             .subscribe(onNext: { [listener] _ in
-                listener?.closeFlow()
+                listener?.closeFlow(isInteractive: false)
             })
             .disposeOnDeactivate(interactor: self)
     }

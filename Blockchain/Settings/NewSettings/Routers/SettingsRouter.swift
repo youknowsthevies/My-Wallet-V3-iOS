@@ -51,6 +51,9 @@ final class SettingsRouter: SettingsRouterAPI {
     private unowned let appCoordinator: AppCoordinator
 
     private let builder: SettingsBuilding
+
+    /// The router for linking a new bank
+    private var linkBankFlowRouter: LinkBankFlowStarter?
     
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
@@ -157,7 +160,7 @@ final class SettingsRouter: SettingsRouterAPI {
             cardRouter.load()
         case .showAddBankScreen(let fiatCurrency):
             if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled && fiatCurrency == .USD {
-                // TODO: Present the ACH Flow
+                showLinkBankFlow()
                 return
             }
             appCoordinator.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: false)
@@ -263,6 +266,29 @@ final class SettingsRouter: SettingsRouterAPI {
         case .none:
             break
         }
+    }
+
+    private func showLinkBankFlow() {
+        let builder = LinkBankFlowRootBuilder()
+        // we need to pass the the navigation controller so we can present and dismiss from within the flow.
+        let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
+        self.linkBankFlowRouter = router
+        let flowDismissed: () -> Void = { [weak self] in
+            guard let self = self else { return }
+            self.linkBankFlowRouter = nil
+        }
+        router.startFlow()
+            .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
+            .skipWhile { $0.shouldSkipEffect }
+            .subscribe(onNext: { [weak self] effect in
+                guard case let .closeFlow(isInteractive) = effect, !isInteractive else {
+                    flowDismissed()
+                    return
+                }
+                self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: flowDismissed)
+            })
+            .disposed(by: disposeBag)
+
     }
     
     private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {

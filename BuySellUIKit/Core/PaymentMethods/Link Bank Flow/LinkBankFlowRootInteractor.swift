@@ -31,7 +31,7 @@ enum LinkBankFlow {
 protocol LinkBankFlowRootRouting: Routing {
     func route(to screen: LinkBankFlow.Screen)
     func closeFailureScreen()
-    func closeFlow()
+    func closeFlow(isInteractive: Bool)
     func returnToSplashScreen()
 }
 
@@ -39,20 +39,28 @@ final class LinkBankFlowRootInteractor: Interactor,
                                         LinkBankFlowRootInteractable {
 
     // MARK: - Properties
+    let linkBankFlowEffect: Observable<LinkBankFlowEffect>
     weak var router: LinkBankFlowRootRouting?
 
     // MARK: - Private Properties
+    private let bankFlowEffectRelay = PublishRelay<LinkBankFlowEffect>()
     internal let retryAction = PublishRelay<LinkBankFlow.Action>()
     private let supportedParters: Set<BankLinkageData.Partner> = [.yodlee]
 
     // MARK: - Injected
     private let linkedBankService: LinkedBanksServiceAPI
     private let loadingViewPresenter: LoadingViewPresenting
+    private let beneficiariesService: BeneficiariesServiceAPI
 
     init(linkedBankService: LinkedBanksServiceAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
+         beneficiariesService: BeneficiariesServiceAPI = resolve()) {
         self.linkedBankService = linkedBankService
         self.loadingViewPresenter = loadingViewPresenter
+        self.beneficiariesService = beneficiariesService
+        linkBankFlowEffect = bankFlowEffectRelay
+            .asObservable()
+            .share(replay: 1, scope: .whileConnected)
         super.init()
     }
 
@@ -74,8 +82,20 @@ final class LinkBankFlowRootInteractor: Interactor,
             .subscribe(onNext: handleInitialRouting)
             .disposeOnDeactivate(interactor: self)
 
+        // Refresh the underlying value of BeneficiariesService once we've linked a bank
+        linkBankFlowEffect
+            .filter { $0 == .bankLinked }
+            .flatMap { [beneficiariesService] effect -> Single<LinkBankFlowEffect> in
+                beneficiariesService.fetch()
+                    .take(1)
+                    .asSingle()
+                    .map { _ in LinkBankFlowEffect.bankLinked }
+            }
+            .subscribe()
+            .disposeOnDeactivate(interactor: self)
+
         retryAction
-            .subscribe(onNext: { [router] _ in
+            .subscribe(onNext: { [weak router] _ in
                 router?.closeFailureScreen()
             })
             .disposeOnDeactivate(interactor: self)
@@ -85,12 +105,16 @@ final class LinkBankFlowRootInteractor: Interactor,
         router?.route(to: screen)
     }
 
-    func closeFlow() {
-        router?.closeFlow()
+    func closeFlow(isInteractive: Bool) {
+        bankFlowEffectRelay.accept(.closeFlow(isInteractive))
     }
 
     func returnToSplashScreen() {
         router?.returnToSplashScreen()
+    }
+
+    func updateBankLinked() {
+        bankFlowEffectRelay.accept(.bankLinked)
     }
 
     // MARK: - Private

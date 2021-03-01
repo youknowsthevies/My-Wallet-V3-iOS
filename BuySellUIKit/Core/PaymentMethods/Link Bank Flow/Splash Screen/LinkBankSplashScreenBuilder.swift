@@ -17,17 +17,10 @@ protocol LinkBankSplashScreenBuildable {
 
 final class LinkBankSplashScreenBuilder: LinkBankSplashScreenBuildable {
 
-    private let stateService: StateServiceAPI
-
-    init(stateService: StateServiceAPI) {
-        self.stateService = stateService
-    }
-
     func build(withListener listener: LinkBankSplashScreenListener, data: BankLinkageData) -> LinkBankSplashScreenRouting {
         let viewController = LinkBankSplashScreenViewController()
         let contentReducer = LinkBankSplashScreenContentReducer()
         let interactor = LinkBankSplashScreenInteractor(presenter: viewController,
-                                                        stateService: stateService,
                                                         bankLinkageData: data,
                                                         contentReducer: contentReducer)
         interactor.listener = listener

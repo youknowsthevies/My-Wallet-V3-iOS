@@ -19,7 +19,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
                                         YodleeScreenViewControllable {
 
     private let disposeBag = DisposeBag()
-    private let closeTriggerred = PublishSubject<Void>()
+    private let closeTriggerred = PublishSubject<Bool>()
     private let backTriggerred = PublishSubject<Void>()
 
     private let webview: WKWebView
@@ -38,12 +38,13 @@ final class YodleeScreenViewController: BaseScreenViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
+        // so that we'll be able to listen for system dismissal methods
+        navigationController?.presentationController?.delegate = self
         setupUI()
     }
 
     override func navigationBarTrailingButtonPressed() {
-        closeTriggerred.onNext(())
+        closeTriggerred.onNext(false)
     }
 
     override func navigationBarLeadingButtonPressed() {
@@ -89,7 +90,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
             .disposed(by: disposeBag)
 
         let closeTapped = closeTriggerred
-            .map { _ in YodleeScreen.Effect.closeFlow }
+            .map { isInteractive in YodleeScreen.Effect.closeFlow(isInteractive) }
             .asDriverCatchError()
 
         let backTapped = backTriggerred
@@ -140,5 +141,12 @@ final class YodleeScreenViewController: BaseScreenViewController,
                 view.isHidden = hidden
             }
         )
+    }
+}
+
+extension YodleeScreenViewController: UIAdaptivePresentationControllerDelegate {
+    /// Called when a pull-down dismissal happens
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        closeTriggerred.onNext(true)
     }
 }

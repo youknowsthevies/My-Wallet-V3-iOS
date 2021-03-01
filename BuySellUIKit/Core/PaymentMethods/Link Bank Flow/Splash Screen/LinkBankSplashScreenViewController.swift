@@ -17,7 +17,9 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
                                                 LinkBankSplashScreenViewControllable {
 
     private let disposeBag = DisposeBag()
-    private let closeTriggerred = PublishSubject<Void>()
+
+    /// Stream `true` in case the close was triggered from `UIAdaptivePresentationControllerDelegate` otherwise false
+    private let closeTriggerred = PublishSubject<Bool>()
 
     private lazy var topBackgroundImageView = UIImageView()
     private lazy var topImageView = UIImageView()
@@ -33,12 +35,13 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-
+        // so that we'll be able to listen for system dismissal methods
+        navigationController?.presentationController?.delegate = self
         setupUI()
     }
 
     override func navigationBarTrailingButtonPressed() {
-        closeTriggerred.onNext(())
+        closeTriggerred.onNext(false)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -95,7 +98,7 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
             .asDriverCatchError()
 
         let closeTapped = closeTriggerred
-            .map { _ in LinkBankSplashScreenEffects.closeFlow }
+            .map { isInteractive in LinkBankSplashScreenEffects.closeFlow(isInteractive) }
             .asDriverCatchError()
 
         return .merge(continueTapped, closeTapped, linkTapped)
@@ -166,5 +169,12 @@ final class LinkBankSplashScreenViewController: BaseScreenViewController,
         continueButton.layoutToSuperview(.leading, offset: Spacing.inner)
         continueButton.layoutToSuperview(.trailing, offset: -Spacing.inner)
         continueButton.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
+    }
+}
+
+extension LinkBankSplashScreenViewController: UIAdaptivePresentationControllerDelegate {
+    /// Called when a pull-down dismissal happens
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        closeTriggerred.onNext(true)
     }
 }

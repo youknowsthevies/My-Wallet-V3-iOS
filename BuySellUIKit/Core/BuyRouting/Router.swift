@@ -391,15 +391,28 @@ public final class Router: RouterAPI {
     }
 
     private func showLinkBankFlow() {
-        let builder = LinkBankFlowRootBuilder(stateService: stateService)
+        let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
         self.linkBankFlowRouter = router
-        let flowDimissed: () -> Void = { [weak self] in
+        let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
         }
-        router.startFlow(flowDismissed: flowDimissed)
+        router.startFlow()
+            .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
+            .skipWhile { $0.shouldSkipEffect }
+            .subscribe(onNext: { [weak self] effect in
+                guard let self = self else { return }
+                guard case let .closeFlow(isInteractive) = effect, !isInteractive else {
+                    self.stateService.previousRelay.accept(())
+                    flowDismissed()
+                    return
+                }
+                self.stateService.previousRelay.accept(())
+                self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: flowDismissed)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func showInelligibleCurrency(with currency: FiatCurrency) {

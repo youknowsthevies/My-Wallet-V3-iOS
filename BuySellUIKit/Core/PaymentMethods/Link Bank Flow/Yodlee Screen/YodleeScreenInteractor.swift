@@ -46,7 +46,7 @@ enum YodleeScreen {
 
     enum Effect: Equatable {
         case link(url: URL)
-        case closeFlow
+        case closeFlow(_ isInteractive: Bool)
         case back
         case none
     }
@@ -61,8 +61,9 @@ protocol YodleeScreenPresentable: Presentable {
 }
 
 protocol YodleeScreenListener: class {
-    func closeFlow()
+    func closeFlow(isInteractive: Bool)
     func returnToSplashScreen()
+    func updateBankLinked()
 }
 
 final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentable>, YodleeScreenInteractable {
@@ -71,7 +72,6 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     weak var listener: YodleeScreenListener?
 
     private let bankLinkageData: BankLinkageData
-    private let stateService: StateServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let yodleeRequestProvider: YodleeRequestProvider
     private let yodleeMessageService: YodleeMessageService
@@ -80,14 +80,12 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
     init(presenter: YodleeScreenPresentable,
          bankLinkageData: BankLinkageData,
-         stateService: StateServiceAPI,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          yodleeRequestProvider: YodleeRequestProvider,
          yodleeMessageService: YodleeMessageService,
          yodleeActivationService: YodleeActivateService,
          contentReducer: YodleeScreenContentReducer) {
         self.bankLinkageData = bankLinkageData
-        self.stateService = stateService
         self.analyticsRecorder = analyticsRecorder
         self.yodleeRequestProvider = yodleeRequestProvider
         self.yodleeMessageService = yodleeMessageService
@@ -135,6 +133,13 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             }
             .share(replay: 1, scope: .whileConnected)
 
+        activationResult
+            .map(\.isActive)
+            .subscribe { [weak listener] _ in
+                listener?.updateBankLinked()
+            }
+            .disposeOnDeactivate(interactor: self)
+
         let activationContentAction = activationResult
             .distinctUntilChanged()
             .do(onNext: { [weak self] state in
@@ -169,7 +174,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             .filter(\.isActive)
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { _ in
-                self.listener?.closeFlow()
+                self.listener?.closeFlow(isInteractive: false)
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -189,7 +194,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
 
         Signal.merge(contentReducer.cancelButtonViewModel.tap,
                      contentReducer.okButtonViewModel.tap)
-            .map { _ in YodleeScreen.Effect.closeFlow }
+            .map { _ in YodleeScreen.Effect.closeFlow(false) }
             .emit(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)
 
@@ -208,9 +213,9 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         switch effect {
         case .link(let url):
             router?.route(to: .link(url: url))
-        case .closeFlow:
+        case .closeFlow(let isInteractive):
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
-            listener?.closeFlow()
+            listener?.closeFlow(isInteractive: isInteractive)
         case .back:
             listener?.returnToSplashScreen()
         case .none:
@@ -227,7 +232,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
             return .none // will be handled as an action (successMessage)
         case .closed:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchClose)
-            listener?.closeFlow()
+            listener?.closeFlow(isInteractive: false)
         case .error:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbAchError)
             return .none // will be handled as an action (errorMessageAction)

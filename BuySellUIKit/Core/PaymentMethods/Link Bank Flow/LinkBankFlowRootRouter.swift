@@ -8,16 +8,49 @@
 
 import PlatformUIKit
 import RIBs
+import RxCocoa
+import RxSwift
+
+/// Represents an effect as part of the LinkBank Flow
+public enum LinkBankFlowEffect: Equatable {
+    /// Bank is linked
+    case bankLinked
+    /// Close of the flow should occur,
+    /// `true` if the close event occured from a "pull down" to close event, otherwise `false`
+    case closeFlow(_ isInteractive: Bool)
+    /// No action required
+    case none
+
+    /// Helper variable to check if self is `closeFlow`
+    public var isCloseEffect: Bool {
+        guard case .closeFlow = self else {
+            return false
+        }
+        return true
+    }
+
+    /// Returns `true` if the given effect should be
+    /// skipped as part of the flow output, otherwise `false`
+    public var shouldSkipEffect: Bool {
+        switch self {
+        case .closeFlow:
+            return false
+        case .bankLinked, .none:
+            return true
+        }
+    }
+}
 
 public protocol LinkBankFlowStarter: AnyObject {
     /// Helper method for starting the withdraw flow
-    func startFlow(flowDismissed: @escaping () -> Void)
+    func startFlow() -> Observable<LinkBankFlowEffect>
 }
 
 protocol LinkBankFlowRootInteractable: Interactable,
                                        LinkBankSplashScreenListener,
                                        YodleeScreenListener,
                                        LinkBankFailureScreenListener {
+    var linkBankFlowEffect: Observable<LinkBankFlowEffect> { get }
     var router: LinkBankFlowRootRouting? { get set }
 }
 
@@ -27,7 +60,6 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
 
     private var dismissFlow: (() -> Void)?
 
-    private let stateService: StateServiceAPI
     private let presentingController: NavigationControllerAPI?
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
@@ -36,12 +68,10 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private var navigationController: UINavigationController?
 
     init(interactor: LinkBankFlowRootInteractable,
-         stateService: StateServiceAPI,
          presentingController: NavigationControllerAPI?,
          splashScreenBuilder: LinkBankSplashScreenBuildable,
          yodleeScreenBuilder: YodleeScreenBuildable,
          failureScreenBuilder: LinkBankFailureScreenBuildable) {
-        self.stateService = stateService
         self.presentingController = presentingController
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
@@ -80,18 +110,15 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
         self.navigationController?.popViewController(animated: true)
     }
 
-    func closeFlow() {
-        stateService.previousRelay.accept(())
-        presentingController?.dismiss(animated: true, completion: { [weak self] in
-            self?.dismissFlow?()
-        })
+    func closeFlow(isInteractive: Bool) {
+        // no-op, will be handled by `linkBankFlowEffect` stream
     }
 
     // MARK: - LinkBankFlowStarter
-    func startFlow(flowDismissed: @escaping () -> Void) {
-        dismissFlow = flowDismissed
+    func startFlow() -> Observable<LinkBankFlowEffect> {
         interactable.activate()
         load()
+        return interactor.linkBankFlowEffect
     }
 
     // MARK: - Private methods

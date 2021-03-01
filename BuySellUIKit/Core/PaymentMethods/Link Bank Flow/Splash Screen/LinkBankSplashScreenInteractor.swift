@@ -16,7 +16,7 @@ import RxSwift
 import ToolKit
 
 enum LinkBankSplashScreenEffects {
-    case closeFlow
+    case closeFlow(_ isInteractive: Bool)
     case continueTapped
     case linkTapped(TitledLink)
 }
@@ -30,7 +30,7 @@ protocol LinkBankSplashScreenPresentable: Presentable {
 }
 
 protocol LinkBankSplashScreenListener: AnyObject {
-    func closeFlow()
+    func closeFlow(isInteractive: Bool)
     func route(to screen: LinkBankFlow.Screen)
 }
 
@@ -40,17 +40,15 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
     weak var router: LinkBankSplashScreenRouting?
     weak var listener: LinkBankSplashScreenListener?
 
-    private let stateService: StateServiceAPI
     private let bankLinkageData: BankLinkageData
     private let contentReducer: LinkBankSplashScreenContentReducer
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(presenter: LinkBankSplashScreenPresentable,
-         stateService: StateServiceAPI,
          bankLinkageData: BankLinkageData,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          contentReducer: LinkBankSplashScreenContentReducer) {
-        self.stateService = stateService
+
         self.bankLinkageData = bankLinkageData
         self.contentReducer = contentReducer
         self.analyticsRecorder = analyticsRecorder
@@ -72,8 +70,8 @@ final class LinkBankSplashScreenInteractor: PresentableInteractor<LinkBankSplash
 
     private func handle(effect: LinkBankSplashScreenEffects) {
         switch effect {
-        case .closeFlow:
-            listener?.closeFlow()
+        case .closeFlow(let isInteractive):
+            listener?.closeFlow(isInteractive: isInteractive)
         case .continueTapped:
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSplashCTA(partner: partnerForAnalytics()))
             listener?.route(to: .yodlee(data: bankLinkageData))
