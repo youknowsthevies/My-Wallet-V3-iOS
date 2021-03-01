@@ -58,15 +58,12 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
             action: action,
             selectionPageReducer: reducer
         )
-        let selectionPageService = TargetSelectionPageService(
-            accountProvider: accountProvider,
-            action: action
-        )
         let interactor = TargetSelectionPageInteractor(
+            targetSelectionPageModel: .init(interactor: TargetSelectionInteractor()),
             presenter: presenter,
-            targetSelectionService: selectionPageService,
             accountProvider: accountProvider,
-            listener: listener
+            listener: listener,
+            action: action
         )
         return TargetSelectionPageRouter(interactor: interactor, viewController: viewController)
     }

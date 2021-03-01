@@ -252,7 +252,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     // MARK: - Setup
 
     private func setupNavigationBar() {
-        titleViewStyle = .text(value: LocalizationConstants.Swap.swap)
+        titleViewStyle = .text(value: displayBundle.title)
         let mayGoBack = (navigationController?.children.count ?? 0) > 1
         set(barStyle: .darkContent(),
             leadingButtonStyle: mayGoBack ? .back : .none,

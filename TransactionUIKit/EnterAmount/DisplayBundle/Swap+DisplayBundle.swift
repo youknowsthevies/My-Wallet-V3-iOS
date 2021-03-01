@@ -39,6 +39,7 @@ extension DisplayBundle {
         )
 
         return DisplayBundle(
+            title: LocalizedString.Swap.swap,
             colors: colors,
             events: events,
             accessibilityIdentifiers: accessibilityIdentifiers,

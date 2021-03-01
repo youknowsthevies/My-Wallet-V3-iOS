@@ -39,6 +39,7 @@ extension DisplayBundle {
         )
 
         return DisplayBundle(
+            title: LocalizedString.Send.send,
             colors: colors,
             events: events,
             accessibilityIdentifiers: accessibilityIdentifiers,
@@ -48,8 +49,8 @@ extension DisplayBundle {
                     max: SendAnalyticsEvent()
                 ),
                 strings: .init(
-                    useMin: LocalizedString.Swap.AmountPresenter.LimitView.useMin,
-                    useMax: LocalizedString.Swap.AmountPresenter.LimitView.useMax
+                    useMin: LocalizedString.Send.AmountPresenter.LimitView.useMin,
+                    useMax: LocalizedString.Send.AmountPresenter.LimitView.useMax
                 ),
                 accessibilityIdentifiers: .init()
             )

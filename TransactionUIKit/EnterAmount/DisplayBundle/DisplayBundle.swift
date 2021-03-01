@@ -52,18 +52,36 @@ struct DisplayBundle {
         }
     }
 
+    let title: String
     let amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
     let colors: Colors
     let events: Events
     let accessibilityIdentifiers: AccessibilityIdentifiers
 
-    init(colors: Colors,
+    init(title: String,
+         colors: Colors,
          events: Events,
          accessibilityIdentifiers: AccessibilityIdentifiers,
          amountDisplayBundle: AmountTranslationPresenter.DisplayBundle) {
+        self.title = title
         self.colors = colors
         self.events = events
         self.accessibilityIdentifiers  = accessibilityIdentifiers
         self.amountDisplayBundle = amountDisplayBundle
+    }
+    
+    static func bundle(for action: AssetAction, sourceAccount: SingleAccount) -> DisplayBundle {
+        switch action {
+        case .swap:
+            return DisplayBundle.swap(sourceAccount: sourceAccount)
+        case .send:
+            return DisplayBundle.send(sourceAccount: sourceAccount)
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            unimplemented()
+        }
     }
 }

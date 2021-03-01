@@ -40,10 +40,10 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
             
             let cell: UITableViewCell
             switch item.presenter {
+            case .radioSelection(let presenter):
+                cell = self.radioCell(for: indexPath, presenter: presenter)
             case .singleAccount(let presenter):
                 cell = self.balanceCell(for: indexPath, presenter: presenter)
-            case .emptyDestination(let viewModel):
-                cell = self.selectionCell(for: indexPath, viewModel: viewModel)
             }
             cell.selectionStyle = .none
             return cell
@@ -117,15 +117,16 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         stateWait.map(\.sections)
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-
+        
         stateWait.map(\.actionButtonModel)
             .drive(actionButton.rx.viewModel)
             .disposed(by: disposeBag)
         
         let selectionEffect = tableView.rx
             .modelSelected(TargetSelectionPageSectionModel.Item.self)
-            .compactMap(\.account)
-            .map { TargetSelectionPageInteractor.Effects.select($0) }
+            .filter(\.isSelectable)
+            .map(\.account)
+            .map { account in TargetSelectionPageInteractor.Effects.select(account) }
             .asDriverCatchError()
 
         let backButtonEffect = backButtonRelay
@@ -135,8 +136,20 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         let closeButtonEffect = closeButtonRelay
             .map { TargetSelectionPageInteractor.Effects.closed }
             .asDriverCatchError()
+        
+        let nextButtonEffect = stateWait
+            .map(\.actionButtonModel)
+            .flatMap { viewModel -> Signal<Void> in
+                viewModel.tap
+            }
+            .asObservable()
+            .map { _ in  TargetSelectionPageInteractor.Effects.next }
+            .asDriverCatchError()
 
-        return .merge(backButtonEffect, closeButtonEffect, selectionEffect)
+        return .merge(backButtonEffect,
+                      closeButtonEffect,
+                      selectionEffect,
+                      nextButtonEffect)
     }
     
     // MARK: - Private Methods
@@ -144,11 +157,12 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     private func setupUI() {
         tableView.backgroundColor = .white
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 80
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.register(SelectionButtonTableViewCell.self)
+        tableView.register(RadioSelectionTableViewCell.self)
 
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .leading, .trailing)
@@ -160,6 +174,12 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         actionButton.layoutToSuperview(.trailing, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
         actionButton.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true, offset: -Spacing.outer)
         actionButton.layout(dimension: .height, to: 48)
+    }
+    
+    private func radioCell(for indexPath: IndexPath, presenter: RadioSelectionCellPresenter) -> UITableViewCell {
+        let cell = tableView.dequeue(RadioSelectionTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
     }
 
     private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenting) -> UITableViewCell {

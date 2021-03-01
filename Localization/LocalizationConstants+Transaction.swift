@@ -13,7 +13,11 @@ extension LocalizationConstants {
         public enum Confirmation {
             public enum Error { }
         }
-        public enum Send { }
+        public enum Send {
+            public enum AmountPresenter {
+                public enum LimitView { }
+            }
+        }
         public enum Swap {
             public enum KYC { }
             public enum Completion {
@@ -108,9 +112,9 @@ public extension LocalizationConstants.Transaction {
         "To",
         comment: "To"
     )
-    static let orSelectAWallet = NSLocalizedString(
-        "or Select a Wallet",
-        comment: "or Select a Wallet"
+    static let selectAWallet = NSLocalizedString(
+        "Select a Wallet",
+        comment: "Select a Wallet"
     )
 }
 
@@ -130,6 +134,17 @@ public extension LocalizationConstants.Transaction.Send {
     static let to = NSLocalizedString(
         "To",
         comment: "To"
+    )
+}
+
+public extension LocalizationConstants.Transaction.Send.AmountPresenter.LimitView {
+    static let useMin = NSLocalizedString(
+        "The minimum send is %@",
+        comment: "The minimum send is"
+    )
+    static let useMax = NSLocalizedString(
+        "You can send up to %@",
+        comment: "You can send up to"
     )
 }
 

@@ -33,7 +33,10 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
 
     func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State> {
         let action = self.action
-        let sourceSections = interactorState.map(\.sourceInteractors)
+        let sourceSection = interactorState
+            .map(\.interactors)
+            .compactMap(\.sourceInteractor)
+            .map { [$0] }
             .map { items -> [TargetSelectionPageCellItem] in
                 items.map { interactor in
                     TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
@@ -44,7 +47,9 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
 
-        let destinationSections = interactorState.map(\.destinationInteractors)
+        let destinationSections = interactorState
+            .map(\.interactors)
+            .map(\.destinationInteractors)
             .map { items -> [TargetSelectionPageCellItem] in
                 items.map { interactor in
                     TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
@@ -54,16 +59,25 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 guard let self = self else { return .empty() }
                 return .just(.destination(header: self.provideDestinationSectionHeader(action: action), items: items))
             }
+        
+        let button = interactorState
+            .map(\.actionButtonEnabled)
+            .map { canContinue -> ButtonViewModel in
+                let viewModel: ButtonViewModel = .primary(with: LocalizationConstants.Transaction.next)
+                viewModel.isEnabledRelay.accept(canContinue)
+                return viewModel
+            }
+            .asDriver()
+        
+        let sections = Driver
+            .combineLatest(sourceSection, destinationSections)
+            .map { [$0] + [$1] }
 
         let navigationModel = self.navigationModel
-        return Driver.combineLatest(sourceSections, destinationSections)
-            .map { [$0] + [$1] }
-            .map { sections -> TargetSelectionPagePresenter.State in
-                TargetSelectionPagePresenter.State(
-                    actionButtonModel: .primary(with: LocalizationConstants.Transaction.next),
-                    navigationModel: navigationModel,
-                    sections: sections
-                )
+        return Driver.combineLatest(sections, button)
+            .map { (values) -> TargetSelectionPagePresenter.State in
+                let (sections, button) = values
+                return .init(actionButtonModel: button, navigationModel: navigationModel, sections: sections)
             }
     }
 
@@ -111,7 +125,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             return TargetSelectionHeaderBuilder(
                 headerType: .section(
                     .init(
-                        sectionTitle: LocalizationConstants.Transaction.orSelectAWallet
+                        sectionTitle: LocalizationConstants.Transaction.to
                     )
                 )
             )

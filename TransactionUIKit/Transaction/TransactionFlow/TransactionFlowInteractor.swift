@@ -221,9 +221,10 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .enterPassword:
             unimplemented()
         case .selectTarget:
-            let swapP2Enabled = internalFeatureService.isEnabled(.swapP2)
-            let sendP2Enabled = internalFeatureService.isEnabled(.sendP2)
-            guard !(swapP2Enabled || sendP2Enabled) else {
+            /// `TargetSelectionViewController` should only be shown for `SendP2`
+            /// and `.send`. Otherwise we should show the account picker to select
+            /// the destination/target.
+            if internalFeatureService.isEnabled(.sendP2) && action == .send {
                 router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
                 return
             }

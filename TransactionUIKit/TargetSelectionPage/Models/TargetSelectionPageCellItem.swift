@@ -14,27 +14,60 @@ struct TargetSelectionPageCellItem: IdentifiableType {
     // MARK: - Properties
 
     enum Presenter {
+        case radioSelection(RadioSelectionCellPresenter)
         case singleAccount(AccountCurrentBalanceCellPresenter)
-        case emptyDestination(SelectionButtonViewModel)
     }
 
     enum Interactor {
+        case singleAccountAvailableTarget(SingleAccount)
+        case singleAccountSelection(SingleAccount)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
-        case emptyDestination(SelectionButtonViewModel)
+        
+        var account: SingleAccount {
+            switch self {
+            case .singleAccountAvailableTarget(let account):
+                return account
+            case .singleAccountSelection(let account):
+                return account
+            case .singleAccount(let account, _):
+                return account
+            }
+        }
+    }
+    
+    var isSelectable: Bool {
+        switch presenter {
+        case .radioSelection:
+            return true
+        case .singleAccount:
+            return false
+        }
     }
 
     var identity: AnyHashable {
-        guard let id = account?.id else {
-            return UUID()
-        }
-        return id
+        account.id
     }
 
-    let account: BlockchainAccount?
+    let account: BlockchainAccount
     let presenter: Presenter
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
+        case .singleAccountAvailableTarget(let account):
+            self.account = account
+            presenter = .radioSelection(
+                RadioSelectionCellPresenter(
+                    account: account
+                )
+            )
+        case .singleAccountSelection(let account):
+            self.account = account
+            presenter = .radioSelection(
+                RadioSelectionCellPresenter(
+                    account: account,
+                    selected: true
+                )
+            )
         case .singleAccount(let account, let interactor):
             self.account = account
             presenter = .singleAccount(
@@ -45,9 +78,6 @@ struct TargetSelectionPageCellItem: IdentifiableType {
                     separatorVisibility: .hidden
                 )
             )
-        case .emptyDestination(let viewModel):
-            self.account = nil
-            presenter = .emptyDestination(viewModel)
         }
     }
 }

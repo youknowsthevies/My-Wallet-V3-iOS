@@ -39,7 +39,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
     }
 
     func build(listener: EnterAmountPageListener, sourceAccount: SingleAccount, action: AssetAction) -> EnterAmountPageRouter {
-        let displayBundle = DisplayBundle.swap(sourceAccount: sourceAccount)
+        let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
         let defaultCryptoCurrency: CryptoCurrency = sourceAccount.currencyType.cryptoCurrency!
 
         let initialActiveInput: ActiveAmountInput
