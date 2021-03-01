@@ -10,6 +10,9 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Transaction {
+        public enum TargetSource {
+            public enum Card { }
+        }
         public enum Confirmation {
             public enum Error { }
         }
@@ -134,6 +137,15 @@ public extension LocalizationConstants.Transaction.Send {
     static let to = NSLocalizedString(
         "To",
         comment: "To"
+    )
+}
+
+public extension LocalizationConstants.Transaction.TargetSource.Card {
+    static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
+    // swiftlint:disable line_length
+    static let description = NSLocalizedString(
+        "At this time, you can only transfer %@ from your Trade Wallet to your %@ Wallet. Once %@ is in your Wallet you can transfer to external addresses.",
+        comment: "At this time, you can only transfer %@ from your Trade Wallet to your %@ Wallet. Once %@ is in your Wallet you can transfer to external addresses."
     )
 }
 

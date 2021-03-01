@@ -40,6 +40,8 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
             
             let cell: UITableViewCell
             switch item.presenter {
+            case .cardView(let viewModel):
+                cell = self.cardCell(for: indexPath, viewModel: viewModel)
             case .radioSelection(let presenter):
                 cell = self.radioCell(for: indexPath, presenter: presenter)
             case .singleAccount(let presenter):
@@ -125,7 +127,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         let selectionEffect = tableView.rx
             .modelSelected(TargetSelectionPageSectionModel.Item.self)
             .filter(\.isSelectable)
-            .map(\.account)
+            .compactMap(\.account)
             .map { account in TargetSelectionPageInteractor.Effects.select(account) }
             .asDriverCatchError()
 
@@ -161,8 +163,8 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
-        tableView.register(SelectionButtonTableViewCell.self)
         tableView.register(RadioSelectionTableViewCell.self)
+        tableView.register(CardTableViewCell.self)
 
         view.addSubview(tableView)
         tableView.layoutToSuperview(.top, .leading, .trailing)
@@ -187,9 +189,9 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         cell.presenter = presenter
         return cell
     }
-
-    private func selectionCell(for indexPath: IndexPath, viewModel: SelectionButtonViewModel) -> UITableViewCell {
-        let cell = tableView.dequeue(SelectionButtonTableViewCell.self, for: indexPath)
+    
+    private func cardCell(for indexPath: IndexPath, viewModel: CardViewViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(CardTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }

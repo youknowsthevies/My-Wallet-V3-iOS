@@ -22,6 +22,7 @@ protocol TargetSelectionPageReducerAPI {
 
 final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
 
+    private typealias LocalizationIds = LocalizationConstants.Transaction.TargetSource
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
@@ -46,6 +47,11 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 guard let self = self else { return .empty() }
                 return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
+        
+        let sourceAccount = interactorState
+            .map(\.interactors)
+            .compactMap(\.sourceInteractor)
+            .map(\.account)
 
         let destinationSections = interactorState
             .map(\.interactors)
@@ -54,6 +60,21 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 items.map { interactor in
                     TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
                 }
+            }
+            .withLatestFrom(sourceAccount) { [unowned self] (items, sourceAccount) -> [TargetSelectionPageCellItem] in
+                guard self.action == .send else { return items }
+                guard sourceAccount is TradingAccount else { return items }
+                let currencyCode = sourceAccount.currencyType.displayCode
+                let title = LocalizationIds.Card.internalSendOnly
+                let description = String(format: LocalizationIds.Card.description, currencyCode, currencyCode, currencyCode)
+                return [
+                    .init(
+                        cardView: .transactionViewModel(
+                            with: title,
+                            description: description
+                        )
+                    )
+                ] + items
             }
             .flatMap { [weak self] items -> Driver<TargetSelectionPageSectionModel> in
                 guard let self = self else { return .empty() }

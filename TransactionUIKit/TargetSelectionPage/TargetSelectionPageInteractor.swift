@@ -198,7 +198,7 @@ extension TargetSelectionPageInteractor {
                 /// and append it as a `singleAccountSelection`. This will show the
                 /// radio cell as selected.
                 if let account = target {
-                    destinations = destinations.filter { $0.account.label != account.label }
+                    destinations = destinations.filter { $0.account.id != account.id }
                     destinations.append(.singleAccountSelection(account))
                 }
                 /// Order the destinations alphabetically.

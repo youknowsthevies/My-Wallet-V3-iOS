@@ -13,6 +13,13 @@ import RxSwift
 
 public final class RadioSelectionCellPresenter {
     
+    // MARK: - Public Properties
+    
+    /// The image corresponding to `imageName`
+    public let image: Driver<UIImage?>
+    
+    // MARK: - Content
+    
     enum Content {
         /// Shows a `WalletView` - A view with a `BadgeImageView`,
         /// the name of the wallet, and its balance in crypto.
@@ -26,6 +33,8 @@ public final class RadioSelectionCellPresenter {
         }
     }
     
+    // MARK: - Internal
+    
     let content: Content
     
     /// Selection relay
@@ -34,8 +43,7 @@ public final class RadioSelectionCellPresenter {
     /// Name for radio image
     let imageName = BehaviorRelay<String?>(value: nil)
     
-    /// The image corresponding to `imageName`
-    public let image: Driver<UIImage?>
+    // MARK: - Init
     
     public init(account: SingleAccount, selected: Bool = false) {
         content = .wallet(.init(account: account))
@@ -62,8 +70,6 @@ extension RadioSelectionCellPresenter: IdentifiableType, Equatable {
         switch (lhs.content, rhs.content) {
         case (.wallet(let left), .wallet(let right)):
             return left.identifier == right.identifier
-        default:
-            return false
         }
     }
 }

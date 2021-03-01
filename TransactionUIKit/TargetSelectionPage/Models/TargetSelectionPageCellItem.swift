@@ -15,6 +15,7 @@ struct TargetSelectionPageCellItem: IdentifiableType {
 
     enum Presenter {
         case radioSelection(RadioSelectionCellPresenter)
+        case cardView(CardViewViewModel)
         case singleAccount(AccountCurrentBalanceCellPresenter)
     }
 
@@ -39,17 +40,32 @@ struct TargetSelectionPageCellItem: IdentifiableType {
         switch presenter {
         case .radioSelection:
             return true
-        case .singleAccount:
+        case .singleAccount,
+             .cardView:
             return false
         }
     }
 
     var identity: AnyHashable {
-        account.id
+        switch presenter {
+        case .cardView(let viewModel):
+            return viewModel.identifier
+        case .radioSelection,
+             .singleAccount:
+            guard let account = account else {
+                fatalError("Expected an account")
+            }
+            return account.id
+        }
     }
 
-    let account: BlockchainAccount
+    let account: BlockchainAccount?
     let presenter: Presenter
+    
+    init(cardView: CardViewViewModel) {
+        account = nil
+        presenter = .cardView(cardView)
+    }
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
