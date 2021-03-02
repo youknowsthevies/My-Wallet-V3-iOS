@@ -268,8 +268,9 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     }
                 }
             }
+            .sorted()
             .map { PaymentMethodType.suggested($0) }
-
+            
         let fundsCurrencies = Set(
             paymentMethods
                 .compactMap { method -> CurrencyType? in
@@ -308,7 +309,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             }
             .map { PaymentMethodType.linkedBank($0) }
         
-        return balances + activeBanks + cardTypes + suggestedMethods
+        return balances + cardTypes + activeBanks + suggestedMethods
     }
 
     private func provideMethodTypes() -> Observable<[PaymentMethodType]> {

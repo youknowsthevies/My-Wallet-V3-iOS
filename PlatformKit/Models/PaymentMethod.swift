@@ -16,10 +16,9 @@ public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
 }
 
 /// The available payment methods
-public struct PaymentMethod: Equatable {
+public struct PaymentMethod: Equatable, Comparable {
         
-    public enum MethodType: Equatable {
-        
+    public enum MethodType: Equatable, Comparable {
         /// Card payment method
         case card(Set<CardType>)
 
@@ -80,7 +79,20 @@ public struct PaymentMethod: Equatable {
                 return .bankTransfer
             }
         }
-        
+
+        var sortIndex: Int {
+            switch self {
+            case .bankTransfer:
+                return 0
+            case .card:
+                return 1
+            case .funds:
+                return 2
+            case .bankAccount:
+                return 3
+            }
+        }
+
         public init?(type: PaymentMethodPayloadType,
                      subTypes: [String],
                      currency: FiatCurrency,
@@ -127,6 +139,10 @@ public struct PaymentMethod: Equatable {
             lhs.rawType == rhs.rawType
         }
 
+        public static func < (lhs: PaymentMethod.MethodType, rhs: PaymentMethod.MethodType) -> Bool {
+            lhs.sortIndex < rhs.sortIndex
+        }
+
         /// Helper method to determine if the passed MethodType is the same as self
         /// - Parameter otherType: A `MethodType` for the comparison
         /// - Returns: `True` if it is the same MethodType as the passed one otherwise false
@@ -157,6 +173,10 @@ public struct PaymentMethod: Equatable {
     
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type == rhs.type
+    }
+
+    public static func < (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
+        lhs.type < rhs.type
     }
 
     public init(type: MethodType, max: FiatValue, min: FiatValue) {
