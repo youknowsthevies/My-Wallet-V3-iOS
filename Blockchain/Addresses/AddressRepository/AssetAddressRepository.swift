@@ -113,20 +113,23 @@ enum AssetAddressType {
 
         // Only one address for ethereum and stellar
         appSettings.swipeAddressForEther = wallet.getEtherAddress()
-        appSettings.swipeAddressForStellar = stellarWalletAccountRepository.defaultAccount?.publicKey
-        paxAssetAccountRepository
-            .assetAccountDetails
-            .subscribe(onSuccess: { details in
-                appSettings.swipeAddressForPax = details.account.accountAddress
-            })
-            .disposed(by: disposeBag)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            appSettings.swipeAddressForStellar = self.stellarWalletAccountRepository.defaultAccount?.publicKey
+            self.paxAssetAccountRepository
+                .assetAccountDetails
+                .subscribe(onSuccess: { details in
+                    appSettings.swipeAddressForPax = details.account.accountAddress
+                })
+                .disposed(by: self.disposeBag)
 
-        tetherAssetAccountRepository
-            .assetAccountDetails
-            .subscribe(onSuccess: { details in
-                appSettings.swipeAddressForTether = details.account.accountAddress
-            })
-            .disposed(by: disposeBag)
+            self.tetherAssetAccountRepository
+                .assetAccountDetails
+                .subscribe(onSuccess: { details in
+                    appSettings.swipeAddressForTether = details.account.accountAddress
+                })
+                .disposed(by: self.disposeBag)
+        }
         
         // Retrieve swipe addresses for bitcoin and bitcoin cash
         let assetTypesWithHDAddresses = [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash]

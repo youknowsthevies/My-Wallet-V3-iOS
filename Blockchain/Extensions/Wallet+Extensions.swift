@@ -20,17 +20,21 @@ extension Wallet: MnemonicAccessAPI {
     }
     
     public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        var secondPassword = secondPassword
-        if secondPassword?.isEmpty == true {
-            secondPassword = nil
-        }
-        if needsSecondPassword(), secondPassword == nil {
-            return .error(MnemonicAccessError.generic)
-        }
-        guard let mnemonic = getMnemonic(secondPassword) else {
-            return .error(MnemonicAccessError.generic)
-        }
-        return .just(mnemonic)
+        Single.just(())
+            .observeOn(MainScheduler.asyncInstance)
+            .flatMap(weak: self) { (self, _) -> Single<Mnemonic> in
+                var secondPassword = secondPassword
+                if secondPassword?.isEmpty == true {
+                    secondPassword = nil
+                }
+                if self.needsSecondPassword(), secondPassword == nil {
+                    return .error(MnemonicAccessError.generic)
+                }
+                guard let mnemonic = self.getMnemonic(secondPassword) else {
+                    return .error(MnemonicAccessError.generic)
+                }
+                return .just(mnemonic)
+            }
     }
 
     public var mnemonic: Maybe<Mnemonic> {
