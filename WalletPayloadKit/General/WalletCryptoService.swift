@@ -1,6 +1,6 @@
 //
 //  WalletCryptoService.swift
-//  PlatformKit
+//  WalletPayloadKit
 //
 //  Created by Daniel Huri on 17/01/2020.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
@@ -9,7 +9,6 @@
 import DIKit
 import RxSwift
 import ToolKit
-import WalletPayloadKit
 
 public enum WalletCryptoPBKDF2Iterations {
     /// Used for Auto Pair QR code decryption/encryption
@@ -58,15 +57,22 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
     /// - Parameter pair: A pair of key and data used in the decription process.
     public func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
-        decryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)).single
-            .catchError(weak: self) { (self, error) -> Single<String> in
-                self.decryptJS(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
-                    .do(onSuccess: { _ in
-                        // For now log the error only
-                        self.recorder.error(error)
-                        // Later we should crash if JS decryption succeeds but native decryption fails
-                        // fatalError(error.localizedDescription)
-                    })
+        Single.just(decryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)))
+            .flatMap(weak: self) { (self, result) -> Single<String> in
+                switch result {
+                case .success(let payload):
+                    return .just(payload)
+                case .failure(let payloadDecryptionError):
+                    return self.decryptJS(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations))
+                        .do(onSuccess: { _ in
+                            // For now log the error only
+                            self.recorder.error(payloadDecryptionError)
+                            // Crash for internal builds if JS decryption succeeds but native decryption fails
+                            #if INTERNAL_BUILD
+                            fatalError("Native decryption failed. Error: \(String(describing: payloadDecryptionError))")
+                            #endif
+                        })
+                }
             }
     }
     
@@ -78,16 +84,12 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Private methods
     
-    private func encryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, WalletCryptoError> {
-        payloadCryptor
-            .encrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
-            .mapError { _ in WalletCryptoError.unknown }
+    private func encryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
+        payloadCryptor.encrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
     
-    private func decryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, WalletCryptoError> {
-        payloadCryptor
-            .decrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
-            .mapError { _ in WalletCryptoError.unknown }
+    private func decryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
+        payloadCryptor.decrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
     
     private func decryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Single<String> {

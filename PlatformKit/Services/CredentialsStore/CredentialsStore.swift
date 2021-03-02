@@ -9,6 +9,7 @@
 import DIKit
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 final class CredentialsStore: CredentialsStoreAPI {
 

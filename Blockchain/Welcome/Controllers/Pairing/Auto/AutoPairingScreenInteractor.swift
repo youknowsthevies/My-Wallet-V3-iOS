@@ -36,10 +36,8 @@ final class AutoPairingScreenInteractor {
     // MARK: - Setup
     
     init(service: AutoWalletPairingServiceAPI = AutoWalletPairingService(
-            repository: WalletManager.shared.repository,
-            jsContextProvider: WalletManager.shared,
-            recorder: CrashlyticsRecorder()
-        ),
+            repository: WalletManager.shared.repository
+         ),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
          analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.service = service

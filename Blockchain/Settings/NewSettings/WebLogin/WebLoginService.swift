@@ -13,6 +13,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import WalletPayloadKit
 
 protocol WebLoginQRCodeServiceAPI: class {
     var qrCode: Single<String> { get }

@@ -14,6 +14,8 @@ extension DependencyContainer {
      
     public static var walletPayloadKit = module {
         
+        factory { WalletCryptoService() as WalletCryptoServiceAPI }
+        
         factory { WalletPayloadCryptor() as WalletPayloadCryptorAPI }
         
         factory { PayloadCrypto() as PayloadCryptoAPI }

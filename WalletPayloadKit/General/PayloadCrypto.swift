@@ -18,6 +18,7 @@ enum PayloadCryptoError: Error {
     case unsupportedPayloadVersion
     case encryptionFailed
     case decryptionFailed
+    case failedToDecryptV1Payload
 }
 
 struct WalletData {
@@ -301,7 +302,7 @@ final class PayloadCrypto: PayloadCryptoAPI {
             }
         }
         
-        return .failure(.decryptionFailed)
+        return .failure(.failedToDecryptV1Payload)
     }
     
     private static func randomIV(_ count: Int) -> Array<UInt8> {
