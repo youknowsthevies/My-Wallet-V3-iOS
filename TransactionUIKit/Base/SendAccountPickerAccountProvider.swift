@@ -10,44 +10,56 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
+/// An AccountPickerAccountProvider for the Send Screen.
+/// This only supports `.send` action.
 final class SendAccountPickerAccountProvider: AccountPickerAccountProviding {
-    
+
+    private enum Error: LocalizedError {
+        case failedLoadingWallet(asset: String, name: String)
+
+        var errorDescription: String? {
+            switch self {
+            case let .failedLoadingWallet(asset, name):
+                return "Failed to load wallet asset '\(asset)' name '\(name)'"
+            }
+        }
+    }
+
     // MARK: - Private Properties
 
-    private let action: AssetAction
     private let coincore: Coincore
-    private let singleAccountsOnly: Bool
+    private let errorRecorder: ErrorRecording
 
     // MARK: - Properties
 
     public var accounts: Single<[BlockchainAccount]> {
-        let singleAccountsOnly = self.singleAccountsOnly
-        return coincore.allAccounts
-            .map { allAccountsGroup -> [BlockchainAccount] in
-                if singleAccountsOnly {
-                    return allAccountsGroup.accounts
-                }
-                return [allAccountsGroup] + allAccountsGroup.accounts
+        coincore.allAccounts
+            .map(\.accounts)
+            .map { accounts in
+                accounts.filter { $0 is NonCustodialAccount }
             }
-            .map(weak: self) { (self, accounts) -> [BlockchainAccount] in
-                switch self.action {
-                case .send:
-                    return accounts.filter { $0 is NonCustodialAccount }
-                default:
-                    fatalError("Only send supported.")
+            .flatMapFilter(
+                action: .send,
+                failSequence: false,
+                onError: { [weak self] account in
+                    let error: Error
+                    if let account = account as? SingleAccount {
+                        error = .failedLoadingWallet(asset: account.currencyType.displaySymbol, name: account.label)
+                    } else {
+                        error = .failedLoadingWallet(asset: "unknown", name: account.label)
+                    }
+                    self?.errorRecorder.error(error)
                 }
-            }
-            .flatMapFilter(action: action)
+            )
     }
 
     // MARK: - Init
 
-    public init(singleAccountsOnly: Bool,
-                coincore: Coincore = resolve(),
-                action: AssetAction) {
-        self.action = action
+    public init(coincore: Coincore = resolve(),
+                errorRecorder: ErrorRecording = resolve()) {
         self.coincore = coincore
-        self.singleAccountsOnly = singleAccountsOnly
+        self.errorRecorder = errorRecorder
     }
 }
