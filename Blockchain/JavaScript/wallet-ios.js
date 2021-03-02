@@ -1689,6 +1689,46 @@ MyWalletPhone.recoverWithPassphrase = function(email, password, passphrase) {
     };
 }
 
+MyWalletPhone.recoverWithMetadata = function(passphrase) {
+
+    if (Helpers.isValidBIP39Mnemonic(passphrase)) {
+        console.log('recovering wallet');
+
+        var accountProgress = function(obj) {
+            var totalReceived = obj['total_received'];
+            var finalBalance = obj['final_balance'];
+            objc_on_progress_recover_with_passphrase_finalBalance(totalReceived, finalBalance);
+        }
+
+        var generateUUIDProgress = function() {
+            objc_loading_start_generate_uuids();
+        }
+
+        var decryptWalletProgress = function() {
+            objc_loading_start_decrypt_wallet();
+        }
+
+        var startedRestoreHDWallet = function() {
+            objc_loading_start_recover_wallet();
+        }
+
+        var success = function (recoveredWalletDictionary) {
+            console.log('recovery success');
+            objc_on_success_recover_with_passphrase(recoveredWalletDictionary);
+        }
+
+        var error = function(error) {
+            console.log('recovery error after validation: ' + error);
+            objc_on_error_recover_with_passphrase(error);
+        }
+
+        MyWallet.recoverFromMetadata(passphrase, success, error, startedRestoreHDWallet, accountProgress, generateUUIDProgress, decryptWalletProgress);
+    } else {
+        console.log('Invalid passphrase');
+        objc_on_error_recover_with_passphrase('invalid passphrase');
+    };
+}
+
 MyWalletPhone.setLabelForAddress = function(address, label) {
     if (label == '') {
         label = null;

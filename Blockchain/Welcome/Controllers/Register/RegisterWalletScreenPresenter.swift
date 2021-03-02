@@ -76,7 +76,7 @@ final class RegisterWalletScreenPresenter {
     
     // MARK: - Setup
     
-    init(alertPresenter: AlertViewPresenter = .shared,
+    init(alertPresenter: AlertViewPresenter = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          interactor: RegisterWalletScreenInteracting,
          type: RegistrationType = .default) {
@@ -166,8 +166,24 @@ final class RegisterWalletScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
+
+    private lazy var prepareOnce: Void = {
+        do {
+            try interactor.prepare()
+        } catch {
+            alertPresenter.internetConnection()
+            loadingViewPresenter.hide()
+        }
+    }()
+
+    func viewDidAppear() {
+        _ = prepareOnce
+    }
     
     func viewDidLoad() {
+        if type == .recovery {
+            loadingViewPresenter.showCircular(with: LocalizationConstants.Authentication.loadingWallet)
+        }
         emailTextFieldViewModel.focusRelay.accept(.on)
     }
     

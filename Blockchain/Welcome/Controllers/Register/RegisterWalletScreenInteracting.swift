@@ -15,14 +15,16 @@ struct WalletRegistrationContent {
     var password = ""
 }
 
-protocol RegisterWalletScreenInteracting: class {
+protocol RegisterWalletScreenInteracting: AnyObject {
     
     /// Content relay
     var contentStateRelay: BehaviorRelay<WalletRegistrationContent> { get }
     
     /// Reflects errors received from the JS layer
     var error: Observable<String> { get }
-    
+
+    func prepare() throws
+
     /// Executes the registration (creation / recovery)
     func execute() throws
 }

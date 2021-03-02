@@ -60,6 +60,8 @@ final class CreateWalletScreenInteractor: NSObject {
 // MARK: - RegisterWalletScreenInteracting
 
 extension CreateWalletScreenInteractor: RegisterWalletScreenInteracting {
+    func prepare() throws { }
+
     func execute() throws {
         guard reachability.canConnect else {
             throw InternetReachability.ErrorType.internetUnreachable

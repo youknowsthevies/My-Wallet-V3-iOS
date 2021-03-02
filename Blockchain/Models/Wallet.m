@@ -565,12 +565,16 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf loading_start_recover_wallet];
     };
 
-    self.context[@"objc_on_success_recover_with_passphrase"] = ^(NSDictionary *totalReceived, NSString *finalBalance) {
-        [weakSelf on_success_recover_with_passphrase:totalReceived];
+    self.context[@"objc_on_success_recover_with_passphrase"] = ^(NSDictionary *recoveredWalletDictionary) {
+        [weakSelf on_success_recover_with_passphrase:recoveredWalletDictionary];
     };
 
     self.context[@"objc_on_error_recover_with_passphrase"] = ^(NSString *error) {
         [weakSelf on_error_recover_with_passphrase:error];
+    };
+
+    self.context[@"objc_on_progress_recover_with_passphrase_finalBalance"] = ^(NSString *totalReceived, NSString *finalBalance) {
+        [weakSelf on_progress_recover_with_passphrase:totalReceived finalBalance:finalBalance];
     };
 
 #pragma mark Settings
@@ -585,10 +589,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     
     self.context[@"objc_on_get_btc_exchange_rates_success"] = ^(NSString *currencies) {
         [weakSelf on_get_btc_exchange_rates_success:currencies];
-    };
-
-    self.context[@"objc_on_progress_recover_with_passphrase_finalBalance"] = ^(NSString *totalReceived, NSString *finalBalance) {
-        [weakSelf on_progress_recover_with_passphrase:totalReceived finalBalance:finalBalance];
     };
 
     self.context[@"objc_on_success_get_recovery_phrase"] = ^(NSString *recoveryPhrase) {
@@ -1124,135 +1124,12 @@ NSString * const kLockboxInvitation = @"lockbox";
     return 0;
 }
 
-- (void)getAccountInfo
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"JSON.stringify(MyWalletPhone.getAccountInfo())"];
-}
-
 - (void)getAccountInfoAndExchangeRates
 {
     if (![self isInitialized]) {
         return;
     }
-    
     [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getAccountInfoAndExchangeRates()"];
-}
-
-- (NSString *)getEmail
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getEmail()"] toString];
-}
-
-- (NSString *)getSMSNumber
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    JSValue *smsNumber = [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getSMSNumber()"];
-
-    if ([smsNumber isUndefined]) return @"";
-
-    return [smsNumber toString];
-}
-
-- (BOOL)getSMSVerifiedStatus
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getSMSVerifiedStatus()"] toBool];
-}
-
-- (BOOL)getEmailVerifiedStatus
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getEmailVerifiedStatus()"] toBool];
-}
-
-- (void)changeEmail:(NSString *)newEmail
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeEmail(\"%@\")", [newEmail escapedForJS]]];
-}
-
-- (void)resendVerificationEmail:(NSString *)email
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.resendEmailConfirmation(\"%@\")", [email escapedForJS]]];
-}
-
-- (void)changeMobileNumber:(NSString *)newMobileNumber success:(void (^ _Nonnull)(void))success error:(void (^ _Nonnull)(void))error
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    // Set callbacks
-    [self.context invokeOnceWithFunctionBlock:success forJsFunctionName:@"objc_on_change_mobile_number_success"];
-    [self.context invokeOnceWithFunctionBlock:error forJsFunctionName:@"objc_on_change_mobile_number_error"];
-
-    // Invoke function in wallet
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeMobileNumber(\"%@\")", [newMobileNumber escapedForJS]]];
-}
-
-- (void)verifyMobileNumber:(NSString *)code success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    // Set callbacks
-    [self.context invokeOnceWithFunctionBlock:success forJsFunctionName:@"objc_on_verify_mobile_number_success"];
-    [self.context invokeOnceWithFunctionBlock:error forJsFunctionName:@"objc_on_verify_mobile_number_error"];
-
-    // Invoke function in wallet
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.verifyMobile(\"%@\")", [code escapedForJS]]];
-}
-
-- (void)enableTwoStepVerificationForSMS
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.setTwoFactorSMS()"];
-}
-
-- (void)disableTwoStepVerification
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.unsetTwoFactor()"];
-}
-
-- (BOOL)isCorrectPassword:(NSString *)inputedPassword
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.isCorrectMainPassword(\"%@\")", [inputedPassword escapedForJS]]] toBool];
 }
 
 - (void)signBitcoinPaymentWithSecondPassword:(NSString *_Nullable)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error
@@ -1840,31 +1717,20 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.checkIfWalletHasAddress(\"%@\")", [address escapedForJS]] ] toBool];
 }
 
-- (void)recoverWithEmail:(NSString *)email password:(NSString *)recoveryPassword passphrase:(NSString *)passphrase
+- (void)recoverWithEmail:(nonnull NSString *)email password:(nonnull NSString *)recoveryPassword mnemonicPassphrase:(nonnull NSString *)mnemonicPassphrase
 {
     [self useDebugSettingsIfSet];
-
     self.emptyAccountIndex = 0;
     self.recoveredAccountIndex = 0;
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.recoverWithPassphrase(\"%@\",\"%@\",\"%@\")", [email escapedForJS], [recoveryPassword escapedForJS], [passphrase escapedForJS]]];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.recoverWithPassphrase(\"%@\",\"%@\",\"%@\")", [email escapedForJS], [recoveryPassword escapedForJS], [mnemonicPassphrase escapedForJS]]];
 }
 
-- (void)enableEmailNotifications
+- (void)recoverFromMetadataWithMnemonicPassphrase:(nonnull NSString *)mnemonicPassphrase
 {
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.enableEmailNotifications()"];
-}
-
-- (void)disableEmailNotifications
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.disableEmailNotifications()"];
+    [self useDebugSettingsIfSet];
+    self.emptyAccountIndex = 0;
+    self.recoveredAccountIndex = 0;
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.recoverWithMetadata(\"%@\")", [mnemonicPassphrase escapedForJS]]];
 }
 
 - (void)updateServerURL:(NSString *)newURL
@@ -1946,15 +1812,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         return [[[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getIndexOfActiveAccount(%d)", account]] toNumber] intValue];
     }
     return 0;
-}
-
-- (BOOL)emailNotificationsEnabled
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.emailNotificationsEnabled()"] toBool];
 }
 
 - (void)saveNote:(NSString *)note forTransaction:(NSString *)hash
@@ -3005,6 +2862,8 @@ NSString * const kLockboxInvitation = @"lockbox";
         [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:BC_STRING_INVALID_RECOVERY_PHRASE in:nil handler:nil];
     } else if ([error isEqualToString:@""]) {
         [AlertViewPresenter.shared internetConnection];
+    } else if ([error isEqualToString:ERROR_NO_METADATA]) {
+        // Not possible to recover wallet from mnemonic only, old flow should be used.
     } else if ([error isEqualToString:ERROR_TIMEOUT_REQUEST]){
         [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:LocalizationConstantsObjcBridge.timedOut in:nil handler:nil];
     } else {
@@ -3523,13 +3382,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return nil;
 }
 
-- (void)setPbkdf2Iterations:(int)iterations
-{
-    DLog(@"Setting PBKDF2 Iterations");
-
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setPbkdf2Iterations(%d)", iterations]];
-}
-
 #pragma mark - Callbacks from JS to Obj-C for HD wallet
 
 - (void)reload
@@ -3695,18 +3547,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else {
         [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
     }
-}
-
-#pragma mark - Settings Helpers
-
-- (BOOL)hasVerifiedEmail
-{
-    return [self getEmailVerifiedStatus];
-}
-
-- (BOOL)hasVerifiedMobileNumber
-{
-    return [self getSMSVerifiedStatus];
 }
 
 #pragma mark - Debugging

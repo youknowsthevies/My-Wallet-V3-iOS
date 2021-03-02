@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxCocoa
 import RxSwift
+import ToolKit
 
 /// This class represents the wallet creation form
 final class RegisterWalletViewController: BaseScreenViewController {
@@ -38,12 +38,18 @@ final class RegisterWalletViewController: BaseScreenViewController {
         self.presenter = presenter
         super.init(nibName: RegisterWalletViewController.objectName, bundle: nil)
     }
-    
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        unimplemented()
     }
     
     // MARK: - Lifecycle
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        presenter.viewDidAppear()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -20,7 +20,7 @@ final class RecoverWalletScreenInteractor {
     var content: Observable<WalletRegistrationContent> {
         contentStateRelay.asObservable()
     }
-    
+
     /// Reflects errors received from the JS layer
     var error: Observable<String> {
         errorRelay.asObservable()
@@ -33,7 +33,7 @@ final class RecoverWalletScreenInteractor {
     private let wallet: Wallet
     private let walletManager: WalletManager
     
-    /// A passphase for recovery
+    /// A passphrase for recovery
     private let passphrase: String
     
     // MARK: - Accessors
@@ -60,18 +60,27 @@ final class RecoverWalletScreenInteractor {
 // MARK: - RegisterWalletScreenInteracting
 
 extension RecoverWalletScreenInteractor: RegisterWalletScreenInteracting {
+    func prepare() throws {
+        guard reachability.canConnect else {
+            throw InternetReachability.ErrorType.internetUnreachable
+        }
+        wallet.loadJS()
+        wallet.delegate = WalletManager.shared
+        wallet.recoverFromMetadata(withMnemonicPassphrase: passphrase)
+    }
+
     func execute() throws {
         guard reachability.canConnect else {
             throw InternetReachability.ErrorType.internetUnreachable
         }
-
         wallet.loadJS()
-        
-        wallet.recover(
-            withEmail: contentStateRelay.value.email,
-            password: contentStateRelay.value.password,
-            passphrase: passphrase)
-
         wallet.delegate = WalletManager.shared
+        let email: String = contentStateRelay.value.email
+        let password: String = contentStateRelay.value.password
+        wallet.recover(
+            withEmail: email,
+            password: password,
+            mnemonicPassphrase: passphrase
+        )
     }
 }

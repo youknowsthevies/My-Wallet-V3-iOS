@@ -73,24 +73,32 @@
 
 @property (nonatomic, assign) int lastLabelledAddressesCount;
 
-@property (nonatomic, readonly, strong) BitcoinWallet * _Nonnull bitcoin;
-@property (nonatomic, readonly, strong) EthereumWallet * _Nonnull ethereum;
-@property (nonatomic, readonly, strong) WalletCryptoJS * _Nonnull crypto;
-@property (nonatomic, strong) WalletRepository * _Nonnull repository;
+@property (nonatomic, readonly, strong, nonnull) BitcoinWallet * bitcoin;
+@property (nonatomic, readonly, strong, nonnull) EthereumWallet * ethereum;
+@property (nonatomic, readonly, strong, nonnull) WalletCryptoJS * crypto;
+@property (nonatomic, strong, nonnull) WalletRepository * repository;
 
 @property (nonatomic, copy, nullable) NSDecimalNumber *latestEthExchangeRate;
 
 - (instancetype)init;
+
+# pragma mark - JS
 
 /// Forces the JS layer to load - should be used to reset the context and rebind the methods
 - (void)loadJS;
 
 /// Load the JS - but only if needed
 - (void)loadJSIfNeeded;
+- (BOOL)isInitialized;
+- (JSValue *)executeJSSynchronous:(NSString *)command;
+
+# pragma mark - Login
+
 - (void)fetchWalletWith:(nonnull NSString *)password;
 - (void)loadWalletWithGuid:(nonnull NSString *)guid sharedKey:(nullable NSString *)sharedKey password:(nullable NSString *)password;
-
 - (void)resetSyncStatus;
+
+# pragma mark - Addresses
 
 - (NSDictionary *)addressBook;
 
@@ -99,10 +107,6 @@
 - (void)toggleArchiveLegacyAddress:(NSString *)address;
 - (void)toggleArchiveAccount:(int)account assetType:(LegacyAssetType)assetType;
 - (void)archiveTransferredAddresses:(NSArray *)transferredAddresses;
-
-- (void)signBitcoinPaymentWithSecondPassword:(NSString *_Nullable)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error;
-- (void)signBitcoinCashPaymentWithSecondPassword:(NSString *_Nullable)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error;
-- (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword;
 
 - (NSString *)labelForLegacyAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
 
@@ -125,7 +129,6 @@
 - (NSArray *)allLegacyAddresses:(LegacyAssetType)assetType;
 - (NSArray *)archivedLegacyAddresses;
 
-- (BOOL)isInitialized;
 
 - (float)getStrengthForPassword:(NSString *)password;
 
@@ -151,7 +154,8 @@
 - (int)getIndexOfActiveAccount:(int)account assetType:(LegacyAssetType)assetType;
 - (int)getAllTransactionsCount;
 
-// HD Wallet
+# pragma mark - HD Wallet
+
 - (void)upgradeToV3Wallet;
 - (BOOL)hasAccount;
 - (BOOL)didUpgradeToHd;
@@ -163,7 +167,7 @@
  @param secondPassword the optional second password if set
  @return the mnemonic, or nil if the wallet is not yet initialized
  */
-- (NSString *_Nullable)getMnemonic:(NSString *_Nullable)secondPassword;
+- (nullable NSString *)getMnemonic:(nullable NSString *)secondPassword;
 
 - (BOOL)isRecoveryPhraseVerified;
 - (void)markRecoveryPhraseVerifiedWithCompletion:(void (^ _Nullable)(void))completion error: (void (^ _Nullable)(void))error;
@@ -192,44 +196,20 @@
 
 - (NSString *)getXpubForAccount:(int)accountIndex assetType:(LegacyAssetType)assetType;
 
-- (void)setPbkdf2Iterations:(int)iterations;
-
 - (void)loading_stop;
-
-- (BOOL)checkIfWalletHasAddress:(NSString *)address;
 
 - (NSDictionary *)filteredWalletJSON;
 
 - (int)getDefaultAccountLabelledAddressesCount;
 
+# pragma mark - Settings
+
 - (BOOL)isLockboxEnabled;
-
-// Settings
-- (void)getAccountInfo;
-- (NSString *_Nullable)getEmail;
-- (NSString *)getSMSNumber;
-- (BOOL)getSMSVerifiedStatus;
-- (BOOL)getEmailVerifiedStatus;
-
+- (NSString *)getMobileMessage;
 - (void)getAccountInfoAndExchangeRates;
 
-- (void)changeEmail:(NSString *)newEmail;
-- (void)resendVerificationEmail:(NSString *)email;
+# pragma mark - Bitcoin and Bitcoin Cash Payment Spender
 
-- (void)changeMobileNumber:(NSString *)newMobileNumber success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error;
-- (void)verifyMobileNumber:(NSString *)code success:(void (^ _Nonnull)(void))success error: (void (^ _Nonnull)(void))error;
-- (void)enableTwoStepVerificationForSMS;
-- (void)disableTwoStepVerification;
-- (BOOL)isCorrectPassword:(NSString *)inputedPassword;
-- (void)enableEmailNotifications;
-- (void)disableEmailNotifications;
-- (BOOL)emailNotificationsEnabled;
-
-// Security Center
-- (BOOL)hasVerifiedEmail;
-- (BOOL)hasVerifiedMobileNumber;
-
-// Payment Spender
 - (void)createNewPayment:(LegacyAssetType)assetType;
 - (void)changePaymentFromAddress:(NSString *)fromString isAdvanced:(BOOL)isAdvanced assetType:(LegacyAssetType)assetType;
 - (void)changePaymentFromAccount:(int)fromInt isAdvanced:(BOOL)isAdvanced assetType:(LegacyAssetType)assetType;
@@ -254,28 +234,22 @@
 - (uint64_t)dust;
 - (void)getSwipeAddresses:(int)numberOfAddresses assetType:(LegacyAssetType)assetType;
 
-// Recover with passphrase
-- (void)recoverWithEmail:(NSString *)email password:(NSString *)recoveryPassword passphrase:(NSString *)passphrase;
+# pragma mark - Transaction Details
 
-- (void)updateServerURL:(NSString *)newURL;
-
-// Transaction Details
 - (void)saveNote:(NSString *)note forTransaction:(NSString *)hash;
 - (void)saveEtherNote:(NSString *)note forTransaction:(NSString *)hash;
 - (NSString *)getBitcoinNotePlaceholderForTransactionHash:(NSString *)myHash;
 
-- (JSValue *)executeJSSynchronous:(NSString *)command;
+# pragma mark - Ethereum
 
-- (NSDecimalNumber *)getEthBalance;
-
-// Ether send
-
-- (NSString * _Nullable)getEtherAddress __deprecated_msg("Use `getEthereumAddressWithSuccess:error` instead.");
+- (nullable NSDecimalNumber *)getEthBalance;
+- (nullable NSString *)getEtherAddress __deprecated_msg("Use `getEthereumAddressWithSuccess:error` instead.");
 
 - (void)isEtherContractAddress:(NSString *)address completion:(void (^ __nullable)(NSData *data, NSURLResponse *response, NSError *error))completion;
 - (BOOL)hasEthAccount;
 
-// Bitcoin Cash
+# pragma mark - Bitcoin Cash
+
 - (NSString *)fromBitcoinCash:(NSString *)address;
 - (NSString *)toBitcoinCash:(NSString *)address includePrefix:(BOOL)includePrefix;
 - (void)fetchBitcoinCashExchangeRates;
@@ -285,14 +259,22 @@
 - (BOOL)hasBchAccount;
 - (uint64_t)getBchBalance;
 - (NSString *)bitcoinCashExchangeRate;
-- (NSString *_Nullable)getLabelForDefaultBchAccount;
+- (nullable NSString *)getLabelForDefaultBchAccount;
 
-// Lockbox
-- (NSArray *_Nonnull)getLockboxDevices;
+# pragma mark - Lockbox
 
-// XLM
-- (NSArray *_Nullable)getXlmAccounts;
-- (void)saveXlmAccount:(NSString *_Nonnull)publicKey label:(NSString *_Nullable)label success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
+- (nonnull NSArray *)getLockboxDevices;
+
+# pragma mark - Stellar
+
+- (nullable NSArray *)getXlmAccounts;
+- (void)saveXlmAccount:(nonnull NSString *)publicKey label:(nullable NSString *)label success:(void (^ _Nonnull)(void))success error:(void (^)(NSString *_Nonnull))error;
+
+# pragma mark - Bitcoin and Bitcoin Cash Transacting
+
+- (void)signBitcoinPaymentWithSecondPassword:(nullable NSString *)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error;
+- (void)signBitcoinCashPaymentWithSecondPassword:(nullable NSString *)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error;
+- (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword;
 
 /// Call this method to build an Exchange order.
 /// It constructs and stores a payment object with a given CryptoCurrency, to, from, and amount (properties of OrderTransactionLegacy).
@@ -322,6 +304,13 @@
                        error:(void (^ _Nonnull)(NSString *_Nonnull))error
                       cancel:(void (^ _Nonnull)(void))cancel;
 
-- (NSString *)getMobileMessage;
+# pragma mark - Wallet Recovery
+
+/// Recovers wallet associated with mnemonic passphrase, setting to it the given email and password and a new GUID.
+- (void)recoverWithEmail:(nonnull NSString *)email password:(nonnull NSString *)recoveryPassword mnemonicPassphrase:(nonnull NSString *)mnemonicPassphrase;
+/// Tries to recover wallet associated with mnemonic passphrase, reusing same GUID.
+/// Succeeds if the wallet has the correct backup data in its metadata, otherwise fails with 'NO_METADATA' error.
+- (void)recoverFromMetadataWithMnemonicPassphrase:(nonnull NSString *)mnemonicPassphrase;
+
 
 @end
