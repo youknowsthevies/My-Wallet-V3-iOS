@@ -104,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.kycKit;
             DependencyContainer.kycUIKit;
             DependencyContainer.blockchain;
-            #if DEBUG_MENU
+            #if INTERNAL_BUILD
             DependencyContainer.debugUIKit;
             #endif
         })
@@ -178,7 +178,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             cacheSuite.set(false, forKey: simulateSurgeKey)
 
         }
-        #if DEBUG_MENU
+        #if INTERNAL_BUILD
         debugCoordinator.enableDebugMenu(for: window)
         #endif
 

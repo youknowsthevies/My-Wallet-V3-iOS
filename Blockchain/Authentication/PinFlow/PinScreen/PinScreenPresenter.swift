@@ -36,7 +36,7 @@ final class PinScreenPresenter {
             hash = (info[Constants.commitHash] as? String ?? "")
         }
         var title = "v\(Bundle.applicationVersion ?? "")"
-        #if SHOW_COMMIT_HASH
+        #if INTERNAL_BUILD
         title = "\(title) (\(hash))"
         #endif
         switch flow {

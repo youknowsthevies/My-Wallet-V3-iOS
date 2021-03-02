@@ -47,7 +47,7 @@ final class AboutView: UIView {
             hash = (info[Constants.commitHash] as? String ?? "")
         }
         var version = LocalizationIDs.version + " " + "\(Bundle.applicationVersion ?? "")"
-        #if SHOW_COMMIT_HASH
+        #if INTERNAL_BUILD
         version = "\(version) (\(hash))"
         #endif
         

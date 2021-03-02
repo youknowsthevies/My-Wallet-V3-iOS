@@ -52,7 +52,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 case .success(let value):
                     return value
                 case .failure(let error):
-                    #if DEBUG_MENU
+                    #if INTERNAL_BUILD
                     fatalError(error.localizedDescription)
                     #else
                     return .zero(currency: state.source!.currencyType)
@@ -67,7 +67,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 case .success(let value):
                     return value
                 case .failure(let error):
-                    #if DEBUG_MENU
+                    #if INTERNAL_BUILD
                     fatalError(error.localizedDescription)
                     #else
                     return .zero(currency: (state.destination as! CryptoTarget).asset.currency)

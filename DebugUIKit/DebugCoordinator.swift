@@ -111,7 +111,7 @@ extension DebugCoordinator: UIAdaptivePresentationControllerDelegate {
     }
 }
 
-#if DEBUG_MENU
+#if INTERNAL_BUILD
 /// Needed as we're capturing the shake motion on a window level
 // swiftlint:disable all
 extension UIWindow {
