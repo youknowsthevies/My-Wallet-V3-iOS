@@ -85,7 +85,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     }
     
     private func showWithdrawalScreen() {
-        if internalFeatureService.isEnabled(.sendP2) {
+        if internalFeatureService.isEnabled(.internalSendP2) {
             internalSendRelay.accept(())
         } else {
             let interactor = CustodyWithdrawalScreenInteractor(

@@ -224,7 +224,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
             /// the destination/target.
-            if internalFeatureService.isEnabled(.sendP2) && action == .send {
+            if internalFeatureService.isEnabled(.internalSendP2) && action == .send {
                 router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
                 return
             }
@@ -236,11 +236,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .selectSource:
             router?.routeToSourceAccountPicker(action: action)
         case .enterAddress:
-            if internalFeatureService.isEnabled(.swapP2) {
-                router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
-            } else {
-                unimplemented()
-            }
+            router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
         case .closed:
             transactionModel.destroy()
         }

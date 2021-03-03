@@ -26,10 +26,9 @@ final class TabControllerManager: NSObject {
 
     private var activityNavigationController: UINavigationController!
     private var dashboardNavigationController: UINavigationController!
-    private var sendNavigationViewController: UINavigationController!
     private var receiveNavigationViewController: UINavigationController!
-    private var buySellViewController: UINavigationController!
     private var sendViewController: UIViewController!
+    private var sendP2ViewController: UIViewController!
     private var swapViewController: UIViewController!
     private var swapRouter: ViewableRouting!
     private var sendRouter: SendRootRouting!
@@ -99,21 +98,18 @@ final class TabControllerManager: NSObject {
     }
     
     private func loadSend() {
-        guard self.sendViewController == nil else { return }
-        
-        func populateNewSend() {
+        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
+        case true:
+            guard sendP2ViewController == nil else { return }
             let router = SendRootBuilder().build()
-            sendViewController = router.viewControllable.uiviewController
+            sendP2ViewController = router.viewControllable.uiviewController
             sendRouter = router
             router.interactable.activate()
             router.load()
-        }
-        func populateLegacySend() {
+        case false:
+            guard sendViewController == nil else { return }
             sendViewController = sendReceiveCoordinator.builder.send()
         }
-        
-        /// Always showing Legacy Send at this time
-        populateLegacySend()
     }
     
     func send(from account: BlockchainAccount) {
@@ -127,20 +123,38 @@ final class TabControllerManager: NSObject {
 
     func showSend(cryptoCurrency: CryptoCurrency) {
         loadSend()
-        tabViewController.setActiveViewController(
-            UINavigationController(rootViewController: sendViewController),
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
+        case true:
+            tabViewController.setActiveViewController(
+                sendP2ViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        case false:
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
     }
 
     func showSend() {
         loadSend()
-        tabViewController.setActiveViewController(
-            UINavigationController(rootViewController: sendViewController),
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
+        case true:
+            tabViewController.setActiveViewController(
+                sendP2ViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        case false:
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
     }
 
     func showReceive() {
