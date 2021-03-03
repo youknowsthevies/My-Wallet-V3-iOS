@@ -30,7 +30,36 @@ final class CrashlyticsRecorder: Recording {
     /// If the only necessary recording data is the context, just call `error()` with no `error` parameter.
     /// - Parameter error: The error to be recorded by the crash service. defaults to `BreadcrumbError` instance.
     func error(_ error: Error) {
-        crashlytics.record(error: error as NSError)
+        let userInfo: [String: Any] = [
+            "description": String(describing: error),
+            "localizedDescription": error.localizedDescription
+        ]
+        let prettyError = NSError(domain: domain(for: error), code: 0, userInfo: userInfo)
+        crashlytics.record(error: prettyError)
+    }
+
+    /// From the assumption that the error is a enumeration, return its case 'name' by parsing its description.
+    /// e.g. For an given `Error.nameOfTheError(params ...)` returns `nameOfTheError`
+    private func errorName(for error: Error) -> String {
+        let description = String(describing: error)
+        guard let name = description.split(separator: "(", maxSplits: 1, omittingEmptySubsequences: true).first else {
+            return ""
+        }
+        return String(name)
+    }
+
+    /// For a given error, returns the string reflection of its type plus its name. Differs from the default NSError.domain because it won't contain
+    ///  any memory address and also has the error name.
+    /// e.g. for an Error `Error.nameOfTheError(params ...)` nested inside a class `Class` in a framework
+    /// `Framework` returns `Framework.Class.Error.nameOfTheError`.
+    private func domain(for error: Error) -> String {
+        String(reflecting: type(of: error))
+            .components(separatedBy: ".")
+            .filter { component in
+                !component.contains("unknown context at $")
+            }
+            .joined(separator: ".")
+            .appending("." + errorName(for: error))
     }
 
     // MARK: - MessageRecording

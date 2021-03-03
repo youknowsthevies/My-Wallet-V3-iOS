@@ -78,10 +78,7 @@ public final class SendReceiveBuilder {
             barStyle: .lightContent()
         )
         let builder = AccountPickerBuilder(
-            accountProvider: SendAccountPickerAccountProvider(
-                singleAccountsOnly: true,
-                action: .send
-            ),
+            accountProvider: SendAccountPickerAccountProvider(),
             action: .send
         )
         let didSelect: AccountPickerDidSelect = { [weak self] account in
