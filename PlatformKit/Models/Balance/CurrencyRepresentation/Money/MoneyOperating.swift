@@ -76,6 +76,25 @@ extension MoneyOperating {
         return Self.init(amount: amount, currency: lhs.currencyType)
     }
 
+    /// Calculates the value of `self` before a given percentage change happened.
+    /// e.g. if the current value is `11` and the percentage of change is `0.1` (`10%`)
+    /// the return value will be `10`.
+    public func value(before percentageChange: Double) -> Self {
+        let percentageChange = percentageChange + 1
+        guard !percentageChange.isNaN else {
+            return Self.zero(currency: currencyType)
+        }
+        guard !percentageChange.isZero else {
+            return Self.zero(currency: currencyType)
+        }
+        guard percentageChange.isNormal else {
+            return Self.zero(currency: currencyType)
+        }
+        let decimalChange = Decimal(percentageChange)
+        let majorAmount = displayMajorValue / decimalChange
+        return Self.create(major: majorAmount, currency: currencyType)
+    }
+
     /// - Returns: A` Decimal` rounded to 4 decimal places.
     public func percentage(of rhs: Self) throws -> Decimal {
         try Self.percentage(lhs: self, rhs: rhs)

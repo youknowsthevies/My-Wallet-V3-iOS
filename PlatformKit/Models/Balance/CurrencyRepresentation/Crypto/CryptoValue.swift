@@ -37,20 +37,3 @@ extension CryptoValue {
         return FiatValue.create(major: conversionAmount, currency: exchangeRate.currencyType)
     }
 }
-
-extension CryptoValue {
-
-    /// Calculates the value of `self` before a given percentage change
-    public func value(before percentageChange: Double) -> CryptoValue {
-        let percentageChange = percentageChange + 1
-        guard !percentageChange.isNaN else {
-            return .zero(currency: currencyType)
-        }
-        guard !percentageChange.isZero else {
-            return .zero(currency: currencyType)
-        }
-        let decimalChange = Decimal(percentageChange)
-        let majorAmount = displayMajorValue / decimalChange
-        return CryptoValue.create(major: majorAmount, currency: currencyType)
-    }
-}

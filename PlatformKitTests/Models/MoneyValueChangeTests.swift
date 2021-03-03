@@ -27,6 +27,14 @@ final class MoneyValueChangeTests: XCTestCase {
         XCTAssertEqual(result, expected)
     }
 
+    // Test value before inf
+    func testFiatValueBeforeInf() {
+        let value = FiatValue.create(minor: "1500", currency: .GBP)!
+        let expected = FiatValue.zero(currency: .GBP)
+        let result = value.value(before: Double.infinity)
+        XCTAssertEqual(result, expected)
+    }
+
     // Test value before 100 % Decrease
     func testFiatValueBefore100PercentDecrease() {
         let value = FiatValue.create(minor: "1500", currency: .GBP)!

@@ -72,25 +72,3 @@ extension FiatValue: MoneyOperating {
         return FiatValue(amount: amount, currency: currency)
     }
 }
-
-extension FiatValue {
-    
-    /// Calculates the value of `self` before a given percentage change
-    /// e.g if the current value is `100` and the percentage of change is `10%`,
-    /// the `percentageChange` expected value would be `0.1`.
-    public func value(before percentageChange: Double) -> FiatValue {
-        let percentageChange = percentageChange + 1
-        guard !percentageChange.isNaN else {
-            return .zero(currency: currencyType)
-        }
-        guard !percentageChange.isZero else {
-            return .zero(currency: currencyType)
-        }
-        let decimalChange = Decimal(percentageChange)
-        let majorAmount = displayMajorValue / decimalChange
-        return .create(
-            major: majorAmount,
-            currency: currencyType
-        )
-    }
-}
