@@ -67,7 +67,10 @@ final class AutoPairingViewController: BaseScreenViewController {
     }
     
     fileprivate func start() {
-        viewFinderViewController = presenter.scannerBuilder.build()!
+        guard let scanner = presenter.scannerBuilder.build() else {
+            return
+        }
+        viewFinderViewController = scanner
         viewFinderViewController.view.frame = viewFrame
         add(child: viewFinderViewController)
     }
