@@ -131,6 +131,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
                 return self.yodleeActivationService
                     .startPolling(for: self.bankLinkageData.id, providerAccountId: data.providerAccountId, accountId: data.accountId)
             }
+            .catchErrorJustReturn(.inactive(.unknown))
             .share(replay: 1, scope: .whileConnected)
 
         activationResult

@@ -56,7 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DeepLinkHandler()
     }()
 
-    @LazyInject private var deepLinkRouter: DeepLinkRouter
+    @LazyInject private var deepLinkRouter: DeepLinkRouting
 
     /// A service that provides remote notification registration logic,
     /// thus taking responsibility off `AppDelegate` instance.
