@@ -52,6 +52,11 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
         }
     }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        // TODO: Parsing
+        unimplemented()
+    }
+
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {

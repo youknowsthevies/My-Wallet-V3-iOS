@@ -67,6 +67,9 @@ public enum TextFieldType: Hashable {
 
     /// A description of a event
     case description
+
+    /// A crypto address type
+    case cryptoAddress
 }
 
 // MARK: - Debug
@@ -110,6 +113,8 @@ extension TextFieldType: CustomDebugStringConvertible {
             return "post-code"
         case .personFullName:
             return "person-full-name"
+        case .cryptoAddress:
+            return "crypto-address"
         }
     }
 }
@@ -139,7 +144,8 @@ extension TextFieldType {
              .postcode,
              .cardholderName,
              .description,
-             .expirationDate:
+             .expirationDate,
+             .cryptoAddress:
             return false
         }
     }
@@ -188,6 +194,8 @@ extension TextFieldType {
             return .id(AccessibilityId.state)
         case .postcode:
             return .id(AccessibilityId.postCode)
+        case .cryptoAddress:
+            return .id(AccessibilityId.cryptoAddress)
         }
     }
     
@@ -206,7 +214,8 @@ extension TextFieldType {
              .expirationDate,
              .cardholderName,
              .cardNumber,
-             .description:
+             .description,
+             .cryptoAddress:
              return false
         case .password,
              .newPassword,
@@ -242,7 +251,8 @@ extension TextFieldType {
              .state,
              .mobile,
              .cardholderName,
-             .cardNumber:
+             .cardNumber,
+             .cryptoAddress:
             return ""
         }
     }
@@ -285,6 +295,8 @@ extension TextFieldType {
             return LocalizedString.postCode
         case .personFullName:
             return LocalizedString.fullName
+        case .cryptoAddress:
+            return ""
         }
     }
     
@@ -299,7 +311,8 @@ extension TextFieldType {
              .password,
              .backupVerification,
              .oneTimeCode,
-             .description:
+             .description,
+             .cryptoAddress:
             return .default
         case .mobile:
             return .phonePad
@@ -336,7 +349,8 @@ extension TextFieldType {
              .expirationDate,
              .cardNumber,
              .postcode,
-             .description:
+             .description,
+             .cryptoAddress:
             return .none
         }
     }
@@ -358,7 +372,8 @@ extension TextFieldType {
              .state,
              .postcode,
              .personFullName,
-             .description:
+             .description,
+             .cryptoAddress:
             return false
         case .newPassword, .confirmNewPassword, .password:
             return true
@@ -417,6 +432,8 @@ extension TextFieldType {
             return .postalCode
         case .personFullName:
             return .name
+        case .cryptoAddress:
+            return nil
         }
     }
 }

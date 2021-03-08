@@ -154,6 +154,7 @@ public class TextFieldViewModel {
     }
     
     /// The placeholder of the text-field
+    public let placeholderRelay: BehaviorRelay<NSAttributedString>
     var placeholder: Driver<NSAttributedString> {
         placeholderRelay.asDriver()
     }
@@ -179,7 +180,7 @@ public class TextFieldViewModel {
 
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")
-    var text: Observable<String> {
+    public var text: Observable<String> {
         textRelay
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
@@ -195,7 +196,6 @@ public class TextFieldViewModel {
     private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>
     private let contentTypeRelay: BehaviorRelay<UITextContentType?>
     private let isSecureRelay = BehaviorRelay(value: false)
-    private let placeholderRelay: BehaviorRelay<NSAttributedString>
     private let textColorRelay = BehaviorRelay<UIColor>(value: .textFieldText)
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)

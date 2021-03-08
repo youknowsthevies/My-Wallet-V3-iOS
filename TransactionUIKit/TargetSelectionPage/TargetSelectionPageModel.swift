@@ -44,6 +44,8 @@ final class TargetSelectionPageModel {
         switch action {
         case .sourceAccountSelected(let account, let action):
             return processTargetListUpdate(sourceAccount: account, action: action)
+        case .validateAddress(let address, let account):
+            return validateCrypto(address: address, account: account)
         case .destinationSelected,
              .availableTargets,
              .destinationConfirmed,
@@ -58,6 +60,16 @@ final class TargetSelectionPageModel {
             .getAvailableTargetAccounts(sourceAccount: sourceAccount, action: action)
             .subscribe { [weak self] accounts in
                 self?.process(action: .availableTargets(accounts))
+            }
+    }
+
+    private func validateCrypto(address: String, account: CryptoAccount) -> Disposable {
+        interactor
+            .validateCrypto(address: address, account: account)
+            .subscribe { [weak self] (result) in
+                guard case .success = result else {
+                    return
+                }
             }
     }
 }

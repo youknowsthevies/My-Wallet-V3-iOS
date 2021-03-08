@@ -43,6 +43,11 @@ final class StellarAsset: CryptoAsset {
         self.errorRecorder = errorRecorder
     }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        // TODO: Parse address
+        unimplemented()
+    }
+
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
         switch filter {
         case .all:
