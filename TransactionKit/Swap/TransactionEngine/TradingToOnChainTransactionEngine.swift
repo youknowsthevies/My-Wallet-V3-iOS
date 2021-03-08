@@ -179,8 +179,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
             let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
             let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
-            print(fiatAmount.displayString)
-            print(fiatFees.displayString)
             return (fiatAmount, fiatFees)
         }
         .map { (amount: $0.0, fees: $0.1) }
