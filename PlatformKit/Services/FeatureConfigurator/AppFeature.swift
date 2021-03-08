@@ -81,7 +81,7 @@ extension AppFeature {
         case .achBuyFlowEnabled:
             return "ach_buy_flow_enabled_ios"
         case .internalSendEnabled:
-            return "internal_send_p2"
+            return "internal_send_enabled_ios"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:
