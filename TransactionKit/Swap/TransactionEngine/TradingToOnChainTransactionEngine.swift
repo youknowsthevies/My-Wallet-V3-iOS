@@ -92,20 +92,13 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         fiatAmountAndFees(from: pendingTransaction)
-            .map(weak: self) { (self, input) -> PendingTransaction in
+            .map(\.amount)
+            .map(weak: self) { (self, amount) -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
-                let (amount, fees) = input
                 var values: [TransactionConfirmation] = [
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
-                    .feedTotal(
-                        .init(
-                            amount: pendingTransaction.amount,
-                            fee: pendingTransaction.fees,
-                            exchangeAmount: amount.moneyValue,
-                            exchangeFee: fees.moneyValue
-                        )
-                    )
+                    .total(.init(total: amount.moneyValue))
                 ]
                 if self.isNoteSupported {
                     values.append(.destination(.init(value: "")))
@@ -186,6 +179,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
             let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
             let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+            print(fiatAmount.displayString)
+            print(fiatFees.displayString)
             return (fiatAmount, fiatFees)
         }
         .map { (amount: $0.0, fees: $0.1) }
