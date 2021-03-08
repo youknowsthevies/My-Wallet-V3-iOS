@@ -151,7 +151,10 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         sourceAccount
             .actionableBalance
-            .flatMapCompletable { balance -> Completable in
+            .flatMapCompletable(weak: self) { (self, balance) -> Completable in
+                guard try pendingTransaction.amount > .zero(currency: self.sourceAsset) else {
+                    throw TransactionValidationFailure(state: .invalidAmount)
+                }
                 guard try balance >= pendingTransaction.amount else {
                     throw TransactionValidationFailure(state: .insufficientFunds)
                 }
