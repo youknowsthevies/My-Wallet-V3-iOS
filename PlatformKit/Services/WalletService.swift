@@ -57,4 +57,13 @@ class WalletService: WalletOptionsAPI {
         }
         .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
+
+    // TODO: Dimitris - Move this to its own service
+    var serverStatus: Single<ServerIncidents> {
+        guard let url = URL(string: "https://www.blockchain-status.com/api/v2/incidents.json") else {
+            return Single.error(NetworkCommunicatorError.clientError(.failedRequest(description: "Invalid URL")))
+        }
+        return communicator
+            .perform(request: NetworkRequest(endpoint: url, method: .get, authenticated: false))
+    }
 }
