@@ -65,6 +65,7 @@ final class PinInteractor: PinInteracting {
 
     func serverStatus() -> Observable<ServerIncidents> {
         maintenanceService.serverStatus
+            .filter { $0.hasActiveMajorIncident }
             .asObservable()
             .catchError { [weak self] (error) -> Observable<ServerIncidents> in
                 self?.recorder.error(error)
