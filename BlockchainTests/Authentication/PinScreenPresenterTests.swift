@@ -54,7 +54,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: "5740")
         
         do {
@@ -79,7 +80,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: "5740")
         
         do {
@@ -109,7 +111,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: "5740")
         
         do {
@@ -131,7 +134,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: Pin.invalid.toString)
         
         do {
@@ -160,7 +164,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: selectedPin.toString)
         
         do {
@@ -187,7 +192,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
                                            backwardRouting: backward,
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         
         // Set a different value than the previosly selected one
         presenter.reset(to: "9154")
@@ -216,7 +222,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: pin)
         
         do {
@@ -238,7 +245,8 @@ class PinScreenPresenterTests: XCTestCase {
                                            biometryProvider: biometryProvider,
                                            appSettings: appSettings,
                                            credentialsStore: CredentialsStoreAPIMock(),
-                                           forwardRouting: forward)
+                                           forwardRouting: forward,
+                                           performEffect: { _ in })
         presenter.reset(to: previousPin.toString)
         
         do {

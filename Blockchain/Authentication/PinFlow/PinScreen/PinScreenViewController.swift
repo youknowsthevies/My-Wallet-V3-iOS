@@ -27,6 +27,10 @@ final class PinScreenViewController: BaseScreenViewController {
     private let presenter: PinScreenPresenter
     private let devSupport: DevSupporting
     private let alertViewPresenter: AlertViewPresenter
+
+    private var serverStatusContainerView: UIStackView!
+    private let serverStatusTitleLabel = UILabel()
+    private let serverStatusSubtitleLabel = InteractableTextView()
     
     private let disposeBag = DisposeBag()
     
@@ -49,7 +53,9 @@ final class PinScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupErrorLabel()
-        
+        createServerStatusView()
+        presenter.viewDidLoad()
+
         swipeInstructionView.isHidden = !presenter.showsSwipeToReceive
         digitPadView.viewModel = presenter.digitPadViewModel
         securePinView.viewModel = presenter.securePinViewModel
@@ -66,13 +72,21 @@ final class PinScreenViewController: BaseScreenViewController {
         case .regular, .max:
             break
         }
-        
         // Subscribe to pin changes
         presenter.pin
             .bind { [weak self] pin in
                 guard pin != nil else { return }
                 self?.respondToPinChange()
             }
+            .disposed(by: disposeBag)
+
+        serverStatusContainerView.isHidden = true
+        presenter.serverStatus
+            .drive(onNext: { [weak self] serverStatus in
+                self?.securePinViewTopConstraint.isActive = false
+                self?.serverStatusContainerView.isHidden = false
+                self?.showOutage(status: serverStatus)
+            })
             .disposed(by: disposeBag)
         
         NotificationCenter.when(UIApplication.willEnterForegroundNotification) { [weak self] _ in
@@ -88,13 +102,48 @@ final class PinScreenViewController: BaseScreenViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presenter.authenticateUsingBiometricsIfNeeded()
-        
+
         #if DEBUG
         becomeFirstResponder()
         #endif
     }
     
     // MARK: - Setup
+
+    private func showOutage(status: ServerStatusViewModel) {
+        serverStatusTitleLabel.text = status.title
+        serverStatusTitleLabel.isHidden = status.title == nil
+        serverStatusSubtitleLabel.viewModel = status.textViewModel
+    }
+
+    private func createServerStatusView() {
+        serverStatusContainerView = UIStackView(arrangedSubviews: [serverStatusTitleLabel, serverStatusSubtitleLabel])
+        serverStatusContainerView.axis = .vertical
+        serverStatusContainerView.spacing = 8
+        serverStatusContainerView.backgroundColor = UIColor.darkBlueBackground
+        serverStatusContainerView.isLayoutMarginsRelativeArrangement = true
+        serverStatusContainerView.directionalLayoutMargins = .init(top: Spacing.inner,
+                                                                   leading: Spacing.inner,
+                                                                   bottom: Spacing.inner,
+                                                                   trailing: Spacing.inner)
+        view.addSubview(serverStatusContainerView)
+
+        serverStatusTitleLabel.font = UIFont.main(.bold, 16)
+        serverStatusTitleLabel.textColor = UIColor.red
+        serverStatusTitleLabel.textAlignment = .left
+        serverStatusTitleLabel.numberOfLines = 2
+
+        serverStatusSubtitleLabel.font = UIFont.main(.medium, 16)
+        serverStatusSubtitleLabel.textColor = .white
+        serverStatusSubtitleLabel.textAlignment = .left
+        serverStatusSubtitleLabel.backgroundColor = .clear
+
+        serverStatusContainerView.layer.cornerRadius = 8
+        serverStatusContainerView.layoutToSuperview(.top, relation: .equal, usesSafeAreaLayoutGuide: true, offset: 10)
+        serverStatusContainerView.layoutToSuperview(.leading, relation: .equal, usesSafeAreaLayoutGuide: true, offset: 10)
+        serverStatusContainerView.layoutToSuperview(.trailing, relation: .equal, usesSafeAreaLayoutGuide: true, offset: -10)
+        securePinView.layout(edge: .top, to: .bottom, of: serverStatusContainerView, relation: .equal, offset:  18, priority: .required)
+    }
     
     private func prepareForAppearance() {
         presenter.reset()

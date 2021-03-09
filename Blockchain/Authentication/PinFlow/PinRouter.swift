@@ -40,6 +40,8 @@ final class PinRouter: NSObject {
     private let swipeToReceiveConfig: SwipeToReceiveConfiguring
     
     private let enabledCryptoCurrencies: [CryptoCurrency]
+
+    private let webViewService: WebViewServiceAPI
     
     // MARK: - Setup
     
@@ -47,12 +49,14 @@ final class PinRouter: NSObject {
          swipeToReceiveConfig: SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
-         completion: PinRouting.RoutingType.Forward? = nil) {
+         completion: PinRouting.RoutingType.Forward? = nil,
+         webViewService: WebViewServiceAPI = resolve()) {
         enabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
         self.flow = flow
         self.swipeToReceiveConfig = swipeToReceiveConfig
         self.recorder = recorder
         self.completion = completion
+        self.webViewService = webViewService
         super.init()
     }
 
@@ -79,6 +83,13 @@ final class PinRouter: NSObject {
     func cleanup() {
         DispatchQueue.main.async { [weak self] in
             self?.finish(animated: false, completedSuccessfully: false)
+        }
+    }
+
+    func effectHandling(_ effect: PinRouting.RoutingType.EffectType) {
+        switch effect {
+        case .openLink(let url):
+            webViewService.openSafari(url: url, from: navigationController)
         }
     }
 }
@@ -112,7 +123,8 @@ extension PinRouter {
         
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
-                                           forwardRouting: forwardRouting)
+                                           forwardRouting: forwardRouting,
+                                           performEffect: effectHandling)
         let pinViewController = PinScreenViewController(using: presenter)
         if useCase.isAuthenticateOnLogin {
             authenticateOnLogin(using: pinViewController)
@@ -162,7 +174,8 @@ extension PinRouter {
         let presenter = PinScreenPresenter(useCase: .authenticateBeforeChanging,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting)
+                                           forwardRouting: forwardRouting,
+                                           performEffect: effectHandling)
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
@@ -184,7 +197,8 @@ extension PinRouter {
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting)
+                                           forwardRouting: forwardRouting,
+                                           performEffect: effectHandling)
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
@@ -201,7 +215,8 @@ extension PinRouter {
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
-                                           forwardRouting: forwardRouting)
+                                           forwardRouting: forwardRouting,
+                                           performEffect: effectHandling)
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
