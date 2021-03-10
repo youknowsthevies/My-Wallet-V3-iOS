@@ -63,6 +63,16 @@ final class PinInteractor: PinInteracting {
     
     // MARK: - API
 
+    func serverStatus() -> Observable<ServerIncidents> {
+        maintenanceService.serverStatus
+            .filter { $0.hasActiveMajorIncident }
+            .asObservable()
+            .catchError { [weak self] (error) -> Observable<ServerIncidents> in
+                self?.recorder.error(error)
+                return .empty()
+            }
+    }
+
     /// Creates a pin code in the remote pin store
     /// - Parameter payload: the pin payload
     /// - Returns: Completable indicating completion
