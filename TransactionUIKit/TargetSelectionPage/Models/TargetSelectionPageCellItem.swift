@@ -45,7 +45,9 @@ struct TargetSelectionPageCellItem: IdentifiableType {
             switch self {
             case .walletInputField:
                 return true
-            default:
+            case .singleAccount,
+                 .singleAccountAvailableTarget,
+                 .singleAccountSelection:
                 return false
             }
         }

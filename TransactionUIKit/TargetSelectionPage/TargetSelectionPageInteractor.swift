@@ -37,8 +37,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     weak var listener: TargetSelectionPageListener?
-    
-    private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
@@ -108,10 +106,11 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .disposeOnDeactivate(interactor: self)
 
         sourceAccount
-            .subscribe(onNext: { account in
+            .subscribe(onNext: { [weak self] account in
+                guard let self = self else { return }
                 self.targetSelectionPageModel.process(action: .sourceAccountSelected(account, self.action))
             })
-            .disposed(by: disposeBag)
+            .disposeOnDeactivate(interactor: self)
 
         // bind for text updates
         cryptoAddressViewModel

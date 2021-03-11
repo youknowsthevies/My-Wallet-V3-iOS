@@ -18,8 +18,9 @@ protocol TargetDestinationsStrategyAPI {
 
 // MARK: - Main Concrete Class
 
-/// A concrete class adopting the `TargetDestinationsStrategyAPI` which
-struct TargetDestinationStrategy: TargetDestinationsStrategyAPI {
+/// A container class adopting the `TargetDestinationsStrategyAPI`
+/// which holds a concrete class of type `TargetDestinationsStrategyAPI` which provides a set of sections.
+struct TargetDestinationSections: TargetDestinationsStrategyAPI {
 
     private let strategy: TargetDestinationsStrategyAPI
 
@@ -66,7 +67,9 @@ struct TradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
     func sections(interactors: [TargetSelectionPageCellItem.Interactor],
                   action: AssetAction) -> [TargetSelectionPageSectionModel] {
-        guard action == .send else { return [] }
+        guard action == .send else {
+            fatalError("given action: \(action) is not supported")
+        }
         let items = interactors.map { interactor in
             TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
         }
@@ -95,7 +98,9 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
     func sections(interactors: [TargetSelectionPageCellItem.Interactor],
                   action: AssetAction) -> [TargetSelectionPageSectionModel] {
-        guard action == .send else { return [] }
+        guard action == .send else {
+            fatalError("given action: \(action) is not supported")
+        }
         let walletInputfield = interactors.first(where: \.isWalletInputField)
             .map { interactor in
                 TargetSelectionPageCellItem(interactor: interactor, assetAction: action)

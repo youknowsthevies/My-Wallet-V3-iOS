@@ -60,6 +60,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                     return NonTradingSourceDestinationStrategy(sourceAccount: account)
                 }
             }
+            .map(TargetDestinationSections.init(strategy:))
 
         let destinationSections = interactorState
             .map(\.interactors)
