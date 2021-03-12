@@ -34,6 +34,10 @@ public protocol Asset {
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup>
     
     func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]>
+
+    /// Validates the given address
+    /// - Parameter address: A `String` value of the address to be parse
+    func parse(address: String) -> Single<ReceiveAddress?>
 }
 
 public protocol CryptoAsset: Asset {
@@ -43,6 +47,7 @@ public protocol CryptoAsset: Asset {
 
 public enum CryptoAssetError: Error {
     case noDefaultAccount
+    case addressParseFailure
 }
 
 extension CryptoAsset {

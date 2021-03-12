@@ -48,6 +48,11 @@ final class BitcoinAsset: CryptoAsset {
         }
     }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        // TODO: 
+        unimplemented()
+    }
+
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {

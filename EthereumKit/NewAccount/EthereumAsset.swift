@@ -53,6 +53,23 @@ final class EthereumAsset: CryptoAsset {
         }
     }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        guard !address.isEmpty else {
+            return .just(nil)
+        }
+        let validated = EthereumAddress(stringLiteral: address)
+        guard validated.isValid else {
+            return .just(nil)
+        }
+        return .just(
+            EthereumReceiveAddress(
+                address: address,
+                label: address,
+                onTxCompleted: { _ in Completable.empty() }
+            )
+        )
+    }
+
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {

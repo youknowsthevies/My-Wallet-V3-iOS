@@ -34,10 +34,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let accountProvider: SourceAndTargetAccountProviding
     private let targetSelectionPageModel: TargetSelectionPageModel
     private let action: AssetAction
+    private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     weak var listener: TargetSelectionPageListener?
-    
-    private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
@@ -45,10 +44,12 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
          presenter: TargetSelectionPagePresentable,
          accountProvider: SourceAndTargetAccountProviding,
          listener: TargetSelectionListenerBridge,
-         action: AssetAction) {
+         action: AssetAction,
+         messageRecorder: MessageRecording = resolve()) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
+        self.messageRecorder = messageRecorder
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -62,6 +63,12 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
     override func didBecomeActive() {
         super.didBecomeActive()
+
+        let cryptoAddressViewModel = TextFieldViewModel(
+            with: TextFieldType.cryptoAddress,
+            validator: TextValidationFactory.General.alwaysValid,
+            messageRecorder: messageRecorder
+        )
         
         /// Listens to the `step` which
         /// triggers routing to a new screen or ending the flow
@@ -75,8 +82,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .disposeOnDeactivate(interactor: self)
         
         /// Fetch the source account provided.
-        accountProvider
-            .sourceAccount
+        let sourceAccount = accountProvider.sourceAccount
             .map { account -> CryptoAccount in
                 guard let crypto = account else {
                     fatalError("Expected a source account")
@@ -84,10 +90,37 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 return crypto
             }
             .asObservable()
-            .subscribe(onNext: { account in
+            .share(replay: 1, scope: .whileConnected)
+
+        sourceAccount
+            .map { (account) -> NSAttributedString in
+                NSAttributedString(
+                    string: String(format: LocalizationConstants.TextField.Title.cryptoAddress, account.currencyType.name),
+                    attributes: [
+                        .foregroundColor: UIColor.textFieldPlaceholder,
+                        .font: UIFont.main(.medium, 16)
+                    ]
+                )
+            }
+            .bind(to: cryptoAddressViewModel.placeholderRelay)
+            .disposeOnDeactivate(interactor: self)
+
+        sourceAccount
+            .subscribe(onNext: { [weak self] account in
+                guard let self = self else { return }
                 self.targetSelectionPageModel.process(action: .sourceAccountSelected(account, self.action))
             })
-            .disposed(by: disposeBag)
+            .disposeOnDeactivate(interactor: self)
+
+        // bind for text updates
+        cryptoAddressViewModel
+            .text
+            .skip(1)
+            .withLatestFrom(sourceAccount) { ($0, $1) }
+            .subscribe(onNext: { [weak self] (address, account) in
+                self?.targetSelectionPageModel.process(action: .validateAddress(address, account))
+            })
+            .disposeOnDeactivate(interactor: self)
         
         let interactorState = targetSelectionPageModel
             .state
@@ -102,7 +135,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 let interactors: TargetSelectionPageInteractor.State.Interactors = .init(
                     sourceAccount: sourceAccount,
                     availableTargets: targets,
-                    target: updater.destination as? SingleAccount
+                    target: updater.destination as? SingleAccount,
+                    cryptoAddressViewModel: cryptoAddressViewModel
                 )
                 
                 return state
@@ -181,19 +215,31 @@ extension TargetSelectionPageInteractor {
         /// `sourceInteractor` is the `From` account.
         /// `destinationInteractors` is all possible targets including the selected target.
         struct Interactors {
-            static let empty = Interactors(sourceInteractor: nil, destinationInteractors: [])
+            static let empty = Interactors(sourceInteractor: nil, destinationInteractors: [], cryptoAddressViewModel: nil)
             let sourceInteractor: TargetSelectionPageCellItem.Interactor?
+            let cryptoAddressViewModel: TextFieldViewModel?
             let destinationInteractors: [TargetSelectionPageCellItem.Interactor]
             
             private init(sourceInteractor: TargetSelectionPageCellItem.Interactor?,
-                         destinationInteractors: [TargetSelectionPageCellItem.Interactor]) {
+                         destinationInteractors: [TargetSelectionPageCellItem.Interactor],
+                         cryptoAddressViewModel: TextFieldViewModel?) {
                 self.sourceInteractor = sourceInteractor
                 self.destinationInteractors = destinationInteractors
+                self.cryptoAddressViewModel = cryptoAddressViewModel
             }
             
-            init(sourceAccount: SingleAccount, availableTargets: [SingleAccount], target: SingleAccount?) {
+            init(sourceAccount: SingleAccount,
+                 availableTargets: [SingleAccount],
+                 target: SingleAccount?,
+                 cryptoAddressViewModel: TextFieldViewModel) {
                 sourceInteractor = .singleAccount(sourceAccount, AccountAssetBalanceViewInteractor(account: sourceAccount))
                 var destinations: [TargetSelectionPageCellItem.Interactor] = availableTargets.map { .singleAccountAvailableTarget($0) }
+                if sourceAccount is NonCustodialAccount {
+                    destinations.insert(.walletInputField(sourceAccount, cryptoAddressViewModel), at: 0)
+                    self.cryptoAddressViewModel = cryptoAddressViewModel
+                } else {
+                    self.cryptoAddressViewModel = nil
+                }
                 /// If there is a target selected, filter it out from `destinations`
                 /// and append it as a `singleAccountSelection`. This will show the
                 /// radio cell as selected.

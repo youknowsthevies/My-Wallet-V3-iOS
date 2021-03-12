@@ -12,7 +12,7 @@ enum TargetSelectionAction: MviAction {
     
     case sourceAccountSelected(BlockchainAccount, AssetAction)
     case availableTargets([BlockchainAccount])
-    // TODO: Action for address entry
+    case validateAddress(String, CryptoAccount)
     case destinationSelected(BlockchainAccount)
     case destinationConfirmed
     case returnToPreviousStep
@@ -32,6 +32,8 @@ enum TargetSelectionAction: MviAction {
                 .update(keyPath: \.nextEnabled, value: true)
         case .destinationConfirmed:
             return oldState.update(keyPath: \.step, value: .complete)
+        case .validateAddress:
+            return oldState
         case .returnToPreviousStep:
             var stepsBackStack = oldState.stepsBackStack
             let previousStep = stepsBackStack.popLast() ?? .initial

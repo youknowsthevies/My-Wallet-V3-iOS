@@ -6,9 +6,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxDataSources
+import ToolKit
 
 struct TargetSelectionPageCellItem: IdentifiableType {
     // MARK: - Properties
@@ -17,12 +19,14 @@ struct TargetSelectionPageCellItem: IdentifiableType {
         case radioSelection(RadioSelectionCellPresenter)
         case cardView(CardViewViewModel)
         case singleAccount(AccountCurrentBalanceCellPresenter)
+        case walletInputField(TextFieldViewModel)
     }
 
     enum Interactor {
         case singleAccountAvailableTarget(SingleAccount)
         case singleAccountSelection(SingleAccount)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
+        case walletInputField(SingleAccount, TextFieldViewModel)
         
         var account: SingleAccount {
             switch self {
@@ -32,13 +36,27 @@ struct TargetSelectionPageCellItem: IdentifiableType {
                 return account
             case .singleAccount(let account, _):
                 return account
+            case .walletInputField(let account, _):
+                return account
+            }
+        }
+
+        var isWalletInputField: Bool {
+            switch self {
+            case .walletInputField:
+                return true
+            case .singleAccount,
+                 .singleAccountAvailableTarget,
+                 .singleAccountSelection:
+                return false
             }
         }
     }
-    
+
     var isSelectable: Bool {
         switch presenter {
-        case .radioSelection:
+        case .radioSelection,
+             .walletInputField:
             return true
         case .singleAccount,
              .cardView:
@@ -51,7 +69,8 @@ struct TargetSelectionPageCellItem: IdentifiableType {
         case .cardView(let viewModel):
             return viewModel.identifier
         case .radioSelection,
-             .singleAccount:
+             .singleAccount,
+             .walletInputField:
             guard let account = account else {
                 fatalError("Expected an account")
             }
@@ -94,6 +113,9 @@ struct TargetSelectionPageCellItem: IdentifiableType {
                     separatorVisibility: .hidden
                 )
             )
+        case .walletInputField(let account, let viewModel):
+            self.account = account
+            presenter = .walletInputField(viewModel)
         }
     }
 }

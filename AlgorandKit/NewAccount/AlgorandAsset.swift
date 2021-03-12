@@ -45,6 +45,10 @@ final class AlgorandAsset: CryptoAsset {
         self.internalFeatureFlag = internalFeatureFlag
    }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        unimplemented()
+    }
+
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {

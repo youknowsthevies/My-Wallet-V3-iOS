@@ -49,6 +49,11 @@ final class StellarAsset: CryptoAsset {
         self.internalFeatureFlag = internalFeatureFlag
     }
 
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        // TODO: Parse address
+        unimplemented()
+    }
+
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
         switch filter {
         case .all:
