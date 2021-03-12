@@ -33,7 +33,7 @@ final class AlgorandAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        .just(nil)
+        unimplemented()
     }
 
     // MARK: - Helpers
