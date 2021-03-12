@@ -20,13 +20,19 @@ final class BitcoinAsset: CryptoAsset {
             .map { BitcoinCryptoAccount(id: $0.publicKey, label: $0.label, isDefault: true) }
     }
 
+    private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinWalletAccountRepository
     private let errorRecorder: ErrorRecording
+    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: BitcoinWalletAccountRepository = resolve(),
-         errorRecorder: ErrorRecording = resolve()) {
-       self.repository = repository
-       self.errorRecorder = errorRecorder
+         errorRecorder: ErrorRecording = resolve(),
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+        self.exchangeAccountProvider = exchangeAccountProvider
+        self.repository = repository
+        self.errorRecorder = errorRecorder
+        self.internalFeatureFlag = internalFeatureFlag
    }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
@@ -51,9 +57,19 @@ final class BitcoinAsset: CryptoAsset {
 
     private var allAccountsGroup: Single<AccountGroup> {
         let asset = self.asset
-        return Single
-            .zip(nonCustodialGroup, custodialGroup, interestGroup)
-            .map { CryptoAccountNonCustodialGroup(asset: asset, accounts: $0.0.accounts + $0.1.accounts + $0.2.accounts) }
+        return Single.zip(nonCustodialGroup,
+                          custodialGroup,
+                          interestGroup,
+                          exchangeGroup)
+            .map { (nonCustodialGroup, custodialGroup, interestGroup, exchangeGroup) -> [SingleAccount] in
+                    nonCustodialGroup.accounts +
+                    custodialGroup.accounts +
+                    interestGroup.accounts +
+                    exchangeGroup.accounts
+            }
+            .map { accounts -> AccountGroup in
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
+            }
     }
     
     private var custodialGroup: Single<AccountGroup> {
@@ -65,6 +81,32 @@ final class BitcoinAsset: CryptoAsset {
         return Single
             .just(CryptoInterestAccount(asset: asset))
             .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
+    }
+    
+    private var exchangeGroup: Single<AccountGroup> {
+        let asset = self.asset
+        guard internalFeatureFlag.isEnabled(.nonCustodialSendP2) else {
+            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        }
+        return exchangeAccountProvider
+            .account(for: asset)
+            .catchError { error in
+                /// TODO: This shouldn't prevent users from seeing all accounts.
+                /// Potentially return nil should this fail.
+                guard let serviceError = error as? ExchangeAccountsNetworkError else {
+                    throw error
+                }
+                switch serviceError {
+                case .missingAccount:
+                    return Single.just(nil)
+                }
+            }
+            .map { account in
+                guard let account = account else {
+                    return CryptoAccountCustodialGroup(asset: asset, accounts: [])
+                }
+                return CryptoAccountCustodialGroup(asset: asset, accounts: [account])
+            }
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {

@@ -120,6 +120,22 @@ public enum LocalizationConstants {
         public static let balancesGeneric = NSLocalizedString("We are experiencing a service issue that may affect displayed balances. Don't worry, your funds are safe.", comment: "Message shown when an error occurs while fetching balance or transaction history")
     }
 
+    public struct ServerStatus {
+        public static let mainTitle = NSLocalizedString(
+            "Service Unavailable",
+            comment: "Service Unavailable"
+        )
+
+        public static let majorOutageSubtitle = NSLocalizedString(
+            "We are experiencing an outage with the wallet. Please rest assured your funds are safe.",
+            comment: "We are experiencing an outage with the wallet. Please rest assured your funds are safe."
+        )
+        public static let learnMore = NSLocalizedString(
+            " Learn more.",
+            comment: " Learn more"
+        )
+    }
+
     public struct Authentication {
         public struct DefaultPasswordScreen {
             public static let title = NSLocalizedString(
@@ -623,6 +639,10 @@ public enum LocalizationConstants {
         public static let exchange = NSLocalizedString(
             "Exchange",
             comment: "The Exchange"
+        )
+        public static let secureChannel = NSLocalizedString(
+            "Web Log In",
+            comment: "Web Log In menu item title."
         )
     }
 

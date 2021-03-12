@@ -48,6 +48,13 @@ public enum AppFeature: Int, CaseIterable {
     case achBuyFlowEnabled
 
     case achSettingsEnabled
+    
+    /// Sending from custodial to non-custodial
+    /// via the transaction flow
+    case internalSendEnabled
+
+    /// Enable Secure Channel
+    case secureChannel
 }
 
 extension AppFeature {
@@ -80,6 +87,11 @@ extension AppFeature {
             return "ach_buy_flow_enabled_ios"
         case .achSettingsEnabled:
             return "ach_settings_enabled_ios"
+        case .internalSendEnabled:
+            return "internal_send_enabled_ios"
+        case .secureChannel:
+            // TODO: (paulo) Modern Wallet P3 - Use "secure_channel_ios".
+            return "secure_channel_ios_dev"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:

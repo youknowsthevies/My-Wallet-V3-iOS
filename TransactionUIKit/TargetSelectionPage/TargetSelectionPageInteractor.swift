@@ -117,8 +117,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .text
             .skip(1)
             .withLatestFrom(sourceAccount) { ($0, $1) }
-            .subscribe(onNext: { (address, account) in
-                self.targetSelectionPageModel.process(action: .validateAddress(address, account))
+            .subscribe(onNext: { [weak self] (address, account) in
+                self?.targetSelectionPageModel.process(action: .validateAddress(address, account))
             })
             .disposeOnDeactivate(interactor: self)
 
@@ -129,7 +129,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 guard let sourceAccount = updater.sourceAccount as? SingleAccount else {
                     fatalError("You should have a source account.")
                 }
-                let targets = (updater.availableTargets ?? [])
+                let targets = updater.availableTargets
                     .compactMap { $0 as? SingleAccount }
                 
                 let interactors: TargetSelectionPageInteractor.State.Interactors = .init(

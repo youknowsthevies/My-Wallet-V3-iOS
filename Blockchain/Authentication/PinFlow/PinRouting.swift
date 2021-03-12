@@ -135,6 +135,7 @@ struct PinRouting {
         typealias Forward = (RoutingType.Input) -> Void
         typealias Backward = () -> Void
         typealias Logout = () -> Void
+        typealias Effect = (EffectType) -> Void
         
         enum Input {
             case authentication(password: String)
@@ -159,6 +160,10 @@ struct PinRouting {
                     return nil
                 }
             }
+        }
+
+        enum EffectType {
+            case openLink(url: URL)
         }
     }
 }

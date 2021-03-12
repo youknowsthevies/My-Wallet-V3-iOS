@@ -46,6 +46,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
     private let internalFeatureService: InternalFeatureFlagServiceAPI
+    private let featureConfiguring: FeatureConfiguring
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
@@ -53,7 +54,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
          target: TransactionTarget?,
          presenter: TransactionFlowPresentable,
          internalFeatureService: InternalFeatureFlagServiceAPI = resolve(),
+         featureConfiguring: FeatureConfiguring = resolve(),
          analyticsHook: TransactionAnalyticsHook = resolve()) {
+        self.featureConfiguring = featureConfiguring
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
@@ -223,7 +226,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
             /// the destination/target.
-            if internalFeatureService.isEnabled(.internalSendP2) && action == .send {
+            let internalSendEnabled = featureConfiguring.configuration(for: .internalSendEnabled).isEnabled
+            let nonCustodialSendP2 = internalFeatureService.isEnabled(.nonCustodialSendP2)
+            if (internalSendEnabled || nonCustodialSendP2) && action == .send {
                 router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
                 return
             }
