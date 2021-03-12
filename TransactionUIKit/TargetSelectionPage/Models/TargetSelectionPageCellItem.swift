@@ -12,17 +12,18 @@ import PlatformUIKit
 import RxDataSources
 import ToolKit
 
-struct TargetSelectionPageCellItem: IdentifiableType {
+struct TargetSelectionPageCellItem: Equatable, Identifiable {
+
     // MARK: - Properties
 
-    enum Presenter {
+    enum Presenter: Equatable {
         case radioSelection(RadioSelectionCellPresenter)
         case cardView(CardViewViewModel)
         case singleAccount(AccountCurrentBalanceCellPresenter)
         case walletInputField(TextFieldViewModel)
     }
 
-    enum Interactor {
+    enum Interactor: Equatable {
         case singleAccountAvailableTarget(SingleAccount)
         case singleAccountSelection(SingleAccount)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
@@ -50,6 +51,10 @@ struct TargetSelectionPageCellItem: IdentifiableType {
                  .singleAccountSelection:
                 return false
             }
+        }
+
+        public static func == (lhs: Interactor, rhs: Interactor) -> Bool {
+            lhs.account.id == rhs.account.id
         }
     }
 
@@ -117,5 +122,9 @@ struct TargetSelectionPageCellItem: IdentifiableType {
             self.account = account
             presenter = .walletInputField(viewModel)
         }
+    }
+
+    static func == (lhs: TargetSelectionPageCellItem, rhs: TargetSelectionPageCellItem) -> Bool {
+        lhs.identity == rhs.identity
     }
 }

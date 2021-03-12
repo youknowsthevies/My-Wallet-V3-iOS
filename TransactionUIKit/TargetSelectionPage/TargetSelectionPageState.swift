@@ -30,9 +30,10 @@ struct TargetSelectionPageState: Equatable, StateType {
     
     var nextEnabled: Bool = false
     var isGoingBack: Bool = false
+    var inputValidated: InputValidation = .invalid
     var sourceAccount: BlockchainAccount?
     var availableTargets: [BlockchainAccount]?
-    var destination: BlockchainAccount?
+    var destination: TransactionTarget?
     var stepsBackStack: [TargetSelectionPageStep] = []
     var step: TargetSelectionPageStep = .initial {
         didSet {
@@ -62,4 +63,32 @@ extension TargetSelectionPageState {
         }
         return self
     }
+}
+
+extension TargetSelectionPageState {
+    enum InputValidation: Equatable {
+        case valid(ReceiveAddress)
+        case invalid
+
+        var isValid: Bool {
+            switch self {
+            case .valid:
+                return true
+            case .invalid:
+                return false
+            }
+        }
+
+        public static func ==(lhs: TargetSelectionPageState.InputValidation, rhs: TargetSelectionPageState.InputValidation) -> Bool {
+            switch (lhs, rhs) {
+            case (.valid(let leftAddress), .valid(let rightAddress)):
+                return leftAddress.address == rightAddress.address
+            case (.invalid, .invalid):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+
 }

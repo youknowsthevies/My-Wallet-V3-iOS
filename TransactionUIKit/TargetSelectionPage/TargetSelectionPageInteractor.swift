@@ -19,7 +19,7 @@ protocol TargetSelectionPageRouting: ViewableRouting {
 }
 
 protocol TargetSelectionPageListener: AnyObject {
-    func didSelect(blockchainAccount: BlockchainAccount)
+    func didSelect(target: TransactionTarget)
     func didTapBack()
     func didTapClose()
 }
@@ -121,7 +121,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self.targetSelectionPageModel.process(action: .validateAddress(address, account))
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         let interactorState = targetSelectionPageModel
             .state
             .observeOn(MainScheduler.instance)
@@ -138,7 +138,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                     target: updater.destination as? SingleAccount,
                     cryptoAddressViewModel: cryptoAddressViewModel
                 )
-                
+
                 return state
                     /// Update the `Interactors` for the cells.
                     .update(keyPath: \.interactors, value: interactors)
@@ -197,8 +197,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             guard let account = newState.destination else {
                 fatalError("Expected a destination acount.")
             }
-            didSelect?(account)
-            listener?.didSelect(blockchainAccount: account)
+            didSelect?(account as! BlockchainAccount)
+            listener?.didSelect(target: account)
         }
     }
     
@@ -219,7 +219,7 @@ extension TargetSelectionPageInteractor {
             let sourceInteractor: TargetSelectionPageCellItem.Interactor?
             let cryptoAddressViewModel: TextFieldViewModel?
             let destinationInteractors: [TargetSelectionPageCellItem.Interactor]
-            
+
             private init(sourceInteractor: TargetSelectionPageCellItem.Interactor?,
                          destinationInteractors: [TargetSelectionPageCellItem.Interactor],
                          cryptoAddressViewModel: TextFieldViewModel?) {

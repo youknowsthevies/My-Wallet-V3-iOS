@@ -39,8 +39,6 @@ final class TargetSelectionPageModel {
     }
     
     func perform(previousState: TargetSelectionPageState, action: TargetSelectionAction) -> Disposable? {
-        // TODO: Action for addres entry.
-        // Validate the address on each keystroke.
         switch action {
         case .sourceAccountSelected(let account, let action):
             return processTargetListUpdate(sourceAccount: account, action: action)
@@ -50,7 +48,8 @@ final class TargetSelectionPageModel {
              .availableTargets,
              .destinationConfirmed,
              .resetFlow,
-             .returnToPreviousStep:
+             .returnToPreviousStep,
+             .addressValidated:
             return nil
         }
     }
@@ -66,10 +65,12 @@ final class TargetSelectionPageModel {
     private func validateCrypto(address: String, account: CryptoAccount) -> Disposable {
         interactor
             .validateCrypto(address: address, account: account)
-            .subscribe { [weak self] (result) in
-                guard case .success = result else {
+            .subscribe(onSuccess: { [weak self] (result) in
+                guard case .success(let receiveAddress) = result else {
+                    self?.process(action: .addressValidated(.invalid))
                     return
                 }
-            }
+                self?.process(action: .addressValidated(.valid(receiveAddress)))
+            })
     }
 }
