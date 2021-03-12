@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
+@testable import PlatformKit
 import RxSwift
 
 class WalletServiceMock: WalletOptionsAPI {
@@ -19,6 +19,10 @@ class WalletServiceMock: WalletOptionsAPI {
     var underlyingWalletOptions: WalletOptions = .empty
     var walletOptions: Single<WalletOptions> {
         .just(underlyingWalletOptions)
+    }
+
+    var serverStatus: Single<ServerIncidents> {
+        .just(ServerIncidents(page: .init(id: "", name: "", url: ""), incidents: []))
     }
 }
 

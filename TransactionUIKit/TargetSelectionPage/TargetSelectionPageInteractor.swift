@@ -129,7 +129,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 guard let sourceAccount = updater.sourceAccount as? SingleAccount else {
                     fatalError("You should have a source account.")
                 }
-                let targets = (updater.availableTargets ?? [])
+                let targets = updater.availableTargets
                     .compactMap { $0 as? SingleAccount }
                 
                 let interactors: TargetSelectionPageInteractor.State.Interactors = .init(

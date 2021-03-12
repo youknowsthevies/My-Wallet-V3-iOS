@@ -8,6 +8,7 @@
 
 import DIKit
 import LocalAuthentication
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -16,6 +17,17 @@ import ToolKit
 
 private enum PinScreenPresenterError: Error {
     case absentPinValueWhenAuthenticateUsingBiometrics
+}
+
+// TODO: Dimitris - Move this to correct place
+public struct ServerStatusViewModel {
+    public let title: String?
+    public let textViewModel: InteractableTextViewModel
+
+    public init(title: String?, textViewModel: InteractableTextViewModel) {
+        self.title = title
+        self.textViewModel = textViewModel
+    }
 }
 
 /// Presenter for PIN screen
@@ -107,9 +119,26 @@ final class PinScreenPresenter {
         isProcessingRelay
             .observeOn(MainScheduler.instance)
     }
+
+    var serverStatusRelay = PublishRelay<ServerStatusViewModel>()
+    var serverStatus: Driver<ServerStatusViewModel> {
+        serverStatusRelay
+            .asDriver(onErrorDriveWith: .empty())
+    }
+
+    var learnMoreServerStatusTap: Signal<URL> {
+        serverStatusRelay
+            .map(\.textViewModel)
+            .flatMap(\.tap)
+            .map(\.url)
+            .asSignal(onErrorSignalWith: .empty())
+    }
+
+    let serverStatusTitle = LocalizationConstants.ServerStatus.mainTitle
     
     // MARK: Routing
-    
+
+    private let performEffect: PinRouting.RoutingType.Effect
     private let forwardRouting: PinRouting.RoutingType.Forward
     let backwardRouting: PinRouting.RoutingType.Backward!
 
@@ -149,7 +178,8 @@ final class PinScreenPresenter {
          recorder: Recording = CrashlyticsRecorder(),
          credentialsStore: CredentialsStoreAPI = resolve(),
          backwardRouting: PinRouting.RoutingType.Backward? = nil,
-         forwardRouting: @escaping PinRouting.RoutingType.Forward) {
+         forwardRouting: @escaping PinRouting.RoutingType.Forward,
+         performEffect: @escaping PinRouting.RoutingType.Effect) {
         self.useCase = useCase
         self.flow = flow
         self.interactor = interactor
@@ -159,6 +189,7 @@ final class PinScreenPresenter {
         self.backwardRouting = backwardRouting
         self.forwardRouting = forwardRouting
         self.credentialsStore = credentialsStore
+        self.performEffect = performEffect
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
@@ -250,6 +281,31 @@ final class PinScreenPresenter {
             .bind { [unowned self] in
                 self.authenticateUsingBiometricsIfNeeded()
             }
+            .disposed(by: disposeBag)
+
+        learnMoreServerStatusTap
+            .emit(weak: self) { (self, url) in
+                self.performEffect(.openLink(url: url))
+            }
+            .disposed(by: disposeBag)
+    }
+
+    func viewDidLoad() {
+        interactor.serverStatus()
+            .map { incident -> ServerStatusViewModel in
+                ServerStatusViewModel(
+                    title: nil,
+                    textViewModel: .init(
+                        inputs: [
+                            .text(string: LocalizationConstants.ServerStatus.majorOutageSubtitle),
+                            .url(string: LocalizationConstants.ServerStatus.learnMore, url: incident.page.url)
+                        ],
+                        textStyle: .init(color: .white, font: UIFont.main(.medium, 16)),
+                        linkStyle: .init(color: .white, font: UIFont.main(.bold, 16))
+                    )
+                )
+            }
+            .bind(to: serverStatusRelay)
             .disposed(by: disposeBag)
     }
 }
