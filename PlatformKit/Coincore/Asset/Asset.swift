@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -45,11 +46,13 @@ public enum CryptoAssetError: Error {
 }
 
 extension CryptoAsset {
+    
     public func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
         guard let crypto = account as? CryptoAccount else {
             fatalError("Expected a CryptoAccount: \(account)")
         }
         precondition(crypto.asset == asset)
+        // TODO: Fetch exchange accounts
         switch crypto {
         case is CryptoTradingAccount:
             return accountGroup(filter: .nonCustodial)

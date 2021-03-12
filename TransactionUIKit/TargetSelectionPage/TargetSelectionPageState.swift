@@ -31,7 +31,7 @@ struct TargetSelectionPageState: Equatable, StateType {
     var nextEnabled: Bool = false
     var isGoingBack: Bool = false
     var sourceAccount: BlockchainAccount?
-    var availableTargets: [BlockchainAccount]?
+    var availableTargets: [TransactionTarget] = []
     var destination: BlockchainAccount?
     var stepsBackStack: [TargetSelectionPageStep] = []
     var step: TargetSelectionPageStep = .initial {
@@ -47,7 +47,8 @@ struct TargetSelectionPageState: Equatable, StateType {
         lhs.destination?.label == rhs.destination?.label &&
         lhs.sourceAccount?.label == rhs.sourceAccount?.label &&
         lhs.step == rhs.step &&
-        lhs.stepsBackStack == rhs.stepsBackStack
+        lhs.stepsBackStack == rhs.stepsBackStack &&
+        lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
     }
 }
 

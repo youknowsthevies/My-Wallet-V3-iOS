@@ -22,7 +22,7 @@ enum TargetSelectionAction: MviAction {
         switch self {
         case .availableTargets(let accounts):
             return oldState
-                .update(keyPath: \.availableTargets, value: accounts)
+                .update(keyPath: \.availableTargets, value: accounts.compactMap { $0 as? SingleAccount })
         case .sourceAccountSelected(let account, _):
             return oldState
                 .update(keyPath: \.sourceAccount, value: account)
