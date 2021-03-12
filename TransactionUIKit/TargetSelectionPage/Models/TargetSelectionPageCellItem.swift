@@ -12,7 +12,7 @@ import PlatformUIKit
 import RxDataSources
 import ToolKit
 
-struct TargetSelectionPageCellItem: Equatable, Identifiable {
+struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     // MARK: - Properties
 
