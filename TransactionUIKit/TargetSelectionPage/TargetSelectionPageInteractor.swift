@@ -117,8 +117,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .text
             .skip(1)
             .withLatestFrom(sourceAccount) { ($0, $1) }
-            .subscribe(onNext: { (address, account) in
-                self.targetSelectionPageModel.process(action: .validateAddress(address, account))
+            .subscribe(onNext: { [weak self] (address, account) in
+                self?.targetSelectionPageModel.process(action: .validateAddress(address, account))
             })
             .disposeOnDeactivate(interactor: self)
         
