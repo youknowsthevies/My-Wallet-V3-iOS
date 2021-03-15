@@ -137,12 +137,13 @@ public class TextFieldViewModel {
                 hintRelay.asDriver(),
                 titleRelay.asDriver()
             )
+            .map { (isOn: $0.0.isOn, shouldShowHint: $0.1, hint: $0.2, title: $0.3) }
             .map {
                 Mode(
-                    isFocused: $0.0.isOn,
-                    shouldShowHint: $0.1,
-                    hint: $0.2,
-                    title: $0.3
+                    isFocused: $0.isOn,
+                    shouldShowHint: $0.shouldShowHint,
+                    hint: $0.hint,
+                    title: $0.title
                 )
             }
             .distinctUntilChanged()

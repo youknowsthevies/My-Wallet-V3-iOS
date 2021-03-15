@@ -46,9 +46,11 @@ struct TargetSelectionPageState: Equatable, StateType {
     static func == (lhs: TargetSelectionPageState, rhs: TargetSelectionPageState) -> Bool {
         lhs.nextEnabled == rhs.nextEnabled &&
         lhs.destination?.label == rhs.destination?.label &&
-        lhs.sourceAccount?.label == rhs.sourceAccount?.label &&
+        lhs.sourceAccount?.id == rhs.sourceAccount?.id &&
         lhs.step == rhs.step &&
         lhs.stepsBackStack == rhs.stepsBackStack &&
+        lhs.inputValidated == rhs.inputValidated &&
+        lhs.isGoingBack == rhs.isGoingBack &&
         lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
     }
 }

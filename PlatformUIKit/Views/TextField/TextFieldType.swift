@@ -214,14 +214,14 @@ extension TextFieldType {
              .expirationDate,
              .cardholderName,
              .cardNumber,
-             .description,
-             .cryptoAddress:
+             .description:
              return false
         case .password,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
-             .oneTimeCode:
+             .oneTimeCode,
+             .cryptoAddress:
             return true
         }
     }
@@ -396,7 +396,8 @@ extension TextFieldType {
         case .expirationDate,
              .cardCVV,
              .backupVerification,
-             .description:
+             .description,
+             .cryptoAddress:
             return nil
         case .walletIdentifier:
             return .username
@@ -432,8 +433,6 @@ extension TextFieldType {
             return .postalCode
         case .personFullName:
             return .name
-        case .cryptoAddress:
-            return nil
         }
     }
 }

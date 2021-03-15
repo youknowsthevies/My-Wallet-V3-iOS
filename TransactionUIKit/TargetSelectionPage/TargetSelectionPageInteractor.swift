@@ -66,7 +66,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         let cryptoAddressViewModel = TextFieldViewModel(
             with: TextFieldType.cryptoAddress,
-            validator: TextValidationFactory.General.alwaysValid,
+            validator: CryptoAddressValidator(model: targetSelectionPageModel),
             messageRecorder: messageRecorder
         )
         

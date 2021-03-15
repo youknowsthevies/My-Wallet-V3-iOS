@@ -39,10 +39,12 @@ enum TargetSelectionAction: MviAction {
         case .addressValidated(let inputValidation):
             guard case let .valid(address) = inputValidation else {
                 return oldState
+                    .update(keyPath: \.inputValidated, value: inputValidation)
                     .update(keyPath: \.nextEnabled, value: false)
             }
             let destination = address as TransactionTarget
             return oldState
+                .update(keyPath: \.inputValidated, value: inputValidation)
                 .update(keyPath: \.destination, value: destination)
                 .update(keyPath: \.nextEnabled, value: true)
         case .returnToPreviousStep:
