@@ -64,8 +64,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let cryptoAddressViewModel = TextFieldViewModel(
-            with: TextFieldType.cryptoAddress,
+        let cryptoAddressViewModel = CryptoAddressTextFieldViewModel(
             validator: CryptoAddressValidator(model: targetSelectionPageModel),
             messageRecorder: messageRecorder
         )
