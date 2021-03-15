@@ -178,6 +178,14 @@ public class TextFieldViewModel {
             .map { $0?.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
     }
+    
+    /// Streams events when the accessory is being tapped
+    public var tap: Signal<Void> {
+        tapRelay.asSignal()
+    }
+    
+    /// Streams events when the accessory is being tapped
+    public let tapRelay = PublishRelay<Void>()
 
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")

@@ -49,7 +49,9 @@ final class TargetSelectionPageModel {
              .destinationConfirmed,
              .resetFlow,
              .returnToPreviousStep,
-             .addressValidated:
+             .addressValidated,
+             .destinationDeselected,
+             .qrScannerButtonTapped:
             return nil
         }
     }

@@ -12,11 +12,13 @@ enum TargetSelectionAction: MviAction {
     
     case sourceAccountSelected(BlockchainAccount, AssetAction)
     case availableTargets([BlockchainAccount])
+    case destinationDeselected
     case validateAddress(String, CryptoAccount)
     case destinationSelected(BlockchainAccount)
     case addressValidated(TargetSelectionPageState.InputValidation)
     case destinationConfirmed
     case returnToPreviousStep
+    case qrScannerButtonTapped
     case resetFlow
     
     func reduce(oldState: TargetSelectionPageState) -> TargetSelectionPageState {
@@ -32,6 +34,10 @@ enum TargetSelectionAction: MviAction {
             return oldState
                 .update(keyPath: \.destination, value: destination)
                 .update(keyPath: \.nextEnabled, value: true)
+        case .destinationDeselected:
+            return oldState
+                .update(keyPath: \.destination, value: nil)
+                .update(keyPath: \.nextEnabled, value: false)
         case .destinationConfirmed:
             return oldState.update(keyPath: \.step, value: .complete)
         case .validateAddress:
@@ -54,6 +60,9 @@ enum TargetSelectionAction: MviAction {
                 .update(keyPath: \.stepsBackStack, value: stepsBackStack)
                 .update(keyPath: \.step, value: previousStep)
                 .update(keyPath: \.isGoingBack, value: true)
+        case .qrScannerButtonTapped:
+            return oldState
+                .update(keyPath: \.step, value: .qrScanner)
         case .resetFlow:
             return oldState
                 .update(keyPath: \.step, value: .closed)

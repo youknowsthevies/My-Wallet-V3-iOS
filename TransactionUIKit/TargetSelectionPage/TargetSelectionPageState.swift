@@ -12,13 +12,15 @@ enum TargetSelectionPageStep {
     // TODO: QR Scanning Step
     case initial
     case complete
+    case qrScanner
     case closed
     
     var addToBackStack: Bool {
         switch self {
         case .closed,
              .complete,
-             .initial:
+             .initial,
+             .qrScanner:
             return false
         }
     }

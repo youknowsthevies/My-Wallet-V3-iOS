@@ -34,6 +34,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let accountProvider: SourceAndTargetAccountProviding
     private let targetSelectionPageModel: TargetSelectionPageModel
     private let action: AssetAction
+    private let cryptoAddressViewModel: CryptoAddressTextFieldViewModel
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     weak var listener: TargetSelectionPageListener?
@@ -50,6 +51,10 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
         self.messageRecorder = messageRecorder
+        cryptoAddressViewModel = CryptoAddressTextFieldViewModel(
+            validator: CryptoAddressValidator(model: targetSelectionPageModel),
+            messageRecorder: messageRecorder
+        )
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -63,11 +68,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
     override func didBecomeActive() {
         super.didBecomeActive()
-
-        let cryptoAddressViewModel = CryptoAddressTextFieldViewModel(
-            validator: CryptoAddressValidator(model: targetSelectionPageModel),
-            messageRecorder: messageRecorder
-        )
+        
+        cryptoAddressViewModel
+            .tapRelay
+            .bindAndCatch(weak: self) { (self) in
+                self.targetSelectionPageModel.process(action: .qrScannerButtonTapped)
+            }
+            .disposeOnDeactivate(interactor: self)
         
         /// Listens to the `step` which
         /// triggers routing to a new screen or ending the flow
@@ -110,17 +117,31 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self.targetSelectionPageModel.process(action: .sourceAccountSelected(account, self.action))
             })
             .disposeOnDeactivate(interactor: self)
-
-        // bind for text updates
-        cryptoAddressViewModel
+        
+        let addressInput = cryptoAddressViewModel
             .text
             .skip(1)
+
+        // bind for text updates
+        addressInput
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .subscribe(onNext: { [weak self] (address, account) in
                 self?.targetSelectionPageModel.process(action: .validateAddress(address, account))
             })
             .disposeOnDeactivate(interactor: self)
-
+        
+        /// If the user has selected a wallet but then decides
+        /// to enter in an address instead, the wallet selection state
+        /// should be removed as soon as the user enters a character into the text field.
+        addressInput
+            .withLatestFrom(targetSelectionPageModel.state) { ($0, $1) }
+            .filter { $0.1.inputValidated == .invalid }
+            .filter { $0.1.destination != nil }
+            .subscribe(onNext: { [weak self] (input, state) in
+                self?.targetSelectionPageModel.process(action: .destinationDeselected)
+            })
+            .disposeOnDeactivate(interactor: self)
+        
         let interactorState = targetSelectionPageModel
             .state
             .observeOn(MainScheduler.instance)
@@ -135,7 +156,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                     sourceAccount: sourceAccount,
                     availableTargets: targets,
                     target: updater.destination as? SingleAccount,
-                    cryptoAddressViewModel: cryptoAddressViewModel
+                    cryptoAddressViewModel: self.cryptoAddressViewModel
                 )
 
                 return state
@@ -156,6 +177,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private func handle(effects: Effects) {
         switch effects {
         case .select(let account):
+            cryptoAddressViewModel.textRelay.accept("")
             targetSelectionPageModel.process(action: .destinationSelected(account))
         case .back,
              .closed:
@@ -198,6 +220,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             }
             didSelect?(account as! BlockchainAccount)
             listener?.didSelect(target: account)
+        case .qrScanner:
+            // TODO: Present QR Scanner
+            break
         }
     }
     
