@@ -51,15 +51,14 @@ final class StellarAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        guard address.count == 56,
-              let _ = try? KeyPair(accountId: address) else {
-            return .just(nil)
-        }
-        return .just(StellarReceiveAddress(
-            address: address,
-            label: address,
-            memo: nil,
-            onTxCompleted: { _ in Completable.empty() })
+        guard address.count == 56 else { return .just(nil) }
+        guard let pair = try? KeyPair(accountId: address) else { return .just(nil) }
+        return .just(
+            StellarReceiveAddress(
+                address: pair.accountId,
+                label: pair.accountId,
+                memo: nil,
+                onTxCompleted: { _ in Completable.empty() })
         )
     }
 
