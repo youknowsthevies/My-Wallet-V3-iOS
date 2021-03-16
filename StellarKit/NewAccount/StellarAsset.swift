@@ -9,6 +9,7 @@
 import DIKit
 import PlatformKit
 import RxSwift
+import stellarsdk
 import ToolKit
 
 final class StellarAsset: CryptoAsset {
@@ -50,8 +51,16 @@ final class StellarAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        // TODO: Parse address
-        unimplemented()
+        guard address.count > 0,
+              let _ = try? KeyPair(accountId: address) else {
+            return .just(nil)
+        }
+        return .just(StellarReceiveAddress(
+            address: address,
+            label: address,
+            memo: nil,
+            onTxCompleted: { _ in Completable.empty() })
+        )
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
