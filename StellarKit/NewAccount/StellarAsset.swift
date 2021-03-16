@@ -58,7 +58,8 @@ final class StellarAsset: CryptoAsset {
                 address: pair.accountId,
                 label: pair.accountId,
                 memo: nil,
-                onTxCompleted: { _ in Completable.empty() })
+                onTxCompleted: { _ in Completable.empty() }
+            )
         )
     }
 
