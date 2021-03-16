@@ -23,7 +23,7 @@ final class BitcoinAddressValidator: BitcoinAddressValidatorAPI {
             guard let self = self else {
                 throw BitcoinReceiveAddressError.uninitialized
             }
-            guard address.count > 26 else {
+            guard address.count >= 26 else {
                 throw BitcoinReceiveAddressError.incompleteAddress
             }
             guard self.bridge.validateBitcoin(address: address) else {
