@@ -82,6 +82,25 @@ final class BitcoinWallet: NSObject {
     }
 }
 
+extension BitcoinWallet: BitcoinAddressValidatorAPI {
+    func validate(address: String) -> Completable {
+        Completable.fromCallable { [weak self] in
+            guard let self = self else {
+                throw BitcoinReceiveAddressError.uninitialized
+            }
+            guard let wallet = self.wallet else {
+                throw BitcoinReceiveAddressError.uninitialized
+            }
+            guard address.count > 26 else {
+                throw BitcoinReceiveAddressError.incompleteAddress
+            }
+            guard wallet.validateBitcoin(address: address) else {
+                throw BitcoinReceiveAddressError.jsReturnedNil
+            }
+        }
+    }
+}
+
 extension BitcoinWallet: BitcoinChainSendBridgeAPI {
     func buildProposal<Token>(with destination: BitcoinChainReceiveAddress<Token>,
                               amount: MoneyValue,

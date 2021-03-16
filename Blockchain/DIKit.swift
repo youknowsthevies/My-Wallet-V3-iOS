@@ -227,8 +227,17 @@ extension DependencyContainer {
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as StellarWalletBridgeAPI
         }
+        
+        // MARK: - BitcoinCash Wallet
+        
+        factory { BitcoinCashAddressValidator() as BitcoinCashAddressValidatorAPI }
 
         // MARK: - Bitcoin Wallet
+        
+        factory { () -> BitcoinAddressValidatorAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.wallet.bitcoin
+        }
 
         factory { () -> BitcoinWalletBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
