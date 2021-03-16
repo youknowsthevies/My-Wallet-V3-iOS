@@ -234,10 +234,7 @@ extension DependencyContainer {
 
         // MARK: - Bitcoin Wallet
         
-        factory { () -> BitcoinAddressValidatorAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet.bitcoin
-        }
+        factory { BitcoinAddressValidator() as BitcoinAddressValidatorAPI }
 
         factory { () -> BitcoinWalletBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
