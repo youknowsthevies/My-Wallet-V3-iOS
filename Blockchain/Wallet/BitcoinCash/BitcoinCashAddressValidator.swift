@@ -29,7 +29,7 @@ final class BitcoinCashAddressValidator: BitcoinCashAddressValidatorAPI {
             guard let self = self else {
                 throw BitcoinCashWalletError.deallocated
             }
-            guard address.count > 26 else {
+            guard address.count == 42 else {
                 throw BitcoinCashWalletError.incompleteAddress
             }
             guard self.wallet.validateBitcoinCash(address: address) else {
