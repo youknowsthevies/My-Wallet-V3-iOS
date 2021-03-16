@@ -137,12 +137,13 @@ public class TextFieldViewModel {
                 hintRelay.asDriver(),
                 titleRelay.asDriver()
             )
+            .map { (isOn: $0.0.isOn, shouldShowHint: $0.1, hint: $0.2, title: $0.3) }
             .map {
                 Mode(
-                    isFocused: $0.0.isOn,
-                    shouldShowHint: $0.1,
-                    hint: $0.2,
-                    title: $0.3
+                    isFocused: $0.isOn,
+                    shouldShowHint: $0.shouldShowHint,
+                    hint: $0.hint,
+                    title: $0.title
                 )
             }
             .distinctUntilChanged()
@@ -177,6 +178,14 @@ public class TextFieldViewModel {
             .map { $0?.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
     }
+    
+    /// Streams events when the accessory is being tapped
+    public var tap: Signal<Void> {
+        tapRelay.asSignal()
+    }
+    
+    /// Streams events when the accessory is being tapped
+    public let tapRelay = PublishRelay<Void>()
 
     /// The content of the text field
     public let textRelay = BehaviorRelay<String>(value: "")
@@ -192,6 +201,8 @@ public class TextFieldViewModel {
     let textFont = UIFont.main(.medium, 16)
     let titleRelay: BehaviorRelay<String>
 
+    /// Used for equality
+    private var internalText: String?
     private let autocapitalizationTypeRelay: BehaviorRelay<UITextAutocapitalizationType>
     private let keyboardTypeRelay: BehaviorRelay<UIKeyboardType>
     private let contentTypeRelay: BehaviorRelay<UITextContentType?>
@@ -257,7 +268,15 @@ public class TextFieldViewModel {
         text
             .bindAndCatch(to: validator.valueRelay)
             .disposed(by: disposeBag)
-        
+
+        text
+            .subscribe(onNext: { [weak self] text in
+                // we update the changes of the text to our internalText property
+                // for equality purposes
+                self?.internalText = text
+            })
+            .disposed(by: disposeBag)
+
         let matchState: Observable<TextValidationState>
         if let textMatcher = textMatcher {
             matchState = textMatcher.validationState
@@ -419,6 +438,12 @@ extension TextFieldViewModel {
                 self = .invalid(reason: nil)
             }
         }
+    }
+}
+
+extension TextFieldViewModel: Equatable {
+    public static func == (lhs: TextFieldViewModel, rhs: TextFieldViewModel) -> Bool {
+        lhs.internalText == rhs.internalText
     }
 }
 

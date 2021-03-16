@@ -59,8 +59,22 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        // TODO: Parsing
-        unimplemented()
+        guard !address.isEmpty else {
+            return .just(nil)
+        }
+        let validated = EthereumAddress(stringLiteral: address)
+        guard validated.isValid else {
+            return .just(nil)
+        }
+        return .just(
+            ERC20ReceiveAddress<Token>(
+                asset: Token.assetType,
+                address: address,
+                // TODO: Correct label
+                label: address,
+                onTxCompleted: { _ in Completable.empty() }
+            )
+        )
     }
 
     // MARK: - Helpers

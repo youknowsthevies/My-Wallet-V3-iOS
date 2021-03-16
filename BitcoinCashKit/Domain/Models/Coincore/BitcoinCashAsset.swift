@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
@@ -23,15 +24,18 @@ class BitcoinCashAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinCashWalletAccountRepository
     private let errorRecorder: ErrorRecording
+    private let addressValidator: BitcoinCashAddressValidatorAPI
     private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: BitcoinCashWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         addressValidator: BitcoinCashAddressValidatorAPI = resolve(),
          internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
+        self.addressValidator = addressValidator
         self.internalFeatureFlag = internalFeatureFlag
     }
 
@@ -49,8 +53,17 @@ class BitcoinCashAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        // TODO: Parsing
-        unimplemented()
+        addressValidator.validate(address: address)
+            .andThen(
+                .just(
+                    BitcoinChainReceiveAddress<BitcoinCashToken>(
+                        address: address,
+                        label: address,
+                        onTxCompleted: { _ in Completable.empty() }
+                    )
+                )
+            )
+            .catchErrorJustReturn(nil)
     }
 
     // MARK: - Helpers
