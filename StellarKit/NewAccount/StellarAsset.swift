@@ -51,7 +51,7 @@ final class StellarAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        guard address.count > 0,
+        guard address.count == 56,
               let _ = try? KeyPair(accountId: address) else {
             return .just(nil)
         }
