@@ -21,6 +21,7 @@ import StellarKit
 import ToolKit
 import TransactionKit
 import TransactionUIKit
+import WalletPayloadKit
 
 extension DependencyContainer {
     
@@ -247,5 +248,9 @@ extension DependencyContainer {
         }
 
         single { BitcoinCashWallet() as BitcoinCashWalletBridgeAPI }
+
+        // MARK: Wallet Upgrade
+
+        factory { WalletManager.shared as WalletUpgradingProvider }
     }
 }

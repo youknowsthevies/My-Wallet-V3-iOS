@@ -107,8 +107,7 @@ enum AssetAddressType {
         }
 
         guard wallet.didUpgradeToHd() else {
-            Logger.shared.warning("Wallet has not yet been upgraded to HD.")
-            return
+            fatalError("Wallet upgrade is not optional.")
         }
 
         // Only one address for ethereum and stellar

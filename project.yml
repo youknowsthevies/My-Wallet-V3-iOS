@@ -1153,5 +1153,8 @@ targets:
   WalletPayloadKitTests:
     dependencies:
     - target: WalletPayloadKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
     templates:
     - FrameworkTest

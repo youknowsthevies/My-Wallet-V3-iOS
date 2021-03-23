@@ -11,6 +11,7 @@
 @import WalletPayloadKit;
 @import FirebaseAnalytics;
 @import NetworkKit;
+@import ToolKit;
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import "Wallet.h"
@@ -178,6 +179,11 @@ NSString * const kLockboxInvitation = @"lockbox";
         [timer invalidate];
         [weakSelf.timers removeObjectForKey:identifier];
     };
+}
+
+- (JSContext *)loadContextIfNeeded {
+    [self loadJSIfNeeded];
+    return self.context;
 }
 
 - (void)loadJSIfNeeded {
@@ -549,10 +555,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_makeNotice_id_message"] = ^(NSString *type, NSString *_id, NSString *message) {
         [weakSelf makeNotice:type id:_id message:message];
-    };
-
-    self.context[@"objc_upgrade_success"] = ^() {
-        [weakSelf upgrade_success];
     };
 
 #pragma mark Recovery
@@ -1198,7 +1200,8 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)newAccount:(NSString*)__password email:(NSString *)__email
 {
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")", [__password escapedForJS], [__email escapedForJS], BC_STRING_MY_BITCOIN_WALLET]];
+    NSString *walletName = [LocalizationConstantsObjcBridge myBitcoinWallet];
+    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")", [__password escapedForJS], [__email escapedForJS], walletName]];
 }
 
 - (BOOL)needsSecondPassword
@@ -2280,13 +2283,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     DLog(@"Stop loading");
     [LoadingViewPresenter.shared hide];
-}
-
-- (void)upgrade_success
-{
-    if ([delegate respondsToSelector:@selector(walletUpgraded:)]) {
-        [delegate walletUpgraded:self];
-    }
 }
 
 #pragma mark - Callbacks from JS to Obj-C

@@ -354,7 +354,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return
             }
 
-            // Check that the version of the link (if provided) is supported, if not, prompt the user to upgrade
+            // Check that the version of the link (if provided) is supported, if not, prompt the user to update
             if let minimumAppVersionStr = dynamicLink?.minimumAppVersion,
                 let minimumAppVersion = AppVersion(string: minimumAppVersionStr),
                 let appVersionStr = Bundle.applicationVersion,

@@ -166,12 +166,13 @@ MyWalletPhone.upgradeToV3 = function(firstAccountName) {
 
         MyWallet.wallet.getHistory();
         objc_loading_stop();
-        objc_upgrade_success();
+        objc_upgrade_V3_success();
     };
 
     var error = function (e) {
         console.log('Error upgrading legacy wallet to HD wallet: ' + e);
         objc_loading_stop();
+        objc_upgrade_V3_error();
     };
 
     if (MyWallet.wallet.isDoubleEncrypted) {

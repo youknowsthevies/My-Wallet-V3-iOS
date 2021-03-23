@@ -8,6 +8,7 @@
 
 import DIKit
 import ToolKit
+import WalletPayloadKit
 
 extension Wallet {
     private enum WalletJavaScriptError: Error {
@@ -22,3 +23,5 @@ extension Wallet {
         errorRecorder.error(WalletJavaScriptError.typeError)
     }
 }
+
+extension Wallet: WalletUpgradingAPI {  }

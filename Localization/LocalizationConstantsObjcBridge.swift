@@ -92,18 +92,6 @@ import Foundation
 
     @objc public class func invalidXAddressY() -> String { LocalizationConstants.SendAsset.invalidXAddressY }
 
-    @objc public class func upgradeSuccess() -> String { LocalizationConstants.LegacyUpgrade.upgradeSuccess }
-
-    @objc public class func upgradeSuccessTitle() -> String { LocalizationConstants.LegacyUpgrade.upgradeSuccessTitle }
-
-    @objc public class func upgrade() -> String { LocalizationConstants.LegacyUpgrade.upgrade }
-
-    @objc public class func upgradeFeatureOne() -> String { LocalizationConstants.LegacyUpgrade.upgradeFeatureOne }
-
-    @objc public class func upgradeFeatureTwo() -> String { LocalizationConstants.LegacyUpgrade.upgradeFeatureTwo }
-
-    @objc public class func upgradeFeatureThree() -> String { LocalizationConstants.LegacyUpgrade.upgradeFeatureThree }
-
     @objc public class func nonSpendable() -> String { LocalizationConstants.AddressAndKeyImport.nonSpendable }
 
     @objc public class func dontShowAgain() -> String { LocalizationConstants.dontShowAgain }

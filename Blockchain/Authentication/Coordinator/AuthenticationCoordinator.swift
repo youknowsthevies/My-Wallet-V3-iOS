@@ -166,8 +166,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         if let topViewController = topViewController, self.appSettings.isPinSet {
             self.alertPresenter.showMobileNoticeIfNeeded()
         }
-        
-        UIApplication.shared.keyWindow?.rootViewController = AppCoordinator.shared.slidingViewController
+
+        AppCoordinator.shared.startAfterWalletAuthentication()
 
         // Handle any necessary routing after authentication
         handlePostAuthenticationLogic()
@@ -210,7 +210,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     /// Starts the authentication flow. If the user has a pin set, it will trigger
     /// present the pin entry screen, otherwise, it will show the password screen.
-    @objc func start(flowProvider: MainFlowProviding = AppCoordinator.shared) {
+    func start(flowProvider: MainFlowProviding = AppCoordinator.shared) {
         if appSettings.isPinSet {
             authenticatePin(flowProvider: flowProvider)
         } else {
@@ -258,6 +258,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         let presenter = PasswordRequiredScreenPresenter()
         let viewController = PasswordRequiredViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
+        // Sets view controller as rootViewController of the window
         window.rootViewController = navigationController
     }
     
@@ -426,7 +427,7 @@ extension AuthenticationCoordinator {
             /// TODO: Inject app coordinator instead - currently there is
             /// a crash related to circle-dependency between `AuthenticationCoordinator`
             /// and `AppCoordinator`.
-            AppCoordinator.shared.startAfterWalletCreation()
+            AppCoordinator.shared.startAfterWalletAuthentication()
             self.handlePostAuthenticationLogic()
         }
         pinRouter.execute()

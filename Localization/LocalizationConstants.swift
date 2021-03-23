@@ -813,33 +813,6 @@ public enum LocalizationConstants {
         public static let yesterday = NSLocalizedString("Yesterday", comment: "text shown when a transaction has completed yesterday")
     }
 
-    public struct LegacyUpgrade {
-        public static let upgrade = NSLocalizedString(
-            "Upgrade",
-            comment: "The title of the side menu entry item."
-        )
-        public static let upgradeFeatureOne = NSLocalizedString(
-            "Always know the market price",
-            comment: "The description in the first view of the legacy wallet upgrade flow."
-        )
-        public static let upgradeFeatureTwo = NSLocalizedString(
-            "Easy one time wallet backup keeps you in control of your funds.",
-            comment: "The description in the second view of the legacy wallet upgrade flow."
-        )
-        public static let upgradeFeatureThree = NSLocalizedString(
-            "Everything you need to store, spend and receive BTC, ETH and BCH.",
-            comment: "The description in the third view of the legacy wallet upgrade flow."
-        )
-        public static let upgradeSuccess = NSLocalizedString(
-            "You are now running our most secure wallet",
-            comment: "The message displayed in the alert view after completing the legacy upgrade flow."
-        )
-        public static let upgradeSuccessTitle = NSLocalizedString(
-            "Success!",
-            comment: "The title of the alert view after completing the legacy upgrade flow."
-        )
-    }
-
     public struct Lockbox {
         public static let getYourLockbox = NSLocalizedString(
             "Get Your Lockbox",
