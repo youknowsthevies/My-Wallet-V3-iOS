@@ -878,6 +878,7 @@ targets:
       Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
     dependencies:
     - carthage: RxSwift
+    - carthage: RxCombine
     - carthage: DIKit
     - target: ToolKit
     info:
@@ -938,6 +939,7 @@ targets:
     - carthage: RxSwift
     - carthage: RxRelay
     - carthage: RxCocoa
+    - carthage: RxCombine
     - carthage: CryptoSwift
     - carthage: Crypto
     - carthage: CCryptoBoringSSL
