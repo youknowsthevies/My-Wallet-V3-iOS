@@ -644,10 +644,6 @@ targets:
     templates:
     - FrameworkTest
   CommonCryptoKit:
-    dependencies:
-    - carthage: Crypto
-    - carthage: CCryptoBoringSSL
-    - carthage: CCryptoBoringSSLShims
     scheme:
       testTargets:
       - CommonCryptoKitTests
@@ -941,9 +937,6 @@ targets:
     - carthage: RxCocoa
     - carthage: RxCombine
     - carthage: CryptoSwift
-    - carthage: Crypto
-    - carthage: CCryptoBoringSSL
-    - carthage: CCryptoBoringSSLShims
     - carthage: LibWally
     scheme:
       testTargets:
