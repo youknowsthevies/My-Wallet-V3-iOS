@@ -54,17 +54,11 @@ extension DependencyContainer {
             let gbpEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.GBP))
             let usdEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.USD))
             
-            let cryptos: [CryptoCurrency: CryptoItemEventServiceAPI] = [
-                .algorand: DIKit.resolve(tag: CryptoCurrency.algorand),
-                .bitcoin: DIKit.resolve(tag: CryptoCurrency.bitcoin),
-                .bitcoinCash: DIKit.resolve(tag: CryptoCurrency.bitcoinCash),
-                .tether: DIKit.resolve(tag: CryptoCurrency.tether),
-                .pax: DIKit.resolve(tag: CryptoCurrency.pax),
-                .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
-                .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
-                .wDGLD: DIKit.resolve(tag: CryptoCurrency.wDGLD),
-                .yearnFinance: DIKit.resolve(tag: CryptoCurrency.yearnFinance)
-            ]
+            let cryptos = CryptoCurrency.allCases
+                .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
+                    let component: CryptoItemEventServiceAPI = DIKit.resolve(tag: cryptoCurrency)
+                    result[cryptoCurrency] = component
+                }
             
             return ActivityProvider(
                 fiats: [
@@ -79,7 +73,11 @@ extension DependencyContainer {
         factory { EmptyTransactionalActivityItemEventService() }
         
         factory { EmptySwapActivityItemEventService() }
-        
+
+        factory(tag: CryptoCurrency.aave) { () -> CryptoItemEventServiceAPI in
+            CryptoEventService.erc20(token: AaveToken.self)
+        }
+
         factory(tag: CryptoCurrency.algorand) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.algorand()
         }

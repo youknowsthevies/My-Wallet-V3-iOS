@@ -43,6 +43,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
         var result: [AssetAddress] = []
         for address in addresses {
             switch asset {
+            case .aave:
+                result += [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
             case .algorand:
                 break
             case .bitcoin:

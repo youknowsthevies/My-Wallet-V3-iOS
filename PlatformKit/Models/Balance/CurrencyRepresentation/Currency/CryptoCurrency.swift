@@ -20,6 +20,7 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable 
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case algorand = "ALGO"
+    case aave = "AAVE"
     case yearnFinance = "YFI"
     case wDGLD = "WDGLD"
     case pax = "PAX"
@@ -56,14 +57,16 @@ extension CryptoCurrency {
             return 3
         case .algorand:
             return 4
-        case .yearnFinance:
+        case .aave:
             return 5
-        case .wDGLD:
+        case .yearnFinance:
             return 6
-        case .pax:
+        case .wDGLD:
             return 7
-        case .tether:
+        case .pax:
             return 8
+        case .tether:
+            return 9
         }
     }
 
@@ -73,7 +76,8 @@ extension CryptoCurrency {
         switch self {
         case .algorand:
             return false
-        case .bitcoin,
+        case .aave,
+             .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
@@ -91,7 +95,8 @@ extension CryptoCurrency {
         switch self {
         case .algorand:
             return false
-        case .bitcoin,
+        case .aave,
+             .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
@@ -109,7 +114,8 @@ extension CryptoCurrency {
         switch self {
         case .algorand:
             return false
-        case .bitcoin,
+        case .aave,
+             .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
@@ -127,7 +133,8 @@ extension CryptoCurrency {
         switch self {
         case .algorand:
             return false
-        case .bitcoin,
+        case .aave,
+             .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
@@ -143,7 +150,8 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasLegacySendSupport: Bool {
         switch self {
-        case .algorand,
+        case .aave,
+             .algorand,
              .tether,
              .wDGLD,
              .yearnFinance:
@@ -159,6 +167,8 @@ extension CryptoCurrency {
 
     public var name: String {
         switch self {
+        case .aave:
+            return "Aave"
         case .algorand:
             return "Algorand"
         case .bitcoin:
@@ -187,7 +197,7 @@ extension CryptoCurrency {
         
     public var displayCode: String {
         switch self {
-        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar, .yearnFinance:
+        case  .aave, .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar, .yearnFinance:
             return code
         case .tether:
             return "USDT"
@@ -208,7 +218,8 @@ extension CryptoCurrency {
              .bitcoinCash,
              .wDGLD:
             return 8
-        case .ethereum,
+        case .aave,
+             .ethereum,
              .pax,
              .yearnFinance:
             return 18
@@ -223,7 +234,8 @@ extension CryptoCurrency {
             return 6
         case .stellar:
             return 7
-        case .bitcoin,
+        case .aave,
+             .bitcoin,
              .bitcoinCash,
              .ethereum,
              .pax,
@@ -236,7 +248,7 @@ extension CryptoCurrency {
     /// Returns `true` for any ERC20 asset
     public var isERC20: Bool {
         switch self {
-        case .pax, .tether, .wDGLD, .yearnFinance:
+        case .aave, .pax, .tether, .wDGLD, .yearnFinance:
             return true
         case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return false

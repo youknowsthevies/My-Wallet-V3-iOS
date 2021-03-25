@@ -16,6 +16,8 @@ import PlatformKit
 class FakeAddress {
     static func address(for type: CryptoCurrency) -> String {
         switch type {
+        case .aave:
+            return "fake_aave_address"
         case .ethereum:
             return "0x17836d05892AF892d3CC68C70563B10CFDed19DD"
         case .bitcoin:

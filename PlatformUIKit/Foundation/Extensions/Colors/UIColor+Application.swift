@@ -104,7 +104,8 @@ public extension UIColor {
     static let iconWarning = orange600
     
     // Currency
-    
+
+    static let aave = aaveColor
     static let bitcoin = btc
     static let ethereum = eth
     static let bitcoinCash = bch

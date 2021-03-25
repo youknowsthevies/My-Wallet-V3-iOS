@@ -110,8 +110,14 @@ final class DataProvider: DataProviding {
             exchangeAPI: exchange[CryptoCurrency.yearnFinance],
             fiatCurrencyService: fiatCurrencyService
         )
+        let aaveHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .aave,
+            exchangeAPI: exchange[CryptoCurrency.aave],
+            fiatCurrencyService: fiatCurrencyService
+        )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
+            aave: aaveHistoricalFiatService,
             algorand: algorandHistoricalFiatService,
             ether: etherHistoricalFiatService,
             pax: paxHistoricalFiatService,
@@ -235,6 +241,19 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[CurrencyType.crypto(.yearnFinance)]
         )
+        let aaveBalanceFetcher = AssetBalanceFetcher(
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.aave)),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.aave) }(),
+            trading: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.aave.currency,
+                fetcher: tradingBalanceStatesFetcher
+            ),
+            savings: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.aave.currency,
+                fetcher: savingsBalanceStatesFetcher
+            ),
+            exchange: exchange[CurrencyType.crypto(.aave)]
+        )
         let stellarBalanceFetcher = AssetBalanceFetcher(
             blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.stellar)),
             wallet: StellarServiceProvider.shared.services.accounts,
@@ -276,6 +295,7 @@ final class DataProvider: DataProviding {
         )
         
         let cryptoBalanceFetchers: [CryptoCurrency: AssetBalanceFetching] = [
+            .aave: aaveBalanceFetcher,
             .bitcoin: bitcoinBalanceFetcher,
             .bitcoinCash: bitcoinCashBalanceFetcher,
             .stellar: stellarBalanceFetcher,
@@ -296,6 +316,11 @@ final class DataProvider: DataProviding {
         
         balanceChange = BalanceChangeProvider(
             currencies: enabledCurrencies.allEnabledCryptoCurrencies,
+            aave: AssetBalanceChangeProvider(
+                balance: aaveBalanceFetcher,
+                prices: historicalPrices[.aave],
+                cryptoCurrency: .aave
+            ),
             ether: AssetBalanceChangeProvider(
                 balance: etherBalanceFetcher,
                 prices: historicalPrices[.ethereum],

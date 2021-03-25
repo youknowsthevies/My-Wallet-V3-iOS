@@ -194,6 +194,11 @@ enum AssetAddressType {
                 return []
             }
             return [AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)]
+        case .aave:
+            guard let address = appSettings.swipeAddressForAave else {
+                return []
+            }
+            return [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
         case .bitcoinCash, .bitcoin:
             let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
             return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)

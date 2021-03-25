@@ -29,6 +29,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
     private let wallet: Wallet
     private let stellarServiceProvider: StellarServiceProvider
+    private let aaveAccountRepository: ERC20AssetAccountRepository<AaveToken>
     private let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
     private let tetherAccountRepository: ERC20AssetAccountRepository<TetherToken>
     private let wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken>
@@ -43,6 +44,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     init(wallet: Wallet = WalletManager.shared.wallet,
          stellarServiceProvider: StellarServiceProvider = StellarServiceProvider.shared,
          ethereumAccountRepository: EthereumAssetAccountRepository = resolve(),
+         aaveAccountRepository: ERC20AssetAccountRepository<AaveToken> = resolve(),
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          tetherAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
          wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken> = resolve(),
@@ -51,6 +53,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
          ethereumWalletService: EthereumWalletServiceAPI = resolve()) {
         self.wallet = wallet
         self.enabledCurrenciesService = enabledCurrenciesService
+        self.aaveAccountRepository = aaveAccountRepository
         self.paxAccountRepository = paxAccountRepository
         self.tetherAccountRepository = tetherAccountRepository
         self.wdgldAccountRepository = wdgldAccountRepository
@@ -85,10 +88,18 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                 }
 
                 switch assetType {
+                case .aave:
+                    return self.erc20Account(
+                        repository: self.yearnFinanceAccountRepository,
+                        fromCache: fromCache
+                    )
                 case .algorand:
                     return .just([])
                 case .pax:
-                    return self.paxAccount(fromCache: fromCache)
+                    return self.erc20Account(
+                        repository: self.paxAccountRepository,
+                        fromCache: fromCache
+                    )
                 case .ethereum:
                     return self.ethereumAccount(fromCache: fromCache)
                 case .stellar:
@@ -97,11 +108,20 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                      .bitcoinCash:
                     return self.legacyAddress(assetType: assetType, fromCache: fromCache)
                 case .tether:
-                    return self.tetherAccount(fromCache: fromCache)
+                    return self.erc20Account(
+                        repository: self.tetherAccountRepository,
+                        fromCache: fromCache
+                    )
                 case .wDGLD:
-                    return self.wdgldAccount(fromCache: fromCache)
+                    return self.erc20Account(
+                        repository: self.wdgldAccountRepository,
+                        fromCache: fromCache
+                    )
                 case .yearnFinance:
-                    return self.yearnFinanceAccount(fromCache: fromCache)
+                    return self.erc20Account(
+                        repository: self.yearnFinanceAccountRepository,
+                        fromCache: fromCache
+                    )
                 }
             }
     }
@@ -140,7 +160,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                 return .error(AssetAccountRepositoryError.noDefaultAccount)
             }
             return .just(defaultAccount)
-        case .ethereum,
+        case .aave,
+             .ethereum,
              .pax,
              .tether,
              .wDGLD,
@@ -182,66 +203,15 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    private func paxAccount(fromCache: Bool) -> Single<[AssetAccount]> {
-        paxAccountRepository
+    func erc20Account<Token: ERC20Token>(repository: ERC20AssetAccountRepository<Token>, fromCache: Bool) -> Single<[AssetAccount]> {
+        repository
             .currentAssetAccountDetails(fromCache: fromCache)
             .map { details -> AssetAccount in
                 AssetAccount(
                     index: 0,
                     address: AssetAddressFactory.create(
                         fromAddressString: details.account.accountAddress,
-                        assetType: .pax
-                    ),
-                    balance: details.balance,
-                    name: details.account.name
-                )
-            }
-            .map { [$0] }
-    }
-
-    private func tetherAccount(fromCache: Bool) -> Single<[AssetAccount]> {
-        tetherAccountRepository
-            .currentAssetAccountDetails(fromCache: fromCache)
-            .map { details -> AssetAccount in
-                AssetAccount(
-                    index: 0,
-                    address: AssetAddressFactory.create(
-                        fromAddressString: details.account.accountAddress,
-                        assetType: .tether
-                    ),
-                    balance: details.balance,
-                    name: details.account.name
-                )
-            }
-            .map { [$0] }
-    }
-
-    private func wdgldAccount(fromCache: Bool) -> Single<[AssetAccount]> {
-        wdgldAccountRepository
-            .currentAssetAccountDetails(fromCache: fromCache)
-            .map { details -> AssetAccount in
-                AssetAccount(
-                    index: 0,
-                    address: AssetAddressFactory.create(
-                        fromAddressString: details.account.accountAddress,
-                        assetType: .wDGLD
-                    ),
-                    balance: details.balance,
-                    name: details.account.name
-                )
-            }
-            .map { [$0] }
-    }
-
-    private func yearnFinanceAccount(fromCache: Bool) -> Single<[AssetAccount]> {
-        yearnFinanceAccountRepository
-            .currentAssetAccountDetails(fromCache: fromCache)
-            .map { details -> AssetAccount in
-                AssetAccount(
-                    index: 0,
-                    address: AssetAddressFactory.create(
-                        fromAddressString: details.account.accountAddress,
-                        assetType: .yearnFinance
+                        assetType: Token.assetType
                     ),
                     balance: details.balance,
                     name: details.account.name

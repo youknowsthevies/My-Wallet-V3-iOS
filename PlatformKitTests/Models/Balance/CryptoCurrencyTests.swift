@@ -18,6 +18,7 @@ class CryptoCurrencyTests: XCTestCase {
             .bitcoinCash,
             .stellar,
             .algorand,
+            .aave,
             .yearnFinance,
             .wDGLD,
             .pax,

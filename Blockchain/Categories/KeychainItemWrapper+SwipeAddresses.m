@@ -15,6 +15,8 @@
 + (NSString *)keychainKeyForAssetType:(LegacyAssetType)assetType
 {
     switch (assetType) {
+        case LegacyAssetTypeAave:
+            return KEYCHAIN_KEY_AAVE_ADDRESS;
         case LegacyAssetTypeBitcoin:
             return KEYCHAIN_KEY_BTC_SWIPE_ADDRESSES;
         case LegacyAssetTypeBitcoinCash:

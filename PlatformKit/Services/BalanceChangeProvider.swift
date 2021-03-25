@@ -40,6 +40,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     
     public init(
         currencies: [CryptoCurrency],
+        aave: AssetBalanceChangeProviding,
         ether: AssetBalanceChangeProviding,
         pax: AssetBalanceChangeProviding,
         stellar: AssetBalanceChangeProviding,
@@ -51,6 +52,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
         yearnFinance: AssetBalanceChangeProviding) {
         self.currencies = currencies.map { $0.currency }
         services = [
+            .crypto(.aave): aave,
             .crypto(.ethereum): ether,
             .crypto(.pax): pax,
             .crypto(.stellar): stellar,

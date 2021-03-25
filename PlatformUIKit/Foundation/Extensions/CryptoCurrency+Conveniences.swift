@@ -23,8 +23,10 @@ extension CryptoCurrency {
 
     public var brandColor: UIColor {
         switch self {
+        case .aave:
+            return .aave
         case .algorand:
-            return .algo
+            return .algorand
         case .bitcoin:
             return .bitcoin
         case .bitcoinCash:
@@ -46,8 +48,10 @@ extension CryptoCurrency {
 
     public var accentColor: UIColor {
         switch self {
+        case .aave:
+            return UIColor.aave.withAlphaComponent(0.15)
         case .algorand:
-            return UIColor.algo.withAlphaComponent(0.15)
+            return UIColor.algorand.withAlphaComponent(0.15)
         case .bitcoin:
             return UIColor.bitcoin.withAlphaComponent(0.15)
         case .bitcoinCash:
@@ -72,6 +76,8 @@ extension CryptoCurrency {
     /// Note that the images are on PlatformUIKit Bundle.
     public var filledImageSmallName: String {
         switch self {
+        case .aave:
+            return "filled_aave_small"
         case .algorand:
             return "filled_algo_small"
         case .bitcoin:
@@ -96,6 +102,8 @@ extension CryptoCurrency {
     /// Note that the images are on PlatformUIKit Bundle.
     public var logoImageName: String {
         switch self {
+        case .aave:
+            return "filled_aave_large"
         case .algorand:
             return "filled_algo_large"
         case .bitcoin:

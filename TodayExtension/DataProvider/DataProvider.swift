@@ -105,8 +105,14 @@ final class DataProvider {
             exchangeAPI: exchange[CryptoCurrency.yearnFinance],
             fiatCurrencyService: fiatCurrencyService
         )
-        
+        let aaveHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .aave,
+            exchangeAPI: exchange[CryptoCurrency.aave],
+            fiatCurrencyService: fiatCurrencyService
+        )
+
         self.historicalPrices = HistoricalFiatPriceProvider(
+            aave: aaveHistoricalFiatService,
             algorand: algorandHistoricalFiatService,
             ether: etherHistoricalFiatService,
             pax: paxHistoricalFiatService,

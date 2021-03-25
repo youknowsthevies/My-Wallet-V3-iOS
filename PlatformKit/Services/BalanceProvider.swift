@@ -41,53 +41,55 @@ public final class BalanceProvider: BalanceProviding {
             .map { $0.totalFiat }
             .share()
     }
-        
+
     /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<MoneyBalancePairsCalculationStates> {
-        let cryptoCalculationStates = [
-            services[.crypto(.stellar)]!.calculationState,
-            services[.crypto(.bitcoin)]!.calculationState,
-            services[.crypto(.bitcoinCash)]!.calculationState,
-            services[.crypto(.algorand)]!.calculationState,
-        ]
-        let erc20CalculationStates = [
-            services[.crypto(.ethereum)]!.calculationState,
-            services[.crypto(.pax)]!.calculationState,
-            services[.crypto(.tether)]!.calculationState,
-            services[.crypto(.wDGLD)]!.calculationState,
-            services[.crypto(.yearnFinance)]!.calculationState
-        ]
-        let fiatCalculationStates = [
-            services[.fiat(.GBP)]!.calculationState,
-            services[.fiat(.EUR)]!.calculationState,
-            services[.fiat(.USD)]!.calculationState
-        ]
-        let cryptoCalculationObservable = Observable.combineLatest(cryptoCalculationStates)
-            .map { states in
-                (
-                    stellar: states[0],
-                    bitcoin: states[1],
-                    bitcoinCash: states[2],
-                    algorand: states[3]
-                )
+        let cryptoCalculationObservable = Observable
+            .combineLatest(
+                services[.crypto(.stellar)]!.calculationState,
+                services[.crypto(.bitcoin)]!.calculationState,
+                services[.crypto(.bitcoinCash)]!.calculationState,
+                services[.crypto(.algorand)]!.calculationState
+            )
+            .map { (stellar, bitcoin, bitcoinCash, algorand) -> [CurrencyType : MoneyBalancePairsCalculationState] in
+                [
+                    .crypto(.stellar): stellar,
+                    .crypto(.bitcoin): bitcoin,
+                    .crypto(.bitcoinCash): bitcoinCash,
+                    .crypto(.algorand): algorand
+                ]
             }
-        let erc20Calculationbservable = Observable.combineLatest(erc20CalculationStates)
-            .map { states in
-                (
-                    ethereum: states[0],
-                    pax: states[1],
-                    tether: states[2],
-                    wdgld: states[3],
-                    yearnFinance: states[4]
-                )
+        let erc20Calculationbservable = Observable
+            .combineLatest(
+                services[.crypto(.aave)]!.calculationState,
+                services[.crypto(.ethereum)]!.calculationState,
+                services[.crypto(.pax)]!.calculationState,
+                services[.crypto(.tether)]!.calculationState,
+                services[.crypto(.wDGLD)]!.calculationState,
+                services[.crypto(.yearnFinance)]!.calculationState
+            )
+            .map { (aave, ethereum, pax, tether, wdgld, yearnFinance) -> [CurrencyType : MoneyBalancePairsCalculationState] in
+                [
+                    .crypto(.aave): aave,
+                    .crypto(.ethereum): ethereum,
+                    .crypto(.pax): pax,
+                    .crypto(.tether): tether,
+                    .crypto(.wDGLD): wdgld,
+                    .crypto(.yearnFinance): yearnFinance
+                ]
             }
-        let fiatCalculationObservable = Observable.combineLatest(fiatCalculationStates)
-            .map { states in
-                (
-                    gbp: states[0],
-                    eur: states[1],
-                    usd: states[2]
-                )
+        let fiatCalculationObservable = Observable
+            .combineLatest(
+                services[.fiat(.GBP)]!.calculationState,
+                services[.fiat(.EUR)]!.calculationState,
+                services[.fiat(.USD)]!.calculationState
+            )
+            .map { (gbp, eur, usd) -> [CurrencyType : MoneyBalancePairsCalculationState] in
+                [
+                    .fiat(.GBP): gbp,
+                    .fiat(.EUR): eur,
+                    .fiat(.USD): usd
+                ]
             }
 
         return Observable
@@ -95,20 +97,7 @@ public final class BalanceProvider: BalanceProviding {
             .map { (crypto, erc20, fiat) in
                 MoneyBalancePairsCalculationStates(
                     identifier: "total-balance",
-                    statePerCurrency: [
-                        .crypto(.ethereum): erc20.ethereum,
-                        .crypto(.pax): erc20.pax,
-                        .crypto(.stellar): crypto.stellar,
-                        .crypto(.bitcoin): crypto.bitcoin,
-                        .crypto(.bitcoinCash): crypto.bitcoinCash,
-                        .crypto(.algorand): crypto.algorand,
-                        .crypto(.tether): erc20.tether,
-                        .crypto(.wDGLD): erc20.wdgld,
-                        .crypto(.yearnFinance): erc20.yearnFinance,
-                        .fiat(.GBP): fiat.gbp,
-                        .fiat(.EUR): fiat.eur,
-                        .fiat(.USD): fiat.usd
-                    ]
+                    statePerCurrency: crypto.merge(with: erc20).merge(with: fiat)
                 )
             }
             .share()

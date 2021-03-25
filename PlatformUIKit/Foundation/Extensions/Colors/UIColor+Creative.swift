@@ -22,6 +22,7 @@ extension UIColor {
 
     // Crypto
 
+    static let aaveColor = color(named: "Aave")
     static let algo = color(named: "Algorand")
     static let btc = color(named: "Bitcoin")
     static let eth = color(named: "Ethereum")

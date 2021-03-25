@@ -25,7 +25,8 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
     
     // MARK: - Setup
     
-    public init(algorand: HistoricalFiatPriceServiceAPI,
+    public init(aave: HistoricalFiatPriceServiceAPI,
+                algorand: HistoricalFiatPriceServiceAPI,
                 ether: HistoricalFiatPriceServiceAPI,
                 pax: HistoricalFiatPriceServiceAPI,
                 stellar: HistoricalFiatPriceServiceAPI,
@@ -34,6 +35,7 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
                 tether: HistoricalFiatPriceServiceAPI,
                 wDGLD: HistoricalFiatPriceServiceAPI,
                 yearnFinance: HistoricalFiatPriceServiceAPI) {
+        services[.aave] = aave
         services[.algorand] = algorand
         services[.ethereum] = ether
         services[.pax] = pax

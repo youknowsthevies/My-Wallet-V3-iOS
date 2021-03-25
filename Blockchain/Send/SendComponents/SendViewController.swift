@@ -283,7 +283,8 @@ fileprivate extension CryptoCurrency {
         switch self {
         case .ethereum:
             return #imageLiteral(resourceName: "eth_bad")
-        case .algorand,
+        case .aave,
+             .algorand,
              .bitcoin,
              .bitcoinCash,
              .pax,
@@ -299,7 +300,8 @@ fileprivate extension CryptoCurrency {
         switch self {
         case .ethereum:
             return #imageLiteral(resourceName: "eth_good")
-        case .algorand,
+        case .aave,
+             .algorand,
              .bitcoin,
              .bitcoinCash,
              .pax,

@@ -108,6 +108,8 @@ public extension PriceWindow.TimelineInterval {
 public extension CryptoCurrency {
     var maxStartDate: TimeInterval {
         switch self {
+        case .aave:
+            return 1615831200
         case .bitcoin:
             return 1282089600
         case .bitcoinCash:

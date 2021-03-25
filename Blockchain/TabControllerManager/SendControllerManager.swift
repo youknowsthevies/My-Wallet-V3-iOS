@@ -49,6 +49,8 @@ extension SendControllerManager: SendScreenProvider {
 
     func send(_ cryptoCurrency: CryptoCurrency) -> UIViewController {
         switch cryptoCurrency {
+        case .aave:
+            fatalError("Not Supported")
         case .algorand:
             fatalError("Not Supported")
         case .bitcoin:

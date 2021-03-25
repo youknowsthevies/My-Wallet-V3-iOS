@@ -43,7 +43,15 @@ final class SendExecutor: SendExecuting {
             ethereumService.fetchHistoryIfNeeded
                 .subscribe()
                 .disposed(by: disposeBag)
-        case .algorand, .bitcoin, .bitcoinCash, .stellar, .pax, .tether, .wDGLD, .yearnFinance:
+        case .aave,
+             .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .stellar,
+             .pax,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
             fatalError("\(asset.rawValue) doesn't support new send logic.")
         }
     }
@@ -52,7 +60,15 @@ final class SendExecutor: SendExecuting {
         switch asset {
         case .ethereum:
             return send(ether: value, to: address)
-        case .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether, .wDGLD, .yearnFinance:
+        case .aave,
+             .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .stellar,
+             .pax,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
             fatalError("\(asset.rawValue) doesn't support new send logic.")
         }
     }

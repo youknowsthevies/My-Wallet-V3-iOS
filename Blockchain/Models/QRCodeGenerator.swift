@@ -41,7 +41,8 @@ import PlatformUIKit
                 amount: amount,
                 includeScheme: includeScheme
             )
-        case .algorand,
+        case .aave,
+             .algorand,
              .ether,
              .pax,
              .stellar,

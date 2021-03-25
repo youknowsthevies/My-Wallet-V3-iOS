@@ -20,7 +20,46 @@ extension DependencyContainer {
         single(tag: Tags.ERC20AccountService.addressCache) {
             Atomic<[String: Bool]>([:])
         }
-        
+
+        // MARK: - Aave
+
+        factory(tag: CryptoCurrency.aave) { ERC20Asset<AaveToken>() as CryptoAsset }
+
+        factory { ERC20AssetAccountRepository<AaveToken>() }
+
+        factory(tag: CryptoCurrency.aave) { ERC20OnChainTransactionEngineFactory<AaveToken>() as OnChainTransactionEngineFactory }
+
+        factory(tag: CryptoCurrency.aave) { ERC20ExternalAssetAddressFactory<AaveToken>() as CryptoReceiveAddressFactory }
+
+        factory(tag: CryptoCurrency.aave) {
+            AnyAssetAccountDetailsAPI(
+                service: ERC20AssetAccountDetailsService<AaveToken>()
+            )
+        }
+
+        factory { ERC20BalanceService<AaveToken>() }
+
+        factory {
+            AnyERC20AccountAPIClient<AaveToken>(
+                accountAPIClient: ERC20AccountAPIClient<AaveToken>()
+            )
+        }
+
+        factory { ERC20AccountAPIClient<AaveToken>() }
+
+        factory { ERC20AccountService<AaveToken>() }
+
+        factory(tag: CryptoCurrency.aave) { ERC20AssetBalanceFetcher<AaveToken>() as CryptoAccountBalanceFetching }
+
+        factory { AnyERC20HistoricalTransactionService<AaveToken>() }
+
+        factory { ERC20Service<AaveToken>() }
+
+        factory { () -> AnyERC20Service<AaveToken> in
+            let service: ERC20Service<AaveToken> = DIKit.resolve()
+            return AnyERC20Service<AaveToken>(service)
+        }
+
         // MARK: - PAX
 
         factory(tag: CryptoCurrency.pax) { ERC20Asset<PaxToken>() as CryptoAsset }

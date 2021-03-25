@@ -14,6 +14,8 @@ extension CryptoCurrency {
     /// The legacy representation of `CryptoCurrency`
     var legacy: LegacyAssetType {
         switch self {
+        case .aave:
+            return .aave
         case .algorand:
             return .algorand
         case .bitcoin:
@@ -42,6 +44,8 @@ extension CryptoCurrency {
 
     init(legacyAssetType: LegacyAssetType) {
         switch legacyAssetType {
+        case .aave:
+            self = .aave
         case .algorand:
             self = .algorand
         case .bitcoin:
