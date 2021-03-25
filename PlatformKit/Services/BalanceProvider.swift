@@ -44,51 +44,70 @@ public final class BalanceProvider: BalanceProviding {
         
     /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<MoneyBalancePairsCalculationStates> {
-        let calculationStates = [
-            services[.crypto(.ethereum)]!.calculationState,
-            services[.crypto(.pax)]!.calculationState,
+        let cryptoCalculationStates = [
             services[.crypto(.stellar)]!.calculationState,
             services[.crypto(.bitcoin)]!.calculationState,
             services[.crypto(.bitcoinCash)]!.calculationState,
             services[.crypto(.algorand)]!.calculationState,
+        ]
+        let erc20CalculationStates = [
+            services[.crypto(.ethereum)]!.calculationState,
+            services[.crypto(.pax)]!.calculationState,
             services[.crypto(.tether)]!.calculationState,
             services[.crypto(.wDGLD)]!.calculationState,
+            services[.crypto(.yearnFinance)]!.calculationState
+        ]
+        let fiatCalculationStates = [
             services[.fiat(.GBP)]!.calculationState,
             services[.fiat(.EUR)]!.calculationState,
             services[.fiat(.USD)]!.calculationState
         ]
-        return Observable
-            .combineLatest(calculationStates)
-            .map {
+        let cryptoCalculationObservable = Observable.combineLatest(cryptoCalculationStates)
+            .map { states in
                 (
-                    ethereum: $0[0],
-                    pax: $0[1],
-                    stellar: $0[2],
-                    bitcoin: $0[3],
-                    bitcoinCash: $0[4],
-                    algorand: $0[5],
-                    tether: $0[6],
-                    wdgld: $0[7],
-                    gbp: $0[8],
-                    eur: $0[9],
-                    usd: $0[10]
+                    stellar: states[0],
+                    bitcoin: states[1],
+                    bitcoinCash: states[2],
+                    algorand: states[3]
                 )
             }
+        let erc20Calculationbservable = Observable.combineLatest(erc20CalculationStates)
             .map { states in
+                (
+                    ethereum: states[0],
+                    pax: states[1],
+                    tether: states[2],
+                    wdgld: states[3],
+                    yearnFinance: states[4]
+                )
+            }
+        let fiatCalculationObservable = Observable.combineLatest(fiatCalculationStates)
+            .map { states in
+                (
+                    gbp: states[0],
+                    eur: states[1],
+                    usd: states[2]
+                )
+            }
+
+        return Observable
+            .combineLatest(cryptoCalculationObservable, erc20Calculationbservable, fiatCalculationObservable)
+            .map { (crypto, erc20, fiat) in
                 MoneyBalancePairsCalculationStates(
                     identifier: "total-balance",
                     statePerCurrency: [
-                        .crypto(.ethereum): states.ethereum,
-                        .crypto(.pax): states.pax,
-                        .crypto(.stellar): states.stellar,
-                        .crypto(.bitcoin): states.bitcoin,
-                        .crypto(.bitcoinCash): states.bitcoinCash,
-                        .crypto(.algorand): states.algorand,
-                        .crypto(.tether): states.tether,
-                        .crypto(.wDGLD): states.wdgld,
-                        .fiat(.GBP): states.gbp,
-                        .fiat(.EUR): states.eur,
-                        .fiat(.USD): states.usd
+                        .crypto(.ethereum): erc20.ethereum,
+                        .crypto(.pax): erc20.pax,
+                        .crypto(.stellar): crypto.stellar,
+                        .crypto(.bitcoin): crypto.bitcoin,
+                        .crypto(.bitcoinCash): crypto.bitcoinCash,
+                        .crypto(.algorand): crypto.algorand,
+                        .crypto(.tether): erc20.tether,
+                        .crypto(.wDGLD): erc20.wdgld,
+                        .crypto(.yearnFinance): erc20.yearnFinance,
+                        .fiat(.GBP): fiat.gbp,
+                        .fiat(.EUR): fiat.eur,
+                        .fiat(.USD): fiat.usd
                     ]
                 )
             }

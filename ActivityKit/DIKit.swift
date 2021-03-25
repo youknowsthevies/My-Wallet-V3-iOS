@@ -62,7 +62,8 @@ extension DependencyContainer {
                 .pax: DIKit.resolve(tag: CryptoCurrency.pax),
                 .ethereum: DIKit.resolve(tag: CryptoCurrency.ethereum),
                 .stellar: DIKit.resolve(tag: CryptoCurrency.stellar),
-                .wDGLD: DIKit.resolve(tag: CryptoCurrency.wDGLD)
+                .wDGLD: DIKit.resolve(tag: CryptoCurrency.wDGLD),
+                .yearnFinance: DIKit.resolve(tag: CryptoCurrency.yearnFinance)
             ]
             
             return ActivityProvider(
@@ -92,11 +93,11 @@ extension DependencyContainer {
         }
         
         factory(tag: CryptoCurrency.tether) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.tether()
+            CryptoEventService.erc20(token: TetherToken.self)
         }
         
         factory(tag: CryptoCurrency.pax) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.pax()
+            CryptoEventService.erc20(token: PaxToken.self)
         }
         
         factory(tag: CryptoCurrency.ethereum) { () -> CryptoItemEventServiceAPI in
@@ -108,7 +109,11 @@ extension DependencyContainer {
         }
 
         factory(tag: CryptoCurrency.wDGLD) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.wDGLD()
+            CryptoEventService.erc20(token: WDGLDToken.self)
+        }
+
+        factory(tag: CryptoCurrency.yearnFinance) { () -> CryptoItemEventServiceAPI in
+            CryptoEventService.erc20(token: YearnFinanceToken.self)
         }
     }
 }
@@ -156,7 +161,6 @@ extension CryptoEventService {
     fileprivate static func ethereum(eventsService: EthereumTransactionalActivityItemEventsService = resolve(),
                                      orderService: BuySellKit.OrdersServiceAPI = resolve(),
                                      swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
-        
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .ethereum, service: orderService)
         let fetcher = EthereumSwapActivityItemEventsService(service: swapActivity)
@@ -166,13 +170,11 @@ extension CryptoEventService {
             buySell: buySell,
             swap: swapService
         )
-        
     }
     
     fileprivate static func stellar(eventsService: StellarTransactionalActivityItemEventsService = resolve(),
                                     orderService: BuySellKit.OrdersServiceAPI = resolve(),
                                     swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
-        
         let transactionalService = TransactionalActivityItemEventService(fetcher: eventsService)
         let buySell = BuySellActivityItemEventService(currency: .stellar, service: orderService)
         let fetcher = StellarSwapActivityItemEventsService(service: swapActivity)
@@ -182,56 +184,30 @@ extension CryptoEventService {
             buySell: buySell,
             swap: swapService
         )
-        
     }
 
-    fileprivate static func tether(historalTransactionService: AnyERC20HistoricalTransactionService<TetherToken> = resolve(),
-                                   eventsService: BitcoinCashTransactionalActivityItemEventsService = resolve(),
-                                   orderService: BuySellKit.OrdersServiceAPI = resolve(),
-                                   swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
-        let erc20EventsService = AnyERC20TransactionalActivityItemEventsService<TetherToken>(transactionsService: historalTransactionService)
-        
-        let transactionalService = TransactionalActivityItemEventService(fetcher: erc20EventsService)
-        let buySell = BuySellActivityItemEventService(currency: .tether, service: orderService)
-        
-        let fetcher = AnyERC20SwapActivityItemEventsService<TetherToken>(service: swapActivity)
-        let swapService = SwapActivityItemEventService(fetcher: fetcher)
-        return CryptoEventService(
-            transactional: transactionalService,
-            buySell: buySell,
-            swap: swapService
+    fileprivate static func erc20<Token: ERC20Token>(
+        token: Token.Type,
+        historalTransactionService: AnyERC20HistoricalTransactionService<Token> = resolve(),
+        orderService: BuySellKit.OrdersServiceAPI = resolve(),
+        swapActivity: SwapActivityServiceAPI = resolve()
+    ) -> CryptoEventService {
+        let erc20EventsService = AnyERC20TransactionalActivityItemEventsService<Token>(
+            transactionsService: historalTransactionService
         )
-    }
-
-    fileprivate static func wDGLD(historalTransactionService: AnyERC20HistoricalTransactionService<WDGLDToken> = resolve(),
-                                  eventsService: BitcoinCashTransactionalActivityItemEventsService = resolve(),
-                                  orderService: BuySellKit.OrdersServiceAPI = resolve(),
-                                  swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
-        let erc20EventsService = AnyERC20TransactionalActivityItemEventsService<WDGLDToken>(transactionsService: historalTransactionService)
-
-        let transactionalService = TransactionalActivityItemEventService(fetcher: erc20EventsService)
-        let buySell = BuySellActivityItemEventService(currency: .wDGLD, service: orderService)
-
-        let fetcher = AnyERC20SwapActivityItemEventsService<WDGLDToken>(service: swapActivity)
-        let swapService = SwapActivityItemEventService(fetcher: fetcher)
-        return CryptoEventService(
-            transactional: transactionalService,
-            buySell: buySell,
-            swap: swapService
+        let transactionalService = TransactionalActivityItemEventService(
+            fetcher: erc20EventsService
         )
-    }
-    
-    fileprivate static func pax(historalTransactionService: AnyERC20HistoricalTransactionService<PaxToken> = resolve(),
-                                eventsService: BitcoinCashTransactionalActivityItemEventsService = resolve(),
-                                orderService: BuySellKit.OrdersServiceAPI = resolve(),
-                                swapActivity: SwapActivityServiceAPI = resolve()) -> CryptoEventService {
-        let erc20EventsService = AnyERC20TransactionalActivityItemEventsService<PaxToken>(transactionsService: historalTransactionService)
-        
-        let transactionalService = TransactionalActivityItemEventService(fetcher: erc20EventsService)
-        let buySell = BuySellActivityItemEventService(currency: .pax, service: orderService)
-        
-        let fetcher = AnyERC20SwapActivityItemEventsService<PaxToken>(service: swapActivity)
-        let swapService = SwapActivityItemEventService(fetcher: fetcher)
+        let buySell = BuySellActivityItemEventService(
+            currency: Token.assetType,
+            service: orderService
+        )
+        let fetcher = AnyERC20SwapActivityItemEventsService<Token>(
+            service: swapActivity
+        )
+        let swapService = SwapActivityItemEventService(
+            fetcher: fetcher
+        )
         return CryptoEventService(
             transactional: transactionalService,
             buySell: buySell,

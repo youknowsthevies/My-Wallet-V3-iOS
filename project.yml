@@ -176,8 +176,10 @@ targets:
   ActivityKit:
     dependencies:
     - target: PlatformKit
+    - target: AlgorandKit
     - target: BuySellKit
     - target: BitcoinKit
+    - target: BitcoinCashKit
     - target: EthereumKit
     - target: ERC20Kit
     - target: StellarKit
@@ -187,6 +189,9 @@ targets:
     - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
+    scheme:
+      testTargets:
+      - ActivityKitTests
     templates:
     - Framework
   ActivityKitTests:

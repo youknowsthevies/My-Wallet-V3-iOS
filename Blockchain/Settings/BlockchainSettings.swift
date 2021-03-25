@@ -314,6 +314,11 @@ final class BlockchainSettings: NSObject {
             set { setSwipeAddress(newValue, for: .wDGLD) }
         }
 
+        var swipeAddressForYearnFinance: String? {
+            get { getSwipeAddress(for: .yearnFinance) }
+            set { setSwipeAddress(newValue, for: .yearnFinance) }
+        }
+
         /**
          Determines the number of labeled addresses for the default account.
          - Note:

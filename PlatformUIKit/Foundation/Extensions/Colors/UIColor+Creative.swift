@@ -30,6 +30,7 @@ extension UIColor {
     static let pax = color(named: "Pax")
     static let usdt = color(named: "Tether")
     static let wDGLD = color(named: "wDGLD")
+    static let yfi = color(named: "YearnFinance")
 
     // Tiers
 

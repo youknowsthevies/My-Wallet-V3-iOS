@@ -99,10 +99,10 @@ extension NumberFormatter {
     @objc static func assetTypeAmount(
         fromAmount: Decimal,
         fiatPerAmount: Decimal,
-        assetType: LegacyCryptoCurrency
+        assetType: LegacyAssetType
     ) -> String {
         let conversionResult = fromAmount / fiatPerAmount
-        let formatter = assetType.value == .stellar ? NumberFormatter.stellarFormatter : NumberFormatter.assetFormatter
+        let formatter = assetType == .stellar ? NumberFormatter.stellarFormatter : NumberFormatter.assetFormatter
         return formatter.string(from: NSDecimalNumber(decimal: conversionResult)) ?? "\(conversionResult)"
     }
 

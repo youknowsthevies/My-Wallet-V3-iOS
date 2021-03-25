@@ -31,6 +31,8 @@
             return KEYCHAIN_KEY_USDT_ADDRESS;
         case LegacyAssetTypeWDGLD:
             return KEYCHAIN_KEY_WDGLD_ADDRESS;
+        case LegacyAssetTypeYearnFinance:
+            return KEYCHAIN_KEY_YFI_ADDRESS;
     }
 }
 
@@ -111,6 +113,11 @@
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeBitcoinCash];
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeEther];
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeStellar];
+    [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypePax];
+    [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeAlgorand];
+    [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeTether];
+    [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeWDGLD];
+    [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeYearnFinance];
 }
 
 #pragma mark - Single Address Swipe to Receive

@@ -47,7 +47,8 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
         bitcoinCash: AssetBalanceChangeProviding,
         algorand: AssetBalanceChangeProviding,
         tether: AssetBalanceChangeProviding,
-        wDGLD: AssetBalanceChangeProviding) {
+        wDGLD: AssetBalanceChangeProviding,
+        yearnFinance: AssetBalanceChangeProviding) {
         self.currencies = currencies.map { $0.currency }
         services = [
             .crypto(.ethereum): ether,
@@ -57,7 +58,8 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
             .crypto(.bitcoinCash): bitcoinCash,
             .crypto(.algorand): algorand,
             .crypto(.tether): tether,
-            .crypto(.wDGLD): wDGLD
+            .crypto(.wDGLD): wDGLD,
+            .crypto(.yearnFinance): yearnFinance
         ]
     }
 

@@ -39,6 +39,8 @@ class AssetAddressFactory {
             return AnyERC20AssetAddress<TetherToken>(publicKey: address)
         case .wDGLD:
             return AnyERC20AssetAddress<WDGLDToken>(publicKey: address)
+        case .yearnFinance:
+            return AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)
         }
     }
 

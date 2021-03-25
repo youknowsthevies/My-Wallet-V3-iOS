@@ -40,11 +40,7 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
             return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
         case .stellar:
             return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
-        case .pax:
-            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-        case .tether:
-            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-        case .wDGLD:
+        case .pax, .tether, .wDGLD, .yearnFinance:
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
         }
     }

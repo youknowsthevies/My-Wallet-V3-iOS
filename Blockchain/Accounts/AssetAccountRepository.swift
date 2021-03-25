@@ -32,6 +32,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
     private let paxAccountRepository: ERC20AssetAccountRepository<PaxToken>
     private let tetherAccountRepository: ERC20AssetAccountRepository<TetherToken>
     private let wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken>
+    private let yearnFinanceAccountRepository: ERC20AssetAccountRepository<YearnFinanceToken>
     private let ethereumAccountRepository: EthereumAssetAccountRepository
     private let ethereumWalletService: EthereumWalletServiceAPI
     private let stellarAccountService: StellarAccountAPI
@@ -45,6 +46,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
          paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          tetherAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
          wdgldAccountRepository: ERC20AssetAccountRepository<WDGLDToken> = resolve(),
+         yearnFinanceAccountRepository: ERC20AssetAccountRepository<YearnFinanceToken> = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          ethereumWalletService: EthereumWalletServiceAPI = resolve()) {
         self.wallet = wallet
@@ -56,6 +58,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         self.stellarServiceProvider = stellarServiceProvider
         self.stellarAccountService = stellarServiceProvider.services.accounts
         self.ethereumAccountRepository = ethereumAccountRepository
+        self.yearnFinanceAccountRepository = yearnFinanceAccountRepository
     }
 
     deinit {
@@ -97,6 +100,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                     return self.tetherAccount(fromCache: fromCache)
                 case .wDGLD:
                     return self.wdgldAccount(fromCache: fromCache)
+                case .yearnFinance:
+                    return self.yearnFinanceAccount(fromCache: fromCache)
                 }
             }
     }
@@ -138,7 +143,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         case .ethereum,
              .pax,
              .tether,
-             .wDGLD:
+             .wDGLD,
+             .yearnFinance:
             return accounts(for: assetType, fromCache: false)
                 .map { accounts in
                     guard let defaultAccount = accounts.first else {
@@ -219,6 +225,23 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                     address: AssetAddressFactory.create(
                         fromAddressString: details.account.accountAddress,
                         assetType: .wDGLD
+                    ),
+                    balance: details.balance,
+                    name: details.account.name
+                )
+            }
+            .map { [$0] }
+    }
+
+    private func yearnFinanceAccount(fromCache: Bool) -> Single<[AssetAccount]> {
+        yearnFinanceAccountRepository
+            .currentAssetAccountDetails(fromCache: fromCache)
+            .map { details -> AssetAccount in
+                AssetAccount(
+                    index: 0,
+                    address: AssetAddressFactory.create(
+                        fromAddressString: details.account.accountAddress,
+                        assetType: .yearnFinance
                     ),
                     balance: details.balance,
                     name: details.account.name

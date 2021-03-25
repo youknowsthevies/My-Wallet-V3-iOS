@@ -104,7 +104,7 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.wDGLD) { ERC20Asset<WDGLDToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<WDGLDToken>() }
-        
+
         factory(tag: CryptoCurrency.wDGLD) { ERC20OnChainTransactionEngineFactory<WDGLDToken>() as OnChainTransactionEngineFactory }
 
         factory(tag: CryptoCurrency.wDGLD) { ERC20ExternalAssetAddressFactory<WDGLDToken>() as CryptoReceiveAddressFactory }
@@ -124,7 +124,7 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<WDGLDToken>() }
-        
+
         factory { ERC20AccountService<WDGLDToken>() }
 
         factory(tag: CryptoCurrency.wDGLD) { ERC20AssetBalanceFetcher<WDGLDToken>() as CryptoAccountBalanceFetching }
@@ -137,15 +137,51 @@ extension DependencyContainer {
             let service: ERC20Service<WDGLDToken> = DIKit.resolve()
             return AnyERC20Service<WDGLDToken>(service)
         }
+
+        // MARK: - Yearn Finance
+
+        factory(tag: CryptoCurrency.yearnFinance) { ERC20Asset<YearnFinanceToken>() as CryptoAsset }
+
+        factory { ERC20AssetAccountRepository<YearnFinanceToken>() }
+
+        factory(tag: CryptoCurrency.yearnFinance) { ERC20OnChainTransactionEngineFactory<YearnFinanceToken>() as OnChainTransactionEngineFactory }
+
+        factory(tag: CryptoCurrency.yearnFinance) { ERC20ExternalAssetAddressFactory<YearnFinanceToken>() as CryptoReceiveAddressFactory }
+
+        factory(tag: CryptoCurrency.yearnFinance) {
+            AnyAssetAccountDetailsAPI(
+                service: ERC20AssetAccountDetailsService<YearnFinanceToken>()
+            )
+        }
+
+        factory { ERC20BalanceService<YearnFinanceToken>() }
+
+        factory {
+            AnyERC20AccountAPIClient<YearnFinanceToken>(
+                accountAPIClient: ERC20AccountAPIClient<YearnFinanceToken>()
+            )
+        }
+
+        factory { ERC20AccountAPIClient<YearnFinanceToken>() }
+
+        factory { ERC20AccountService<YearnFinanceToken>() }
+
+        factory(tag: CryptoCurrency.yearnFinance) { ERC20AssetBalanceFetcher<YearnFinanceToken>() as CryptoAccountBalanceFetching }
+
+        factory { AnyERC20HistoricalTransactionService<YearnFinanceToken>() }
+
+        factory { ERC20Service<YearnFinanceToken>() }
+
+        factory { () -> AnyERC20Service<YearnFinanceToken> in
+            let service: ERC20Service<YearnFinanceToken> = DIKit.resolve()
+            return AnyERC20Service<YearnFinanceToken>(service)
+        }
     }
 }
 
 extension DependencyContainer {
-    
     struct Tags {
-        
         struct ERC20AccountService {
-            
             static let addressCache = String(describing: Self.self)
         }
     }

@@ -91,7 +91,7 @@ class NumberFormatterTests: XCTestCase {
         let assetTypeAmount = NumberFormatter.assetTypeAmount(
             fromAmount: amount,
             fiatPerAmount: rate,
-            assetType: .ethereum
+            assetType: .ether
         )
         XCTAssertEqual(assetTypeAmount, "1\(Locale.current.safeDecimalSeparator)88634971",
             "Formatted string should have eight decimal places and round down when truncating")

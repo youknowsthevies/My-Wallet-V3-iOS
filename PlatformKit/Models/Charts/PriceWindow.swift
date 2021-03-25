@@ -124,6 +124,8 @@ public extension CryptoCurrency {
             return 1511829681
         case .wDGLD:
             return 1605636000
+        case .yearnFinance:
+            return 1615831200
         }
     }
 }

@@ -30,6 +30,8 @@ extension CryptoCurrency {
             return .tether
         case .wDGLD:
             return .WDGLD
+        case .yearnFinance:
+            return .yearnFinance
         }
     }
     
@@ -56,6 +58,8 @@ extension CryptoCurrency {
             self = .tether
         case .WDGLD:
             self = .wDGLD
+        case .yearnFinance:
+            self = .yearnFinance
         }
     }
 }

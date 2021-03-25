@@ -46,7 +46,8 @@ import PlatformUIKit
              .pax,
              .stellar,
              .tether,
-             .WDGLD:
+             .WDGLD,
+             .yearnFinance:
             return nil
         }
     }

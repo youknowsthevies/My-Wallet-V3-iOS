@@ -32,6 +32,8 @@ class FakeAddress {
             return "fake_algorand_address"
         case .wDGLD:
             return "fake_wDGLD_address"
+        case .yearnFinance:
+            return "fake_YFI_address"
         }
     }
 }

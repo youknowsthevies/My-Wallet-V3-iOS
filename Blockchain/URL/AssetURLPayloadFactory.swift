@@ -35,7 +35,8 @@ final class AssetURLPayloadFactory: AssetURLPayloadFactoryAPI {
                 return EthereumURLPayload(address: string, amount: nil)
             case .algorand,
                  .tether,
-                 .wDGLD:
+                 .wDGLD,
+                 .yearnFinance:
                 return nil
             }
         }

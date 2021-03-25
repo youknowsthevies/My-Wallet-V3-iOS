@@ -95,10 +95,14 @@ final class DataProvider {
             exchangeAPI: exchange[CryptoCurrency.tether],
             fiatCurrencyService: fiatCurrencyService
         )
-
         let wDGLDHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .wDGLD,
             exchangeAPI: exchange[CryptoCurrency.wDGLD],
+            fiatCurrencyService: fiatCurrencyService
+        )
+        let yearnFinanceHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .yearnFinance,
+            exchangeAPI: exchange[CryptoCurrency.yearnFinance],
             fiatCurrencyService: fiatCurrencyService
         )
         
@@ -110,7 +114,8 @@ final class DataProvider {
             bitcoin: bitcoinHistoricalFiatService,
             bitcoinCash: bitcoinCashHistoricalFiatService,
             tether: tetherHistoricalFiatService,
-            wDGLD: wDGLDHistoricalFiatService
+            wDGLD: wDGLDHistoricalFiatService,
+            yearnFinance: yearnFinanceHistoricalFiatService
         )
     }
 }

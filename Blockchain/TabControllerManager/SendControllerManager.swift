@@ -68,6 +68,8 @@ extension SendControllerManager: SendScreenProvider {
             fatalError("Not Supported")
         case .wDGLD:
             fatalError("Not Supported")
+        case .yearnFinance:
+            fatalError("Not Supported")
         }
     }
 }

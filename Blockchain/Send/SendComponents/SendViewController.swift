@@ -277,3 +277,38 @@ extension Reactive where Base: SendViewController {
         }
     }
 }
+
+fileprivate extension CryptoCurrency {
+    var errorImage: UIImage {
+        switch self {
+        case .ethereum:
+            return #imageLiteral(resourceName: "eth_bad")
+        case .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .pax,
+             .stellar,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
+            impossible()
+        }
+    }
+
+    var successImage: UIImage {
+        switch self {
+        case .ethereum:
+            return #imageLiteral(resourceName: "eth_good")
+        case .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .pax,
+             .stellar,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
+            impossible()
+        }
+    }
+
+}

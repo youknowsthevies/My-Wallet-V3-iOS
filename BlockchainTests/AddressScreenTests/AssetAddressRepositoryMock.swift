@@ -59,6 +59,8 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
                 result += [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
             case .wDGLD:
                 result += [AnyERC20AssetAddress<WDGLDToken>(publicKey: address)]
+            case .yearnFinance:
+                result += [AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)]
             }
         }
         return result

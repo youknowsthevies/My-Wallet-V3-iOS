@@ -105,6 +105,11 @@ final class DataProvider: DataProviding {
             exchangeAPI: exchange[CryptoCurrency.wDGLD],
             fiatCurrencyService: fiatCurrencyService
         )
+        let yearnFinanceHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .yearnFinance,
+            exchangeAPI: exchange[CryptoCurrency.yearnFinance],
+            fiatCurrencyService: fiatCurrencyService
+        )
         
         self.historicalPrices = HistoricalFiatPriceProvider(
             algorand: algorandHistoricalFiatService,
@@ -114,7 +119,8 @@ final class DataProvider: DataProviding {
             bitcoin: bitcoinHistoricalFiatService,
             bitcoinCash: bitcoinCashHistoricalFiatService,
             tether: tetherHistoricalFiatService,
-            wDGLD: wDGLDHistoricalFiatService
+            wDGLD: wDGLDHistoricalFiatService,
+            yearnFinance: yearnFinanceHistoricalFiatService
         )
                 
         let tradingBalanceStatesFetcher = CustodialBalanceStatesFetcher(
@@ -216,6 +222,19 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[CurrencyType.crypto(.wDGLD)]
         )
+        let yearnFinanceBalanceFetcher = AssetBalanceFetcher(
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.yearnFinance)),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.yearnFinance) }(),
+            trading: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.yearnFinance.currency,
+                fetcher: tradingBalanceStatesFetcher
+            ),
+            savings: CustodialMoneyBalanceFetcher(
+                currencyType: CryptoCurrency.yearnFinance.currency,
+                fetcher: savingsBalanceStatesFetcher
+            ),
+            exchange: exchange[CurrencyType.crypto(.yearnFinance)]
+        )
         let stellarBalanceFetcher = AssetBalanceFetcher(
             blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.stellar)),
             wallet: StellarServiceProvider.shared.services.accounts,
@@ -257,14 +276,15 @@ final class DataProvider: DataProviding {
         )
         
         let cryptoBalanceFetchers: [CryptoCurrency: AssetBalanceFetching] = [
-            .bitcoin : bitcoinBalanceFetcher,
-            .bitcoinCash : bitcoinCashBalanceFetcher,
-            .stellar : stellarBalanceFetcher,
-            .pax : paxBalanceFetcher,
-            .ethereum : etherBalanceFetcher,
-            .algorand : algorandBalanceFetcher,
-            .tether : tetherBalanceFetcher,
+            .bitcoin: bitcoinBalanceFetcher,
+            .bitcoinCash: bitcoinCashBalanceFetcher,
+            .stellar: stellarBalanceFetcher,
+            .pax: paxBalanceFetcher,
+            .ethereum: etherBalanceFetcher,
+            .algorand: algorandBalanceFetcher,
+            .tether: tetherBalanceFetcher,
             .wDGLD: wDGLDBalanceFetcher,
+            .yearnFinance: yearnFinanceBalanceFetcher
         ]
         
         let balance = BalanceProvider(
@@ -315,6 +335,11 @@ final class DataProvider: DataProviding {
                 balance: wDGLDBalanceFetcher,
                 prices: historicalPrices[.wDGLD],
                 cryptoCurrency: .wDGLD
+            ),
+            yearnFinance: AssetBalanceChangeProvider(
+                balance: yearnFinanceBalanceFetcher,
+                prices: historicalPrices[.yearnFinance],
+                cryptoCurrency: .yearnFinance
             )
         )
         
