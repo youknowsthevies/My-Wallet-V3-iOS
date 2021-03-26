@@ -49,14 +49,16 @@ public final class BalanceProvider: BalanceProviding {
                 services[.crypto(.stellar)]!.calculationState,
                 services[.crypto(.bitcoin)]!.calculationState,
                 services[.crypto(.bitcoinCash)]!.calculationState,
-                services[.crypto(.algorand)]!.calculationState
+                services[.crypto(.algorand)]!.calculationState,
+                services[.crypto(.polkadot)]!.calculationState
             )
-            .map { (stellar, bitcoin, bitcoinCash, algorand) -> [CurrencyType : MoneyBalancePairsCalculationState] in
+            .map { (stellar, bitcoin, bitcoinCash, algorand, polkadot) -> [CurrencyType : MoneyBalancePairsCalculationState] in
                 [
                     .crypto(.stellar): stellar,
                     .crypto(.bitcoin): bitcoin,
                     .crypto(.bitcoinCash): bitcoinCash,
-                    .crypto(.algorand): algorand
+                    .crypto(.algorand): algorand,
+                    .crypto(.polkadot): polkadot
                 ]
             }
         let erc20Calculationbservable = Observable

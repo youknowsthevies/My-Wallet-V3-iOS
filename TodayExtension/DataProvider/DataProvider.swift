@@ -59,15 +59,14 @@ final class DataProvider {
             cryptos: cryptoExchangeServices
         )
 
+        let aaveHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .aave,
+            exchangeAPI: exchange[CryptoCurrency.aave],
+            fiatCurrencyService: fiatCurrencyService
+        )
         let algorandHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .algorand,
             exchangeAPI: exchange[CryptoCurrency.algorand],
-            fiatCurrencyService: fiatCurrencyService
-        )
-        
-        let etherHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .ethereum,
-            exchangeAPI: exchange[CryptoCurrency.ethereum],
             fiatCurrencyService: fiatCurrencyService
         )
         let bitcoinHistoricalFiatService = HistoricalFiatPriceService(
@@ -80,14 +79,24 @@ final class DataProvider {
             exchangeAPI: exchange[CryptoCurrency.bitcoinCash],
             fiatCurrencyService: fiatCurrencyService
         )
-        let stellarHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .stellar,
-            exchangeAPI: exchange[CryptoCurrency.stellar],
+        let etherHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .ethereum,
+            exchangeAPI: exchange[CryptoCurrency.ethereum],
             fiatCurrencyService: fiatCurrencyService
         )
         let paxHistoricalFiatService = HistoricalFiatPriceService(
             cryptoCurrency: .pax,
             exchangeAPI: exchange[CryptoCurrency.pax],
+            fiatCurrencyService: fiatCurrencyService
+        )
+        let polkadotHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .polkadot,
+            exchangeAPI: exchange[CryptoCurrency.polkadot],
+            fiatCurrencyService: fiatCurrencyService
+        )
+        let stellarHistoricalFiatService = HistoricalFiatPriceService(
+            cryptoCurrency: .stellar,
+            exchangeAPI: exchange[CryptoCurrency.stellar],
             fiatCurrencyService: fiatCurrencyService
         )
         let tetherHistoricalFiatService = HistoricalFiatPriceService(
@@ -105,20 +114,16 @@ final class DataProvider {
             exchangeAPI: exchange[CryptoCurrency.yearnFinance],
             fiatCurrencyService: fiatCurrencyService
         )
-        let aaveHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .aave,
-            exchangeAPI: exchange[CryptoCurrency.aave],
-            fiatCurrencyService: fiatCurrencyService
-        )
 
         self.historicalPrices = HistoricalFiatPriceProvider(
             aave: aaveHistoricalFiatService,
             algorand: algorandHistoricalFiatService,
-            ether: etherHistoricalFiatService,
-            pax: paxHistoricalFiatService,
-            stellar: stellarHistoricalFiatService,
             bitcoin: bitcoinHistoricalFiatService,
             bitcoinCash: bitcoinCashHistoricalFiatService,
+            ether: etherHistoricalFiatService,
+            pax: paxHistoricalFiatService,
+            polkadot: polkadotHistoricalFiatService,
+            stellar: stellarHistoricalFiatService,
             tether: tetherHistoricalFiatService,
             wDGLD: wDGLDHistoricalFiatService,
             yearnFinance: yearnFinanceHistoricalFiatService

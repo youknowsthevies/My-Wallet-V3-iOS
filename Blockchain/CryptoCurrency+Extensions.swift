@@ -26,6 +26,8 @@ extension CryptoCurrency {
             return .ether
         case .pax:
             return .pax
+        case .polkadot:
+            return .polkadot
         case .stellar:
             return .stellar
         case .tether:
@@ -54,10 +56,12 @@ extension CryptoCurrency {
             self = .bitcoinCash
         case .ether:
             self = .ethereum
-        case .stellar:
-            self = .stellar
         case .pax:
             self = .pax
+        case .polkadot:
+            self = .polkadot
+        case .stellar:
+            self = .stellar
         case .tether:
             self = .tether
         case .WDGLD:

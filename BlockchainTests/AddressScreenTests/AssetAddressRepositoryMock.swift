@@ -45,7 +45,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
             switch asset {
             case .aave:
                 result += [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
-            case .algorand:
+            case .algorand, .polkadot:
                 break
             case .bitcoin:
                 result += [BitcoinAssetAddress(publicKey: address)]

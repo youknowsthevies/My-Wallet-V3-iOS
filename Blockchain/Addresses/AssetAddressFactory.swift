@@ -23,10 +23,11 @@ class AssetAddressFactory {
     /// - Returns: the concrete AssetAddress
     static func create(fromAddressString address: String, assetType: CryptoCurrency) -> AssetAddress {
         switch assetType {
+        case .algorand,
+             .polkadot:
+            fatalError("\(assetType.name) not supported.")
         case .aave:
             return AnyERC20AssetAddress<AaveToken>(publicKey: address)
-        case .algorand:
-            fatalError("Algorand not supported")
         case .bitcoin:
             return BitcoinAssetAddress(publicKey: address)
         case .bitcoinCash:

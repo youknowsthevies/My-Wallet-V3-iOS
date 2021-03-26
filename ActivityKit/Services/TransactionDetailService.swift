@@ -30,7 +30,7 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
     
     func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
         switch cryptoCurrency {
-        case .algorand:
+        case .algorand, .polkadot:
             return nil
         case .bitcoin:
             return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"

@@ -55,7 +55,16 @@ final class SendSourceAccountStateService: SendSourceAccountStateServicing {
         switch asset {
         case .ethereum:
             recalculateStateForEtherBasedAssets()
-        case .aave, .algorand, .bitcoin, .bitcoinCash, .pax, .stellar, .tether, .wDGLD, .yearnFinance:
+        case .aave,
+             .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .pax,
+             .polkadot,
+             .stellar,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
             fatalError("\(#function) is not implemented for \(asset)")
         }
     }

@@ -35,6 +35,8 @@ extension CryptoCurrency {
             return .ethereum
         case .pax:
             return .usdd
+        case .polkadot:
+            return .polkadot
         case .stellar:
             return .stellar
         case .tether:
@@ -46,33 +48,28 @@ extension CryptoCurrency {
         }
     }
 
+    /// Defaults to brand color with 15% opacity.
     public var accentColor: UIColor {
         switch self {
-        case .aave:
-            return UIColor.aave.withAlphaComponent(0.15)
-        case .algorand:
-            return UIColor.algorand.withAlphaComponent(0.15)
-        case .bitcoin:
-            return UIColor.bitcoin.withAlphaComponent(0.15)
-        case .bitcoinCash:
-            return UIColor.bitcoinCash.withAlphaComponent(0.15)
-        case .ethereum:
-            return UIColor.ethereum.withAlphaComponent(0.15)
-        case .pax:
-            return UIColor.usdd.withAlphaComponent(0.15)
-        case .stellar:
-            return UIColor.stellar.withAlphaComponent(0.15)
-        case .tether:
-            return UIColor.tether.withAlphaComponent(0.15)
         case .wDGLD:
-            return UIColor.wDGLD.withAlphaComponent(0.15)
-        case .yearnFinance:
-            return UIColor.yearnFinance.withAlphaComponent(0.15)
+            return UIColor.wdgld.withAlphaComponent(0.15)
+        case .aave,
+             .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .pax,
+             .polkadot,
+             .stellar,
+             .tether,
+             .yearnFinance:
+            return brandColor.withAlphaComponent(0.15)
         }
     }
 
     // MARK: Filled small image
 
+    /// Image file name for small logo.
     /// Note that the images are on PlatformUIKit Bundle.
     public var filledImageSmallName: String {
         switch self {
@@ -88,6 +85,8 @@ extension CryptoCurrency {
             return "filled_eth_small"
         case .pax:
             return "filled_pax_small"
+        case .polkadot:
+            return "filled_dot_small"
         case .stellar:
             return "filled_xlm_small"
         case .tether:
@@ -99,6 +98,7 @@ extension CryptoCurrency {
         }
     }
 
+    /// Image file name for large logo.
     /// Note that the images are on PlatformUIKit Bundle.
     public var logoImageName: String {
         switch self {
@@ -114,6 +114,8 @@ extension CryptoCurrency {
             return "filled_eth_large"
         case .pax:
             return "filled_pax_large"
+        case .polkadot:
+            return "filled_dot_large"
         case .stellar:
             return "filled_xlm_large"
         case .tether:

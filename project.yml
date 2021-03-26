@@ -44,6 +44,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: AlgorandKitTests
         randomExecutionOrder: true
+      - name: PolkadotKitTests
+        randomExecutionOrder: true
       - name: ActivityKitTests
         randomExecutionOrder: true
       - name: BitcoinKitTests
@@ -177,6 +179,7 @@ targets:
     dependencies:
     - target: PlatformKit
     - target: AlgorandKit
+    - target: PolkadotKit
     - target: BuySellKit
     - target: BitcoinKit
     - target: BitcoinCashKit
@@ -406,6 +409,7 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - target: AlgorandKit
+    - target: PolkadotKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -986,6 +990,33 @@ targets:
       path: TestKit/Mocks/PlatformKit
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
+    templates:
+    - FrameworkTest
+  PolkadotKit:
+    dependencies:
+    - target: Localization
+    - target: PlatformKit
+    - target: ToolKit
+    - target: NetworkKit
+    - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    scheme:
+      testTargets:
+      - PolkadotKitTests
+    templates:
+    - Framework
+  PolkadotKitTests:
+    dependencies:
+    - target: PolkadotKit
+    sources:
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/ToolKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/PlatformKit
+    - group: ${target_name}/TestKit
+      path: TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
   StellarKit:

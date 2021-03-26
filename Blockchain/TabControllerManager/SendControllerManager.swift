@@ -49,10 +49,13 @@ extension SendControllerManager: SendScreenProvider {
 
     func send(_ cryptoCurrency: CryptoCurrency) -> UIViewController {
         switch cryptoCurrency {
-        case .aave:
-            fatalError("Not Supported")
-        case .algorand:
-            fatalError("Not Supported")
+        case .aave,
+             .algorand,
+             .polkadot,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
+            fatalError("\(cryptoCurrency.name) Not Supported by Legacy Send.")
         case .bitcoin:
             return BaseNavigationController(rootViewController: createSendBTC())
         case .bitcoinCash:
@@ -66,12 +69,6 @@ extension SendControllerManager: SendScreenProvider {
         case .stellar:
             let sendXLM = SendLumensViewController.make(with: .shared)
             return BaseNavigationController(rootViewController: sendXLM)
-        case .tether:
-            fatalError("Not Supported")
-        case .wDGLD:
-            fatalError("Not Supported")
-        case .yearnFinance:
-            fatalError("Not Supported")
         }
     }
 }

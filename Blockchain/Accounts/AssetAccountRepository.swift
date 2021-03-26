@@ -100,6 +100,8 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                         repository: self.paxAccountRepository,
                         fromCache: fromCache
                     )
+                case .polkadot:
+                    return .just([])
                 case .ethereum:
                     return self.ethereumAccount(fromCache: fromCache)
                 case .stellar:
@@ -146,7 +148,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
 
     func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount> {
         switch assetType {
-        case .algorand:
+        case .algorand, .polkadot:
             return .error(AssetAccountRepositoryError.noDefaultAccount)
         case .stellar:
             guard let defaultAccount = stellarAccountService.currentAccount?.assetAccount else {

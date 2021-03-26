@@ -20,6 +20,7 @@ public enum CryptoCurrency: String, Currency, Codable, CaseIterable, Comparable 
     case bitcoinCash = "BCH"
     case stellar = "XLM"
     case algorand = "ALGO"
+    case polkadot = "DOT"
     case aave = "AAVE"
     case yearnFinance = "YFI"
     case wDGLD = "WDGLD"
@@ -57,16 +58,18 @@ extension CryptoCurrency {
             return 3
         case .algorand:
             return 4
-        case .aave:
+        case .polkadot:
             return 5
-        case .yearnFinance:
+        case .aave:
             return 6
-        case .wDGLD:
+        case .yearnFinance:
             return 7
-        case .pax:
+        case .wDGLD:
             return 8
-        case .tether:
+        case .pax:
             return 9
+        case .tether:
+            return 10
         }
     }
 
@@ -74,7 +77,8 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialReceiveSupport: Bool {
         switch self {
-        case .algorand:
+        case .algorand,
+             .polkadot:
             return false
         case .aave,
              .bitcoin,
@@ -93,7 +97,8 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialWithdrawalSupport: Bool {
         switch self {
-        case .algorand:
+        case .algorand,
+             .polkadot:
             return false
         case .aave,
              .bitcoin,
@@ -112,7 +117,8 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialActivitySupport: Bool {
         switch self {
-        case .algorand:
+        case .algorand,
+             .polkadot:
             return false
         case .aave,
              .bitcoin,
@@ -127,11 +133,12 @@ extension CryptoCurrency {
         }
     }
 
-    /// CryptoCurrency is supported in New Swap
-    /// Used whenever we don't have access to the new Account architecture.
+    /// CryptoCurrency has Non Custodial support in Swap.
+    /// Used only if we don't have access to the new Account architecture.
     public var hasSwapSupport: Bool {
         switch self {
-        case .algorand:
+        case .algorand,
+             .polkadot:
             return false
         case .aave,
              .bitcoin,
@@ -152,6 +159,7 @@ extension CryptoCurrency {
         switch self {
         case .aave,
              .algorand,
+             .polkadot,
              .tether,
              .wDGLD,
              .yearnFinance:
@@ -177,6 +185,8 @@ extension CryptoCurrency {
             return "Bitcoin Cash"
         case .ethereum:
             return "Ether"
+        case .polkadot:
+            return "DOT"
         case .pax:
             return "USD \(LocalizationConstants.digital)"
         case .stellar:
@@ -197,7 +207,14 @@ extension CryptoCurrency {
         
     public var displayCode: String {
         switch self {
-        case  .aave, .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar, .yearnFinance:
+        case .aave,
+             .algorand,
+             .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .polkadot,
+             .stellar,
+             .yearnFinance:
             return code
         case .tether:
             return "USDT"
@@ -218,6 +235,8 @@ extension CryptoCurrency {
              .bitcoinCash,
              .wDGLD:
             return 8
+        case .polkadot:
+            return 10
         case .aave,
              .ethereum,
              .pax,
@@ -242,6 +261,8 @@ extension CryptoCurrency {
              .wDGLD,
              .yearnFinance:
             return 8
+        case .polkadot:
+            return 10
         }
     }
     
@@ -250,7 +271,7 @@ extension CryptoCurrency {
         switch self {
         case .aave, .pax, .tether, .wDGLD, .yearnFinance:
             return true
-        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .stellar:
+        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .polkadot, .stellar:
             return false
         }
     }

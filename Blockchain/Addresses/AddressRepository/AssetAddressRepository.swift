@@ -162,6 +162,11 @@ enum AssetAddressType {
 
         // TODO: In `BlockchainSettings.App`, create a method that receives an enum and returns a swipe address
         switch asset {
+        case .aave:
+            guard let address = appSettings.swipeAddressForAave else {
+                return []
+            }
+            return [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
         case .algorand:
             return []
         case .ethereum:
@@ -179,6 +184,8 @@ enum AssetAddressType {
                 return []
             }
             return [AnyERC20AssetAddress<PaxToken>(publicKey: address)]
+        case .polkadot:
+            return []
         case .tether:
             guard let address = appSettings.swipeAddressForTether else {
                 return []
@@ -194,11 +201,6 @@ enum AssetAddressType {
                 return []
             }
             return [AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)]
-        case .aave:
-            guard let address = appSettings.swipeAddressForAave else {
-                return []
-            }
-            return [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
         case .bitcoinCash, .bitcoin:
             let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
             return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)

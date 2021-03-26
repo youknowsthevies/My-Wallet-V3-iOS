@@ -35,6 +35,7 @@ final class AssetURLPayloadFactory: AssetURLPayloadFactoryAPI {
                 return EthereumURLPayload(address: string, amount: nil)
             case .aave,
                  .algorand,
+                 .polkadot,
                  .tether,
                  .wDGLD,
                  .yearnFinance:

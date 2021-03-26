@@ -47,8 +47,9 @@ final class SendExecutor: SendExecuting {
              .algorand,
              .bitcoin,
              .bitcoinCash,
-             .stellar,
              .pax,
+             .polkadot,
+             .stellar,
              .tether,
              .wDGLD,
              .yearnFinance:
@@ -66,6 +67,7 @@ final class SendExecutor: SendExecuting {
              .bitcoinCash,
              .stellar,
              .pax,
+             .polkadot,
              .tether,
              .wDGLD,
              .yearnFinance:

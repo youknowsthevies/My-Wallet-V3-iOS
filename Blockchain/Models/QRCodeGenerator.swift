@@ -45,6 +45,7 @@ import PlatformUIKit
              .algorand,
              .ether,
              .pax,
+             .polkadot,
              .stellar,
              .tether,
              .WDGLD,

@@ -17,18 +17,20 @@
     switch (assetType) {
         case LegacyAssetTypeAave:
             return KEYCHAIN_KEY_AAVE_ADDRESS;
+        case LegacyAssetTypeAlgorand:
+            return KEYCHAIN_KEY_ALGO_ADDRESS;
         case LegacyAssetTypeBitcoin:
             return KEYCHAIN_KEY_BTC_SWIPE_ADDRESSES;
         case LegacyAssetTypeBitcoinCash:
             return KEYCHAIN_KEY_BCH_SWIPE_ADDRESSES;
         case LegacyAssetTypeEther:
             return KEYCHAIN_KEY_ETHER_ADDRESS;
-        case LegacyAssetTypeStellar:
-            return KEYCHAIN_KEY_XLM_ADDRESS;
         case LegacyAssetTypePax:
             return KEYCHAIN_KEY_PAX_ADDRESS;
-        case LegacyAssetTypeAlgorand:
-            return KEYCHAIN_KEY_ALGO_ADDRESS;
+        case LegacyAssetTypePolkadot:
+            return KEYCHAIN_KEY_DOT_ADDRESS;
+        case LegacyAssetTypeStellar:
+            return KEYCHAIN_KEY_XLM_ADDRESS;
         case LegacyAssetTypeTether:
             return KEYCHAIN_KEY_USDT_ADDRESS;
         case LegacyAssetTypeWDGLD:
