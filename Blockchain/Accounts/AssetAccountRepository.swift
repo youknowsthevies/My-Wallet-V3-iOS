@@ -241,7 +241,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         let fallback = EthereumAssetAccount(
             walletIndex: 0,
             accountAddress: ethereumAddress,
-            name: LocalizationConstants.myEtherWallet
+            name: CryptoCurrency.ethereum.defaultWalletName
         )
         let details = EthereumAssetAccountDetails(
             account: fallback,
@@ -259,7 +259,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                         assetType: .ethereum
                     ),
                     balance: details.balance,
-                    name: LocalizationConstants.myEtherWallet
+                    name: CryptoCurrency.ethereum.defaultWalletName
                 )
             }
             .map { [$0] }

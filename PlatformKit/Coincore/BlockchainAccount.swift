@@ -9,6 +9,8 @@
 import RxSwift
 import ToolKit
 
+public typealias AvailableActions = Set<AssetAction>
+
 public protocol TradingAccount { }
 
 public protocol NonCustodialAccount { }

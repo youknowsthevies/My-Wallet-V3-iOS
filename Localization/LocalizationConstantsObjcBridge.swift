@@ -98,8 +98,6 @@ import Foundation
 
     @objc public class func loadingExchange() -> String { LocalizationConstants.Swap.loading }
 
-    @objc public class func myEtherWallet() -> String { LocalizationConstants.myEtherWallet }
-
     @objc public class func notEnoughXForFees() -> String { LocalizationConstants.Errors.notEnoughXForFees }
 
     @objc public class func balances() -> String { LocalizationConstants.balances }
@@ -126,7 +124,9 @@ import Foundation
 
     @objc public class func yesterday() -> String { LocalizationConstants.Transactions.yesterday }
 
-    @objc public class func myBitcoinWallet() -> String { LocalizationConstants.ObjCStrings.BC_STRING_MY_BITCOIN_WALLET }
-
     @objc public class func balancesErrorGeneric() -> String { LocalizationConstants.Errors.balancesGeneric }
+
+    @objc public class func myBitcoinWallet() -> String { LocalizationConstants.Account.myWallet }
+
+    @objc public class func myEtherWallet() -> String { LocalizationConstants.Account.myWallet }
 }

@@ -118,7 +118,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 exchangeProviding: ExchangeProviding = resolve(),
                 custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
                 eligibilityService: EligibilityServiceAPI = resolve()) {
-        self.label = asset.defaultTradeWalletName
+        self.label = asset.defaultTradingWalletName
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
         self.balanceFetching = balanceProviding[asset.currency].trading

@@ -2089,24 +2089,6 @@ MyWalletPhone.recordLastTransactionAsync = function(txHash) {
         .catch(error);
 };
 
-MyWalletPhone.saveEtherAccountAsync = function (privateKey, label) {
-    var success = function () {
-        objc_on_didSaveEtherAccountAsync();
-    };
-    var error = function (e) {
-        objc_on_error_savingEtherAccountAsync(e);
-    };
-    var saveAccount = function (accountPrivateKey, accountLabel) {
-        var eth = MyWallet.wallet.eth;
-        if (eth && eth.defaultAccount) {
-            return Promise.reject("Account already exists");
-        } else {
-            return eth.createAccountFromPrivateKey(accountPrivateKey, accountLabel);
-        }
-    }
-    saveAccount(accountLabel).then(success, error);
-};
-
 MyWalletPhone.getEtherAccountsAsync = function (secondPassword) {
     var fetchAccounts = function () {
         var eth = MyWallet.wallet.eth;

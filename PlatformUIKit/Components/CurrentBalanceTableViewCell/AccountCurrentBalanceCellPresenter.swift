@@ -15,7 +15,6 @@ import ToolKit
 public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
     private typealias AccessibilityId = Accessibility.Identifier.AccountPicker.AccountCell
-    private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
 
     public var iconImageViewContent: Driver<ImageViewContent> {
         iconImageViewContentRelay.asDriver()
@@ -118,7 +117,6 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             badgeImageViewModel.marginOffsetRelay.accept(0)
             badgeRelay.accept(badgeImageViewModel)
         }
-        titleRelay.accept(account.label)
 
         switch account.accountType {
         case .custodial:

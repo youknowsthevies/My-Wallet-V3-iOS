@@ -46,18 +46,24 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         .just(EthereumReceiveAddress(address: id, label: label, onTxCompleted: onTxCompleted))
     }
 
+    private let hdAccountIndex: Int
     private let balanceFetching: SingleAccountBalanceFetching
+    private let bridge: EthereumWalletBridgeAPI
     private let exchangeService: PairExchangeServiceAPI
 
     init(id: String,
          label: String? = nil,
+         hdAccountIndex: Int,
+         bridge: EthereumWalletBridgeAPI = resolve(),
          balanceProviding: BalanceProviding = resolve(),
          exchangeProviding: ExchangeProviding = resolve()) {
         let asset = CryptoCurrency.ethereum
         self.asset = asset
         self.id = id
+        self.hdAccountIndex = hdAccountIndex
         self.exchangeService = exchangeProviding[asset]
         self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
     }
 
@@ -69,5 +75,9 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             ) { (exchangeRate: $0, balance: $1) }
             .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
             .map(\.quote)
+    }
+
+    func updateLabel(_ newLabel: String) -> Completable {
+        bridge.update(accountIndex: hdAccountIndex, label: newLabel)
     }
 }

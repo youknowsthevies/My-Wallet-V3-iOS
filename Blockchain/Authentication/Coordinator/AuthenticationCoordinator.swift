@@ -66,6 +66,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
     private lazy var supportedPairsInteractor: BuySellKit.SupportedPairsInteractorServiceAPI = resolve()
+    @LazyInject private var coincore: Coincore
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
@@ -167,15 +168,20 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             self.alertPresenter.showMobileNoticeIfNeeded()
         }
 
-        AppCoordinator.shared.startAfterWalletAuthentication()
-
         // Handle any necessary routing after authentication
         handlePostAuthenticationLogic()
     }
-    
-    func handlePostAuthenticationLogic() {
+
+    private func handlePostAuthenticationLogic() {
+
+        coincore.initialize()
+            .subscribe()
+            .disposed(by: bag)
+
+        AppCoordinator.shared.startAfterWalletAuthentication()
+
         NotificationCenter.default.post(name: .login, object: nil)
-        
+
         if isCreatingWallet {
             fiatCurrencySettingsService
                 .update(currency: .locale, context: .walletCreation)
@@ -191,7 +197,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
                 })
                 .disposed(by: bag)
         }
-        
+
         if let route = postAuthenticationRoute {
             switch route {
             case .sendCoins:
@@ -199,10 +205,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             }
             postAuthenticationRoute = nil
         }
-        
+
         // Handle airdrop routing
         deepLinkRouter.routeIfNeeded()
-    
+
         hasFinishedAuthentication = true
     }
 
@@ -424,10 +430,6 @@ extension AuthenticationCoordinator {
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
             guard let self = self else { return }
             self.alertPresenter.showMobileNoticeIfNeeded()
-            /// TODO: Inject app coordinator instead - currently there is
-            /// a crash related to circle-dependency between `AuthenticationCoordinator`
-            /// and `AppCoordinator`.
-            AppCoordinator.shared.startAfterWalletAuthentication()
             self.handlePostAuthenticationLogic()
         }
         pinRouter.execute()

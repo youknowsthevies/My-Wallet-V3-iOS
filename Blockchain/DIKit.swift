@@ -224,10 +224,7 @@ extension DependencyContainer {
 
         // MARK: - Stellar Wallet
 
-        factory { () -> StellarWalletBridgeAPI in
-            let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.wallet as StellarWalletBridgeAPI
-        }
+        factory { StellarWallet() as StellarWalletBridgeAPI }
         
         // MARK: - BitcoinCash Wallet
         

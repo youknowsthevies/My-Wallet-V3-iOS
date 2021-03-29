@@ -1201,7 +1201,11 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)newAccount:(NSString*)__password email:(NSString *)__email
 {
     NSString *walletName = [LocalizationConstantsObjcBridge myBitcoinWallet];
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")", [__password escapedForJS], [__email escapedForJS], walletName]];
+    NSString *passwordEscaped = [__password escapedForJS];
+    NSString *emailEscaped = [__email escapedForJS];
+    NSString *scriptFormat = @"MyWalletPhone.newAccount(\"%@\", \"%@\", \"%@\")";
+    NSString *script = [NSString stringWithFormat:scriptFormat, passwordEscaped, emailEscaped, walletName];
+    [self.context evaluateScriptCheckIsOnMainQueue:script];
 }
 
 - (BOOL)needsSecondPassword
@@ -3305,32 +3309,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getLabelForEthAccount()"] toString];
     }
     return nil;
-}
-
-- (void)setLabelForAccount:(int)account label:(NSString *)label assetType:(LegacyAssetType)assetType
-{
-    if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.shared internetConnection];
-        return;
-    }
-
-    if ([self isInitialized]) {
-        if (assetType == LegacyAssetTypeBitcoin) {
-            self.isSyncing = YES;
-            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didSetLabelForAccount) name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
-        } else if (assetType == LegacyAssetTypeBitcoinCash) {
-            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.setLabelForAccount(%d, \"%@\")", account, [label escapedForJS]]];
-            [self getHistory];
-        }
-    }
-}
-
-- (void)didSetLabelForAccount
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
-
-    [self getHistory];
 }
 
 - (void)createAccountWithLabel:(NSString *)label

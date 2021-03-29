@@ -187,7 +187,6 @@
 - (id)getBalanceForAccount:(int)account assetType:(LegacyAssetType)assetType;
 
 - (NSString *)getLabelForAccount:(int)account assetType:(LegacyAssetType)assetType;
-- (void)setLabelForAccount:(int)account label:(NSString *)label assetType:(LegacyAssetType)assetType;
 
 - (void)createAccountWithLabel:(NSString *)label;
 - (void)generateNewKey;

@@ -68,10 +68,6 @@ public enum LocalizationConstants {
         "Don’t show again",
         comment: "Text displayed to the user when an action has the option to not be asked again."
     )
-    public static let myEtherWallet = NSLocalizedString(
-        "My Ether Wallet",
-        comment: "The default name of the ether wallet."
-    )
     public static let loading = NSLocalizedString(
         "Loading",
         comment: "Text displayed when there is an asynchronous action that needs to complete before the user can take further action."
@@ -899,10 +895,6 @@ public enum LocalizationConstants {
         public static let readMore = NSLocalizedString(
             "Read More",
             comment: "Button title for user to learn more about the minimum balance requirement for XLM."
-        )
-        public static let defaultLabelName = NSLocalizedString(
-            "My Stellar Wallet",
-            comment: "The default label of the XLM wallet."
         )
         public static let viewOnArgument = NSLocalizedString(
             "View on %@",

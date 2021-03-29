@@ -100,7 +100,7 @@ public class CryptoExchangeAccount: ExchangeAccount {
     
     init(response: CryptoExchangeAddressResponse,
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
-        self.label = response.assetType.defaultExchangeName
+        self.label = response.assetType.defaultExchangeWalletName
         self.asset = response.assetType
         self.address = response.address
         self.state = .init(state: response.state)

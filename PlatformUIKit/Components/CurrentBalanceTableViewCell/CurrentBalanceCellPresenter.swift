@@ -15,7 +15,6 @@ import RxSwift
 public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
     
     public typealias DescriptionValue = () -> Observable<String>
-    
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
     
     public var iconImageViewContent: Driver<ImageViewContent> {
@@ -135,14 +134,16 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
         }
         
         switch (interactor.accountType, currency) {
-        case (.nonCustodial, _):
-            titleRelay.accept(currency.name)
-        case (.custodial(.trading), .crypto):
+        case (.nonCustodial, .fiat(let fiatCurrency)):
+            titleRelay.accept(fiatCurrency.defaultWalletName)
+        case (.nonCustodial, .crypto(let cryptoCurrency)):
+            titleRelay.accept(cryptoCurrency.defaultWalletName)
+        case (.custodial(.trading), .crypto(let cryptoCurrency)):
             iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock", bundle: Bundle.platformUIKit))
-            titleRelay.accept(LocalizedString.Title.trading)
-        case (.custodial(.savings), .crypto):
+            titleRelay.accept(cryptoCurrency.defaultTradingWalletName)
+        case (.custodial(.savings), .crypto(let cryptoCurrency)):
             iconImageViewContentRelay.accept(.empty)
-            titleRelay.accept(LocalizedString.Title.savings)
+            titleRelay.accept(cryptoCurrency.defaultInterestWalletName)
         case (.custodial, .fiat(let currency)):
             titleRelay.accept(currency.name)
         }

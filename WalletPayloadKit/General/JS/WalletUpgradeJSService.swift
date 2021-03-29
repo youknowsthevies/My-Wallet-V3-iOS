@@ -55,7 +55,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
     func upgradeToV3() -> Single<String> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             let context = self.contextProvider.jsContext
-            let walletName = LocalizationConstants.ObjCStrings.BC_STRING_MY_BITCOIN_WALLET
+            let walletName = LocalizationConstants.Account.myWallet
             context.invokeOnce(
                 functionBlock: {
                     observer(.success("V3"))

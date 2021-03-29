@@ -49,7 +49,7 @@ public class FiatCustodialAccount: FiatAccount {
         self.balanceProviding = balanceProviding
         self.exchange = exchangeProviding[fiatCurrency]
         self.fiatCurrency = fiatCurrency
-        label = String(format: LocalizedString.myWallet, fiatCurrency.code)
+        label = fiatCurrency.defaultWalletName
         id = "FiatCustodialAccount." + fiatCurrency.code
     }
 
