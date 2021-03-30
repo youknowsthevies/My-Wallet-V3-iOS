@@ -16,7 +16,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
     private typealias AccessibilityId = Accessibility.Identifier.AccountPicker.AccountCell
 
-    public var iconImageViewContent: Driver<ImageViewContent> {
+    public var iconImageViewContent: Driver<BadgeImageViewModel> {
         iconImageViewContentRelay.asDriver()
     }
 
@@ -66,7 +66,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
     private let badgeRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let separatorVisibilityRelay: BehaviorRelay<Visibility>
-    private let iconImageViewContentRelay = BehaviorRelay<ImageViewContent>(value: .empty)
+    private let iconImageViewContentRelay = BehaviorRelay<BadgeImageViewModel>(value: .empty)
     private let titleRelay = BehaviorRelay<String>(value: "")
     private let descriptionRelay = BehaviorRelay<String>(value: "")
     private let disposeBag = DisposeBag()
@@ -118,13 +118,35 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             badgeRelay.accept(badgeImageViewModel)
         }
 
+        let model: BadgeImageViewModel
         switch account.accountType {
-        case .custodial:
-            iconImageViewContentRelay.accept(ImageViewContent(imageName: "icon_custody_lock", bundle: Bundle.platformUIKit))
+        case .custodial(.trading):
+            model = .template(
+                with: "ic-trading-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        case .custodial(.savings):
+            model = .template(
+                with: "ic-interest-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         case .nonCustodial:
-            iconImageViewContentRelay.accept(.empty)
+            model = .template(
+                with: "ic-private-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         }
-
+        model.marginOffsetRelay.accept(1)
+        iconImageViewContentRelay.accept(model)
         titleRelay.accept(account.label)
         descriptionRelay.accept(account.currencyType.name)
     }
