@@ -28,6 +28,20 @@ final class WalletViewViewModel {
         )
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
         
+        nameLabelContent = .init(
+            text: account.label,
+            font: .main(.semibold, 16.0),
+            color: .textFieldText,
+            alignment: .left,
+            accessibility: .none
+        )
+        guard !(account is CryptoExchangeAccount) else {
+            /// Exchange accounts don't have a balance
+            /// that we can readily access at this time.
+            balanceLabelContent = .empty()
+            return
+        }
+        
         balanceLabelContent = account
                     .balance
                     .map(\.displayString)
@@ -41,13 +55,5 @@ final class WalletViewViewModel {
                         )
                     }
                     .asDriver(onErrorJustReturn: .empty)
-        
-        nameLabelContent = .init(
-            text: account.label,
-            font: .main(.semibold, 16.0),
-            color: .textFieldText,
-            alignment: .left,
-            accessibility: .none
-        )
     }
 }

@@ -81,6 +81,7 @@ public final class TransactionProcessor {
     // in the original list when the pendingTx is created. And if it is not supported, then trying to
     // update it will cause an error.
     public func set(transactionOptionValue: TransactionConfirmation) -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `set(transactionOptionValue):\(transactionOptionValue)`")
         do {
             let pendingTx = try pendingTxSubject.value()
             if !pendingTx.confirmations.contains(transactionOptionValue) {
@@ -106,6 +107,7 @@ public final class TransactionProcessor {
     }
     
     public func updateAmount(amount: MoneyValue) -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `updateAmount: \(amount.displayString)`")
         do {
             if !canTransactFiat, amount.isFiat {
                 throw PlatformKitError.illegalStateException(
@@ -140,6 +142,7 @@ public final class TransactionProcessor {
     }
 
     public func execute(secondPassword: String) -> Single<TransactionResult> {
+        Logger.shared.debug("!TRANSACTION!> in `execute`")
         do {
             if engine.requireSecondPassword, secondPassword.isEmpty {
                 throw PlatformKitError.illegalStateException(message: "Second password not supplied")
@@ -161,6 +164,7 @@ public final class TransactionProcessor {
     }
 
     public func validateAll() -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `validateAll`")
         guard let pendingTransaction = try? self.pendingTransaction() else {
             preconditionFailure("We should always have a pending transaction when validating")
         }
@@ -180,11 +184,31 @@ public final class TransactionProcessor {
             .asCompletable()
     }
     
+    /// Check that the fee level is supported,
+    /// then call into the engine to set the fee and validate ballances etc
+    public func updateFeeLevel(_ feeLevel: FeeLevel, customFeeAmount: MoneyValue?) -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `UpdateFeeLevel`")
+        guard let pendingTransaction = try? self.pendingTransaction() else {
+            preconditionFailure("We should always have a pending transaction when validating")
+        }
+        precondition(pendingTransaction.feeSelection.availableLevels.contains(feeLevel))
+        return engine.doUpdateFeeLevel(
+            pendingTransaction: pendingTransaction,
+            level: feeLevel,
+            customFeeAmount: customFeeAmount ?? .zero(currency: pendingTransaction.amount.currency)
+        )
+        .do(onSuccess: { [weak self] pendingTransaction in
+            self?.updatePendingTx(pendingTransaction)
+        })
+        .asCompletable()
+    }
+    
     // MARK: - Private methods
 
     // Called back by the engine if it has received an external signal and the existing confirmation set
     // requires a refresh
     private func refreshConfirmations(revalidate: Bool) -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `refreshConfirmations`")
         guard let pendingTransaction = try? self.pendingTransaction() else {
             return .empty() // TODO: or error?
         }

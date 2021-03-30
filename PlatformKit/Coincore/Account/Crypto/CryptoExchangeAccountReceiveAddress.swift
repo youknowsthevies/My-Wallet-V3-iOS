@@ -8,22 +8,9 @@
 
 import RxSwift
 
-struct CryptoExchangeAccountReceiveAddress: CryptoReceiveAddress {
-    
-    typealias TxCompleted = (TransactionResult) -> Completable
-    
-    let address: String
-    let asset: CryptoCurrency
-    let label: String
-    let onTxCompleted: TxCompleted
-    
-    init(asset: CryptoCurrency,
-         address: String,
-         label: String,
-         onTxCompleted: @escaping TxCompleted) {
-        self.asset = asset
-        self.address = address
-        self.label = label
-        self.onTxCompleted = onTxCompleted
-    }
+public struct CryptoExchangeAccountReceiveAddress: CryptoReceiveAddress {
+    public let asset: CryptoCurrency
+    public let label: String
+    public let address: String
+    public let onTxCompleted: (TransactionResult) -> Completable
 }

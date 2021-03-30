@@ -40,7 +40,31 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let priceService: PriceServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
     private var target: BitcoinChainReceiveAddress<Token> {
-        transactionTarget as! BitcoinChainReceiveAddress<Token>
+        switch transactionTarget {
+        case (is TradingCryptoReceiveAddress):
+            let trading = transactionTarget as! TradingCryptoReceiveAddress
+            /// If the destination is a `CryptoTradingAccount`, we will not
+            /// have a `BitcoinChainReceiveAddress`.
+            return .init(
+                address: trading.address,
+                label: trading.label,
+                onTxCompleted: trading.onTxCompleted
+            )
+        case (is CryptoExchangeAccountReceiveAddress):
+            let exchange = transactionTarget as! CryptoExchangeAccountReceiveAddress
+            /// If the destination is a `CryptoExchangeAccountReceiveAddress`,
+            /// we will not have a `BitcoinChainReceiveAddress`.
+            return .init(
+                address: exchange.address,
+                label: exchange.label,
+                onTxCompleted: exchange.onTxCompleted
+            )
+        default:
+            guard let receiveAddress = transactionTarget as? BitcoinChainReceiveAddress<Token> else {
+                fatalError("Engine requires transactionTarget to be a BitcoinChainReceiveAddress")
+            }
+            return receiveAddress
+        }
     }
     
     // MARK: - Init
@@ -77,8 +101,13 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 .init(
                     amount: .zero(currency: Token.coin.cryptoCurrency),
                     available: .zero(currency: Token.coin.cryptoCurrency),
-                    fees: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                    feeLevel: .regular,
+                    feeAmount: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
+                    feeForFullAvailable: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
+                    feeSelection: .init(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: Token.coin.cryptoCurrency
+                    ),
                     selectedFiatCurrency: fiatCurrency
                 )
             }
@@ -96,7 +125,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     .feedTotal(
                         .init(
                             amount: pendingTransaction.amount,
-                            fee: pendingTransaction.fees,
+                            fee: pendingTransaction.feeAmount,
                             exchangeAmount: amount.moneyValue,
                             exchangeFee: fees.moneyValue
                         )
@@ -153,9 +182,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     }
             }
             .map { (candidate) -> PendingTransaction in
-                pendingTransaction.update(amount: amount,
-                                          available: candidate.sweepAmount,
-                                          fees: candidate.fees)
+                pendingTransaction.update(
+                    amount: amount,
+                    available: candidate.sweepAmount,
+                    fee: candidate.fees
+                    // TODO: `feeForFullAvailable`
+                )
             }
     }
 
@@ -257,15 +289,15 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                       selectedFeeLevel: pendingTransaction.feeLevel,
                       customFeeAmount: .zero(currency: fees.currency),
                       availableLevels: [.regular, .priority],
-                      asset: .ethereum)
+                      asset: Token.coin.cryptoCurrency)
             }
     }
     
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            Single.just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency)),
-            Single.just(pendingTransaction.fees.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency))
         )
         .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

@@ -66,6 +66,9 @@ final class TransactionFlowDescriptor {
                 guard let destination = state.destination else {
                     return prefix
                 }
+                if let address = destination as? CryptoReceiveAddress {
+                    return prefix + address.address
+                }
                 guard let account = destination as? BlockchainAccount else {
                     return prefix
                 }
@@ -155,6 +158,7 @@ final class TransactionFlowDescriptor {
         }
     }
 
+    static let networkFee = LocalizedString.networkFee
     static let availableBalanceTitle = LocalizedString.available
     static let maxButtonTitle = LocalizedString.Swap.swapMax
     

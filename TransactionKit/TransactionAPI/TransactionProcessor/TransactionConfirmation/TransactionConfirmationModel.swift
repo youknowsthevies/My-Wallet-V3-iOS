@@ -121,18 +121,9 @@ extension TransactionConfirmation.Model {
     }
 
     public struct FeeSelection: TransactionConfirmationModelable {
-        public struct FeeInfo: Equatable {
-            let regularFee: MoneyValue
-            let priorityFee: MoneyValue
-
-            public init(regularFee: MoneyValue, priorityFee: MoneyValue) {
-                self.regularFee = regularFee
-                self.priorityFee = priorityFee
-            }
-        }
         public let feeState: FeeState?
         public let exchange: MoneyValue?
-        public let feeInfo: FeeInfo?
+        public let feeInfo: FeeLevelRates?
         public let selectedLevel: FeeLevel
         public let customFeeAmount: MoneyValue?
         public let availableLevels: Set<FeeLevel>
@@ -149,17 +140,17 @@ extension TransactionConfirmation.Model {
 
         public init(feeState: FeeState? = nil,
                     exchange: MoneyValue? = nil,
-                    feeInfo: FeeInfo? = nil,
                     selectedFeeLevel: FeeLevel,
+                    feeInfo: FeeLevelRates? = nil,
                     customFeeAmount: MoneyValue? = nil,
                     availableLevels: Set<FeeLevel>,
                     asset: CryptoCurrency) {
             self.feeState = feeState
             self.exchange = exchange
+            self.feeInfo = feeInfo
             self.selectedLevel = selectedFeeLevel
             self.customFeeAmount = customFeeAmount
             self.availableLevels = availableLevels
-            self.feeInfo = feeInfo
             self.asset = asset
         }
     }

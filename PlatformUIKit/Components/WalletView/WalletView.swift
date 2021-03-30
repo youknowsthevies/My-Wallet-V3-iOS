@@ -30,6 +30,14 @@ final class WalletView: UIView {
             guard let viewModel = viewModel else { return }
             badgeImageView.viewModel = viewModel.badgeImageViewModel
             nameLabel.content = viewModel.nameLabelContent
+            Driver.just(viewModel.badgeImageViewModel)
+                .drive(badgeImageView.rx.viewModel)
+                .disposed(by: disposeBag)
+            
+            Driver.just(viewModel.nameLabelContent)
+                .drive(nameLabel.rx.content)
+                .disposed(by: disposeBag)
+            
             viewModel
                 .balanceLabelContent
                 .drive(balanceLabel.rx.content)
@@ -71,5 +79,15 @@ final class WalletView: UIView {
         badgeImageView.layoutToSuperview(.leading, .top, .bottom)
         badgeImageView.layout(edge: .trailing, to: .leading, of: stackView, offset: -16.0)
         stackView.layout(to: .centerY, of: self)
+    }
+}
+
+// MARK: - Rx
+
+extension Reactive where Base: WalletView {
+    var rx_viewModel: Binder<WalletViewViewModel> {
+        Binder(base) { view, viewModel in
+            view.viewModel = viewModel
+        }
     }
 }

@@ -1,23 +1,18 @@
 //
-//  RadioSelectionTableViewCell.swift
+//  RadioLineItemTableViewCell.swift
 //  PlatformUIKit
 //
-//  Created by Alex McGregor on 2/19/21.
+//  Created by Alex McGregor on 3/23/21.
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxCocoa
 import RxSwift
 
-/// A `UITableViewCell` with a radio button as its accessory view.
-/// This radio button serves as a its selection state.
-/// The `RadioSelectionTableViewCell` can contain any subview on the left but
-/// will always show a `RadioButton` on the right.
-public final class RadioSelectionTableViewCell: UITableViewCell {
+public final class RadioLineItemTableViewCell: UITableViewCell {
     
     // MARK: - Public Properties
     
-    public var presenter: RadioSelectionCellPresenter! {
+    public var presenter: RadioLineItemCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -29,17 +24,17 @@ public final class RadioSelectionTableViewCell: UITableViewCell {
                 .drive(radioView.rx.image)
                 .disposed(by: disposeBag)
             
-            switch presenter.content {
-            case .wallet(let viewModel):
-                walletView.viewModel = viewModel
-            }
+            presenter
+                .viewModel
+                .drive(lineItemView.rx.rx_viewModel)
+                .disposed(by: disposeBag)
         }
     }
     
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()
-    private let walletView = WalletView()
+    private let lineItemView = LineItemView()
     private let radioView = UIImageView()
     private let separatorView = UIView()
 
@@ -61,16 +56,17 @@ public final class RadioSelectionTableViewCell: UITableViewCell {
     }
 
     func setup() {
-        contentView.addSubview(walletView)
+        selectionStyle = .none
+        contentView.addSubview(lineItemView)
         contentView.addSubview(radioView)
         contentView.addSubview(separatorView)
         separatorView.layoutToSuperview(.leading, .trailing, .bottom)
         separatorView.layout(dimension: .height, to: 1.0)
         separatorView.backgroundColor = .lightBorder
-        walletView.layout(to: .centerY, of: contentView)
-        walletView.layoutToSuperview(.top, offset: 16.0)
-        walletView.layoutToSuperview(.leading, offset: 24.0)
-        walletView.layout(edge: .trailing, to: .leading, of: radioView, offset: -16.0)
+        lineItemView.layout(to: .centerY, of: contentView)
+        lineItemView.layoutToSuperview(.top, offset: 16.0)
+        lineItemView.layoutToSuperview(.leading, offset: 24.0)
+        lineItemView.layout(edge: .trailing, to: .leading, of: radioView, offset: -16.0)
         radioView.layout(size: .edge(24.0))
         radioView.layout(to: .centerY, of: contentView)
         radioView.layoutToSuperview(.trailing, offset: -24.0)

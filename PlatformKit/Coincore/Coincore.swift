@@ -134,6 +134,7 @@ public final class Coincore {
                 && (sourceAccount is TradingAccount ? destinationAccount is TradingAccount : true)
         case .send:
             return !(destinationAccount is FiatAccount)
+                && !(destinationAccount is CryptoInterestAccount)
         case .deposit,
              .receive,
              .viewActivity,

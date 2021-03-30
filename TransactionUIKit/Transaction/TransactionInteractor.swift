@@ -52,6 +52,13 @@ final class TransactionInteractor {
         }
         return transactionProcessor.updateAmount(amount: amount)
     }
+    
+    func updateTransactionFees(with level: FeeLevel, amount: MoneyValue?) -> Completable {
+        guard let transactionProcessor = transactionProcessor else {
+            fatalError("Tx Processor is nil")
+        }
+        return transactionProcessor.updateFeeLevel(level, customFeeAmount: amount)
+    }
 
     func getAvailableSourceAccounts(action: AssetAction) -> Single<[CryptoAccount]> {
         switch action {
@@ -135,22 +142,6 @@ final class TransactionInteractor {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.validateAll()
-    }
-
-    private func invalidObservable<T>(with message: String) -> Observable<T> {
-        .error(platformKitError(with: message))
-    }
-
-    private func invalidCompletable(with message: String) -> Completable {
-        .just(event: .error(platformKitError(with: message)))
-    }
-    
-    private func invalidSingle<T>(with message: String) -> Single<T> {
-        .error(platformKitError(with: message))
-    }
-
-    private func platformKitError(with message: String) -> PlatformKitError {
-        .illegalStateException(message: message)
     }
 }
 

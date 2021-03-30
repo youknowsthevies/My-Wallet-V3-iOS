@@ -27,6 +27,7 @@ enum TransactionAction: MviAction {
     case updateTransactionComplete(TransactionResult)
     case fetchFiatRates
     case fetchTargetRates
+    case updateFeeLevelAndAmount(FeeLevel, MoneyValue?)
     case sourceDestinationPair(MoneyValuePair)
     case transactionFiatRatePairs(TransactionMoneyValuePairs)
     case fatalTransactionError(Error)
@@ -43,6 +44,8 @@ enum TransactionAction: MviAction {
             newState.allowFiatInput = allowFiatInput
             newState.nextEnabled = false
             return newState.withUpdatedBackstack(oldState: oldState)
+        case .updateFeeLevelAndAmount:
+            return oldState
         case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
             let step: TransactionStep = passwordRequired ? .enterPassword : .enterAmount
             // TODO: BitPay: step = target is InvoiceTarget -> TransactionStep.CONFIRM_DETAIL

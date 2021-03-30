@@ -17,7 +17,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     // MARK: - Properties
 
     enum Presenter: Equatable {
-        case radioSelection(RadioSelectionCellPresenter)
+        case radioSelection(RadioAccountCellPresenter)
         case cardView(CardViewViewModel)
         case singleAccount(AccountCurrentBalanceCellPresenter)
         case walletInputField(TextFieldViewModel)
@@ -96,14 +96,14 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
         case .singleAccountAvailableTarget(let account):
             self.account = account
             presenter = .radioSelection(
-                RadioSelectionCellPresenter(
+                RadioAccountCellPresenter(
                     account: account
                 )
             )
         case .singleAccountSelection(let account):
             self.account = account
             presenter = .radioSelection(
-                RadioSelectionCellPresenter(
+                RadioAccountCellPresenter(
                     account: account,
                     selected: true
                 )

@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
-import RxCocoa
-import ToolKit
 import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
 
 public final class ContentLabelView: UIView {
     
@@ -18,9 +18,20 @@ public final class ContentLabelView: UIView {
             disposeBag = DisposeBag()
         }
         didSet {
-            titleLabel.content = presenter?.titleLabelContent ?? .empty
-            presenter?.descriptionLabelContent
+            guard let presenter = presenter else { return }
+            titleLabel.content = presenter.titleLabelContent
+            presenter.descriptionLabelContent
                 .drive(descriptionLabel.rx.content)
+                .disposed(by: disposeBag)
+            
+            button.rx.tap
+                .throttle(
+                    .milliseconds(200),
+                    latest: false,
+                    scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
+                )
+                .observeOn(MainScheduler.instance)
+                .bindAndCatch(to: presenter.tapRelay)
                 .disposed(by: disposeBag)
         }
     }
@@ -29,6 +40,7 @@ public final class ContentLabelView: UIView {
     
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
+    private let button = UIButton()
     private var disposeBag = DisposeBag()
     
     // MARK: - Properties
@@ -38,10 +50,12 @@ public final class ContentLabelView: UIView {
         
         addSubview(titleLabel)
         addSubview(descriptionLabel)
+        addSubview(button)
         
         titleLabel.layoutToSuperview(.top, .leading, .trailing)
         descriptionLabel.layoutToSuperview(.bottom, .leading, .trailing)
         descriptionLabel.layout(edge: .top, to: .bottom, of: titleLabel, offset: Spacing.standard)
+        button.fillSuperview()
     }
     
     required init?(coder: NSCoder) { unimplemented() }

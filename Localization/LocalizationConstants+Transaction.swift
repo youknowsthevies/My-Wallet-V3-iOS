@@ -103,6 +103,7 @@ public extension LocalizationConstants.Transaction {
         "Available",
         comment: "Available"
     )
+    static let networkFee = NSLocalizedString("Network Fee", comment: "Network Fee")
     static let newSwap = NSLocalizedString(
         "New Swap",
         comment: "New Swap"
@@ -141,6 +142,26 @@ public extension LocalizationConstants.Transaction.Send {
     static let to = NSLocalizedString(
         "To",
         comment: "To"
+    )
+    static let networkFee = NSLocalizedString(
+        "Network Fee",
+        comment: "Network Fee"
+    )
+    static let regular = NSLocalizedString(
+        "Regular",
+        comment: "Regular"
+    )
+    static let priority = NSLocalizedString(
+        "Priority",
+        comment: "Priority"
+    )
+    static let min = NSLocalizedString(
+        "Min",
+        comment: "Abbreviation for minutes"
+    )
+    static let minutes = NSLocalizedString(
+        "Minutes",
+        comment: "Minutes"
     )
 }
 

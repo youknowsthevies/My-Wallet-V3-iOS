@@ -16,6 +16,10 @@ public protocol SendAuxililaryViewInteractorAPI: AnyObject {
     var resetToMaxAmount: Observable<Void> { get }
 
     var availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI { get }
+    
+    var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI { get }
+    
+    var networkFeeTappedRelay: PublishRelay<Void> { get }
 
     var resetToMaxAmountRelay: PublishRelay<Void> { get }
 }
@@ -23,7 +27,14 @@ public protocol SendAuxililaryViewInteractorAPI: AnyObject {
 public extension SendAuxililaryViewInteractorAPI {
     /// Streams reset to max events
     var resetToMaxAmount: Observable<Void> {
-        resetToMaxAmountRelay.asObservable()
+        resetToMaxAmountRelay
+            .asObservable()
+    }
+    
+    /// Streams network fee tap events
+    var networkFeeTapped: Observable<Void> {
+        networkFeeTappedRelay
+            .asObservable()
     }
 }
 
@@ -32,6 +43,10 @@ public final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI
     public let availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI
 
     public let resetToMaxAmountRelay = PublishRelay<Void>()
+    
+    public let networkFeeTappedRelay = PublishRelay<Void>()
+    
+    public let networkFeeContentViewInteractor: ContentLabelViewInteractorAPI
 
     @available(*, deprecated, message: "Use `init(currencyType:coincore:)` method instead which uses the Coincore API")
     public init(balanceProvider: BalanceProviding, currencyType: CurrencyType) {
@@ -39,6 +54,9 @@ public final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI
             balanceProvider: balanceProvider,
             currencyType: currencyType
         )
+        /// NOTE: Not used in `Sell` which is the only place
+        /// where this initializer is called
+        networkFeeContentViewInteractor = EmptyNetworkFeeContentInteractor()
     }
 
     public init(currencyType: CurrencyType,
@@ -47,5 +65,8 @@ public final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI
             currencyType: currencyType,
             coincore: coincore
         )
+        /// NOTE: Not used in `Withdraw` which is the only place
+        /// where this initializer is called
+        networkFeeContentViewInteractor = EmptyNetworkFeeContentInteractor()
     }
 }

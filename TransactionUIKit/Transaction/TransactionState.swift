@@ -63,6 +63,16 @@ struct TransactionState: Equatable {
         }
         return source.asset
     }
+    
+    /// The fees associated with the transaction
+    var feeSelection: FeeSelection {
+        guard let pendingTx = pendingTransaction else {
+            /// If there is no `pendingTransaction` then the
+            /// available fee levels is `[.none]`
+            return .empty(asset: asset)
+        }
+        return pendingTx.feeSelection
+    }
 
     /// The amount the user is swapping from.
     var amount: MoneyValue {
@@ -121,11 +131,19 @@ struct TransactionState: Equatable {
     /// The `MoneyValue` representing the amount received
     /// or the amount that is sent to the given destination.
     func moneyValueFromDestination() -> Result<MoneyValue, TransactionUIKitError> {
-        guard let destination = destination as? SingleAccount else {
+        var currencyType: CurrencyType = .crypto(.bitcoin)
+        switch destination {
+        case is SingleAccount:
+            let account = destination as! SingleAccount
+            currencyType = account.currencyType
+        case is CryptoReceiveAddress:
+            let address = destination as! CryptoReceiveAddress
+            currencyType = address.asset.currency
+        default:
             return .failure(.unexpectedDestinationAccountType)
         }
         guard let exchange = sourceDestinationPair else {
-            return .success(.zero(currency: destination.currencyType))
+            return .success(.zero(currency: currencyType))
         }
         guard case let .crypto(currency) = exchange.quote.currencyType else {
             return .failure(.unexpectedCurrencyType(exchange.quote.currencyType))

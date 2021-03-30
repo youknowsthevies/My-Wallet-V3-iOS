@@ -7,8 +7,10 @@
 //
 
 import DIKit
+import PlatformKit
 import PlatformUIKit
 import RIBs
+import TransactionKit
 
 protocol EnterAmountPageInteractable: Interactable {
     var router: EnterAmountPageRouting? { get set }
@@ -18,7 +20,8 @@ protocol EnterAmountPageInteractable: Interactable {
 protocol EnterAmountViewControllable: ViewControllable { }
 
 final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, EnterAmountViewControllable>,
-                                   EnterAmountPageRouting {
+                                   EnterAmountPageRouting,
+                                   NetworkFeeSelectionListener {
 
     private let alertViewPresenter: AlertViewPresenterAPI
 
@@ -33,4 +36,30 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
     func showError() {
         alertViewPresenter.error(in: viewController.uiviewController, action: nil)
     }
+    
+    func showFeeSelectionSheet(with transactionModel: TransactionModel) {
+        let builder = NetworkFeeSelectionBuilder()
+        let router = builder.build(withListener: self, transactionModel: transactionModel)
+        let viewController = router.viewControllable.uiviewController
+        viewController.transitioningDelegate = sheetPresenter
+        viewController.modalPresentationStyle = .custom
+        attachChild(router)
+        self.viewController.uiviewController.present(viewController, animated: true, completion: nil)
+    }
+    
+    func dismissNetworkFeeSelectionScreen() {
+        detachCurrentChild()
+    }
+    
+    private func detachCurrentChild() {
+        guard let currentRouter = children.last else {
+            return
+        }
+        detachChild(currentRouter)
+        self.viewController.uiviewController.dismiss(animated: true, completion: nil)
+    }
+    
+    private lazy var sheetPresenter: BottomSheetPresenting = {
+        BottomSheetPresenting(ignoresBackroundTouches: true)
+    }()
 }

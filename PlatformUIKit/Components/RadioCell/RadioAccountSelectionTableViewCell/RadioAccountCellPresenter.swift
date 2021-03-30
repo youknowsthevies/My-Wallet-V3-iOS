@@ -11,34 +11,24 @@ import RxCocoa
 import RxDataSources
 import RxSwift
 
-public final class RadioSelectionCellPresenter {
+public final class RadioAccountCellPresenter: IdentifiableType {
     
     // MARK: - Public Properties
     
     /// The image corresponding to `imageName`
     public let image: Driver<UIImage?>
     
-    // MARK: - Content
+    // MARK: - RxDataSources
     
-    enum Content {
-        /// Shows a `WalletView` - A view with a `BadgeImageView`,
-        /// the name of the wallet, and its balance in crypto.
-        case wallet(WalletViewViewModel)
-        
-        var identifier: String {
-            switch self {
-            case .wallet(let viewModel):
-                return viewModel.identifier
-            }
-        }
-    }
+    public let identity: AnyHashable
     
     // MARK: - Internal
     
-    let content: Content
+    /// The `viewModel` for the `WalletView`
+    let viewModel: Driver<WalletViewViewModel>
     
     /// Selection relay
-    let selectedRelay = PublishRelay<Bool>()
+    let selectedRelay = BehaviorRelay<Bool>(value: false)
     
     /// Name for radio image
     let imageName = BehaviorRelay<String?>(value: nil)
@@ -46,7 +36,9 @@ public final class RadioSelectionCellPresenter {
     // MARK: - Init
     
     public init(account: SingleAccount, selected: Bool = false) {
-        content = .wallet(.init(account: account))
+        let model: WalletViewViewModel = .init(account: account)
+        viewModel = .just(model)
+        identity = model.identifier
         image = Observable
             .merge(selectedRelay.asObservable(), Observable.just(selected))
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
@@ -60,16 +52,9 @@ public final class RadioSelectionCellPresenter {
     }
 }
 
-extension RadioSelectionCellPresenter: IdentifiableType, Equatable {
-
-    public var identity: AnyHashable {
-        content.identifier
-    }
-    
-    public static func == (lhs: RadioSelectionCellPresenter, rhs: RadioSelectionCellPresenter) -> Bool {
-        switch (lhs.content, rhs.content) {
-        case (.wallet(let left), .wallet(let right)):
-            return left.identifier == right.identifier
-        }
+extension RadioAccountCellPresenter: Equatable {
+    public static func == (lhs: RadioAccountCellPresenter, rhs: RadioAccountCellPresenter) -> Bool {
+        lhs.identity == rhs.identity &&
+        lhs.selectedRelay.value == rhs.selectedRelay.value
     }
 }

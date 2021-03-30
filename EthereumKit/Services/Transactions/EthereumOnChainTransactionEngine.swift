@@ -86,8 +86,13 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 .init(
                     amount: MoneyValue.zero(currency: .ethereum),
                     available: MoneyValue.zero(currency: .ethereum),
-                    fees: MoneyValue.zero(currency: .ethereum),
-                    feeLevel: .regular,
+                    feeAmount: MoneyValue.zero(currency: .ethereum),
+                    feeForFullAvailable: MoneyValue.zero(currency: .ethereum),
+                    feeSelection: .init(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: .ethereum
+                    ),
                     selectedFiatCurrency: fiatCurrency
                 )
             }
@@ -122,7 +127,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                     .feedTotal(
                         .init(
                             amount: pendingTransaction.amount,
-                            fee: pendingTransaction.fees,
+                            fee: pendingTransaction.feeAmount,
                             exchangeAmount: amount.moneyValue,
                             exchangeFee: fees.moneyValue
                         )
@@ -153,7 +158,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             return pendingTransaction.update(
                 amount: amount,
                 available: max,
-                fees: fee.moneyValue
+                fee: fee.moneyValue,
+                feeForFullAvailable: fee.moneyValue
             )
         }
     }
@@ -174,7 +180,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         return updateFeeSelection(
             cryptoCurrency: .ethereum,
             pendingTransaction: pendingTransaction,
-            newConfirmation: value
+            newFeeLevel: value.selectedLevel,
+            customFeeAmount: value.customFeeAmount
         )
     }
     
@@ -297,8 +304,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            Single.just(pendingTransaction.amount.cryptoValue ?? .etherZero),
-            Single.just(pendingTransaction.fees.cryptoValue ?? .etherZero)
+            .just(pendingTransaction.amount.cryptoValue ?? .etherZero),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .etherZero)
         )
         .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

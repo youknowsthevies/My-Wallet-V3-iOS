@@ -87,8 +87,13 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
                 .init(
                     amount: .zero(currency: Token.assetType),
                     available: .zero(currency: Token.assetType),
-                    fees: MoneyValue.zero(currency: .ethereum),
-                    feeLevel: .regular,
+                    feeAmount: MoneyValue.zero(currency: .ethereum),
+                    feeForFullAvailable: MoneyValue.zero(currency: .ethereum),
+                    feeSelection: .init(
+                        selectedLevel: .regular,
+                        availableLevels: [.regular, .priority],
+                        asset: .ethereum
+                    ),
                     selectedFiatCurrency: fiatCurrency
                 )
             }
@@ -123,7 +128,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
                     .feedTotal(
                         .init(
                             amount: pendingTransaction.amount,
-                            fee: pendingTransaction.fees,
+                            fee: pendingTransaction.feeAmount,
                             exchangeAmount: amount.moneyValue,
                             exchangeFee: fees.moneyValue
                         )
@@ -154,7 +159,8 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
             return pendingTransaction.update(
                 amount: amount,
                 available: actionableBalance,
-                fees: fee.moneyValue
+                fee: fee.moneyValue,
+                feeForFullAvailable: fee.moneyValue
             )
         }
     }
@@ -175,7 +181,8 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
         return updateFeeSelection(
             cryptoCurrency: Token.assetType,
             pendingTransaction: pendingTransaction,
-            newConfirmation: value
+            newFeeLevel: value.selectedLevel,
+            customFeeAmount: value.customFeeAmount
         )
     }
     
@@ -300,8 +307,8 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            Single.just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.assetType)),
-            Single.just(pendingTransaction.fees.cryptoValue ?? .zero(currency: Token.assetType))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.assetType)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: Token.assetType))
         )
         .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

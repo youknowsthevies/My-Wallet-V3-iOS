@@ -25,18 +25,39 @@ extension OnChainTransactionEngine {
         transactionTarget.onTxCompleted(transactionResult)
     }
     
+    public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+        precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
+        guard let source = sourceAccount else {
+            fatalError("Expected a sourceAccount")
+        }
+        if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {
+            return updateFeeSelection(
+                cryptoCurrency: source.asset,
+                pendingTransaction: pendingTransaction,
+                newFeeLevel: level,
+                customFeeAmount: customFeeAmount
+            )
+        } else {
+            return .just(pendingTransaction)
+        }
+    }
+    
     public func updateFeeSelection(cryptoCurrency: CryptoCurrency,
                                    pendingTransaction: PendingTransaction,
-                                   newConfirmation: TransactionConfirmation.Model.FeeSelection) -> Single<PendingTransaction> {
-        var pendingTransaction = pendingTransaction
-        pendingTransaction.feeLevel = newConfirmation.selectedLevel
-        pendingTransaction.customFeeAmount = newConfirmation.customFeeAmount
-        return update(amount: pendingTransaction.amount, pendingTransaction: pendingTransaction)
+                                   newFeeLevel: FeeLevel,
+                                   customFeeAmount: MoneyValue?) -> Single<PendingTransaction> {
+        // TODO: Store default fee level
+        var transaction = pendingTransaction
+        var feeSelection = pendingTransaction.feeSelection
+        feeSelection.selectedLevel = newFeeLevel
+        feeSelection.customAmount = customFeeAmount
+        transaction.feeSelection = feeSelection
+        return update(amount: transaction.amount, pendingTransaction: transaction)
             .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                self.validateAmount(pendingTransaction: pendingTransaction)
+                self.validateAmount(pendingTransaction: transaction)
             }
             .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                self.doBuildConfirmations(pendingTransaction: pendingTransaction)
+                self.doBuildConfirmations(pendingTransaction: transaction)
             }
     }
     
@@ -44,27 +65,28 @@ extension OnChainTransactionEngine {
         switch (pendingTransaction.feeLevel, pendingTransaction.customFeeAmount) {
         case (.custom, nil):
             return .validCustomFee
-        case (.custom, .some(let customFeeAmount)):
+        case (.custom, .some(let amount)):
             let currency = pendingTransaction.amount.currency
             let zero: MoneyValue = .zero(currency: currency)
             guard let minimum = MoneyValue.create(minor: "1", currency: pendingTransaction.amount.currency) else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
-            if try customFeeAmount < minimum {
-                return .feeUnderMinLimit
-            }
-            if try customFeeAmount >= minimum, try customFeeAmount <= (feeOptions?.minLimit ?? zero) {
+            
+            switch amount {
+            case _ where try amount < minimum:
+                return FeeState.feeUnderMinLimit
+            case _ where try amount >= minimum && amount <= (feeOptions?.minLimit ?? zero):
                 return .feeUnderRecommended
-            }
-            if try customFeeAmount >= (feeOptions?.maxLimit ?? zero) {
+            case _ where try amount >= (feeOptions?.maxLimit ?? zero):
                 return .feeOverRecommended
+            default:
+                return .validCustomFee
             }
-            return .validCustomFee
         default:
             if try pendingTransaction.available < pendingTransaction.amount {
                 return .feeTooHigh
             }
-            return .valid(absoluteFee: pendingTransaction.fees)
+            return .valid(absoluteFee: pendingTransaction.feeAmount)
         }
     }
 }

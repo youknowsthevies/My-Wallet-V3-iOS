@@ -196,7 +196,7 @@ extension SwapTransactionEngine {
                                     feeType: .withdrawalFee,
                                     asset: targetAsset)),
                     .networkFee(.init(
-                                    fee: pendingTransaction.fees,
+                                    fee: pendingTransaction.feeAmount,
                                     feeType: .depositFee,
                                     asset: sourceAsset))
                 ]

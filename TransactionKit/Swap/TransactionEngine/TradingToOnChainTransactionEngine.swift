@@ -75,9 +75,11 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                     .init(
                         amount: .zero(currency: self.sourceAsset),
                         available: .zero(currency: self.sourceAsset),
-                        fees: .zero(currency: self.sourceAsset),
-                        feeLevel: .none,
-                        selectedFiatCurrency: fiatCurrency
+                        feeAmount: .zero(currency: self.sourceAsset),
+                        feeForFullAvailable: .zero(currency: self.sourceAsset),
+                        feeSelection: .empty(asset: self.sourceAsset),
+                        selectedFiatCurrency: fiatCurrency,
+                        minimumLimit: .zero(currency: self.sourceAsset)
                     )
                 )
             }
@@ -143,6 +145,15 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         target.onTxCompleted(transactionResult)
     }
     
+    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
+                          level: FeeLevel,
+                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+        precondition(pendingTransaction.availableFeeLevels.contains(level))
+        /// `TradingToOnChainTransactionEngine` only supports a
+        /// `FeeLevel` of `.none`
+        return .just(pendingTransaction)
+    }
+    
     // MARK: - Private Functions
     
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
@@ -164,7 +175,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .map { ($0.fees) }
             .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
                 /// Fees are zero in this case
-                .init(feeState: .valid(absoluteFee: pendingTransaction.fees),
+                .init(feeState: .valid(absoluteFee: pendingTransaction.feeAmount),
                       exchange: fees.moneyValue,
                       selectedFeeLevel: pendingTransaction.feeLevel,
                       customFeeAmount: .zero(currency: fees.currency),
@@ -176,8 +187,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            Single.just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceAsset)),
-            Single.just(pendingTransaction.fees.cryptoValue ?? .zero(currency: sourceAsset))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceAsset)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: sourceAsset))
         )
         .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

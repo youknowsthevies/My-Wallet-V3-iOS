@@ -58,13 +58,12 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
                 let pendingTransaction = PendingTransaction(
-                    amount: .zero(currency: self.sourceAccount.asset),
+                    amount: .zero(currency: self.sourceAsset),
                     available: actionableBalance,
-                    fees: .zero(currency: self.sourceAccount.asset),
-                    feeLevel: .none,
-                    selectedFiatCurrency: fiatCurrency,
-                    minimumLimit: nil,
-                    maximumLimit: nil
+                    feeAmount: .zero(currency: self.sourceAsset),
+                    feeForFullAvailable: .zero(currency: self.sourceAsset),
+                    feeSelection: .empty(asset: self.sourceAsset),
+                    selectedFiatCurrency: fiatCurrency
                 )
                 return self.updateLimits(
                     pendingTransaction: pendingTransaction,
@@ -80,6 +79,13 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             .map { _ in
                 TransactionResult.unHashed(amount: pendingTransaction.amount)
             }
+    }
+    
+    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
+                          level: FeeLevel,
+                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+        precondition(pendingTransaction.availableFeeLevels.contains(level))
+        return Single.just(pendingTransaction)
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

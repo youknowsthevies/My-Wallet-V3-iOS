@@ -73,6 +73,13 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             return .just(event: .error(error))
         }
     }
+    
+    private func defaultFeeLevel(pendingTransaction: PendingTransaction) -> FeeLevel {
+        if pendingTransaction.feeSelection.availableLevels.contains(.priority) {
+            return .priority
+        }
+        return pendingTransaction.feeSelection.selectedLevel
+    }
 
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine.validateAmount(pendingTransaction: pendingTransaction)
@@ -102,11 +109,13 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                     )
                     .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                         let (fiatCurrency, pendingTransaction) = payload
+                        
                         let fallback = PendingTransaction(
                             amount: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
                             available: CryptoValue.zero(currency: self.targetAsset).moneyValue,
-                            fees: CryptoValue.zero(currency: self.targetAsset).moneyValue,
-                            feeLevel: .none,
+                            feeAmount: CryptoValue.zero(currency: self.targetAsset).moneyValue,
+                            feeForFullAvailable: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
+                            feeSelection: .empty(asset: self.sourceAsset),
                             selectedFiatCurrency: fiatCurrency
                         )
                         return self.updateLimits(
@@ -114,10 +123,9 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                             pricedQuote: pricedQuote,
                             fiatCurrency: fiatCurrency
                         )
-                        .map { pendingTransaction -> PendingTransaction in
-                            var pendingTransaction = pendingTransaction
-                            pendingTransaction.feeLevel = .priority
-                            return pendingTransaction
+                        .map(weak: self) { (self, pendingTx) -> PendingTransaction in
+                            pendingTx
+                                .update(selectedFeeLevel: self.defaultFeeLevel(pendingTransaction: pendingTx))
                         }
                         .handleSwapPendingOrdersError(initialValue: fallback)
                     }
@@ -170,6 +178,16 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                             }
                     }
             }
+    }
+    
+    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
+                          level: FeeLevel,
+                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+        onChainEngine.doUpdateFeeLevel(
+            pendingTransaction: pendingTransaction,
+            level: level,
+            customFeeAmount: customFeeAmount
+        )
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

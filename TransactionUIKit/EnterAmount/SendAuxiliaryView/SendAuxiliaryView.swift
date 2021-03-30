@@ -16,8 +16,13 @@ import ToolKit
 final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI {
     
     private let contentLabelViewInteractor = ContentLabelViewInteractor()
+    private let networkLabelViewInteractor = ContentLabelViewInteractor()
     
     let resetToMaxAmountRelay = PublishRelay<Void>()
+    let networkFeeTappedRelay = PublishRelay<Void>()
+    var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI {
+        networkLabelViewInteractor
+    }
     var availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI {
         contentLabelViewInteractor
     }
@@ -27,6 +32,13 @@ final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI {
             .map { $0.toDisplayString(includeSymbol: true) }
             .map { ValueCalculationState.value($0) }
             .bindAndCatch(to: contentLabelViewInteractor.stateSubject)
+    }
+    
+    func connect(fee: Observable<MoneyValue>) -> Disposable {
+        fee
+            .map { $0.toDisplayString(includeSymbol: true) }
+            .map { ValueCalculationState.value($0) }
+            .bindAndCatch(to: networkLabelViewInteractor.stateSubject)
     }
 }
 

@@ -59,8 +59,8 @@ public class CryptoExchangeAccount: ExchangeAccount {
         .just(
             CryptoExchangeAccountReceiveAddress(
                 asset: asset,
-                address: address,
                 label: label,
+                address: address,
                 onTxCompleted: onTxCompleted
             )
         )

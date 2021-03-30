@@ -168,7 +168,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
-        tableView.register(RadioSelectionTableViewCell.self)
+        tableView.register(RadioAccountTableViewCell.self)
         tableView.register(CardTableViewCell.self)
         tableView.register(TextFieldTableViewCell.self)
 
@@ -190,8 +190,8 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         return cell
     }
     
-    private func radioCell(for indexPath: IndexPath, presenter: RadioSelectionCellPresenter) -> UITableViewCell {
-        let cell = tableView.dequeue(RadioSelectionTableViewCell.self, for: indexPath)
+    private func radioCell(for indexPath: IndexPath, presenter: RadioAccountCellPresenter) -> UITableViewCell {
+        let cell = tableView.dequeue(RadioAccountTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

@@ -67,6 +67,11 @@ public protocol TransactionEngine: AnyObject {
 
     /// Action to be executed when confirmations have been built and we want to start checking for updates on them
     func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
+    
+    /// Update the selected fee level of this Tx.
+    /// This should check & update balances etc.
+    /// This is only called when the user is applying a custom fee. 
+    func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction>
 
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 }

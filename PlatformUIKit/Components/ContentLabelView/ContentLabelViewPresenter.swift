@@ -18,6 +18,8 @@ public final class ContentLabelViewPresenter {
     
     private typealias AccessibilityId = Accessibility.Identifier.ContentLabelView
     
+    // MARK: - LabelContent
+    
     public let descriptionLabelContent: Driver<LabelContent>
          
     public var containsDescription: Driver<Bool> {
@@ -27,18 +29,32 @@ public final class ContentLabelViewPresenter {
     }
     
     public let titleLabelContent: LabelContent
+    
+    // MARK: - Tap Interaction
+    
+    public var tap: Signal<Void> {
+        tapRelay.asSignal()
+    }
+    
+    public let tapRelay = PublishRelay<Void>()
+    
+    // MARK: - Interactor
 
     private let interactor: ContentLabelViewInteractorAPI
     
-    public init(title: String, interactor: ContentLabelViewInteractorAPI) {
+    // MARK: - Init
+    
+    public init(title: String,
+                alignment: NSTextAlignment,
+                interactor: ContentLabelViewInteractorAPI) {
         self.interactor = interactor
-        titleLabelContent = LabelContent(
+        titleLabelContent = .init(
             text: title,
             font: .main(.medium, 12),
-            color: .descriptionText,
-            accessibility: .id(AccessibilityId.title)
+            color: .secondary,
+            alignment: alignment,
+            accessibility: .id(Accessibility.Identifier.ContentLabelView.title)
         )
-
         descriptionLabelContent = interactor.contentCalculationState
             .compactMap { $0.value }
             .map {
@@ -46,6 +62,7 @@ public final class ContentLabelViewPresenter {
                     text: $0,
                     font: .main(.semibold, 14),
                     color: .titleText,
+                    alignment: alignment,
                     accessibility: .id(AccessibilityId.description)
                 )
             }

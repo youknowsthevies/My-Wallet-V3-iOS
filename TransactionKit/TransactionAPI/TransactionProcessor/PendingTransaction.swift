@@ -15,14 +15,38 @@ public struct PendingTransaction: Equatable {
         case userTiers
         case xlmMemo
     }
+    
+    /// The maximum amount the user can spend. We compare the amount entered to the
+    /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
+    public var maxSpendable: MoneyValue {
+        guard let maximumLimit = self.maximumLimit else {
+            return available
+        }
+        guard let availableMaximumLimit = try? maximumLimit - feeAmount else {
+            return available
+        }
+        return (try? MoneyValue.min(available, availableMaximumLimit)) ?? .zero(currency: amount.currencyType)
+    }
+    
+    public var feeLevel: FeeLevel {
+        feeSelection.selectedLevel
+    }
+    
+    public var availableFeeLevels: Set<FeeLevel> {
+        feeSelection.availableLevels
+    }
+    
+    public var customFeeAmount: MoneyValue? {
+        feeSelection.customAmount
+    }
 
     public var amount: MoneyValue
     // The source account actionable balance minus the fees for the current fee level.
     public var available: MoneyValue
-    public var fees: MoneyValue
     public var selectedFiatCurrency: FiatCurrency
-    public var feeLevel: FeeLevel
-    public var customFeeAmount: MoneyValue?
+    public var feeSelection: FeeSelection
+    public var feeAmount: MoneyValue
+    public var feeForFullAvailable: MoneyValue
     public var confirmations: [TransactionConfirmation] = []
     public var minimumLimit: MoneyValue?
     public var maximumLimit: MoneyValue?
@@ -32,15 +56,17 @@ public struct PendingTransaction: Equatable {
 
     public init(amount: MoneyValue,
                 available: MoneyValue,
-                fees: MoneyValue,
-                feeLevel: FeeLevel,
+                feeAmount: MoneyValue,
+                feeForFullAvailable: MoneyValue,
+                feeSelection: FeeSelection,
                 selectedFiatCurrency: FiatCurrency,
                 minimumLimit: MoneyValue? = nil,
                 maximumLimit: MoneyValue? = nil) {
         self.amount = amount
         self.available = available
-        self.fees = fees
-        self.feeLevel = feeLevel
+        self.feeAmount = feeAmount
+        self.feeForFullAvailable = feeForFullAvailable
+        self.feeSelection = feeSelection
         self.selectedFiatCurrency = selectedFiatCurrency
         self.minimumLimit = minimumLimit
         self.maximumLimit = maximumLimit
@@ -59,11 +85,29 @@ public struct PendingTransaction: Equatable {
         return copy
     }
     
-    public func update(amount: MoneyValue, available: MoneyValue, fees: MoneyValue) -> PendingTransaction {
+    public func update(selectedFeeLevel: FeeLevel) -> PendingTransaction {
+        var copy = self
+        copy.feeSelection = copy.feeSelection.update(selectedFeeLevel: selectedFeeLevel)
+        return copy
+    }
+    
+    public func update(amount: MoneyValue,
+                       available: MoneyValue,
+                       fee: MoneyValue,
+                       feeForFullAvailable: MoneyValue) -> PendingTransaction {
         var copy = self
         copy.amount = amount
         copy.available = available
-        copy.fees = fees
+        copy.feeAmount = fee
+        copy.feeForFullAvailable = feeForFullAvailable
+        return copy
+    }
+    
+    public func update(amount: MoneyValue, available: MoneyValue, fee: MoneyValue) -> PendingTransaction {
+        var copy = self
+        copy.amount = amount
+        copy.available = available
+        copy.feeAmount = fee
         return copy
     }
 
@@ -88,11 +132,19 @@ public struct PendingTransaction: Equatable {
         copy.confirmations = confirmations.filter { $0.type != optionType }
         return copy
     }
+    
+    public func hasFeeLevelChanged(newLevel: FeeLevel, newAmount: MoneyValue) -> Bool {
+        feeLevel != newLevel || (feeLevel == .custom && newAmount != customFeeAmount)
+    }
+    
+    // MARK: - Equatable
 
     public static func == (lhs: PendingTransaction, rhs: PendingTransaction) -> Bool {
         lhs.amount == rhs.amount
+            && lhs.feeAmount == rhs.feeAmount
             && lhs.available == rhs.available
-            && lhs.fees == rhs.fees
+            && lhs.feeSelection == rhs.feeSelection
+            && lhs.feeForFullAvailable == rhs.feeForFullAvailable
             && lhs.selectedFiatCurrency == rhs.selectedFiatCurrency
             && lhs.feeLevel == rhs.feeLevel
             && lhs.confirmations == rhs.confirmations
@@ -101,18 +153,6 @@ public struct PendingTransaction: Equatable {
             && lhs.maximumLimit == rhs.maximumLimit
             && lhs.validationState == rhs.validationState
     }
-
-    /// The maximum amount the user can spend. We compare the amount entered to the
-    /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
-    public var maxSpendable: MoneyValue {
-        guard let maximumLimit = self.maximumLimit else {
-            return available
-        }
-        guard let availableMaximumLimit = try? maximumLimit - fees else {
-            return available
-        }
-        return (try? MoneyValue.min(available, availableMaximumLimit)) ?? .zero(currency: amount.currencyType)
-    }
 }
 
 public extension PendingTransaction {
@@ -120,8 +160,10 @@ public extension PendingTransaction {
         .init(
             amount: .zero(currency: currencyType),
             available: .zero(currency: currencyType),
-            fees: .zero(currency: currencyType),
-            feeLevel: .none,
+            feeAmount: .zero(currency: currencyType),
+            feeForFullAvailable: .zero(currency: currencyType),
+            // TODO: Handle alternate currency types
+            feeSelection: .empty(asset: currencyType.cryptoCurrency!),
             selectedFiatCurrency: .USD
         )
     }

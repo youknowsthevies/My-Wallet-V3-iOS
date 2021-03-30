@@ -90,6 +90,8 @@ final class TransactionModel {
             )
         case .updateAmount(let amount):
             return processAmountChanged(amount: amount)
+        case .updateFeeLevelAndAmount(let feeLevel, let amount):
+            return processSetFeeLevel(feeLevel, amount: amount)
         case .pendingTransactionUpdated:
             return nil
         case .prepareTransaction:
@@ -125,6 +127,16 @@ final class TransactionModel {
     }
     
     // MARK: - Private methods
+    
+    private func processSetFeeLevel(_ feeLevel: FeeLevel, amount: MoneyValue?) -> Disposable {
+        interactor.updateTransactionFees(with: feeLevel, amount: amount)
+            .subscribe(onCompleted: {
+                Logger.shared.debug("!TRANSACTION!> Tx setFeeLevel complete")
+            }, onError: { [weak self] error in
+                Logger.shared.error("!TRANSACTION!> Unable to set feeLevel: \(error.localizedDescription)")
+                self?.process(action: .fatalTransactionError(error))
+            })
+    }
 
     private func processSourceAccountsListUpdate(action: AssetAction) -> Disposable {
         interactor.getAvailableSourceAccounts(action: action)
