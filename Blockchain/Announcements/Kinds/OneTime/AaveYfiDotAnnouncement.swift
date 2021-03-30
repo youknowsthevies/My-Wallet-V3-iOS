@@ -1,9 +1,9 @@
 //
-//  AlgorandAnnouncement.swift
+//  AaveYfiDotAnnouncement.swift
 //  Blockchain
 //
-//  Created by Chris Arriola on 6/12/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Paulo on 30/03/2021.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import DIKit
@@ -13,17 +13,17 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-/// Announcement that introduces Algorand asset
-final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
+/// Announcement that introduces Aave Yfi Dot assets
+final class AaveYfiDotAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
-    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.Algorand
+    private typealias LocalizedString = LocalizationConstants.AnnouncementCards.AaveYfiDot
     
     // MARK: - Properties
     
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizedString.ctaButton,
-            background: .algorand
+            background: .primaryButton
         )
         button.tapRelay
             .bind { [weak self] in
@@ -37,7 +37,7 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
         return AnnouncementCardViewModel(
             type: type,
-            image: AnnouncementCardViewModel.Image(name: CryptoCurrency.algorand.filledImageSmallName),
+            image: AnnouncementCardViewModel.Image(name: "yfi_aave_dot_announcement", size: CGSize(width: 140, height: 40)),
             title: LocalizedString.title,
             description: LocalizedString.description,
             buttons: [button],
@@ -58,7 +58,7 @@ final class AlgorandAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         !isDismissed
     }
     
-    let type = AnnouncementType.algorand
+    let type = AnnouncementType.aaveYfiDot
     let analyticsRecorder: AnalyticsEventRecording
     
     let dismiss: CardAnnouncementAction
