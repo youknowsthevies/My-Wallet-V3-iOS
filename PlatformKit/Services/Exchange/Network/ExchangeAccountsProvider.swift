@@ -21,31 +21,15 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
     // MARK: - Public (ExchangeAccountsProviderAPI)
     
     var accounts: Single<[CryptoExchangeAccount]> {
-        statusService.hasLinkedExchangeAccount
-            .map { hasLinkedExchangeAccount -> Void in
-                guard hasLinkedExchangeAccount else {
-                    throw ExchangeAccountsNetworkError.missingAccount
-                }
-                return ()
-            }
-            .flatMap { Single.just(CryptoCurrency.allCases) }
-            .flatMap(weak: self) { (self, currencies) -> Single<[CryptoExchangeAccount]> in
-                let elements = currencies.map { currency in
-                    self.client
-                        .exchangeAddress(with: currency)
-                        .map { response in
-                            CryptoExchangeAccount(response: response)
-                        }
-                }
-                
-                return Single.zip(elements)
-            }
+        exchangeAccountsCachedValue.valueSingle
     }
     
     // MARK: - Private Properties
     
+    private let exchangeAccountsCachedValue: CachedValue<[CryptoExchangeAccount]>
     private let statusService: ExchangeAccountStatusServiceAPI
     private let client: ExchangeAccountsProviderClientAPI
+    private let disposeBag = DisposeBag()
     
     // MARK: - Init
     
@@ -53,22 +37,62 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
          statusService: ExchangeAccountStatusServiceAPI = resolve()) {
         self.statusService = statusService
         self.client = client
+        exchangeAccountsCachedValue = CachedValue<[CryptoExchangeAccount]>(
+            configuration: CachedValueConfiguration(
+                refreshType: .onSubscription,
+                flushNotificationName: .logout,
+                fetchNotificationName: .login
+            )
+        )
+
+        exchangeAccountsCachedValue.setFetch {
+            statusService.hasLinkedExchangeAccount
+                .map { hasLinkedExchangeAccount -> Void in
+                    guard hasLinkedExchangeAccount else {
+                        throw ExchangeAccountsNetworkError.missingAccount
+                    }
+                    return ()
+                }
+                .flatMap { .just(CryptoCurrency.allCases) }
+                .flatMap { currencies -> Single<[CryptoExchangeAccount]> in
+                    let elements = currencies.map { currency in
+                        client
+                            .exchangeAddress(with: currency)
+                            .map { response in
+                                CryptoExchangeAccount(response: response)
+                            }
+                    }
+                    
+                    return Single.zip(elements)
+                }
+        }
+        
+        setup()
     }
     
     // MARK: - ExchangeAccountsProviderAPI
     
     func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount?> {
-        statusService.hasLinkedExchangeAccount
-            .map { hasLinkedExchangeAccount -> Void in
-                guard hasLinkedExchangeAccount else {
+        exchangeAccountsCachedValue
+            .valueSingle
+            .map { accounts in
+                let account = accounts.filter { $0.asset == currency }.first
+                guard let value = account else {
                     throw ExchangeAccountsNetworkError.missingAccount
                 }
-                return ()
+                return value
             }
-            .flatMap(weak: self) { (self, _) in
-                self.client
-                    .exchangeAddress(with: currency)
-                    .map { CryptoExchangeAccount(response: $0) }
-            }
+    }
+    
+    // MARK: - Private Functions
+    
+    private func setup() {
+        /// Fetch the users accounts upon initialization.
+        /// Subsequent calls should be pulled from cache.
+        /// Logout purges cache. Login refreshes cache. 
+        accounts
+            .observeOn(MainScheduler.instance)
+            .subscribe()
+            .disposed(by: disposeBag)
     }
 }

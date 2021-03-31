@@ -22,7 +22,7 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
     
     public var hasLinkedExchangeAccount: Single<Bool> {
         nabuUserService
-            .fetchUser()
+            .user
             .map(\.hasLinkedExchangeAccount)
     }
     

@@ -120,7 +120,7 @@ extension DependencyContainer {
         
         factory { SwapActivityService() as SwapActivityServiceAPI }
         
-        factory { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
+        single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
         
         factory { ExchangeAccountStatusService() as ExchangeAccountStatusServiceAPI }
 
