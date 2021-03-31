@@ -90,6 +90,10 @@ public class CryptoExchangeAccount: ExchangeAccount {
         /// Exchange API does not return a balance.
         .just(.zero(currency: fiatCurrency))
     }
+
+    public func can(perform action: AssetAction) -> Single<Bool> {
+        actions.map { $0.contains(action) }
+    }
     
     // MARK: - Private Properties
     

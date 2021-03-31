@@ -103,6 +103,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return base
             }
+            // TODO: (IOS-4437) Remove this observeOn MainScheduler
             .observeOn(MainScheduler.instance)
     }
 
@@ -125,6 +126,30 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.eligibilityService = eligibilityService
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
+    }
+
+    public func can(perform action: AssetAction) -> Single<Bool> {
+        switch action {
+        case .viewActivity:
+            return .just(true)
+        case .send:
+            return balance
+                .map(\.isPositive)
+        case .sell,
+             .swap:
+            return balance
+                .map(\.isPositive)
+                .flatMap(weak: self) { (self, isPositive) -> Single<Bool> in
+                    guard isPositive else {
+                        return .just(false)
+                    }
+                    return self.eligibilityService.isEligible
+                }
+        case .deposit,
+             .receive,
+             .withdraw:
+            return .just(false)
+        }
     }
 
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
