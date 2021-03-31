@@ -55,7 +55,7 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
         presenter = nil
     }
 
-    func setup() {
+    private func setup() {
         selectionStyle = .none
         contentView.addSubview(lineItemView)
         contentView.addSubview(radioView)

@@ -41,7 +41,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let bridge: BitcoinChainSendBridgeAPI
     private var target: BitcoinChainReceiveAddress<Token> {
         switch transactionTarget {
-        case (is TradingCryptoReceiveAddress):
+        case is TradingCryptoReceiveAddress:
             let trading = transactionTarget as! TradingCryptoReceiveAddress
             /// If the destination is a `CryptoTradingAccount`, we will not
             /// have a `BitcoinChainReceiveAddress`.
@@ -50,7 +50,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 label: trading.label,
                 onTxCompleted: trading.onTxCompleted
             )
-        case (is CryptoExchangeAccountReceiveAddress):
+        case is CryptoExchangeAccountReceiveAddress:
             let exchange = transactionTarget as! CryptoExchangeAccountReceiveAddress
             /// If the destination is a `CryptoExchangeAccountReceiveAddress`,
             /// we will not have a `BitcoinChainReceiveAddress`.

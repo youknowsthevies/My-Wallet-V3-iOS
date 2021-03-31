@@ -131,14 +131,12 @@ struct TransactionState: Equatable {
     /// The `MoneyValue` representing the amount received
     /// or the amount that is sent to the given destination.
     func moneyValueFromDestination() -> Result<MoneyValue, TransactionUIKitError> {
-        var currencyType: CurrencyType = .crypto(.bitcoin)
+        let currencyType: CurrencyType
         switch destination {
-        case is SingleAccount:
-            let account = destination as! SingleAccount
+        case let account as SingleAccount:
             currencyType = account.currencyType
-        case is CryptoReceiveAddress:
-            let address = destination as! CryptoReceiveAddress
-            currencyType = address.asset.currency
+        case let receiveAddress as CryptoReceiveAddress:
+            currencyType = receiveAddress.asset.currency
         default:
             return .failure(.unexpectedDestinationAccountType)
         }
