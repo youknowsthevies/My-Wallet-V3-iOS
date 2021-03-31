@@ -80,7 +80,7 @@ public class CryptoExchangeAccount: ExchangeAccount {
     }
     
     public lazy var id: String = "CryptoExchangeAccount." + asset.code
-    public let accountType: SingleAccountType = .nonCustodial
+    public let accountType: SingleAccountType = .custodial(.exchange)
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
     public let label: String

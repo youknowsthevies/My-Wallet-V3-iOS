@@ -88,6 +88,8 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
                         pending = savings
                     case .trading:
                         pending = trading
+                    case .exchange:
+                        fatalError("Exchange account types are not supported.")
                     }
                 case .nonCustodial:
                     pending = wallet

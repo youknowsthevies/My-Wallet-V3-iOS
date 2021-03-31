@@ -283,7 +283,8 @@ final class DashboardDetailsScreenPresenter {
             guard let self = self else { return .empty() }
             switch accountType {
             case .nonCustodial,
-                 .custodial(.trading):
+                 .custodial(.trading),
+                 .custodial(.exchange):
                 return .just(self.currency.name)
             case .custodial(.savings):
                 return self.interactor

@@ -16,17 +16,61 @@ final class WalletViewViewModel {
         nameLabelContent.text
     }
     
+    let accountTypeBadge: BadgeImageViewModel
     let badgeImageViewModel: BadgeImageViewModel
     let nameLabelContent: LabelContent
     let balanceLabelContent: Driver<LabelContent>
     
     init(account: SingleAccount) {
+        let currency = account.currencyType
+        let accountType = account.accountType
+        
         badgeImageViewModel = .default(
-            with: account.currencyType.logoImageName,
+            with: currency.logoImageName,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )
+        
+        switch (accountType, currency) {
+        case (.nonCustodial, .fiat),
+             (.custodial, .fiat):
+            accountTypeBadge = .empty
+        case (.custodial(.exchange), .crypto):
+            accountTypeBadge = .template(
+                with: "ic-exchange-account",
+                templateColor: currency.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        case (.nonCustodial, .crypto):
+            accountTypeBadge = .template(
+                with: "ic-private-account",
+                templateColor: currency.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        case (.custodial(.trading), .crypto):
+            accountTypeBadge = .template(
+                with: "ic-trading-account",
+                templateColor: currency.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        case (.custodial(.savings), .crypto):
+            accountTypeBadge = .template(
+                with: "ic-interest-account",
+                templateColor: currency.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
+        }
+        
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
+        accountTypeBadge.marginOffsetRelay.accept(1.0)
         
         nameLabelContent = .init(
             text: account.label,

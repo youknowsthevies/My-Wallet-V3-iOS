@@ -136,6 +136,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
+        case .custodial(.exchange):
+            model = .template(
+                with: "ic-exchange-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         case .nonCustodial:
             model = .template(
                 with: "ic-private-account",
