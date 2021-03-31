@@ -90,7 +90,7 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
                 switch assetType {
                 case .aave:
                     return self.erc20Account(
-                        repository: self.yearnFinanceAccountRepository,
+                        repository: self.aaveAccountRepository,
                         fromCache: fromCache
                     )
                 case .algorand:
