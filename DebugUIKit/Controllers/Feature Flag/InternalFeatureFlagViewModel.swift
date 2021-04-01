@@ -17,8 +17,6 @@ struct InternalFeatureItem: Equatable {
 
     var title: String {
         switch type {
-        case .nonCustodialSendP2:
-            return "Non-Custodial Send P2"
         case .secureChannel:
             return "Secure Channel"
         }

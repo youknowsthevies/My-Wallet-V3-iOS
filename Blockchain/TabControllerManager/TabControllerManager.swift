@@ -98,18 +98,12 @@ final class TabControllerManager: NSObject {
     }
     
     private func loadSend() {
-        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
-        case true:
-            guard sendP2ViewController == nil else { return }
-            let router = SendRootBuilder().build()
-            sendP2ViewController = router.viewControllable.uiviewController
-            sendRouter = router
-            router.interactable.activate()
-            router.load()
-        case false:
-            guard sendViewController == nil else { return }
-            sendViewController = sendReceiveCoordinator.builder.send()
-        }
+        guard sendP2ViewController == nil else { return }
+        let router = SendRootBuilder().build()
+        sendP2ViewController = router.viewControllable.uiviewController
+        sendRouter = router
+        router.interactable.activate()
+        router.load()
     }
     
     func send(from account: BlockchainAccount) {
@@ -123,38 +117,20 @@ final class TabControllerManager: NSObject {
 
     func showSend(cryptoCurrency: CryptoCurrency) {
         loadSend()
-        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
-        case true:
-            tabViewController.setActiveViewController(
-                sendP2ViewController,
-                animated: true,
-                index: Constants.Navigation.tabSend
-            )
-        case false:
-            tabViewController.setActiveViewController(
-                UINavigationController(rootViewController: sendViewController),
-                animated: true,
-                index: Constants.Navigation.tabSend
-            )
-        }
+        tabViewController.setActiveViewController(
+            sendP2ViewController,
+            animated: true,
+            index: Constants.Navigation.tabSend
+        )
     }
 
     func showSend() {
         loadSend()
-        switch internalFeatureFlag.isEnabled(.nonCustodialSendP2) {
-        case true:
-            tabViewController.setActiveViewController(
-                sendP2ViewController,
-                animated: true,
-                index: Constants.Navigation.tabSend
-            )
-        case false:
-            tabViewController.setActiveViewController(
-                UINavigationController(rootViewController: sendViewController),
-                animated: true,
-                index: Constants.Navigation.tabSend
-            )
-        }
+        tabViewController.setActiveViewController(
+            sendP2ViewController,
+            animated: true,
+            index: Constants.Navigation.tabSend
+        )
     }
 
     func showReceive() {

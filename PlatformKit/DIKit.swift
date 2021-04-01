@@ -194,10 +194,6 @@ extension DependencyContainer {
         
         factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
         
-        // MARK: - Withdrawal
-        
-        factory { CustodyWithdrawalRequestService() as CustodyWithdrawalServiceAPI }
-        
         // MARK: - KYC
         
         factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }

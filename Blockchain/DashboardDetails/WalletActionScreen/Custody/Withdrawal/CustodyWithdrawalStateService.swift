@@ -6,12 +6,59 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+
+enum WithdrawalError: LocalizedError {
+    private typealias LocalizationFailureIDs = LocalizationConstants.SimpleBuy.Withdrawal.SummaryFailure
+
+    case unknown
+    case withdrawalLocked
+
+    init(error: NetworkCommunicatorError) {
+        switch error {
+        case .serverError(let error) where error.nabuError?.code == .some(.withdrawalLocked):
+            self = .withdrawalLocked
+        default:
+            self = .unknown
+        }
+    }
+
+    var localizedTitle: String {
+        switch self {
+        case .unknown:
+            return LocalizationFailureIDs.Unknown.title
+        case .withdrawalLocked:
+            return LocalizationFailureIDs.WithdrawLocked.title
+        }
+    }
+
+    var localizedDescription: String {
+        switch self {
+        case .unknown:
+            return LocalizationFailureIDs.Unknown.description
+        case .withdrawalLocked:
+            return LocalizationFailureIDs.WithdrawLocked.description
+        }
+    }
+}
+
+/// The status of the withdrawal after submission
+enum CustodyWithdrawalStatus: Equatable {
+    /// Default state
+    case unknown
+    
+    /// The withdrawal was successful
+    case successful
+    
+    /// The withdrawal failed
+    case failed(WithdrawalError)
+}
 
 protocol CustodyWithdrawalStateReceiverServiceAPI: class {
         
@@ -32,9 +79,6 @@ protocol CustodyWithdrawalStateEmitterServiceAPI: class {
 
     /// Move to the previous state
     var previousRelay: PublishRelay<Void> { get }
-
-    /// Move to the webview state
-    var webviewRelay: PublishRelay<URL> { get }
 }
 
 typealias CustodyWithdrawalStateServiceAPI = CustodyWithdrawalStateReceiverServiceAPI &
@@ -86,12 +130,6 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
         /// Custody withdrawal screen
         case withdrawal
         
-        /// Custody summary screen after a withdrawal
-        case summary
-
-        /// Displaying a web view
-        case webview(url: URL)
-
         /// ~Fin~
         case end
     }
@@ -119,7 +157,6 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
     
     let nextRelay = PublishRelay<Void>()
     let previousRelay = PublishRelay<Void>()
-    let webviewRelay = PublishRelay<URL>()
     let completionRelay = BehaviorRelay<CustodyWithdrawalStatus>(value: .unknown)
     
     private let statesRelay = BehaviorRelay<States>(value: .start)
@@ -144,17 +181,6 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
-
-        webviewRelay
-            .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self, url) in
-                let state: State = .webview(url: url)
-                let states = self.statesRelay.value
-                let action: Action = .next(state)
-                let nextStates = states.states(byAppending: state)
-                self.apply(action: action, states: nextStates)
-            }
-            .disposed(by: disposeBag)
     }
     
     private func next() {
@@ -166,14 +192,8 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
             state = .withdrawal
             action = .next(state)
         case .withdrawal:
-            state = .summary
-            action = .next(state)
-        case .summary:
             state = .end
-            action = .next(state)
-        case .webview:
-            state = .end
-            action = .next(state)
+            action = .dismiss
         case .end:
             state = .end
             action = .dismiss

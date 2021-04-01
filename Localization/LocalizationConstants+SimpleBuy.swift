@@ -61,45 +61,6 @@ extension LocalizationConstants.SimpleBuy {
         
     }
     public enum Withdrawal {
-        public static let title = NSLocalizedString(
-            "Send to",
-            comment: "Send to"
-        )
-        public enum Description {
-            public enum Top {
-                public static let prefix = NSLocalizedString(
-                    "At this time, Blockchain.com only allows you to send funds to your",
-                    comment: "At this time, Blockchain.com only allows you to send funds to your"
-                )
-                public static let suffix = NSLocalizedString(
-                    "wallet.",
-                    comment: "wallet"
-                )
-            }
-            public enum Bottom {
-                public static let withdrawable = NSLocalizedString(
-                    "Your available balance to withdraw is %@.",
-                    comment: "Your available balance to withdraw is %@."
-                )
-                public static let remaining = NSLocalizedString(
-                    "The remaining balance %@ will be available to be withdrawn within 3 days.",
-                    comment: "The remaining balance %@ will be available to be withdrawn within 3 days."
-                )
-            }
-        }
-
-        public static let action = NSLocalizedString("Send", comment: "Send")
-
-        public enum SummarySuccess {
-            public static let title = NSLocalizedString("Success!", comment: "Success!")
-            public static let sent = NSLocalizedString("Sent", comment: "Sent")
-            public static let description = NSLocalizedString(
-                "It may take up to 1 hour for your transaction to be processed.",
-                comment: "It may take up to 1 hour for your transaction to be processed."
-            )
-            public static let action = NSLocalizedString("Done", comment: "Done")
-        }
-
         public enum SummaryFailure {
             public enum Unknown {
                 public static let title = NSLocalizedString("Oops!", comment: "Oops!")

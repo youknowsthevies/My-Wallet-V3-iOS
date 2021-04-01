@@ -106,16 +106,18 @@ final class EthereumAsset: CryptoAsset {
     
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
-        guard internalFeatureFlag.isEnabled(.nonCustodialSendP2) else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
         return exchangeAccountProvider
             .account(for: asset)
             .catchError { error in
                 /// TODO: This shouldn't prevent users from seeing all accounts.
                 /// Potentially return nil should this fail.
                 guard let serviceError = error as? ExchangeAccountsNetworkError else {
+                    #if INTERNAL_BUILD
+                    Logger.shared.error(error)
                     throw error
+                    #else
+                    return Single.just(nil)
+                    #endif
                 }
                 switch serviceError {
                 case .missingAccount:

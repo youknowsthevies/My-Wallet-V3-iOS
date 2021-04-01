@@ -233,9 +233,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
             /// the destination/target.
-            let internalSendEnabled = featureConfiguring.configuration(for: .internalSendEnabled).isEnabled
-            let nonCustodialSendP2 = internalFeatureService.isEnabled(.nonCustodialSendP2)
-            if (internalSendEnabled || nonCustodialSendP2) && action == .send {
+            if action == .send {
                 router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
                 return
             }

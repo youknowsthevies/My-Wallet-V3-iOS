@@ -65,11 +65,6 @@ extension Accessibility.Identifier {
             public static let cryptoValue = "\(prefix)cryptoValue"
             public static let fiatValue = "\(prefix)fiatValue"
         }
-        public enum Withdrawal {
-            private static let prefix = "Withdrawal."
-            public static let cryptoValue = "\(prefix)AssetBalanceView.cryptoBalanceValue"
-            public static let fiatValue = "\(prefix)AssetBalanceView.fiatBalanceValue"
-        }
         public enum CustodialAction {
             private static let prefix = "CustodialAction."
             public static let cryptoValue = "\(prefix)AssetBalanceView.cryptoBalanceValue"
