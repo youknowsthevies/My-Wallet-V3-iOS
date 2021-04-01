@@ -141,7 +141,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self?.targetSelectionPageModel.process(action: .destinationDeselected)
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         let interactorState = targetSelectionPageModel
             .state
             .observeOn(MainScheduler.instance)
@@ -152,7 +152,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 return self.calculateNextState(with: state, updater: updater)
             }
             .asDriverCatchError()
-        
+
         presenter.connect(state: interactorState)
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)

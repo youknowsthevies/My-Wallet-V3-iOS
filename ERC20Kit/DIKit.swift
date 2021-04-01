@@ -60,6 +60,13 @@ extension DependencyContainer {
             return AnyERC20Service<AaveToken>(service)
         }
 
+        factory { CryptoFeeService<ERC20TransactionFee<AaveToken>>() }
+
+        factory {
+            AnyCryptoFeeService<ERC20TransactionFee<AaveToken>>
+                .erc20(token: AaveToken.self)
+        }
+
         // MARK: - PAX
 
         factory(tag: CryptoCurrency.pax) { ERC20Asset<PaxToken>() as CryptoAsset }
@@ -98,7 +105,14 @@ extension DependencyContainer {
             let service: ERC20Service<PaxToken> = DIKit.resolve()
             return AnyERC20Service<PaxToken>(service)
         }
-        
+
+        factory { CryptoFeeService<ERC20TransactionFee<PaxToken>>() }
+
+        factory {
+            AnyCryptoFeeService<ERC20TransactionFee<PaxToken>>
+                .erc20(token: PaxToken.self)
+        }
+
         // MARK: - Tether
 
         factory(tag: CryptoCurrency.tether) { ERC20Asset<TetherToken>() as CryptoAsset }
@@ -136,6 +150,13 @@ extension DependencyContainer {
         factory { () -> AnyERC20Service<TetherToken> in
             let service: ERC20Service<TetherToken> = DIKit.resolve()
             return AnyERC20Service<TetherToken>(service)
+        }
+
+        factory { CryptoFeeService<ERC20TransactionFee<TetherToken>>() }
+
+        factory {
+            AnyCryptoFeeService<ERC20TransactionFee<TetherToken>>
+                .erc20(token: TetherToken.self)
         }
 
         // MARK: - WDGLD
@@ -177,6 +198,13 @@ extension DependencyContainer {
             return AnyERC20Service<WDGLDToken>(service)
         }
 
+        factory { CryptoFeeService<ERC20TransactionFee<WDGLDToken>>() }
+
+        factory {
+            AnyCryptoFeeService<ERC20TransactionFee<WDGLDToken>>
+                .erc20(token: WDGLDToken.self)
+        }
+
         // MARK: - Yearn Finance
 
         factory(tag: CryptoCurrency.yearnFinance) { ERC20Asset<YearnFinanceToken>() as CryptoAsset }
@@ -215,6 +243,22 @@ extension DependencyContainer {
             let service: ERC20Service<YearnFinanceToken> = DIKit.resolve()
             return AnyERC20Service<YearnFinanceToken>(service)
         }
+
+        factory { CryptoFeeService<ERC20TransactionFee<YearnFinanceToken>>() }
+
+        factory {
+            AnyCryptoFeeService<ERC20TransactionFee<YearnFinanceToken>>
+                .erc20(token: YearnFinanceToken.self)
+        }
+    }
+}
+
+extension AnyCryptoFeeService {
+    fileprivate static func erc20<Token: ERC20Token>(
+        token: Token.Type,
+        service: CryptoFeeService<ERC20TransactionFee<Token>> = resolve()
+    ) -> AnyCryptoFeeService<ERC20TransactionFee<Token>> {
+        AnyCryptoFeeService<ERC20TransactionFee<Token>>(service: service)
     }
 }
 

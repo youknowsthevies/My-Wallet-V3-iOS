@@ -53,6 +53,10 @@ public class FiatCustodialAccount: FiatAccount {
         id = "FiatCustodialAccount." + fiatCurrency.code
     }
 
+    public func can(perform action: AssetAction) -> Single<Bool> {
+        actions.map { $0.contains(action) }
+    }
+
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         guard self.fiatCurrency != fiatCurrency else {
             return balance

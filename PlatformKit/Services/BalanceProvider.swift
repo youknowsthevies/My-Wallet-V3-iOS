@@ -8,6 +8,7 @@
 
 import RxRelay
 import RxSwift
+import ToolKit
 
 /// Provider of balance services and total balance in `FiatValue`
 public protocol BalanceProviding: class {
@@ -44,62 +45,28 @@ public final class BalanceProvider: BalanceProviding {
 
     /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<MoneyBalancePairsCalculationStates> {
-        let cryptoCalculationObservable = Observable
-            .combineLatest(
-                services[.crypto(.stellar)]!.calculationState,
-                services[.crypto(.bitcoin)]!.calculationState,
-                services[.crypto(.bitcoinCash)]!.calculationState,
-                services[.crypto(.algorand)]!.calculationState,
-                services[.crypto(.polkadot)]!.calculationState
-            )
-            .map { (stellar, bitcoin, bitcoinCash, algorand, polkadot) -> [CurrencyType : MoneyBalancePairsCalculationState] in
-                [
-                    .crypto(.stellar): stellar,
-                    .crypto(.bitcoin): bitcoin,
-                    .crypto(.bitcoinCash): bitcoinCash,
-                    .crypto(.algorand): algorand,
-                    .crypto(.polkadot): polkadot
-                ]
+        // Array of `calculationState` observables from all currencies we want to fetch.
+        let observables = services
+            .reduce(into: [Observable<[CurrencyType : MoneyBalancePairsCalculationState]>]()) { (result, element) in
+                let observable = element.value.calculationState
+                    // Map the `MoneyBalancePairsCalculationState` so it remains attached to its currency.
+                    .map { calculationState -> [CurrencyType : MoneyBalancePairsCalculationState] in
+                        [element.key: calculationState]
+                    }
+                result.append(observable)
             }
-        let erc20Calculationbservable = Observable
-            .combineLatest(
-                services[.crypto(.aave)]!.calculationState,
-                services[.crypto(.ethereum)]!.calculationState,
-                services[.crypto(.pax)]!.calculationState,
-                services[.crypto(.tether)]!.calculationState,
-                services[.crypto(.wDGLD)]!.calculationState,
-                services[.crypto(.yearnFinance)]!.calculationState
-            )
-            .map { (aave, ethereum, pax, tether, wdgld, yearnFinance) -> [CurrencyType : MoneyBalancePairsCalculationState] in
-                [
-                    .crypto(.aave): aave,
-                    .crypto(.ethereum): ethereum,
-                    .crypto(.pax): pax,
-                    .crypto(.tether): tether,
-                    .crypto(.wDGLD): wdgld,
-                    .crypto(.yearnFinance): yearnFinance
-                ]
-            }
-        let fiatCalculationObservable = Observable
-            .combineLatest(
-                services[.fiat(.GBP)]!.calculationState,
-                services[.fiat(.EUR)]!.calculationState,
-                services[.fiat(.USD)]!.calculationState
-            )
-            .map { (gbp, eur, usd) -> [CurrencyType : MoneyBalancePairsCalculationState] in
-                [
-                    .fiat(.GBP): gbp,
-                    .fiat(.EUR): eur,
-                    .fiat(.USD): usd
-                ]
-            }
-
         return Observable
-            .combineLatest(cryptoCalculationObservable, erc20Calculationbservable, fiatCalculationObservable)
-            .map { (crypto, erc20, fiat) in
+            .combineLatest(observables)
+            .map { data -> [CurrencyType : MoneyBalancePairsCalculationState] in
+                // Reduce our `[Dictionary]` into a single `Dictionary`.
+                data.reduce(into: [CurrencyType : MoneyBalancePairsCalculationState]()) { (result, this) in
+                    result.merge(this)
+                }
+            }
+            .map { statePerCurrency in
                 MoneyBalancePairsCalculationStates(
                     identifier: "total-balance",
-                    statePerCurrency: crypto.merge(with: erc20).merge(with: fiat)
+                    statePerCurrency: statePerCurrency
                 )
             }
             .share()

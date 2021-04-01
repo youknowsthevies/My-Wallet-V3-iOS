@@ -67,6 +67,21 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         self.label = label ?? asset.defaultWalletName
     }
 
+    func can(perform action: AssetAction) -> Single<Bool> {
+        switch action {
+        case .receive,
+             .send,
+             .viewActivity:
+            return .just(true)
+        case .deposit,
+             .sell,
+             .withdraw:
+            return .just(false)
+        case .swap:
+            return isFunded
+        }
+    }
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         Single
             .zip(

@@ -40,6 +40,10 @@ final class PolkadotCryptoAccount: CryptoNonCustodialAccount {
         self.exchangeService = exchangeProviding[.polkadot]
     }
 
+    func can(perform action: AssetAction) -> Single<Bool> {
+        actions.map { $0.contains(action) }
+    }
+
     func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         Single
             .zip(
