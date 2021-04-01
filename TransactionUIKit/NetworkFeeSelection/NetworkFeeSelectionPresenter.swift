@@ -12,7 +12,7 @@ import RxCocoa
 
 final class NetworkFeeSelectionPresenter: Presenter<NetworkFeeSelectionViewControllable>, NetworkFeeSelectionPresentable {
     
-    var listener: NetworkFeeSelectionPresentableListener?
+    weak var listener: NetworkFeeSelectionPresentableListener?
     
     struct State {
         var title: LabelContent

@@ -56,13 +56,11 @@ final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelec
         
         /// Depending on the `FeeState` we may need to show an error
         /// in the custom fee entry cell.
-        let feeState = transactionState
-            .map(\.feeSelection)
-            .compactMap(\.feeState)
+        //  let feeState = transactionState
+        //      .map(\.feeSelection)
+        //      .compactMap(\.feeState)
         
-        let state = transactionModel
-            .state
-            .observeOn(MainScheduler.instance)
+        let state = transactionState
             .scan(.initial) { [weak self] (state, updater) -> State in
                 guard let self = self else { return state }
                 return self.calculateNextState(with: state, updater: updater)
@@ -70,7 +68,7 @@ final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelec
             .asDriverCatchError()
         
         presenter.connect(state: state)
-            .drive(onNext: handleEffects)
+            .drive(onNext: handle(effect: ))
             .disposeOnDeactivate(interactor: self)
     }
     
@@ -80,11 +78,12 @@ final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelec
         with state: State,
         updater: TransactionState
     ) -> State {
-        state.update(keyPath: \.selectedFeeLevel, value: updater.feeSelection.selectedLevel)
+        state
+            .update(keyPath: \.selectedFeeLevel, value: updater.feeSelection.selectedLevel)
             .update(keyPath: \.okButtonEnabled, value: true)
     }
     
-    func handleEffects(_ effect: NetworkFeeSelectionEffects) {
+    private func handle(effect: NetworkFeeSelectionEffects) {
         switch effect {
         case .okTapped:
             listener?.dismissNetworkFeeSelectionScreen()
