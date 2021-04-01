@@ -20,6 +20,11 @@ extension LocalizationConstants {
             public enum AmountPresenter {
                 public enum LimitView { }
             }
+            public enum Completion {
+                public enum Pending { }
+                public enum Success { }
+                public enum Failure { }
+            }
         }
         public enum Swap {
             public enum KYC { }
@@ -226,6 +231,47 @@ public extension LocalizationConstants.Transaction.Swap {
     static let newSwapDisclaimer = NSLocalizedString(
         "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
         comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
+    )
+}
+
+public extension LocalizationConstants.Transaction.Send.Completion.Pending {
+    static let title = NSLocalizedString(
+        "Sending %@",
+        comment: "Sending %@"
+    )
+    static let description = NSLocalizedString(
+        "We're sending your transaction now.",
+        comment: "We're sending your transaction now."
+    )
+}
+
+public extension LocalizationConstants.Transaction.Send.Completion.Success {
+    static let title = NSLocalizedString(
+        "%@ Sent",
+        comment: "Swap Complete"
+    )
+    static let description = NSLocalizedString(
+        "Your %@ has been successfully sent.",
+        comment: "Your %@ has been successfully sent."
+    )
+    static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
+    )
+}
+
+public extension LocalizationConstants.Transaction.Send.Completion.Failure {
+    static let title = NSLocalizedString(
+        "Oops! Something Went Wrong.",
+        comment: "Oops! Something Went Wrong."
+    )
+    static let description = NSLocalizedString(
+        "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
+        comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
+    )
+    static let action = NSLocalizedString(
+        "OK",
+        comment: "OK"
     )
 }
 

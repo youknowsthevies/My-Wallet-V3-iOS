@@ -75,26 +75,29 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 }
             }
         
+        let action = transactionModel
+            .state
+            .map(\.action)
+        
         let destination = transactionModel
             .state
             .compactMap(\.destination)
-            .compactMap { $0 as? SingleAccount }
         
         let executionStatus = transactionModel
             .state
             .map(\.executionStatus)
         
         let interactorState = Observable
-            .combineLatest(sent, received, destination, executionStatus)
+            .combineLatest(sent, received, destination, executionStatus, action)
             .map { (values) -> State in
-                let (sent, received, destination, status) = values
+                let (sent, received, destination, status, action) = values
                 switch status {
                 case .completed:
-                    return .complete(destination: destination)
+                    return .complete(amount: sent, destination: destination, action: action)
                 case .error:
-                    return .failed
+                    return .failed(amount: sent, action: action)
                 case .inProgress, .notStarted:
-                    return .pending(sent: sent, received: received)
+                    return .pending(action: action, sent: sent, received: received)
                 }
             }
             .asDriverCatchError()
@@ -152,7 +155,9 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 }
 
 extension PendingTransactionPageInteractor {
-    typealias LocalizationId = LocalizationConstants.Transaction.Swap.Completion
+    typealias SwapLocalizationIds = LocalizationConstants.Transaction.Swap.Completion
+    typealias SendLocalizationIds = LocalizationConstants.Transaction.Send.Completion
+    
     // TODO: Inject Accessibility
     
     struct State {
@@ -191,69 +196,172 @@ extension PendingTransactionPageInteractor {
             self.effects = effects
         }
         
-        static func complete(destination: SingleAccount) -> State {
-            .init(
-                title: LocalizationId.Success.title,
-                subtitle: String(
-                    format: LocalizationId.Success.description,
-                    destination.currencyType.name
-                ),
-                compositeViewType: .composite(
-                    .init(
-                        baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
-                        sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
-                        backgroundColor: .primaryButton,
-                        cornerRadiusRatio: 0.5
-                    )
-                ),
-                effects: .close,
-                buttonViewModel: .primary(with: LocalizationId.Success.action)
-            )
+        static func complete(amount: MoneyValue,
+                             destination: TransactionTarget,
+                             action: AssetAction) -> State {
+            let asset: CurrencyType
+            switch destination {
+            case let cryptoTarget as CryptoTarget:
+                asset = cryptoTarget.asset.currency
+            case let account as SingleAccount:
+                asset = account.currencyType
+            default:
+                fatalError("Unsupported destination")
+            }
+            switch action {
+            case .send:
+                return .init(
+                    title: String(
+                        format: SendLocalizationIds.Success.title,
+                        amount.displayString
+                    ),
+                    subtitle: String(
+                        format: SendLocalizationIds.Success.description,
+                        asset.name
+                    ),
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .image(asset.logoImageName),
+                            sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    effects: .close,
+                    buttonViewModel: .primary(with: SendLocalizationIds.Success.action)
+                )
+            case .swap:
+                return .init(
+                    title: SwapLocalizationIds.Success.title,
+                    subtitle: String(
+                        format: SwapLocalizationIds.Success.description,
+                        asset.name
+                    ),
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
+                            backgroundColor: .primaryButton,
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    effects: .close,
+                    buttonViewModel: .primary(with: SwapLocalizationIds.Success.action)
+                )
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                fatalError("Copy not supported for AssetAction: \(action)")
+            }
         }
         
-        static let failed: State = .init(
-            title: LocalizationId.Failure.title,
-            subtitle: LocalizationId.Failure.description,
-            compositeViewType: .composite(
-                .init(
-                    baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
-                    sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
-                    backgroundColor: .primaryButton,
-                    cornerRadiusRatio: 0.5
+        static func failed(amount: MoneyValue, action: AssetAction) -> State {
+            switch action {
+            case .send:
+                return .init(
+                    title: SendLocalizationIds.Failure.title,
+                    subtitle: SendLocalizationIds.Failure.description,
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .image(amount.currency.logoImageName),
+                            sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    effects: .close,
+                    buttonViewModel: .primary(with: SendLocalizationIds.Failure.action)
                 )
-            ),
-            effects: .close,
-            buttonViewModel: .primary(with: LocalizationId.Failure.action)
-        )
-        
-        static func pending(sent: MoneyValue, received: MoneyValue) -> State {
-            var title = String(
-                format: LocalizationId.Pending.title,
-                sent.displayString,
-                received.displayString
-            )
-            let zeroSent = MoneyValue.zero(currency: sent.currencyType)
-            let zeroReceived = MoneyValue.zero(currency: received.currencyType)
-            if sent == zeroSent || received == zeroReceived {
-                title = String(
-                    format: LocalizationId.Pending.title,
-                    sent.displayCode,
-                    received.displayCode
+            case .swap:
+                return .init(
+                    title: SwapLocalizationIds.Failure.title,
+                    subtitle: SwapLocalizationIds.Failure.description,
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
+                            backgroundColor: .primaryButton,
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    effects: .close,
+                    buttonViewModel: .primary(with: SwapLocalizationIds.Failure.action)
                 )
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                fatalError("Copy not supported for AssetAction: \(action)")
             }
-            return .init(
-                title: title,
-                subtitle: LocalizationId.Pending.description,
-                compositeViewType: .composite(
-                    .init(
-                        baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
-                        sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
-                        backgroundColor: .primaryButton,
-                        cornerRadiusRatio: 0.5
+        }
+        
+        static func pending(action: AssetAction,
+                            sent: MoneyValue,
+                            received: MoneyValue?) -> State {
+            switch action {
+            case .send:
+                var title = String(
+                    format: SendLocalizationIds.Pending.title,
+                    sent.displayString
+                )
+                let zeroSent = MoneyValue.zero(currency: sent.currencyType)
+                if sent == zeroSent {
+                    title = String(
+                        format: SendLocalizationIds.Pending.title,
+                        sent.displayCode
                     )
-                ),
-                buttonViewModel: nil
-            )
+                }
+                return .init(
+                    title: title,
+                    subtitle: SendLocalizationIds.Pending.description,
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .image(sent.currency.logoImageName),
+                            sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    buttonViewModel: nil
+                )
+            case .swap:
+                guard let receivedAmount = received else {
+                    fatalError("Expected an amount received.")
+                }
+                var title = String(
+                    format: SwapLocalizationIds.Pending.title,
+                    sent.displayString,
+                    receivedAmount.displayString
+                )
+                let zeroSent = MoneyValue.zero(currency: sent.currencyType)
+                let zeroReceived = MoneyValue.zero(currency: receivedAmount.currencyType)
+                if sent == zeroSent || received == zeroReceived {
+                    title = String(
+                        format: SwapLocalizationIds.Pending.title,
+                        sent.displayCode,
+                        receivedAmount.displayCode
+                    )
+                }
+                return .init(
+                    title: title,
+                    subtitle: SwapLocalizationIds.Pending.description,
+                    compositeViewType: .composite(
+                        .init(
+                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
+                            backgroundColor: .primaryButton,
+                            cornerRadiusRatio: 0.5
+                        )
+                    ),
+                    buttonViewModel: nil
+                )
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                fatalError("Copy not supported for AssetAction: \(action)")
+            }
         }
     }
 }
