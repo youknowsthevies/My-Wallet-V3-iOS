@@ -205,19 +205,20 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             action: updater.action
         )
 
-        var networkFeeSupport = updater
+        let networkFeeAdjustmentSupported = updater
             .pendingTransaction?
             .availableFeeLevels
             .networkFeeAdjustmentSupported ?? false
 
-        networkFeeSupport = updater.action == .send ? networkFeeSupport : false
+        let networkFeeVisible = updater.action == .send ? networkFeeAdjustmentSupported : false
+        let networkFeeVisibility: Visibility = networkFeeVisible ? .visible : .hidden
 
-        let presenter: SendAuxililaryViewPresenter = .init(
-            interactor: self.auxiliaryViewInteractor,
+        let presenter = SendAuxililaryViewPresenter(
+            interactor: auxiliaryViewInteractor,
             availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
             maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle(action: updater.action),
-            maxButtonVisibility: networkFeeSupport ? .hidden : .visible,
-            networkFeeVisibility: networkFeeSupport ? .visible : .hidden
+            maxButtonVisibility: networkFeeVisibility.inverted,
+            networkFeeVisibility: networkFeeVisibility
         )
 
         presenter
@@ -277,9 +278,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             action: action
         )
         let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
-            SendAuxililaryViewPresenter(interactor: auxiliaryViewInteractor,
-                                        availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
-                                        maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle)
+            SendAuxililaryViewPresenter(
+                interactor: auxiliaryViewInteractor,
+                availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
+                maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle,
+                maxButtonVisibility: .hidden,
+                networkFeeVisibility: .hidden
+            )
         )
         return State(
             topSelection: topSelectionState,

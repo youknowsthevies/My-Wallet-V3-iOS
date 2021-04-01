@@ -262,20 +262,25 @@ final class EnterAmountViewController: BaseScreenViewController,
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountPageInteractor.BottomAuxiliaryViewModelState) {
         let height: CGFloat
         let visibility: Visibility
-        var subviewsToRemove: [UIView]
+        let subviewsToRemove: [UIView]
         switch state {
         case .hidden:
+            subviewsToRemove = bottomAuxiliaryView.subviews
             height = 0.5
             visibility = .hidden
-            subviewsToRemove = bottomAuxiliaryView.subviews
         case .maxAvailable(let presenter):
-            let sendAuxiliaryView = SendAuxiliaryView()
+            subviewsToRemove = []
+            let sendAuxiliaryView: SendAuxiliaryView
+            if let view = bottomAuxiliaryView.subviews.first(where: { $0 is SendAuxiliaryView }) {
+                sendAuxiliaryView = view as! SendAuxiliaryView
+            } else {
+                sendAuxiliaryView = SendAuxiliaryView()
+                bottomAuxiliaryView.addSubview(sendAuxiliaryView)
+                sendAuxiliaryView.fillSuperview()
+            }
             sendAuxiliaryView.presenter = presenter
-            bottomAuxiliaryView.addSubview(sendAuxiliaryView)
-            sendAuxiliaryView.fillSuperview()
             visibility = .visible
             height = Constant.Standard.topSelectionViewHeight
-            subviewsToRemove = []
         }
         UIView.animate(
             withDuration: 0.25,

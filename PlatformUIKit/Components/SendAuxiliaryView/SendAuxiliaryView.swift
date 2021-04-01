@@ -23,13 +23,7 @@ public final class SendAuxiliaryView: UIView {
             maxButtonView.viewModel = presenter.maxButtonViewModel
             availableBalanceView.presenter = presenter.availableBalanceContentViewPresenter
             networkFeeView.presenter = presenter.networkFeeContentViewPresenter
-            
-            presenter
-                .maxButtonVisibility
-                .map(\.isHidden)
-                .drive(maxButtonView.rx.isHidden)
-                .disposed(by: disposeBag)
-            
+
             presenter
                 .networkFeeContentVisibility
                 .drive(networkFeeView.rx.visibility)
@@ -59,9 +53,9 @@ public final class SendAuxiliaryView: UIView {
         networkFeeView.layoutToSuperview(.centerY)
         networkFeeView.layoutToSuperview(.trailing, offset: -Spacing.outer)
         
-        maxButtonView.layout(dimension: .height, to: 30)
-        maxButtonView.layoutToSuperview(.trailing, offset: -Spacing.outer)
         maxButtonView.layoutToSuperview(.centerY)
+        maxButtonView.layoutToSuperview(.trailing, offset: -Spacing.outer)
+        maxButtonView.layout(dimension: .height, to: 30)
     }
     
     required init?(coder: NSCoder) { unimplemented() }

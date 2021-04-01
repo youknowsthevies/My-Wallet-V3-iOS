@@ -25,10 +25,10 @@ public final class SendAuxililaryViewPresenter: Equatable {
     public let networkFeeContentViewPresenter: ContentLabelViewPresenter
     
     // MARK: - Internal Properties
-    
-    let maxButtonVisibility: Driver<Visibility>
-    
-    let networkFeeContentVisibility: Driver<Visibility>
+
+    var networkFeeContentVisibility: Driver<Visibility> {
+        .just(networkFeeContentVisible)
+    }
     
     let maxButtonViewModel: ButtonViewModel
     
@@ -51,27 +51,34 @@ public final class SendAuxililaryViewPresenter: Equatable {
     public init(interactor: SendAuxililaryViewInteractorAPI,
                 availableBalanceTitle: String,
                 maxButtonTitle: String,
-                maxButtonVisibility: Visibility = .visible,
-                networkFeeVisibility: Visibility = .hidden) {
-        self.maxButtonVisible = maxButtonVisibility
-        self.networkFeeContentVisible = networkFeeVisibility
-        self.networkFeeContentVisibility = .just(networkFeeVisibility)
-        self.maxButtonVisibility = .just(maxButtonVisibility)
+                maxButtonVisibility: Visibility,
+                networkFeeVisibility: Visibility) {
+        maxButtonVisible = maxButtonVisibility
+        networkFeeContentVisible = networkFeeVisibility
+
+        // MARK: Available Balance
+
         availableBalanceContentViewPresenter = ContentLabelViewPresenter(
-                title: availableBalanceTitle,
-                alignment: .left,
-                interactor: interactor.availableBalanceContentViewInteractor
+            title: availableBalanceTitle,
+            alignment: .left,
+            interactor: interactor.availableBalanceContentViewInteractor
         )
+
+        // MARK: Network Fee
+
         networkFeeContentViewPresenter = ContentLabelViewPresenter(
             title: LocalizationId.networkFee,
             alignment: .right,
             interactor: interactor.networkFeeContentViewInteractor
         )
-        
+
+        // MARK: Max Button
+
         maxButtonViewModel = ButtonViewModel.secondary(
             with: maxButtonTitle,
             font: .main(.semibold, 14)
         )
+        maxButtonViewModel.isHiddenRelay.accept(maxButtonVisibility.isHidden)
         
         maxButtonViewModel.contentInsetRelay.accept(
             UIEdgeInsets(horizontal: Spacing.standard, vertical: 0)
@@ -89,7 +96,7 @@ public final class SendAuxililaryViewPresenter: Equatable {
 
 public extension SendAuxililaryViewPresenter {
     static func ==(lhs: SendAuxililaryViewPresenter, rhs: SendAuxililaryViewPresenter) -> Bool {
-        lhs.maxButtonVisible == rhs.maxButtonVisible &&
-        lhs.networkFeeContentVisible == rhs.networkFeeContentVisible
+        lhs.maxButtonVisible == rhs.maxButtonVisible
+            && lhs.networkFeeContentVisible == rhs.networkFeeContentVisible
     }
 }

@@ -173,9 +173,13 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         )
 
         let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
-            SendAuxililaryViewPresenter(interactor: auxiliaryViewInteractor,
-                                        availableBalanceTitle: LocalizatedStrings.available,
-                                        maxButtonTitle: LocalizatedStrings.withdrawMax)
+            SendAuxililaryViewPresenter(
+                interactor: auxiliaryViewInteractor,
+                availableBalanceTitle: LocalizatedStrings.available,
+                maxButtonTitle: LocalizatedStrings.withdrawMax,
+                maxButtonVisibility: .visible,
+                networkFeeVisibility: .hidden
+            )
         )
 
         return State(

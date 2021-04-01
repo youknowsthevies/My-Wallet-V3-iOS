@@ -41,7 +41,8 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             interactor: interactor.auxiliaryViewInteractor,
             availableBalanceTitle: LocalizedString.available,
             maxButtonTitle: LocalizedString.useMax,
-            maxButtonVisibility: .visible
+            maxButtonVisibility: .visible,
+            networkFeeVisibility: .hidden
         )
         super.init(
             analyticsRecorder: analyticsRecorder,
