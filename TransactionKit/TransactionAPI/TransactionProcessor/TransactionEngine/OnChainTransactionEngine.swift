@@ -47,17 +47,15 @@ extension OnChainTransactionEngine {
                                    newFeeLevel: FeeLevel,
                                    customFeeAmount: MoneyValue?) -> Single<PendingTransaction> {
         // TODO: Store default fee level
-        var transaction = pendingTransaction
-        var feeSelection = pendingTransaction.feeSelection
-        feeSelection.selectedLevel = newFeeLevel
-        feeSelection.customAmount = customFeeAmount
-        transaction.feeSelection = feeSelection
-        return update(amount: transaction.amount, pendingTransaction: transaction)
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                self.validateAmount(pendingTransaction: transaction)
+        let pendingTransaction = pendingTransaction
+            .update(selectedFeeLevel: newFeeLevel, customFeeAmount: customFeeAmount)
+
+        return update(amount: pendingTransaction.amount, pendingTransaction: pendingTransaction)
+            .flatMap(weak: self) { (self, updatedTransaction) -> Single<PendingTransaction> in
+                self.validateAmount(pendingTransaction: updatedTransaction)
             }
-            .flatMap(weak: self) { (self, pendingTransaction) -> Single<PendingTransaction> in
-                self.doBuildConfirmations(pendingTransaction: transaction)
+            .flatMap(weak: self) { (self, validatedTransaction) -> Single<PendingTransaction> in
+                self.doBuildConfirmations(pendingTransaction: validatedTransaction)
             }
     }
     

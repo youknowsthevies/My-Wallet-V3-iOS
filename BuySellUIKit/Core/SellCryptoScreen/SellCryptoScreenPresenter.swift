@@ -23,7 +23,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     
     // MARK: - Properties
     
-    private let auxiliaryViewPresenter: SendAuxililaryViewPresenter
+    private let auxiliaryViewPresenter: SendAuxiliaryViewPresenter
     private let interactor: SellCryptoScreenInteractor
     private let routerInteractor: SellRouterInteractor
     private let disposeBag = DisposeBag()
@@ -31,18 +31,22 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     // MARK: - Setup
     
     init(
-         analyticsRecorder: AnalyticsEventRecorderAPI,
-         interactor: SellCryptoScreenInteractor,
-         routerInteractor: SellRouterInteractor,
-         backwardsNavigation: @escaping () -> Void) {
+        analyticsRecorder: AnalyticsEventRecorderAPI,
+        interactor: SellCryptoScreenInteractor,
+        routerInteractor: SellRouterInteractor,
+        backwardsNavigation: @escaping () -> Void
+    ) {
         self.routerInteractor = routerInteractor
         self.interactor = interactor
-        auxiliaryViewPresenter = SendAuxililaryViewPresenter(
-            interactor: interactor.auxiliaryViewInteractor,
-            availableBalanceTitle: LocalizedString.available,
-            maxButtonTitle: LocalizedString.useMax,
+        let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
             maxButtonVisibility: .visible,
-            networkFeeVisibility: .hidden
+            networkFeeVisibility: .hidden,
+            availableBalanceTitle: LocalizedString.available,
+            maxButtonTitle: LocalizedString.useMax
+        )
+        auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+            interactor: interactor.auxiliaryViewInteractor,
+            initialState: auxiliaryPresenterState
         )
         super.init(
             analyticsRecorder: analyticsRecorder,

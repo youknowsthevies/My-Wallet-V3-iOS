@@ -43,8 +43,8 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
     private let withdrawalFeeService: WithdrawalFeeService
     private let validationService: WithdrawAmountValidationService
 
-    /// The interactor that `SendAuxililaryViewPresenter` uses
-    private let auxiliaryViewInteractor: SendAuxililaryViewInteractorAPI
+    /// The interactor that `SendAuxiliaryViewPresenter` uses
+    private let auxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI
     /// The interactor that `SingleAmountPreseneter` uses
     private let amountInteractor: SingleAmountInteractor
 
@@ -67,7 +67,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary
         self.amountInteractor = amountInteractor
-        self.auxiliaryViewInteractor = SendAuxililaryViewInteractor(currencyType: fiatCurrency.currency)
+        self.auxiliaryViewInteractor = SendAuxiliaryViewInteractor(currencyType: fiatCurrency.currency)
         self.withdrawalFeeService = withdrawalFeeService
         self.analyticsRecorder = analyticsRecorder
         self.validationService = validationService
@@ -171,14 +171,16 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
             trailingContent: .transaction(descriptorViewModel),
             leadingContent: .none
         )
-
+        let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
+            maxButtonVisibility: .visible,
+            networkFeeVisibility: .hidden,
+            availableBalanceTitle: LocalizatedStrings.available,
+            maxButtonTitle: LocalizatedStrings.withdrawMax
+        )
         let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
-            SendAuxililaryViewPresenter(
+            SendAuxiliaryViewPresenter(
                 interactor: auxiliaryViewInteractor,
-                availableBalanceTitle: LocalizatedStrings.available,
-                maxButtonTitle: LocalizatedStrings.withdrawMax,
-                maxButtonVisibility: .visible,
-                networkFeeVisibility: .hidden
+                initialState: auxiliaryPresenterState
             )
         )
 
@@ -211,7 +213,7 @@ extension WithdrawAmountPageInteractor {
     /// The state of the bottom auxiliary view
     enum BottomAuxiliaryViewModelState {
         /// Max available style button with available amount for spending and use-maximum button
-        case maxAvailable(SendAuxililaryViewPresenter)
+        case maxAvailable(SendAuxiliaryViewPresenter)
 
         /// Hidden - nothing to present
         case hidden

@@ -1,0 +1,129 @@
+//
+//  SendAuxiliaryViewPresenter.swift
+//  PlatformUIKit
+//
+//  Created by Daniel on 06/08/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import Localization
+import PlatformKit
+import RxCocoa
+import RxSwift
+import ToolKit
+
+public final class SendAuxiliaryViewPresenter {
+
+    public struct State {
+        let maxButtonVisibility: Visibility
+        let networkFeeVisibility: Visibility
+        let availableBalanceTitle: String
+        let maxButtonTitle: String
+
+        public init(
+            maxButtonVisibility: Visibility,
+            networkFeeVisibility: Visibility,
+            availableBalanceTitle: String,
+            maxButtonTitle: String
+        ) {
+            self.maxButtonVisibility = maxButtonVisibility
+            self.networkFeeVisibility = networkFeeVisibility
+            self.availableBalanceTitle = availableBalanceTitle
+            self.maxButtonTitle = maxButtonTitle
+        }
+    }
+    
+    // MARK: - Types
+    
+    private typealias LocalizationId = LocalizationConstants.Transaction.Send
+    
+    // MARK: - Public Properties
+
+    private(set) public lazy var state = stateRelay.asDriver()
+
+    public let stateRelay: BehaviorRelay<State>
+
+    // MARK: - Internal Properties
+
+    let interactor: SendAuxiliaryViewInteractorAPI
+
+    let maxButtonViewModel: ButtonViewModel
+
+    let availableBalanceContentViewPresenter: ContentLabelViewPresenter
+
+    let networkFeeContentViewPresenter: ContentLabelViewPresenter
+    
+    // MARK: - Private
+
+    private let disposeBag = DisposeBag()
+    
+    // MARK: - Init
+
+    public init(interactor: SendAuxiliaryViewInteractorAPI,
+                initialState: State) {
+
+        // MARK: Setting up
+
+        self.interactor = interactor
+        stateRelay = .init(value: initialState)
+
+        networkFeeContentViewPresenter = ContentLabelViewPresenter(
+            title: LocalizationId.networkFee,
+            alignment: .right,
+            interactor: interactor.networkFeeContentViewInteractor
+        )
+
+        maxButtonViewModel = ButtonViewModel.secondary(
+            with: initialState.maxButtonTitle,
+            font: .main(.semibold, 14)
+        )
+
+        availableBalanceContentViewPresenter = ContentLabelViewPresenter(
+            title: initialState.availableBalanceTitle,
+            alignment: .left,
+            interactor: interactor.availableBalanceContentViewInteractor
+        )
+
+        // MARK: Fee
+
+        networkFeeContentViewPresenter.tap
+            .emit(to: interactor.networkFeeTappedRelay)
+            .disposed(by: disposeBag)
+
+        // MARK: Max Button
+
+        maxButtonViewModel.contentInsetRelay
+            .accept(UIEdgeInsets(horizontal: Spacing.standard, vertical: 0))
+        maxButtonViewModel.tap
+            .emit(to: interactor.resetToMaxAmountRelay)
+            .disposed(by: disposeBag)
+
+        // MARK: Available Balance
+
+        availableBalanceContentViewPresenter.containsDescription
+            .drive(maxButtonViewModel.isEnabledRelay)
+            .disposed(by: disposeBag)
+
+        availableBalanceContentViewPresenter.tap
+            .emit(to: interactor.availableBalanceTappedRelay)
+            .disposed(by: disposeBag)
+
+        // MARK: State
+
+        state
+            .map(\.availableBalanceTitle)
+            .drive(availableBalanceContentViewPresenter.titleRelay)
+            .disposed(by: disposeBag)
+
+        state
+            .map(\.maxButtonTitle)
+            .drive(maxButtonViewModel.textRelay)
+            .disposed(by: disposeBag)
+
+        state
+            .map(\.maxButtonVisibility)
+            .map(\.isHidden)
+            .drive(maxButtonViewModel.isHiddenRelay)
+            .disposed(by: disposeBag)
+    }
+}

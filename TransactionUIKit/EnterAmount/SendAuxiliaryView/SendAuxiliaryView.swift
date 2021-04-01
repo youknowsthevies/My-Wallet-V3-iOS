@@ -1,5 +1,5 @@
 //
-//  SendAuxiliaryView.swift
+//  SendAuxiliaryViewInteractor.swift
 //  PlatformUIKit
 //
 //  Created by Daniel on 06/08/2020.
@@ -13,13 +13,15 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI {
+final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     
     private let contentLabelViewInteractor = ContentLabelViewInteractor()
     private let networkLabelViewInteractor = ContentLabelViewInteractor()
     
     let resetToMaxAmountRelay = PublishRelay<Void>()
     let networkFeeTappedRelay = PublishRelay<Void>()
+    let availableBalanceTappedRelay = PublishRelay<Void>()
+
     var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI {
         networkLabelViewInteractor
     }

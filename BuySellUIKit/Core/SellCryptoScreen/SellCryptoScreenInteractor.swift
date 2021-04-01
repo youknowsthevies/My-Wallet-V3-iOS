@@ -97,7 +97,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Interactors
     
-    let auxiliaryViewInteractor: SendAuxililaryViewInteractorAPI
+    let auxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI
     
     // MARK: - Injected
     
@@ -142,7 +142,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         self.data = data
         self.balanceProvider = balanceProvider
         stateRelay = BehaviorRelay(value: .empty)
-        auxiliaryViewInteractor = SendAuxililaryViewInteractor(
+        auxiliaryViewInteractor = SendAuxiliaryViewInteractor(
             balanceProvider: balanceProvider,
             currencyType: data.source.currencyType
         )

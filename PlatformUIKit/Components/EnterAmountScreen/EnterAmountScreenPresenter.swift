@@ -26,7 +26,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         case selection(SelectionButtonViewModel)
         
         /// Max available style button with available amount for spending and use-maximum button
-        case maxAvailable(SendAuxililaryViewPresenter)
+        case maxAvailable(SendAuxiliaryViewPresenter)
         
         /// Hidden - nothing to present
         case hidden

@@ -38,8 +38,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     weak var router: EnterAmountPageRouting?
     weak var listener: EnterAmountPageListener?
 
-    /// The interactor that `SendAuxililaryViewPresenter` uses
-    private let auxiliaryViewInteractor: SendAuxililaryViewInteractor
+    /// The interactor that `SendAuxiliaryViewPresenter` uses
+    private let auxiliaryViewInteractor: SendAuxiliaryViewInteractor
+    private let auxiliaryViewPresenter: SendAuxiliaryViewPresenter
     /// The interactor that `SingleAmountPreseneter` uses
     private let amountInteractor: AmountTranslationInteractor
 
@@ -63,9 +64,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         self.amountInteractor = amountInteractor
         self.priceService = priceService
         self.analyticsHook = analyticsHook
-        self.auxiliaryViewInteractor = SendAuxililaryViewInteractor()
+        self.auxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
+        let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
+            maxButtonVisibility: .hidden,
+            networkFeeVisibility: .hidden,
+            availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
+            maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle
+        )
+        auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+            interactor: auxiliaryViewInteractor,
+            initialState: auxiliaryPresenterState
+        )
         super.init(presenter: presenter)
     }
 
@@ -78,9 +89,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         
         amountInteractor
             .effect
-            .subscribe(onNext: { [weak self] effect  in
+            .subscribe { [weak self] effect  in
                 self?.handleAmountTranslation(effect: effect)
-            })
+            }
             .disposeOnDeactivate(interactor: self)
 
         amountInteractor
@@ -164,31 +175,67 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .bindAndCatch(to: amountInteractor.stateRelay)
             .disposeOnDeactivate(interactor: self)
 
-        let interactorState = transactionModel.state
-            .observeOn(MainScheduler.instance)
+        let interactorState = transactionState
             .scan(initialState()) { [weak self] (currentState, updater) -> State in
                 guard let self = self else {
                     return currentState
                 }
                 return self.calculateNextState(
                     with: currentState,
-                    updater: updater,
-                    maxSpendable: spendable.map(\.max)
+                    updater: updater
                 )
             }
             .asDriverCatchError()
 
-        presenter.continueButtonTapped
+        presenter
+            .continueButtonTapped
             .asObservable()
-            .withLatestFrom(transactionModel.state)
+            .withLatestFrom(transactionState)
             .subscribe(onNext: { [weak self] state in
                 self?.transactionModel.process(action: .prepareTransaction)
                 self?.analyticsHook.onEnterAmountContinue(with: state)
             })
             .disposeOnDeactivate(interactor: self)
 
-        presenter.connect(state: interactorState)
+        presenter
+            .connect(state: interactorState)
             .drive(onNext: handle(effects:))
+            .disposeOnDeactivate(interactor: self)
+
+        auxiliaryViewInteractor
+            .availableBalanceTapped
+            .withLatestFrom(spendable.map(\.max))
+            .subscribe(onNext: { [weak self] maxSpendable in
+                self?.amountInteractor.set(amount: maxSpendable)
+            })
+            .disposeOnDeactivate(interactor: self)
+
+        auxiliaryViewInteractor
+            .networkFeeTapped
+            .bindAndCatch(weak: self) { (self, _) in
+                self.router?.showFeeSelectionSheet(with: self.transactionModel)
+            }
+            .disposeOnDeactivate(interactor: self)
+
+        transactionState
+            .compactMap { state -> (action: AssetAction, networkFeeAdjustmentSupported: Bool)? in
+                guard let pendingTransaction = state.pendingTransaction else {
+                    return nil
+                }
+                return (state.action, pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
+            }
+            .map { (action, networkFeeAdjustmentSupported) in
+                (action, networkFeeAdjustmentSupported ? Visibility.visible : .hidden)
+            }
+            .map { (action, networkFeeVisibility) -> SendAuxiliaryViewPresenter.State in
+                SendAuxiliaryViewPresenter.State(
+                    maxButtonVisibility: networkFeeVisibility.inverted,
+                    networkFeeVisibility: networkFeeVisibility,
+                    availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
+                    maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle(action: action)
+                )
+            }
+            .bindAndCatch(to: auxiliaryViewPresenter.stateRelay)
             .disposeOnDeactivate(interactor: self)
     }
 
@@ -196,8 +243,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
     private func calculateNextState(
         with state: State,
-        updater: TransactionState,
-        maxSpendable: Observable<MoneyValue>
+        updater: TransactionState
     ) -> State {
         let topSelection = TopSelectionState(
             sourceAccount: updater.source,
@@ -205,44 +251,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             action: updater.action
         )
 
-        let networkFeeAdjustmentSupported = updater
-            .pendingTransaction?
-            .availableFeeLevels
-            .networkFeeAdjustmentSupported ?? false
-
-        let networkFeeVisible = updater.action == .send ? networkFeeAdjustmentSupported : false
-        let networkFeeVisibility: Visibility = networkFeeVisible ? .visible : .hidden
-
-        let presenter = SendAuxililaryViewPresenter(
-            interactor: auxiliaryViewInteractor,
-            availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
-            maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle(action: updater.action),
-            maxButtonVisibility: networkFeeVisibility.inverted,
-            networkFeeVisibility: networkFeeVisibility
-        )
-
-        presenter
-            .availableBalanceContentViewPresenter
-            .tapRelay
-            .withLatestFrom(maxSpendable)
-            .subscribe(onNext: { [weak self] maxSpendable in
-                self?.amountInteractor.set(amount: maxSpendable)
-            })
-            .disposeOnDeactivate(interactor: self)
-
-        presenter
-            .networkFeeContentViewPresenter
-            .tapRelay
-            .bindAndCatch(weak: self) { (self, _) in
-                self.router?.showFeeSelectionSheet(with: self.transactionModel)
-            }
-            .disposeOnDeactivate(interactor: self)
-
-        let bottomAuxillaryState: BottomAuxiliaryViewModelState = .maxAvailable(
-            presenter
-        )
         return state
-            .update(\.bottomAuxiliaryState, value: bottomAuxillaryState)
             .update(\.canContinue, value: updater.nextEnabled)
             .update(\.topSelection, value: topSelection)
             .update(\.topSelection.title,
@@ -277,14 +286,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             destinationAccount: nil,
             action: action
         )
-        let bottomAuxiliaryState = BottomAuxiliaryViewModelState.maxAvailable(
-            SendAuxililaryViewPresenter(
-                interactor: auxiliaryViewInteractor,
-                availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
-                maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle,
-                maxButtonVisibility: .hidden,
-                networkFeeVisibility: .hidden
-            )
+        let bottomAuxiliaryState = BottomAuxiliaryViewModelState.visible(
+            auxiliaryViewPresenter
         )
         return State(
             topSelection: topSelectionState,
@@ -346,7 +349,7 @@ extension EnterAmountPageInteractor {
     /// The state of the bottom auxiliary view
     enum BottomAuxiliaryViewModelState {
         /// Max available style button with available amount for spending and use-maximum button
-        case maxAvailable(SendAuxililaryViewPresenter)
+        case visible(SendAuxiliaryViewPresenter)
 
         /// Hidden - nothing to present
         case hidden
@@ -375,8 +378,8 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
         switch (lhs, rhs) {
         case (.hidden, .hidden):
             return true
-        case (.maxAvailable(let left), .maxAvailable(let right)):
-            return left == right
+        case (.visible, .visible):
+            return true
         default:
             return false
         }

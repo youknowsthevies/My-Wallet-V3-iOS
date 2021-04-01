@@ -84,30 +84,31 @@ public struct PendingTransaction: Equatable {
         copy.available = available
         return copy
     }
-    
+
     public func update(selectedFeeLevel: FeeLevel) -> PendingTransaction {
         var copy = self
-        copy.feeSelection = copy.feeSelection.update(selectedFeeLevel: selectedFeeLevel)
+        copy.feeSelection = copy.feeSelection.update(selectedLevel: selectedFeeLevel)
         return copy
     }
-    
-    public func update(amount: MoneyValue,
-                       available: MoneyValue,
-                       fee: MoneyValue,
-                       feeForFullAvailable: MoneyValue) -> PendingTransaction {
+
+    public func update(selectedFeeLevel: FeeLevel, customFeeAmount: MoneyValue?) -> PendingTransaction {
+        var copy = self
+        copy.feeSelection = copy.feeSelection
+            .update(customAmount: customFeeAmount, selectedLevel: selectedFeeLevel)
+        return copy
+    }
+
+    public func update(
+        amount: MoneyValue,
+        available: MoneyValue,
+        fee: MoneyValue,
+        feeForFullAvailable: MoneyValue
+    ) -> PendingTransaction {
         var copy = self
         copy.amount = amount
         copy.available = available
         copy.feeAmount = fee
         copy.feeForFullAvailable = feeForFullAvailable
-        return copy
-    }
-    
-    public func update(amount: MoneyValue, available: MoneyValue, fee: MoneyValue) -> PendingTransaction {
-        var copy = self
-        copy.amount = amount
-        copy.available = available
-        copy.feeAmount = fee
         return copy
     }
 

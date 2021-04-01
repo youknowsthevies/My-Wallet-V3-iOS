@@ -12,31 +12,38 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public final class ContentLabelViewPresenter {
+/// Presenter for `ContentLabelView`.
+final class ContentLabelViewPresenter {
     
     // MARK: - Types
     
     private typealias AccessibilityId = Accessibility.Identifier.ContentLabelView
-    
-    // MARK: - LabelContent
-    
-    public let descriptionLabelContent: Driver<LabelContent>
-         
-    public var containsDescription: Driver<Bool> {
+
+    // MARK: - Title LabelContent
+
+    /// An input relay for the title.
+    let titleRelay: BehaviorRelay<String>
+
+    /// Driver emitting the title `LabelContent`.
+    let titleLabelContent: Driver<LabelContent>
+
+    // MARK: - Description LabelContent
+
+    let descriptionLabelContent: Driver<LabelContent>
+
+    var containsDescription: Driver<Bool> {
         interactor.contentCalculationState
             .map { $0.isValue }
             .asDriver(onErrorJustReturn: false)
     }
     
-    public let titleLabelContent: LabelContent
-    
     // MARK: - Tap Interaction
     
-    public var tap: Signal<Void> {
+    var tap: Signal<Void> {
         tapRelay.asSignal()
     }
     
-    public let tapRelay = PublishRelay<Void>()
+    let tapRelay = PublishRelay<Void>()
     
     // MARK: - Interactor
 
@@ -44,17 +51,22 @@ public final class ContentLabelViewPresenter {
     
     // MARK: - Init
     
-    public init(title: String,
-                alignment: NSTextAlignment,
-                interactor: ContentLabelViewInteractorAPI) {
+    init(title: String,
+         alignment: NSTextAlignment,
+         interactor: ContentLabelViewInteractorAPI) {
         self.interactor = interactor
-        titleLabelContent = .init(
-            text: title,
-            font: .main(.medium, 12),
-            color: .secondary,
-            alignment: alignment,
-            accessibility: .id(Accessibility.Identifier.ContentLabelView.title)
-        )
+        titleRelay = BehaviorRelay<String>(value: title)
+        titleLabelContent = titleRelay
+            .asDriver()
+            .map { title in
+                LabelContent(
+                    text: title,
+                    font: .main(.medium, 12),
+                    color: .secondary,
+                    alignment: alignment,
+                    accessibility: .id(Accessibility.Identifier.ContentLabelView.title)
+                )
+            }
         descriptionLabelContent = interactor.contentCalculationState
             .compactMap { $0.value }
             .map {

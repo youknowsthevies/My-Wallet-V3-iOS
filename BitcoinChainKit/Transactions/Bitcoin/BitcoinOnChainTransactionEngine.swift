@@ -185,8 +185,8 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 pendingTransaction.update(
                     amount: amount,
                     available: candidate.sweepAmount,
-                    fee: candidate.fees
-                    // TODO: `feeForFullAvailable`
+                    fee: candidate.fees,
+                    feeForFullAvailable: candidate.sweepFee
                 )
             }
     }

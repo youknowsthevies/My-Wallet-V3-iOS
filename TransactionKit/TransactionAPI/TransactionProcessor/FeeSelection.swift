@@ -24,21 +24,21 @@ public struct FeeSelection: Equatable {
         self.asset = asset
     }
     
-    public func update(amount: MoneyValue?, feeLevel: FeeLevel) -> FeeSelection {
-        precondition(availableLevels.contains(feeLevel))
+    public func update(customAmount: MoneyValue?, selectedLevel: FeeLevel) -> FeeSelection {
+        precondition(availableLevels.contains(selectedLevel))
         var copy = self
-        copy.customAmount = amount
-        copy.selectedLevel = feeLevel
+        copy.customAmount = customAmount
+        copy.selectedLevel = selectedLevel
         return copy
     }
-    
-    public func update(selectedFeeLevel: FeeLevel) -> FeeSelection {
-        precondition(availableLevels.contains(selectedFeeLevel))
+
+    public func update(selectedLevel: FeeLevel) -> FeeSelection {
+        precondition(availableLevels.contains(selectedLevel))
         var copy = self
-        copy.selectedLevel = selectedFeeLevel
+        copy.selectedLevel = selectedLevel
         return copy
     }
-    
+
     public static func empty(asset: CryptoCurrency) -> FeeSelection {
         .init(selectedLevel: .none, availableLevels: [.none], asset: asset)
     }

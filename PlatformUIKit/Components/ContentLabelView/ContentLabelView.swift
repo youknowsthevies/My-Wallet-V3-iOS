@@ -11,6 +11,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
+/// A `UIView` containing two `UILabel`, one on top of the other, an a `UIButton` on top to intercept touch events.
 public final class ContentLabelView: UIView {
     
     var presenter: ContentLabelViewPresenter! {
@@ -19,8 +20,13 @@ public final class ContentLabelView: UIView {
         }
         didSet {
             guard let presenter = presenter else { return }
-            titleLabel.content = presenter.titleLabelContent
-            presenter.descriptionLabelContent
+            presenter
+                .titleLabelContent
+                .drive(titleLabel.rx.content)
+                .disposed(by: disposeBag)
+
+            presenter
+                .descriptionLabelContent
                 .drive(descriptionLabel.rx.content)
                 .disposed(by: disposeBag)
             

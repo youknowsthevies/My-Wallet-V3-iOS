@@ -268,7 +268,7 @@ final class EnterAmountViewController: BaseScreenViewController,
             subviewsToRemove = bottomAuxiliaryView.subviews
             height = 0.5
             visibility = .hidden
-        case .maxAvailable(let presenter):
+        case .visible(let presenter):
             subviewsToRemove = []
             let sendAuxiliaryView: SendAuxiliaryView
             if let view = bottomAuxiliaryView.subviews.first(where: { $0 is SendAuxiliaryView }) {

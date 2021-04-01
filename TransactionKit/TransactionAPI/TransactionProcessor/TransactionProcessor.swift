@@ -192,15 +192,16 @@ public final class TransactionProcessor {
             preconditionFailure("We should always have a pending transaction when validating")
         }
         precondition(pendingTransaction.feeSelection.availableLevels.contains(feeLevel))
-        return engine.doUpdateFeeLevel(
-            pendingTransaction: pendingTransaction,
-            level: feeLevel,
-            customFeeAmount: customFeeAmount ?? .zero(currency: pendingTransaction.amount.currency)
-        )
-        .do(onSuccess: { [weak self] pendingTransaction in
-            self?.updatePendingTx(pendingTransaction)
-        })
-        .asCompletable()
+        return engine
+            .doUpdateFeeLevel(
+                pendingTransaction: pendingTransaction,
+                level: feeLevel,
+                customFeeAmount: customFeeAmount ?? .zero(currency: pendingTransaction.amount.currency)
+            )
+            .do(onSuccess: { [weak self] pendingTransaction in
+                self?.updatePendingTx(pendingTransaction)
+            })
+            .asCompletable()
     }
     
     // MARK: - Private methods

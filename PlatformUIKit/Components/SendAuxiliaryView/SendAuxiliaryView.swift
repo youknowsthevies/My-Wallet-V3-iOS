@@ -1,5 +1,5 @@
 //
-//  Send.swift
+//  SendAuxiliaryView.swift
 //  PlatformUIKit
 //
 //  Created by Daniel on 06/08/2020.
@@ -15,7 +15,7 @@ public final class SendAuxiliaryView: UIView {
     
     // MARK: - Properties
     
-    public var presenter: SendAuxililaryViewPresenter! {
+    public var presenter: SendAuxiliaryViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -25,7 +25,8 @@ public final class SendAuxiliaryView: UIView {
             networkFeeView.presenter = presenter.networkFeeContentViewPresenter
 
             presenter
-                .networkFeeContentVisibility
+                .state
+                .map(\.networkFeeVisibility)
                 .drive(networkFeeView.rx.visibility)
                 .disposed(by: disposeBag)
         }

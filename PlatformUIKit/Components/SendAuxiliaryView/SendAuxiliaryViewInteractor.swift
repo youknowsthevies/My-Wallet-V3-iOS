@@ -1,5 +1,5 @@
 //
-//  SendAuxiliaryView.swift
+//  SendAuxiliaryViewInteractor.swift
 //  PlatformUIKit
 //
 //  Created by Daniel on 06/08/2020.
@@ -12,7 +12,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public protocol SendAuxililaryViewInteractorAPI: AnyObject {
+public protocol SendAuxiliaryViewInteractorAPI: AnyObject {
     var resetToMaxAmount: Observable<Void> { get }
 
     var availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI { get }
@@ -21,10 +21,12 @@ public protocol SendAuxililaryViewInteractorAPI: AnyObject {
     
     var networkFeeTappedRelay: PublishRelay<Void> { get }
 
+    var availableBalanceTappedRelay: PublishRelay<Void> { get }
+
     var resetToMaxAmountRelay: PublishRelay<Void> { get }
 }
 
-public extension SendAuxililaryViewInteractorAPI {
+public extension SendAuxiliaryViewInteractorAPI {
     /// Streams reset to max events
     var resetToMaxAmount: Observable<Void> {
         resetToMaxAmountRelay
@@ -36,16 +38,19 @@ public extension SendAuxililaryViewInteractorAPI {
         networkFeeTappedRelay
             .asObservable()
     }
+
+    var availableBalanceTapped: Observable<Void> {
+        availableBalanceTappedRelay
+            .asObservable()
+    }
 }
 
-public final class SendAuxililaryViewInteractor: SendAuxililaryViewInteractorAPI {
+public final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
 
     public let availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI
-
     public let resetToMaxAmountRelay = PublishRelay<Void>()
-    
     public let networkFeeTappedRelay = PublishRelay<Void>()
-    
+    public let availableBalanceTappedRelay = PublishRelay<Void>()
     public let networkFeeContentViewInteractor: ContentLabelViewInteractorAPI
 
     @available(*, deprecated, message: "Use `init(currencyType:coincore:)` method instead which uses the Coincore API")
