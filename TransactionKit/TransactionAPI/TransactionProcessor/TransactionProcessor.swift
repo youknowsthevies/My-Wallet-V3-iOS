@@ -56,7 +56,7 @@ public final class TransactionProcessor {
          engine: TransactionEngine) {
         self.engine = engine
         pendingTxSubject = BehaviorSubject(value: .zero(currencyType: sourceAccount.currencyType))
-        self.engine.start(
+        engine.start(
             sourceAccount: sourceAccount,
             transactionTarget: transactionTarget,
             askForRefreshConfirmation: { [weak self] revalidate in
@@ -66,7 +66,7 @@ public final class TransactionProcessor {
                 return self.refreshConfirmations(revalidate: revalidate)
             }
         )
-        self.engine.assertInputsValid()
+        engine.assertInputsValid()
     }
     
     // MARK: - Public methods

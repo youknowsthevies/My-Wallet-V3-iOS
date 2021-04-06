@@ -72,7 +72,7 @@ public class CryptoExchangeAccount: ExchangeAccount {
     }
     
     public var actions: Single<AvailableActions> {
-        .just([.receive])
+        .just([])
     }
     
     public var isFunded: Single<Bool> {

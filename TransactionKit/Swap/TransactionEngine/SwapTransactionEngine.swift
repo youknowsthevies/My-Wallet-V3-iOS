@@ -178,7 +178,6 @@ extension SwapTransactionEngine {
         quotesEngine.getRate(direction: orderDirection, pair: pair)
             .first()
             .map(weak: self) { [sourceAsset, targetAsset] (self, pricedQuote) -> PendingTransaction in
-                var pendingTransaction = pendingTransaction
                 guard let pricedQuote = pricedQuote else {
                     return pendingTransaction // TODO: maybe throw .error()?
                 }
@@ -201,7 +200,7 @@ extension SwapTransactionEngine {
                                     asset: sourceAsset))
                 ]
 
-                pendingTransaction.confirmations = confirmations
+                var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
                 pendingTransaction.minimumLimit = try pendingTransaction.calculateMinimumLimit(for: pricedQuote)
                 return pendingTransaction
             }

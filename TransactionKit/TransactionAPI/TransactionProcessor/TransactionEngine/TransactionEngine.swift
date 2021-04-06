@@ -84,8 +84,6 @@ public extension TransactionEngine {
 
     var canTransactFiat: Bool { false }
 
-    func assertInputsValid() { }
-
     func stop(pendingTransaction: PendingTransaction) { }
 
     func start(sourceAccount: CryptoAccount,

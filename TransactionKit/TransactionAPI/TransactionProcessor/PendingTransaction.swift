@@ -121,10 +121,16 @@ public struct PendingTransaction: Equatable {
         }
         return copy
     }
-    
+
     public func insert(confirmations: [TransactionConfirmation]) -> PendingTransaction {
         var copy = self
         copy.confirmations.append(contentsOf: confirmations)
+        return copy
+    }
+
+    public func update(confirmations: [TransactionConfirmation]) -> PendingTransaction {
+        var copy = self
+        copy.confirmations = confirmations
         return copy
     }
 

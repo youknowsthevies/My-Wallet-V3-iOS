@@ -99,18 +99,19 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         fiatAmountAndFees(from: pendingTransaction)
             .map(\.amount)
-            .map(weak: self) { (self, amount) -> PendingTransaction in
-                var pendingTransaction = pendingTransaction
-                var values: [TransactionConfirmation] = [
+            .map(weak: self) { (self, amount) -> [TransactionConfirmation] in
+                var confirmations: [TransactionConfirmation] = [
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .total(.init(total: amount.moneyValue))
                 ]
                 if self.isNoteSupported {
-                    values.append(.destination(.init(value: "")))
+                    confirmations.append(.destination(.init(value: "")))
                 }
-                pendingTransaction.confirmations = values
-                return pendingTransaction
+                return confirmations
+            }
+            .map { confirmations -> PendingTransaction in
+                pendingTransaction.update(confirmations: confirmations)
             }
     }
     
@@ -169,21 +170,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 return .just(event: .completed)
             }
     }
-    
-    private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        fiatAmountAndFees(from: pendingTransaction)
-            .map { ($0.fees) }
-            .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
-                /// Fees are zero in this case
-                .init(feeState: .valid(absoluteFee: pendingTransaction.feeAmount),
-                      exchange: fees.moneyValue,
-                      selectedFeeLevel: pendingTransaction.feeLevel,
-                      customFeeAmount: .zero(currency: fees.currency),
-                      availableLevels: [.none],
-                      asset: self.sourceAccount.asset)
-            }
-    }
-    
+
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,

@@ -12,8 +12,11 @@ import RxSwift
 public protocol OnChainTransactionEngine: TransactionEngine {}
 
 extension OnChainTransactionEngine {
-    
-    public func assertInputsValid() {
+
+    /// A default implementation for `assertInputsValid()` that validates that `transactionTarget`
+    /// is a `CryptoReceiveAddress` and that its address isn't empty, and that the source account and
+    /// target account have the same asset.
+    public func defaultAssertInputsValid() {
         guard let target = transactionTarget as? CryptoReceiveAddress else {
             preconditionFailure("\(String(describing: transactionTarget)) is not CryptoReceiveAddress")
         }

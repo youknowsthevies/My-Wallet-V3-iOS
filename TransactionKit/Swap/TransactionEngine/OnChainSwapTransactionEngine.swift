@@ -55,6 +55,10 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
         self.receiveAddressFactory = receiveAddressFactory
     }
 
+    func assertInputsValid() {
+        // We don't assert anything for On Chain Swap.
+    }
+
     private func startOnChainEngine(pricedQuote: PricedQuote) -> Completable {
         do {
             let transactionTarget = try receiveAddressFactory.makeExternalAssetAddress(

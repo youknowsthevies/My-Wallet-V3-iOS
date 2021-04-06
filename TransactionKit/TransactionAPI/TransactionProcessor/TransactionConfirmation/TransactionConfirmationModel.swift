@@ -29,59 +29,57 @@ extension TransactionConfirmation.Model {
 
     public struct FeedTotal: TransactionConfirmationModelable {
         public let amount: MoneyValue
+        public let amountInFiat: MoneyValue
         public let fee: MoneyValue
-        public let exchangeAmount: MoneyValue?
-        public let exchangeFee: MoneyValue?
+        public let feeInFiat: MoneyValue
         public let type: TransactionConfirmation.Kind = .readOnly
-
-        public init(amount: MoneyValue,
-                    fee: MoneyValue,
-                    exchangeAmount: MoneyValue? = nil,
-                    exchangeFee: MoneyValue? = nil) {
-            self.amount = amount
-            self.fee = fee
-            self.exchangeFee = exchangeFee
-            self.exchangeAmount = exchangeAmount
-        }
 
         public var formatted: (String, String)? {
             (LocalizedString.total, amountString)
         }
+        public init(
+            amount: MoneyValue,
+            amountInFiat: MoneyValue,
+            fee: MoneyValue,
+            feeInFiat: MoneyValue
+        ) {
+            self.amount = amount
+            self.amountInFiat = amountInFiat
+            self.fee = fee
+            self.feeInFiat = feeInFiat
+        }
 
         private var amountString: String {
             if amount.currency == fee.currency {
-                let total = try? amount + fee
-                if let exchange = exchangeAmount,
-                   let converted = try? total?.convert(using: exchange) {
-                    return converted.displayString
-                }
-                return total?.displayString ?? ""
+                return amountStringSameCurrency
             } else {
-                var amountString = amount.displayString
-                if let exchange = exchangeAmount,
-                   let convertedAmount = try? amount.convert(using: exchange) {
-                    amountString = convertedAmount.displayString
-                }
-
-                var feeString = fee.displayString
-                if let exchange = exchangeFee,
-                   let convertedFee = try? amount.convert(using: exchange) {
-                    feeString = convertedFee.displayString
-                }
-                return amountString + " " + feeString
+                return amountStringDifferentCurrencies
             }
+        }
+
+        private var amountStringSameCurrency: String {
+            guard let total = try? amount + fee else {
+                return ""
+            }
+            guard let totalFiat = try? amountInFiat + feeInFiat else {
+                return ""
+            }
+            return "\(total.displayString) (\(totalFiat.displayString))"
+        }
+
+        private var amountStringDifferentCurrencies: String {
+            "\(amount.displayString) (\(amountInFiat.displayString))\n\(fee.displayString) (\(feeInFiat.displayString))"
         }
     }
 
     public struct Total: TransactionConfirmationModelable {
         public let total: MoneyValue
         public let exchange: MoneyValue?
-        public let type: TransactionConfirmation.Kind
+        public let type: TransactionConfirmation.Kind = .readOnly
 
-        public init(total: MoneyValue, exchange: MoneyValue? = nil, type: TransactionConfirmation.Kind = .readOnly) {
+        public init(total: MoneyValue, exchange: MoneyValue? = nil) {
             self.total = total
             self.exchange = exchange
-            self.type = type
         }
 
         public var formatted: (String, String)? {
@@ -121,37 +119,18 @@ extension TransactionConfirmation.Model {
     }
 
     public struct FeeSelection: TransactionConfirmationModelable {
-        public let feeState: FeeState?
-        public let exchange: MoneyValue?
-        public let feeInfo: FeeLevelRates?
+        public let feeState: FeeState
         public let selectedLevel: FeeLevel
-        public let customFeeAmount: MoneyValue?
-        public let availableLevels: Set<FeeLevel>
-        public let asset: CryptoCurrency
+        public let fee: MoneyValue?
         public let type: TransactionConfirmation.Kind = .feeSelection
-
         public var formatted: (String, String)? {
-            nil
+            ("Transaction Fee", fee?.toDisplayString(includeSymbol: true) ?? "")
         }
 
-        func hasOptionChanged(oldLevel: FeeLevel, oldAmount: MoneyValue) -> Bool {
-            selectedLevel != oldLevel || (selectedLevel == .custom && oldAmount != customFeeAmount)
-        }
-
-        public init(feeState: FeeState? = nil,
-                    exchange: MoneyValue? = nil,
-                    selectedFeeLevel: FeeLevel,
-                    feeInfo: FeeLevelRates? = nil,
-                    customFeeAmount: MoneyValue? = nil,
-                    availableLevels: Set<FeeLevel>,
-                    asset: CryptoCurrency) {
+        public init(feeState: FeeState, selectedLevel: FeeLevel, fee: MoneyValue?) {
             self.feeState = feeState
-            self.exchange = exchange
-            self.feeInfo = feeInfo
-            self.selectedLevel = selectedFeeLevel
-            self.customFeeAmount = customFeeAmount
-            self.availableLevels = availableLevels
-            self.asset = asset
+            self.selectedLevel = selectedLevel
+            self.fee = fee
         }
     }
 

@@ -77,6 +77,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     // MARK: - OnChainTransactionEngine
     
     func assertInputsValid() {
+        defaultAssertInputsValid()
         precondition(sourceAccount.asset.isERC20)
     }
     
@@ -117,27 +118,33 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     }
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(fiatAmountAndFees(from: pendingTransaction),
-                   makeFeeSelectionOption(pendingTransaction: pendingTransaction))
-            .map(weak: self) { (self, input) -> [TransactionConfirmation] in
-                let (values, option) = input
-                let (amount, fees) = values
-                return [
+        Single
+            .zip(
+                fiatAmountAndFees(from: pendingTransaction),
+                makeFeeSelectionOption(pendingTransaction: pendingTransaction)
+            )
+            .map { (fiatAmountAndFees, feeSelectionOption) ->
+                (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
+                let (amountInFiat, feesInFiat) = fiatAmountAndFees
+                return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
+            }
+            .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
+                [
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .feedTotal(
                         .init(
                             amount: pendingTransaction.amount,
+                            amountInFiat: payload.amountInFiat,
                             fee: pendingTransaction.feeAmount,
-                            exchangeAmount: amount.moneyValue,
-                            exchangeFee: fees.moneyValue
+                            feeInFiat: payload.feesInFiat
                         )
                     ),
-                    .feeSelection(option),
+                    .feeSelection(payload.feeSelectionOption),
                     .description(.init())
                 ]
             }
-            .map { pendingTransaction.insert(confirmations: $0) }
+            .map { pendingTransaction.update(confirmations: $0) }
     }
     
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -166,24 +173,20 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     }
     
     func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
-        guard case let .feeSelection(value) = newConfirmation else {
+        switch newConfirmation {
+        case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
+            return updateFeeSelection(
+                cryptoCurrency: Token.assetType,
+                pendingTransaction: pendingTransaction,
+                newFeeLevel: value.selectedLevel,
+                customFeeAmount: nil
+            )
+        default:
             return defaultDoOptionUpdateRequest(
                 pendingTransaction: pendingTransaction,
                 newConfirmation: newConfirmation
             )
         }
-        guard value.selectedLevel != pendingTransaction.feeLevel else {
-            return defaultDoOptionUpdateRequest(
-                pendingTransaction: pendingTransaction,
-                newConfirmation: newConfirmation
-            )
-        }
-        return updateFeeSelection(
-            cryptoCurrency: Token.assetType,
-            pendingTransaction: pendingTransaction,
-            newFeeLevel: value.selectedLevel,
-            customFeeAmount: value.customFeeAmount
-        )
     }
     
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
@@ -292,15 +295,17 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     }
     
     private func makeFeeSelectionOption(pendingTransaction: PendingTransaction) -> Single<TransactionConfirmation.Model.FeeSelection> {
-        fiatAmountAndFees(from: pendingTransaction)
-            .map { ($0.fees) }
-            .map(weak: self) { (self, fees) -> TransactionConfirmation.Model.FeeSelection in
-                .init(feeState: try self.getFeeState(pendingTransaction: pendingTransaction),
-                      exchange: fees.moneyValue,
-                      selectedFeeLevel: pendingTransaction.feeLevel,
-                      customFeeAmount: .zero(currency: fees.currency),
-                      availableLevels: [.regular, .priority],
-                      asset: .ethereum)
+        Single
+            .just(pendingTransaction)
+            .map(weak: self) { (self, pendingTransaction) -> FeeState in
+                try self.getFeeState(pendingTransaction: pendingTransaction)
+            }
+            .map { (feeState) -> TransactionConfirmation.Model.FeeSelection in
+                TransactionConfirmation.Model.FeeSelection(
+                    feeState: feeState,
+                    selectedLevel: pendingTransaction.feeLevel,
+                    fee: pendingTransaction.feeAmount
+                )
             }
     }
     
