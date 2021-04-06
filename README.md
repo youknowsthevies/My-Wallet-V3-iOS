@@ -8,6 +8,8 @@
 
 ## Install Xcode
 
+⚠️ **We're currently using Xcode 12.2!** The app won't compile on newer versions of the IDE! You can download it [here](https://developer.apple.com/download/more/). ⚠️
+
 After installing Xcode, open it to begin the Command Line Tools installation. After finished, make sure that a valid CL Tool version is selected in `Xcode > Preferences > Locations > Command Line Tools`.
 
 
