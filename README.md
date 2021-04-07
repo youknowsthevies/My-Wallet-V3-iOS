@@ -12,14 +12,35 @@
 
 After installing Xcode, open it to begin the Command Line Tools installation. After finished, make sure that a valid CL Tool version is selected in `Xcode > Preferences > Locations > Command Line Tools`.
 
+## Install Git submodules
+
+    $ git submodule update --init
 
 ## Install `homebrew`
 
 https://brew.sh/
 
-## Install Git submodules
+## Install Ruby dependencies
 
-    $ git submodule update --init
+Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
+
+    $ brew update && brew install rbenv
+    $ rbenv init
+
+Install a recent ruby version:
+
+    $ rbenv install 2.6.5
+    $ rbenv global 2.6.5
+    $ eval "$(rbenv init -)"
+
+Then the project ruby dependencies (`fastlane`, etc.):
+
+    $ gem install bundler
+    $ bundle install
+
+## Install build dependencies (brew)
+
+    $ sh scripts/install-brew-dependencies.sh
 
 ## Install JS Dependencies
 
@@ -49,36 +70,22 @@ Install a node version manager such as [nvm](https://github.com/creationix/nvm) 
     $ cd ./Submodules/OpenSSL-for-iPhone
     $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
-## Install Ruby dependencies
-
-Install a Ruby version manager such as [rbenv](https://github.com/rbenv/rbenv).
-
-    $ brew update && brew install rbenv
-    $ rbenv init
-
-Install a recent ruby version:
-
-    $ rbenv install 2.6.5
-    $ rbenv global 2.6.5
-
-Then the project ruby dependencies (`fastlane`, etc.):
-
-    $ gem install bundler
-    $ bundle install
-
-## Install build dependencies (brew)
-
-    $ sh scripts/install-brew-dependencies.sh
-
 ## Bootstrap Carthage Dependencies
 
 To workaround a error when bootstraping Firebase dependencies, use this custom script:
 
     $ sh scripts/carthage-bootstrap.sh
+    
+👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
+
+⚠️ You may need to run the following command if you encounter an `xcode-select` error:
+
+    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 ## Add production Config file
 
-Clone `wallet-ios-credentials` repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
+Clone the [wallet-ios-credentials](https://github.com/blockchain/wallet-ios-credentials) repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
+
 ```
 Config/BlockchainConfig/Dev.xcconfig
 Config/BlockchainConfig/Production.xcconfig
@@ -89,12 +96,14 @@ Config/NetworkKitConfig/Staging.xcconfig
 ```
 
 This is how `BlockchainConfig/Production.xcconfig` looks like:
+
 ```
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 OPENSSL_CERT_URL = blockchain.info
 ```
 
 This is how `NetworkKitConfig/Production.xcconfig` looks like:
+
 ```
 API_URL = api.blockchain.info
 BUY_WEBVIEW_URL = blockchain.info/wallet/#/intermediate
@@ -108,9 +117,11 @@ WEBSOCKET_SERVER = ws.blockchain.info/inv
 WEBSOCKET_SERVER_BCH = ws.blockchain.info/bch/inv
 WEBSOCKET_SERVER_ETH = ws.blockchain.info/eth/inv
 ```
+
 ## Add Firebase Config Files
 
 Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory into `Blockchain` directory, it contains a `GoogleService-Info.plist` for each environment.
+
 ```
 Firease/Dev/GoogleService-Info.plist
 Firease/Prod/GoogleService-Info.plist
