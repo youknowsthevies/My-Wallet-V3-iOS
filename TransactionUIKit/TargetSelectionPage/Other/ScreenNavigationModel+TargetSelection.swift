@@ -16,7 +16,7 @@ extension ScreenNavigationModel {
 extension ScreenNavigationModel.TargetSelection {
     public static func navigation(title: String) -> ScreenNavigationModel {
         ScreenNavigationModel(
-            leadingButton: .back,
+            leadingButton: .none,
             trailingButton: .close,
             titleViewStyle: .text(value: title),
             barStyle: .darkContent()

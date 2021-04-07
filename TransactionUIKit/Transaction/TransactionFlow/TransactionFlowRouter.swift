@@ -138,13 +138,20 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         )
         let viewControllable = router.viewControllable
         attachChild(router)
-        viewController.push(viewController: viewControllable)
+        viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
 
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction) {
         guard let source = source as? SingleAccount else { return }
         let builder = EnterAmountPageBuilder(transactionModel: transactionModel)
-        let router = builder.build(listener: interactor, sourceAccount: source, action: action)
+        let router = builder.build(
+            listener: interactor,
+            sourceAccount: source,
+            action: action,
+            navigationModel: ScreenNavigationModel.EnterAmount.navigation(
+                allowsBackButton: action.allowsBackButton
+            )
+        )
         let viewControllable = router.viewControllable
         attachChild(router)
         if let childVC = viewController.uiviewController.children.first, childVC is TransactionFlowInitialViewController {

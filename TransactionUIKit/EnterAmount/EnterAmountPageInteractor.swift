@@ -50,11 +50,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
     private let action: AssetAction
+    private let navigationModel: ScreenNavigationModel
 
     init(transactionModel: TransactionModel,
          presenter: EnterAmountPagePresentable,
          amountInteractor: AmountTranslationInteractor,
          action: AssetAction,
+         navigationModel: ScreenNavigationModel,
          analyticsHook: TransactionAnalyticsHook = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          alertViewPresenter: AlertViewPresenterAPI = resolve(),
@@ -63,6 +65,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         self.transactionModel = transactionModel
         self.amountInteractor = amountInteractor
         self.priceService = priceService
+        self.navigationModel = navigationModel
         self.analyticsHook = analyticsHook
         self.auxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         self.alertViewPresenter = alertViewPresenter
@@ -292,6 +295,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         return State(
             topSelection: topSelectionState,
             bottomAuxiliaryState: bottomAuxiliaryState,
+            navigationModel: navigationModel,
             canContinue: false
         )
     }
@@ -301,6 +305,7 @@ extension EnterAmountPageInteractor {
     struct State {
         var topSelection: TopSelectionState
         var bottomAuxiliaryState: BottomAuxiliaryViewModelState
+        var navigationModel: ScreenNavigationModel
         var canContinue: Bool
     }
 

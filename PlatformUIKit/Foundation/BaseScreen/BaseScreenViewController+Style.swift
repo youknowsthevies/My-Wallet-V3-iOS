@@ -13,12 +13,12 @@ public enum Screen {
     public enum Style { }
 }
 
-public protocol ScreenNavigationButton {
+public protocol ScreenNavigationButton: Equatable {
     var content: Screen.NavigationBarContent? { get }
 }
 
 extension Screen {
-    public struct NavigationBarContent {
+    public struct NavigationBarContent: Equatable {
         let title: String?
         let image: UIImage?
         let accessibility: Accessibility?

@@ -17,7 +17,10 @@ import ToolKit
 import UIKit
 
 protocol EnterAmountPageBuildable {
-    func build(listener: EnterAmountPageListener, sourceAccount: SingleAccount, action: AssetAction) -> EnterAmountPageRouter
+    func build(listener: EnterAmountPageListener,
+               sourceAccount: SingleAccount,
+               action: AssetAction,
+               navigationModel: ScreenNavigationModel) -> EnterAmountPageRouter
 }
 
 final class EnterAmountPageBuilder: EnterAmountPageBuildable {
@@ -38,7 +41,10 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
         self.fiatCurrencyService = fiatCurrencyService
     }
 
-    func build(listener: EnterAmountPageListener, sourceAccount: SingleAccount, action: AssetAction) -> EnterAmountPageRouter {
+    func build(listener: EnterAmountPageListener,
+               sourceAccount: SingleAccount,
+               action: AssetAction,
+               navigationModel: ScreenNavigationModel) -> EnterAmountPageRouter {
         let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
         let defaultCryptoCurrency: CryptoCurrency = sourceAccount.currencyType.cryptoCurrency!
 
@@ -86,7 +92,8 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             transactionModel: transactionModel,
             presenter: viewController,
             amountInteractor: amountTranslationInteractor,
-            action: action
+            action: action,
+            navigationModel: navigationModel
         )
         interactor.listener = listener
         let router = EnterAmountPageRouter(interactor: interactor,

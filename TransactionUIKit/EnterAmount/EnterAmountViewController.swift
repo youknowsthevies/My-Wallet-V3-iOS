@@ -147,16 +147,6 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadTopSeparatorView.backgroundColor = displayBundle.colors.digitPadTopSeparator
     }
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
-        setupNavigationBar()
-    }
-
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupNavigationBar()
-    }
-
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
@@ -216,6 +206,17 @@ final class EnterAmountViewController: BaseScreenViewController,
             }
             .disposed(by: disposeBag)
 
+        ControlEvent.merge(self.rx.viewDidLoad.mapToVoid(), self.rx.viewWillAppear.mapToVoid())
+            .asDriver(onErrorJustReturn: ())
+            .flatMap { _ in
+                state
+            }
+            .map(\.navigationModel)
+            .drive(weak: self) { (self, model) in
+                self.setupNavigationBar(model: model)
+            }
+            .disposed(by: disposeBag)
+
         let digitInput = digitPadView.viewModel
             .valueObservable
             .asDriverCatchError()
@@ -251,12 +252,12 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Setup
 
-    private func setupNavigationBar() {
+    private func setupNavigationBar(model: ScreenNavigationModel) {
         titleViewStyle = .text(value: displayBundle.title)
-        let mayGoBack = (navigationController?.children.count ?? 0) > 1
-        set(barStyle: .darkContent(),
+        let mayGoBack = model.leadingButton != .none ? (navigationController?.children.count ?? 0) > 1 : false
+        set(barStyle: model.barStyle,
             leadingButtonStyle: mayGoBack ? .back : .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: model.trailingButton)
     }
 
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountPageInteractor.BottomAuxiliaryViewModelState) {
