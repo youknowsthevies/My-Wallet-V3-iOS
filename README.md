@@ -64,7 +64,6 @@ Install a node version manager such as [nvm](https://github.com/creationix/nvm) 
 
     # Install and build js files
     $ sh scripts/install-js.sh && sh scripts/build-js.sh
-    $ sh scripts/build-generate-js.sh
 
 ## Prepare OpenSSL
 
