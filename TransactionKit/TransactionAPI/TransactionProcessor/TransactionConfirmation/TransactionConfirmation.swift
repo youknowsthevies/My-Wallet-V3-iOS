@@ -1,5 +1,5 @@
 //
-//  TransactionOptionValue.swift
+//  TransactionConfirmation.swift
 //  PlatformKit
 //
 //  Created by Alex McGregor on 10/22/20.
@@ -61,7 +61,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
         }
     }
 
-    public var formatted: (String, String)? {
+    public var formatted: (title: String, subtitle: String)? {
         switch self {
         case .description(let value):
             return value.formatted
@@ -95,8 +95,7 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
             return value.formatted
         }
     }
-    
-    // TODO: Better way to do this? Not sure doing this on `==()` is a good idea. Comparing type isn't correct.
+
     /// Is equal ignoring associated value.
     public func bareCompare(to rhs: Self) -> Bool {
         switch (self, rhs) {

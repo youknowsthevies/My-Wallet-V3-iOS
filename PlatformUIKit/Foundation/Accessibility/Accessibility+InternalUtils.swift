@@ -107,6 +107,7 @@ extension Accessibility.Identifier {
         static let state = "\(prefix)state"
         static let postCode = "\(prefix)postCode"
         static let cryptoAddress = "\(prefix)cryptoAddress"
+        static let memo = "\(prefix)memo"
     }
 }
 

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -36,19 +37,29 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     var cells: [DetailsScreen.CellType]
     let continueButtonViewModel: ButtonViewModel
     let cancelButtonViewModel: ButtonViewModel
+    let messageRecorder: MessageRecording
+    let memoUpdated: PublishRelay<(String, TransactionConfirmation.Model.Memo)> = .init()
+    private let memoModel: TextFieldViewModel
+    private var disposeBag = DisposeBag()
 
     // MARK: - Private Properties
 
-    init() {
+    init(messageRecorder: MessageRecording = resolve()) {
+        self.messageRecorder = messageRecorder
         title = LocalizedString.Confirmation.confirm
         cancelButtonViewModel = .cancel(with: LocalizedString.Confirmation.cancel)
         continueButtonViewModel = .primary(with: "")
-
         cells = []
+        memoModel = TextFieldViewModel(
+            with: .memo,
+            validator: TextValidationFactory.General.alwaysValid,
+            messageRecorder: messageRecorder
+        )
     }
 
+
     func setup(for state: TransactionState) {
-        
+        disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
         
         guard let pendingTransaction = state.pendingTransaction else {
@@ -57,8 +68,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         let interactors: [DefaultLineItemCellPresenter] = pendingTransaction.confirmations
-            .filter { confirmations -> Bool in
-                !confirmations.isErrorNotice
+            .filter { confirmation -> Bool in
+                !confirmation.isCustom
             }
             .compactMap(\.formatted)
             .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
@@ -98,6 +109,34 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 .badges(noticeViewModel)
             }
 
+        let memo: TransactionConfirmation.Model.Memo? = pendingTransaction.confirmations
+            .filter(\.isMemo)
+            .compactMap { confirmation -> TransactionConfirmation.Model.Memo? in
+                guard case let .memo(memo) = confirmation else {
+                    return nil
+                }
+                return memo
+            }
+            .first
+
+        var memoModels: [DetailsScreen.CellType] = []
+        if let memo = memo {
+            let subtitle = memo.formatted?.subtitle ?? ""
+            memoModel.originalTextRelay.accept(subtitle)
+            memoModel
+                .focusRelay
+                .filter { $0 == .off(.endEditing) }
+                .mapToVoid()
+                .withLatestFrom(memoModel.textRelay)
+                .distinctUntilChanged()
+                .map { text in
+                    (text: text, oldModel: memo)
+                }
+                .bind(to: memoUpdated)
+                .disposed(by: disposeBag)
+            memoModels.append(.textField(memoModel))
+        }
+
         var disclaimer: [DetailsScreen.CellType] = []
         if TransactionFlowDescriptor.confirmDisclaimerVisibility(action: state.action) {
             let content = LabelContent(
@@ -109,7 +148,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        cells = [.separator] + confirmationLineItems + errorModels + disclaimer
+        cells = [.separator] + confirmationLineItems + memoModels + errorModels + disclaimer
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -132,9 +171,22 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
 }
 
 extension TransactionConfirmation {
+    var isCustom: Bool {
+        isErrorNotice || isMemo
+    }
+
     var isErrorNotice: Bool {
         switch self {
         case .errorNotice:
+            return true
+        default:
+            return false
+        }
+    }
+
+    var isMemo: Bool {
+        switch self {
+        case .memo:
             return true
         default:
             return false

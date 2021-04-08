@@ -10,7 +10,7 @@ import Foundation
 
 public protocol TransactionConfirmationModelable: Hashable {
     var type: TransactionConfirmation.Kind { get }
-    var formatted: (String, String)? { get }
+    var formatted: (title: String, subtitle: String)? { get }
 }
 
 extension TransactionConfirmationModelable {

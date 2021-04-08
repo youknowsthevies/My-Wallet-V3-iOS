@@ -44,7 +44,7 @@ public protocol TransactionEngine: AnyObject {
     /// be passed to validate after this call.
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
 
-    /// Process any TxOption updates, if required. The default just replaces the option and returns
+    /// Process any `TransactionConfirmation` updates, if required. The default just replaces the option and returns
     /// the updated pendingTx. Subclasses may want to, eg, update amounts on fee changes etc
     func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction>
 

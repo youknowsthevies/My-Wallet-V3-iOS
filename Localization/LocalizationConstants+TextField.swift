@@ -47,6 +47,10 @@ public extension LocalizationConstants {
                 "No description",
                 comment: "Description placeholder"
             )
+            public static let noMemo = NSLocalizedString(
+                "No memo",
+                comment: "Memo placeholder"
+            )
             public static let cvv = NSLocalizedString(
                 "123",
                 comment: "CVV placeholder"
@@ -64,88 +68,92 @@ public extension LocalizationConstants {
             public struct Card {
                 public static let name = NSLocalizedString(
                     "Name on Card",
-                    comment: "Placeholder for card owner name text field"
+                    comment: "Title for card owner name text field"
                 )
                 public static let number = NSLocalizedString(
                     "Card Number",
-                    comment: "Placeholder for card number text field"
+                    comment: "Title for card number text field"
                 )
                 public static let expirationDate = NSLocalizedString(
                     "Expiry Date",
-                    comment: "Placeholder for card expiry date text field"
+                    comment: "Title for card expiry date text field"
                 )
                 public static let cvv = NSLocalizedString(
                     "CVV",
-                    comment: "Placeholder for card cvv text field"
+                    comment: "Title for card cvv text field"
                 )
                 public static let cvc = NSLocalizedString(
                     "CVC",
-                    comment: "Placeholder for card cvc text field"
+                    comment: "Title for card cvc text field"
                 )
             }
             public static let description = NSLocalizedString(
                 "Description",
-                comment: "Placeholder for Description text field"
+                comment: "Title for Description text field"
+            )
+            public static let memo = NSLocalizedString(
+                "Memo",
+                comment: "Title for Memo text field"
             )
             public static let email = NSLocalizedString(
                 "Your Email",
-                comment: "Placeholder for email text field"
+                comment: "Title for email text field"
             )
             public static let password = NSLocalizedString(
                 "Password",
-                comment: "Placeholder for password text field"
+                comment: "Title for password text field"
             )
             public static let confirmPassword = NSLocalizedString(
                 "Confirm Password",
-                comment: "Placeholder for confirm password text field"
+                comment: "Title for confirm password text field"
             )
             public static let recoveryPhrase = NSLocalizedString(
                 "Recovery passphrase",
-                comment: "Placeholder for recovery passphrase text field"
+                comment: "Title for recovery passphrase text field"
             )
             public static let walletIdentifier = NSLocalizedString(
                 "Wallet Identifier",
-                comment: "Placeholder for wallet identifier text field"
+                comment: "Title for wallet identifier text field"
             )
             public static let mobile = NSLocalizedString(
                 "Mobile Number",
-                comment: "Placeholder for mobile number entry"
+                comment: "Title for mobile number entry"
             )
             public static let word = NSLocalizedString(
                 "word",
-                comment: "Partial placeholder for mnemonic word entry. e.g. \"1st word\" "
+                comment: "Partial Title for mnemonic word entry. e.g. \"1st word\" "
             )
             public static let oneTimeCode = NSLocalizedString(
                 "Code",
-                comment: "Placeholder for a one time code."
+                comment: "Title for a one time code."
             )
             public static let addressLine = NSLocalizedString(
                 "Address Line",
-                comment: "Placeholder for address line # text field"
+                comment: "Title for address line # text field"
             )
             public static let fullName = NSLocalizedString(
                 "Full Name",
-                comment: "Placeholder for person's full name text field"
+                comment: "Title for person's full name text field"
             )
             public static let city = NSLocalizedString(
                 "City",
-                comment: "Placeholder for city text field"
+                comment: "Title for city text field"
             )
             public static let state = NSLocalizedString(
                 "State",
-                comment: "Placeholder for state text field"
+                comment: "Title for state text field"
             )
             public static let postCode = NSLocalizedString(
                 "Post Code",
-                comment: "Placeholder for post code text field"
+                comment: "Title for post code text field"
             )
             public static let zip = NSLocalizedString(
                 "Zip",
-                comment: "Placeholder for zip text field"
+                comment: "Title for zip text field"
             )
             public static let cryptoAddress = NSLocalizedString(
                 "%@ address",
-                comment: "Placeholder for crypto address"
+                comment: "Title for crypto address"
             )
         }
         

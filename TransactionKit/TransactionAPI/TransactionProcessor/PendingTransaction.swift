@@ -47,7 +47,9 @@ public struct PendingTransaction: Equatable {
     public var feeSelection: FeeSelection
     public var feeAmount: MoneyValue
     public var feeForFullAvailable: MoneyValue
-    public var confirmations: [TransactionConfirmation] = []
+    /// The list of `TransactionConfirmation`.
+    /// To update this value, use methods `update(confirmations:)` and `insert(confirmations:)`
+    public private(set) var confirmations: [TransactionConfirmation] = []
     public var minimumLimit: MoneyValue?
     public var maximumLimit: MoneyValue?
     public var minimumApiLimit: MoneyValue?
@@ -112,6 +114,7 @@ public struct PendingTransaction: Equatable {
         return copy
     }
 
+    /// Insert a `TransactionConfirmation`, replacing any previous value with the same confirmation type.
     public func insert(confirmation: TransactionConfirmation, prepend: Bool = false) -> PendingTransaction {
         var copy = self
         if let idx = copy.confirmations.firstIndex(where: { $0.bareCompare(to: confirmation) }) {
@@ -122,18 +125,21 @@ public struct PendingTransaction: Equatable {
         return copy
     }
 
+    /// Appends content of the given list into the current confirmations list.
     public func insert(confirmations: [TransactionConfirmation]) -> PendingTransaction {
         var copy = self
         copy.confirmations.append(contentsOf: confirmations)
         return copy
     }
 
+    /// Update (replace) the confirmations list with the given value.
     public func update(confirmations: [TransactionConfirmation]) -> PendingTransaction {
         var copy = self
         copy.confirmations = confirmations
         return copy
     }
 
+    /// Removes confirmations of the given type from the confirmations list.
     public func remove(optionType: TransactionConfirmation.Kind) -> PendingTransaction {
         var copy = self
         copy.confirmations = confirmations.filter { $0.type != optionType }

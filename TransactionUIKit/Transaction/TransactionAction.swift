@@ -35,6 +35,7 @@ enum TransactionAction: MviAction {
     case resetFlow
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
+    case modifyTransactionConfirmation(TransactionConfirmation)
 
     func reduce(oldState: TransactionState) -> TransactionState {
         switch self {
@@ -176,6 +177,8 @@ enum TransactionAction: MviAction {
             newState.isGoingBack = true
             newState.errorState = .none
             return newState
+        case .modifyTransactionConfirmation:
+            return oldState
         }
     }
 

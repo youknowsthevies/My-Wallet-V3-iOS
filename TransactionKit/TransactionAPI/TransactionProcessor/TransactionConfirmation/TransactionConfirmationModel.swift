@@ -21,7 +21,7 @@ extension TransactionConfirmation.Model {
         public let currency: CryptoCurrency
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (String(format: LocalizedString.price, currency.displayCode),
              money.displayString)
         }
@@ -34,7 +34,7 @@ extension TransactionConfirmation.Model {
         public let feeInFiat: MoneyValue
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.total, amountString)
         }
         public init(
@@ -82,7 +82,7 @@ extension TransactionConfirmation.Model {
             self.exchange = exchange
         }
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             var value: String = total.displayString
             if let exchange = exchange,
                let converted = try? total.convert(using: exchange) {
@@ -96,7 +96,7 @@ extension TransactionConfirmation.Model {
         public let value: String
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.to, value)
         }
 
@@ -109,7 +109,7 @@ extension TransactionConfirmation.Model {
         public let value: String
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.from, value)
         }
 
@@ -123,7 +123,7 @@ extension TransactionConfirmation.Model {
         public let selectedLevel: FeeLevel
         public let fee: MoneyValue?
         public let type: TransactionConfirmation.Kind = .feeSelection
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             ("Transaction Fee", fee?.toDisplayString(includeSymbol: true) ?? "")
         }
 
@@ -138,7 +138,7 @@ extension TransactionConfirmation.Model {
         public let secondsRemaining: TimeInterval
         public let type: TransactionConfirmation.Kind = .invoiceCountdown
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             nil
         }
     }
@@ -155,7 +155,7 @@ extension TransactionConfirmation.Model {
 
         // By the time we are on the confirmation screen most of these possible error should have been
         // filtered out. A few remain possible, because BE failures or BitPay invoices, thus:
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             switch validationState {
             case .canExecute, .uninitialized:
                 return nil
@@ -198,7 +198,7 @@ extension TransactionConfirmation.Model {
         public let value: String
         public let type: TransactionConfirmation.Kind = .description
         
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.description, value)
         }
         
@@ -236,7 +236,7 @@ extension TransactionConfirmation.Model {
         public let required: Bool
         public let type: TransactionConfirmation.Kind = .memo
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.memo, value?.string ?? "")
         }
 
@@ -250,7 +250,7 @@ extension TransactionConfirmation.Model {
         public let cryptoValue: CryptoValue
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.Swap.swap, cryptoValue.displayString)
         }
     }
@@ -259,7 +259,7 @@ extension TransactionConfirmation.Model {
         public let cryptoValue: CryptoValue
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.receive, cryptoValue.displayString)
         }
     }
@@ -269,7 +269,7 @@ extension TransactionConfirmation.Model {
         public let resultValue: MoneyValue
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.exchangeRate, "\(baseValue.displayString) = \(resultValue.displayString)")
         }
     }
@@ -284,7 +284,7 @@ extension TransactionConfirmation.Model {
         public let asset: CryptoCurrency
         public let type: TransactionConfirmation.Kind = .networkFee
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             (String(format: LocalizedString.networkFee, asset.displayCode),
              fee.displayString)
         }
@@ -295,7 +295,7 @@ extension TransactionConfirmation.Model {
         public let value: Bool
         public let type: TransactionConfirmation.Kind
 
-        public var formatted: (String, String)? {
+        public var formatted: (title: String, subtitle: String)? {
             ("\(value) Data", "\(data.debugDescription)")
         }
 

@@ -119,6 +119,8 @@ final class TransactionModel {
             return nil
         case .sourceAccountSelected(let sourceAccount):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
+        case .modifyTransactionConfirmation(let confirmation):
+            return processModifyTransactionConfirmation(confirmation: confirmation)
         }
     }
     
@@ -127,6 +129,16 @@ final class TransactionModel {
     }
     
     // MARK: - Private methods
+
+    private func processModifyTransactionConfirmation(confirmation: TransactionConfirmation) -> Disposable {
+        interactor
+            .modifyTransactionConfirmation(confirmation)
+            .subscribe(
+                onError: { error in
+                    Logger.shared.error("!TRANSACTION!> Unable to modify transaction confirmation: \(error.localizedDescription)")
+                }
+            )
+    }
     
     private func processSetFeeLevel(_ feeLevel: FeeLevel, amount: MoneyValue?) -> Disposable {
         interactor.updateTransactionFees(with: feeLevel, amount: amount)

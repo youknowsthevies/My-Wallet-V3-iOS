@@ -78,13 +78,17 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
     
     func testDryRunTransaction_BelowMinimumSend() throws {
-        let sendDetails = SendDetails.valid(value: .stellar(minor: 1_000_000))
+        let sendDetails = SendDetails.valid(value: .stellar(minor: 1))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.toAddress] = toJSON
-        
-        dryRunInvalidTransaction(sendDetails, with: .belowMinimumSend)
+
+        do {
+            _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     func testDryRunTransaction_BadDestinationAccountID() throws {
@@ -95,7 +99,6 @@ class StellarTransactionDispatcherTests: XCTestCase {
         dryRunInvalidTransaction(sendDetails, with: .badDestinationAccountID)
     }
 }
-
 
 fileprivate extension SendDetails {
     static func valid(toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",

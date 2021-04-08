@@ -108,11 +108,11 @@ final class TransactionInteractor {
         return transactionProcessor.execute(secondPassword: secondPassword)
     }
 
-    func modifyOptionValue(newOption: TransactionConfirmation) -> Completable {
+    func modifyTransactionConfirmation(_ newConfirmation: TransactionConfirmation) -> Completable {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
         }
-        return transactionProcessor.set(transactionOptionValue: newOption)
+        return transactionProcessor.set(transactionConfirmation: newConfirmation)
     }
 
     func reset() {

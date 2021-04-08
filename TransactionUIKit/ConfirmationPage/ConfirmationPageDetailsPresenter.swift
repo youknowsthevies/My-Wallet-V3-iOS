@@ -46,8 +46,15 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
 
     // MARK: - Screen Properties
 
-    private(set) var buttons: [ButtonViewModel] = []
-    private(set) var cells: [DetailsScreen.CellType] = []
+    var buttons: [ButtonViewModel] {
+        [
+            contentReducer.cancelButtonViewModel,
+            contentReducer.continueButtonViewModel
+        ]
+    }
+    var cells: [DetailsScreen.CellType] {
+        contentReducer.cells
+    }
 
     // MARK: - Private Properties
 
@@ -69,11 +76,6 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
         navigationBarLeadingButtonAction = .custom { [backButtonPressed] in
             backButtonPressed.accept(())
         }
-
-        buttons = [
-            contentReducer.cancelButtonViewModel,
-            contentReducer.continueButtonViewModel
-        ]
     }
 
     func connect(action: Driver<ConfirmationPageInteractor.Action>) -> Driver<ConfirmationPageInteractor.Effects> {
@@ -93,9 +95,9 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .disposed(by: disposeBag)
 
         details
-            .drive(weak: self, onNext: { (self, state) in
+            .drive(weak: self) { (self, state) in
                 self.setup(state: state)
-            })
+            }
             .disposed(by: disposeBag)
 
         let closeTapped = contentReducer
@@ -109,17 +111,19 @@ final class ConfirmationPageDetailsPresenter: DetailsScreenPresenterAPI, Confirm
             .map { ConfirmationPageInteractor.Effects.back }
             .asDriverCatchError()
 
-        return .merge(closeTapped, backTapped)
+        let memoChanged = contentReducer
+            .memoUpdated
+            .map { (text, oldModel) in
+                ConfirmationPageInteractor.Effects.updateMemo(text, oldModel: oldModel)
+            }
+            .asDriverCatchError()
+
+        return .merge(closeTapped, backTapped, memoChanged)
     }
 
     private func setup(state: TransactionState) {
-
         contentReducer.setup(for: state)
-
         titleViewRelay.accept(.text(value: contentReducer.title))
-
-        cells = contentReducer.cells
-
         reloadRelay.accept(())
     }
 }

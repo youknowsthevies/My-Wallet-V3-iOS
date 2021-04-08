@@ -12,6 +12,7 @@ import RIBs
 import RxCocoa
 import RxSwift
 import ToolKit
+import TransactionKit
 
 protocol ConfirmationPageInteractable: Interactable {
     var router: ConfirmationPageRouting? { get set }
@@ -64,6 +65,9 @@ final class ConfirmationPageInteractor: PresentableInteractor<ConfirmationPagePr
             listener?.closeFlow()
         case .back:
             listener?.checkoutDidTapBack()
+        case .updateMemo(let memo, let oldModel):
+            let model = TransactionConfirmation.Model.Memo(textMemo: memo, required: oldModel.required)
+            transactionModel.process(action: .modifyTransactionConfirmation(.memo(model)))
         }
     }
 }
@@ -77,5 +81,6 @@ extension ConfirmationPageInteractor {
     enum Effects: Equatable {
         case close
         case back
+        case updateMemo(String?, oldModel: TransactionConfirmation.Model.Memo)
     }
 }

@@ -99,7 +99,7 @@ extension SwapTransactionEngine {
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
         pendingTransaction.engineState[.quoteSubscription] = nil
-        pendingTransaction.confirmations = []
+        pendingTransaction.update(confirmations: [])
         return pendingTransaction
     }
 
@@ -364,16 +364,6 @@ extension PendingTransaction {
     }
 }
 
-extension Completable {
-
-    public func updateTxValidityCompletable(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        flatMapSingle { () -> Single<PendingTransaction> in
-            .just(pendingTransaction.update(validationState: .canExecute))
-        }
-        .updateTxValiditySingle(pendingTransaction: pendingTransaction)
-    }
-}
-
 extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransaction {
 
     func handleSwapPendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
@@ -387,36 +377,6 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
             var initialValue = initialValue
             initialValue.validationState = .pendingOrdersLimitReached
             return .just(initialValue)
-        }
-    }
-
-    func updateTxValiditySingle(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        catchError { error -> Single<PendingTransaction> in
-            guard let validationError = error as? TransactionValidationFailure else {
-                throw error
-            }
-            return .just(pendingTransaction.update(validationState: validationError.state))
-        }
-        .map { pendingTransaction -> PendingTransaction in
-            if pendingTransaction.confirmations.isEmpty {
-                return pendingTransaction
-            } else {
-                return updateOptionsWithValidityWarning(pendingTransaction: pendingTransaction)
-            }
-        }
-    }
-    
-    private func updateOptionsWithValidityWarning(pendingTransaction: PendingTransaction) -> PendingTransaction {
-        switch pendingTransaction.validationState {
-        case .canExecute,
-             .uninitialized:
-            return pendingTransaction.remove(optionType: .errorNotice)
-        default:
-            let error = TransactionConfirmation.Model.ErrorNotice(
-                validationState: pendingTransaction.validationState,
-                moneyValue: pendingTransaction.validationState == .belowMinimumLimit ? pendingTransaction.minimumLimit : nil
-            )
-            return pendingTransaction.insert(confirmation: .errorNotice(error))
         }
     }
 }

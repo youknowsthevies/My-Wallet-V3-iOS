@@ -68,6 +68,9 @@ public enum TextFieldType: Hashable {
     /// A description of a event
     case description
 
+    /// A memo of a transaction.
+    case memo
+
     /// A crypto address type
     case cryptoAddress
 }
@@ -77,6 +80,8 @@ public enum TextFieldType: Hashable {
 extension TextFieldType: CustomDebugStringConvertible {
     public var debugDescription: String {
         switch self {
+        case .memo:
+            return "memo"
         case .walletIdentifier:
             return "wallet-identifier"
         case .description:
@@ -145,7 +150,8 @@ extension TextFieldType {
              .cardholderName,
              .description,
              .expirationDate,
-             .cryptoAddress:
+             .cryptoAddress,
+             .memo:
             return false
         }
     }
@@ -196,6 +202,8 @@ extension TextFieldType {
             return .id(AccessibilityId.postCode)
         case .cryptoAddress:
             return .id(AccessibilityId.cryptoAddress)
+        case .memo:
+            return .id(AccessibilityId.memo)
         }
     }
     
@@ -214,7 +222,8 @@ extension TextFieldType {
              .expirationDate,
              .cardholderName,
              .cardNumber,
-             .description:
+             .description,
+             .memo:
              return false
         case .password,
              .newPassword,
@@ -238,6 +247,8 @@ extension TextFieldType {
             return LocalizedString.oneTimeCode
         case .description:
             return LocalizedString.noDescription
+        case .memo:
+            return LocalizedString.noMemo
         case .password,
              .newPassword,
              .confirmNewPassword,
@@ -297,6 +308,8 @@ extension TextFieldType {
             return LocalizedString.fullName
         case .cryptoAddress:
             return ""
+        case .memo:
+            return LocalizedString.memo
         }
     }
     
@@ -312,7 +325,8 @@ extension TextFieldType {
              .backupVerification,
              .oneTimeCode,
              .description,
-             .cryptoAddress:
+             .cryptoAddress,
+             .memo:
             return .default
         case .mobile:
             return .phonePad
@@ -350,7 +364,8 @@ extension TextFieldType {
              .cardNumber,
              .postcode,
              .description,
-             .cryptoAddress:
+             .cryptoAddress,
+             .memo:
             return .none
         }
     }
@@ -373,7 +388,8 @@ extension TextFieldType {
              .postcode,
              .personFullName,
              .description,
-             .cryptoAddress:
+             .cryptoAddress,
+             .memo:
             return false
         case .newPassword, .confirmNewPassword, .password:
             return true
@@ -397,7 +413,8 @@ extension TextFieldType {
              .cardCVV,
              .backupVerification,
              .description,
-             .cryptoAddress:
+             .cryptoAddress,
+             .memo:
             return nil
         case .walletIdentifier:
             return .username

@@ -172,26 +172,22 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
     
     func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
-        guard case let .feeSelection(value) = newConfirmation else {
+        switch newConfirmation {
+        case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
+            return updateFeeSelection(
+                cryptoCurrency: .ethereum,
+                pendingTransaction: pendingTransaction,
+                newFeeLevel: value.selectedLevel,
+                customFeeAmount: nil
+            )
+        default:
             return defaultDoOptionUpdateRequest(
                 pendingTransaction: pendingTransaction,
                 newConfirmation: newConfirmation
             )
         }
-        guard value.selectedLevel != pendingTransaction.feeLevel else {
-            return defaultDoOptionUpdateRequest(
-                pendingTransaction: pendingTransaction,
-                newConfirmation: newConfirmation
-            )
-        }
-        return updateFeeSelection(
-            cryptoCurrency: .ethereum,
-            pendingTransaction: pendingTransaction,
-            newFeeLevel: value.selectedLevel,
-            customFeeAmount: nil
-        )
     }
-    
+
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in

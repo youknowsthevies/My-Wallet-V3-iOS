@@ -73,24 +73,27 @@ public final class TransactionProcessor {
 
     public func reset() {
         do {
-            engine.stop(pendingTransaction: try pendingTxSubject.value())
+            engine.stop(pendingTransaction: try pendingTransaction())
         } catch { }
     }
     
     // Set the option to the passed option value. If the option is not supported, it will not be
     // in the original list when the pendingTx is created. And if it is not supported, then trying to
     // update it will cause an error.
-    public func set(transactionOptionValue: TransactionConfirmation) -> Completable {
-        Logger.shared.debug("!TRANSACTION!> in `set(transactionOptionValue):\(transactionOptionValue)`")
+    public func set(transactionConfirmation: TransactionConfirmation) -> Completable {
+        Logger.shared.debug("!TRANSACTION!> in `set(transactionConfirmation): \(transactionConfirmation)`")
         do {
-            let pendingTx = try pendingTxSubject.value()
-            if !pendingTx.confirmations.contains(transactionOptionValue) {
-                return .just(event: .error(PlatformKitError.illegalArgument))
+            let pendingTx = try pendingTransaction()
+            if !pendingTx.confirmations.contains(where: { $0.bareCompare(to: transactionConfirmation) }) {
+                let error = PlatformKitError.illegalStateException(
+                    message: "Unsupported TransactionConfirmation: \(transactionConfirmation)"
+                )
+                return .just(event: .error(error))
             }
             return engine
                 .doOptionUpdateRequest(
                     pendingTransaction: pendingTx,
-                    newConfirmation: transactionOptionValue
+                    newConfirmation: transactionConfirmation
                 )
                 .flatMap(weak: self) { (self, transaction) -> Single<PendingTransaction> in
                     self.engine.doValidateAll(pendingTransaction: transaction)
@@ -115,7 +118,7 @@ public final class TransactionProcessor {
                 )
             }
             return engine
-                .update(amount: amount, pendingTransaction: try pendingTxSubject.value())
+                .update(amount: amount, pendingTransaction: try pendingTransaction())
                 .flatMap(weak: self) { (self, transaction) -> Single<PendingTransaction> in
                     let isFreshTx = transaction.validationState == .uninitialized
                     return self.engine
@@ -147,7 +150,7 @@ public final class TransactionProcessor {
             if engine.requireSecondPassword, secondPassword.isEmpty {
                 throw PlatformKitError.illegalStateException(message: "Second password not supplied")
             }
-            let pendingTransaction = try pendingTxSubject.value()
+            let pendingTransaction = try self.pendingTransaction()
             return engine
                 .doValidateAll(pendingTransaction: pendingTransaction)
                 .do(onSuccess: { transaction in

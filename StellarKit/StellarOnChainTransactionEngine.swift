@@ -189,8 +189,11 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         defaultDoOptionUpdateRequest(pendingTransaction: pendingTransaction, newConfirmation: newConfirmation)
             .map { pendingTransaction -> PendingTransaction in
                 var pendingTransaction = pendingTransaction
-                if case let .memo(memo) = newConfirmation {
+                switch newConfirmation {
+                case .memo(let memo):
                     pendingTransaction.setMemo(memo: memo)
+                default:
+                    break
                 }
                 return pendingTransaction
             }

@@ -26,7 +26,7 @@ final class StellarTransactionDispatcher {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let horizonProxy: HorizonProxyAPI
 
-    private let minSend = CryptoValue.one(currency: .stellar)
+    private let minSend = CryptoValue.stellar(minor: 1)
     private var sendTimeOutSeconds: Single<Int> {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
