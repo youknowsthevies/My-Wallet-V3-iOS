@@ -129,8 +129,10 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .map(weak: self) { (self, payload) -> [TransactionConfirmation] in
                 [
+                    .sendDestinationValue(.init(value: pendingTransaction.amount)),
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.transactionTarget.label)),
+                    .feeSelection(payload.feeSelectionOption),
                     .feedTotal(
                         .init(
                             amount: pendingTransaction.amount,
@@ -138,9 +140,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                             fee: pendingTransaction.feeAmount,
                             feeInFiat: payload.feesInFiat
                         )
-                    ),
-                    .feeSelection(payload.feeSelectionOption),
-                    .description(.init())
+                    )
                 ]
             }
             .map { pendingTransaction.update(confirmations: $0) }

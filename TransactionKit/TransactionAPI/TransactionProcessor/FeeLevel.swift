@@ -6,11 +6,26 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
+
 public enum FeeLevel: Equatable {
     case none
     case regular
     case priority
     case custom
+
+    public var title: String {
+        switch self {
+        case .none:
+            return ""
+        case .regular:
+            return LocalizationConstants.Transaction.Send.regular
+        case .priority:
+            return LocalizationConstants.Transaction.Send.priority
+        case .custom:
+            return LocalizationConstants.Transaction.Send.custom
+        }
+    }
 }
 
 extension Collection where Element == FeeLevel {

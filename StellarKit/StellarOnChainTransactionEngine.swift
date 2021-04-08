@@ -120,7 +120,11 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     fee: pendingTransaction.feeAmount,
                     feeInFiat: feesFiat
                 )
+                let sendDestination = TransactionConfirmation.Model.SendDestinationValue(
+                    value: pendingTransaction.amount
+                )
                 return [
+                    .sendDestinationValue(sendDestination),
                     .source(from),
                     .destination(to),
                     .feeSelection(fee),

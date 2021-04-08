@@ -123,8 +123,11 @@ extension TransactionConfirmation.Model {
         public let selectedLevel: FeeLevel
         public let fee: MoneyValue?
         public let type: TransactionConfirmation.Kind = .feeSelection
+
         public var formatted: (title: String, subtitle: String)? {
-            ("Transaction Fee", fee?.toDisplayString(includeSymbol: true) ?? "")
+            let subtitle = fee?.toDisplayString(includeSymbol: true) ?? ""
+            let title = LocalizedString.transactionFee(feeType: selectedLevel.title)
+            return (title, subtitle)
         }
 
         public init(feeState: FeeState, selectedLevel: FeeLevel, fee: MoneyValue?) {
@@ -261,6 +264,19 @@ extension TransactionConfirmation.Model {
 
         public var formatted: (title: String, subtitle: String)? {
             (LocalizationConstants.Transaction.receive, cryptoValue.displayString)
+        }
+    }
+
+    public struct SendDestinationValue: TransactionConfirmationModelable {
+        public let value: MoneyValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizationConstants.Transaction.Send.send, value.displayString)
+        }
+
+        public init(value: MoneyValue) {
+            self.value = value
         }
     }
 

@@ -9,6 +9,7 @@
 import Localization
 import PlatformUIKit
 import RxCocoa
+import TransactionKit
 
 protocol NetworkFeeSelectionReducerAPI {
     func presentableState(for interactorState: Driver<NetworkFeeSelectionInteractor.State>) -> Driver<NetworkFeeSelectionPresenter.State>
@@ -32,7 +33,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
             .map(\.selectedFeeLevel)
             .map {
                 RadioLineItemCellPresenter(
-                    title: LocalizationId.regular,
+                    title: FeeLevel.regular.title,
                     subtitle: "\(60)+ \(LocalizationId.min)",
                     selected: $0 == .regular
                 )
@@ -44,7 +45,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
             .map(\.selectedFeeLevel)
             .map {
                 RadioLineItemCellPresenter(
-                    title: LocalizationId.priority,
+                    title: FeeLevel.priority.title,
                     subtitle: "\(30) \(LocalizationId.minutes)",
                     selected: $0 == .priority
                 )

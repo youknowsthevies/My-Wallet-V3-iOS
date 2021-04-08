@@ -160,6 +160,10 @@ public extension LocalizationConstants.Transaction.Send {
         "Priority",
         comment: "Priority"
     )
+    static let custom = NSLocalizedString(
+        "Custom",
+        comment: "Custom"
+    )
     static let min = NSLocalizedString(
         "Min",
         comment: "Abbreviation for minutes"
@@ -397,4 +401,11 @@ public extension LocalizationConstants.Transaction.Confirmation {
         "Cancel",
         comment: "Cancel"
     )
+    static func transactionFee(feeType: String) -> String {
+        let format = NSLocalizedString(
+            "Fee - %@",
+            comment: "Fee"
+        )
+        return String(format: format, feeType)
+    }
 }

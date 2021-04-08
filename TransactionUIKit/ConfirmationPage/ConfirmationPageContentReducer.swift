@@ -57,7 +57,6 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         )
     }
 
-
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
