@@ -9,6 +9,7 @@
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import RxSwift
 
 // MARK: - Listener Bridge
 
@@ -19,8 +20,12 @@ enum TargetSelectionListenerBridge {
 
 // MARK: - Builder
 
+typealias BackButtonInterceptor = () -> Observable<(step: TransactionStep, backStack: [TransactionStep], isGoingBack: Bool)>
+
 protocol TargetSelectionBuildable {
-    func build(listener: TargetSelectionListenerBridge, navigationModel: ScreenNavigationModel) -> TargetSelectionPageRouting
+    func build(listener: TargetSelectionListenerBridge,
+               navigationModel: ScreenNavigationModel,
+               backButtonInterceptor: @escaping BackButtonInterceptor) -> TargetSelectionPageRouting
 }
 
 final class TargetSelectionPageBuilder: TargetSelectionBuildable {
@@ -41,7 +46,8 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
     // MARK: - Public Methods
 
     public func build(listener: TargetSelectionListenerBridge,
-                      navigationModel: ScreenNavigationModel) -> TargetSelectionPageRouting {
+                      navigationModel: ScreenNavigationModel,
+                      backButtonInterceptor: @escaping BackButtonInterceptor) -> TargetSelectionPageRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
         case .listener:
@@ -63,7 +69,8 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
             presenter: presenter,
             accountProvider: accountProvider,
             listener: listener,
-            action: action
+            action: action,
+            backButtonInterceptor: backButtonInterceptor
         )
         return TargetSelectionPageRouter(interactor: interactor, viewController: viewController)
     }

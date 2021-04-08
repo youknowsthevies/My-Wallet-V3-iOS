@@ -134,7 +134,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.TargetSelection.navigation(
                 title: TransactionFlowDescriptor.TargetSelection.navigationTitle(action: action)
-            )
+            ),
+            backButtonInterceptor: {
+                transactionModel.state.map { ($0.step, $0.stepsBackStack, $0.isGoingBack) }
+            }
         )
         let viewControllable = router.viewControllable
         attachChild(router)

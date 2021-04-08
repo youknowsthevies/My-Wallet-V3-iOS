@@ -37,6 +37,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let cryptoAddressViewModel: CryptoAddressTextFieldViewModel
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
+    private let backButtonInterceptor: BackButtonInterceptor
     weak var listener: TargetSelectionPageListener?
 
     // MARK: - Init
@@ -46,11 +47,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
          accountProvider: SourceAndTargetAccountProviding,
          listener: TargetSelectionListenerBridge,
          action: AssetAction,
+         backButtonInterceptor: @escaping BackButtonInterceptor,
          messageRecorder: MessageRecording = resolve()) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
         self.messageRecorder = messageRecorder
+        self.backButtonInterceptor = backButtonInterceptor
         cryptoAddressViewModel = CryptoAddressTextFieldViewModel(
             validator: CryptoAddressValidator(model: targetSelectionPageModel),
             messageRecorder: messageRecorder
@@ -74,6 +77,19 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .bindAndCatch(weak: self) { (self) in
                 self.targetSelectionPageModel.process(action: .qrScannerButtonTapped)
             }
+            .disposeOnDeactivate(interactor: self)
+
+        // This returns an observable from the TransactionModel and its state.
+        // Since the TargetSelection has it's own model/state/actions we need to intercept when the back button
+        // of the TransactionFlow occurs and update the TargetSelection state
+        backButtonInterceptor()
+            .subscribe(onNext: { [weak self] state in
+                let hasCorrectBackStack = state.backStack.isEmpty || state.backStack.contains(.selectTarget)
+                let hasCorrectStep = state.step == .enterAmount || state.step == .selectTarget
+                if hasCorrectStep && hasCorrectBackStack && state.isGoingBack {
+                    self?.targetSelectionPageModel.process(action: .returnToPreviousStep)
+                }
+            })
             .disposeOnDeactivate(interactor: self)
         
         /// Listens to the `step` which
@@ -202,7 +218,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private var initialStep: Bool = true
     private func handleStateChange(newState: TargetSelectionPageState) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
-            finishFlow()
+            // no-op
         } else {
             initialStep = false
             showFlowStep(newState: newState)

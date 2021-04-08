@@ -11,9 +11,8 @@ import PlatformKit
 extension AssetAction {
     var allowsBackButton: Bool {
         switch self {
-        case .send:
-            return false
-        case .deposit,
+        case .send,
+             .deposit,
              .receive,
              .sell,
              .swap,
