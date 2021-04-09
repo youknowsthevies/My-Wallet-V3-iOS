@@ -174,6 +174,7 @@ final class WithdrawAmountPageInteractor: PresentableInteractor<WithdrawAmountPa
         let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
             maxButtonVisibility: .visible,
             networkFeeVisibility: .hidden,
+            bitpayVisibility: .hidden,
             availableBalanceTitle: LocalizatedStrings.available,
             maxButtonTitle: LocalizatedStrings.withdrawMax
         )

@@ -21,6 +21,7 @@ final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     let resetToMaxAmountRelay = PublishRelay<Void>()
     let networkFeeTappedRelay = PublishRelay<Void>()
     let availableBalanceTappedRelay = PublishRelay<Void>()
+    let imageRelay = PublishRelay<ImageViewContent>()
 
     var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI {
         networkLabelViewInteractor

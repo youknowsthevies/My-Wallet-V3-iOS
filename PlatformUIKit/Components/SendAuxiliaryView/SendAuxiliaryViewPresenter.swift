@@ -17,17 +17,20 @@ public final class SendAuxiliaryViewPresenter {
     public struct State {
         let maxButtonVisibility: Visibility
         let networkFeeVisibility: Visibility
+        let bitpayVisibility: Visibility
         let availableBalanceTitle: String
         let maxButtonTitle: String
 
         public init(
             maxButtonVisibility: Visibility,
             networkFeeVisibility: Visibility,
+            bitpayVisibility: Visibility,
             availableBalanceTitle: String,
             maxButtonTitle: String
         ) {
             self.maxButtonVisibility = maxButtonVisibility
             self.networkFeeVisibility = networkFeeVisibility
+            self.bitpayVisibility = bitpayVisibility
             self.availableBalanceTitle = availableBalanceTitle
             self.maxButtonTitle = maxButtonTitle
         }
@@ -52,6 +55,8 @@ public final class SendAuxiliaryViewPresenter {
     let availableBalanceContentViewPresenter: ContentLabelViewPresenter
 
     let networkFeeContentViewPresenter: ContentLabelViewPresenter
+
+    let imageContent: Driver<ImageViewContent>
     
     // MARK: - Private
 
@@ -83,6 +88,10 @@ public final class SendAuxiliaryViewPresenter {
             alignment: .left,
             interactor: interactor.availableBalanceContentViewInteractor
         )
+
+        imageContent = interactor
+            .imageRelay
+            .asDriverCatchError()
 
         // MARK: Fee
 

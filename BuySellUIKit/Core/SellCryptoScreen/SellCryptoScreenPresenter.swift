@@ -41,6 +41,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
             maxButtonVisibility: .visible,
             networkFeeVisibility: .hidden,
+            bitpayVisibility: .hidden,
             availableBalanceTitle: LocalizedString.available,
             maxButtonTitle: LocalizedString.useMax
         )

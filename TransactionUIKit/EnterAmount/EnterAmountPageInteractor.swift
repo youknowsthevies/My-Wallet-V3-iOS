@@ -73,6 +73,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
             maxButtonVisibility: .hidden,
             networkFeeVisibility: .hidden,
+            bitpayVisibility: .hidden,
             availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
             maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle
         )
@@ -234,6 +235,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 SendAuxiliaryViewPresenter.State(
                     maxButtonVisibility: networkFeeVisibility.inverted,
                     networkFeeVisibility: networkFeeVisibility,
+                    bitpayVisibility: .hidden,
                     availableBalanceTitle: TransactionFlowDescriptor.availableBalanceTitle,
                     maxButtonTitle: TransactionFlowDescriptor.maxButtonTitle(action: action)
                 )

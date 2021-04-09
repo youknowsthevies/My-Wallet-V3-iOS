@@ -25,6 +25,17 @@ public final class SendAuxiliaryView: UIView {
             networkFeeView.presenter = presenter.networkFeeContentViewPresenter
 
             presenter
+                .imageContent
+                .drive(imageView.rx.content)
+                .disposed(by: disposeBag)
+
+            presenter
+                .state
+                .map(\.bitpayVisibility)
+                .drive(imageView.rx.visibility)
+                .disposed(by: disposeBag)
+
+            presenter
                 .state
                 .map(\.networkFeeVisibility)
                 .drive(networkFeeView.rx.visibility)
@@ -34,6 +45,7 @@ public final class SendAuxiliaryView: UIView {
     
     private let availableBalanceView: ContentLabelView
     private let networkFeeView: ContentLabelView
+    private let imageView: UIImageView
     private let maxButtonView: ButtonView
     private var disposeBag = DisposeBag()
         
@@ -41,12 +53,14 @@ public final class SendAuxiliaryView: UIView {
         availableBalanceView = ContentLabelView()
         networkFeeView = ContentLabelView()
         maxButtonView = ButtonView()
+        imageView = UIImageView()
         
         super.init(frame: UIScreen.main.bounds)
         
         addSubview(availableBalanceView)
         addSubview(maxButtonView)
         addSubview(networkFeeView)
+        addSubview(imageView)
         
         availableBalanceView.layoutToSuperview(.centerY)
         availableBalanceView.layoutToSuperview(.leading, offset: Spacing.outer)
@@ -57,6 +71,9 @@ public final class SendAuxiliaryView: UIView {
         maxButtonView.layoutToSuperview(.centerY)
         maxButtonView.layoutToSuperview(.trailing, offset: -Spacing.outer)
         maxButtonView.layout(dimension: .height, to: 30)
+
+        imageView.layoutToSuperview(.centerY)
+        imageView.layoutToSuperview(.trailing, offset: -Spacing.outer)
     }
     
     required init?(coder: NSCoder) { unimplemented() }

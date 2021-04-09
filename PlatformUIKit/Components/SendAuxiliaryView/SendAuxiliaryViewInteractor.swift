@@ -24,6 +24,8 @@ public protocol SendAuxiliaryViewInteractorAPI: AnyObject {
     var availableBalanceTappedRelay: PublishRelay<Void> { get }
 
     var resetToMaxAmountRelay: PublishRelay<Void> { get }
+
+    var imageRelay: PublishRelay<ImageViewContent> { get }
 }
 
 public extension SendAuxiliaryViewInteractorAPI {
@@ -52,6 +54,7 @@ public final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     public let networkFeeTappedRelay = PublishRelay<Void>()
     public let availableBalanceTappedRelay = PublishRelay<Void>()
     public let networkFeeContentViewInteractor: ContentLabelViewInteractorAPI
+    public let imageRelay = PublishRelay<ImageViewContent>()
 
     @available(*, deprecated, message: "Use `init(currencyType:coincore:)` method instead which uses the Coincore API")
     public init(balanceProvider: BalanceProviding, currencyType: CurrencyType) {
