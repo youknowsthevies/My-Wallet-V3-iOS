@@ -490,7 +490,7 @@ targets:
       path: Blockchain/Scripts/export_built_products_dir.sh
     preBuildScripts:
     - name: my-wallet SHA256
-      script: "cd ${PROJECT_DIR}\nif ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo\
+      script: "if [[ -z \"${BITRISE_PROJECT_PATH}\" ]]; then\n  exit 0\nfi\ncd ${PROJECT_DIR}\nif ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo\
         \ \"Checksum failed:\" >&2\n  exit 1\nfi\n"
     settings:
       base:
