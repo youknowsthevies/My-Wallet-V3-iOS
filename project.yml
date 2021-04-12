@@ -292,7 +292,9 @@ targets:
       testTargets:
       - AlgorandKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   AlgorandKitTests:
     dependencies:
     - target: AlgorandKit
@@ -304,7 +306,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
@@ -322,7 +326,9 @@ targets:
       testTargets:
       - BitcoinCashKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinCashKitTests:
     dependencies:
     - target: BitcoinCashKit
@@ -336,7 +342,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinChainKit:
     dependencies:
     - target: PlatformKit
@@ -354,7 +362,9 @@ targets:
       testTargets:
       - BitcoinChainKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinChainKitTests:
     dependencies:
     - target: BitcoinChainKit
@@ -368,7 +378,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinKit:
     dependencies:
     - target: BitcoinChainKit
@@ -387,7 +399,9 @@ targets:
       testTargets:
       - BitcoinKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   BitcoinKitTests:
     dependencies:
     - target: BitcoinKit
@@ -401,7 +415,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   Blockchain:
     configFiles:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
@@ -722,7 +738,9 @@ targets:
       testTargets:
       - ERC20KitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   ERC20KitTests:
     dependencies:
     - target: ERC20Kit
@@ -738,7 +756,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ERC20Kit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   EthereumKit:
     dependencies:
     - target: NetworkKit
@@ -755,7 +775,9 @@ targets:
       testTargets:
       - EthereumKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   EthereumKitTests:
     dependencies:
     - target: EthereumKit
@@ -769,7 +791,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   HDWalletKit:
     dependencies:
     - target: CommonCryptoKit
@@ -1041,7 +1065,9 @@ targets:
       testTargets:
       - PolkadotKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   PolkadotKitTests:
     dependencies:
     - target: PolkadotKit
@@ -1053,7 +1079,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   StellarKit:
     dependencies:
     - target: PlatformKit
@@ -1068,7 +1096,9 @@ targets:
       testTargets:
       - StellarKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Crypto Assets
   StellarKitTests:
     dependencies:
     - target: StellarKit
@@ -1080,7 +1110,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/StellarKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Crypto Assets
   TestKit:
     platform: iOS
     sources:
