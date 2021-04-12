@@ -796,18 +796,17 @@ targets:
     - FrameworkTest
   InterestKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - InterestKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Wallet
   InterestKitTests:
     dependencies:
     - target: InterestKit
@@ -819,25 +818,25 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Wallet
   InterestUIKit:
     dependencies:
-    - target: InterestKit
-    - target: PlatformUIKit
-    - target: PlatformKit
     - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
+    - target: InterestKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - InterestUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Wallet
   InterestUIKitTests:
     dependencies:
     - target: InterestUIKit
@@ -851,7 +850,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Wallet
   KYCKit:
     dependencies:
     - target: Localization
