@@ -204,18 +204,18 @@ targetTemplates:
 targets:
   ActivityKit:
     dependencies:
-    - target: PlatformKit
+    - carthage: BigInt
     - target: AlgorandKit
-    - target: PolkadotKit
-    - target: BuySellKit
-    - target: BitcoinKit
     - target: BitcoinCashKit
-    - target: EthereumKit
+    - target: BitcoinKit
+    - target: BuySellKit
     - target: ERC20Kit
+    - target: EthereumKit
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PolkadotKit
     - target: StellarKit
     - target: ToolKit
-    - target: NetworkKit
-    - carthage: BigInt
     scheme:
       testTargets:
       - ActivityKitTests
@@ -227,11 +227,11 @@ targets:
     dependencies:
     - target: ActivityKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
@@ -239,19 +239,15 @@ targets:
       featureName: Activity
   ActivityUIKit:
     dependencies:
-    - target: ActivityKit
-    - target: BuySellKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: ToolKit
-    - target: Localization
+    - carthage: RxDataSources
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
-    - carthage: RxDataSources
+    - target: ActivityKit
+    - target: BuySellKit
+    - target: Localization
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - ActivityUIKitTests
@@ -263,13 +259,13 @@ targets:
     dependencies:
     - target: ActivityUIKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -296,11 +292,11 @@ targets:
     dependencies:
     - target: AlgorandKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
@@ -330,13 +326,13 @@ targets:
     dependencies:
     - target: BitcoinCashKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
@@ -363,13 +359,13 @@ targets:
     dependencies:
     - target: BitcoinChainKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
@@ -377,15 +373,15 @@ targets:
       featureName: Crypto Assets
   BitcoinKit:
     dependencies:
-    - target: BitcoinChainKit
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
-    - target: TransactionKit
     - carthage: BigInt
     - carthage: LibWally
+    - target: BitcoinChainKit
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinKitTests
@@ -397,13 +393,13 @@ targets:
     dependencies:
     - target: BitcoinKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
@@ -643,13 +639,13 @@ targets:
     dependencies:
     - target: BuySellKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templates:
       - ModuleTests
@@ -658,12 +654,12 @@ targets:
   BuySellUIKit:
     dependencies:
     - target: BuySellKit
-    - target: PlatformUIKit
-    - target: PlatformKit
     - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BuySellUIKitTests
@@ -675,15 +671,15 @@ targets:
     dependencies:
     - target: BuySellUIKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templates:
       - ModuleTests
@@ -706,23 +702,23 @@ targets:
       featureName: Other
   DebugUIKit:
     dependencies:
-    - target: ToolKit
     - target: PlatformKit
     - target: PlatformUIKit
+    - target: ToolKit
     templates:
       - Module
     templateAttributes:
       featureName: Other
   ERC20Kit:
     dependencies:
-    - target: NetworkKit
-    - target: EthereumKit
-    - target: PlatformKit
-    - target: ToolKit
-    - target: TransactionKit
     - carthage: BigInt
     - carthage: SwiftProtobuf
     - carthage: WalletCore
+    - target: EthereumKit
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - ERC20KitTests
@@ -734,15 +730,15 @@ targets:
     dependencies:
     - target: ERC20Kit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/EthereumKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ERC20Kit
     templates:
       - ModuleTests
@@ -750,13 +746,13 @@ targets:
       featureName: Crypto Assets
   EthereumKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
     - target: TransactionKit
-    - carthage: BigInt
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
     scheme:
       testTargets:
       - EthereumKitTests
@@ -768,13 +764,13 @@ targets:
     dependencies:
     - target: EthereumKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/EthereumKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -815,11 +811,11 @@ targets:
     dependencies:
     - target: InterestKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -845,13 +841,13 @@ targets:
     dependencies:
     - target: InterestUIKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -874,11 +870,11 @@ targets:
     dependencies:
     - target: KYCKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -886,13 +882,13 @@ targets:
       featureName: KYC
   KYCUIKit:
     dependencies:
+    - carthage: Veriff
     - target: KYCKit
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
-    - carthage: Veriff
     scheme:
       testTargets:
       - KYCUIKitTests
@@ -904,13 +900,13 @@ targets:
     dependencies:
     - target: KYCUIKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
       - ModuleTests
@@ -1046,11 +1042,11 @@ targets:
       featureName: Platform
   PolkadotKit:
     dependencies:
+    - carthage: BigInt
     - target: Localization
+    - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
-    - target: NetworkKit
-    - carthage: BigInt
     scheme:
       testTargets:
       - PolkadotKitTests
@@ -1062,11 +1058,11 @@ targets:
     dependencies:
     - target: PolkadotKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
       - ModuleTests
