@@ -216,9 +216,6 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     scheme:
       testTargets:
       - ActivityKitTests
@@ -354,9 +351,6 @@ targets:
     - target: Localization
     - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: LibWally
     scheme:
       testTargets:
@@ -391,9 +385,6 @@ targets:
     - target: Localization
     - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: LibWally
     scheme:
       testTargets:
@@ -641,10 +632,6 @@ targets:
     - target: NetworkKit
     - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
     scheme:
       testTargets:
       - BuySellKitTests
@@ -677,10 +664,6 @@ targets:
     - target: NetworkKit
     - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
     scheme:
       testTargets:
       - BuySellUIKitTests
@@ -726,10 +709,6 @@ targets:
     - target: ToolKit
     - target: PlatformKit
     - target: PlatformUIKit
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
     templates:
       - Module
     templateAttributes:
@@ -742,10 +721,6 @@ targets:
     - target: ToolKit
     - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: SwiftProtobuf
     - carthage: WalletCore
     scheme:
@@ -780,9 +755,6 @@ targets:
     - target: ToolKit
     - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: SwiftProtobuf
     - carthage: WalletCore
     scheme:
@@ -882,17 +854,17 @@ targets:
     - FrameworkTest
   KYCKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxSwift
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - KYCKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: KYC
   KYCKitTests:
     dependencies:
     - target: KYCKit
@@ -904,26 +876,25 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: KYC
   KYCUIKit:
     dependencies:
     - target: KYCKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
-    - target: KYCKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     - carthage: Veriff
     scheme:
       testTargets:
       - KYCUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: KYC
   KYCUIKitTests:
     dependencies:
     - target: KYCUIKit
@@ -937,7 +908,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: KYC
   Localization:
     templates:
       - Module
@@ -1074,9 +1047,6 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     scheme:
       testTargets:
       - PolkadotKitTests
@@ -1104,9 +1074,6 @@ targets:
     - target: Localization
     - target: ToolKit
     - target: TransactionKit
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: stellarsdk
     scheme:
       testTargets:
@@ -1119,11 +1086,11 @@ targets:
     dependencies:
     - target: StellarKit
     sources:
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
+    - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/StellarKit
     templates:
       - ModuleTests
@@ -1176,10 +1143,6 @@ targets:
   ToolKit:
     dependencies:
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
     scheme:
       testTargets:
       - ToolKitTests
