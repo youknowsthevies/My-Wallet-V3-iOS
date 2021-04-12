@@ -32,7 +32,7 @@ struct TargetSelectionPageState: Equatable, StateType {
     
     var nextEnabled: Bool = false
     var isGoingBack: Bool = false
-    var inputValidated: InputValidation = .invalid
+    var inputValidated: TargetSelectionInputValidation = .empty
     var sourceAccount: BlockchainAccount?
     var availableTargets: [TransactionTarget] = []
     var destination: TransactionTarget?
@@ -41,6 +41,10 @@ struct TargetSelectionPageState: Equatable, StateType {
         didSet {
             isGoingBack = false
         }
+    }
+    
+    var inputRequiresAddressValidation: Bool {
+        inputValidated.requiresValidation
     }
     // TODO: Handle alternate destination type
     // of an address
@@ -68,32 +72,4 @@ extension TargetSelectionPageState {
         }
         return self
     }
-}
-
-extension TargetSelectionPageState {
-    enum InputValidation: Equatable {
-        case valid(ReceiveAddress)
-        case invalid
-
-        var isValid: Bool {
-            switch self {
-            case .valid:
-                return true
-            case .invalid:
-                return false
-            }
-        }
-
-        public static func ==(lhs: TargetSelectionPageState.InputValidation, rhs: TargetSelectionPageState.InputValidation) -> Bool {
-            switch (lhs, rhs) {
-            case (.valid(let leftAddress), .valid(let rightAddress)):
-                return leftAddress.address == rightAddress.address
-            case (.invalid, .invalid):
-                return true
-            default:
-                return false
-            }
-        }
-    }
-
 }

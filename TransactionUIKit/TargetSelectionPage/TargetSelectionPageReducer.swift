@@ -36,7 +36,6 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
     func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State> {
         let action = self.action
         let sourceSection = interactorState
-            .map(\.interactors)
             .compactMap(\.sourceInteractor)
             .map { [$0] }
             .map { items -> [TargetSelectionPageCellItem] in
@@ -50,7 +49,6 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             }
         
         let sourceAccountStrategy = interactorState
-            .map(\.interactors)
             .compactMap(\.sourceInteractor)
             .map(\.account)
             .map { account -> TargetDestinationsStrategyAPI in
@@ -63,11 +61,27 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             .map(TargetDestinationSections.init(strategy:))
 
         let destinationSections = interactorState
-            .map(\.interactors)
             .map(\.destinationInteractors)
             .withLatestFrom(sourceAccountStrategy) { ($0, $1) }
             .map { (items, strategy) -> [TargetSelectionPageSectionModel] in
                 strategy.sections(interactors: items, action: action)
+            }
+
+        let inputFieldSection = interactorState
+            .map(\.inputFieldInteractor)
+            .distinctUntilChanged()
+            .map { (item) -> [TargetSelectionPageSectionModel] in
+                guard let item = item else {
+                    return []
+                }
+                let header = TargetSelectionHeaderBuilder(
+                    headerType: .section(.init(sectionTitle: LocalizationConstants.Transaction.to))
+                )
+                let section = TargetSelectionPageSectionModel.destination(
+                    header: header,
+                    items: [.init(interactor: item, assetAction: action)]
+                )
+                return [section]
             }
         
         let button = interactorState
@@ -80,14 +94,18 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
             .asDriver()
         
         let sections = Driver
-            .combineLatest(sourceSection, destinationSections)
-            .map { [$0] + $1 }
+            .combineLatest(sourceSection, inputFieldSection, destinationSections)
+            .map { [$0] + $1 + $2 }
 
         let navigationModel = self.navigationModel
         return Driver.combineLatest(sections, button)
             .map { (values) -> TargetSelectionPagePresenter.State in
                 let (sections, button) = values
-                return .init(actionButtonModel: button, navigationModel: navigationModel, sections: sections)
+                return .init(
+                    actionButtonModel: button,
+                    navigationModel: navigationModel,
+                    sections: sections
+                )
             }
     }
 

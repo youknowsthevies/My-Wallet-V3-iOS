@@ -30,9 +30,11 @@ final class CryptoAddressValidator: TextValidating {
         model
             .state
             .map(\.inputValidated)
+            .compactMap(\.textInput)
             .map { validation -> TextValidationState in
                 switch validation {
-                case .invalid:
+                case .invalid,
+                     .inactive:
                     return .invalid(reason: "Invalid Address")
                 case .valid:
                     return .valid

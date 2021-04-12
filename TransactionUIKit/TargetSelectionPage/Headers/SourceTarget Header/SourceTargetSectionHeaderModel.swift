@@ -9,7 +9,7 @@
 import PlatformUIKit
 import UIKit
 
-public struct SourceTargetSectionHeaderModel {
+public struct SourceTargetSectionHeaderModel: Equatable {
     static let defaultHeight: CGFloat = 20
 
     private let sectionTitle: String

@@ -51,7 +51,8 @@ final class TargetSelectionPageModel {
              .returnToPreviousStep,
              .addressValidated,
              .destinationDeselected,
-             .qrScannerButtonTapped:
+             .qrScannerButtonTapped,
+             .validateQRScanner:
             return nil
         }
     }
@@ -69,7 +70,7 @@ final class TargetSelectionPageModel {
             .validateCrypto(address: address, account: account)
             .subscribe(onSuccess: { [weak self] (result) in
                 guard case .success(let receiveAddress) = result else {
-                    self?.process(action: .addressValidated(.invalid))
+                    self?.process(action: .addressValidated(.invalid(address)))
                     return
                 }
                 self?.process(action: .addressValidated(.valid(receiveAddress)))

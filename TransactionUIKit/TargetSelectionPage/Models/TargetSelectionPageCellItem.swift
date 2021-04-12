@@ -24,16 +24,13 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     }
 
     enum Interactor: Equatable {
-        case singleAccountAvailableTarget(SingleAccount)
-        case singleAccountSelection(SingleAccount)
+        case singleAccountAvailableTarget(SingleAccount, Bool)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
         case walletInputField(SingleAccount, TextFieldViewModel)
         
         var account: SingleAccount {
             switch self {
-            case .singleAccountAvailableTarget(let account):
-                return account
-            case .singleAccountSelection(let account):
+            case .singleAccountAvailableTarget(let account, _):
                 return account
             case .singleAccount(let account, _):
                 return account
@@ -47,8 +44,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             case .walletInputField:
                 return true
             case .singleAccount,
-                 .singleAccountAvailableTarget,
-                 .singleAccountSelection:
+                 .singleAccountAvailableTarget:
                 return false
             }
         }
@@ -60,10 +56,10 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     var isSelectable: Bool {
         switch presenter {
-        case .radioSelection,
-             .walletInputField:
+        case .radioSelection:
             return true
         case .singleAccount,
+             .walletInputField,
              .cardView:
             return false
         }
@@ -73,9 +69,12 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
         switch presenter {
         case .cardView(let viewModel):
             return viewModel.identifier
-        case .radioSelection,
-             .singleAccount,
-             .walletInputField:
+        case .walletInputField:
+            // we currently only support one text field
+            return "wallet-input"
+        case .radioSelection(let presenter):
+            return presenter.identity
+        case .singleAccount:
             guard let account = account else {
                 fatalError("Expected an account")
             }
@@ -93,19 +92,12 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
-        case .singleAccountAvailableTarget(let account):
-            self.account = account
-            presenter = .radioSelection(
-                RadioAccountCellPresenter(
-                    account: account
-                )
-            )
-        case .singleAccountSelection(let account):
+        case .singleAccountAvailableTarget(let account, let selected):
             self.account = account
             presenter = .radioSelection(
                 RadioAccountCellPresenter(
                     account: account,
-                    selected: true
+                    selected: selected
                 )
             )
         case .singleAccount(let account, let interactor):
