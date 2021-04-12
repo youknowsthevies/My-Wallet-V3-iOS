@@ -638,7 +638,7 @@ targets:
     templates:
       - Module
     templateAttributes:
-      featureName: BuySell
+      featureName: Transactions
   BuySellKitTests:
     dependencies:
     - target: BuySellKit
@@ -654,7 +654,7 @@ targets:
     templates:
       - ModuleTests
     templateAttributes:
-      featureName: BuySell
+      featureName: Transactions
   BuySellUIKit:
     dependencies:
     - target: BuySellKit
@@ -670,7 +670,7 @@ targets:
     templates:
       - Module
     templateAttributes:
-      featureName: BuySell
+      featureName: Transactions
   BuySellUIKitTests:
     dependencies:
     - target: BuySellUIKit
@@ -688,7 +688,7 @@ targets:
     templates:
       - ModuleTests
     templateAttributes:
-      featureName: BuySell
+      featureName: Transactions
   CommonCryptoKit:
     scheme:
       testTargets:
@@ -1163,19 +1163,18 @@ targets:
       featureName: Other
   TransactionKit:
     dependencies:
+    - carthage: BigInt
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
     scheme:
       testTargets:
       - TransactionKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Transactions
   TransactionKitTests:
     dependencies:
     - target: TransactionKit
@@ -1187,26 +1186,26 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Transactions
   TransactionUIKit:
     dependencies:
-    - target: TransactionKit
+    - carthage: BigInt
+    - target: KYCKit
+    - target: KYCUIKit
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
-    - target: KYCKit
-    - target: KYCUIKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - target: TransactionKit
     scheme:
       testTargets:
       - BuySellUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Transactions
   TransactionUIKitTests:
     dependencies:
     - target: TransactionUIKit
@@ -1220,7 +1219,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Transactions
   WalletPayloadKit:
     dependencies:
     - target: CommonCryptoKit
