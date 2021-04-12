@@ -788,12 +788,16 @@ targets:
       testTargets:
       - HDWalletKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Wallet
   HDWalletKitTests:
     dependencies:
     - target: HDWalletKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Wallet
   InterestKit:
     dependencies:
     - target: Localization
