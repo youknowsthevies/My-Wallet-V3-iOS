@@ -649,7 +649,9 @@ targets:
       testTargets:
       - BuySellKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: BuySell
   BuySellKitTests:
     dependencies:
     - target: BuySellKit
@@ -663,7 +665,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: BuySell
   BuySellUIKit:
     dependencies:
     - target: BuySellKit
@@ -681,7 +685,9 @@ targets:
       testTargets:
       - BuySellUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: BuySell
   BuySellUIKitTests:
     dependencies:
     - target: BuySellUIKit
@@ -697,7 +703,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: BuySell
   CommonCryptoKit:
     scheme:
       testTargets:
