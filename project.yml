@@ -978,24 +978,21 @@ targets:
     - FrameworkTest
   PlatformKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: CryptoSwift
+    - carthage: LibWally
     - target: CommonCryptoKit
     - target: Localization
     - target: NetworkKit
     - target: ToolKit
     - target: WalletPayloadKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    - carthage: RxCombine
-    - carthage: CryptoSwift
-    - carthage: LibWally
     scheme:
       testTargets:
       - PlatformKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Platform
   PlatformKitTests:
     dependencies:
     - target: PlatformKit
@@ -1007,28 +1004,28 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Platform
   PlatformUIKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: Charts
+    - carthage: Differentiator
+    - carthage: PhoneNumberKit
+    - carthage: RIBs
+    - carthage: RxDataSources
+    - carthage: Zxcvbn
     - target: Localization
     - target: PlatformKit
     - target: ToolKit
-    - carthage: BigInt
-    - carthage: Charts
-    - carthage: DIKit
-    - carthage: PhoneNumberKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    - carthage: Zxcvbn
-    - carthage: RxDataSources
-    - carthage: Differentiator
-    - carthage: RIBs
     scheme:
       testTargets:
       - PlatformUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Platform
   PlatformUIKitTests:
     dependencies:
     - target: PlatformUIKit
@@ -1040,7 +1037,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformUIKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Platform
   PolkadotKit:
     dependencies:
     - target: Localization
