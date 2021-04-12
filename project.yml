@@ -703,12 +703,16 @@ targets:
       testTargets:
       - CommonCryptoKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Other
   CommonCryptoKitTests:
     dependencies:
     - target: CommonCryptoKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Other
   DebugUIKit:
     dependencies:
     - target: ToolKit
@@ -719,7 +723,9 @@ targets:
     - carthage: RxRelay
     - carthage: RxSwift
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Other
   ERC20Kit:
     dependencies:
     - target: NetworkKit
@@ -926,7 +932,9 @@ targets:
     - FrameworkTest
   Localization:
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Other
   NetworkKit:
     configFiles:
       Debug Dev: Config/NetworkKitConfig/NetworkKit-Dev.xcconfig
@@ -1168,7 +1176,9 @@ targets:
       testTargets:
       - ToolKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Other
   ToolKitTests:
     dependencies:
     - target: ToolKit
@@ -1176,7 +1186,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Other
   TransactionKit:
     dependencies:
     - target: Localization
