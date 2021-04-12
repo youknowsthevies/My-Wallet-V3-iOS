@@ -174,6 +174,33 @@ targetTemplates:
     - group: ${target_name}/TestKit
       path: TestKit/Utilities
     type: bundle.unit-test
+  Module:
+    dependencies:
+      - carthage: DIKit
+      - carthage: RxCocoa
+      - carthage: RxRelay
+      - carthage: RxSwift
+    platform: iOS
+    sources:
+      - path: Modules/${featureName}/${target_name}
+        createIntermediateGroups: true
+        excludes:
+          - Scripts
+    type: framework
+  ModuleTests:
+    dependencies:
+      - carthage: DIKit
+      - carthage: RxRelay
+      - carthage: RxSwift
+      - carthage: RxBlocking
+      - carthage: RxTest
+    platform: iOS
+    sources:
+      - path: Modules/${featureName}/${target_name}
+        createIntermediateGroups: true
+      - group: Modules/${featureName}/${target_name}/TestKit
+        path: TestKit/Utilities
+    type: bundle.unit-test
 targets:
   ActivityKit:
     dependencies:
@@ -196,7 +223,9 @@ targets:
       testTargets:
       - ActivityKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Activity
   ActivityKitTests:
     dependencies:
     - target: ActivityKit
@@ -208,7 +237,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Activity
   ActivityUIKit:
     dependencies:
     - target: ActivityKit
@@ -228,7 +259,9 @@ targets:
       testTargets:
       - ActivityUIKitTests
     templates:
-    - Framework
+      - Module
+    templateAttributes:
+      featureName: Activity
   ActivityUIKitTests:
     dependencies:
     - target: ActivityUIKit
@@ -242,7 +275,9 @@ targets:
     - group: ${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templates:
-    - FrameworkTest
+      - ModuleTests
+    templateAttributes:
+      featureName: Activity
   AlgorandKit:
     dependencies:
     - target: Localization
