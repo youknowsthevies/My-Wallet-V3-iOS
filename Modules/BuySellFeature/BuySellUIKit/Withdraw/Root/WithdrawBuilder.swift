@@ -11,17 +11,6 @@ import PlatformUIKit
 import RIBs
 import UIKit
 
-/// Provides the entry point for `WithdrawRootRouter`
-public protocol WithdrawBuildable {
-    /// Builds the components for the Withdraw Flow
-    ///
-    ///
-    /// - Returns: A tuple consisting
-    ///     - `flow`: A `WithdrawFlowStarter` which allows the flow to start
-    ///     - `controller`: A `UINavigationController` object which acts as the root navigation of the flow.
-    func build() -> (flow: WithdrawFlowStarter, controller: UINavigationController)
-}
-
 public final class WithdrawBuilder: WithdrawBuildable {
 
     private let currency: FiatCurrency

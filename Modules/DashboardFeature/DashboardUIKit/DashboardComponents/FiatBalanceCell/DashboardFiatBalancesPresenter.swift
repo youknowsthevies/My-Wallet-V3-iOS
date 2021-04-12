@@ -1,0 +1,73 @@
+//
+//  DashboardFiatBalancesPresenter.swift
+//  Blockchain
+//
+//  Created by Daniel on 14/07/2020.
+//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import DIKit
+import PlatformKit
+import PlatformUIKit
+import RxCocoa
+import RxRelay
+import RxSwift
+
+final class DashboardFiatBalancesPresenter {
+    
+    // MARK: - Exposed Properties
+    
+    var tap: Driver<DashboardItemDisplayAction<CurrencyType>> {
+        selectionRelay
+            .asDriver()
+    }
+    
+    /// Streams only distinct actions
+    var action: Driver<DashboardItemDisplayAction<ViewPresenter>> {
+        _ = setup
+        return actionRelay
+            .asDriver()
+            .distinctUntilChanged()
+    }
+    
+    // MARK: - Private Properties
+    
+    private let selectionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyType>>(value: .hide)
+    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<ViewPresenter>>(value: .hide)
+    
+    private let fiatBalanceCollectionViewPresenter: ViewPresenter
+    private let interactor: DashboardFiatBalancesInteractor
+    private let disposeBag = DisposeBag()
+    
+    private lazy var setup: Void = {
+        let fiatBalanceCollectionViewPresenter = self.fiatBalanceCollectionViewPresenter
+        interactor.shouldAppear
+            .map { $0 ? .show(fiatBalanceCollectionViewPresenter) : .hide }
+            .bindAndCatch(to: actionRelay)
+            .disposed(by: disposeBag)
+    }()
+    
+    // MARK: - Setup
+    
+    init(interactor: DashboardFiatBalancesInteractor) {
+        self.interactor = interactor
+        
+        let fiatPresenting: FiatBalanceCollectionViewPresenting = resolve()
+        guard let viewPresenter = fiatPresenting as? CurrencyViewPresenter else {
+            abort()
+        }
+        fiatBalanceCollectionViewPresenter = viewPresenter
+        
+        viewPresenter
+            .tap?
+            .emit(onNext: { [weak self] currencyType in
+                guard let self = self else { return }
+                self.selectionRelay.accept(.show(currencyType))
+            })
+            .disposed(by: disposeBag)
+    }
+
+    func refresh() {
+        interactor.refresh()
+    }
+}

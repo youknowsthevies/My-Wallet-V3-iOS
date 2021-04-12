@@ -50,6 +50,10 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: BitcoinKitTests
         randomExecutionOrder: true
+      - name: DashboardKitTests
+        randomExecutionOrder: true
+      - name: DashboardUIKitTests
+        randomExecutionOrder: true
       - name: ERC20KitTests
         randomExecutionOrder: true
       - name: EthereumKitTests
@@ -447,6 +451,8 @@ targets:
     - target: Localization
     - target: ActivityKit
     - target: ActivityUIKit
+    - target: DashboardKit
+    - target: DashboardUIKit
     - target: KYCKit
     - target: KYCUIKit
     - target: DebugUIKit
@@ -660,6 +666,39 @@ targets:
       featureName: BuySellFeature
     templates:
     - ModuleTests
+  DashboardKit:
+    scheme:
+      testTargets:
+        - DashboardKitTests
+    templates:
+      - Module
+    templateAttributes:
+      featureName: DashboardFeature
+  DashboardKitTests:
+    dependencies:
+      - target: DashboardKit
+    templates:
+      - ModuleTests
+    templateAttributes:
+      featureName: DashboardFeature
+  DashboardUIKit:
+    dependencies:
+      - target: DashboardKit
+      - target: PlatformUIKit
+    scheme:
+      testTargets:
+        - DashboardUIKitTests
+    templates:
+      - Module
+    templateAttributes:
+      featureName: DashboardFeature
+  DashboardUIKitTests:
+    dependencies:
+      - target: DashboardUIKit
+    templates:
+      - ModuleTests
+    templateAttributes:
+      featureName: DashboardFeature
   CommonCryptoKit:
     scheme:
       testTargets:

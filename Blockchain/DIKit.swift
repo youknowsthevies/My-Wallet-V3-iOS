@@ -10,6 +10,8 @@ import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
 import BuySellKit
+import BuySellUIKit
+import DashboardUIKit
 import DebugUIKit
 import DIKit
 import ERC20Kit
@@ -23,11 +25,21 @@ import TransactionKit
 import TransactionUIKit
 import WalletPayloadKit
 
+extension BackupFundsSettingsRouter: DashboardUIKit.BackupRouterAPI {}
+
+extension AppCoordinator: DashboardUIKit.WalletOperationsRouting {}
+
+extension AnalyticsUserPropertyInteractor: DashboardUIKit.AnalyticsUserPropertyInteracting {}
+
+extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
+
 extension DependencyContainer {
     
     // MARK: - Blockchain Module
     
     static var blockchain = module {
+        
+        factory { NavigationRouter() as NavigationRouterAPI }
 
         single { AuthenticationCoordinator() }
 
@@ -61,10 +73,44 @@ extension DependencyContainer {
 
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
+        factory { BackupFundsCustodialRouter() as BackupRouterAPI }
+                
+        factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
+        
+        factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
+        
+        factory { DataProvider.default.balanceChange as BalanceChangeProviding }
+        
         single { TradeLimitsService() as TradeLimitsAPI }
 
         factory { SiftService() as SiftServiceAPI }
 
+        // MARK: - Dashboard
+        
+        factory { BackupFundsSettingsRouter() as DashboardUIKit.BackupRouterAPI }
+        
+        factory {
+            AccountsRouter(
+                routing: AppCoordinator.shared,
+                balanceProvider: DataProvider.default.balance,
+                backupRouter: BackupFundsSettingsRouter()
+            ) as AccountsRouting
+        }
+        
+        single { AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting }
+        
+        factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
+        
+        factory { AnnouncementPresenter() as DashboardUIKit.AnnouncementPresenting }
+        
+        factory { FiatBalanceCellProvider() as FiatBalanceCellProviding }
+        
+        factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
+        
+        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
+        
+        factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
+        
         // MARK: - Send
 
         factory { () -> SendScreenProvider in

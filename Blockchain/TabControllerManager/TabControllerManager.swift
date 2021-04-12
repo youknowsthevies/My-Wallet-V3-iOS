@@ -8,6 +8,7 @@
 
 import ActivityUIKit
 import BuySellUIKit
+import DashboardUIKit
 import DIKit
 import NetworkKit
 import PlatformKit

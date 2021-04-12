@@ -7,7 +7,9 @@
 //
 
 import BuySellKit
+import DIKit
 import PlatformKit
+import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit
@@ -76,11 +78,13 @@ public final class FiatBalanceCollectionViewInteractor {
             .disposed(by: disposeBag)
     }()
     
-    public init(tiersService: KYCTiersServiceAPI,
-                balanceProvider: BalanceProviding,
-                enabledCurrenciesService: EnabledCurrenciesServiceAPI,
-                paymentMethodsService: PaymentMethodsServiceAPI,
-                fiatCurrencyService: FiatCurrencyServiceAPI) {
+    public init(
+        tiersService: KYCTiersServiceAPI = resolve(),
+        balanceProvider: BalanceProviding = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.tiersService = tiersService
         self.balanceProvider = balanceProvider
         self.paymentMethodsService = paymentMethodsService
@@ -97,4 +101,19 @@ extension FiatBalanceCollectionViewInteractor: Equatable {
     public static func == (lhs: FiatBalanceCollectionViewInteractor, rhs: FiatBalanceCollectionViewInteractor) -> Bool {
         lhs.interactorsStateRelay.value == rhs.interactorsStateRelay.value
     }
+}
+
+extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
+
+    public var hasBalances: Observable<Bool> {
+        interactorsState
+            .compactMap { $0.value }
+            .map { $0.count > 0 }
+            .catchErrorJustReturn(false)
+    }
+    
+    public func reloadBalances() {
+        refresh()
+    }
+    
 }
