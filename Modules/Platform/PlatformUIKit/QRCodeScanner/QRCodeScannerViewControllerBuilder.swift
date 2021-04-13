@@ -23,11 +23,16 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
     private let parser: P
     private let textViewModel: QRCodeScannerTextViewModel
     private let completed: CompletionHandler
-    
-    public init(parser: P, textViewModel: QRCodeScannerTextViewModel, completed: @escaping CompletionHandler) {
+    private let closeHandler: (() -> Void)?
+
+    public init(parser: P,
+                textViewModel: QRCodeScannerTextViewModel,
+                completed: @escaping CompletionHandler,
+                closeHandler: (() -> Void)? = nil) {
         self.parser = parser
         self.textViewModel = textViewModel
         self.completed = completed
+        self.closeHandler = closeHandler
     }
     
     public func with(loadingViewPresenter: LoadingViewPresenting,
@@ -59,7 +64,9 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
         )
         
         guard let qrCodeScannerViewModel = vm else { return nil }
-        
+
+        qrCodeScannerViewModel.closeHandler = closeHandler
+
         let scannerViewController = QRCodeScannerViewController(
             presentationType: presentationType,
             viewModel: qrCodeScannerViewModel,

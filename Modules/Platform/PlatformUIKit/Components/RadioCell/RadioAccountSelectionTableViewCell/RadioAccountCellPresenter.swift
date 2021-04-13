@@ -28,8 +28,8 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     let viewModel: Driver<WalletViewViewModel>
     
     /// Selection relay
-    let selectedRelay = BehaviorRelay<Bool>(value: false)
-    
+    let selectedRelay = PublishRelay<Bool>()
+
     /// Name for radio image
     let imageName = BehaviorRelay<String?>(value: nil)
     
@@ -38,9 +38,9 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     public init(account: SingleAccount, selected: Bool = false) {
         let model: WalletViewViewModel = .init(account: account)
         viewModel = .just(model)
-        identity = model.identifier
-        image = Observable
-            .merge(selectedRelay.asObservable(), Observable.just(selected))
+        identity = model.identifier + (selected ? "selected" : "unselected")
+        image = selectedRelay.asObservable()
+            .startWith(selected)
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)
             .map { name in
@@ -54,7 +54,6 @@ public final class RadioAccountCellPresenter: IdentifiableType {
 
 extension RadioAccountCellPresenter: Equatable {
     public static func == (lhs: RadioAccountCellPresenter, rhs: RadioAccountCellPresenter) -> Bool {
-        lhs.identity == rhs.identity &&
-        lhs.selectedRelay.value == rhs.selectedRelay.value
+        lhs.identity == rhs.identity
     }
 }

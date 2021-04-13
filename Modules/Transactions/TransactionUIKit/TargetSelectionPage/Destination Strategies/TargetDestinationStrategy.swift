@@ -101,10 +101,6 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         guard action == .send else {
             fatalError("given action: \(action) is not supported")
         }
-        let walletInputfield = interactors.first(where: \.isWalletInputField)
-            .map { interactor in
-                TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
-            }
 
         let additionalWallets = interactors.compactMap { interactor -> TargetSelectionPageCellItem? in
             if !interactor.isWalletInputField {
@@ -114,11 +110,6 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         }
 
         var sections: [TargetSelectionPageSectionModel] = []
-        if let walletInputfield = walletInputfield {
-            sections.append(
-                .destination(header: provideSectionHeader(action: action, title: .to), items: [walletInputfield])
-            )
-        }
         if !additionalWallets.isEmpty {
             sections.append(
                 .destination(header: provideSectionHeader(action: action, title: .orSelect), items: additionalWallets)

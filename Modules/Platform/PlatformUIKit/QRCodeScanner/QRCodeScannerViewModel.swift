@@ -19,6 +19,7 @@ protocol QRCodeScannerViewModelProtocol: class {
     var scanningStopped: (() -> Void)? { get set }
     var closeButtonTapped: (() -> Void)? { get set }
     var scanComplete: ((Result<String, QRScannerError>) -> Void)? { get set }
+    var closeHandler: (() -> Void)? { get set }
     
     var videoPreviewLayer: CALayer? { get }
     var loadingText: String? { get }
@@ -50,7 +51,8 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     var scanningStopped: (() -> Void)?
     var closeButtonTapped: (() -> Void)?
     var scanComplete: ((Result<String, QRScannerError>) -> Void)?
-    
+    var closeHandler: (() -> Void)?
+
     let overlayViewModel: QRCodeScannerOverlayViewModel
     
     var videoPreviewLayer: CALayer? {
@@ -70,12 +72,14 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     private let scanner: QRCodeScannerProtocol
     private let completed: ((Result<P.Success, P.Failure>) -> Void)
     private let deepLinkQRCodeRouter: DeepLinkQRCodeRouter
+
     
     init?(parser: P,
           additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
           textViewModel: QRCodeScannerTextViewModel,
           scanner: QRCodeScannerProtocol,
-          completed: CompletionHandler?) {
+          completed: CompletionHandler?,
+          closeHandler: (() -> Void)? = nil) {
         guard let completed = completed else { return nil }
         
         let additionalLinkRoutes: [DeepLinkRoute]
@@ -90,6 +94,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         self.textViewModel = textViewModel
         self.scanner = scanner
         self.completed = completed
+        self.closeHandler = closeHandler
         self.overlayViewModel = .init(supportsCameraRoll: parser is AddressQRCodeParser)
         self.scanner.delegate = self
     }

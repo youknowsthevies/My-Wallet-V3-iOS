@@ -11,7 +11,7 @@ import PlatformUIKit
 
 public struct TargetSelectionHeaderBuilder: HeaderBuilder {
 
-    private let headerType: TargetSelectionHeaderType
+    let headerType: TargetSelectionHeaderType
 
     public init(headerType: TargetSelectionHeaderType) {
         self.headerType = headerType
