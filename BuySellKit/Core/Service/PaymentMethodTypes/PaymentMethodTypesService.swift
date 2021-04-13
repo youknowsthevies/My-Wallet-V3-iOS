@@ -313,25 +313,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     private func provideMethodTypes() -> Observable<[PaymentMethodType]> {
-        if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled {
-            return methodTypesWithLinkedBanks()
-        }
-        return methodTypesWithoutLinkedBanks()
-    }
-
-    private func methodTypesWithoutLinkedBanks() -> Observable<[PaymentMethodType]> {
-        Observable
-            .combineLatest(
-                paymentMethodsService.paymentMethods,
-                cardListService.cards,
-                balanceProvider.fiatFundsBalances
-            )
-            .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
-            }
-    }
-
-    private func methodTypesWithLinkedBanks() -> Observable<[PaymentMethodType]> {
         Observable
             .combineLatest(
                 paymentMethodsService.paymentMethods,

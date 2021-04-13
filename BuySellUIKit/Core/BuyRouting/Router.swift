@@ -42,7 +42,6 @@ public final class Router: RouterAPI {
     private let navigationRouter: NavigationRouterAPI
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let alertViewPresenter: AlertViewPresenterAPI
-    private let featureConfiguring: FeatureConfiguring
     
     private var cardRouter: CardRouter!
     
@@ -67,7 +66,6 @@ public final class Router: RouterAPI {
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 alertViewPresenter: AlertViewPresenterAPI = resolve(),
-                featureConfiguring: FeatureConfiguring = resolve(),
                 builder: Buildable,
                 kycRouter: KYCRouterAPI,
                 currency: CryptoCurrency) {
@@ -75,7 +73,6 @@ public final class Router: RouterAPI {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
-        self.featureConfiguring = featureConfiguring
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
         self.builder = builder
@@ -353,16 +350,8 @@ public final class Router: RouterAPI {
                 })
             .disposed(by: disposeBag)
     }
-    
-    private func showPaymentMethodsScreen() {
-        guard featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled else {
-            showOldPaymentMethodsScreen()
-            return
-        }
-        showACHPaymentMethodsScreen()
-    }
 
-    private func showACHPaymentMethodsScreen() {
+    private func showPaymentMethodsScreen() {
         let builder = ACHFlowRootBuilder(stateService: stateService)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
@@ -372,17 +361,6 @@ public final class Router: RouterAPI {
             self.achFlowRouter = nil
         }
         router.startFlow(flowDismissed: flowDimissed)
-    }
-
-    private func showOldPaymentMethodsScreen() {
-        let interactor = PaymentMethodsScreenInteractor(paymentMethodTypesService: paymentMethodTypesService)
-        let presenter = PaymentMethodsScreenPresenter(
-            interactor: interactor,
-            stateService: stateService
-        )
-        let viewController = PaymentMethodsScreenViewController(presenter: presenter)
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
     }
 
     private func showLinkBankFlow() {

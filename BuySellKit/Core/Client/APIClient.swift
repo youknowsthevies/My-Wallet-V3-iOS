@@ -20,7 +20,6 @@ typealias SimpleBuyClientAPI = EligibilityClientAPI &
                                OrderCreationClientAPI &
                                CardOrderConfirmationClientAPI &
                                QuoteClientAPI &
-                               PaymentMethodsClientAPI &
                                BeneficiariesClientAPI &
                                OrdersActivityClientAPI &
                                WithdrawalClientAPI &
@@ -315,28 +314,6 @@ final class APIClient: SimpleBuyClientAPI {
         let request = requestBuilder.get(
             path: path,
             parameters: parameters,
-            authenticated: true
-        )!
-        return communicator.perform(request: request)
-    }
-    
-    // MARK: - PaymentMethodsClientAPI
-    
-    func paymentMethods(for currency: String,
-                        checkEligibility: Bool) -> Single<PaymentMethodsResponse> {
-        let queryParameters = [
-            URLQueryItem(
-                name: Parameter.currency,
-                value: currency
-            ),
-            URLQueryItem(
-                name: Parameter.checkEligibility,
-                value: "\(checkEligibility)"
-            )
-        ]
-        let request = requestBuilder.get(
-            path: Path.paymentMethods,
-            parameters: queryParameters,
             authenticated: true
         )!
         return communicator.perform(request: request)

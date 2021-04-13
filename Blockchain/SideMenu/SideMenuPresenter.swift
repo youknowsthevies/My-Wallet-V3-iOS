@@ -22,13 +22,8 @@ class SideMenuPresenter {
     
     var sideMenuItems: Observable<[SideMenuItem]> {
         reactiveWallet.waitUntilInitialized
-            .flatMap(weak: self) { (self, _) -> Observable<Bool> in
-                self.featureFetcher
-                    .fetchBool(for: .simpleBuyEnabled)
-                    .asObservable()
-            }
-            .map(weak: self) { (self, isSimpleBuyEnabled) in
-                self.menuItems(showSimpleBuy: isSimpleBuyEnabled)
+            .map(weak: self) { (self, _) in
+                self.menuItems()
             }
             .startWith([])
             .observeOn(MainScheduler.instance)
@@ -49,7 +44,6 @@ class SideMenuPresenter {
     private let secureChannelInternalEnabled: Bool
     private var introductionSequence = WalletIntroductionSequence()
     private let introInterator: WalletIntroductionInteractor
-    private let featureFetcher: FeatureFetching
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let itemSelectionRelay = PublishRelay<SideMenuItem>()
     
@@ -58,7 +52,6 @@ class SideMenuPresenter {
     private let wallet: Wallet
     private let walletService: WalletOptionsAPI
     private let reactiveWallet: ReactiveWalletAPI
-    private let exchangeConfiguration: AppFeatureConfiguration
     private let secureChannelConfiguration: AppFeatureConfiguration
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
@@ -68,7 +61,6 @@ class SideMenuPresenter {
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletOptionsAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
-        featureFetcher: FeatureFetching = resolve(),
         appFeatureConfigurator: AppFeatureConfigurator = resolve(),
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         onboardingSettings: BlockchainSettings.Onboarding = .shared,
@@ -79,8 +71,6 @@ class SideMenuPresenter {
         self.reactiveWallet = reactiveWallet
         self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
-        self.featureFetcher = featureFetcher
-        exchangeConfiguration = appFeatureConfigurator.configuration(for: .exchangeLinking)
         secureChannelConfiguration = appFeatureConfigurator.configuration(for: .secureChannel)
         secureChannelInternalEnabled = internalFeatureFlagService.isEnabled(.secureChannel)
     }
@@ -138,22 +128,14 @@ class SideMenuPresenter {
         triggerNextStep()
     }
 
-    private func menuItems(showSimpleBuy: Bool) -> [SideMenuItem] {
+    private func menuItems() -> [SideMenuItem] {
         var items: [SideMenuItem] = [.accountsAndAddresses]
         
         if wallet.isLockboxEnabled() {
             items.append(.lockbox)
         }
-
-        if showSimpleBuy {
-            items.append(contentsOf: [.buy, .sell])
-        }
-
-        items += [.support, .airdrops, .settings]
         
-        if exchangeConfiguration.isEnabled {
-            items.append(.exchange)
-        }
+        items += [.buy, .sell, .support, .airdrops, .settings, .exchange]
         
         return items
     }

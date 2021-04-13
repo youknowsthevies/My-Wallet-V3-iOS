@@ -34,10 +34,11 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
     let fetchTriggerRelay = PublishRelay<Void>()
     
     private var _buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
-        custodialFeatureFetching
-            .featureEnabled(for: .simpleBuyEnabled)
-            .flatMap(weak: self) { (self, simpleBuyEnabled) in
-                guard simpleBuyEnabled else {
+        kycTiersService
+            .tiers
+            .map(\.isTier2Approved)
+            .flatMap(weak: self) { (self, tier2Approved) in
+                guard tier2Approved else {
                     return Single.just([])
                 }
                 return self.fetchBuySellActivityEvents
@@ -82,14 +83,14 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
     private let buySellActivityRelay = BehaviorRelay<[BuySellActivityItemEvent]>(value: [])
     private let currencyType: CurrencyType
     private let service: BuySellKit.OrdersServiceAPI
+    private let kycTiersService: KYCTiersServiceAPI
     private let disposeBag = DisposeBag()
-    private let custodialFeatureFetching: CustodialFeatureFetching
 
     init(currency: CryptoCurrency,
          service: BuySellKit.OrdersServiceAPI,
-         custodialFeatureFetching: CustodialFeatureFetching = resolve()) {
+         kycTiersSerivice: KYCTiersServiceAPI = resolve()) {
         self.currencyType = .crypto(currency)
         self.service = service
-        self.custodialFeatureFetching = custodialFeatureFetching
+        self.kycTiersService = kycTiersSerivice
     }
 }

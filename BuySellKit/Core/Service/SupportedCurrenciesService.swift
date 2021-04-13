@@ -29,10 +29,9 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
 
     // MARK: - Setup
 
-    init(featureFetcher: FeatureFetching = resolve(),
-         pairsService: SupportedPairsServiceAPI = resolve(),
+    init(pairsService: SupportedPairsServiceAPI = resolve(),
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
-
+        
         cachedValue = .init(
             configuration: .init(
                 identifier: "simple-buy-supported-currencies",
@@ -40,19 +39,12 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
                 flushNotificationName: .logout
             )
         )
-
+        
         cachedValue
             .setFetch { () -> Single<Set<FiatCurrency>> in
-                featureFetcher
-                    .fetchBool(for: .simpleBuyEnabled)
-                    .flatMap { isFeatureEnabled -> Single<Set<FiatCurrency>> in
-                        guard isFeatureEnabled else {
-                            return .just([])
-                        }
-                        return pairsService
-                            .fetchPairs(for: .all)
-                            .map { $0.fiatCurrencySet }
-                    }
+                pairsService
+                    .fetchPairs(for: .all)
+                    .map { $0.fiatCurrencySet }
             }
     }
 }

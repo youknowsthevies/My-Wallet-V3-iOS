@@ -83,7 +83,6 @@ extension LocalizationConstants.Settings {
         )
         public static let remove = NSLocalizedString("Remove Card", comment: "Remove Card")
         public static let unverified = NSLocalizedString("You must have Gold Level verification status to add a credit card.", comment: "You must have Gold Level verification status to add a credit card.")
-        public static let disabled = NSLocalizedString("Not currently available", comment: "Not currently available")
     }
     
     public struct Bank {
@@ -96,7 +95,6 @@ extension LocalizationConstants.Settings {
         )
         public static let remove = NSLocalizedString("Remove Bank", comment: "Remove Bank")
         public static let unverified = NSLocalizedString("You must have Gold Level verification status to link a bank.", comment: "You must have Gold Level verification status to link a bank")
-        public static let disabled = NSLocalizedString("Not currently available", comment: "Not currently available")
         
         public static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
     }

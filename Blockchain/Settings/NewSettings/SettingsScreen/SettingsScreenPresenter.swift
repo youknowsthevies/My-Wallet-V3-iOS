@@ -68,7 +68,6 @@ final class SettingsScreenPresenter {
         aboutSectionPresenter = AboutSectionPresenter()
         
         connectPresenter = .init(
-            featureConfiguration: interactor.pitLinkingConfiguration,
             exchangeConnectionStatusProvider: interactor.pitConnnectionProviding
         )
         

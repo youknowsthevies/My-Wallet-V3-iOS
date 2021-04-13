@@ -74,19 +74,10 @@ final class SwapDescriptionIntroductionEvent: WalletIntroductionEvent, WalletInt
     }
     
     private var buttonTitle: String {
-        /// If `Buy` is enabled, the user will see an additional introduction event.
-        switch isSimpleBuyEnabled {
-        case true:
-            return LocalizationConstants.Onboarding.IntroductionSheet.next
-        case false:
-            return LocalizationConstants.Onboarding.IntroductionSheet.done
-        }
+        LocalizationConstants.Onboarding.IntroductionSheet.next
     }
     
-    private let isSimpleBuyEnabled: Bool
-    
-    init(isSimpleBuyEnabled: Bool, selection: @escaping WalletIntroductionAction) {
-        self.isSimpleBuyEnabled = isSimpleBuyEnabled
+    init(selection: @escaping WalletIntroductionAction) {
         self.selection = selection
     }
 }

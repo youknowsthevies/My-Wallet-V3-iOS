@@ -137,8 +137,6 @@ extension DependencyContainer {
         
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
-        factory { CustodialFeatureFetcher() as CustodialFeatureFetching }
-
         single { () -> WalletOptionsAPI in
             WalletService()
         }

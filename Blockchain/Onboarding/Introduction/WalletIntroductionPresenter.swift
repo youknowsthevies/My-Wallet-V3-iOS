@@ -46,7 +46,6 @@ final class WalletIntroductionPresenter: NSObject {
     // The current introduction sequence.
     private var introductionSequence = WalletIntroductionSequence()
 
-    private let featureConfigurator: FeatureConfiguring
     private let interactor: WalletIntroductionInteractor
     private let recorder: AnalyticsEventRecording
     private let screen: WalletIntroductionLocation.Screen
@@ -54,13 +53,9 @@ final class WalletIntroductionPresenter: NSObject {
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let disposeBag = DisposeBag()
 
-    init(
-        featureConfigurator: FeatureConfiguring = resolve(),
-        onboardingSettings: BlockchainSettings.Onboarding = .shared,
-        screen: WalletIntroductionLocation.Screen,
-        recorder: AnalyticsEventRecording = resolve()
-    ) {
-        self.featureConfigurator = featureConfigurator
+    init(onboardingSettings: BlockchainSettings.Onboarding = .shared,
+         screen: WalletIntroductionLocation.Screen,
+         recorder: AnalyticsEventRecording = resolve()) {
         self.onboardingSettings = onboardingSettings
         self.screen = screen
         self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
@@ -178,12 +173,9 @@ extension WalletIntroductionPresenter {
     }
 
     private var swapDescription: SwapDescriptionIntroductionEvent {
-        let isSimpleBuyEnabled = featureConfigurator.configuration(for: .simpleBuyEnabled).isEnabled
-        return SwapDescriptionIntroductionEvent(isSimpleBuyEnabled: isSimpleBuyEnabled, selection: { [weak self] in
+        SwapDescriptionIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             self.triggerNextStep()
-            // If `Buy` isn't enabled, then we don't need to open the side menu.
-            guard isSimpleBuyEnabled else { return }
             AppCoordinator.shared.toggleSideMenu()
         })
     }

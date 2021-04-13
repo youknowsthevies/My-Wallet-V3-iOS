@@ -16,33 +16,24 @@ final class ConnectSectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .connect
     
     var state: Observable<State> {
-        showConnectSection
-            .map(weak: self) { (self, showConnect) -> State in
-                guard showConnect else { return .loaded(next: .empty) }
-                let presenter: PITConnectionCellPresenter = .init(
-                    pitConnectionProvider: self.exchangeConnectionStatusProvider
+        let presenter: PITConnectionCellPresenter = .init(
+            pitConnectionProvider: exchangeConnectionStatusProvider
+        )
+        let state = State.loaded(next:
+            .some(
+                .init(
+                    sectionType: sectionType,
+                    items: [.init(cellType: .badge(.pitConnection, presenter))]
                 )
-                return .loaded(next:
-                    .some(
-                        .init(
-                            sectionType: self.sectionType,
-                            items: [.init(cellType: .badge(.pitConnection, presenter))]
-                        )
-                    )
-                )
-        }
+            )
+        )
+        
+        return .just(state)
     }
-    
-    private var showConnectSection: Observable<Bool> {
-        .just(configuration.isEnabled)
-    }
-    
-    private let configuration: AppFeatureConfiguration
+
     private let exchangeConnectionStatusProvider: PITConnectionStatusProviding
-    
-    init(featureConfiguration: AppFeatureConfiguration,
-         exchangeConnectionStatusProvider: PITConnectionStatusProviding) {
-        self.configuration = featureConfiguration
+
+    init(exchangeConnectionStatusProvider: PITConnectionStatusProviding) {
         self.exchangeConnectionStatusProvider = exchangeConnectionStatusProvider
     }
 }

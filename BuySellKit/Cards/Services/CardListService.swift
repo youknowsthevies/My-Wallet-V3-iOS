@@ -53,18 +53,15 @@ public final class CardListService: CardListServiceAPI {
 
     private let client: CardListClientAPI
     private let reactiveWallet: ReactiveWalletAPI
-    private let featureFetcher: FeatureFetching
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
 
     // MARK: - Setup
     
     public init(client: CardListClientAPI = resolve(),
                 reactiveWallet: ReactiveWalletAPI = resolve(),
-                featureFetcher: FeatureFetching = resolve(),
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.client = client
         self.reactiveWallet = reactiveWallet
-        self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
 
         NotificationCenter.when(.logout) { [weak self] _ in
@@ -84,14 +81,7 @@ public final class CardListService: CardListServiceAPI {
 
     /// Always fetches data from API, updates relay on success.
     private func createFetchSingle() -> Single<[CardData]> {
-        featureFetcher
-            .fetchBool(for: .simpleBuyCardsEnabled)
-            .flatMap(weak: self) { (self, enabled) -> Single<[CardPayload]> in
-                guard enabled else {
-                    return .just([])
-                }
-                return self.client.cardList
-            }
+        client.cardList
             .map { Array<CardData>.init(response: $0) }
             .do(onSuccess: { [weak self] (cards: [CardData]) in
                 self?.cardsRelay.accept(cards)

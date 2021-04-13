@@ -7,7 +7,6 @@
 //
 
 import BuySellKit
-import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -26,13 +25,7 @@ final class CardSettingsSectionInteractor {
     let addPaymentMethodInteractor: AddPaymentMethodInteractor
     
     private lazy var setup: Void = {
-        featureFetcher
-            .fetchBool(for: .simpleBuyCardsEnabled)
-            .asObservable()
-            .flatMap(weak: self) { (self, enabled) -> Observable<State> in
-                guard enabled else { return .just(.invalid(.empty)) }
-                return self.cardsState
-            }
+        cardsState
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
@@ -54,16 +47,13 @@ final class CardSettingsSectionInteractor {
 
     // MARK: - Injected
     
-    private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let tierLimitsProvider: TierLimitsProviding
     
     // MARK: - Setup
     
-    init(featureFetcher: FeatureFetching = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          tierLimitsProvider: TierLimitsProviding) {
-        self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
         
@@ -72,8 +62,7 @@ final class CardSettingsSectionInteractor {
             addNewInteractor: AddCardInteractor(
                 paymentMethodTypesService: paymentMethodTypesService
             ),
-            tiersLimitsProvider: tierLimitsProvider,
-            featureFetcher: featureFetcher
+            tiersLimitsProvider: tierLimitsProvider
         )
     }
 }

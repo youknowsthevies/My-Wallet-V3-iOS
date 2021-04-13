@@ -103,21 +103,18 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     }
     
     // MARK: - Properties
-    
-    private let featureConfigurator: FeatureConfiguring
+
     private let communicator: NetworkCommunicatorAPI
     private let repository: ExchangeAccountRepositoryAPI
     private let urlPrefix: String
         
     // MARK: - Setup
     
-    init(featureConfigurator: FeatureConfiguring = resolve(),
-         repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
+    init(repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
          communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
          urlPrefix: String = BlockchainAPI.shared.retailCoreUrl) {
         self.communicator = communicator
         self.repository = repository
-        self.featureConfigurator = featureConfigurator
         self.urlPrefix = urlPrefix
     }
 
@@ -125,11 +122,6 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     
     /// Fetches the Exchange address for a given asset type
     func fetchAddress(for asset: CryptoCurrency) -> Single<String> {
-        
-        /// Make sure that the config for Exchange is enabled before moving on to fetch the address
-        guard featureConfigurator.configuration(for: .exchangeLinking).isEnabled else {
-            return Single.error(AppFeatureConfiguration.ConfigError.disabled)
-        }
         let url = "\(urlPrefix)/payments/accounts/linked"
         let data = AddressRequestBody(currency: asset.code)
         

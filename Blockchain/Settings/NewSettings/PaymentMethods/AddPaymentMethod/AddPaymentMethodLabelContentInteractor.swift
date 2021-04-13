@@ -19,7 +19,6 @@ struct AddPaymentMethodLocalizedStrings {
     private static var card: AddPaymentMethodLocalizedStrings {
         typealias LocalizedString = LocalizationConstants.Settings.Card
         return AddPaymentMethodLocalizedStrings(
-            featureDisabled: LocalizedString.disabled,
             kycDisabled: LocalizedString.unverified,
             notAbleToAddNew: LocalizedString.maximum,
             cta: LocalizedString.add,
@@ -30,7 +29,6 @@ struct AddPaymentMethodLocalizedStrings {
     private static func bank(for fiatCurrency: FiatCurrency) -> AddPaymentMethodLocalizedStrings {
         typealias LocalizedString = LocalizationConstants.Settings.Bank
         return AddPaymentMethodLocalizedStrings(
-            featureDisabled: LocalizedString.disabled,
             kycDisabled: LocalizedString.unverified,
             notAbleToAddNew: LocalizedString.maximum,
             cta: "\(LocalizedString.addPrefix) \(fiatCurrency.code) \(LocalizedString.addSuffix)",
@@ -38,7 +36,6 @@ struct AddPaymentMethodLocalizedStrings {
         )
     }
     
-    let featureDisabled: String
     let kycDisabled: String
     let notAbleToAddNew: String
     let cta: String
@@ -105,11 +102,9 @@ final class AddPaymentMethodLabelContentInteractor: LabelContentInteracting {
         Observable
             .combineLatest(
                 interactor.isAbleToAddNew,
-                interactor.isKYCVerified,
-                interactor.isFeatureEnabled
+                interactor.isKYCVerified
             )
-            .map { (isAbleToAddNew, isKYCVerified, isFeatureEnabled) in
-                guard isFeatureEnabled else { return localizedStrings.featureDisabled }
+            .map { (isAbleToAddNew, isKYCVerified) in
                 guard isKYCVerified else { return localizedStrings.kycDisabled }
                 guard isAbleToAddNew else { return localizedStrings.notAbleToAddNew }
                 return localizedStrings.cta

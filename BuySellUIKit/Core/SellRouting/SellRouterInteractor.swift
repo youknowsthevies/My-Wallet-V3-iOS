@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -165,7 +165,6 @@ public final class SellRouterInteractor: Interactor {
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let accountSelectionService: AccountSelectionServiceAPI
-    private let featureFetching: FeatureFetching
     private let balanceProvider: BalanceProviding
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
@@ -179,13 +178,11 @@ public final class SellRouterInteractor: Interactor {
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 eligibilityService: EligibilityServiceAPI = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
-                featureFetching: FeatureFetching = resolve(),
                 balanceProvider: BalanceProviding,
                 loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve()) {
         self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
-        self.featureFetching = featureFetching
         self.accountSelectionService = accountSelectionService
         self.balanceProvider = balanceProvider
         self.loader = loader
@@ -210,20 +207,14 @@ public final class SellRouterInteractor: Interactor {
 
         Single.zip(
                 kycTiersService.fetchTiers(),
-                featureFetching.fetchBool(for: .simpleBuyEnabled),
-                featureFetching.fetchBool(for: .simpleBuyFundsEnabled),
                 eligibility
             )
-            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2), eligible: $0.3) }
+            .map { (tiers: $0.0, eligible: $0.1) }
             .handleLoaderForLifecycle(
                 loader: loader,
                 style: .circle
             )
-            .map { (tiers: KYC.UserTiers, isEnabled: Bool, eligible: Bool) -> State in
-                guard isEnabled else {
-                    // Feature is disabled
-                    return .ineligible
-                }
+            .map { (tiers: KYC.UserTiers, eligible: Bool) -> State in
                 let status = tiers.tierAccountStatus(for: .tier2)
                 switch (status, eligible) {
                 case (.none, _):
@@ -275,28 +266,13 @@ public final class SellRouterInteractor: Interactor {
     }
     
     public func nextFromKYC() {
-        Single.zip(
-                kycTiersService.fetchTiers(),
-                featureFetching.fetchBool(for: .simpleBuyEnabled),
-                featureFetching.fetchBool(for: .simpleBuyFundsEnabled)
-            )
-            .map { (tiers: $0.0, isEnabled: ($0.1 && $0.2)) }
+        kycTiersService.fetchTiers()
             .handleLoaderForLifecycle(
                 loader: loader,
-              style: .circle
+                style: .circle
             )
-            .map { values -> States in
-                let isTier2Approved = values.tiers.isTier2Approved
-                let isEnabled = values.isEnabled
-                let state: State
-                switch (isTier2Approved, isEnabled) {
-                case (true, true):
-                    state = .accountSelector
-                case (_, false):
-                    state = .ineligible
-                case (false, true):
-                    state = .inactive
-                }
+            .map { tiers -> States in
+                let state: State = tiers.isTier2Approved ? .accountSelector : .inactive
                 let states = States(current: state, previous: [.inactive])
                 return states
             }

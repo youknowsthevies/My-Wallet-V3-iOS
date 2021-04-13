@@ -33,7 +33,7 @@ class SavingAccountService: SavingAccountServiceAPI {
     
     private let client: SavingsAccountClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let custodialFeatureFetcher: CustodialFeatureFetching
+    private let kycTiersService: KYCTiersServiceAPI
     private let cachedValue: CachedValue<CustodialAccountBalanceStates>
 
     private lazy var setup: Void = {
@@ -47,10 +47,10 @@ class SavingAccountService: SavingAccountServiceAPI {
 
     init(client: SavingsAccountClientAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         custodialFeatureFetcher: CustodialFeatureFetching = resolve()) {
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
-        self.custodialFeatureFetcher = custodialFeatureFetcher
+        self.kycTiersService = kycTiersService
         self.cachedValue = CachedValue(configuration: .onSubscription())
     }
 
@@ -79,14 +79,12 @@ class SavingAccountService: SavingAccountServiceAPI {
 
     private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {
         Single.zip(
-                custodialFeatureFetcher
-                    .featureEnabled(for: .interestAccountEnabled),
+                kycTiersService.tiers.map(\.isTier2Approved),
                 fiatCurrencyService.fiatCurrency
             )
             .flatMap(weak: self) { (self, values) in
-                let interestAccountEnabled = values.0
-                let fiatCurrency = values.1
-                guard interestAccountEnabled else {
+                let (tier2Approved, fiatCurrency) = values
+                guard tier2Approved else {
                     return Single.just(.empty)
                 }
                 return self.client.balance(with: fiatCurrency).map { balance in

@@ -43,19 +43,16 @@ final class BanksSettingsSectionInteractor {
     }
         
     private let beneficiariesService: BeneficiariesServiceAPI
-    private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let tierLimitsProvider: TierLimitsProviding
 
     // MARK: - Setup
     
     init(beneficiariesService: BeneficiariesServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          tierLimitsProvider: TierLimitsProviding) {
         self.beneficiariesService = beneficiariesService
-        self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
         
@@ -67,8 +64,7 @@ final class BanksSettingsSectionInteractor {
                         beneficiariesService: beneficiariesService,
                         fiatCurrency: $0
                     ),
-                    tiersLimitsProvider: tierLimitsProvider,
-                    featureFetcher: featureFetcher
+                    tiersLimitsProvider: tierLimitsProvider
                 )
             }
     }
