@@ -219,7 +219,7 @@ targets:
       testTargets:
       - ActivityKitTests
     templateAttributes:
-      featureName: Activity
+      featureName: ActivityFeature
     templates:
     - Module
   ActivityKitTests:
@@ -233,7 +233,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Activity
+      featureName: ActivityFeature
     templates:
     - ModuleTests
   ActivityUIKit:
@@ -251,7 +251,7 @@ targets:
       testTargets:
       - ActivityUIKitTests
     templateAttributes:
-      featureName: Activity
+      featureName: ActivityFeature
     templates:
     - Module
   ActivityUIKitTests:
@@ -267,7 +267,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Activity
+      featureName: ActivityFeature
     templates:
     - ModuleTests
   AlgorandKit:
@@ -284,7 +284,7 @@ targets:
       testTargets:
       - AlgorandKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   AlgorandKitTests:
@@ -298,7 +298,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   BitcoinCashKit:
@@ -318,7 +318,7 @@ targets:
       testTargets:
       - BitcoinCashKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   BitcoinCashKitTests:
@@ -334,7 +334,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   BitcoinChainKit:
@@ -351,7 +351,7 @@ targets:
       testTargets:
       - BitcoinChainKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   BitcoinChainKitTests:
@@ -367,7 +367,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   BitcoinKit:
@@ -385,7 +385,7 @@ targets:
       testTargets:
       - BitcoinKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   BitcoinKitTests:
@@ -401,7 +401,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   Blockchain:
@@ -632,7 +632,7 @@ targets:
       testTargets:
       - BuySellKitTests
     templateAttributes:
-      featureName: Transactions
+      featureName: BuySellFeature
     templates:
     - Module
   BuySellKitTests:
@@ -648,7 +648,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templateAttributes:
-      featureName: Transactions
+      featureName: BuySellFeature
     templates:
     - ModuleTests
   BuySellUIKit:
@@ -664,7 +664,7 @@ targets:
       testTargets:
       - BuySellUIKitTests
     templateAttributes:
-      featureName: Transactions
+      featureName: BuySellFeature
     templates:
     - Module
   BuySellUIKitTests:
@@ -682,7 +682,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/BuySellKit
     templateAttributes:
-      featureName: Transactions
+      featureName: BuySellFeature
     templates:
     - ModuleTests
   CommonCryptoKit:
@@ -690,14 +690,14 @@ targets:
       testTargets:
       - CommonCryptoKitTests
     templateAttributes:
-      featureName: Other
+      featureName: Cryptography
     templates:
     - Module
   CommonCryptoKitTests:
     dependencies:
     - target: CommonCryptoKit
     templateAttributes:
-      featureName: Other
+      featureName: Cryptography
     templates:
     - ModuleTests
   DebugUIKit:
@@ -706,7 +706,7 @@ targets:
     - target: PlatformUIKit
     - target: ToolKit
     templateAttributes:
-      featureName: Other
+      featureName: Debug
     templates:
     - Module
   ERC20Kit:
@@ -723,7 +723,7 @@ targets:
       testTargets:
       - ERC20KitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   ERC20KitTests:
@@ -741,7 +741,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ERC20Kit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   EthereumKit:
@@ -757,7 +757,7 @@ targets:
       testTargets:
       - EthereumKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   EthereumKitTests:
@@ -773,7 +773,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   HDWalletKit:
@@ -784,14 +784,14 @@ targets:
       testTargets:
       - HDWalletKitTests
     templateAttributes:
-      featureName: Wallet
+      featureName: HDWallet
     templates:
     - Module
   HDWalletKitTests:
     dependencies:
     - target: HDWalletKit
     templateAttributes:
-      featureName: Wallet
+      featureName: HDWallet
     templates:
     - ModuleTests
   InterestKit:
@@ -804,7 +804,7 @@ targets:
       testTargets:
       - InterestKitTests
     templateAttributes:
-      featureName: Wallet
+      featureName: InterestFeature
     templates:
     - Module
   InterestKitTests:
@@ -818,7 +818,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Wallet
+      featureName: InterestFeature
     templates:
     - ModuleTests
   InterestUIKit:
@@ -834,7 +834,7 @@ targets:
       testTargets:
       - InterestUIKitTests
     templateAttributes:
-      featureName: Wallet
+      featureName: InterestFeature
     templates:
     - Module
   InterestUIKitTests:
@@ -850,7 +850,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Wallet
+      featureName: InterestFeature
     templates:
     - ModuleTests
   KYCKit:
@@ -863,7 +863,7 @@ targets:
       testTargets:
       - KYCKitTests
     templateAttributes:
-      featureName: KYC
+      featureName: KYCFeature
     templates:
     - Module
   KYCKitTests:
@@ -877,7 +877,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: KYC
+      featureName: KYCFeature
     templates:
     - ModuleTests
   KYCUIKit:
@@ -893,7 +893,7 @@ targets:
       testTargets:
       - KYCUIKitTests
     templateAttributes:
-      featureName: KYC
+      featureName: KYCFeature
     templates:
     - Module
   KYCUIKitTests:
@@ -909,12 +909,12 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: KYC
+      featureName: KYCFeature
     templates:
     - ModuleTests
   Localization:
     templateAttributes:
-      featureName: Other
+      featureName: Localization
     templates:
     - Module
   NetworkKit:
@@ -1051,7 +1051,7 @@ targets:
       testTargets:
       - PolkadotKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   PolkadotKitTests:
@@ -1065,7 +1065,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/NetworkKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   StellarKit:
@@ -1079,7 +1079,7 @@ targets:
       testTargets:
       - StellarKitTests
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - Module
   StellarKitTests:
@@ -1093,7 +1093,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/StellarKit
     templateAttributes:
-      featureName: Crypto Assets
+      featureName: CryptoAssets
     templates:
     - ModuleTests
   TestKit:
@@ -1147,7 +1147,7 @@ targets:
       testTargets:
       - ToolKitTests
     templateAttributes:
-      featureName: Other
+      featureName: ToolKit
     templates:
     - Module
   ToolKitTests:
@@ -1157,7 +1157,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
     templateAttributes:
-      featureName: Other
+      featureName: ToolKit
     templates:
     - ModuleTests
   TransactionKit:
@@ -1171,7 +1171,7 @@ targets:
       testTargets:
       - TransactionKitTests
     templateAttributes:
-      featureName: Transactions
+      featureName: TransactionsFeature
     templates:
     - Module
   TransactionKitTests:
@@ -1185,7 +1185,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Transactions
+      featureName: TransactionsFeature
     templates:
     - ModuleTests
   TransactionUIKit:
@@ -1202,7 +1202,7 @@ targets:
       testTargets:
       - BuySellUIKitTests
     templateAttributes:
-      featureName: Transactions
+      featureName: TransactionsFeature
     templates:
     - Module
   TransactionUIKitTests:
@@ -1218,7 +1218,7 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/PlatformKit
     templateAttributes:
-      featureName: Transactions
+      featureName: TransactionsFeature
     templates:
     - ModuleTests
   WalletPayloadKit:
@@ -1231,7 +1231,7 @@ targets:
       testTargets:
       - WalletPayloadKitTests
     templateAttributes:
-      featureName: Other
+      featureName: WalletPayload
     templates:
     - Module
   WalletPayloadKitTests:
@@ -1241,6 +1241,6 @@ targets:
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Mocks/ToolKit
     templateAttributes:
-      featureName: Other
+      featureName: WalletPayload
     templates:
     - ModuleTests
