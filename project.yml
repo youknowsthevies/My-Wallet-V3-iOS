@@ -196,6 +196,21 @@ targetTemplates:
     - carthage: RxTest
     platform: iOS
     sources:
+    - createIntermediateGroups: true
+      path: Modules/${featureName}/${target_name}
+    - createIntermediateGroups: true
+      path: TestKit/Utilities
+      type: folder
+    type: bundle.unit-test
+  ModuleTests2:
+    dependencies:
+    - carthage: DIKit
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - carthage: RxBlocking
+    - carthage: RxTest
+    platform: iOS
+    sources:
     - path: Modules/${featureName}/${target_name}
     - group: Modules/${featureName}/${target_name}/TestKit
       path: TestKit/Utilities
@@ -235,7 +250,7 @@ targets:
     templateAttributes:
       featureName: ActivityFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   ActivityUIKit:
     dependencies:
     - carthage: RxDataSources
@@ -269,7 +284,7 @@ targets:
     templateAttributes:
       featureName: ActivityFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   AlgorandKit:
     dependencies:
     - target: Localization
@@ -300,7 +315,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
@@ -336,7 +351,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   BitcoinChainKit:
     dependencies:
     - target: PlatformKit
@@ -369,7 +384,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   BitcoinKit:
     dependencies:
     - carthage: BigInt
@@ -403,7 +418,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   Blockchain:
     configFiles:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
@@ -650,7 +665,7 @@ targets:
     templateAttributes:
       featureName: BuySellFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   BuySellUIKit:
     dependencies:
     - target: BuySellKit
@@ -684,7 +699,7 @@ targets:
     templateAttributes:
       featureName: BuySellFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   CommonCryptoKit:
     scheme:
       testTargets:
@@ -699,7 +714,7 @@ targets:
     templateAttributes:
       featureName: Cryptography
     templates:
-    - ModuleTests
+    - ModuleTests2
   DebugUIKit:
     dependencies:
     - target: PlatformKit
@@ -743,7 +758,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   EthereumKit:
     dependencies:
     - carthage: BigInt
@@ -775,7 +790,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   HDWalletKit:
     dependencies:
     - target: CommonCryptoKit
@@ -793,7 +808,7 @@ targets:
     templateAttributes:
       featureName: HDWallet
     templates:
-    - ModuleTests
+    - ModuleTests2
   InterestKit:
     dependencies:
     - target: Localization
@@ -820,7 +835,7 @@ targets:
     templateAttributes:
       featureName: InterestFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   InterestUIKit:
     dependencies:
     - target: CommonCryptoKit
@@ -852,7 +867,7 @@ targets:
     templateAttributes:
       featureName: InterestFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   KYCKit:
     dependencies:
     - target: Localization
@@ -879,7 +894,7 @@ targets:
     templateAttributes:
       featureName: KYCFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   KYCUIKit:
     dependencies:
     - carthage: Veriff
@@ -911,7 +926,7 @@ targets:
     templateAttributes:
       featureName: KYCFeature
     templates:
-    - ModuleTests
+    - ModuleTests2
   Localization:
     templateAttributes:
       featureName: Localization
@@ -1006,7 +1021,7 @@ targets:
     templateAttributes:
       featureName: Platform
     templates:
-    - ModuleTests
+    - ModuleTests2
   PlatformUIKit:
     dependencies:
     - carthage: BigInt
@@ -1039,7 +1054,7 @@ targets:
     templateAttributes:
       featureName: Platform
     templates:
-    - ModuleTests
+    - ModuleTests2
   PolkadotKit:
     dependencies:
     - carthage: BigInt
@@ -1067,7 +1082,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   StellarKit:
     dependencies:
     - target: PlatformKit
@@ -1095,7 +1110,7 @@ targets:
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests
+    - ModuleTests2
   TestKit:
     platform: iOS
     sources:
@@ -1154,8 +1169,9 @@ targets:
     dependencies:
     - target: ToolKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
+    - createIntermediateGroups: true
       path: TestKit/Mocks/ToolKit
+      type: folder
     templateAttributes:
       featureName: ToolKit
     templates:
@@ -1178,12 +1194,15 @@ targets:
     dependencies:
     - target: TransactionKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
+    - createIntermediateGroups: true
       path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
+      type: folder
+    - createIntermediateGroups: true
       path: TestKit/Mocks/PlatformKit
+      type: folder
+    - createIntermediateGroups: true
+      path: TestKit/Mocks/ToolKit
+      type: folder
     templateAttributes:
       featureName: TransactionsFeature
     templates:
@@ -1209,14 +1228,18 @@ targets:
     dependencies:
     - target: TransactionUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: Modules/${featureName}/${target_name}/TestKit
+    - createIntermediateGroups: true
       path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
+      type: folder
+    - createIntermediateGroups: true
       path: TestKit/Mocks/PlatformKit
+      type: folder
+    - createIntermediateGroups: true
+      path: TestKit/Mocks/PlatformUIKit
+      type: folder
+    - createIntermediateGroups: true
+      path: TestKit/Mocks/ToolKit
+      type: folder
     templateAttributes:
       featureName: TransactionsFeature
     templates:
@@ -1238,8 +1261,9 @@ targets:
     dependencies:
     - target: WalletPayloadKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
+    - createIntermediateGroups: true
       path: TestKit/Mocks/ToolKit
+      type: folder
     templateAttributes:
       featureName: WalletPayload
     templates:
