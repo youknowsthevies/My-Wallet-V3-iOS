@@ -52,9 +52,8 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
     }
     
     private func prepareServiceForHttpCodeOk(with fixture: Fixture) -> RemoteNotificationNetworkService {
-        let communicator = MockNetworkCommunicator()
-        communicator.response = (filename: fixture.rawValue, bundle: Bundle(for: RemoteNotificationNetworkServiceTests.self))
-        let service = RemoteNotificationNetworkService(communicator: communicator)
-        return service
+        let networkAdapter = NetworkAdapterMock()
+        networkAdapter.response = (filename: fixture.rawValue, bundle: Bundle(for: RemoteNotificationNetworkServiceTests.self))
+        return RemoteNotificationNetworkService(networkAdapter: networkAdapter)
     }
 }

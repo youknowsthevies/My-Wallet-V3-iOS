@@ -14,14 +14,14 @@ public final class SMSClient: SMSClientAPI {
     
     // MARK: - Properties
         
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: SMSRequestBuilder
 
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = SMSRequestBuilder(requestBuilder: requestBuilder)
     }
     
@@ -29,8 +29,7 @@ public final class SMSClient: SMSClientAPI {
     
     public func requestOTP(sessionToken: String, guid: String) -> Completable {
         let request = requestBuilder.build(sessionToken: sessionToken, guid: guid)
-        return communicator
-            .perform(request: request, responseType: EmptyNetworkResponse.self)
+        return networkAdapter.perform(request: request)
     }
 }
 

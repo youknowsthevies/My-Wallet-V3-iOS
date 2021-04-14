@@ -10,6 +10,7 @@ import Foundation
 import ToolKit
 
 public enum NetworkCommunicatorError: Error {
+    case unknown(Error)
     case clientError(HTTPRequestClientError)
     case rawServerError(ServerErrorResponse)
     case serverError(HTTPRequestServerError)
@@ -17,6 +18,8 @@ public enum NetworkCommunicatorError: Error {
     
     func analyticsEvent(for request: NetworkRequest, decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil) -> AnalyticsEvent? {
         switch self {
+        case .unknown:
+            return nil
         case .clientError(let clientError):
             return NetworkErrorEvent(request: request, error: clientError)
         case .rawServerError, .serverError, .payloadError:
@@ -67,6 +70,10 @@ enum NetworkErrorEvent: AnalyticsEvent {
         }
     }
     
+    init?(request: NetworkRequest, error: URLError) {
+        self = .clientError(ErrorDetails(request: request, message: error.localizedDescription))
+    }
+    
     var name: String {
         "network_error"
     }
@@ -81,7 +88,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
     }
 }
 
-private enum APIErrorEvent: AnalyticsEvent {
+enum APIErrorEvent: AnalyticsEvent {
     case payloadError(ErrorDetails?)
     case serverError(ErrorDetails?)
     
@@ -130,6 +137,14 @@ private enum APIErrorEvent: AnalyticsEvent {
             self.body = body
             self.requestId = requestId
         }
+        
+        static func from(request: NetworkRequest, errorResponse: ServerErrorResponseNew? = nil, body: String? = nil) -> Self? {
+            self.init(
+                request: request,
+                errorResponse: errorResponse?.legacyError,
+                body: body
+            )
+        }
     }
     
     var name: String {
@@ -155,7 +170,28 @@ private enum APIErrorEvent: AnalyticsEvent {
             self = .serverError(ErrorDetails(
                 request: request
             ))
-        case .clientError:
+        case .clientError, .unknown:
+            return nil
+        }
+    }
+    
+    init?(request: NetworkRequest,
+          error: NetworkCommunicatorErrorNew,
+          decodeErrorResponse: ((ServerErrorResponseNew) -> String?)? = nil) {
+        switch error {
+        case .rawServerError(let rawServerError):
+            self = .serverError(ErrorDetails.from(
+                request: request,
+                errorResponse: rawServerError,
+                body: decodeErrorResponse?(rawServerError)
+            ))
+        case .serverError, .payloadError, .authentication:
+            self = .serverError(
+                ErrorDetails.from(
+                    request: request
+                )
+            )
+        case .urlError:
             return nil
         }
     }

@@ -37,13 +37,13 @@ public final class EveryPayClient: EveryPayClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.everypay),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.everypay),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.everypay)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -64,6 +64,6 @@ public final class EveryPayClient: EveryPayClientAPI {
             body: try? payload.encode(),
             headers: headers
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 }

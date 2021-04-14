@@ -33,7 +33,7 @@ final class CryptoFeeClient<FeeType: TransactionFee & Decodable> {
     // MARK: - Private Properties
 
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     var fees: Single<FeeType> {
         guard let request = requestBuilder.get(
@@ -42,14 +42,14 @@ final class CryptoFeeClient<FeeType: TransactionFee & Decodable> {
         ) else {
             return .error(RequestBuilder.Error.buildingRequest)
         }
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     // MARK: - Init
 
-    init(communicator: NetworkCommunicatorAPI = resolve(),
+    init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve()) {
         self.requestBuilder = requestBuilder
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
     }
 }

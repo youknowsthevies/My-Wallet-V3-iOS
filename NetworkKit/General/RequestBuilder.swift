@@ -35,7 +35,7 @@ public class RequestBuilder {
                     headers: HTTPHeaders? = nil,
                     authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                    decoder: NetworkResponseDecoderAPI = resolve(),
                     recordErrors: Bool = false) -> NetworkRequest? {
         get(
             path: RequestBuilder.path(from: components),
@@ -53,7 +53,7 @@ public class RequestBuilder {
                     headers: HTTPHeaders? = nil,
                     authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                    decoder: NetworkResponseDecoderAPI = resolve(),
                     recordErrors: Bool = false) -> NetworkRequest? {
         buildRequest(
             method: .get,
@@ -75,7 +75,7 @@ public class RequestBuilder {
                     headers: HTTPHeaders? = nil,
                     authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                    decoder: NetworkResponseDecoderAPI = resolve(),
                     recordErrors: Bool = false) -> NetworkRequest? {
         put(
             path: RequestBuilder.path(from: components),
@@ -95,7 +95,7 @@ public class RequestBuilder {
                     headers: HTTPHeaders? = nil,
                     authenticated: Bool = false,
                     contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                    decoder: NetworkResponseDecoderAPI = resolve(),
                     recordErrors: Bool = false) -> NetworkRequest? {
         buildRequest(
             method: .put,
@@ -118,7 +118,7 @@ public class RequestBuilder {
                      headers: HTTPHeaders? = nil,
                      authenticated: Bool = false,
                      contentType: NetworkRequest.ContentType = .json,
-                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                     decoder: NetworkResponseDecoderAPI = resolve(),
                      recordErrors: Bool = false) -> NetworkRequest? {
         post(
             path: RequestBuilder.path(from: components),
@@ -138,7 +138,7 @@ public class RequestBuilder {
                      headers: HTTPHeaders? = nil,
                      authenticated: Bool = false,
                      contentType: NetworkRequest.ContentType = .json,
-                     decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                     decoder: NetworkResponseDecoderAPI = resolve(),
                      recordErrors: Bool = false) -> NetworkRequest? {
         buildRequest(
             method: .post,
@@ -160,7 +160,7 @@ public class RequestBuilder {
                        headers: HTTPHeaders? = nil,
                        authenticated: Bool = false,
                        contentType: NetworkRequest.ContentType = .json,
-                       decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                       decoder: NetworkResponseDecoderAPI = resolve(),
                        recordErrors: Bool = false) -> NetworkRequest? {
         buildRequest(
             method: .delete,
@@ -189,7 +189,7 @@ public class RequestBuilder {
                               headers: HTTPHeaders? = nil,
                               authenticated: Bool = false,
                               contentType: NetworkRequest.ContentType = .json,
-                              decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+                              decoder: NetworkResponseDecoderAPI = resolve(),
                               recordErrors: Bool = false) -> NetworkRequest? {
         guard let url = buildURL(path: path, parameters: parameters) else {
             return nil

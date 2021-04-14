@@ -20,7 +20,7 @@ public protocol NabuAuthenticationExecutorAPI {
 
 public typealias NabuAuthenticationExecutorProvider = () -> NabuAuthenticationExecutorAPI
 
-class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
+final class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     
     typealias CredentialsRepository = CredentialsRepositoryAPI & NabuOfflineTokenRepositoryAPI
     
@@ -77,7 +77,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     }
             }
     }
-    
+
     // MARK: - Private methods
     
     private func getToken() -> Single<Token> {
@@ -175,7 +175,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     }
     
     private func unauthenticated(error: Error) -> Single<Bool> {
-        guard let error = NabuAPIError(error: error) else {
+        guard let error = NabuAuthenticationError(error: error) else {
             return .just(false)
         }
         return .just(error == .tokenExpired)
@@ -226,7 +226,7 @@ class NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     }
     
     private func userRestored(error: Error) -> Single<Bool> {
-        guard let error = NabuAPIError(error: error) else {
+        guard let error = NabuAuthenticationError(error: error) else {
             return .just(false)
         }
         return .just(error == .alreadyRegistered)

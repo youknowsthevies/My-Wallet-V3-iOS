@@ -57,7 +57,6 @@ public enum HTTPRequestServerError: HTTPRequestError {
             return nil
         }
     }
-    
 }
 
 // NOTE: in future cases, we may want to allow empty payloads, but this is currently not applicable for the KYC flow.

@@ -7,12 +7,10 @@
 //
 
 import RxSwift
+import ToolKit
 
 public protocol AuthenticatorAPI: AnyObject {
-    
-    @available(*, deprecated, message: "This is deprecated. Don't use this.")
-    var token: Single<String> { get }
-    
+
     /// Fetches authentication token
     /// - Parameter singleFunction: method requiring authentication token
     func authenticate<Response>(_ singleFunction: @escaping (String) -> Single<Response>) -> Single<Response>

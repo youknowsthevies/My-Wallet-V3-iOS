@@ -36,12 +36,12 @@ final class ERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAPI {
         }
     }
     
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
     
-    init(communicator: NetworkCommunicatorAPI = resolve(),
+    init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve()) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
@@ -49,18 +49,18 @@ final class ERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAPI {
         let parameters = [ URLQueryItem(name: "page", value: page) ]
         let path = EndpointV2.transactions(for: address)
         let request = requestBuilder.get(path: path, parameters: parameters)!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
     
     func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
         let path = EndpointV2.isContract(with: address)
         let request = requestBuilder.get(path: path)!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<Token>> {
         let path = EndpointV2.summary(for: address)
         let request = requestBuilder.get(path: path)!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 }

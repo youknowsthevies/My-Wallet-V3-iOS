@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import NetworkKit
 
 public struct PinStoreResponse: Decodable & Error {
     
@@ -57,3 +57,17 @@ extension PinStoreResponse {
     }
 }
 
+extension PinStoreResponse: ErrorResponseConvertible {
+    
+    public static func from(
+        _ communicatorError: NetworkCommunicatorErrorNew
+    ) -> PinStoreResponse {
+        PinStoreResponse(
+            statusCode: nil,
+            error: communicatorError.localizedDescription,
+            pinDecryptionValue: nil,
+            key: nil,
+            value: nil
+        )
+    }
+}

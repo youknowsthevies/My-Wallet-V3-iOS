@@ -38,7 +38,7 @@ final class BitpayService: BitpayServiceProtocol {
     }
 
     private let recorder: AnalyticsEventRecording
-    private let network: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let bitpayUrl: String = "https://bitpay.com/"
     private let invoicePath: String = "i/"
     
@@ -51,10 +51,10 @@ final class BitpayService: BitpayServiceProtocol {
     
     init(recorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         network: NetworkCommunicatorAPI = resolve(),
+         networkAdapter: NetworkAdapterAPI = resolve(),
          cacheSuite: CacheSuite = resolve()) {
         self.recorder = recorder
-        self.network = network
+        self.networkAdapter = networkAdapter
         self.announcementRecorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
     }
     
@@ -86,7 +86,7 @@ final class BitpayService: BitpayServiceProtocol {
         }
         
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
-        return network.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
     
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
@@ -100,7 +100,7 @@ final class BitpayService: BitpayServiceProtocol {
             return Single.error(NetworkError.generic(message: nil))
         }
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
-        return network.perform(request: request).do(onSuccess: { [weak self] _ in
+        return networkAdapter.perform(request: request).do(onSuccess: { [weak self] _ in
             self?.recorder.record(event: AnalyticsEvents.Bitpay.bitpayPaymentSuccess)
         }, onError: { [weak self] error in
             self?.recorder.record(event: AnalyticsEvents.Bitpay.bitpayPaymentFailure(error: error))
@@ -119,7 +119,7 @@ final class BitpayService: BitpayServiceProtocol {
             return Single.error(NetworkError.generic(message: nil))
         }
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(payload), headers: headers)
-        return self.network.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     private enum UTCToLocalDateConverterError: Error {
@@ -167,7 +167,7 @@ final class BitpayService: BitpayServiceProtocol {
         }
         
         let request = NetworkRequest(endpoint:url, method: .get, headers: headers, contentType: .json)
-        let networkReq: Single<BitpayPaymentRequest> = self.network.perform(request: request)
+        let networkReq: Single<BitpayPaymentRequest> = networkAdapter.perform(request: request)
         
         return networkReq
             .map {

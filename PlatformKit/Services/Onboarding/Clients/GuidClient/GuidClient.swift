@@ -21,23 +21,23 @@ public final class GuidClient: GuidClientAPI {
     
     // MARK: - Properties
         
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdpater: NetworkAdapterAPI
     private let requestBuilder: GuidRequestBuilder
     
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    public init(networkAdpater: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdpater = networkAdpater
         self.requestBuilder = GuidRequestBuilder(requestBuilder: requestBuilder)
     }
     
     /// Fetches the `GUID`
     public func guid(by sessionToken: String) -> Single<String> {
         let request = requestBuilder.build(sessionToken: sessionToken)
-        return communicator
+        return networkAdpater
             .perform(request: request, responseType: Response.self)
-            .map { $0.guid }
+            .map(\.guid)
     }
 }
 
