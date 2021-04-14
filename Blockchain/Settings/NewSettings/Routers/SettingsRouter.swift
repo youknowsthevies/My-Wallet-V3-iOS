@@ -42,7 +42,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
-    private let featureConfiguring: FeatureConfiguring
 
     private let navigationRouter: NavigationRouterAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
@@ -67,7 +66,6 @@ final class SettingsRouter: SettingsRouterAPI {
          alertPresenter: AlertViewPresenter = resolve(),
          cardListService: CardListServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-         featureConfiguring: FeatureConfiguring = resolve(),
          currencyRouting: CurrencyRouting,
          tabSwapping: TabSwapping) {
         self.appCoordinator = appCoordinator
@@ -79,7 +77,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.tabSwapping = tabSwapping
         self.guidRepositoryAPI = guidRepositoryAPI
         self.paymentMethodTypesService = paymentMethodTypesService
-        self.featureConfiguring = featureConfiguring
         
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -159,7 +156,7 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             cardRouter.load()
         case .showAddBankScreen(let fiatCurrency):
-            if featureConfiguring.configuration(for: .achSettingsEnabled).isEnabled && fiatCurrency == .USD {
+            if fiatCurrency == .USD {
                 showLinkBankFlow()
                 return
             }

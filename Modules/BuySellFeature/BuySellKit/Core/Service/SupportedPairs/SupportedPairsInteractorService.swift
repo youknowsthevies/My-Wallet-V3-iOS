@@ -40,16 +40,13 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
     
     private let pairsRelay = BehaviorRelay<SupportedPairs?>(value: nil)
 
-    private let featureFetcher: FeatureFetching
     private let pairsService: SupportedPairsServiceAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     
     // MARK: - Setup
 
-    init(featureFetcher: FeatureFetching = resolve(),
-         pairsService: SupportedPairsServiceAPI = resolve(),
+    init(pairsService: SupportedPairsServiceAPI = resolve(),
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
-        self.featureFetcher = featureFetcher
         self.pairsService = pairsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         
@@ -59,20 +56,14 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
     }
 
     func fetch() -> Observable<SupportedPairs> {
-        featureFetcher.fetchBool(for: .simpleBuyEnabled)
-            .asObservable()
-            .flatMapLatest(weak: self) { (self, isFeatureEnabled) -> Observable<SupportedPairs> in
-                guard isFeatureEnabled else {
-                    return .just(.empty)
-                }
-                return self.fiatCurrencySettingsService
-                    .fiatCurrencyObservable
-                    .map { .only(fiatCurrency: $0) }
-                    .flatMapLatest { self.pairsService.fetchPairs(for: $0).asObservable() }
+        fiatCurrencySettingsService
+            .fiatCurrencyObservable
+            .map { .only(fiatCurrency: $0) }
+            .flatMapLatest(weak: self) { (self, value) in
+                self.pairsService.fetchPairs(for: value).asObservable()
             }
             .do(onNext: { [weak self] pairs in
                 self?.pairsRelay.accept(pairs)
             })
-            
     }
 }

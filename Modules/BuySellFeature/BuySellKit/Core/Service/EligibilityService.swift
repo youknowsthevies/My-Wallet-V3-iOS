@@ -24,18 +24,15 @@ final class EligibilityService: EligibilityServiceAPI {
     private let client: EligibilityClientAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    private let featureFetcher: FeatureFetching
     
     // MARK: - Setup
     
     init(client: EligibilityClientAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         featureFetcher: FeatureFetching  = resolve()) {
+         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
-        self.featureFetcher = featureFetcher
         self.isEligibileValue = CachedValue(
             configuration: CachedValueConfiguration(
                 refreshType: .periodic(seconds: TimeInterval(30)),
@@ -47,13 +44,7 @@ final class EligibilityService: EligibilityServiceAPI {
         isEligibileValue.setFetch(weak: self) { (self) in
             self.reactiveWallet.waitUntilInitializedSingle
                 .flatMap(weak: self) { (self, _) -> Single<Bool> in
-                    self.featureFetcher.fetchBool(for: .simpleBuyEnabled)
-                }
-                .flatMap(weak: self) { (self, isFeatureEnabled) -> Single<Bool> in
-                    guard isFeatureEnabled else {
-                        return .just(false)
-                    }
-                    return self.fiatCurrencyService.fiatCurrency
+                    self.fiatCurrencyService.fiatCurrency
                         .flatMap { currency -> Single<EligibilityResponse> in
                             self.client.isEligible(
                                 for: currency.code,

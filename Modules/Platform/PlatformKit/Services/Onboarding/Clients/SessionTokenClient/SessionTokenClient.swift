@@ -32,7 +32,7 @@ public final class SessionTokenClient: SessionTokenClientAPI {
             method: .post,
             contentType: .json
         )
-        return communicator
+        return networkAdapter
             .perform(request: request, responseType: Response.self)
             .map { $0.token }
             .map { token -> String in
@@ -42,11 +42,12 @@ public final class SessionTokenClient: SessionTokenClientAPI {
     }
     
     private let url = URL(string: BlockchainAPI.shared.walletSession)!
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve()) {
-        self.communicator = communicator
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve()) {
+        self.networkAdapter = networkAdapter
     }
 }

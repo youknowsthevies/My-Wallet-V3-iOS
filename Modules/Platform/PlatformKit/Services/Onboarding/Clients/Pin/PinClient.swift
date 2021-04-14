@@ -15,13 +15,13 @@ public final class PinClient: PinClientAPI {
     
     // MARK: - Properties
 
-    private let network: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let apiURL = URL(string: BlockchainAPI.shared.pinStore)!
     
     // MARK: - Setup
     
-    public init(network: NetworkCommunicatorAPI = resolve()) {
-        self.network = network
+    public init(networkAdapter: NetworkAdapterAPI = resolve()) {
+        self.networkAdapter = networkAdapter
     }
     
     /// Creates a new pin in the remote pin store
@@ -37,19 +37,12 @@ public final class PinClient: PinClientAPI {
             body: data,
             contentType: .formUrlEncoded
         )
-        return network.perform(
+        return networkAdapter
+            .perform(
                 request: request,
                 responseType: PinStoreResponse.self,
                 errorResponseType: PinStoreResponse.self
             )
-            .map { result -> PinStoreResponse in
-                switch result {
-                case .success(let response):
-                    return response
-                case .failure(let response):
-                    return response
-                }
-            }
     }
     
     /// Validates if the provided pin payload (i.e. pin code and pin key combination) is correct.
@@ -65,19 +58,12 @@ public final class PinClient: PinClientAPI {
             body: data,
             contentType: .formUrlEncoded
         )
-        return network.perform(
+        return networkAdapter
+            .perform(
                 request: request,
                 responseType: PinStoreResponse.self,
                 errorResponseType: PinStoreResponse.self
             )
-            .map { result -> PinStoreResponse in
-                switch result {
-                case .success(let response):
-                    return response
-                case .failure(let response):
-                    return response
-                }
-            }
     }
 }
 

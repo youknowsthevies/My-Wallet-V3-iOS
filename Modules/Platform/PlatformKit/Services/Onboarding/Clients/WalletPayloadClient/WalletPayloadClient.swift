@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
 import NetworkKit
 import RxSwift
@@ -87,7 +88,15 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
     }
     
     /// Error returned from the server
-    struct ErrorResponse: Decodable, Error {
+    struct ErrorResponse: ErrorResponseConvertible {
+        
+        static func from(_ communicatorError: NetworkCommunicatorErrorNew) -> WalletPayloadClient.ErrorResponse {
+            ErrorResponse(
+                isEmailAuthorizationRequired: true,
+                errorMessage: communicatorError.localizedDescription
+            )
+        }
+        
         enum CodingKeys: String, CodingKey {
             case isEmailAuthorizationRequired = "authorization_required"
             case errorMessage = "initial_error"
@@ -102,6 +111,12 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
                 forKey: .isEmailAuthorizationRequired
             ) ?? false
             errorMessage = try container.decode(String.self, forKey: .errorMessage)
+        }
+        
+        private init(isEmailAuthorizationRequired: Bool,
+                     errorMessage: String?) {
+            self.isEmailAuthorizationRequired = isEmailAuthorizationRequired
+            self.errorMessage = errorMessage
         }
     }
     
@@ -127,14 +142,14 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
     
     // MARK: - Properties
     
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: WalletPayloadRequestBuilder
 
     // MARK: - Setup
 
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = WalletPayloadRequestBuilder(requestBuilder: requestBuilder)
     }
     
@@ -142,19 +157,22 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     public func payload(guid: String, identifier: Identifier) -> Single<ClientResponse> {
         let request = requestBuilder.build(identifier: identifier, guid: guid)
-        return communicator.perform(
-            request: request,
-            responseType: Response.self,
-            errorResponseType: ErrorResponse.self
-        )
-        .map { result in
-            switch result {
-            case .success(let response):
-                return try ClientResponse(response: response)
-            case .failure(let response):
-                throw ClientError(response: response)
+        return networkAdapter
+            .perform(
+                request: request,
+                responseType: Response.self,
+                errorResponseType: ErrorResponse.self
+            )
+            .mapError(ClientError.init)
+            .mapError { $0 }
+            .flatMap { response -> AnyPublisher<WalletPayloadClient.ClientResponse, Error> in
+                Result { try WalletPayloadClient.ClientResponse(response: response) }
+                    .publisher
+                    .eraseToAnyPublisher()
             }
-        }
+            .asObservable()
+            .take(1)
+            .asSingle()
     }
 }
 

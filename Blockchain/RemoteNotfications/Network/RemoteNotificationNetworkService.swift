@@ -30,12 +30,12 @@ final class RemoteNotificationNetworkService {
     // MARK: - Properties
     
     private let url = BlockchainAPI.shared.pushNotificationsUrl
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve()) {
-        self.communicator = communicator
+    init(networkAdapter: NetworkAdapterAPI = resolve()) {
+        self.networkAdapter = networkAdapter
     }
 }
 
@@ -43,11 +43,13 @@ final class RemoteNotificationNetworkService {
 
 extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
 
-    func register(with token: String,
-                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void> {
+    func register(
+        with token: String,
+        using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI
+    ) -> Single<Void> {
         registrationRequest(with: token, using: credentialsProvider)
             .flatMap(weak: self) { (self, request) -> Single<RegistrationResponseData> in
-                self.communicator.perform(request: request)
+                self.networkAdapter.perform(request: request)
             }
             .map { response -> Void in
                 guard response.success
@@ -56,8 +58,10 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
             }
     }
 
-    private func registrationRequest(with token: String,
-                                     using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<NetworkRequest> {
+    private func registrationRequest(
+        with token: String,
+        using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI
+    ) -> Single<NetworkRequest> {
         Single
             .zip(
                 credentialsProvider.sharedKey,

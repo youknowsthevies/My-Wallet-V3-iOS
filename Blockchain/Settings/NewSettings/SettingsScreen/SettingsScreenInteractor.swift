@@ -42,8 +42,6 @@ final class SettingsScreenInteractor {
     let appSettings: BlockchainSettings.App
     let featureConfigurator: FeatureFetchingConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
-    let pitLinkingConfiguration: AppFeatureConfiguration
-    let simpleBuyCardsConfiguration: AppFeatureConfiguration
     let swipeToReceiveConfiguration: AppFeatureConfiguration
 
     // MARK: - Private Properties
@@ -80,13 +78,11 @@ final class SettingsScreenInteractor {
         tiersProviding = TierLimitsProvider(tiersService: tiersService)
 
         cardSectionInteractor = CardSettingsSectionInteractor(
-            featureFetcher: featureConfigurator,
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
         
         bankSectionInteractor = BanksSettingsSectionInteractor(
-            featureFetcher: featureConfigurator,
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
@@ -105,8 +101,6 @@ final class SettingsScreenInteractor {
             fiatCurrencyService: fiatCurrencyService
         )
         
-        pitLinkingConfiguration = featureConfigurator.configuration(for: .exchangeLinking)
-        simpleBuyCardsConfiguration = featureConfigurator.configuration(for: .simpleBuyCardsEnabled)
         swipeToReceiveConfiguration = featureConfigurator.configuration(for: .swipeToReceive)
         self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating

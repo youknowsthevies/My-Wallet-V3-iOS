@@ -32,14 +32,14 @@ final class SettingsClient: SettingsClientAPI {
     // MARK: - Private Properties
     
     private let apiCode: String
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
     init(apiCode: String = BlockchainAPI.Parameters.apiCode,
-         communicator: NetworkCommunicatorAPI = resolve()) {
+         networkAdapter: NetworkAdapterAPI = resolve()) {
         self.apiCode = apiCode
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
     }
     
     /// Fetches the wallet settings from the backend.
@@ -47,28 +47,21 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Single` that wraps a `SettingsResponse`.
     func settings(by guid: String, sharedKey: String) -> Single<SettingsResponse> {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
-                let payload = SettingsRequest(
-                    method: Method.getInfo.rawValue,
-                    guid: guid,
-                    sharedKey: sharedKey,
-                    apiCode: self.apiCode
-                )
-                let data = try? JSONEncoder().encode(payload)
-                let request = NetworkRequest(
-                    endpoint: url,
-                    method: .post,
-                    body: data,
-                    contentType: .formUrlEncoded
-                )
-                observer(.success(request))
-                return Disposables.create()
-            }
-            .flatMap(weak: self) { (self, request) -> Single<SettingsResponse> in
-                self.communicator.perform(request: request)
-            }
+        let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
+        let payload = SettingsRequest(
+            method: Method.getInfo.rawValue,
+            guid: guid,
+            sharedKey: sharedKey,
+            apiCode: self.apiCode
+        )
+        let data = try? JSONEncoder().encode(payload)
+        let request = NetworkRequest(
+            endpoint: url,
+            method: .post,
+            body: data,
+            contentType: .formUrlEncoded
+        )
+        return networkAdapter.perform(request: request)
     }
     
     /// Updates the last tx time.
@@ -182,31 +175,25 @@ final class SettingsClient: SettingsClientAPI {
                         method: Method,
                         payload: String,
                         context: FlowContext? = nil) -> Completable {
-        Single
-            .create(weak: self) { (self, observer) -> Disposable in
-                let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
-                let requestPayload = SettingsRequest(
-                    method: method.rawValue,
-                    guid: guid,
-                    sharedKey: sharedKey,
-                    apiCode: self.apiCode,
-                    payload: payload,
-                    length: "\(payload.count)",
-                    format: SettingsRequest.Formats.plain,
-                    context: context?.rawValue
-                )
-                let data = try? JSONEncoder().encode(requestPayload)
-                let request = NetworkRequest(
-                    endpoint: url,
-                    method: .post,
-                    body: data,
-                    contentType: .formUrlEncoded
-                )
-                observer(.success(request))
-                return Disposables.create()
-            }
-            .flatMapCompletable(weak: self) { (self, request) -> Completable in
-                self.communicator.perform(request: request)
-            }
+        
+        let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
+        let requestPayload = SettingsRequest(
+            method: method.rawValue,
+            guid: guid,
+            sharedKey: sharedKey,
+            apiCode: self.apiCode,
+            payload: payload,
+            length: "\(payload.count)",
+            format: SettingsRequest.Formats.plain,
+            context: context?.rawValue
+        )
+        let data = try? JSONEncoder().encode(requestPayload)
+        let request = NetworkRequest(
+            endpoint: url,
+            method: .post,
+            body: data,
+            contentType: .formUrlEncoded
+        )
+        return networkAdapter.perform(request: request)
     }
 }

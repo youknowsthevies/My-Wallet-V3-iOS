@@ -310,7 +310,6 @@ extension LocalizationConstants.Onboarding {
 
     public enum IntroductionSheet {
         public static let next = NSLocalizedString("Next", comment: "Next")
-        public static let done = NSLocalizedString("Done", comment: "Done")
         public enum Home {
             public static let title = NSLocalizedString("View Your Portfolio", comment: "View Your Portfolio")
             public static let description = NSLocalizedString(

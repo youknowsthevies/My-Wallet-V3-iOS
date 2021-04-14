@@ -8,11 +8,11 @@
 
 import BuySellKit
 import DIKit
+import KYCKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
-import KYCKit
 
 // TODO: Tests - Create a protocol for tests, and inject protocol dependencies.
 
@@ -23,7 +23,6 @@ final class AnnouncementPresenter {
     // MARK: Services
     
     private let appCoordinator: AppCoordinator
-    private let featureConfigurator: FeatureConfiguring
     private let featureFetcher: FeatureFetching
     private let airdropRouter: AirdropRouterAPI
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
@@ -56,7 +55,6 @@ final class AnnouncementPresenter {
     
     init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
          topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
-         featureConfigurator: FeatureConfiguring = DIKit.resolve(),
          featureFetcher: FeatureFetching = DIKit.resolve(),
          airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
          cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
@@ -79,7 +77,6 @@ final class AnnouncementPresenter {
         self.airdropRouter = airdropRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
-        self.featureConfigurator = featureConfigurator
         self.featureFetcher = featureFetcher
         self.wallet = wallet
         
@@ -324,10 +321,8 @@ extension AnnouncementPresenter {
     
     /// Computes Wallet-Exchange linking announcement
     private func exchangeLinking(user: NabuUser) -> Announcement {
-        let isFeatureEnabled = featureConfigurator.configuration(for: .exchangeAnnouncement).isEnabled
-        let shouldShowExchangeAnnouncement = isFeatureEnabled && !user.hasLinkedExchangeAccount
-        return ExchangeLinkingAnnouncement(
-            shouldShowExchangeAnnouncement: shouldShowExchangeAnnouncement,
+        ExchangeLinkingAnnouncement(
+            shouldShowExchangeAnnouncement: !user.hasLinkedExchangeAccount,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
@@ -409,10 +404,8 @@ extension AnnouncementPresenter {
     
     /// Computes Buy BTC announcement
     private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
-        let simpleBuyEnabled = featureConfigurator.configuration(for: .simpleBuyEnabled).isEnabled
-        let isEnabled = simpleBuyEnabled && !wallet.isBitcoinWalletFunded
-        return BuyBitcoinAnnouncement(
-            isEnabled: isEnabled,
+        BuyBitcoinAnnouncement(
+            isEnabled: !wallet.isBitcoinWalletFunded,
             reappearanceTimeInterval: reappearanceTimeInterval,
             dismiss: { [weak self] in
                 self?.hideAnnouncement()

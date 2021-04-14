@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import RxSwift
 import ToolKit
-import NetworkKit
 
 final class NabuTokenStore {
     
@@ -43,5 +43,51 @@ final class NabuTokenStore {
                 observer(.success(sessionTokenData))
                 return Disposables.create()
             }
+    }
+}
+
+protocol NabuTokenStoreCombineAPI {
+    
+    var requiresRefreshPublisher: AnyPublisher<Bool, Never> { get }
+    
+    var sessionTokenDataPublisher: AnyPublisher<NabuSessionTokenResponse?, Never> { get }
+    
+    func invalidatePublisher() -> AnyPublisher<Void, Never>
+    
+    func storePublisher(
+        _ sessionTokenData: NabuSessionTokenResponse
+    ) -> AnyPublisher<NabuSessionTokenResponse, Never>
+}
+
+extension NabuTokenStore: NabuTokenStoreCombineAPI {
+    
+    var requiresRefreshPublisher: AnyPublisher<Bool, Never> {
+        .just(sessionTokenData.value == nil)
+    }
+    
+    var sessionTokenDataPublisher: AnyPublisher<NabuSessionTokenResponse?, Never> {
+        .just(sessionTokenData.value)
+    }
+    
+    func invalidatePublisher() -> AnyPublisher<Void, Never> {
+        Deferred {
+            Future { [weak self] promise in
+                self?.sessionTokenData.mutate { $0 = nil }
+                promise(.success(()))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    
+    func storePublisher(
+        _ sessionTokenData: NabuSessionTokenResponse
+    ) -> AnyPublisher<NabuSessionTokenResponse, Never> {
+        Deferred {
+            Future { [weak self] promise in
+                self?.sessionTokenData.mutate { $0 = sessionTokenData }
+                promise(.success(sessionTokenData))
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }

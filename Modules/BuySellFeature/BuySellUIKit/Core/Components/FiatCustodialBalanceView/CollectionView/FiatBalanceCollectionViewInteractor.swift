@@ -35,7 +35,6 @@ public final class FiatBalanceCollectionViewInteractor {
     // MARK: - Injected Properties
 
     private let tiersService: KYCTiersServiceAPI
-    private let featureFetcher: FeatureFetching
     private let balanceProvider: BalanceProviding
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
@@ -54,16 +53,14 @@ public final class FiatBalanceCollectionViewInteractor {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let balances = Observable
             .combineLatest(
-                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable(),
                 balanceProvider.fiatFundsBalances,
                 tiersService.tiers.asObservable(),
                 refreshRelay.asObservable()
-            ) { (enabled: $0, balances: $1, tiers: $2, refresh: $3) }
-            .filter { $0.enabled }
+            ) { (balances: $0, tiers: $1, refresh: $2) }
             .filter { $0.tiers.isTier2Approved }
             .map { $0.balances }
             .filter { $0.isValue } // All balances must contain value to load
-            
+        
         Observable.combineLatest(balances, preferredFiatCurrency)
             .map { (balances, preferredFiatCurrency) in
                 Array.init(
@@ -83,11 +80,9 @@ public final class FiatBalanceCollectionViewInteractor {
                 balanceProvider: BalanceProviding,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI,
                 paymentMethodsService: PaymentMethodsServiceAPI,
-                featureFetcher: FeatureFetching,
                 fiatCurrencyService: FiatCurrencyServiceAPI) {
         self.tiersService = tiersService
         self.balanceProvider = balanceProvider
-        self.featureFetcher = featureFetcher
         self.paymentMethodsService = paymentMethodsService
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService

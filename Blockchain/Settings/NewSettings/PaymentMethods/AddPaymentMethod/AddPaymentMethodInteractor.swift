@@ -20,15 +20,6 @@ final class AddPaymentMethodInteractor {
         case card
         case bank(FiatCurrency)
         
-        var appFeature: AppFeature {
-            switch self {
-            case .card:
-                return .simpleBuyCardsEnabled
-            case .bank:
-                return .simpleBuyFundsEnabled
-            }
-        }
-        
         var fiatCurrency: FiatCurrency? {
             guard case .bank(let currency) = self else { return nil }
             return currency
@@ -42,19 +33,14 @@ final class AddPaymentMethodInteractor {
     
     let isKYCVerified: Observable<Bool>
     
-    let isFeatureEnabled: Observable<Bool>
-    
     let paymentMethod: PaymentMethod
     private let addNewInteractor: AddSpecificPaymentMethodInteractorAPI
     private let tiersLimitsProvider: TierLimitsProviding
-    private let featureFetcher: FeatureFetching
     
     init(paymentMethod: PaymentMethod,
          addNewInteractor: AddSpecificPaymentMethodInteractorAPI,
-         tiersLimitsProvider: TierLimitsProviding,
-         featureFetcher: FeatureFetching) {
+         tiersLimitsProvider: TierLimitsProviding) {
         self.paymentMethod = paymentMethod
-        self.featureFetcher = featureFetcher
         self.addNewInteractor = addNewInteractor
         self.tiersLimitsProvider = tiersLimitsProvider
 
@@ -67,12 +53,8 @@ final class AddPaymentMethodInteractor {
             .catchErrorJustReturn(false)
             .share(replay: 1)
 
-        isFeatureEnabled = featureFetcher.fetchBool(for: paymentMethod.appFeature)
-            .catchErrorJustReturn(false)
-            .asObservable()
-
-        isEnabledForUser = Observable.combineLatest(isAbleToAddNew, isKYCVerified, isFeatureEnabled)
-            .map { $0.0 && $0.1 && $0.2 }
+        isEnabledForUser = Observable.combineLatest(isAbleToAddNew, isKYCVerified)
+            .map { $0.0 && $0.1 }
             .share(replay: 1)
 
     }

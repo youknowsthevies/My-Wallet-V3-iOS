@@ -59,7 +59,6 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 
     private let eligibleMethodsClient: PaymentEligibleMethodsClientAPI
     private let tiersService: KYCTiersServiceAPI
-    private let featureFetcher: FeatureFetching
     private let enabledFiatCurrencies: [FiatCurrency]
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
 
@@ -68,14 +67,12 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
     init(eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
          tiersService: KYCTiersServiceAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
          enabledFiatCurrencies: [FiatCurrency] = { () -> EnabledCurrenciesServiceAPI in
             resolve()
          }().allEnabledFiatCurrencies,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
-        self.featureFetcher = featureFetcher
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledFiatCurrencies = enabledFiatCurrencies
 
@@ -123,31 +120,10 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     }
                     .asObservable()
             }
-            .flatMap(weak: self) { (self, methods) -> Observable<[PaymentMethod]> in
-                self.filterPaymentMethods(methods: methods).asObservable()
-            }
             .distinctUntilChanged()
             .do(onNext: { [weak self] paymentMethods in
                 self?.paymentMethodsRelay.accept(paymentMethods)
             })
             .share()
-    }
-
-    private func filterPaymentMethods(methods: [PaymentMethod]) -> Single<[PaymentMethod]> {
-        Single
-            .zip(
-                featureFetcher.fetchBool(for: .simpleBuyCardsEnabled),
-                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled)
-            )
-            .map { isCardsEnabled, isFundsEnabled in
-                var methods = methods
-                if !isCardsEnabled {
-                    methods = methods.filter { !$0.type.isCard }
-                }
-                if !isFundsEnabled {
-                    methods = methods.filter { !$0.type.isFunds }
-                }
-                return methods
-            }
     }
 }

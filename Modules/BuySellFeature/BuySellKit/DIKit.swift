@@ -19,11 +19,6 @@ extension DependencyContainer {
         // MARK: - Clients - General
         
         factory { APIClient() as SimpleBuyClientAPI }
-
-        factory { () -> PaymentMethodsClientAPI in
-            let client: SimpleBuyClientAPI = DIKit.resolve()
-            return client as PaymentMethodsClientAPI
-        }
         
         factory { () -> SupportedPairsClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
@@ -155,13 +150,7 @@ extension DependencyContainer {
 
         single { PaymentMethodTypesService() as PaymentMethodTypesServiceAPI }
 
-        single { () -> PaymentMethodsServiceAPI in
-            let featureConfiguring: FeatureConfiguring = DIKit.resolve()
-            if featureConfiguring.configuration(for: .achBuyFlowEnabled).isEnabled {
-                return EligiblePaymentMethodsService() as PaymentMethodsServiceAPI
-            }
-            return PaymentMethodsService() as PaymentMethodsServiceAPI
-        }
+        single { EligiblePaymentMethodsService() as PaymentMethodsServiceAPI }
 
         // MARK: - Services - Cards
 

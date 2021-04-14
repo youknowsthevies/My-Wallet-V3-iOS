@@ -350,6 +350,7 @@ targets:
     - target: TransactionKit
     - carthage: BigInt
     - carthage: LibWally
+    - carthage: RxCombine
     scheme:
       testTargets:
       - BitcoinChainKitTests
@@ -1126,6 +1127,11 @@ targets:
   ToolKit:
     dependencies:
     - carthage: BigInt
+    - carthage: DIKit
+    - carthage: RxSwift
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    - carthage: RxCombine
     scheme:
       testTargets:
       - ToolKitTests

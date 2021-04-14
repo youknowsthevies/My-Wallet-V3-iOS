@@ -45,6 +45,8 @@ extension DependencyContainer {
             return config.apiCode as APICode
         }
         
+        single { NetworkResponseDecoder() as NetworkResponseDecoderAPI }
+        
         single { RequestBuilder() }
         
         single { NetworkCommunicator.defaultCommunicator() as NetworkCommunicatorAPI }
@@ -76,6 +78,37 @@ extension DependencyContainer {
         single(tag: DIKitContext.everypay) { RequestBuilder(networkConfig: Network.Config.everypayConfig) }
         
         single(tag: DIKitContext.everypay) { NetworkCommunicator.everypayCommunicator() as NetworkCommunicatorAPI }
+        
+        // MARK: - NEW Networking
+        
+        single { NetworkResponseHandler() as NetworkResponseHandlerAPI }
+        
+        single { NetworkAdapter.defaultAdapter() as NetworkAdapterAPI }
+        
+        single { NetworkCommunicatorNew.defaultCommunicator() as NetworkCommunicatorNewAPI }
+        
+        // MARK: - NEW Networking - Wallet
+        
+        single(tag: DIKitContext.wallet) { NetworkAdapter() as NetworkAdapterAPI }
+        
+        // MARK: - NEW Networking - Retail
+        
+        single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
+
+        single(tag: DIKitContext.retail) { NetworkCommunicatorNew.retailCommunicator() as NetworkCommunicatorNewAPI }
+        
+        // MARK: - NEW Networking - EveryPay
+        
+        single(tag: DIKitContext.everypay) { NetworkAdapter.everypayAdapter() as NetworkAdapterAPI }
+        
+        single(tag: DIKitContext.everypay) { NetworkCommunicatorNew.everypayCommunicator() as NetworkCommunicatorNewAPI }
+        
+        // MARK: - NEW Networking - Other
+        
+        single { () -> NetworkSession in
+            let session: URLSession = DIKit.resolve()
+            return session as NetworkSession
+        }
     }
 }
 
@@ -97,6 +130,48 @@ extension NetworkCommunicator {
         sessionHandler: NetworkSessionDelegateAPI = resolve(tag: DIKitContext.everypay)
     ) -> NetworkCommunicator {
         NetworkCommunicator(sessionHandler: sessionHandler)
+    }
+}
+
+extension NetworkCommunicatorNew {
+    
+    fileprivate static func defaultCommunicator(
+        eventRecorder: AnalyticsEventRecording = resolve()
+    ) -> NetworkCommunicatorNew {
+        NetworkCommunicatorNew(eventRecorder: eventRecorder)
+    }
+    
+    fileprivate static func retailCommunicator(
+        authenticator: AuthenticatorNewAPI = resolve()
+    ) -> NetworkCommunicatorNew {
+        NetworkCommunicatorNew(authenticator: authenticator)
+    }
+    
+    fileprivate static func everypayCommunicator(
+        sessionHandler: NetworkSessionDelegateAPI = resolve(tag: DIKitContext.everypay)
+    ) -> NetworkCommunicatorNew {
+        NetworkCommunicatorNew(sessionHandler: sessionHandler)
+    }
+}
+
+extension NetworkAdapter {
+    
+    fileprivate static func defaultAdapter(
+        communicator: NetworkCommunicatorNewAPI = resolve()
+    ) -> NetworkAdapter {
+        NetworkAdapter(communicator: communicator)
+    }
+    
+    fileprivate static func retailAdapter(
+        communicator: NetworkCommunicatorNewAPI = resolve(tag: DIKitContext.retail)
+    ) -> NetworkAdapter {
+        NetworkAdapter(communicator: communicator)
+    }
+    
+    fileprivate static func everypayAdapter(
+        communicator: NetworkCommunicatorNewAPI = resolve(tag: DIKitContext.everypay)
+    ) -> NetworkAdapter {
+        NetworkAdapter(communicator: communicator)
     }
 }
 

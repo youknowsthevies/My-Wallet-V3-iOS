@@ -38,7 +38,6 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
     let availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>>
 
     private let beneficiariesRelay = BehaviorRelay<[Beneficiary]?>(value: nil)
-    private let featureFetcher: FeatureFetching
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let client: BeneficiariesClientAPI
     private let linkedBankService: LinkedBanksServiceAPI
@@ -48,12 +47,10 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
     
     init(client: BeneficiariesClientAPI = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
          beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
         self.client = client
         self.linkedBankService = linkedBankService
-        self.featureFetcher = featureFetcher
         self.paymentMethodTypesService = paymentMethodTypesService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
 
@@ -68,10 +65,9 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .combineLatest(
                 client.beneficiaries.asObservable(),
                 paymentMethodsShared,
-                linkedBankService.fetchLinkedBanks().asObservable(),
-                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
+                linkedBankService.fetchLinkedBanks().asObservable()
             )
-            .map(concat(beneficiaries:methodTypes:linkedBanks:isEnabled:))
+            .map(concat(beneficiaries:methodTypes:linkedBanks:))
             .do(onNext: { _ in
                 beneficiariesServiceUpdater.reset()
             },
@@ -130,10 +126,9 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .combineLatest(
                 client.beneficiaries.asObservable(),
                 paymentMethodTypesService.methodTypes,
-                linkedBankService.fetchLinkedBanks().asObservable(),
-                featureFetcher.fetchBool(for: .simpleBuyFundsEnabled).asObservable()
+                linkedBankService.fetchLinkedBanks().asObservable()
             )
-            .map(concat(beneficiaries:methodTypes:linkedBanks:isEnabled:))
+            .map(concat(beneficiaries:methodTypes:linkedBanks:))
             .catchErrorJustReturn([])
     }
 
@@ -151,13 +146,10 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 /// - Parameters:
 ///   - beneficiaries: An array containing beneficiaries responses
 ///   - methodTypes: An array containing payment method tyoes
-///   - isEnabled: `True` if the `simpleBuyFundsEnabled` flag is enabled, otherwise `false`
 /// - Returns: An array of `Beneficiary` elements as a result of the contatenation
 private func concat(beneficiaries: [BeneficiaryResponse],
                     methodTypes: [PaymentMethodType],
-                    linkedBanks: [LinkedBankData],
-                    isEnabled: Bool) -> [Beneficiary] {
-    guard isEnabled else { return [] }
+                    linkedBanks: [LinkedBankData]) -> [Beneficiary] {
     var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
     let topLimits = methodTypes.accounts.map { $0.topLimit }
     for limit in topLimits {

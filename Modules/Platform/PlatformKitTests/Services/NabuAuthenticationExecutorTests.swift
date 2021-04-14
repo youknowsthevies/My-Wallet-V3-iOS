@@ -237,7 +237,7 @@ final class NabuAuthenticationExecutorTests: XCTestCase {
                 } else {
                     let httpResponse = HTTPURLResponse(
                         url: URL(string: "https://www.blockchain.com")!,
-                        statusCode: NabuAPIError.tokenExpired.rawValue,
+                        statusCode: NabuAuthenticationError.tokenExpired.rawValue,
                         httpVersion: nil,
                         headerFields: nil
                     )!

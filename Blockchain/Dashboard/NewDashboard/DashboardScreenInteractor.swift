@@ -41,7 +41,6 @@ final class DashboardScreenInteractor {
          balanceChangeProvider: BalanceChangeProviding = DataProvider.default.balanceChange,
          paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          userPropertyInteractor: AnalyticsUserPropertyInteractor = AnalyticsUserPropertyInteractor(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
@@ -61,7 +60,6 @@ final class DashboardScreenInteractor {
         fiatBalancesInteractor = DashboardFiatBalancesInteractor(
             tiersService: tiersService,
             balanceProvider: balanceProvider,
-            featureFetcher: featureFetcher,
             paymentMethodsService: paymentMethodsService,
             enabledCurrenciesService: enabledCurrenciesService,
             fiatCurrencyService: fiatCurrencyService

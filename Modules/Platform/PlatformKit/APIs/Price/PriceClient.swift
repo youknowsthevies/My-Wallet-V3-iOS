@@ -60,14 +60,14 @@ final class PriceClient: PriceClientAPI {
     
     // MARK: - Private properties
 
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
 
     // MARK: - Init
 
-    init(communicator: NetworkCommunicatorAPI = resolve(),
+    init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve()) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
@@ -87,7 +87,7 @@ final class PriceClient: PriceClientAPI {
             path: data.path,
             parameters: data.query
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     func price(for baseCurrencyCode: String,
@@ -102,6 +102,6 @@ final class PriceClient: PriceClientAPI {
             path: data.path,
             parameters: data.query
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 }

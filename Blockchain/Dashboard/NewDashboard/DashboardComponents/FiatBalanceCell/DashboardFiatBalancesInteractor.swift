@@ -27,7 +27,6 @@ final class DashboardFiatBalancesInteractor {
     
     init(tiersService: KYCTiersServiceAPI,
          balanceProvider: BalanceProviding,
-         featureFetcher: FeatureFetching,
          paymentMethodsService: PaymentMethodsServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI,
          fiatCurrencyService: FiatCurrencyServiceAPI) {
@@ -36,7 +35,6 @@ final class DashboardFiatBalancesInteractor {
             balanceProvider: balanceProvider,
             enabledCurrenciesService: enabledCurrenciesService,
             paymentMethodsService: paymentMethodsService,
-            featureFetcher: featureFetcher,
             fiatCurrencyService: fiatCurrencyService
         )
     }
