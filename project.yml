@@ -919,7 +919,7 @@ targets:
     - carthage: DIKit
     - target: ToolKit
     info:
-      path: NetworkKit/Info.plist
+      path: Modules/Network/NetworkKit/Info.plist
       properties:
         API_URL: $(API_URL)
         EVERYPAY_API_URL: $(EVERYPAY_API_URL)
@@ -938,7 +938,7 @@ targets:
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
-      path: NetworkKit/Scripts/get_ssl_certificate.sh
+      path: Modules/Network/NetworkKit/Scripts/get_ssl_certificate.sh
     scheme:
       testTargets:
       - NetworkKitTests
@@ -946,13 +946,13 @@ targets:
     - excludes:
       - Scripts
       - Cert
-      path: NetworkKit
+      path: Modules/Network/NetworkKit
     - buildPhase:
         copyFiles:
           destination: resources
-      group: NetworkKit/Cert
+      group: Modules/Network/NetworkKit/Cert
       optional: true
-      path: NetworkKit/Cert/blockchain.der
+      path: Modules/Network/NetworkKit/Cert/blockchain.der
     type: framework
   NetworkKitTests:
     dependencies:
@@ -962,8 +962,10 @@ targets:
       path: TestKit/TestKit/Mocks/ToolKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
+    templateAttributes:
+      featureName: Network
     templates:
-    - FrameworkTest
+    - ModuleTests
   PlatformKit:
     dependencies:
     - carthage: BigInt
