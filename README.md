@@ -148,6 +148,11 @@ We are integrating XcodeGen and, despite still committing project files in git, 
 
     cmd-r
 
+# Modules
+
+Please refer to the [README](./Modules/README.md) in the `Modules` directory.
+Please also refer to the [README](./TestKit/README.md) in the `TestKit` directory.
+
 # Contributing
 
 If you would like to contribute code to the Blockchain iOS app, you can do so by forking this repository, making the changes on your fork, and sending a pull request back to this repository.
