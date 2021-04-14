@@ -158,8 +158,6 @@ targetTemplates:
   Module:
     dependencies:
     - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
     - carthage: RxSwift
     platform: iOS
     sources:
@@ -222,6 +220,8 @@ targets:
     - ModuleTests
   ActivityUIKit:
     dependencies:
+    - carthage: RxCocoa
+    - carthage: RxRelay
     - carthage: RxDataSources
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
@@ -256,14 +256,14 @@ targets:
     - ModuleTests
   AlgorandKit:
     dependencies:
-    - target: Localization
-    - target: PlatformKit
-    - target: ToolKit
-    - target: NetworkKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - AlgorandKitTests
@@ -287,17 +287,17 @@ targets:
     - ModuleTests
   BitcoinCashKit:
     dependencies:
-    - target: BitcoinChainKit
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
     - carthage: BigInt
     - carthage: DIKit
+    - carthage: LibWally
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: LibWally
+    - target: BitcoinChainKit
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BitcoinCashKitTests
@@ -323,15 +323,17 @@ targets:
     - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
-    - target: TransactionKit
     - carthage: BigInt
     - carthage: LibWally
+    - carthage: RxCocoa
     - carthage: RxCombine
+    - carthage: RxRelay
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinChainKitTests
@@ -359,6 +361,8 @@ targets:
     dependencies:
     - carthage: BigInt
     - carthage: LibWally
+    - carthage: RxCocoa
+    - carthage: RxRelay
     - target: BitcoinChainKit
     - target: HDWalletKit
     - target: Localization
@@ -579,11 +583,11 @@ targets:
     type: application
   BlockchainTests:
     dependencies:
-    - target: Blockchain
+    - carthage: RxBlocking
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: RxBlocking
     - carthage: RxTest
+    - target: Blockchain
     platform: iOS
     sources:
     - path: BlockchainTests
@@ -592,11 +596,11 @@ targets:
     type: bundle.unit-test
   BuySellKit:
     dependencies:
-    - target: PlatformKit
     - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BuySellKitTests
@@ -622,6 +626,8 @@ targets:
     - ModuleTests
   BuySellUIKit:
     dependencies:
+    - carthage: RxCocoa
+    - carthage: RxRelay
     - target: BuySellKit
     - target: CommonCryptoKit
     - target: Localization
@@ -985,6 +991,8 @@ targets:
     - carthage: Differentiator
     - carthage: PhoneNumberKit
     - carthage: RIBs
+    - carthage: RxCocoa
+    - carthage: RxRelay
     - carthage: RxDataSources
     - carthage: Zxcvbn
     - target: Localization
@@ -1165,6 +1173,8 @@ targets:
   TransactionUIKit:
     dependencies:
     - carthage: BigInt
+    - carthage: RxCocoa
+    - carthage: RxRelay
     - target: KYCKit
     - target: KYCUIKit
     - target: Localization
@@ -1199,10 +1209,10 @@ targets:
     - ModuleTests
   WalletPayloadKit:
     dependencies:
+    - carthage: CryptoSwift
     - target: CommonCryptoKit
     - target: Localization
     - target: ToolKit
-    - carthage: CryptoSwift
     scheme:
       testTargets:
       - WalletPayloadKitTests
