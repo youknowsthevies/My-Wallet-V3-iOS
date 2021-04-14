@@ -1111,12 +1111,6 @@ targets:
       featureName: CryptoAssets
     templates:
     - ModuleTests2
-  TestKit:
-    platform: iOS
-    sources:
-    - path: TestKit
-      type: folder
-    type: bundle
   TodayExtension:
     dependencies:
     - sdk: NotificationCenter.framework
