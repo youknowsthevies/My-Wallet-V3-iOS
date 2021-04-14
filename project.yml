@@ -171,8 +171,8 @@ targetTemplates:
     platform: iOS
     sources:
     - path: ${target_name}
-    - group: ${target_name}/TestKit
-      path: TestKit/Utilities
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Utilities
     type: bundle.unit-test
   Module:
     dependencies:
@@ -199,21 +199,7 @@ targetTemplates:
     - createIntermediateGroups: true
       path: Modules/${featureName}/${target_name}
     - createIntermediateGroups: true
-      path: TestKit/Utilities
-      type: folder
-    type: bundle.unit-test
-  ModuleTests2:
-    dependencies:
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxBlocking
-    - carthage: RxTest
-    platform: iOS
-    sources:
-    - path: Modules/${featureName}/${target_name}
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Utilities
+      path: TestKit/TestKit/Utilities
     type: bundle.unit-test
 targets:
   ActivityKit:
@@ -241,16 +227,18 @@ targets:
     dependencies:
     - target: ActivityKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: ActivityFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   ActivityUIKit:
     dependencies:
     - carthage: RxDataSources
@@ -273,18 +261,18 @@ targets:
     dependencies:
     - target: ActivityUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: ActivityFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   AlgorandKit:
     dependencies:
     - target: Localization
@@ -306,16 +294,16 @@ targets:
     dependencies:
     - target: AlgorandKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   BitcoinCashKit:
     dependencies:
     - target: BitcoinChainKit
@@ -340,18 +328,18 @@ targets:
     dependencies:
     - target: BitcoinCashKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   BitcoinChainKit:
     dependencies:
     - target: PlatformKit
@@ -373,18 +361,18 @@ targets:
     dependencies:
     - target: BitcoinChainKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   BitcoinKit:
     dependencies:
     - carthage: BigInt
@@ -407,18 +395,18 @@ targets:
     dependencies:
     - target: BitcoinKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   Blockchain:
     configFiles:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
@@ -617,24 +605,8 @@ targets:
     platform: iOS
     sources:
     - path: BlockchainTests
-    - group: BlockchainTests/TestKit
-      path: TestKit/Utilities
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/ERC20Kit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/BuySellKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit
     type: bundle.unit-test
   BuySellKit:
     dependencies:
@@ -654,18 +626,18 @@ targets:
     dependencies:
     - target: BuySellKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: BuySellFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   BuySellUIKit:
     dependencies:
     - target: BuySellKit
@@ -686,20 +658,20 @@ targets:
     dependencies:
     - target: BuySellUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: BuySellFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   CommonCryptoKit:
     scheme:
       testTargets:
@@ -714,7 +686,7 @@ targets:
     templateAttributes:
       featureName: Cryptography
     templates:
-    - ModuleTests2
+    - ModuleTests
   DebugUIKit:
     dependencies:
     - target: PlatformKit
@@ -745,20 +717,20 @@ targets:
     dependencies:
     - target: ERC20Kit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ERC20Kit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/EthereumKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ERC20Kit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   EthereumKit:
     dependencies:
     - carthage: BigInt
@@ -779,18 +751,18 @@ targets:
     dependencies:
     - target: EthereumKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/EthereumKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   HDWalletKit:
     dependencies:
     - target: CommonCryptoKit
@@ -808,7 +780,7 @@ targets:
     templateAttributes:
       featureName: HDWallet
     templates:
-    - ModuleTests2
+    - ModuleTests
   InterestKit:
     dependencies:
     - target: Localization
@@ -826,16 +798,16 @@ targets:
     dependencies:
     - target: InterestKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: InterestFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   InterestUIKit:
     dependencies:
     - target: CommonCryptoKit
@@ -856,18 +828,18 @@ targets:
     dependencies:
     - target: InterestUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: InterestFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   KYCKit:
     dependencies:
     - target: Localization
@@ -885,16 +857,16 @@ targets:
     dependencies:
     - target: KYCKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: KYCFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   KYCUIKit:
     dependencies:
     - carthage: Veriff
@@ -915,18 +887,18 @@ targets:
     dependencies:
     - target: KYCUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: KYCFeature
     templates:
-    - ModuleTests2
+    - ModuleTests
   Localization:
     templateAttributes:
       featureName: Localization
@@ -985,10 +957,10 @@ targets:
     dependencies:
     - target: NetworkKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
     templates:
     - FrameworkTest
   PlatformKit:
@@ -1012,16 +984,16 @@ targets:
     dependencies:
     - target: PlatformKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: Platform
     templates:
-    - ModuleTests2
+    - ModuleTests
   PlatformUIKit:
     dependencies:
     - carthage: BigInt
@@ -1045,16 +1017,16 @@ targets:
     dependencies:
     - target: PlatformUIKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: Platform
     templates:
-    - ModuleTests2
+    - ModuleTests
   PolkadotKit:
     dependencies:
     - carthage: BigInt
@@ -1073,16 +1045,18 @@ targets:
     dependencies:
     - target: PolkadotKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   StellarKit:
     dependencies:
     - target: PlatformKit
@@ -1101,16 +1075,16 @@ targets:
     dependencies:
     - target: StellarKit
     sources:
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: Modules/${featureName}/${target_name}/TestKit
-      path: TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
     templates:
-    - ModuleTests2
+    - ModuleTests
   TodayExtension:
     dependencies:
     - sdk: NotificationCenter.framework
@@ -1164,8 +1138,7 @@ targets:
     - target: ToolKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/Mocks/ToolKit
-      type: folder
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: ToolKit
     templates:
@@ -1189,14 +1162,13 @@ targets:
     - target: TransactionKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/Mocks/NetworkKit
-      type: folder
+      path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
-      path: TestKit/Mocks/PlatformKit
-      type: folder
+      path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/Mocks/ToolKit
-      type: folder
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: TransactionsFeature
     templates:
@@ -1223,17 +1195,15 @@ targets:
     - target: TransactionUIKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/Mocks/NetworkKit
-      type: folder
+      path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
-      path: TestKit/Mocks/PlatformKit
-      type: folder
+      path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/Mocks/PlatformUIKit
-      type: folder
+      path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/Mocks/ToolKit
-      type: folder
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: TransactionsFeature
     templates:
@@ -1256,8 +1226,7 @@ targets:
     - target: WalletPayloadKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/Mocks/ToolKit
-      type: folder
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: WalletPayload
     templates:
