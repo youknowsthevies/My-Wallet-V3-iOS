@@ -50,7 +50,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == ServerRespons
     }
 }
 
-public protocol NetworkResponseDecoderAPI {
+public protocol NetworkResponseDecoderAPI: NetworkResponseDecoderNewAPI {
     func decode<ResponseType: Decodable>(response: ServerResponse) -> Single<ResponseType>
     func decode<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType>
     func decodeOptional<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType?>
@@ -60,30 +60,27 @@ public protocol NetworkResponseDecoderAPI {
     func decodeFailureToString(errorResponse: ServerErrorResponse) -> String?
 }
 
-public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
+final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
-    // FIXME: Fetch decoder from Container (in the future)
-    public static let `default` = NetworkResponseDecoder()
-
-    public static let defaultJSONDecoder: JSONDecoder = {
+    static let defaultJSONDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .secondsSince1970
         return decoder
     }()
 
-    private let jsonDecoder: JSONDecoder
+    let jsonDecoder: JSONDecoder
 
-    public init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
+    init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
         self.jsonDecoder = jsonDecoder
     }
 
     // MARK: - NetworkResponseDecoderAPI
 
-    public func decode<ResponseType: Decodable>(response: ServerResponse) -> Single<ResponseType> {
-        return decode(networkResponse: response).single
+    func decode<ResponseType: Decodable>(response: ServerResponse) -> Single<ResponseType> {
+        decode(networkResponse: response).single
     }
 
-    public func decode<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType> {
+    func decode<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType> {
         switch result {
         case .success(let networkResponse):
             return decode(networkResponse: networkResponse).single
@@ -92,7 +89,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
     }
 
-    public func decodeOptional<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType?> {
+    func decodeOptional<ResponseType: Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<ResponseType?> {
         switch result {
         case .success(let networkResponse):
             return decodeOptional(networkResponse: networkResponse).single
@@ -101,7 +98,9 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
     }
 
-    public func decode<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(result: Result<ServerResponse, ServerErrorResponse>) -> Single<Result<ResponseType, ErrorResponseType>> {
+    func decode<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(
+        result: Result<ServerResponse, ServerErrorResponse>
+    ) -> Single<Result<ResponseType, ErrorResponseType>> {
         switch result {
         case .success(let networkResponse):
             return Result<Result<ResponseType, Never>, Error> {
@@ -122,7 +121,7 @@ public class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
     }
 
-    public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
+    func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
         }

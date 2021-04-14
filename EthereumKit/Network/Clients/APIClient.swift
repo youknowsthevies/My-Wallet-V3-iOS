@@ -78,21 +78,21 @@ final class APIClient: APIClientAPI {
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
         }
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     // MARK: - Private Properties
 
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
     private let apiCode: String
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(),
+    init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
          apiCode: APICode = resolve()) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
         self.apiCode = apiCode
     }
@@ -111,7 +111,7 @@ final class APIClient: APIClientAPI {
         ) else {
             return .error(ClientError.buildingRequest)
         }
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
@@ -119,10 +119,10 @@ final class APIClient: APIClientAPI {
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
         }
-        return communicator.perform(
-                request: request,
-                responseType: EthereumHistoricalTransactionResponse.self
-            )
+        return networkAdapter.perform(
+            request: request,
+            responseType: EthereumHistoricalTransactionResponse.self
+        )
     }
 
     /// Fetches transactions for an address - returns an array of transactions
@@ -131,7 +131,8 @@ final class APIClient: APIClientAPI {
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
         }
-        return communicator.perform(
+        return networkAdapter
+            .perform(
                 request: request,
                 responseType: EthereumAccountTransactionsResponse.self
             )
@@ -144,12 +145,12 @@ final class APIClient: APIClientAPI {
         guard let request = requestBuilder.get(path: path) else {
             return .error(ClientError.buildingRequest)
         }
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
             .map { (payload: [String: BalanceDetailsResponse]) -> BalanceDetailsResponse in
                 guard let details = payload[address] else {
                     throw ClientError.missingBalanceResponseForAddress
                 }
                 return details
-        }
+            }
     }
 }

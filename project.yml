@@ -315,6 +315,7 @@ targets:
     - carthage: RxRelay
     - carthage: RxSwift
     - carthage: LibWally
+    - carthage: RxCombine
     scheme:
       testTargets:
       - BitcoinChainKitTests
@@ -1097,6 +1098,7 @@ targets:
     - carthage: RxSwift
     - carthage: RxRelay
     - carthage: RxCocoa
+    - carthage: RxCombine
     scheme:
       testTargets:
       - ToolKitTests

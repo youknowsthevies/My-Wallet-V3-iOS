@@ -12,11 +12,6 @@ import RxSwift
 import ToolKit
 
 final class NabuAuthenticator: AuthenticatorAPI {
-
-    @available(*, deprecated, message: "This is deprecated. Don't use this.")
-    var token: Single<String> {
-        authenticationExecutor.token
-    }
     
     private let authenticationExecutorProvider: NabuAuthenticationExecutorProvider
     private var authenticationExecutor: NabuAuthenticationExecutorAPI {
@@ -31,7 +26,7 @@ final class NabuAuthenticator: AuthenticatorAPI {
         authenticationExecutor.authenticate(singleFunction: singleFunction)
     }
     
-    @available(*, deprecated, message: "Don't use this.")
+    @available(*, deprecated, message: "This is deprecated. Don't use this.")
     func authenticateWithResult<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(
         _ singleFunction: @escaping (String) -> Single<Result<ResponseType, ErrorResponseType>>
     ) -> Single<Result<ResponseType, ErrorResponseType>> {

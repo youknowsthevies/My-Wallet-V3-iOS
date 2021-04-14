@@ -39,7 +39,7 @@ final class CardClient: CardClientAPI {
     // MARK: - Setup
     
     init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.communicator = communicator
         self.requestBuilder = requestBuilder
     }

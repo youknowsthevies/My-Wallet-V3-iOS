@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 
 public typealias HTTPHeaders = [String: String]
@@ -68,6 +69,7 @@ public struct NetworkRequest {
     // TODO:
     // * Also inject error decoder
     let decoder: NetworkResponseDecoderAPI
+    let responseHandler: NetworkResponseHandlerAPI
 
     // TODO: modify this to be an Encodable type so that JSON serialization is done in this class
     // vs. having to serialize outside of this class
@@ -84,7 +86,8 @@ public struct NetworkRequest {
         headers: HTTPHeaders? = nil,
         authenticated: Bool = false,
         contentType: ContentType = .json,
-        decoder: NetworkResponseDecoderAPI = NetworkResponseDecoder.default,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        responseHandler: NetworkResponseHandlerAPI = resolve(),
         recordErrors: Bool = false
     ) {
         self.endpoint = endpoint
@@ -94,6 +97,7 @@ public struct NetworkRequest {
         self.authenticated = authenticated
         self.contentType = contentType
         self.decoder = decoder
+        self.responseHandler = responseHandler
         self.recordErrors = recordErrors
     }
     

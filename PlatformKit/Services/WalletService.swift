@@ -20,19 +20,19 @@ class WalletService: WalletOptionsAPI {
         guard let url = URL(string: BlockchainAPI.shared.walletOptionsUrl) else {
             return Single.error(NetworkCommunicatorError.clientError(.failedRequest(description: "Invalid URL")))
         }
-        return communicator
+        return networkAdapter
             .perform(request: NetworkRequest(endpoint: url, method: .get))
             .do(onSuccess: { [weak self] in
                 self?.cachedWalletOptions.value = $0
             })
     }
     
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     
     // MARK: - Public
     
-    init(communicator: NetworkCommunicatorAPI = resolve()) {
-        self.communicator = communicator
+    init(networkAdapter: NetworkAdapterAPI = resolve()) {
+        self.networkAdapter = networkAdapter
     }
     
     /// A Single returning the WalletOptions which contains dynamic flags for configuring the app.
@@ -60,10 +60,8 @@ class WalletService: WalletOptionsAPI {
 
     // TODO: Dimitris - Move this to its own service
     var serverStatus: Single<ServerIncidents> {
-        guard let url = URL(string: "https://www.blockchain-status.com/api/v2/incidents.json") else {
-            return Single.error(NetworkCommunicatorError.clientError(.failedRequest(description: "Invalid URL")))
-        }
-        return communicator
-            .perform(request: NetworkRequest(endpoint: url, method: .get, authenticated: false))
+        let url = URL(string: "https://www.blockchain-status.com/api/v2/incidents.json")!
+        let request = NetworkRequest(endpoint: url, method: .get, authenticated: false)
+        return networkAdapter.perform(request: request)
     }
 }

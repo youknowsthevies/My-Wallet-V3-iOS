@@ -49,14 +49,14 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
         
     // MARK: - Properties
 
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: TwoFARequestBuilder
 
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = TwoFARequestBuilder(requestBuilder: requestBuilder)
     }
     
@@ -70,18 +70,22 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
             sessionToken: sessionToken,
             code: code
         )
-        return communicator.perform(
-            request: request,
-            responseType: WalletPayloadWrapper.self
-        )
-        .catchError { error -> Single<WalletPayloadWrapper> in
-            switch error {
-            case NetworkCommunicatorError.payloadError(.badData(rawPayload: let payload)):
-                throw ClientError(plainServerError: payload) ?? error
-            default:
-                throw error
+        return networkAdapter
+            .perform(
+                request: request,
+                responseType: WalletPayloadWrapper.self
+            )
+            .catchError { error -> Single<WalletPayloadWrapper> in
+                guard let communicatorError = error as? NetworkCommunicatorError else {
+                    throw error
+                }
+                switch communicatorError {
+                case .payloadError(.badData(rawPayload: let payload)):
+                    throw ClientError(plainServerError: payload) ?? error
+                default:
+                    throw error
+                }
             }
-        }
     }
 }
 

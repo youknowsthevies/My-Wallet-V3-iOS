@@ -14,20 +14,20 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
             
     // MARK: - Properties
     
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: AutoWalletPairingClientRequestBuilder
     
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = AutoWalletPairingClientRequestBuilder(requestBuilder: requestBuilder)
     }
         
     public func request(guid: String) -> Single<String> {
         let request = requestBuilder.build(guid: guid)
-        return communicator
+        return networkAdapter
             .perform(request: request, responseType: RawServerResponse.self)
             .map { $0.data }
     }

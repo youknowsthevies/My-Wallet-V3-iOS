@@ -17,13 +17,18 @@ public protocol NetworkCommunicatorAPI {
     
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable
     
-    func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>>
-    
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType>
     
     func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType>
     
     func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?>
+}
+
+extension NetworkCommunicatorAPI {
+    
+    func perform(request: NetworkRequest) -> Completable {
+        perform(request: request, responseType: EmptyNetworkResponse.self)
+    }
 }
 
 final class NetworkCommunicator: NetworkCommunicatorAPI {
@@ -52,10 +57,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     // MARK: - NetworkCommunicatorAPI
     
-    func perform(request: NetworkRequest) -> Completable {
-        perform(request: request, responseType: EmptyNetworkResponse.self)
-    }
-    
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable {
         let requestSingle: Single<ResponseType> = executeAndHandleAuth(request: request)
         return requestSingle.asCompletable()
@@ -63,24 +64,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
         executeAndHandleAuth(request: request)
-    }
-
-    @available(*, deprecated, message: "Don't use this")
-    func perform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest, responseType: ResponseType.Type, errorResponseType: ErrorResponseType.Type) -> Single<Result<ResponseType, ErrorResponseType>> {
-        guard request.authenticated else {
-            return privatePerform(request: request)
-        }
-        guard let authenticator = authenticator else {
-            fatalError("Authenticator missing")
-        }
-        return authenticator.authenticateWithResult { [weak self] token in
-            guard let self = self else {
-                return Single.error(ToolKitError.nullReference(Self.self))
-            }
-            var request = request
-            request.add(authenticationToken: token)
-            return self.privatePerform(request: request)
-        }
     }
     
     func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType> {

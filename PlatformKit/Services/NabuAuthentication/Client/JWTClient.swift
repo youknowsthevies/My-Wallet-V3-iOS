@@ -7,8 +7,8 @@
 //
 
 import DIKit
-import RxSwift
 import NetworkKit
+import RxSwift
 
 public protocol JWTClientAPI: AnyObject {
     func requestJWT(guid: String, sharedKey: String) -> Single<String>
@@ -18,7 +18,7 @@ final class JWTClient: JWTClientAPI {
 
     // MARK: - Types
     
-    private enum ClientError: Error {
+    enum ClientError: Error {
         case jwt(String)
     }
     
@@ -41,13 +41,13 @@ final class JWTClient: JWTClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.wallet),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -70,7 +70,7 @@ final class JWTClient: JWTClientAPI {
             path: Path.token,
             parameters: queryParameters
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
             .map { (response: JWTResponse) -> String in
                 guard response.success else { throw ClientError.jwt(response.error ?? "") }
                 guard let token = response.token else { throw ClientError.jwt(response.error ?? "") }

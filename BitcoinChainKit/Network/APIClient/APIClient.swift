@@ -54,19 +54,19 @@ final class APIClient: APIClientAPI {
     }
     
     private let coin: BitcoinChainCoin
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
     private let endpoint: Endpoint
     
     // MARK: - Init
 
     init(coin: BitcoinChainCoin,
-         communicator: NetworkCommunicatorAPI = resolve(),
-         requestBuilder: RequestBuilder = resolve()) {
+         requestBuilder: RequestBuilder = resolve(),
+         networkAdapter: NetworkAdapterAPI = resolve()) {
         self.coin = coin
-        self.communicator = communicator
         self.requestBuilder = requestBuilder
         self.endpoint = Endpoint(coin: coin)
+        self.networkAdapter = networkAdapter
     }
     
     // MARK: - APIClientAPI
@@ -80,7 +80,7 @@ final class APIClient: APIClientAPI {
             parameters: parameters,
             recordErrors: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 
     func balances(for addresses: [String]) -> Single<BitcoinChainBalanceResponse> {
@@ -92,7 +92,7 @@ final class APIClient: APIClientAPI {
             parameters: parameters,
             recordErrors: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
     
     func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse> {
@@ -104,6 +104,6 @@ final class APIClient: APIClientAPI {
             parameters: parameters,
             recordErrors: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
 }

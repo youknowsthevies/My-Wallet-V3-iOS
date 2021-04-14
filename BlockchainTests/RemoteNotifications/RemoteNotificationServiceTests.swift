@@ -21,7 +21,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
     func testTokenSendingSuccessUsingRealServices() {
         
         // Instantiate all the mock services needed to test the notification domain
-        
+
         let token = "remote-notification-token"
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -31,11 +31,11 @@ final class RemoteNotificationServiceTests: XCTestCase {
         let messagingService = MockMessagingService()
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(token))
         let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
-        let communicator = MockNetworkCommunicator()
-        communicator.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
-        
+        let networkAdapter = NetworkAdapterMock()
+        networkAdapter.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
+
         // Instantiate all the sub services
-        
+
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
             userNotificationCenter: userNotificationCenter,
@@ -49,10 +49,10 @@ final class RemoteNotificationServiceTests: XCTestCase {
             tokenFetcher: tokenFetcher,
             messagingService: messagingService
         )
-        let networkService = RemoteNotificationNetworkService(communicator: communicator)
-        
+        let networkService = RemoteNotificationNetworkService(networkAdapter: networkAdapter)
+
         // Instantiate the main service
-        
+
         let service = RemoteNotificationService(
             authorizer: authorizer,
             relay: relay,
@@ -60,7 +60,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             networkService: networkService,
             walletRepository: GuidSharedKeyRepositoryAPIMock()
         )
-        
+
         let observable = service.sendTokenIfNeeded().toBlocking()
         do {
             try observable.first()!

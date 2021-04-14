@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import Combine
 import RxSwift
 
 extension Result {
@@ -106,6 +106,17 @@ extension Result {
             return .success(value)
         case .failure(let error):
             return .error(error)
+        }
+    }
+}
+
+extension Result {
+    public var publisher: AnyPublisher<Success, Failure> {
+        switch self {
+        case .success(let value):
+            return .just(value)
+        case .failure(let error):
+            return .failure(error)
         }
     }
 }
