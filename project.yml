@@ -155,25 +155,6 @@ settings:
     Release Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
 targetTemplates:
-  Framework:
-    platform: iOS
-    sources:
-    - excludes:
-      - Scripts
-      path: ${target_name}
-    type: framework
-  FrameworkTest:
-    dependencies:
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxBlocking
-    - carthage: RxTest
-    platform: iOS
-    sources:
-    - path: ${target_name}
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Utilities
-    type: bundle.unit-test
   Module:
     dependencies:
     - carthage: DIKit
