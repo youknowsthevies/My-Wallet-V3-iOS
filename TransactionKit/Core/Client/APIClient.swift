@@ -18,7 +18,8 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
                                     OrderTransactionLimitsClientAPI &
                                     OrderFetchingClientAPI &
                                     OrderUpdateClientAPI &
-                                    InternalTransferClientAPI
+                                    InternalTransferClientAPI &
+                                    BitPayClientAPI
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
@@ -39,6 +40,14 @@ final class APIClient: TransactionKitClientAPI {
         static let updateOrder = createOrder
         static let limits = ["trades", "limits"]
         static let transfer = [ "payments", "withdrawals" ]
+    }
+    
+    private enum BitPay {
+        static let url: String = "https://bitpay.com/"
+        
+        enum Paramter {
+            static let invoice: String = "i/"
+        }
     }
     
     // MARK: - Properties
@@ -117,6 +126,83 @@ final class APIClient: TransactionKitClientAPI {
             headers: headers,
             authenticated: true
         )!
+        return communicator.perform(request: request)
+    }
+    
+    // MARK: - BitPayClientAPI
+    
+    func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
+        let payload = ["chain": currency.rawValue]
+        let headers = [
+            HttpHeaderField.xPayProVersion: HttpHeaderValue.xPayProVersion,
+            HttpHeaderField.contentType: HttpHeaderValue.bitpayPaymentRequest,
+            HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
+            HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
+        ]
+        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
+            return Single.error(NetworkError.generic(message: nil))
+        }
+        let request = NetworkRequest(
+            endpoint: url,
+            method: .post,
+            body: try? JSONEncoder().encode(payload),
+            headers: headers
+        )
+        return communicator.perform(request: request)
+    }
+    
+    /// TODO: Probably can be a `Completable`.
+    func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Completable {
+        let transaction = BitPayPayment.Transaction(
+            tx: transactionHex,
+            weightedSize: transactionSize
+        )
+        let payload = BitPayPayment(
+            chain: currency.rawValue,
+            transactions: [transaction]
+        )
+        let headers = [
+            HttpHeaderField.xPayProVersion: HttpHeaderValue.xPayProVersion,
+            HttpHeaderField.contentType: HttpHeaderValue.bitpayPaymentVerification,
+            HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
+            HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
+        ]
+        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
+            return Completable.error(NetworkError.generic(message: nil))
+        }
+        let request = NetworkRequest(
+            endpoint: url,
+            method: .post,
+            body: try? JSONEncoder().encode(payload),
+            headers: headers
+        )
+        return communicator.perform(request: request)
+    }
+    
+    func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
+        let transaction = BitPayPayment.Transaction(
+            tx: transactionHex,
+            weightedSize: transactionSize
+        )
+        let payload = BitPayPayment(
+            chain: currency.rawValue,
+            transactions: [transaction]
+        )
+        let headers = [
+            HttpHeaderField.xPayProVersion: HttpHeaderValue.xPayProVersion,
+            HttpHeaderField.contentType: HttpHeaderValue.bitpayPayment,
+            HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
+            HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
+        ]
+        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
+            return Single.error(NetworkError.generic(message: nil))
+        }
+        let request = NetworkRequest(
+            endpoint: url,
+            method: .post,
+            body: try? JSONEncoder().encode(payload),
+            headers: headers
+        )
         return communicator.perform(request: request)
     }
     

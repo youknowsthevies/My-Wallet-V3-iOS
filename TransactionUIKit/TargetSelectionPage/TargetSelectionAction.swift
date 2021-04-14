@@ -16,7 +16,9 @@ enum TargetSelectionAction: MviAction {
     case validateQRScanner(String)
     case validateAddress(String, CryptoAccount)
     case destinationSelected(BlockchainAccount)
+    case validateBitPayPayload(String, CryptoCurrency)
     case addressValidated(TargetSelectionInputValidation.TextInput)
+    case validBitPayInvoiceTarget(BitPayInvoiceTarget)
     case destinationConfirmed
     case returnToPreviousStep
     case qrScannerButtonTapped
@@ -24,6 +26,8 @@ enum TargetSelectionAction: MviAction {
     
     func reduce(oldState: TargetSelectionPageState) -> TargetSelectionPageState {
         switch self {
+        case .validateBitPayPayload:
+            return oldState
         case .availableTargets(let accounts):
             return oldState
                 .update(keyPath: \.availableTargets, value: accounts.compactMap { $0 as? SingleAccount })
@@ -65,6 +69,12 @@ enum TargetSelectionAction: MviAction {
             let destination = address as TransactionTarget
             return oldState
                 .update(keyPath: \.inputValidated, value: .text(inputValidation))
+                .update(keyPath: \.destination, value: destination)
+                .update(keyPath: \.nextEnabled, value: true)
+                .withUpdatedBackstack(oldState: oldState)
+        case .validBitPayInvoiceTarget(let invoice):
+            let destination = invoice as TransactionTarget
+            return oldState
                 .update(keyPath: \.destination, value: destination)
                 .update(keyPath: \.nextEnabled, value: true)
                 .withUpdatedBackstack(oldState: oldState)

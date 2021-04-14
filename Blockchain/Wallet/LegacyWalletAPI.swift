@@ -61,4 +61,4 @@ protocol LegacyWalletAPI: AnyObject {
                            assetType: LegacyAssetType) -> String!
 }
 
-extension Wallet: LegacyWalletAPI {}
+extension Wallet: LegacyWalletAPI { }

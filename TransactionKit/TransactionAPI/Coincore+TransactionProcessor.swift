@@ -40,6 +40,18 @@ extension Coincore {
                                         target: TransactionTarget,
                                         action: AssetAction) -> Single<TransactionProcessor> {
         switch (target, action) {
+        case (is BitPayInvoiceTarget, .send):
+            let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
+            return account
+                .requireSecondPassword
+                .map { (requiresSecondPassword) -> TransactionProcessor in
+                    .init(sourceAccount: account,
+                          transactionTarget: target,
+                          engine: BitPayTransactionEngine(
+                            onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
+                          )
+                    )
+                }
         case (is CryptoAccount, .swap):
             let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
             return account

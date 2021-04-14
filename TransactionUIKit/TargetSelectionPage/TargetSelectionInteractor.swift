@@ -10,6 +10,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
+import TransactionKit
 
 final class TargetSelectionInteractor {
     
@@ -17,6 +18,10 @@ final class TargetSelectionInteractor {
     
     init(coincore: Coincore = resolve()) {
         self.coincore = coincore
+    }
+    
+    func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
+        BitPayInvoiceTarget.make(from: data, asset: .bitcoin)
     }
     
     func getAvailableTargetAccounts(sourceAccount: BlockchainAccount,

@@ -47,6 +47,13 @@ extension DependencyContainer {
             return client as InternalTransferClientAPI
         }
         
+        factory { () -> BitPayClientAPI in
+            let client: TransactionKitClientAPI = DIKit.resolve()
+            return client as BitPayClientAPI
+        }
+        
+        factory { CryptoTargetPayloadFactory() as CryptoTargetPayloadFactoryAPI }
+        
         factory { APIClient() as TransactionKitClientAPI }
         
         factory { InternalTransferService() as InternalTransferServiceAPI }
@@ -64,5 +71,7 @@ extension DependencyContainer {
         factory { TransactionLimitsService() as TransactionLimitsServiceAPI }
         
         factory { PendingSwapCompletionService() as PendingSwapCompletionServiceAPI }
+        
+        factory { BitPayService() as BitPayServiceAPI }
     }
 }

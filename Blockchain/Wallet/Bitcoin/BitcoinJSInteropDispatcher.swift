@@ -22,6 +22,9 @@ import ToolKit
     
     func didGetHDWallet(_ wallet: JSValue)
     func didFailToGetHDWallet(errorMessage: JSValue)
+    
+    func didGetSignedPayment(_ payment: JSValue)
+    func didFailToSignPayment(errorMessage: JSValue)
 }
 
 protocol BitcoinJSInteropDispatcherAPI {
@@ -31,6 +34,8 @@ protocol BitcoinJSInteropDispatcherAPI {
     var getDefaultWalletIndex: Dispatcher<Int> { get }
     
     var getAccounts: Dispatcher<String> { get }
+    
+    var getSignedPayment: Dispatcher<(String, Int)> { get }
     
     var getHDWallet: Dispatcher<String> { get }
 }
@@ -43,12 +48,39 @@ public class BitcoinJSInteropDispatcher: BitcoinJSInteropDispatcherAPI {
     
     let getWalletIndex = Dispatcher<Int32>()
     
+    let getSignedPayment = Dispatcher<(String, Int)>()
+    
     let getAccounts = Dispatcher<String>()
     
     let getHDWallet = Dispatcher<String>()
 }
 
 extension BitcoinJSInteropDispatcher: BitcoinJSInteropDelegateAPI {
+    
+    public func didGetSignedPayment(_ payment: JSValue) {
+        guard let payload: String = payment.toString() else {
+            getWalletIndex.sendFailure(.unknown)
+            return
+        }
+        let values = payload.components(separatedBy: ",")
+        guard let hex = values.first else {
+            sendFailure(dispatcher: getSignedPayment, errorMessage: payment)
+            return
+        }
+        guard let weight = values.last else {
+            sendFailure(dispatcher: getSignedPayment, errorMessage: payment)
+            return
+        }
+        guard let weightValue = Int(weight) else {
+            sendFailure(dispatcher: getSignedPayment, errorMessage: payment)
+            return
+        }
+        getSignedPayment.sendSuccess(with: (hex, weightValue))
+    }
+    
+    public func didFailToSignPayment(errorMessage: JSValue) {
+        sendFailure(dispatcher: getSignedPayment, errorMessage: errorMessage)
+    }
     
     public func didGetWalletIndex(_ walletIndex: JSValue) {
         guard let walletIndexInt: Int32 = walletIndex.toNumber()?.int32Value else {

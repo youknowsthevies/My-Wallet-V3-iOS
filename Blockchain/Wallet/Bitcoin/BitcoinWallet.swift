@@ -65,6 +65,14 @@ final class BitcoinWallet: NSObject {
             self?.delegate.didFailToGetDefaultWalletIndex(errorMessage: errorMessage)
         }
         
+        context.setJsFunction(named: "objc_on_btc_tx_signed" as NSString) { [weak self] signedPayment in
+            self?.delegate.didGetSignedPayment(signedPayment)
+        }
+        
+        context.setJsFunction(named: "objc_on_btc_tx_signed_error" as NSString) { [weak self] errorMessage in
+            self?.delegate.didFailToSignPayment(errorMessage: errorMessage)
+        }
+        
         context.setJsFunction(named: "objc_on_didGetBitcoinWalletsAsync" as NSString) { [weak self] accounts in
             self?.delegate.didGetAccounts(accounts)
         }
@@ -82,6 +90,22 @@ final class BitcoinWallet: NSObject {
 }
 
 extension BitcoinWallet: BitcoinChainSendBridgeAPI {
+    
+    func sign(with secondPassword: String?) -> Single<EngineTransaction> {
+        Single.create(weak: self) { (self, observer) -> Disposable in
+            self.wallet?.getSignedBitcoinPayment(
+                with: secondPassword,
+                success: { (transactionHex, weight) in
+                    observer(.success(BitPayEngineTransaction(msgSize: weight, txHash: transactionHex)))
+                },
+                error: { json in
+                    Logger.shared.error("BTC payment signing failure: \(json)")
+                    observer(.error(PlatformKitError.default))
+                })
+            return Disposables.create()
+        }
+    }
+    
     func buildProposal<Token>(with destination: BitcoinChainReceiveAddress<Token>,
                               amount: MoneyValue,
                               fees: MoneyValue,

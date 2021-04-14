@@ -8,6 +8,7 @@
 
 import PlatformKit
 import RxSwift
+import ToolKit
 
 final class TargetSelectionPageModel {
     
@@ -44,6 +45,8 @@ final class TargetSelectionPageModel {
             return processTargetListUpdate(sourceAccount: account, action: action)
         case .validateAddress(let address, let account):
             return validateCrypto(address: address, account: account)
+        case .validateBitPayPayload(let value, let currency):
+            return processBitPayValue(payload: value, currency: currency)
         case .destinationSelected,
              .availableTargets,
              .destinationConfirmed,
@@ -52,9 +55,19 @@ final class TargetSelectionPageModel {
              .addressValidated,
              .destinationDeselected,
              .qrScannerButtonTapped,
-             .validateQRScanner:
+             .validateQRScanner,
+             .validBitPayInvoiceTarget:
             return nil
         }
+    }
+    
+    private func processBitPayValue(payload: String, currency: CryptoCurrency) -> Disposable {
+        interactor
+            .getBitPayInvoiceTarget(data: payload, asset: currency)
+            .subscribe(onSuccess: { [weak self] invoice in
+                self?.process(action: .validBitPayInvoiceTarget(invoice))
+                self?.process(action: .destinationConfirmed)
+            })
     }
     
     private func processTargetListUpdate(sourceAccount: BlockchainAccount, action: AssetAction) -> Disposable {
