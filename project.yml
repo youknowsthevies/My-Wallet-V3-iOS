@@ -665,14 +665,14 @@ targets:
       testTargets:
       - CommonCryptoKitTests
     templateAttributes:
-      featureName: Cryptography
+      featureName: CommonCrypto
     templates:
     - Module
   CommonCryptoKitTests:
     dependencies:
     - target: CommonCryptoKit
     templateAttributes:
-      featureName: Cryptography
+      featureName: CommonCrypto
     templates:
     - ModuleTests
   DebugUIKit:
@@ -681,7 +681,7 @@ targets:
     - target: PlatformUIKit
     - target: ToolKit
     templateAttributes:
-      featureName: Debug
+      featureName: DebugUI
     templates:
     - Module
   ERC20Kit:
@@ -1127,7 +1127,7 @@ targets:
       testTargets:
       - ToolKitTests
     templateAttributes:
-      featureName: ToolKit
+      featureName: Tool
     templates:
     - Module
   ToolKitTests:
@@ -1137,7 +1137,7 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
-      featureName: ToolKit
+      featureName: Tool
     templates:
     - ModuleTests
   TransactionKit:
@@ -1151,7 +1151,7 @@ targets:
       testTargets:
       - TransactionKitTests
     templateAttributes:
-      featureName: TransactionsFeature
+      featureName: TransactionFeature
     templates:
     - Module
   TransactionKitTests:
@@ -1167,7 +1167,7 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
-      featureName: TransactionsFeature
+      featureName: TransactionFeature
     templates:
     - ModuleTests
   TransactionUIKit:
@@ -1186,7 +1186,7 @@ targets:
       testTargets:
       - BuySellUIKitTests
     templateAttributes:
-      featureName: TransactionsFeature
+      featureName: TransactionFeature
     templates:
     - Module
   TransactionUIKitTests:
@@ -1204,7 +1204,7 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
-      featureName: TransactionsFeature
+      featureName: TransactionFeature
     templates:
     - ModuleTests
   WalletPayloadKit:
