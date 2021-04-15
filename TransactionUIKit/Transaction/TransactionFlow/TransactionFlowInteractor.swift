@@ -173,6 +173,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func closeFlow() {
+        transactionModel.process(action: .resetFlow)
         router?.closeFlow()
         analyticsHook.onClose()
     }
