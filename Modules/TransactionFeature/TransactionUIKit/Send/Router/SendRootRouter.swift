@@ -92,5 +92,6 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     func dismissTransactionFlow() {
         guard let router = transactionRouter else { return }
         detachChild(router)
+        transactionRouter = nil
     }
 }

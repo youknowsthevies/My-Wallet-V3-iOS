@@ -21,6 +21,9 @@ final class TransactionInteractor {
     private let swapEligibilityService: EligibilityServiceAPI
     private var transactionProcessor: TransactionProcessor?
 
+    /// Used to invalidate the transaction processor chain.
+    private let invalidate = PublishSubject<Void>()
+
     init(coincore: Coincore = resolve(),
          availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
          swapEligibilityService: EligibilityServiceAPI = resolve()) {
@@ -44,6 +47,21 @@ final class TransactionInteractor {
             })
             .asObservable()
             .flatMap(\.initializeTransaction)
+            .takeUntil(invalidate)
+    }
+
+    deinit {
+        reset()
+        self.transactionProcessor = nil
+    }
+
+    func invalidateTransaction() -> Completable {
+        Completable.create(weak: self) { (self, complete) -> Disposable in
+            self.reset()
+            self.transactionProcessor = nil
+            complete(.completed)
+            return Disposables.create()
+        }
     }
 
     func update(amount: MoneyValue) -> Completable {
@@ -116,6 +134,7 @@ final class TransactionInteractor {
     }
 
     func reset() {
+        invalidate.on(.next(()))
         transactionProcessor?.reset()
     }
 

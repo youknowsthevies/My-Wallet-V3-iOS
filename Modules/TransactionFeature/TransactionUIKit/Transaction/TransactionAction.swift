@@ -36,6 +36,7 @@ enum TransactionAction: MviAction {
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
+    case invalidateTransaction
 
     func reduce(oldState: TransactionState) -> TransactionState {
         switch self {
@@ -178,6 +179,12 @@ enum TransactionAction: MviAction {
             return newState
         case .modifyTransactionConfirmation:
             return oldState
+        case .invalidateTransaction:
+            return oldState
+                .update(keyPath: \.pendingTransaction, value: nil)
+                .update(keyPath: \.destination, value: nil)
+                .update(keyPath: \.nextEnabled, value: false)
+                .withUpdatedBackstack(oldState: oldState)
         }
     }
 

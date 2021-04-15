@@ -116,11 +116,17 @@ final class TransactionModel {
             interactor.reset()
             return nil
         case .returnToPreviousStep:
-            return nil
+            let isAmountScreen = previousState.step == .enterAmount
+            guard isAmountScreen else {
+                return nil
+            }
+            return processTransactionInvalidation(action: previousState.action)
         case .sourceAccountSelected(let sourceAccount):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
         case .modifyTransactionConfirmation(let confirmation):
             return processModifyTransactionConfirmation(confirmation: confirmation)
+        case .invalidateTransaction:
+            return proccessInvalidateTransaction()
         }
     }
     
@@ -247,5 +253,17 @@ final class TransactionModel {
             .subscribe { [weak self] (moneyValuePair) in
                 self?.process(action: .sourceDestinationPair(moneyValuePair))
             }
+    }
+
+    private func processTransactionInvalidation(action: AssetAction) -> Disposable {
+        Observable.just(())
+            .subscribe(onNext: { [weak self] _ in
+                self?.process(action: .invalidateTransaction)
+            })
+    }
+
+    private func proccessInvalidateTransaction() -> Disposable {
+        interactor.invalidateTransaction()
+            .subscribe()
     }
 }
