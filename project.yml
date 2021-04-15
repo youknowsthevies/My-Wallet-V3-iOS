@@ -5,8 +5,8 @@ configs:
   Debug Production: debug
   Debug Staging: debug
   Release: release
-  Release Staging: release
   Release Internal: release
+  Release Staging: release
 name: Blockchain
 options:
   bundleIdPrefix: com.rainydayapps
@@ -85,16 +85,16 @@ schemes:
       releaseConfig: Release
     templates:
     - BlockchainScheme
-  Blockchain (Staging):
-    templateAttributes:
-      debugConfig: Debug Staging
-      releaseConfig: Release Staging
-    templates:
-    - BlockchainScheme
   Blockchain (Internal Production):
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release Internal
+    templates:
+    - BlockchainScheme
+  Blockchain (Staging):
+    templateAttributes:
+      debugConfig: Debug Staging
+      releaseConfig: Release Staging
     templates:
     - BlockchainScheme
 settingGroups:
@@ -150,232 +150,257 @@ settings:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Debug Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
-    Release Staging:
-      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Internal:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
+    Release Staging:
+      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
 targetTemplates:
-  Framework:
+  Module:
+    dependencies:
+    - carthage: DIKit
+    - carthage: RxSwift
     platform: iOS
     sources:
-    - excludes:
+    - createIntermediateGroups: true
+      excludes:
       - Scripts
-      path: ${target_name}
+      path: Modules/${featureName}/${target_name}
     type: framework
-  FrameworkTest:
+  ModuleTests:
     dependencies:
+    - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
     - carthage: RxBlocking
     - carthage: RxTest
     platform: iOS
     sources:
-    - path: ${target_name}
-    - group: ${target_name}/TestKit
-      path: TestKit/Utilities
+    - createIntermediateGroups: true
+      path: Modules/${featureName}/${target_name}
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Utilities
     type: bundle.unit-test
 targets:
   ActivityKit:
     dependencies:
-    - target: PlatformKit
+    - carthage: BigInt
     - target: AlgorandKit
-    - target: PolkadotKit
-    - target: BuySellKit
-    - target: BitcoinKit
     - target: BitcoinCashKit
-    - target: EthereumKit
+    - target: BitcoinKit
+    - target: BuySellKit
     - target: ERC20Kit
+    - target: EthereumKit
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PolkadotKit
     - target: StellarKit
     - target: ToolKit
-    - target: NetworkKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     scheme:
       testTargets:
       - ActivityKitTests
+    templateAttributes:
+      featureName: ActivityFeature
     templates:
-    - Framework
+    - Module
   ActivityKitTests:
     dependencies:
     - target: ActivityKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: ActivityFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   ActivityUIKit:
     dependencies:
-    - target: ActivityKit
-    - target: BuySellKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: ToolKit
-    - target: Localization
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxDataSources
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
-    - carthage: RxDataSources
+    - target: ActivityKit
+    - target: BuySellKit
+    - target: Localization
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - ActivityUIKitTests
+    templateAttributes:
+      featureName: ActivityFeature
     templates:
-    - Framework
+    - Module
   ActivityUIKitTests:
     dependencies:
     - target: ActivityUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: ActivityFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   AlgorandKit:
     dependencies:
-    - target: Localization
-    - target: PlatformKit
-    - target: ToolKit
-    - target: NetworkKit
     - carthage: BigInt
     - carthage: DIKit
     - carthage: RxRelay
     - carthage: RxSwift
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - AlgorandKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   AlgorandKitTests:
     dependencies:
     - target: AlgorandKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   BitcoinCashKit:
     dependencies:
-    - target: BitcoinChainKit
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
     - carthage: BigInt
     - carthage: DIKit
+    - carthage: LibWally
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: LibWally
+    - target: BitcoinChainKit
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BitcoinCashKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   BitcoinCashKitTests:
     dependencies:
     - target: BitcoinCashKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
-    - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: LibWally
+    - carthage: RxCocoa
     - carthage: RxCombine
+    - carthage: RxRelay
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinChainKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   BitcoinChainKitTests:
     dependencies:
     - target: BitcoinChainKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   BitcoinKit:
     dependencies:
-    - target: BitcoinChainKit
-    - target: PlatformKit
-    - target: HDWalletKit
-    - target: ToolKit
-    - target: NetworkKit
-    - target: Localization
-    - target: TransactionKit
     - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: LibWally
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - target: BitcoinChainKit
+    - target: HDWalletKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
+    - target: TransactionKit
     scheme:
       testTargets:
       - BitcoinKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   BitcoinKitTests:
     dependencies:
     - target: BitcoinKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BitcoinKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BitcoinKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   Blockchain:
     configFiles:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
       Debug Production: Config/BlockchainConfig/Blockchain-Production.xcconfig
       Debug Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
       Release: Config/BlockchainConfig/Blockchain-Production.xcconfig
-      Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
       Release Internal: Config/BlockchainConfig/Blockchain-Production.xcconfig
+      Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
     - sdk: AdSupport.framework
@@ -491,12 +516,13 @@ targets:
       path: Blockchain/Scripts/export_built_products_dir.sh
     preBuildScripts:
     - name: my-wallet SHA256
-      script: "if [[ -z \"${BITRISE_PROJECT_PATH}\" ]]; then\n  exit 0\nfi\ncd ${PROJECT_DIR}\nif ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo\
-        \ \"Checksum failed:\" >&2\n  exit 1\nfi\n"
+      script: "if [[ -z \"${BITRISE_PROJECT_PATH}\" ]]; then\n  exit 0\nfi\ncd ${PROJECT_DIR}\n\
+        if ! shasum -a 256 -c ${PROJECT_DIR}/my-wallet.js.sha256; then\n  echo \"\
+        Checksum failed:\" >&2\n  exit 1\nfi\n"
     settings:
       base:
-        GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
         COMMIT_HASH: ${COMMIT_HASH}
+        GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
@@ -522,11 +548,11 @@ targets:
           groups:
           - release_signing
           - base_ios
-        Release Staging:
+        Release Internal:
           groups:
           - release_signing
           - base_ios
-        Release Internal:
+        Release Staging:
           groups:
           - release_signing
           - base_ios
@@ -557,185 +583,174 @@ targets:
     type: application
   BlockchainTests:
     dependencies:
-    - target: Blockchain
+    - carthage: RxBlocking
     - carthage: RxRelay
     - carthage: RxSwift
-    - carthage: RxBlocking
     - carthage: RxTest
+    - target: Blockchain
     platform: iOS
     sources:
     - path: BlockchainTests
-    - group: BlockchainTests/TestKit
-      path: TestKit/Utilities
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/ERC20Kit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/BuySellKit
-    - group: BlockchainTests/TestKit
-      path: TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit
     type: bundle.unit-test
   BuySellKit:
     dependencies:
-    - target: PlatformKit
     - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BuySellKitTests
+    templateAttributes:
+      featureName: BuySellFeature
     templates:
-    - Framework
+    - Module
   BuySellKitTests:
     dependencies:
     - target: BuySellKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: BuySellFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   BuySellUIKit:
     dependencies:
-    - target: BuySellKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
-    - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: RxCocoa
+    - carthage: RxRelay
+    - target: BuySellKit
+    - target: CommonCryptoKit
+    - target: Localization
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - BuySellUIKitTests
+    templateAttributes:
+      featureName: BuySellFeature
     templates:
-    - Framework
+    - Module
   BuySellUIKitTests:
     dependencies:
     - target: BuySellUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BuySellKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: BuySellFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   CommonCryptoKit:
     scheme:
       testTargets:
       - CommonCryptoKitTests
+    templateAttributes:
+      featureName: CommonCrypto
     templates:
-    - Framework
+    - Module
   CommonCryptoKitTests:
     dependencies:
     - target: CommonCryptoKit
+    templateAttributes:
+      featureName: CommonCrypto
     templates:
-    - FrameworkTest
+    - ModuleTests
   DebugUIKit:
     dependencies:
-    - target: ToolKit
     - target: PlatformKit
     - target: PlatformUIKit
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - target: ToolKit
+    templateAttributes:
+      featureName: DebugUI
     templates:
-    - Framework
+    - Module
   ERC20Kit:
     dependencies:
-    - target: NetworkKit
+    - carthage: BigInt
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     - target: EthereumKit
+    - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
     - target: TransactionKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
     scheme:
       testTargets:
       - ERC20KitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   ERC20KitTests:
     dependencies:
     - target: ERC20Kit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ERC20Kit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/EthereumKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ERC20Kit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   EthereumKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
     - target: TransactionKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
     scheme:
       testTargets:
       - EthereumKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   EthereumKitTests:
     dependencies:
     - target: EthereumKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/EthereumKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/EthereumKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   HDWalletKit:
     dependencies:
     - target: CommonCryptoKit
@@ -743,147 +758,155 @@ targets:
     scheme:
       testTargets:
       - HDWalletKitTests
+    templateAttributes:
+      featureName: HDWallet
     templates:
-    - Framework
+    - Module
   HDWalletKitTests:
     dependencies:
     - target: HDWalletKit
+    templateAttributes:
+      featureName: HDWallet
     templates:
-    - FrameworkTest
+    - ModuleTests
   InterestKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - InterestKitTests
+    templateAttributes:
+      featureName: InterestFeature
     templates:
-    - Framework
+    - Module
   InterestKitTests:
     dependencies:
     - target: InterestKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: InterestFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   InterestUIKit:
     dependencies:
-    - target: InterestKit
-    - target: PlatformUIKit
-    - target: PlatformKit
     - target: CommonCryptoKit
-    - target: NetworkKit
-    - target: ToolKit
+    - target: InterestKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - InterestUIKitTests
+    templateAttributes:
+      featureName: InterestFeature
     templates:
-    - Framework
+    - Module
   InterestUIKitTests:
     dependencies:
     - target: InterestUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: InterestFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   KYCKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxSwift
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: ToolKit
     scheme:
       testTargets:
       - KYCKitTests
+    templateAttributes:
+      featureName: KYCFeature
     templates:
-    - Framework
+    - Module
   KYCKitTests:
     dependencies:
     - target: KYCKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: KYCFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   KYCUIKit:
     dependencies:
-    - target: KYCKit
-    - target: PlatformUIKit
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: ToolKit
+    - carthage: Veriff
     - target: KYCKit
     - target: Localization
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxCocoa
-    - carthage: Veriff
+    - target: NetworkKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
     scheme:
       testTargets:
       - KYCUIKitTests
+    templateAttributes:
+      featureName: KYCFeature
     templates:
-    - Framework
+    - Module
   KYCUIKitTests:
     dependencies:
     - target: KYCUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: KYCFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   Localization:
+    templateAttributes:
+      featureName: Localization
     templates:
-    - Framework
+    - Module
   NetworkKit:
     configFiles:
       Debug Dev: Config/NetworkKitConfig/NetworkKit-Dev.xcconfig
       Debug Production: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Debug Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
       Release: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
-      Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
       Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
+      Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
     dependencies:
     - carthage: RxSwift
     - carthage: RxCombine
     - carthage: DIKit
     - target: ToolKit
     info:
-      path: NetworkKit/Info.plist
+      path: Modules/Network/NetworkKit/Info.plist
       properties:
         API_URL: $(API_URL)
         EVERYPAY_API_URL: $(EVERYPAY_API_URL)
@@ -902,7 +925,7 @@ targets:
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
-      path: NetworkKit/Scripts/get_ssl_certificate.sh
+      path: Modules/Network/NetworkKit/Scripts/get_ssl_certificate.sh
     scheme:
       testTargets:
       - NetworkKitTests
@@ -910,149 +933,150 @@ targets:
     - excludes:
       - Scripts
       - Cert
-      path: NetworkKit
+      path: Modules/Network/NetworkKit
     - buildPhase:
         copyFiles:
           destination: resources
-      group: NetworkKit/Cert
+      group: Modules/Network/NetworkKit/Cert
       optional: true
-      path: NetworkKit/Cert/blockchain.der
+      path: Modules/Network/NetworkKit/Cert/blockchain.der
     type: framework
   NetworkKitTests:
     dependencies:
     - target: NetworkKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    templateAttributes:
+      featureName: Network
     templates:
-    - FrameworkTest
+    - ModuleTests
   PlatformKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: CryptoSwift
+    - carthage: LibWally
     - target: CommonCryptoKit
     - target: Localization
     - target: NetworkKit
     - target: ToolKit
     - target: WalletPayloadKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    - carthage: RxCombine
-    - carthage: CryptoSwift
-    - carthage: LibWally
     scheme:
       testTargets:
       - PlatformKitTests
+    templateAttributes:
+      featureName: Platform
     templates:
-    - Framework
+    - Module
   PlatformKitTests:
     dependencies:
     - target: PlatformKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: Platform
     templates:
-    - FrameworkTest
+    - ModuleTests
   PlatformUIKit:
     dependencies:
+    - carthage: BigInt
+    - carthage: Charts
+    - carthage: Differentiator
+    - carthage: PhoneNumberKit
+    - carthage: RIBs
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxDataSources
+    - carthage: Zxcvbn
     - target: Localization
     - target: PlatformKit
     - target: ToolKit
-    - carthage: BigInt
-    - carthage: Charts
-    - carthage: DIKit
-    - carthage: PhoneNumberKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    - carthage: Zxcvbn
-    - carthage: RxDataSources
-    - carthage: Differentiator
-    - carthage: RIBs
     scheme:
       testTargets:
       - PlatformUIKitTests
+    templateAttributes:
+      featureName: Platform
     templates:
-    - Framework
+    - Module
   PlatformUIKitTests:
     dependencies:
     - target: PlatformUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: Platform
     templates:
-    - FrameworkTest
+    - ModuleTests
   PolkadotKit:
     dependencies:
+    - carthage: BigInt
     - target: Localization
+    - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
-    - target: NetworkKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     scheme:
       testTargets:
       - PolkadotKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   PolkadotKitTests:
     dependencies:
     - target: PolkadotKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
+    - ModuleTests
   StellarKit:
     dependencies:
     - target: PlatformKit
     - target: Localization
     - target: ToolKit
     - target: TransactionKit
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
     - carthage: stellarsdk
     scheme:
       testTargets:
       - StellarKitTests
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - Framework
+    - Module
   StellarKitTests:
     dependencies:
     - target: StellarKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/StellarKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: CryptoAssets
     templates:
-    - FrameworkTest
-  TestKit:
-    platform: iOS
-    sources:
-    - path: TestKit
-      type: folder
-    type: bundle
+    - ModuleTests
   TodayExtension:
     dependencies:
     - sdk: NotificationCenter.framework
@@ -1082,10 +1106,10 @@ targets:
         Release:
           groups:
           - release_signing_today_extension
-        Release Staging:
+        Release Internal:
           groups:
           - release_signing_today_extension
-        Release Internal:
+        Release Staging:
           groups:
           - release_signing_today_extension
     sources:
@@ -1102,92 +1126,107 @@ targets:
     scheme:
       testTargets:
       - ToolKitTests
+    templateAttributes:
+      featureName: Tool
     templates:
-    - Framework
+    - Module
   ToolKitTests:
     dependencies:
     - target: ToolKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: Tool
     templates:
-    - FrameworkTest
+    - ModuleTests
   TransactionKit:
     dependencies:
+    - carthage: BigInt
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
     scheme:
       testTargets:
       - TransactionKitTests
+    templateAttributes:
+      featureName: TransactionFeature
     templates:
-    - Framework
+    - Module
   TransactionKitTests:
     dependencies:
     - target: TransactionKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: TransactionFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   TransactionUIKit:
     dependencies:
-    - target: TransactionKit
+    - carthage: BigInt
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - target: KYCKit
+    - target: KYCUIKit
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
-    - target: KYCKit
-    - target: KYCUIKit
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - target: TransactionKit
     scheme:
       testTargets:
       - BuySellUIKitTests
+    templateAttributes:
+      featureName: TransactionFeature
     templates:
-    - Framework
+    - Module
   TransactionUIKitTests:
     dependencies:
     - target: TransactionUIKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformUIKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/NetworkKit
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: TransactionFeature
     templates:
-    - FrameworkTest
+    - ModuleTests
   WalletPayloadKit:
     dependencies:
+    - carthage: CryptoSwift
     - target: CommonCryptoKit
     - target: Localization
     - target: ToolKit
-    - carthage: CryptoSwift
     scheme:
       testTargets:
       - WalletPayloadKitTests
+    templateAttributes:
+      featureName: WalletPayload
     templates:
-    - Framework
+    - Module
   WalletPayloadKitTests:
     dependencies:
     - target: WalletPayloadKit
     sources:
-    - group: ${target_name}/TestKit
-      path: TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: WalletPayload
     templates:
-    - FrameworkTest
+    - ModuleTests
