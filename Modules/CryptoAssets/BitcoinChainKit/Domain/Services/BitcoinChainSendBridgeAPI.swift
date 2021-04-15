@@ -76,6 +76,7 @@ public enum BitcoinChainTransactionError: Error {
 }
 
 public protocol BitcoinChainSendBridgeAPI {
+    func sign(with secondPassword: String?) -> Single<EngineTransaction>
     func buildProposal<Token: BitcoinChainToken>(
         with destination: BitcoinChainReceiveAddress<Token>,
         amount: MoneyValue,

@@ -14,6 +14,7 @@ public struct PendingTransaction: Equatable {
         case quoteSubscription
         case userTiers
         case xlmMemo
+        case bitpayTimer
     }
     
     /// The maximum amount the user can spend. We compare the amount entered to the
@@ -80,6 +81,12 @@ public struct PendingTransaction: Equatable {
         return copy
     }
     
+    public func update(amount: MoneyValue) -> PendingTransaction {
+        var copy = self
+        copy.amount = amount
+        return copy
+    }
+    
     public func update(amount: MoneyValue, available: MoneyValue) -> PendingTransaction {
         var copy = self
         copy.amount = amount
@@ -90,6 +97,12 @@ public struct PendingTransaction: Equatable {
     public func update(selectedFeeLevel: FeeLevel) -> PendingTransaction {
         var copy = self
         copy.feeSelection = copy.feeSelection.update(selectedLevel: selectedFeeLevel)
+        return copy
+    }
+    
+    public func update(availableFeeLevels: Set<FeeLevel>) -> PendingTransaction {
+        var copy = self
+        copy.feeSelection = copy.feeSelection.update(availableFeeLevels: availableFeeLevels)
         return copy
     }
 

@@ -38,6 +38,12 @@ public struct FeeSelection: Equatable {
         copy.selectedLevel = selectedLevel
         return copy
     }
+    
+    public func update(availableFeeLevels: Set<FeeLevel>) -> FeeSelection {
+        var copy = self
+        copy.availableLevels = availableFeeLevels
+        return copy
+    }
 
     public static func empty(asset: CryptoCurrency) -> FeeSelection {
         .init(selectedLevel: .none, availableLevels: [.none], asset: asset)

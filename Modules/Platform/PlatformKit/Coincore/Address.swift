@@ -33,6 +33,8 @@ public protocol ReceiveAddress: TransactionTarget {
     var address: String { get }
 }
 
+public protocol InvoiceTarget { }
+
 public protocol CryptoTarget: TransactionTarget {
     var asset: CryptoCurrency { get }
 }

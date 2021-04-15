@@ -1,0 +1,50 @@
+//
+//  BitPayInvoiceTarget.swift
+//  PlatformKit
+//
+//  Created by Alex McGregor on 4/8/21.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
+//
+
+import ToolKit
+
+public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
+    
+    // MARK: - Public Properties
+    
+    public let asset: CryptoCurrency
+    public let address: String
+    public let amount: CryptoValue
+    public let invoiceId: String
+    public let merchant: String
+    public var label: String {
+        "BitPay\(merchant)"
+    }
+    
+    public var expirationTimeInSeconds: TimeInterval {
+        guard let date = DateFormatter.utcSessionDateFormat.date(from: expires) else {
+            fatalError("Expected a date: \(expires)")
+        }
+        return TimeInterval(Calendar.current.component(.second, from: date))
+    }
+    
+    // MARK: - Private Properties
+    
+    private let expires: String
+    
+    // MARK: - Init
+    
+    public init(asset: CryptoCurrency,
+                amount: CryptoValue,
+                invoiceId: String,
+                merchant: String,
+                address: String,
+                expires: String) {
+        self.asset = asset
+        self.amount = amount
+        self.invoiceId = invoiceId
+        self.merchant = merchant
+        self.address = address
+        self.expires = expires
+    }
+}

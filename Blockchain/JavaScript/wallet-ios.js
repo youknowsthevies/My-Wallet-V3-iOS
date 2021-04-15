@@ -1104,6 +1104,8 @@ MyWalletPhone.signBitcoinPayment = function(secondPassword) {
     .transactionHexAndSize()
     .then(function(value) {
           objc_on_btc_tx_signed(value)
+    }).catch(function(e) {
+        objc_on_btc_tx_signed_error(JSON.stringify(e))
     })
 };
 

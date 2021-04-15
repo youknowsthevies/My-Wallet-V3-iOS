@@ -12,7 +12,7 @@ import RxSwift
 import ToolKit
 import TransactionKit
 
-final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine {
+final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
 
     var sourceAccount: CryptoAccount!
     var askForRefreshConfirmation: ((Bool) -> Completable)!
@@ -58,6 +58,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 address: exchange.address,
                 label: exchange.label,
                 onTxCompleted: exchange.onTxCompleted
+            )
+        case let target as BitPayInvoiceTarget:
+            return .init(
+                address: target.address,
+                label: target.label,
+                onTxCompleted: target.onTxCompleted
             )
         default:
             guard let receiveAddress = transactionTarget as? BitcoinChainReceiveAddress<Token> else {
@@ -246,6 +252,23 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 self.bridge.send(coin: Token.coin, with: secondPassword)
             }
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
+    }
+    
+    // MARK: - BitPayClientEngine
+    
+    func doPrepareTransaction(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<EngineTransaction> {
+        bridge.sign(with: secondPassword)
+    }
+    
+    func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {
+        // TODO: This matches Androids API
+        // though may not be necessary for iOS
+    }
+    
+    func doOnTransactionFailed(pendingTransaction: PendingTransaction, error: Error) {
+        // TODO: This matches Androids API
+        // though may not be necessary for iOS
+        Logger.shared.error("BitPay transaction failed: \(error)")
     }
     
     // MARK: - Private Functions

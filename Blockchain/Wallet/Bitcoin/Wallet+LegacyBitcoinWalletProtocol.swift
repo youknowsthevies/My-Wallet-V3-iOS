@@ -26,6 +26,8 @@ protocol LegacyBitcoinWalletProtocol: class {
     func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
     
     func validateBitcoin(address: String) -> Bool
+    
+    func getSignedBitcoinPayment(with secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void)
 }
 
 enum BitcoinReceiveAddressError: Error {
@@ -37,6 +39,29 @@ enum BitcoinReceiveAddressError: Error {
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
+    
+    func getSignedBitcoinPayment(with secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
+        guard isInitialized() else {
+            error("Wallet is not yet initialized.")
+            return
+        }
+        bitcoin.interopDispatcher.getSignedPayment.addObserver { result in
+            switch result {
+            case .success(let payment):
+                success(payment.0, payment.1)
+            case .failure(let errorMessage):
+                error(errorMessage.localizedDescription)
+            }
+        }
+        let function: String = "MyWalletPhone.signBitcoinPayment"
+        let script: String
+        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+            script = "\(function)(\(escapedSecondPassword))"
+        } else {
+            script = "\(function)()"
+        }
+        context.evaluateScript(script)
+    }
     
     func validateBitcoin(address: String) -> Bool {
         let escapedString = address.escapedForJS()

@@ -21,10 +21,20 @@ public struct HttpHeaderField {
     public static let airdropCampaign = "X-CAMPAIGN"
     public static let blockchainOrigin = "blockchain-origin"
     public static let authorization = "Authorization"
+    public static let bitpayPartner = "BP_PARTNER"
+    public static let bitpayPartnerVersion = "BP_PARTNER_VERSION"
+    public static let xPayProVersion = "x-paypro-version"
 }
 
 public struct HttpHeaderValue {
     public static let json = "application/json"
+    public static let bitpayPaymentOptions = "application/payment-options"
+    public static let bitpayPaymentRequest = "application/payment-request"
+    public static let bitpayPaymentVerification = "application/payment-verification"
+    public static let bitpayPayment = "application/payment"
+    public static let bitpayPartnerName = "Blockchain"
+    public static let bitpayPartnerVersion = "V6.28.0"
+    public static let xPayProVersion = "2"
     public static let formEncoded = "application/x-www-form-urlencoded"
     public static let clientTypeApp = "APP"
     public static let simpleBuy = "simplebuy"

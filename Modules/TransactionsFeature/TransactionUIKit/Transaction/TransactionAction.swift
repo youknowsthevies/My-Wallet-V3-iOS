@@ -49,7 +49,6 @@ enum TransactionAction: MviAction {
             return oldState
         case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
             let step: TransactionStep = passwordRequired ? .enterPassword : .enterAmount
-            // TODO: BitPay: step = target is InvoiceTarget -> TransactionStep.CONFIRM_DETAIL
             return TransactionState(
                 action: action,
                 destination: target,
@@ -60,8 +59,6 @@ enum TransactionAction: MviAction {
                 step: step
             ).withUpdatedBackstack(oldState: oldState)
         case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, passwordRequired):
-            // TICKET: [IOS-3825]
-            // TODO: Initial step should be .enterAddress when that screen is implemented.
             return TransactionState(
                 action: action,
                 destination: target,
@@ -107,11 +104,15 @@ enum TransactionAction: MviAction {
             newState.destinationToFiatPair = nil
             return newState
         case .targetAccountSelected(let destinationAccount):
+            /// If the user scans a BitPay QR code, the account will be a
+            /// BitPayInvoiceTarget. This means we do not proceed to the enter amount
+            /// screen but rather the confirmation detail screen.
+            let step: TransactionStep = destinationAccount is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
             var newState = oldState
             newState.errorState = .none
             newState.destination = destinationAccount
             newState.nextEnabled = false
-            newState.step = .enterAmount
+            newState.step = step
             newState.sourceDestinationPair = nil
             newState.sourceToFiatPair = nil
             newState.destinationToFiatPair = nil
@@ -126,8 +127,6 @@ enum TransactionAction: MviAction {
             newState.availableSources = sources
             return newState.withUpdatedBackstack(oldState: oldState)
         case .availableDestinationAccountsListUpdated(let targets):
-            // TICKET: [IOS-3825]
-            // TODO: Step should be .enterAddress when that screen is implemented.
             let newStep: TransactionStep = oldState.passwordRequired ? .enterPassword : .selectTarget
             var newState = oldState
             newState.availableTargets = targets

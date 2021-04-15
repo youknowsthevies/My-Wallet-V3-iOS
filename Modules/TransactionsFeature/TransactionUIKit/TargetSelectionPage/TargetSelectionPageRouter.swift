@@ -9,6 +9,7 @@
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import TransactionKit
 
 protocol TargetSelectionPageInteractable: Interactable {
     var router: TargetSelectionPageRouting? { get set }
@@ -26,17 +27,22 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
     func presentQRScanner(for currency: CryptoCurrency,
                           sourceAccount: CryptoAccount,
                           model: TargetSelectionPageModel) {
-        let parser = AddressQRCodeParser(assetType: currency)
+        let parser = CryptoTargetQRCodeParser(assetType: currency)
         let textViewModel = TargetSelectionQRScanningViewModel()
         let builder = QRCodeScannerViewControllerBuilder(
             parser: parser,
             textViewModel: textViewModel,
             completed: { result in
                 model.process(action: .returnToPreviousStep)
-                if case .success(let assetURL) = result {
-                    /// We need to validate the address as if it were a
-                    /// value provided by user entry in the text field.
-                    model.process(action: .validateQRScanner(assetURL.payload.address))
+                if case .success(let value) = result {
+                    switch value {
+                    case .metadata(let metadata):
+                        /// We need to validate the address as if it were a
+                        /// value provided by user entry in the text field.
+                        model.process(action: .validateQRScanner(metadata.address))
+                    case .bitpay(let value):
+                        model.process(action: .validateBitPayPayload(value, currency))
+                    }
                 }
             },
             closeHandler: {
