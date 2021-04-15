@@ -178,8 +178,8 @@ public extension LocalizationConstants.Transaction.TargetSource.Card {
     static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
     // swiftlint:disable line_length
     static let description = NSLocalizedString(
-        "At this time, you can only transfer %@ from your Trade Wallet to your %@ Wallet. Once %@ is in your Wallet you can transfer to external addresses.",
-        comment: "At this time, you can only transfer %@ from your Trade Wallet to your %@ Wallet. Once %@ is in your Wallet you can transfer to external addresses."
+        "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses.",
+        comment: "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses."
     )
 }
 
