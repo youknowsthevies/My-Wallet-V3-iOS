@@ -73,9 +73,12 @@ struct TradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         let items = interactors.map { interactor in
             TargetSelectionPageCellItem(interactor: interactor, assetAction: action)
         }
-        let currencyCode = sourceAccount.currencyType.displayCode
+        let currency = sourceAccount.currencyType.name
+        let code = sourceAccount.currencyType.displayCode
         let title = LocalizationIds.Card.internalSendOnly
-        let description = String(format: LocalizationIds.Card.description, currencyCode, currencyCode, currencyCode)
+        let description = String(
+            format: LocalizationIds.Card.description, currency, code, code, currency
+        )
         let cardItem = TargetSelectionPageCellItem(
             cardView: .transactionViewModel(
                 with: title,
