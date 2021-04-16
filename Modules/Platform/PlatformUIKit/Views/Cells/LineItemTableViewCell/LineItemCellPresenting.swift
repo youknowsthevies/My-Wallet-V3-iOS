@@ -25,6 +25,9 @@ public protocol LineItemCellPresenting: AnyObject {
     /// Some `LineItems` have an image (e.g. clipboard).
     var image: Driver<UIImage?> { get }
 
+    /// Provides a way to adjust the image width if needed, note the default width is 22px
+    var imageWidth: Driver<CGFloat> { get }
+
     /// Some `LineItems` have a different background color (e.g. clipboard
     /// on selection).
     var backgroundColor: Driver<UIColor> { get }

@@ -45,4 +45,7 @@ class LegacyWalletMock: LegacyWalletAPI {
     func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
         .empty()
     }
+
+    func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
+    }
 }

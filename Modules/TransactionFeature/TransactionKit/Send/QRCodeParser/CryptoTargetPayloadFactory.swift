@@ -33,6 +33,9 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
     func create(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
         guard let data = string else { return .error(CryptoTargetPayloadError.invalidStringData) }
         let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
+        guard asset.supportsBitPay else {
+            return metadata
+        }
         return BitPayInvoiceTarget
             .isValidBitPay(data)
             .andThen(Single.just(.bitpay(data)))

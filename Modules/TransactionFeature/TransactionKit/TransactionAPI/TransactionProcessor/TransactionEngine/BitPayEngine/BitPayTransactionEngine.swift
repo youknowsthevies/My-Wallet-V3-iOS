@@ -27,7 +27,12 @@ final class BitPayTransactionEngine: TransactionEngine {
     }
     
     // MARK: - Private Properties
-    
+
+    /// This is due to the fact that the validation of the timeout occurs on completion of
+    /// the `Observable<Int>.interval` method from Rx, we kill the interval a second earlier so that we
+    /// validate the transaction/invoice on the correct beat.
+    private static let timeoutStop: TimeInterval = 1
+
     private let onChainEngine: OnChainTransactionEngine
     private let bitpayService: BitPayServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -41,6 +46,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         bitpayInvoice
             .expirationTimeInSeconds
     }
+    private let stopCountdown = PublishSubject<Void>()
     
     init(onChainEngine: OnChainTransactionEngine,
          bitpayService: BitPayServiceAPI = resolve(),
@@ -151,6 +157,9 @@ final class BitPayTransactionEngine: TransactionEngine {
                 guard let self = self else { return }
                 // TICKET: IOS-4492 - Analytics
                 self.bitpayClientEngine.doOnTransactionFailed(pendingTransaction: pendingTransaction, error: error)
+            }, onSubscribe: { [weak self] in
+                guard let self = self else { return }
+                self.stopCountdown.on(.next(()))
             })
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
@@ -190,7 +199,7 @@ final class BitPayTransactionEngine: TransactionEngine {
     private func doValidateTimeout(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.just(pendingTransaction)
             .map(weak: self) { (self, pendingTx) in
-                guard self.timeRemainingSeconds >= 0 else {
+                guard self.timeRemainingSeconds > Self.timeoutStop else {
                     throw TransactionValidationFailure(state: .invoiceExpired)
                 }
                 return pendingTx
@@ -203,19 +212,20 @@ final class BitPayTransactionEngine: TransactionEngine {
         transaction.setCountdownTimer(timer: startCountdownTimer(timeRemaining: timeRemainingSeconds))
         return transaction
     }
-    
+
     private func startCountdownTimer(timeRemaining: TimeInterval) -> Disposable {
         guard let remaining = Int(exactly: timeRemaining) else {
             fatalError("Expected an Int value: \(timeRemaining)")
         }
         return Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .takeUntil(stopCountdown)
             .map { remaining - $0 }
             .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
-                _ = self.askForRefreshConfirmation(true)
+                _ = self.askForRefreshConfirmation(false)
                     .subscribe()
             })
-            .takeUntil(.inclusive, predicate: { $0 == 0 })
+            .takeUntil(.inclusive, predicate: { $0 <= Int(Self.timeoutStop) })
             .do(onCompleted: { [weak self] in
                 guard let self = self else { return }
                 Logger.shared.debug("BitPay Invoice Countdown expired")

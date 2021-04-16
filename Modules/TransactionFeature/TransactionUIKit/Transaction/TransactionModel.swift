@@ -116,8 +116,9 @@ final class TransactionModel {
             interactor.reset()
             return nil
         case .returnToPreviousStep:
+            let isBitPay = previousState.step == .confirmDetail && previousState.destination is BitPayInvoiceTarget
             let isAmountScreen = previousState.step == .enterAmount
-            guard isAmountScreen else {
+            guard isAmountScreen || isBitPay else {
                 return nil
             }
             return processTransactionInvalidation(action: previousState.action)

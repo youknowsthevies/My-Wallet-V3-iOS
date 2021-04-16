@@ -22,10 +22,14 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
     }
     
     public var expirationTimeInSeconds: TimeInterval {
-        guard let date = DateFormatter.utcSessionDateFormat.date(from: expires) else {
+        guard let expiryDate = DateFormatter.utcSessionDateFormat.date(from: expires) else {
             fatalError("Expected a date: \(expires)")
         }
-        return TimeInterval(Calendar.current.component(.second, from: date))
+        guard let seconds = Calendar.current.dateComponents([.second], from: Date(), to: expiryDate).second,
+              seconds >= 0 else {
+            return 0
+        }
+        return TimeInterval(seconds)
     }
     
     // MARK: - Private Properties

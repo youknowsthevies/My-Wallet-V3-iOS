@@ -60,7 +60,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
     func setup(for state: TransactionState) {
         disposeBag = DisposeBag()
         continueButtonViewModel.textRelay.accept(Self.confirmCtaText(state: state))
-        
+
         guard let pendingTransaction = state.pendingTransaction else {
             cells = []
             return
@@ -80,6 +80,24 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             .map { interactor in
                 DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
             }
+
+        var bitpayItemIfNeeded: [DetailsScreen.CellType] = pendingTransaction.confirmations
+            .filter(\.isBitPay)
+            .compactMap(\.formatted)
+            .map { data -> (title: LabelContentInteracting, subtitle: LabelContentInteracting) in
+                (DefaultLabelContentInteractor(knownValue: data.0), DefaultLabelContentInteractor(knownValue: data.1))
+            }
+            .map { data in
+                DefaultLineItemCellInteractor(title: data.title, description: data.subtitle)
+            }
+            .map { interactor -> DetailsScreen.CellType in
+                let presenter = DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
+                setupBitPay(on: presenter)
+                return .lineItem(presenter)
+            }
+        if bitpayItemIfNeeded.count > 0 {
+            bitpayItemIfNeeded.append(.separator)
+        }
 
         let confirmationLineItems: [DetailsScreen.CellType] = interactors
             .reduce(into: [DetailsScreen.CellType]()) { (result, lineItem) in
@@ -147,7 +165,8 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             )
             disclaimer.append(.staticLabel(content))
         }
-        cells = [.separator] + confirmationLineItems + memoModels + errorModels + disclaimer
+        let restItems: [DetailsScreen.CellType] = memoModels + errorModels + disclaimer
+        cells = [.separator] + bitpayItemIfNeeded + confirmationLineItems + restItems
     }
 
     static func confirmCtaText(state: TransactionState) -> String {
@@ -167,11 +186,29 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
         }
     }
+
+    // MARK: - Private methods
+
+    private func setupBitPay(on presenter: DefaultLineItemCellPresenter) {
+        let bitPayLogo = UIImage(named: "bitpay-logo")
+
+        presenter.imageWidthRelay.accept(bitPayLogo?.size.width ?? 0)
+        presenter.imageRelay.accept(bitPayLogo)
+    }
 }
 
 extension TransactionConfirmation {
     var isCustom: Bool {
-        isErrorNotice || isMemo
+        isErrorNotice || isMemo || isBitPay
+    }
+
+    var isBitPay: Bool {
+        switch self {
+        case .bitpayCountdown:
+            return true
+        default:
+            return false
+        }
     }
 
     var isErrorNotice: Bool {

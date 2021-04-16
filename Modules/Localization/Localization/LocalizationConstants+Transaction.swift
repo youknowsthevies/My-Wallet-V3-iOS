@@ -408,4 +408,8 @@ public extension LocalizationConstants.Transaction.Confirmation {
         )
         return String(format: format, feeType)
     }
+    static let remainingTime = NSLocalizedString(
+        "Remaining Time",
+        comment: "Remaining Time"
+    )
 }

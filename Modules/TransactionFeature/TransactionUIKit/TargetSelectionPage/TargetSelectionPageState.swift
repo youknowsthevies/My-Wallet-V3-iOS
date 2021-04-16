@@ -8,7 +8,7 @@
 
 import PlatformKit
 
-enum TargetSelectionPageStep {
+enum TargetSelectionPageStep: Equatable {
     // TODO: QR Scanning Step
     case initial
     case complete

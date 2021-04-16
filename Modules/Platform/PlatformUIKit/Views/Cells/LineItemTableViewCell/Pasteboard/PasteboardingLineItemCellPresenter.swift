@@ -60,6 +60,9 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
     public var image: Driver<UIImage?> {
         imageRelay.asDriver()
     }
+
+    /// This is fixed at 22px for pasteboard line items
+    public let imageWidth: Driver<CGFloat>
     
     public var identifier: String {
         pasteboardValue
@@ -101,6 +104,8 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
             interactionText: input.descriptionInteractionText,
             interactionDuration: input.interactionDuration
         )
+
+        imageWidth = Driver.just(22)
 
         interactor = DefaultLineItemCellInteractor(title: titleInteractor, description: descriptionInteractor)
         

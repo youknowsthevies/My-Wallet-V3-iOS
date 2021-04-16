@@ -51,6 +51,9 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
         receiveAddress
     }
+
+    func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
+    }
     
     // MARK: - LegacyEthereumWalletProtocol
     
