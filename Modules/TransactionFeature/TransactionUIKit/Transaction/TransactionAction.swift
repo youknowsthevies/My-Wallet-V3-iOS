@@ -49,7 +49,11 @@ enum TransactionAction: MviAction {
         case .updateFeeLevelAndAmount:
             return oldState
         case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
-            let step: TransactionStep = passwordRequired ? .enterPassword : .enterAmount
+            /// If the user scans a BitPay QR code, the account will be a
+            /// BitPayInvoiceTarget. This means we do not proceed to the enter amount
+            /// screen but rather the confirmation detail screen.
+            let next: TransactionStep = target is BitPayInvoiceTarget ? .confirmDetail : .enterAmount
+            let step = passwordRequired ? .enterPassword : next
             return TransactionState(
                 action: action,
                 destination: target,

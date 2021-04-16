@@ -89,6 +89,21 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
         }
     }
     
+    func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget) {
+        let builder = TransactionFlowBuilder()
+        transactionRouter = builder.build(
+            withListener: interactor,
+            action: .send,
+            sourceAccount: sourceAccount,
+            target: destination
+        )
+        if let router = transactionRouter {
+            let viewControllable = router.viewControllable
+            attachChild(router)
+            viewController.present(viewController: viewControllable)
+        }
+    }
+    
     func dismissTransactionFlow() {
         guard let router = transactionRouter else { return }
         detachChild(router)

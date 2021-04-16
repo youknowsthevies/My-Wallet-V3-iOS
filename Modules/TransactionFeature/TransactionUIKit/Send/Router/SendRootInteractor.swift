@@ -18,6 +18,7 @@ public protocol SendRootRouting: ViewableRouting {
     /// can send from.
     func routeToSendLanding()
     func routeToSend(sourceAccount: CryptoAccount)
+    func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget)
     func dismissTransactionFlow()
 }
 
