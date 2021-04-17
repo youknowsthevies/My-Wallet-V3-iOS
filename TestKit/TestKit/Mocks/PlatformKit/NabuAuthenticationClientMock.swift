@@ -6,24 +6,31 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import Combine
+import NetworkKit
 
 @testable import PlatformKit
 
 final class NabuAuthenticationClientMock: NabuAuthenticationClientAPI {
-
-    var expectedSessionTokenResult: Result<NabuSessionTokenResponse, Error>!
-    var expectedRecoverUserResult: Result<Void, Error>!
     
-    func sessionToken(for guid: String,
-                      userToken: String,
-                      userIdentifier: String,
-                      deviceId: String,
-                      email: String) -> Single<NabuSessionTokenResponse> {
-        expectedSessionTokenResult.single
+    var expectedSessionTokenResult: Result<NabuSessionTokenResponse, NetworkCommunicatorError>!
+    
+    var expectedRecoverUserResult: Result<Void, NetworkCommunicatorError>!
+    
+    func sessionTokenPublisher(
+        for guid: String,
+        userToken: String,
+        userIdentifier: String,
+        deviceId: String,
+        email: String
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError> {
+        expectedSessionTokenResult.publisher.eraseToAnyPublisher()
     }
     
-    func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable {
-        expectedRecoverUserResult.single.asCompletable()
+    func recoverUserPublisher(
+        offlineToken: NabuOfflineTokenResponse,
+        jwt: String
+    ) -> AnyPublisher<Void, NetworkCommunicatorError> {
+        expectedRecoverUserResult.publisher.eraseToAnyPublisher()
     }
 }

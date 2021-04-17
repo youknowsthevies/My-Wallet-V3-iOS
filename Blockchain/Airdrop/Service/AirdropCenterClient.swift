@@ -31,18 +31,21 @@ final class AirdropCenterClient: AirdropCenterClientAPI {
             method: .get,
             authenticated: true
         )
-        return communicator.perform(request: request)
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
     
     private let pathComponents = [ "users", "user-campaigns" ]
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
-    
+    private let networkAdapter: NetworkAdapterAPI
+
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 }

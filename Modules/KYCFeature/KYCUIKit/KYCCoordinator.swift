@@ -74,7 +74,7 @@ final class KYCCoordinator: KYCRouterAPI {
     private var kycSettings: KYCSettingsAPI
 
     private let tiersService: KYCTiersServiceAPI
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let analyticsService: AnalyticsServiceAPI
     private let dataRepository: DataRepositoryAPI
     private let requestBuilder: RequestBuilder
@@ -113,7 +113,7 @@ final class KYCCoordinator: KYCRouterAPI {
         dataRepository: DataRepositoryAPI = resolve(),
         kycSettings: KYCSettingsAPI = resolve(),
         loadingViewPresenter: LoadingViewPresenting = resolve(),
-        communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.requestBuilder = requestBuilder
         self.analyticsService = analyticsService
@@ -123,7 +123,7 @@ final class KYCCoordinator: KYCRouterAPI {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
         self.loadingViewPresenter = loadingViewPresenter
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
 
         registerForKYCFinish()
     }
@@ -510,7 +510,11 @@ final class KYCCoordinator: KYCRouterAPI {
         ) else {
             return .error(RequestBuilder.Error.buildingRequest)
         }
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     @discardableResult private func presentInNavigationController(

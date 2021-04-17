@@ -13,10 +13,6 @@ public typealias HTTPHeaders = [String: String]
 
 public struct NetworkRequest {
     
-    public enum NetworkError: Error {
-        case generic
-    }
-    
     public enum NetworkMethod: String {
         case get = "GET"
         case post = "POST"
@@ -66,8 +62,6 @@ public struct NetworkRequest {
     let endpoint: URL
     private(set) var headers: HTTPHeaders?
     let contentType: ContentType
-    // TODO:
-    // * Also inject error decoder
     let decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
 

@@ -137,9 +137,7 @@ extension DependencyContainer {
         
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
-        single { () -> WalletOptionsAPI in
-            WalletService()
-        }
+        single { WalletService() as WalletOptionsAPI }
 
         factory { CustodialPendingDepositService() as CustodialPendingDepositServiceAPI }
 

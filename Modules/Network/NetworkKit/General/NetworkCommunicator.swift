@@ -1,202 +1,134 @@
 //
-//  NetworkCommunicator.swift
-//  Blockchain
+//  NetworkCommunicatorNew.swift
+//  NetworkKit
 //
-//  Created by Jack on 07/05/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Jack Pooley on 25/03/2021.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
-import RxSwift
-import ToolKit
+import Combine
 import DIKit
+import ToolKit
 
-public protocol NetworkCommunicatorAPI {
+protocol NetworkCommunicatorAPI {
     
-    func perform(request: NetworkRequest) -> Completable
-    
-    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable
-    
-    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType>
-    
-    func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType>
-    
-    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?>
-}
-
-extension NetworkCommunicatorAPI {
-    
-    func perform(request: NetworkRequest) -> Completable {
-        perform(request: request, responseType: EmptyNetworkResponse.self)
-    }
+    /// Performs network requests
+    /// - Parameter request: the request object describes the network request to be performed
+    func dataTaskPublisher(
+        for request: NetworkRequest
+    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
 }
 
 final class NetworkCommunicator: NetworkCommunicatorAPI {
     
-    private var eventRecorder: AnalyticsEventRecording?
-    private var authenticator: AuthenticatorAPI?
+    // MARK: - Private properties
     
-    private let scheduler: ConcurrentDispatchQueueScheduler
-    private let session: URLSession
-    private let sessionHandler: NetworkSessionDelegateAPI
+    private let session: NetworkSession
+    private let queue: DispatchQueue
+    private let authenticator: AuthenticatorAPI?
+    private let eventRecorder: AnalyticsEventRecording?
     
-    init(session: URLSession = resolve(),
+    // MARK: - Setup
+    
+    init(session: NetworkSession = resolve(),
          sessionDelegate: SessionDelegateAPI = resolve(),
          sessionHandler: NetworkSessionDelegateAPI = resolve(),
-         scheduler: ConcurrentDispatchQueueScheduler = resolve(tag: DIKitContext.network),
-         eventRecorder: AnalyticsEventRecording? = nil,
-         authenticator: AuthenticatorAPI? = nil) {
+         queue: DispatchQueue = DispatchQueue.global(qos: .background),
+         authenticator: AuthenticatorAPI? = nil,
+         eventRecorder: AnalyticsEventRecording? = nil) {
         self.session = session
-        self.sessionHandler = sessionHandler
-        self.scheduler = scheduler
-        self.eventRecorder = eventRecorder
+        self.queue = queue
         self.authenticator = authenticator
-
+        self.eventRecorder = eventRecorder
+        
         sessionDelegate.delegate = sessionHandler
     }
     
-    // MARK: - NetworkCommunicatorAPI
+    // MARK: - Internal methods
     
-    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Completable {
-        let requestSingle: Single<ResponseType> = executeAndHandleAuth(request: request)
-        return requestSingle.asCompletable()
-    }
-    
-    func performOptional<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType?> {
-        executeAndHandleAuth(request: request)
-    }
-    
-    func perform<ResponseType: Decodable>(request: NetworkRequest, responseType: ResponseType.Type) -> Single<ResponseType> {
-        executeAndHandleAuth(request: request)
-    }
-    
-    func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
-        executeAndHandleAuth(request: request)
-    }
-    
-    // MARK: - Private methods
-    
-    private func executeAndHandleAuth<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
+    func dataTaskPublisher(
+        for request: NetworkRequest
+    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
         guard request.authenticated else {
-            return privatePerform(request: request)
+            return execute(request: request)
         }
         guard let authenticator = authenticator else {
             fatalError("Authenticator missing")
         }
-        return authenticator.authenticate { [weak self] token in
-            guard let self = self else {
-                return Single.error(ToolKitError.nullReference(Self.self))
+        return authenticator
+            .authenticate { [weak self] token in
+                guard let self = self else {
+                    let empty = Empty(
+                        completeImmediately: true,
+                        outputType: ServerResponseNew.self,
+                        failureType: NetworkCommunicatorError.self
+                    )
+                    return empty.eraseToAnyPublisher()
+                }
+                var request = request
+                request.add(authenticationToken: token)
+                return self.execute(request: request)
             }
-            var request = request
-            request.add(authenticationToken: token)
-            return self.privatePerform(request: request)
-        }
     }
     
-    private func privatePerform<ResponseType: Decodable, ErrorResponseType: Error & Decodable>(request: NetworkRequest) -> Single<Result<ResponseType, ErrorResponseType>> {
-        execute(request: request)
+    // MARK: - Private methods
+    
+    private func execute(
+        request: NetworkRequest
+    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+        session.erasedDataTaskPublisher(for: request.URLRequest)
+            .mapError(NetworkCommunicatorError.urlError)
+            .flatMap { elements -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+                request.responseHandler.handle(elements: elements, for: request)
+            }
+            .eraseToAnyPublisher()
             .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
                 error.analyticsEvent(for: request) { serverErrorResponse in
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
                 }
             }
-            .mapRawServerError()
-            .decode(with: request.decoder)
+            .subscribe(on: queue)
+            .receive(on: queue)
+            .eraseToAnyPublisher()
     }
+}
+
+protocol NetworkSession {
     
-    private func privatePerform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
-        execute(request: request)
-            .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
-                error.analyticsEvent(for: request) { serverErrorResponse in
-                    request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
-                }
-            }
-            .mapRawServerError()
-            .decode(with: request.decoder)
-    }
-        
-    // swiftlint:disable:next function_body_length
-    private func execute(request: NetworkRequest) -> Single<
-        Result<ServerResponse, NetworkCommunicatorError>
-    > {
-        Single<Result<ServerResponse, NetworkCommunicatorError>>.create(weak: self) { (self, observer) -> Disposable in
-            let urlRequest = request.URLRequest
-            let requestPath = urlRequest.url?.path ?? ""
+    func erasedDataTaskPublisher(
+        for request: URLRequest
+    ) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
+}
 
-            Logger.shared.debug("URL: \(urlRequest.url?.absoluteString ?? "")")
-
-            let task = self.session.dataTask(with: urlRequest) { payload, response, error in
-                guard let response = response as? HTTPURLResponse else {
-                    Logger.shared.debug("\(requestPath) failed with error: \(error?.localizedDescription ?? "nil")")
-                    observer(.success(.failure(NetworkCommunicatorError.serverError(.badResponse))))
-                    return
-                }
-//                #if DEBUG
-//                if let payload = payload, let responseValue = String(data: payload, encoding: .utf8) {
-//                    Logger.shared.debug("\(responseValue) <- \(requestPath)")
-//                }
-//                #endif
-                switch response.statusCode {
-                case 204:
-                    observer(.success(.success(ServerResponse(response: response, payload: nil))))
-                    return
-                case 200...299:
-                    observer(.success(.success(ServerResponse(response: response, payload: payload))))
-                    return
-                default:
-                    Logger.shared.debug("\(requestPath) failed with status code: \(response.statusCode)")
-                    observer(.success(.failure(NetworkCommunicatorError.rawServerError(ServerErrorResponse(response: response, payload: payload)))))
-                    return
-                }
-            }
-            defer {
-                task.resume()
-            }
-            return Disposables.create {
-                task.cancel()
-            }
-        }
-        .subscribeOn(scheduler)
-        .observeOn(scheduler)
+extension URLSession: NetworkSession {
+    
+    func erasedDataTaskPublisher(
+        for request: URLRequest
+    ) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
+        dataTaskPublisher(for: request)
+            .eraseToAnyPublisher()
     }
 }
 
-extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, NetworkCommunicatorError> {
-    fileprivate func recordErrors(on recorder: AnalyticsEventRecording?, request: NetworkRequest, errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?) -> Single<Element> {
-        guard request.recordErrors else { return self }
-        return self.do(onSuccess: { result in
-                guard case .failure(let error) = result else {
+extension AnyPublisher where Output == ServerResponseNew,
+                             Failure == NetworkCommunicatorError {
+    
+    fileprivate func recordErrors(
+        on recorder: AnalyticsEventRecording?,
+        request: NetworkRequest,
+        errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?
+    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+        handleEvents(
+            receiveCompletion: { completion in
+                guard case .failure(let communicatorError) = completion else {
                     return
                 }
-                guard let event = errorMapper(request, error) else {
-                    return
-                }
-                recorder?.record(event: event)
-            })
-            .do(onError: { error in
-                guard let error = error as? NetworkCommunicatorError else {
-                    return
-                }
-                guard let event = errorMapper(request, error) else {
+                guard let event = errorMapper(request, communicatorError) else {
                     return
                 }
                 recorder?.record(event: event)
-            })
-    }
-}
-
-extension PrimitiveSequence where Trait == SingleTrait, Element == Result<ServerResponse, NetworkCommunicatorError> {
-    fileprivate func mapRawServerError() -> Single<Result<ServerResponse, ServerErrorResponse>> {
-        map { result -> Result<ServerResponse, ServerErrorResponse> in
-            switch result {
-            case .success(let networkResponse):
-                return .success(networkResponse)
-            case .failure(let error):
-                guard case .rawServerError(let serverErrorResponse) = error else {
-                    throw error
-                }
-                return .failure(serverErrorResponse)
             }
-        }
+        )
+        .eraseToAnyPublisher()
     }
 }

@@ -59,13 +59,13 @@ public final class KYCClient: KYCClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    public init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -74,7 +74,10 @@ public final class KYCClient: KYCClientAPI {
             path: Path.tiers,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
     
     public func supportedDocuments(for country: String) -> Single<KYCSupportedDocumentsResponse> {
@@ -82,7 +85,10 @@ public final class KYCClient: KYCClientAPI {
             path: Path.supportedDocuments(for: country),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
     
     public func credentialsForVeriff() -> Single<VeriffCredentials> {
@@ -90,7 +96,10 @@ public final class KYCClient: KYCClientAPI {
             path: Path.credentiasForVeriff,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
     
     public func user() -> Single<NabuUser> {
@@ -98,15 +107,21 @@ public final class KYCClient: KYCClientAPI {
             path: Path.currentUser,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
     
     public func listOfStates(in country: String) -> Single<[KYCState]> {
         let request = requestBuilder.get(
             path: Path.listOfStates(in: country)
         )!
-        return communicator
-            .perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
             .map { (states: [KYCState]) in
                 states.sorted { $0.name.uppercased() < $1.name.uppercased() }
             }
@@ -136,7 +151,11 @@ public final class KYCClient: KYCClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     public func selectCountry(country: String,
@@ -169,7 +188,11 @@ public final class KYCClient: KYCClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     public func updatePersonalDetails(firstName: String?, lastName: String?, birthday: Date?) -> Completable {
@@ -187,7 +210,11 @@ public final class KYCClient: KYCClientAPI {
             body: try? encoder.encode(payload),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     public func updateAddress(userAddress: UserAddress) -> Completable {
@@ -197,7 +224,11 @@ public final class KYCClient: KYCClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }
 

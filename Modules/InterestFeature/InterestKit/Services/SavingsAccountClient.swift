@@ -33,13 +33,13 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
     // MARK: - Private Properties
 
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
 
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
@@ -57,7 +57,11 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     func balance(with fiatCurrency: FiatCurrency) -> Single<SavingsAccountBalanceResponse?> {
@@ -72,7 +76,12 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.performOptional(request: request, responseType: SavingsAccountBalanceResponse.self)
+        return networkAdapter
+            .performOptional(
+                request: request,
+                responseType: SavingsAccountBalanceResponse.self,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse> {
@@ -87,6 +96,10 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }

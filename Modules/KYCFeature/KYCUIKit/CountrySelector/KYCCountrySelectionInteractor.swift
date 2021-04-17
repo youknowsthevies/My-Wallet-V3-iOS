@@ -6,9 +6,11 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
+import RxCombine
 import RxSwift
 import ToolKit
 
@@ -37,7 +39,10 @@ class KYCCountrySelectionInteractor {
 
     private func sendSelection(countryCode: String, state: String? = nil, shouldBeNotifiedWhenAvailable: Bool? = nil) -> Disposable {
         jwtService.token
-            .flatMapCompletable(weak: self) { (self, jwtToken) in
+            .asObservable()
+            .take(1)
+            .asSingle()
+            .flatMapCompletable(weak: self) { (self, jwtToken) -> Completable in
                 self.kycClient.selectCountry(
                     country: countryCode,
                     state: state,

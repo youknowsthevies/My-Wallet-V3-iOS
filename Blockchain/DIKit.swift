@@ -59,6 +59,8 @@ extension DependencyContainer {
         
         factory(tag: "CrashlyticsRecorder") { CrashlyticsRecorder() as Recording }
 
+        factory { ExchangeClient() as ExchangeClientAPI }
+        
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
         single { TradeLimitsService() as TradeLimitsAPI }

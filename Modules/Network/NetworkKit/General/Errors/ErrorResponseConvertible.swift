@@ -11,5 +11,5 @@ import Foundation
 /// Higher level `Error` types should conform to this to enable mapping from `NetworkCommunicatorErrorNew` errors
 public protocol ErrorResponseConvertible: Error, Decodable {
     
-    static func from(_ communicatorError: NetworkCommunicatorErrorNew) -> Self
+    static func from(_ communicatorError: NetworkCommunicatorError) -> Self
 }
