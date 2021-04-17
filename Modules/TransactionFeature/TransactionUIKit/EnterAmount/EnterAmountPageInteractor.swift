@@ -229,7 +229,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 return (state.action, pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
             }
             .map { (action, networkFeeAdjustmentSupported) in
-                (action, networkFeeAdjustmentSupported ? Visibility.visible : .hidden)
+                (action, (networkFeeAdjustmentSupported && action == .send) ? .visible : .hidden)
             }
             .map { (action, networkFeeVisibility) -> SendAuxiliaryViewPresenter.State in
                 SendAuxiliaryViewPresenter.State(
