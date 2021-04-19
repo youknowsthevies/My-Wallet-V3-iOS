@@ -3,8 +3,8 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import DashboardKit
+import XCTest
 
 class DashboardKitTests: XCTestCase {
 

@@ -71,11 +71,8 @@ public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, Fi
     }
     
     // Equatable
-    override public func isEqual(to other: ViewPresenter) -> Bool {
-        guard let other = other as? FiatBalanceCollectionViewPresenter else {
-            return false
-        }
-        return interactor.interactorsStateRelay.value == other.interactor.interactorsStateRelay.value
+    public static func == (lhs: FiatBalanceCollectionViewPresenter, rhs: FiatBalanceCollectionViewPresenter) -> Bool {
+        lhs.interactor.interactorsStateRelay.value == rhs.interactor.interactorsStateRelay.value
     }
     
 }

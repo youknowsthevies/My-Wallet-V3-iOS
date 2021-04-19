@@ -6,8 +6,8 @@
 import BuySellUIKit
 import DIKit
 import PlatformKit
-import RxSwift
 import RxRelay
+import RxSwift
 import ToolKit
 
 class SimpleBuyAnalyticsService: SimpleBuyAnalayticsServicing {
