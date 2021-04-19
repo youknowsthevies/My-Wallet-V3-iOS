@@ -38,7 +38,7 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     public init(account: SingleAccount, selected: Bool = false) {
         let model: WalletViewViewModel = .init(account: account)
         viewModel = .just(model)
-        identity = model.identifier + (selected ? "selected" : "unselected")
+        identity = model.identifier + (selected ? "_selected" : "_unselected")
         image = selectedRelay.asObservable()
             .startWith(selected)
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }

@@ -12,10 +12,7 @@ import RxSwift
 
 final class WalletViewViewModel {
     
-    var identifier: String {
-        nameLabelContent.text
-    }
-    
+    let identifier: String
     let accountTypeBadge: BadgeImageViewModel
     let badgeImageViewModel: BadgeImageViewModel
     let nameLabelContent: LabelContent
@@ -24,7 +21,7 @@ final class WalletViewViewModel {
     init(account: SingleAccount) {
         let currency = account.currencyType
         let accountType = account.accountType
-        
+        identifier = account.id
         badgeImageViewModel = .default(
             with: currency.logoImageName,
             cornerRadius: .round,
