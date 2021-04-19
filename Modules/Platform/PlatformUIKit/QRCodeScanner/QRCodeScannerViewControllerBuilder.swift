@@ -19,6 +19,7 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
     private var loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
     private var presentationType = QRCodePresentationType.modal(dismissWithAnimation: true)
     private var additionalParsingOptions: QRCodeScannerParsingOptions = .strict
+    private var supportsCameraRoll: Bool = false
     
     private let parser: P
     private let textViewModel: QRCodeScannerTextViewModel
@@ -51,6 +52,11 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
         self.additionalParsingOptions = additionalParsingOptions
         return self
     }
+
+    public func with(supportForCameraRoll: Bool) -> QRCodeScannerViewControllerBuilder {
+        self.supportsCameraRoll = supportForCameraRoll
+        return self
+    }
     
     public func build() -> UIViewController? {
         guard let scanner = scanner else { return nil }
@@ -59,6 +65,7 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
             parser: parser,
             additionalParsingOptions: additionalParsingOptions,
             textViewModel: textViewModel,
+            supportsCameraRoll: supportsCameraRoll,
             scanner: scanner,
             completed: completed
         )
