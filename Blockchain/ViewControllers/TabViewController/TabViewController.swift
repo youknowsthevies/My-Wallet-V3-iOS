@@ -54,7 +54,8 @@ import ToolKit
         didSet {
             tabBar.selectedItem = nil
             let newSelectedIndex = selectedIndex
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [unowned self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
+                guard let self = self else { return }
                 self.tabBar.selectedItem = self.tabBar.items?[newSelectedIndex]
             }
         }
