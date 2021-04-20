@@ -39,7 +39,7 @@ final class PasswordViewController: BaseScreenViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.navBarStyle, leadingButtonStyle: .close)
+        set(barStyle: presenter.navBarStyle, leadingButtonStyle: presenter.leadingButton)
         titleViewStyle = presenter.titleStyle
         keyboardInteractionController = KeyboardInteractionController(in: self)
         

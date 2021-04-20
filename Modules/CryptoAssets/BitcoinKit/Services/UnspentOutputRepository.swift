@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
@@ -58,15 +59,17 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     
     private func fetchAllUnspentOutputs() -> Single<UnspentOutputs> {
         bridge.wallets
-            .map { wallets -> [String] in
-                wallets.map { $0.publicKey }
+            .map { wallets -> [APIWalletModel] in
+                wallets.map { wallet in
+                    APIWalletModel(publicKey: wallet.publicKey, type: wallet.derivationType)
+                }
             }
             .flatMap(weak: self) { (self, addresses) -> Single<UnspentOutputs> in
                 self.fetchUnspentOutputs(for: addresses)
             }
     }
     
-    private func fetchUnspentOutputs(for addresses: [String]) -> Single<UnspentOutputs> {
+    private func fetchUnspentOutputs(for addresses: [APIWalletModel]) -> Single<UnspentOutputs> {
         client.unspentOutputs(for: addresses)
             .map { UnspentOutputs(networkResponse: $0) }
     }

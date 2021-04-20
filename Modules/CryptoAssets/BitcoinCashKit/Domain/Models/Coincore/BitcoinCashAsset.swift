@@ -18,7 +18,15 @@ class BitcoinCashAsset: CryptoAsset {
 
     var defaultAccount: Single<SingleAccount> {
         repository.defaultAccount
-            .map { BitcoinCashCryptoAccount(id: $0.publicKey, label: $0.label, isDefault: true, hdAccountIndex: $0.index) }
+            .map { account in
+                BitcoinCashCryptoAccount(
+                    id: account.publicKey,
+                    derivationType: account.derivationType,
+                    label: account.label,
+                    isDefault: true,
+                    hdAccountIndex: account.index
+                )
+            }
     }
 
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
@@ -138,12 +146,13 @@ class BitcoinCashAsset: CryptoAsset {
                     .map { ($0, accounts) }
             }
             .map { (defaultAccount, accounts) -> [SingleAccount] in
-                accounts.map {
+                accounts.map { account in
                     BitcoinCashCryptoAccount(
-                        id: $0.publicKey,
-                        label: $0.label,
-                        isDefault: $0.publicKey == defaultAccount.publicKey,
-                        hdAccountIndex: $0.index
+                        id: account.publicKey,
+                        derivationType: account.derivationType,
+                        label: account.label,
+                        isDefault: account.publicKey == defaultAccount.publicKey,
+                        hdAccountIndex: account.index
                     )
                 }
             }

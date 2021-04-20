@@ -95,10 +95,10 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 Single.zip(self.userId, self.offlineToken)
             }
             .map { payload -> (userId: String, offlineToken: String) in
-                guard let userId = payload.0 else {
+                guard let userId = payload.0, !userId.isEmpty else {
                     throw MissingCredentialsError.userId
                 }
-                guard let offlineToken = payload.1 else {
+                guard let offlineToken = payload.1, !offlineToken.isEmpty else {
                     throw MissingCredentialsError.offlineToken
                 }
                 return (userId, offlineToken)

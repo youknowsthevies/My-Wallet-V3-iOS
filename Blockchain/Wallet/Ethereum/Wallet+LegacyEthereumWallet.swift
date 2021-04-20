@@ -53,7 +53,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         }
         let function: String = "MyWalletPhone.getEtherAccountsAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
@@ -108,7 +108,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         }
         let function: String = "MyWalletPhone.getERC20TokensAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
@@ -132,7 +132,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         let function: String = "MyWalletPhone.setERC20TokensAsync"
         let escapedTokens = tokensJSONString
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\'\(escapedTokens)\', \(escapedSecondPassword))"
         } else {
             script = "\(function)(\'\(escapedTokens)\')"

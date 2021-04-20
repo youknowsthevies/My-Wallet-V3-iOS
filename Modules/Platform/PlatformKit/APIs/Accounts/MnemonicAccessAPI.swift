@@ -18,16 +18,12 @@ public enum MnemonicAccessError: Error {
 /// need to enter in their secondary password before performing certain actions. This is
 /// **not** currency or asset specific
 public protocol MnemonicAccessAPI {
-    
+
     /// Returns a Maybe emitting a Mnemonic if and only if the mnemonic is not double encrypted
     var mnemonic: Maybe<Mnemonic> { get }
 
     func mnemonic(with secondPassword: String?) -> Single<Mnemonic>
-    
-    /// Returns a Maybe emitting a Mnemonic if and only if the user enters the correct second password
-    /// in the presented prompt
-    var mnemonicForcePrompt: Maybe<Mnemonic> { get }
-    
+
     /// Returns a Maybe emitting a Mnemonic. This will prompt the user to enter the second password if needed.
     var mnemonicPromptingIfNeeded: Maybe<Mnemonic> { get }
 }

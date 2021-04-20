@@ -6,29 +6,45 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import PlatformKit
 import RxSwift
 
-public struct PayloadBitcoinHDWallet: Codable {
-    
-    public let seed_hex: String
-    public let passphrase: String
-    public let default_account_idx: Int
-    public let accounts: [PayloadBitcoinWalletAccount]
+public struct PayloadBitcoinWalletAccountV4: Decodable {
+    public struct Derivation: Decodable {
+        public struct Cache: Decodable {
+            public let receiveAccount: String
+            public let changeAccount: String
+        }
+        public struct Label: Decodable {
+            public let index: Int
+            public let label: String
+        }
+        public let address_labels: [Label]?
+        public let cache: Cache
+        public let purpose: Int
+        public let type: DerivationType
+        public let xpub: String
+        public let xpriv: String
+    }
+    public let label: String
+    public let archived: Bool
+    public let default_derivation: String
+    public let derivations: [Derivation]
 }
 
-public struct PayloadBitcoinWalletAccount: Codable {
-    
+public struct PayloadBitcoinWalletAccountV3: Codable {
+
     public struct Cache: Codable {
         public let receiveAccount: String
         public let changeAccount: String
     }
-    
+
     public struct Label: Codable {
         public let index: Int
         public let label: String
     }
-    
+
     public let label: String
     public let archived: Bool
     public let xpriv: String
@@ -44,8 +60,6 @@ public protocol BitcoinWalletBridgeAPI: AnyObject {
     var defaultWallet: Single<BitcoinWalletAccount> { get }
 
     var wallets: Single<[BitcoinWalletAccount]> { get }
-    
-    var hdWallet: Single<PayloadBitcoinHDWallet> { get }
 
     func memo(for transactionHash: String) -> Single<String?>
 

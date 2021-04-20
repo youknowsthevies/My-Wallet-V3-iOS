@@ -12,9 +12,9 @@ import RxSwift
 
 public protocol BalanceServiceAPI {
     
-    func balance(for address: String) -> Single<CryptoValue>
+    func balance(for wallet: APIWalletModel) -> Single<CryptoValue>
     
-    func balances(for addresses: [String]) -> Single<CryptoValue>
+    func balances(for wallets: [APIWalletModel]) -> Single<CryptoValue>
 }
 
 final class BalanceService: BalanceServiceAPI {
@@ -33,12 +33,12 @@ final class BalanceService: BalanceServiceAPI {
     
     // MARK: - BalanceServiceAPI
     
-    func balance(for address: String) -> Single<CryptoValue> {
-        balances(for: [address])
+    func balance(for wallet: APIWalletModel) -> Single<CryptoValue> {
+        balances(for: [wallet])
     }
 
-    func balances(for addresses: [String]) -> Single<CryptoValue> {
-        client.balances(for: addresses)
+    func balances(for wallets: [APIWalletModel]) -> Single<CryptoValue> {
+        client.balances(for: wallets)
             .map(weak: self) { (self, response) in
                 BitcoinChainBalances(response: response, coin: self.coin)
             }

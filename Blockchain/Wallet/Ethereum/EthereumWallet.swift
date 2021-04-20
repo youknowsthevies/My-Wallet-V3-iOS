@@ -52,8 +52,9 @@ class EthereumWallet: NSObject {
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
     private let walletOptionsService: WalletOptionsAPI
-    
-    /// THese are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
+    private let secondPasswordPrompter: SecondPasswordPromptable
+
+    /// These are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
     /// overflows the function stack with initializers that call one another
     @LazyInject private var assetAccountRepository: EthereumAssetAccountRepository
     @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
@@ -80,10 +81,12 @@ class EthereumWallet: NSObject {
     
     init(schedulerType: SchedulerType = MainScheduler.instance,
          walletOptionsService: WalletOptionsAPI = resolve(),
+         secondPasswordPrompter: SecondPasswordPromptable = resolve(),
          wallet: WalletAPI,
          dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared) {
         self.schedulerType = schedulerType
         self.walletOptionsService = walletOptionsService
+        self.secondPasswordPrompter = secondPasswordPrompter
         self.wallet = wallet
         self.dispatcher = dispatcher
         super.init()
@@ -168,7 +171,7 @@ extension EthereumWallet: ERC20BridgeAPI {
     }
     
     func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
-        secondPasswordIfAccountCreationNeeded
+        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<Void> in
                 self.save(
                     erc20TokenAccounts: erc20TokenAccounts,
@@ -178,7 +181,7 @@ extension EthereumWallet: ERC20BridgeAPI {
     }
     
     var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
-        secondPasswordIfAccountCreationNeeded
+        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<[String: ERC20TokenAccount]> in
                 self.erc20TokenAccounts(secondPassword: secondPassword)
             }
@@ -311,7 +314,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
     
     var name: Single<String> {
-        secondPasswordIfAccountCreationNeeded
+        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.label(secondPassword: secondPassword)
             }
@@ -320,7 +323,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     var address: Single<EthereumAddress> {
         reactiveWallet.waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) in
-                self.secondPasswordIfAccountCreationNeeded
+                self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
@@ -439,14 +442,7 @@ extension EthereumWallet: MnemonicAccessAPI {
         }
         return wallet.mnemonic
     }
-    
-    var mnemonicForcePrompt: Maybe<String> {
-        guard let wallet = wallet else {
-            return Maybe.empty()
-        }
-        return wallet.mnemonicForcePrompt
-    }
-    
+
     var mnemonicPromptingIfNeeded: Maybe<String> {
         guard let wallet = wallet else {
             return Maybe.empty()
@@ -476,7 +472,7 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
         reactiveWallet
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
-                self.secondPasswordIfAccountCreationNeeded
+                self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<[EthereumWalletAccount]> in
                 self.ethereumWallets(secondPassword: secondPassword)
@@ -512,22 +508,6 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
                             archived: false
                         )
                     }
-            }
-    }
-}
-
-extension EthereumWallet: SecondPasswordPromptable {
-    var legacyWallet: LegacyWalletAPI? {
-        wallet
-    }
-    
-    var accountExists: Single<Bool> {
-        reactiveWallet.waitUntilInitializedSingle
-            .flatMap(weak: self) { (self, _) -> Single<Bool> in
-                guard let ethereumAccountExists = self.wallet?.checkIfEthereumAccountExists() else {
-                    return .error(WalletError.notInitialized)
-                }
-                return .just(ethereumAccountExists)
             }
     }
 }

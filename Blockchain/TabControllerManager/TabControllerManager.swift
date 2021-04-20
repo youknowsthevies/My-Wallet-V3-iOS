@@ -39,6 +39,7 @@ final class TabControllerManager: NSObject {
     private let sendReceiveCoordinator: SendReceiveCoordinator
     private let coincore: Coincore
     private let disposeBag = DisposeBag()
+    @LazyInject private var walletManager: WalletManager
 
     init(sendControllerManager: SendControllerManager = resolve(),
          sendReceiveCoordinator: SendReceiveCoordinator = resolve(),
@@ -95,14 +96,26 @@ final class TabControllerManager: NSObject {
             index: Constants.Navigation.tabSwap
         )
     }
-    
+
+    private var isSendP2Enabled: Bool {
+        internalFeatureFlag.isEnabled(.sendP2)
+            || featureConfigurator.configuration(for: .sendP2).isEnabled
+            || walletManager.wallet.didUpgradeToV4
+    }
+
     private func loadSend() {
-        guard sendP2ViewController == nil else { return }
-        let router = SendRootBuilder().build()
-        sendP2ViewController = router.viewControllable.uiviewController
-        sendRouter = router
-        router.interactable.activate()
-        router.load()
+        switch isSendP2Enabled {
+        case true:
+            guard sendP2ViewController == nil else { return }
+            let router = SendRootBuilder().build()
+            sendP2ViewController = router.viewControllable.uiviewController
+            sendRouter = router
+            router.interactable.activate()
+            router.load()
+        case false:
+            guard sendViewController == nil else { return }
+            sendViewController = sendReceiveCoordinator.builder.send()
+        }
     }
     
     func send(from account: BlockchainAccount) {
@@ -321,7 +334,6 @@ extension TabControllerManager: TabViewControllerDelegate {
     // MARK: - View Life Cycle
 
     func tabViewControllerViewDidLoad(_ tabViewController: TabViewController) {
-        let walletManager = WalletManager.shared
         walletManager.settingsDelegate = self
         walletManager.sendBitcoinDelegate = self.sendControllerManager
         walletManager.sendEtherDelegate = self

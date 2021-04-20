@@ -9,6 +9,7 @@
 import DIKit
 import RxSwift
 import StellarKit
+import ToolKit
 
 /// `StellarWalletBridgeAPI` is part of the `bridge` that is used when injecting the `wallet` into
 /// a `WalletAccountRepository`. This is how we save the users `StellarKeyPair`
@@ -31,7 +32,8 @@ final class StellarWallet: StellarWalletBridgeAPI {
             success: {
                 completion(.success(()))
             },
-            error: { _ in
+            error: { error in
+                Logger.shared.error(error)
                 completion(.failure(StellarAccountError.unableToSaveNewAccount))
             }
         )

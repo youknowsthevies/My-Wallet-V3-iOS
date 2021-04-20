@@ -6,7 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import DIKit
 import PlatformKit
 import RxSwift
 import StellarKit
@@ -16,7 +16,12 @@ import StellarKit
 /// secondary password if their wallet is double encrypted.
 extension Wallet: MnemonicAccessAPI {
     public var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
-        mnemonic.ifEmpty(switchTo: mnemonicForcePrompt)
+        let prompter: SecondPasswordPromptable = resolve()
+        return prompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .flatMap(weak: self) { (self, secondPassword) -> Single<Mnemonic> in
+                self.mnemonic(with: secondPassword)
+            }
+            .asMaybe()
     }
     
     public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
@@ -49,25 +54,5 @@ extension Wallet: MnemonicAccessAPI {
                 }
                 return Maybe.just(mnemonic)
             }
-    }
-    
-    public var mnemonicForcePrompt: Maybe<Mnemonic> {
-        Maybe.create(subscribe: { observer -> Disposable in
-            AuthenticationCoordinator.shared.showPasswordScreen(
-                type: .actionRequiresPassword,
-                confirmHandler: { [weak self ] password in
-                    guard let mnemonic = self?.getMnemonic(password) else {
-                        observer(.completed)
-                        return
-                    }
-                    observer(.success(mnemonic))
-                },
-                dismissHandler: {
-                    observer(.error(StellarPaymentOperationError.cancelled))
-                }
-            )
-            return Disposables.create()
-        })
-        .subscribeOn(MainScheduler.asyncInstance)
     }
 }

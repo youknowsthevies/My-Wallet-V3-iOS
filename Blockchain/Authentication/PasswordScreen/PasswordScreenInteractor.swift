@@ -40,7 +40,7 @@ final class PasswordScreenInteractor: PasswordScreenInteracting {
         switch type {
         case .importPrivateKey:
             return true
-        case .actionRequiresPassword, .etherService:
+        case .actionRequiresPassword, .etherService, .login:
             return wallet.validateSecondPassword(passwordRelay.value)
         }
     }

@@ -13,7 +13,7 @@ import ToolKit
 public protocol WalletUpgradeServicing {
     /// Indicates if the wallet needs any payload upgrade.
     /// Crashes if the wallet is not initalized.
-    var needsWalletUpgrade: Bool { get }
+    var needsWalletUpgrade: Single<Bool> { get }
 
     /// Upgrades the user wallet to the most recent version.
     /// Emits the current version being upgrade.
@@ -22,62 +22,44 @@ public protocol WalletUpgradeServicing {
     func upgradeWallet() -> Observable<String>
 }
 
-public protocol WalletUpgradingProvider {
-    var walletUpgrading: WalletUpgradingAPI { get }
-}
-
-public protocol WalletUpgradingAPI {
-    /// If the wallet is already initialized.
-    func isInitialized() -> Bool
-
-    /// If the Wallet is already a HD Wallet (V3+).
-    func didUpgradeToHd() -> Bool
-}
-
 final class WalletUpgradeService: WalletUpgradeServicing {
 
     // MARK: Types
 
     enum PayloadVersion: String {
         case v3
-    }
-
-    enum WalletError: Error {
-        case walletNotInitialized
+        case v4
     }
 
     // MARK: Private Properties
 
-    private let errorRecorder: ErrorRecording
     private let walletUpgradeJSService: WalletUpgradeJSServicing
-    private let walletProvider: WalletUpgradingProvider
-    private var wallet: WalletUpgradingAPI {
-        walletProvider.walletUpgrading
-    }
+    private let wallet: WalletUpgradingAPI
 
     // MARK: Init
 
-    init(walletProvider: WalletUpgradingProvider = resolve(),
-         walletUpgradeJSService: WalletUpgradeJSServicing = resolve(),
-         errorRecorder: ErrorRecording = resolve()) {
-        self.walletProvider = walletProvider
+    init(wallet: WalletUpgradingAPI = resolve(),
+         walletUpgradeJSService: WalletUpgradeJSServicing = resolve()) {
+        self.wallet = wallet
         self.walletUpgradeJSService = walletUpgradeJSService
-        self.errorRecorder = errorRecorder
     }
 
     // MARK: WalletUpgradeServicing
 
-    var needsWalletUpgrade: Bool {
-        guard wallet.isInitialized() else {
-            // TODO: SegWit/V4 Wallet - Consumer must wait for wallet to be ready.
-            errorRecorder.error(WalletError.walletNotInitialized)
-            return false
+    var needsWalletUpgrade: Single<Bool> {
+        guard wallet.isInitialized else {
+            fatalError("Wallet is not initialized yet.")
         }
-        return !necessaryUpgrades.isEmpty
+        return necessaryUpgrades.map(\.isEmpty).map(!)
     }
 
     func upgradeWallet() -> Observable<String> {
-        return wait(for: necessaryWorkflows())
+        necessaryWorkflows()
+            .asObservable()
+            .map { workflows in
+                Observable.concat(workflows)
+            }
+            .flatMap { $0 }
     }
 
     // MARK: Private Methods
@@ -86,20 +68,37 @@ final class WalletUpgradeService: WalletUpgradeServicing {
         switch version {
         case .v3:
             return walletUpgradeJSService.upgradeToV3()
+        case .v4:
+            return walletUpgradeJSService.upgradeToV4()
         }
     }
 
     /// - Returns: Ordered array of necessary payload upgrades.
-    private var necessaryUpgrades: [PayloadVersion] {
+    private var necessaryUpgrades: Single<[PayloadVersion]> {
         var upgrades: [PayloadVersion] = []
-        guard wallet.isInitialized() else {
-            return upgrades
+        guard wallet.isInitialized else {
+            return .just(upgrades)
         }
-        // Check if v3 upgrade is necessary.
-        if !wallet.didUpgradeToHd() {
+        // Check if wallet was already upgrade to V3.
+        if !wallet.didUpgradeToV3 {
             upgrades.append(.v3)
         }
-        return upgrades
+        // Check if wallet was already upgrade to V4.
+        if !wallet.didUpgradeToV4 {
+            // Fetch if is necessary to upgrade to V4 based on Wallet Settings.
+            return wallet.requiresV4Upgrade
+                .map { requiresV4Upgrade -> [PayloadVersion] in
+                    if requiresV4Upgrade {
+                        /// TICKET: IOS-4513: Allow V4 Upgrade.
+                        // upgrades.append(.v4)
+                    }
+                    return upgrades
+                }
+                .catchError { error -> PrimitiveSequence<SingleTrait, [PayloadVersion]> in
+                    .just(upgrades)
+                }
+        }
+        return .just(upgrades)
     }
 
     private func wait(for workflows: [Observable<String>]) -> Observable<String> {
@@ -109,15 +108,17 @@ final class WalletUpgradeService: WalletUpgradeServicing {
     /// Maps the list of necessary upgrades into their workflows.
     /// Because we want the version to be updated to be emitted before the work is started, we `.startWith` it.
     /// We catch any error and throw `WalletUpgradeError.errorUpgrading` instead.
-    private func necessaryWorkflows() -> [Observable<String>] {
-        necessaryUpgrades
-            .map { version in
-                workflow(for: version)
-                    .asObservable()
-                    .startWith(version.rawValue)
-                    .catchError { error -> Observable<String> in
-                        .error(WalletUpgradeError.errorUpgrading(version: version.rawValue))
-                    }
-            }
+    private func necessaryWorkflows() -> Single<[Observable<String>]> {
+        necessaryUpgrades.map(weak: self) { (self, necessaryUpgrades) in
+            necessaryUpgrades
+                .map { version in
+                    self.workflow(for: version)
+                        .asObservable()
+                        .startWith(version.rawValue)
+                        .catchError { error -> Observable<String> in
+                            .error(WalletUpgradeError.errorUpgrading(version: version.rawValue))
+                        }
+                }
+        }
     }
 }

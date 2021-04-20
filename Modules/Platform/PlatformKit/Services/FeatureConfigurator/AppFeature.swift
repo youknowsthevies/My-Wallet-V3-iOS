@@ -25,6 +25,9 @@ public enum AppFeature: Int, CaseIterable {
     
     /// Sift Science SDK is enabled
     case siftScienceEnabled
+
+    /// New send screens.
+    case sendP2
     
     /// Enable Secure Channel
     case secureChannel
@@ -41,6 +44,8 @@ extension AppFeature {
             return "announcements"
         case .siftScienceEnabled:
             return "sift_science_enabled"
+        case .sendP2:
+            return "send_p2_ios"
         case .secureChannel:
             // TODO: (paulo) Modern Wallet P3 - Use "secure_channel_ios".
             return "secure_channel_ios_dev"

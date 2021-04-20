@@ -315,25 +315,11 @@
     
     if (section == 0) {
         labelString = BC_STRING_WALLETS;
-        if (self.assetType == LegacyAssetTypeBitcoin) {
-            UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 20 - 30, 4, 50, 40)];
-            [addButton setImage:[[UIImage imageNamed:@"new"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-            addButton.imageView.tintColor = UIColor.brandPrimary;
-            [addButton addTarget:self action:@selector(newAccountClicked:) forControlEvents:UIControlEventTouchUpInside];
-            [view addSubview:addButton];
-        }
-    }
-    else if (section == 1) {
+    } else if (section == 1) {
         labelString = BC_STRING_IMPORTED_ADDRESSES;
-        if (self.assetType == LegacyAssetTypeBitcoin) {
-            UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width - 20 - 30, 4, 50, 40)];
-            [addButton setImage:[[UIImage imageNamed:@"new"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
-            addButton.imageView.tintColor = UIColor.brandPrimary;
-            [addButton addTarget:self action:@selector(newAddressClicked:) forControlEvents:UIControlEventTouchUpInside];
-            [view addSubview:addButton];
-        }
-    } else
+    } else {
         @throw @"Unknown Section";
+    }
     
     label.text = labelString;
     
@@ -356,11 +342,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    if (self.assetType == LegacyAssetTypeBitcoin) {
-        return 2;
-    } else {
-        return [WalletManager.sharedInstance.wallet hasLegacyAddresses:self.assetType] ? 2 : 1;
-    }
+    return [WalletManager.sharedInstance.wallet hasLegacyAddresses:self.assetType] ? 2 : 1;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

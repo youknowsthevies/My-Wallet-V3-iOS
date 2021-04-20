@@ -16,9 +16,7 @@ class MnemonicAccessMock: MnemonicAccessAPI {
     }
     
     var mnemonic: Maybe<Mnemonic> = .empty()
-    
-    var mnemonicForcePrompt: Maybe<Mnemonic> = .empty()
-    
+
     var mnemonicPromptingIfNeeded: Maybe<Mnemonic> = .empty()
     
     init() { }

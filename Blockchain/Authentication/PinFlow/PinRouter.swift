@@ -210,7 +210,7 @@ extension PinRouter {
             self?.navigationController.popViewController(animated: true)
         }
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] pin in
-            self?.finish(performsCompletionAfterDismissal: false)
+            self?.finish()
         }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
@@ -249,7 +249,7 @@ extension PinRouter {
                         performsCompletionAfterDismissal: Bool = true,
                         completedSuccessfully: Bool = true,
                         completionInput: PinRouting.RoutingType.Input = .none) {        
-        // Concentrate any cleaup logic here
+        // Concentrate any cleanup logic here
         let cleanup = { [weak self] in
             guard let self = self else { return }
             self.navigationController = nil
@@ -271,11 +271,7 @@ extension PinRouter {
                 completion?(completionInput)
             }
             controller.dismiss(animated: animated, completion: cleanup)
-        case .background(flowProvider: let box):
-            if let _ = box.value, completedSuccessfully {
-                // NOOP
-                // Any change to the key window rootViewController will be done after the wallet finishes loading.
-            }
+        case .background:
             cleanup()
         }
     }

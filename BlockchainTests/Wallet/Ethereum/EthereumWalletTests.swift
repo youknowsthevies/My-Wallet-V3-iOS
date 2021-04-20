@@ -32,7 +32,11 @@ class EthereumWalletTests: XCTestCase {
         reactiveWallet = ReactiveWalletMock()
         legacyWalletMock = MockLegacyEthereumWallet()
         // Hack to make things compile
-        subject = EthereumWallet(schedulerType: scheduler!, wallet: legacyWalletMock)
+        subject = EthereumWallet(
+            schedulerType: scheduler,
+            secondPasswordPrompter: SecondPasswordPromptableMock(),
+            wallet: legacyWalletMock
+        )
         subject.reactiveWallet = reactiveWallet
         _ = subject.walletLoaded().subscribeOn(scheduler)
     }

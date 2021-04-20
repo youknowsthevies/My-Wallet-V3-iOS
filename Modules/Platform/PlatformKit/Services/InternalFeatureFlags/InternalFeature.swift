@@ -13,6 +13,9 @@ public enum InternalFeature: String, CaseIterable {
     
     // Enable secure channel
     case secureChannel
+
+    /// New send screens.
+    case sendP2
     
     // Enable receiving to trading account
     case tradingAccountReceive

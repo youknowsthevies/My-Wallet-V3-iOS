@@ -51,14 +51,18 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
     public var balanceMoneyObservable: Observable<MoneyValue> {
         balanceObservable.moneyValue
     }
-        
+
     public let balanceFetchTriggerRelay = PublishRelay<Void>()
     
     // MARK: - Private Properties
     
-    private var activeAccountAddresses: Single<[String]> {
+    private var activeAccountAddresses: Single<[APIWalletModel]> {
         repository.activeAccounts
-            .map { $0.map(\.publicKey) }
+            .map { accounts in
+                accounts.map { account in
+                    APIWalletModel(publicKey: account.publicKey, type: account.derivationType)
+                }
+            }
     }
     
     private lazy var setup: Void = {

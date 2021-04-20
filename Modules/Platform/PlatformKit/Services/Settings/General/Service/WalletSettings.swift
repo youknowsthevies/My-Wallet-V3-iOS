@@ -9,6 +9,10 @@
 import Foundation
 
 public struct WalletSettings: Equatable {
+
+    public enum Feature: String {
+        case segwit
+    }
     
     public let countryCode: String
     public let language: String
@@ -19,6 +23,7 @@ public struct WalletSettings: Equatable {
     public let isEmailNotificationsEnabled: Bool
     public let isEmailVerified: Bool
     public let authenticator: AuthenticatorType
+    public let features: [Feature: Bool]
     
     public var currency: FiatCurrency? {
         FiatCurrency(rawValue: fiatCurrency)
@@ -34,5 +39,11 @@ public struct WalletSettings: Equatable {
         isEmailVerified = response.emailVerified
         isEmailNotificationsEnabled = response.emailNotificationsEnabled
         authenticator = AuthenticatorType(rawValue: response.authenticator) ?? .standard
+        features = response.invited.reduce(into: [Feature: Bool]()) { (result, data) in
+            guard let key = Feature(rawValue: data.key.rawValue) else {
+                return
+            }
+            result[key] = data.value
+        }
     }
 }
