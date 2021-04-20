@@ -37,7 +37,6 @@ public final class KYCTiersViewController: UIViewController {
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
-    private let featureConfiguring: FeatureConfiguring = resolve()
     private let analytics: AnalyticsServiceAPI = resolve()
     fileprivate var disposable: Disposable?
 

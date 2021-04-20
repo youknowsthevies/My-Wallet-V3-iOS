@@ -13,8 +13,6 @@ import RxSwift
 
 struct ERC20ReceiveAddress<Token: ERC20Token>: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
     
-    typealias TxCompleted = (TransactionResult) -> Completable
-    
     let asset: CryptoCurrency
     let address: String
     let label: String

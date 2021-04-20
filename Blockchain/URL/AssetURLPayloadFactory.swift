@@ -30,7 +30,7 @@ final class AssetURLPayloadFactory: AssetURLPayloadFactoryAPI {
             case .bitcoinCash:
                 return BitcoinCashURLPayload(address: string, amount: nil, paymentRequestUrl: nil)
             case .stellar:
-                return StellarURLPayload(address: string, amount: nil)
+                return StellarURLPayload(address: string, amount: nil, memo: nil)
             case .pax, .ethereum:
                 return EthereumURLPayload(address: string, amount: nil)
             case .aave,

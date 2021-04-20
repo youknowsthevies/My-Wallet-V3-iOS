@@ -25,18 +25,15 @@ final class BitcoinAsset: CryptoAsset {
     private let repository: BitcoinWalletAccountRepository
     private let errorRecorder: ErrorRecording
     private let addressValidator: BitcoinAddressValidatorAPI
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: BitcoinWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         addressValidator: BitcoinAddressValidatorAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         addressValidator: BitcoinAddressValidatorAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.addressValidator = addressValidator
-        self.internalFeatureFlag = internalFeatureFlag
    }
 
     func initialize() -> Completable {

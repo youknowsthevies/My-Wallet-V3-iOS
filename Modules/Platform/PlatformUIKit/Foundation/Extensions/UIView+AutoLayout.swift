@@ -203,7 +203,8 @@ extension UIView {
                        to value: CGFloat,
                        relation: Relation = .equal,
                        ratio: CGFloat = 1.0,
-                       priority: UILayoutPriority = .required) -> NSLayoutConstraint {
+                       priority: UILayoutPriority = .required,
+                       activate: Bool = true) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint = NSLayoutConstraint(
             item: self,
@@ -215,7 +216,7 @@ extension UIView {
             constant: value
         )
         constraint.priority = priority
-        constraint.isActive = true
+        constraint.isActive = activate
         return constraint
     }
     

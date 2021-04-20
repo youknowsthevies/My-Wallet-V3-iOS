@@ -37,22 +37,16 @@ final class TabControllerManager: NSObject {
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let sendControllerManager: SendControllerManager
     private let sendReceiveCoordinator: SendReceiveCoordinator
-    private let featureConfigurator: FeatureConfiguring
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
     private let coincore: Coincore
     private let disposeBag = DisposeBag()
 
     init(sendControllerManager: SendControllerManager = resolve(),
          sendReceiveCoordinator: SendReceiveCoordinator = resolve(),
          analyticsEventRecorder: AnalyticsEventRecording = resolve(),
-         featureConfigurator: FeatureConfiguring = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
          coincore: Coincore = resolve()) {
         self.sendControllerManager = sendControllerManager
         self.sendReceiveCoordinator = sendReceiveCoordinator
         self.analyticsEventRecorder = analyticsEventRecorder
-        self.featureConfigurator = featureConfigurator
-        self.internalFeatureFlag = internalFeatureFlag
         self.coincore = coincore
         tabViewController = TabViewController.makeFromStoryboard()
         super.init()

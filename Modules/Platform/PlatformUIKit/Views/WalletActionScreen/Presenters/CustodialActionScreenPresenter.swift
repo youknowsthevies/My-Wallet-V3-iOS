@@ -57,8 +57,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     public init(using interactor: WalletActionScreenInteracting,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
                 stateService: CustodyActionStateServiceAPI,
-                eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
-                internalFeatureFlags: InternalFeatureFlagServiceAPI = resolve()) {
+                eligiblePaymentService: PaymentMethodsServiceAPI = resolve()) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
         self.eligiblePaymentService = eligiblePaymentService

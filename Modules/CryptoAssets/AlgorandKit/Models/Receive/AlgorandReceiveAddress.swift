@@ -1,23 +1,23 @@
 //
-//  EthereumReceiveAddress.swift
-//  EthereumKit
+//  AlgorandReceiveAddress.swift
+//  AlgorandKit
 //
-//  Created by Paulo on 24/08/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Cosmin-Ionut Baies on 19.04.2021.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
 import PlatformKit
 import RxSwift
 
-struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
+struct AlgorandReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
     
-    let asset: CryptoCurrency = .ethereum
+    let asset: CryptoCurrency = .algorand
     let address: String
     let label: String
     let onTxCompleted: TxCompleted
-    
+
     var metadata: CryptoAssetQRMetadata {
-        EthereumURLPayload(address: address, amount: nil)!
+        AlgorandURLPayload(address: address)
     }
     
     init(address: String, label: String, onTxCompleted: @escaping TxCompleted) {

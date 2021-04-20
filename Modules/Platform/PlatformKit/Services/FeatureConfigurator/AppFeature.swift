@@ -28,6 +28,9 @@ public enum AppFeature: Int, CaseIterable {
     
     /// Enable Secure Channel
     case secureChannel
+    
+    // Enable receiving to trading account
+    case tradingAccountReceive
 }
 
 extension AppFeature {
@@ -41,6 +44,8 @@ extension AppFeature {
         case .secureChannel:
             // TODO: (paulo) Modern Wallet P3 - Use "secure_channel_ios".
             return "secure_channel_ios_dev"
+        case .tradingAccountReceive:
+            return "trading_account_receive_ios"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:

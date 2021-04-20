@@ -35,14 +35,11 @@ final class PolkadotAsset: CryptoAsset {
     // MARK: - Private Properties
 
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     // MARK: - Init
 
-    init(exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+    init(exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
-        self.internalFeatureFlag = internalFeatureFlag
    }
 
     func parse(address: String) -> Single<ReceiveAddress?> {

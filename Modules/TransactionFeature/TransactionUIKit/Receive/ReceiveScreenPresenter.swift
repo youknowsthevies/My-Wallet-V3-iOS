@@ -26,7 +26,9 @@ final class ReceiveScreenPresenter {
     let nameLabelContentPresenting: LabelContentPresenting
     let balanceLabelContentPresenting: LabelContentPresenting
     let addressLabelContentPresenting: LabelContentPresenting
+    let memoLabelContentPresenting: LabelContentPresenting
     let walletAddressLabelContent: LabelContent
+    let memoLabelContent: LabelContent
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
     private (set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
@@ -57,6 +59,11 @@ final class ReceiveScreenPresenter {
             font: .main(.semibold, 12),
             color: .titleText
         )
+        memoLabelContent = LabelContent(
+            text: LocalizedString.Text.memo,
+            font: .main(.semibold, 12),
+            color: .titleText
+        )
         nameLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: interactor.account.label,
             descriptors: .init(
@@ -84,16 +91,27 @@ final class ReceiveScreenPresenter {
                 accessibilityId: AccessibilityID.addressLabel
             )
         )
+        memoLabelContentPresenting = DefaultLabelContentPresenter(
+            knownValue: "",
+            descriptors: .init(
+                fontWeight: .medium,
+                contentColor: .darkTitleText,
+                fontSize: 14,
+                accessibilityId: AccessibilityID.memoLabel
+                )
+        )
         copyButton = .secondary(with: LocalizedString.Button.copy)
         shareButton = .primary(with: LocalizedString.Button.share)
 
-        let qrCodeMetadata = interactor.qrCodeMetadata
+        let state = interactor.state
             .asObservable()
             .share(replay: 1)
+        
+        let qrCodeMetadata = state
+            .map(\.metadata)
 
         let address = qrCodeMetadata
             .map(\.address)
-            .share(replay: 1)
 
         qrCodeMetadata
             .map { metadata -> QRCodeAPI? in
@@ -117,6 +135,14 @@ final class ReceiveScreenPresenter {
             .mapToLabelContentStateInteraction()
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: balanceLabelContentPresenting.interactor.stateRelay)
+            .disposed(by: disposeBag)
+        
+        state
+            .map(\.memo)
+            .compactMap { $0 }
+            .map { LabelContent.Value.Interaction.Content(text: $0) }
+            .map { .loaded(next: $0) }
+            .bindAndCatch(to: memoLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
 
         // MARK: - Copy

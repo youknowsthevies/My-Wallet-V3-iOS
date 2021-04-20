@@ -9,6 +9,7 @@
 import PlatformKit
 
 public class EthereumURLPayload: EIP67URI {
+    
     private enum QueryItemKeys: String {
         case value
         case gas
@@ -18,16 +19,16 @@ public class EthereumURLPayload: EIP67URI {
         AssetConstants.URLSchemes.ethereum
     }
 
-    public var absoluteString: String {
-        components.url!.absoluteString
-    }
-
-    public let address: String
     public let cryptoCurrency: CryptoCurrency = .ethereum
-    public let includeScheme: Bool = true
+    public let address: String
     public private(set) var amount: String?
     public private(set) var gas: String?
     public private(set) var paymentRequestUrl: String?
+    public let includeScheme: Bool = true
+    
+    public var absoluteString: String {
+        components.url!.absoluteString
+    }
     
     private let components: URLComponents
     

@@ -22,13 +22,10 @@ class BlockchainDataRepository: DataRepositoryAPI {
     static let shared = BlockchainDataRepository()
 
     private let disposeBag = DisposeBag()
-    private let kycTiersService: KYCTiersServiceAPI
     private let userService: NabuUserServiceAPI
     
-    init(userService: NabuUserServiceAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(userService: NabuUserServiceAPI = resolve()) {
         self.userService = userService
-        self.kycTiersService = kycTiersService
     }
 
     // MARK: - Public Properties

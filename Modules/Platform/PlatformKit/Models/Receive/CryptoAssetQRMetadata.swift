@@ -22,6 +22,7 @@ public protocol CryptoAssetQRMetadata {
     
     var amount: String? { get }
     
+    /// Legacy send
     var paymentRequestUrl: String? { get }
     
     /// Converts this URL to an absolute string (e.g. "bitcoin:1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
