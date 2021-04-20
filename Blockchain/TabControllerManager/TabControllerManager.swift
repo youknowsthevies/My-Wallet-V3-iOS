@@ -123,6 +123,22 @@ final class TabControllerManager: NSObject {
             sendViewController = sendReceiveCoordinator.builder.send()
         }
     }
+    private func setSendAsActive() {
+        switch isSendP2Enabled {
+        case true:
+            tabViewController.setActiveViewController(
+                sendP2ViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        case false:
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
+    }
     
     func send(from account: BlockchainAccount) {
         if sendRouter == nil {
@@ -144,20 +160,12 @@ final class TabControllerManager: NSObject {
 
     func showSend(cryptoCurrency: CryptoCurrency) {
         loadSend()
-        tabViewController.setActiveViewController(
-            sendP2ViewController,
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        setSendAsActive()
     }
 
     func showSend() {
         loadSend()
-        tabViewController.setActiveViewController(
-            sendP2ViewController,
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        setSendAsActive()
     }
 
     func showReceive() {
