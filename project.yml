@@ -7,13 +7,15 @@ configs:
   Release: release
   Release Internal: release
   Release Staging: release
+fileGroups:
+  - README.md
 name: Blockchain
 options:
   bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
     iOS: '13.0'
-  groupSortPosition: top
+  groupSortPosition: bottom
   platform: iOS
 schemeTemplates:
   BlockchainScheme:
@@ -165,6 +167,7 @@ targetTemplates:
       excludes:
       - Scripts
       path: Modules/${featureName}/${target_name}
+    - path: Modules/${featureName}/README.md
     type: framework
   ModuleTests:
     dependencies:
