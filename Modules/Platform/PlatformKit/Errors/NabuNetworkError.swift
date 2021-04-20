@@ -198,6 +198,8 @@ public enum NabuErrorCode: Int, Codable {
 
     /// Custodial Withdrawal Error Code
     case withdrawalLocked = 152
+
+    case forbidden = 160
 }
 
 public enum NabuErrorType: String, Codable {
@@ -217,6 +219,7 @@ public enum NabuErrorType: String, Codable {
     case badParamValue = "BAD_PARAM_VALUE"
 
     // Authentication errors
+    case forbidden = "FORBIDDEN"
     case invalidCredentials = "INVALID_CREDENTIALS"
     case wrongPassword = "WRONG_PASSWORD"
     case wrong2FA = "WRONG_2FA"
@@ -225,4 +228,5 @@ public enum NabuErrorType: String, Codable {
     case invalidRole = "INVALID_ROLE"
     case alreadyLoggedIn = "ALREADY_LOGGED_IN"
     case invalidStatus = "INVALID_STATUS"
+
 }
