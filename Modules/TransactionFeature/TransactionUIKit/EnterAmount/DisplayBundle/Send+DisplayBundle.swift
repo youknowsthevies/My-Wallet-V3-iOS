@@ -35,7 +35,9 @@ extension DisplayBundle {
         )
 
         let accessibilityIdentifiers = AccessibilityIdentifiers(
-            bottomAuxiliaryItemSeparatorTitle: ""
+            bottomAuxiliaryItemSeparatorTitle: "",
+            topSelectionFromIdentifier: "Send.From.Selection",
+            topSelectionToIdentifier: "Send.To.Selection"
         )
 
         return DisplayBundle(

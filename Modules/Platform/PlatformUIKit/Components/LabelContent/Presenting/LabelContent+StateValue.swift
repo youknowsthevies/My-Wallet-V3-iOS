@@ -95,7 +95,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             fontWeight: .medium,
             contentColor: .descriptionText,
             fontSize: 14,
-            accessibilityId: "\(accessibilityIdPrefix)title"
+            accessibilityId: "\(accessibilityIdPrefix).title"
         )
     }
     
@@ -104,7 +104,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             fontWeight: .semibold,
             contentColor: .textFieldText,
             fontSize: 16,
-            accessibilityId: "\(accessibilityIdPrefix)description"
+            accessibilityId: "\(accessibilityIdPrefix).description"
         )
     }
     
@@ -112,7 +112,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
             fontSize: 32,
-            accessibilityId: "\(accessibilityIdPrefix)title"
+            accessibilityId: "\(accessibilityIdPrefix).title"
         )
     }
     

@@ -24,8 +24,8 @@ public final class RadioAccountTableViewCell: UITableViewCell {
             guard let presenter = presenter else { return }
             
             presenter
-                .image
-                .drive(radioView.rx.image)
+                .imageContent
+                .drive(radioView.rx.content)
                 .disposed(by: disposeBag)
             
             presenter
