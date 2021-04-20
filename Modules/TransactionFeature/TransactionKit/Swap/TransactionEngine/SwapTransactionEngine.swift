@@ -368,7 +368,10 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
 
     func handleSwapPendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
         catchError { error -> Single<PendingTransaction> in
-            guard let nabuError = error as? NabuNetworkError else {
+            guard let networkError = error as? NabuNetworkError else {
+                throw error
+            }
+            guard case .nabuError(let nabuError) = networkError else {
                 throw error
             }
             guard nabuError.code == .pendingOrdersLimitReached else {

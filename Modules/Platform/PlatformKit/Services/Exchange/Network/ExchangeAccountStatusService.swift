@@ -36,16 +36,16 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
             /// parse the error to determine if it is because 2FA is
             /// not enabled.
             .catchError { error in
-                guard let networkError = error as? NetworkCommunicatorError else {
+                guard let networkError = error as? NabuNetworkError else {
                     throw error
                 }
-                if case let .serverError(serverError) = networkError,
-                   let nabuError = serverError.nabuError,
-                   nabuError.code == .bad2fa {
-                    return .just(false)
-                } else {
-                    throw networkError
+                guard case .nabuError(let nabuError) = networkError else {
+                    throw error
                 }
+                guard nabuError.code == .bad2fa else {
+                    throw nabuError
+                }
+                return .just(false)
             }
     }
     

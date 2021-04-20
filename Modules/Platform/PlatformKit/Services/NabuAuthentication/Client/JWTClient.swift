@@ -6,12 +6,14 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
 import NetworkKit
 import RxSwift
 
-public protocol JWTClientAPI: AnyObject {
-    func requestJWT(guid: String, sharedKey: String) -> Single<String>
+protocol JWTClientAPI: AnyObject {
+    
+    func requestJWT(guid: String, sharedKey: String) -> AnyPublisher<String, JWTClient.ClientError>
 }
 
 final class JWTClient: JWTClientAPI {
@@ -51,7 +53,7 @@ final class JWTClient: JWTClientAPI {
         self.requestBuilder = requestBuilder
     }
     
-    func requestJWT(guid: String, sharedKey: String) -> Single<String> {
+    func requestJWT(guid: String, sharedKey: String) -> AnyPublisher<String, JWTClient.ClientError> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.guid,
@@ -71,10 +73,18 @@ final class JWTClient: JWTClientAPI {
             parameters: queryParameters
         )!
         return networkAdapter.perform(request: request)
-            .map { (response: JWTResponse) -> String in
-                guard response.success else { throw ClientError.jwt(response.error ?? "") }
-                guard let token = response.token else { throw ClientError.jwt(response.error ?? "") }
-                return token
+            .mapError { (networkError: NetworkCommunicatorError) -> JWTClient.ClientError in
+                .jwt(networkError.localizedDescription)
             }
+            .flatMap { (response: JWTResponse) -> AnyPublisher<String, JWTClient.ClientError> in
+                guard response.success else {
+                    return .failure(ClientError.jwt(response.error ?? ""))
+                }
+                guard let token = response.token else {
+                    return .failure(ClientError.jwt(response.error ?? ""))
+                }
+                return .just(token)
+            }
+            .eraseToAnyPublisher()
     }
 }

@@ -8,6 +8,7 @@
 
 import DIKit
 import NetworkKit
+import PlatformKit
 import RxSwift
 
 typealias CardClientAPI = CardListClientAPI &
@@ -34,13 +35,13 @@ final class CardClient: CardClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -54,7 +55,11 @@ final class CardClient: CardClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardDetailClientAPI
@@ -65,7 +70,11 @@ final class CardClient: CardClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardDeletionClientAPI
@@ -76,7 +85,11 @@ final class CardClient: CardClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardChargeClientAPI
@@ -87,7 +100,11 @@ final class CardClient: CardClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardAdditionClientAPI
@@ -113,7 +130,11 @@ final class CardClient: CardClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardActivationClientAPI
@@ -146,8 +167,11 @@ final class CardClient: CardClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator
-            .perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
             .map { (response: ActivateCardResponse) in
                 response.partner
             }

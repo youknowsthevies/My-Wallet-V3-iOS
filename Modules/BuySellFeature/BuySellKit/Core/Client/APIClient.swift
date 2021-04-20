@@ -73,13 +73,13 @@ final class APIClient: SimpleBuyClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -90,7 +90,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.beneficiaries,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     func deleteBank(by id: String) -> Completable {
@@ -99,7 +103,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - EligibilityClientAPI
@@ -121,7 +129,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - OrderCancellationClientAPI
@@ -131,7 +143,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.trades + [id],
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
         
     // MARK: - SuggestedAmountsClientAPI
@@ -148,7 +164,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - SupportedPairsClientAPI
@@ -171,7 +191,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.supportedPairs,
             parameters: queryParameters
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - OrdersActivityClientAPI
@@ -197,7 +221,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - OrderDetailsClientAPI
@@ -220,7 +248,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     func orderDetails(with identifier: String) -> Single<OrderPayload.Response> {
@@ -229,7 +261,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - PaymentAccountClientAPI
@@ -245,7 +281,11 @@ final class APIClient: SimpleBuyClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - OrderCreationClientAPI
@@ -269,7 +309,11 @@ final class APIClient: SimpleBuyClientAPI {
             body: try? order.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CardOrderConfirmationClientAPI
@@ -288,7 +332,11 @@ final class APIClient: SimpleBuyClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - QuoteClientAPI
@@ -316,7 +364,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - PaymentEligibleMethodsClientAPI
@@ -337,8 +389,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: queryParameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
-
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - WithdrawalClientAPI
@@ -359,7 +414,11 @@ final class APIClient: SimpleBuyClientAPI {
             parameters: queryParameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     func withdraw(data: WithdrawalCheckoutData) -> Single<WithdrawalCheckoutResponse> {
@@ -371,7 +430,11 @@ final class APIClient: SimpleBuyClientAPI {
             headers: headers,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - LinkedBanks API
@@ -381,7 +444,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.linkedBanks,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     func deleteLinkedBank(for id: String) -> Completable {
@@ -389,21 +456,28 @@ final class APIClient: SimpleBuyClientAPI {
             path: Path.linkedBanks + [id],
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     func createBankLinkage(for currency: FiatCurrency) -> Single<CreateBankLinkageResponse> {
         struct Payload: Encodable {
             let currency: String
         }
-
         let payload = Payload(currency: currency.code)
         let request = requestBuilder.post(
             path: Path.linkedBanks,
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     func getLinkedBank(for id: String) -> Single<LinkedBankResponse> {
@@ -412,7 +486,11 @@ final class APIClient: SimpleBuyClientAPI {
             path: path,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     func updateBankLinkage(for id: String, providerAccountId: String, accountId: String) -> Single<LinkedBankResponse> {
@@ -430,6 +508,10 @@ final class APIClient: SimpleBuyClientAPI {
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }

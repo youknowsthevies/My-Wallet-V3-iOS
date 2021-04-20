@@ -8,6 +8,7 @@
 
 public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & SharedKeyRepositoryAPI
+                                     & SharedKeyRepositoryCombineAPI
                                      & PasswordRepositoryAPI
                                      & GuidRepositoryAPI
                                      & SyncPubKeysRepositoryAPI
@@ -15,6 +16,7 @@ public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & AuthenticatorRepositoryAPI
                                      & PayloadRepositoryAPI
                                      & NabuOfflineTokenRepositoryAPI
+                                     & NabuOfflineTokenRepositoryCombineAPI
                                      & CredentialsRepositoryAPI
 
 public protocol WalletRepositoryProvider {

@@ -1,23 +1,29 @@
 //
 //  NabuAuthenticationClient.swift
-//  Blockchain
+//  PlatformKit
 //
-//  Created by Daniel Huri on 13/05/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
+//  Created by Jack Pooley on 07/04/2021.
+//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
 import NetworkKit
-import RxSwift
 
 public protocol NabuAuthenticationClientAPI: AnyObject {
-    func sessionToken(for guid: String,
-                      userToken: String,
-                      userIdentifier: String,
-                      deviceId: String,
-                      email: String) -> Single<NabuSessionTokenResponse>
     
-    func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable
+    func sessionTokenPublisher(
+        for guid: String,
+        userToken: String,
+        userIdentifier: String,
+        deviceId: String,
+        email: String
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError>
+    
+    func recoverUserPublisher(
+        offlineToken: NabuOfflineTokenResponse,
+        jwt: String
+    ) -> AnyPublisher<Void, NetworkCommunicatorError>
 }
 
 final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
@@ -39,22 +45,23 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-        
-    func sessionToken(for guid: String,
-                          userToken: String,
-                          userIdentifier: String,
-                          deviceId: String,
-                          email: String) -> Single<NabuSessionTokenResponse> {
-        
+    
+    func sessionTokenPublisher(
+        for guid: String,
+        userToken: String,
+        userIdentifier: String,
+        deviceId: String,
+        email: String
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError> {
         let headers: [String: String] = [
             HttpHeaderField.appVersion: Bundle.applicationVersion ?? "",
             HttpHeaderField.clientType: HttpHeaderValue.clientTypeApp,
@@ -63,29 +70,34 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
             HttpHeaderField.walletGuid: guid,
             HttpHeaderField.walletEmail: email
         ]
-        
         let parameters = [
             URLQueryItem(
                 name: Parameter.userId.rawValue,
                 value: userIdentifier
             )
         ]
-
         let request = requestBuilder.post(
             path: Path.auth,
             parameters: parameters,
             headers: headers
         )!
-        return communicator.perform(request: request)
+        return networkAdapter.perform(request: request)
     }
     
-    func recoverUser(offlineToken: NabuOfflineTokenResponse, jwt: String) -> Completable {
+    func recoverUserPublisher(
+        offlineToken: NabuOfflineTokenResponse,
+        jwt: String
+    ) -> AnyPublisher<Void, NetworkCommunicatorError> {
         let request = requestBuilder.post(
             path: Path.recover(userId: offlineToken.userId),
             body: try? JWTPayload(jwt: jwt).encode(),
             headers: [HttpHeaderField.authorization: "Bearer \(offlineToken.token)"]
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                responseType: EmptyNetworkResponse.self
+            )
+            .mapToVoid()
     }
 }
-

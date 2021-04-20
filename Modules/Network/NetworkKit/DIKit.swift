@@ -49,26 +49,30 @@ extension DependencyContainer {
         
         single { RequestBuilder() }
         
-        single { NetworkCommunicator.defaultCommunicator() as NetworkCommunicatorAPI }
+        single { NetworkResponseHandler() as NetworkResponseHandlerAPI }
         
-        single(tag: DIKitContext.network) { ConcurrentDispatchQueueScheduler(qos: .background) }
+        single { NetworkAdapter.defaultAdapter() as NetworkAdapterAPI }
+        
+        single { NetworkCommunicator.defaultCommunicator() as NetworkCommunicatorAPI }
         
         // MARK: - Explorer
         
         single(tag: DIKitContext.explorer) { RequestBuilder(networkConfig: Network.Config.explorerConfig) }
         
-        single(tag: DIKitContext.explorer) { NetworkCommunicator() as NetworkCommunicatorAPI }
+        single(tag: DIKitContext.explorer) { NetworkAdapter() as NetworkAdapterAPI }
         
         // MARK: - Wallet
         
         single(tag: DIKitContext.wallet) { RequestBuilder(networkConfig: Network.Config.walletConfig) }
         
-        single(tag: DIKitContext.wallet) { NetworkCommunicator() as NetworkCommunicatorAPI }
+        single(tag: DIKitContext.wallet) { NetworkAdapter() as NetworkAdapterAPI }
         
         // MARK: - Retail
         
         single(tag: DIKitContext.retail) { RequestBuilder(networkConfig: Network.Config.retailConfig) }
         
+        single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
+
         single(tag: DIKitContext.retail) { NetworkCommunicator.retailCommunicator() as NetworkCommunicatorAPI }
         
         // MARK: - EveryPay
@@ -77,33 +81,9 @@ extension DependencyContainer {
         
         single(tag: DIKitContext.everypay) { RequestBuilder(networkConfig: Network.Config.everypayConfig) }
         
-        single(tag: DIKitContext.everypay) { NetworkCommunicator.everypayCommunicator() as NetworkCommunicatorAPI }
-        
-        // MARK: - NEW Networking
-        
-        single { NetworkResponseHandler() as NetworkResponseHandlerAPI }
-        
-        single { NetworkAdapter.defaultAdapter() as NetworkAdapterAPI }
-        
-        single { NetworkCommunicatorNew.defaultCommunicator() as NetworkCommunicatorNewAPI }
-        
-        // MARK: - NEW Networking - Wallet
-        
-        single(tag: DIKitContext.wallet) { NetworkAdapter() as NetworkAdapterAPI }
-        
-        // MARK: - NEW Networking - Retail
-        
-        single(tag: DIKitContext.retail) { NetworkAdapter.retailAdapter() as NetworkAdapterAPI }
-
-        single(tag: DIKitContext.retail) { NetworkCommunicatorNew.retailCommunicator() as NetworkCommunicatorNewAPI }
-        
-        // MARK: - NEW Networking - EveryPay
-        
         single(tag: DIKitContext.everypay) { NetworkAdapter.everypayAdapter() as NetworkAdapterAPI }
         
-        single(tag: DIKitContext.everypay) { NetworkCommunicatorNew.everypayCommunicator() as NetworkCommunicatorNewAPI }
-        
-        // MARK: - NEW Networking - Other
+        single(tag: DIKitContext.everypay) { NetworkCommunicator.everypayCommunicator() as NetworkCommunicatorAPI }
         
         single { () -> NetworkSession in
             let session: URLSession = DIKit.resolve()
@@ -133,43 +113,22 @@ extension NetworkCommunicator {
     }
 }
 
-extension NetworkCommunicatorNew {
-    
-    fileprivate static func defaultCommunicator(
-        eventRecorder: AnalyticsEventRecording = resolve()
-    ) -> NetworkCommunicatorNew {
-        NetworkCommunicatorNew(eventRecorder: eventRecorder)
-    }
-    
-    fileprivate static func retailCommunicator(
-        authenticator: AuthenticatorNewAPI = resolve()
-    ) -> NetworkCommunicatorNew {
-        NetworkCommunicatorNew(authenticator: authenticator)
-    }
-    
-    fileprivate static func everypayCommunicator(
-        sessionHandler: NetworkSessionDelegateAPI = resolve(tag: DIKitContext.everypay)
-    ) -> NetworkCommunicatorNew {
-        NetworkCommunicatorNew(sessionHandler: sessionHandler)
-    }
-}
-
 extension NetworkAdapter {
     
     fileprivate static func defaultAdapter(
-        communicator: NetworkCommunicatorNewAPI = resolve()
+        communicator: NetworkCommunicatorAPI = resolve()
     ) -> NetworkAdapter {
         NetworkAdapter(communicator: communicator)
     }
     
     fileprivate static func retailAdapter(
-        communicator: NetworkCommunicatorNewAPI = resolve(tag: DIKitContext.retail)
+        communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)
     ) -> NetworkAdapter {
         NetworkAdapter(communicator: communicator)
     }
     
     fileprivate static func everypayAdapter(
-        communicator: NetworkCommunicatorNewAPI = resolve(tag: DIKitContext.everypay)
+        communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.everypay)
     ) -> NetworkAdapter {
         NetworkAdapter(communicator: communicator)
     }

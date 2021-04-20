@@ -60,7 +60,7 @@ extension PinStoreResponse {
 extension PinStoreResponse: ErrorResponseConvertible {
     
     public static func from(
-        _ communicatorError: NetworkCommunicatorErrorNew
+        _ communicatorError: NetworkCommunicatorError
     ) -> PinStoreResponse {
         PinStoreResponse(
             statusCode: nil,

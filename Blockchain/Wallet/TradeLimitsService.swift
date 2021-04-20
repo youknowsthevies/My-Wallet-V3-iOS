@@ -20,10 +20,10 @@ final class TradeLimitsService: TradeLimitsAPI {
     private var cachedLimits = BehaviorRelay<TradeLimits?>(value: nil)
     private var cachedLimitsTimer: Timer?
     private let clearCachedLimitsInterval: TimeInterval = 60
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)) {
+        self.networkAdapter = networkAdapter
         self.cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in
             self?.clearCachedLimits()
         }
@@ -96,14 +96,15 @@ final class TradeLimitsService: TradeLimitsAPI {
         ) else {
             return .error(TradeLimitsAPIError.generic)
         }
-
-        return self.communicator.perform(
-            request: NetworkRequest(
-                endpoint: endpoint,
-                method: .get,
-                authenticated: true
+        return networkAdapter
+            .perform(
+                request: NetworkRequest(
+                    endpoint: endpoint,
+                    method: .get,
+                    authenticated: true
+                ),
+                errorResponseType: NabuNetworkError.self
             )
-        )
     }
 
     private func clearCachedLimits() {

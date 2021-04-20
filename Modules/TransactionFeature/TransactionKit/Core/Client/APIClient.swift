@@ -53,67 +53,87 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
     // MARK: - AvailablePairsClientAPI
     
     var availableOrderPairs: Single<AvailableTradingPairsResponse> {
-        let networkRequest = requestBuilder.get(
+        let request = requestBuilder.get(
             path: Path.availablePairs,
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CustodialQuoteAPI
     
     func fetchQuoteResponse(with request: OrderQuoteRequest) -> Single<OrderQuoteResponse> {
-        let networkRequest = requestBuilder.post(
+        let request = requestBuilder.post(
             path: Path.quote,
             body: try? request.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - OrderCreationClientAPI
 
     func create(with orderRequest: OrderCreationRequest) -> Single<SwapActivityItemEvent> {
-        let networkRequest = requestBuilder.post(
+        let request = requestBuilder.post(
             path: Path.createOrder,
             body: try? orderRequest.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - OrderUpdateClientAPI
 
     func updateOrder(with transactionId: String, updateRequest: OrderUpdateRequest) -> Completable {
-        let networkRequest = requestBuilder.post(
+        let request = requestBuilder.post(
             path: Path.createOrder + [transactionId],
             body: try? updateRequest.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 
     // MARK: - OrderFetchingClientAPI
     
     func fetchTransaction(with transactionId: String) -> Single<SwapActivityItemEvent> {
-        let networkRequest = requestBuilder.get(
+        let request = requestBuilder.get(
             path: Path.fetchOrder + [transactionId],
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - InternalTransferClientAPI
@@ -126,7 +146,11 @@ final class APIClient: TransactionKitClientAPI {
             headers: headers,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - BitPayClientAPI
@@ -139,16 +163,18 @@ final class APIClient: TransactionKitClientAPI {
             HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
             HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
         ]
-        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
+        let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID)!
         let request = NetworkRequest(
             endpoint: url,
             method: .post,
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     /// TODO: Probably can be a `Completable`.
@@ -167,16 +193,18 @@ final class APIClient: TransactionKitClientAPI {
             HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
             HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
         ]
-        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
-            return Completable.error(NetworkError.generic(message: nil))
-        }
+        let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID)!
         let request = NetworkRequest(
             endpoint: url,
             method: .post,
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
@@ -194,16 +222,18 @@ final class APIClient: TransactionKitClientAPI {
             HttpHeaderField.bitpayPartner: HttpHeaderValue.bitpayPartnerName,
             HttpHeaderField.bitpayPartnerVersion: HttpHeaderValue.bitpayPartnerVersion
         ]
-        guard let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
+        let url = URL(string: BitPay.url + BitPay.Paramter.invoice + invoiceID)!
         let request = NetworkRequest(
             endpoint: url,
             method: .post,
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - OrderTransactionLimitsClientAPI
@@ -225,12 +255,15 @@ final class APIClient: TransactionKitClientAPI {
                 value: minorValues.description
             )
         ]
-        
-        let networkRequest = requestBuilder.get(
+        let request = requestBuilder.get(
             path: Path.limits,
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: networkRequest)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }

@@ -17,9 +17,7 @@ class WalletService: WalletOptionsAPI {
     private(set) var cachedWalletOptions = Variable<WalletOptions?>(nil)
     
     private var networkFetchedWalletOptions: Single<WalletOptions> {
-        guard let url = URL(string: BlockchainAPI.shared.walletOptionsUrl) else {
-            return Single.error(NetworkCommunicatorError.clientError(.failedRequest(description: "Invalid URL")))
-        }
+        let url = URL(string: BlockchainAPI.shared.walletOptionsUrl)!
         return networkAdapter
             .perform(request: NetworkRequest(endpoint: url, method: .get))
             .do(onSuccess: { [weak self] in

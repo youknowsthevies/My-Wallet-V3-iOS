@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
 import RxRelay
 import RxSwift
@@ -99,6 +100,52 @@ final class SettingsService: SettingsServiceAPI {
             .do(onSuccess: { [weak self] settings in
                 self?.settingsRelay.accept(settings)
             })
+    }
+}
+
+extension SettingsService {
+    
+    // MARK: - SettingsServiceCombineAPI
+    
+    var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
+        valueSingle
+            .asObservable()
+            .publisher
+            .mapError { error -> SettingsServiceError in
+                guard case .timedOut = error as? ToolKitError else {
+                    return .fetchFailed(error)
+                }
+                fatalError("error: \(error)")
+                return .timedOut
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
+        valueObservable
+            .publisher
+            .mapError { error -> SettingsServiceError in
+                guard case .timedOut = error as? ToolKitError else {
+                    return .fetchFailed(error)
+                }
+                fatalError("error: \(error)")
+                return .timedOut
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError> {
+        fetch(force: force)
+            .asObservable()
+            .publisher
+            .mapError { error -> SettingsServiceError in
+                guard case .timedOut = error as? ToolKitError else {
+                    return .fetchFailed(error)
+                }
+                fatalError("error: \(error)")
+                return .timedOut
+            }
+            .eraseToAnyPublisher()
     }
 }
 

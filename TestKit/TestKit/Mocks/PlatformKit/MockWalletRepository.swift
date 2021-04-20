@@ -6,18 +6,54 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import RxSwift
+import ToolKit
 
 @testable import PlatformKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
-    private var expectedSessionToken: String?
-    private var expectedAuthenticatorType: AuthenticatorType = .standard
-    private var expectedGuid: String?
-    private var expectedPayload: String?
-    private var expectedSharedKey: String?
-    private var expectedPassword: String?
-    private var expectedSyncPubKeys = false
+    
+    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
+        expectedOfflineTokenResponse
+            .publisher
+    }
+    
+    func setPublisher(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        perform { [weak self] in
+            self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
+        }
+    }
+    
+    var guidPublisher: AnyPublisher<String?, Never> {
+        .just(expectedGuid)
+    }
+    
+    func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedGuid = guid
+        }
+    }
+    
+    var sharedKeyPublisher: AnyPublisher<String?, Never> {
+        .just(expectedSharedKey)
+    }
+    
+    func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedSharedKey = sharedKey
+        }
+    }
+    
+    var expectedSessionToken: String?
+    var expectedAuthenticatorType: AuthenticatorType = .standard
+    var expectedGuid: String?
+    var expectedPayload: String?
+    var expectedSharedKey: String?
+    var expectedPassword: String?
+    var expectedSyncPubKeys = false
     var expectedOfflineTokenResponse: Result<NabuOfflineTokenResponse, MissingCredentialsError>!
 
     var sessionToken: Single<String?> { .just(expectedSessionToken) }
@@ -33,7 +69,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     }
     
     func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
-        return perform { [weak self] in
+        perform { [weak self] in
             self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
         }
     }
@@ -101,5 +137,16 @@ final class MockWalletRepository: WalletRepositoryAPI {
                 observer(.completed)
                 return Disposables.create()
             }
+    }
+    
+    private func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
+        AnyPublisher
+            .create { observer -> AnyCancellable in
+                operation()
+                observer.send(())
+                observer.send(completion: .finished)
+                return AnyCancellable {}
+            }
+            .eraseToAnyPublisher()
     }
 }
