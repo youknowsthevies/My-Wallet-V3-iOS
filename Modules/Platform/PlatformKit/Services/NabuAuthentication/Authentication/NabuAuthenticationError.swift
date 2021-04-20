@@ -17,22 +17,13 @@ enum NabuAuthenticationError: Int, Error {
     case alreadyRegistered = 409
     
     init?(communicatorError: NetworkCommunicatorError) {
-        switch communicatorError {
-        case .serverError(let serverError):
-            guard case .badStatusCode = serverError, let apiError = NabuAuthenticationError(rawValue: serverError.code ?? 0) else {
-                return nil
-            }
-            self = apiError
-            return
-        case .rawServerError(let serverError):
-            guard let apiError = NabuAuthenticationError(rawValue: serverError.response.statusCode) else {
-                return nil
-            }
-            self = apiError
-            return
-        default:
+        guard case .rawServerError(let serverError) = communicatorError else {
             return nil
         }
+        guard let authenticationError = NabuAuthenticationError(rawValue: serverError.response.statusCode) else {
+            return nil
+        }
+        self = authenticationError
     }
 }
 

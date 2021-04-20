@@ -33,19 +33,9 @@ public enum NetworkCommunicatorError: Error {
     }
 }
 
-/// Errors returned when there is an unexpected response or invalid status code
+/// Errors returned when there is an unexpected response
 public enum HTTPRequestServerError: Error {
     case badResponse
-    case badStatusCode(code: Int, error: Error?, message: String?)
-    
-    public var code: Int? {
-        switch self {
-        case .badResponse:
-            return nil
-        case .badStatusCode(code: let code, _, _):
-            return code
-        }
-    }
 }
 
 /// Errors to represent invalid or empty payload errors
