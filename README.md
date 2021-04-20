@@ -50,10 +50,13 @@ You will be installing:
     - [yarn](https://github.com/yarnpkg/yarn)
 
 ### Install nvm and Node
-    $ cd ~/
-    $ git clone https://github.com/nvm-sh/nvm.git .nvm
-    $ cd .nvm
-    $ nvm.sh
+
+Check [nvm installaton instructions](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+
+Install the correct node version:
+
     $ nvm install 8.17.0
     $ nvm use 8.17.0
 
