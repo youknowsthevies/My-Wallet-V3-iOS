@@ -34,15 +34,12 @@ fi
 
 # Install Node
 echo "Install Node"
-git clone https://github.com/creationix/nvm.git .nvm
+git clone https://github.com/nvm-sh/nvm.git .nvm
 cd .nvm
-git checkout v0.33.11
+git checkout v0.38.0
 . nvm.sh
-nvm install $NODE_VERSION
-nvm use $NODE_VERSION
-if [[ $(npm -v | grep -v "5.6.0") ]]; then
-	npm install -g npm@5.6.0
-fi
+nvm install 8.17.0
+nvm use 8.17.0
 cd ..
 
 # Build JS Dependencies

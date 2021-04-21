@@ -113,8 +113,7 @@ struct OrderPayload {
                 let paymentLink: String
                 let paymentState: PaymentState
             }
-            
-            let paymentId: String
+
             let everypay: EveryPay?
         }
         

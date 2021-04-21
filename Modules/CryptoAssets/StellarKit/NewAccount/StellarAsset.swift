@@ -38,16 +38,13 @@ final class StellarAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let accountRepository: StellarWalletAccountRepository
     private let errorRecorder: ErrorRecording
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(accountRepository: StellarWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.accountRepository = accountRepository
         self.errorRecorder = errorRecorder
-        self.internalFeatureFlag = internalFeatureFlag
     }
 
     func initialize() -> Completable {

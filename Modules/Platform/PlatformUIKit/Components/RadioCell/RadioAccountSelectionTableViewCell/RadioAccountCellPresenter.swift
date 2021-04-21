@@ -15,8 +15,8 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     
     // MARK: - Public Properties
     
-    /// The image corresponding to `imageName`
-    public let image: Driver<UIImage?>
+    /// Streams the image content 
+    public let imageContent: Driver<ImageViewContent>
     
     // MARK: - RxDataSources
     
@@ -35,19 +35,28 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     
     // MARK: - Init
     
-    public init(account: SingleAccount, selected: Bool = false) {
-        let model: WalletViewViewModel = .init(account: account)
+    public init(account: SingleAccount, selected: Bool = false, accessibilityPrefix: String = "") {
+        let model = WalletViewViewModel(
+            account: account,
+            descriptor: .init(
+                accessibilityPrefix: accessibilityPrefix
+            )
+        )
         viewModel = .just(model)
         identity = model.identifier + (selected ? "_selected" : "_unselected")
-        image = selectedRelay.asObservable()
+        imageContent = selectedRelay.asObservable()
             .startWith(selected)
             .map { $0 ? "checkbox-selected" : "checkbox-empty" }
             .asDriver(onErrorJustReturn: nil)
-            .map { name in
-                if let name = name {
-                    return UIImage(named: name, in: .platformUIKit, compatibleWith: nil)
+            .compactMap { name -> ImageViewContent? in
+                guard let name = name else {
+                    return nil
                 }
-                return nil
+                return ImageViewContent(
+                    imageName: name,
+                    accessibility: .init(id: .value("\(accessibilityPrefix).\(name)")),
+                    renderingMode: .normal,
+                    bundle: .platformUIKit)
             }
     }
 }

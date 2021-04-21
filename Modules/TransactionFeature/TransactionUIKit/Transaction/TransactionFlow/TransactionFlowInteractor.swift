@@ -45,23 +45,17 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let sourceAccount: CryptoAccount?
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
-    private let internalFeatureService: InternalFeatureFlagServiceAPI
-    private let featureConfiguring: FeatureConfiguring
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
          sourceAccount: CryptoAccount?,
          target: TransactionTarget?,
          presenter: TransactionFlowPresentable,
-         internalFeatureService: InternalFeatureFlagServiceAPI = resolve(),
-         featureConfiguring: FeatureConfiguring = resolve(),
          analyticsHook: TransactionAnalyticsHook = resolve()) {
-        self.featureConfiguring = featureConfiguring
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
         self.target = target
-        self.internalFeatureService = internalFeatureService
         self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
         presenter.listener = self

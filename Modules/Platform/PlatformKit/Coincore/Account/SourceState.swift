@@ -7,7 +7,7 @@
 //
 
 public enum SourceState {
-    case canSend
+    case canTransact
     case noFunds
     case fundsLocked
     case notEnoughGas

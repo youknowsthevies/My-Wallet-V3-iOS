@@ -110,16 +110,12 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     }
     private let isEligibleForSimpleBuy: Bool
     private let isTier1Or2Verified: Bool
-    private let featureConfiguring: FeatureConfiguring
     private let disposeBag = DisposeBag()
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     // MARK: - Setup
 
     init(isEligibleForSimpleBuy: Bool,
          isTier1Or2Verified: Bool,
-         featureConfiguring: FeatureConfiguring = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
          cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
@@ -127,8 +123,6 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
          action: @escaping CardAnnouncementAction) {
         self.isEligibleForSimpleBuy = isEligibleForSimpleBuy
         self.isTier1Or2Verified = isTier1Or2Verified
-        self.featureConfiguring = featureConfiguring
-        self.internalFeatureFlag = internalFeatureFlag
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss

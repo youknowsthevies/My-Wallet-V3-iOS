@@ -59,6 +59,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let walletManager: WalletManager
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private let sharedContainter: SharedContainerUserDefaults
+    @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
 
     private let deepLinkRouter: DeepLinkRouting
     
@@ -74,7 +75,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     
     /// TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
-    var hasFinishedAuthentication = false
     var isShowingSecondPasswordScreen = false
     
     var isCreatingWallet = false
@@ -138,47 +138,42 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         }
         
         alertPresenter.dismissIfNeeded()
-        let topViewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController
 
-        let tabControllerManager = AppCoordinator.shared.tabControllerManager
-        tabControllerManager?.reload()
-
-        StellarServiceProvider.shared.services.accounts.prefetch()
-        
         // Make user set up a pin if none is set. They can also optionally enable touch ID and link their email.
         guard appSettings.isPinSet else {
             showPinEntryView()
             return
         }
-        
+
+        if UIApplication.shared.keyWindow?.rootViewController?.topMostViewController != nil {
+            alertPresenter.showMobileNoticeIfNeeded()
+        }
+
+        AppCoordinator.shared.startAfterWalletAuthentication(
+            completion: { [weak self] in
+                guard let self = self else { return }
+                // Handle any necessary routing after authentication
+                self.handlePostAuthenticationLogic()
+            }
+        )
+    }
+
+    private func handlePostAuthenticationLogic() {
+
         /// If the user has linked to the Exchange, we sync their addresses on authentication.
         exchangeRepository.syncDepositAddressesIfLinked()
             .subscribe()
             .disposed(by: bag)
-        
-        // TODO: Relocate notification permissions according to the new design
         remoteNotificationTokenSender.sendTokenIfNeeded()
             .subscribe()
             .disposed(by: bag)
         remoteNotificationAuthorizer.requestAuthorizationIfNeeded()
             .subscribe()
             .disposed(by: bag)
-        
-        if let topViewController = topViewController, self.appSettings.isPinSet {
-            self.alertPresenter.showMobileNoticeIfNeeded()
-        }
-
-        // Handle any necessary routing after authentication
-        handlePostAuthenticationLogic()
-    }
-
-    private func handlePostAuthenticationLogic() {
-
+        walletManager.wallet.ethereum.walletDidLoad()
         coincore.initialize()
             .subscribe()
             .disposed(by: bag)
-
-        AppCoordinator.shared.startAfterWalletAuthentication()
 
         NotificationCenter.default.post(name: .login, object: nil)
 
@@ -209,7 +204,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         // Handle airdrop routing
         deepLinkRouter.routeIfNeeded()
 
-        hasFinishedAuthentication = true
+        if let tabControllerManager = AppCoordinator.shared.tabControllerManager {
+            tabControllerManager.reload()
+        }
     }
 
     // MARK: - Start Flows
@@ -274,7 +271,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     func showPasswordScreen(type: PasswordScreenType,
                             confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
                             dismissHandler: PasswordScreenPresenter.DismissHandler? = nil) {
-        guard hasFinishedAuthentication else { return }
         guard !isShowingSecondPasswordScreen else { return }
         guard let parent = UIApplication.shared.topMostViewController else {
             return
@@ -323,15 +319,16 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
 extension AuthenticationCoordinator: WalletSecondPasswordDelegate {
     func getSecondPassword(success: WalletSuccessCallback, dismiss: WalletDismissCallback?) {
-        showPasswordScreen(
-            type: .actionRequiresPassword,
-            confirmHandler: {
-                success.success(string: $0)
-            },
-            dismissHandler: {
-                dismiss?.dismiss()
-            }
-        )
+        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
+            .subscribe(
+                onSuccess: { secondPassword in
+                    success.success(string: secondPassword!)
+                },
+                onError: { error in
+                    dismiss?.dismiss()
+                }
+            )
+            .disposed(by: bag)
     }
     
     func getPrivateKeyPassword(success: WalletSuccessCallback) {
@@ -430,7 +427,15 @@ extension AuthenticationCoordinator {
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
             guard let self = self else { return }
             self.alertPresenter.showMobileNoticeIfNeeded()
-            self.handlePostAuthenticationLogic()
+            /// TODO: Inject app coordinator instead - currently there is
+            /// a crash related to circle-dependency between `AuthenticationCoordinator`
+            /// and `AppCoordinator`.
+            AppCoordinator.shared.startAfterWalletAuthentication(
+                completion: { [weak self] in
+                    // Handle any necessary routing after authentication
+                    self?.handlePostAuthenticationLogic()
+                }
+            )
         }
         pinRouter.execute()
     }
@@ -441,9 +446,8 @@ extension AuthenticationCoordinator {
         guard pinRouter == nil || !pinRouter.isDisplayingLoginAuthentication else {
             return
         }
-        let boxedFlowProvider = UnretainedContentBox(flowProvider)
         let flow = PinRouting.Flow.authenticate(
-            from: .background(flowProvider: boxedFlowProvider),
+            from: .background,
             logoutRouting: logout
         )
         pinRouter = PinRouter(flow: flow) { [weak self] input in

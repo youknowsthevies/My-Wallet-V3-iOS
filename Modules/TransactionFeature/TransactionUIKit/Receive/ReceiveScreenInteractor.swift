@@ -13,18 +13,22 @@ import RxSwift
 import TransactionKit
 
 final class ReceiveScreenInteractor {
+    
+    struct State {
+        let metadata: CryptoAssetQRMetadata
+        let memo: String?
+    }
 
     let account: SingleAccount
     let receiveRouter: ReceiveRouterAPI
-
-    var qrCodeMetadata: Single<CryptoAssetQRMetadata> {
-        account
-            .receiveAddress
-            .map { address -> CryptoAssetQRMetadata in
-                guard let address = address as? CryptoAssetQRMetadataProviding else {
+    
+    var state: Single<State> {
+        account.receiveAddress
+            .map { address -> State in
+                guard let metadataProvider = address as? CryptoAssetQRMetadataProviding else {
                     throw ReceiveAddressError.notSupported
                 }
-                return address.metadata
+                return State(metadata: metadataProvider.metadata, memo: address.memo)
             }
     }
 

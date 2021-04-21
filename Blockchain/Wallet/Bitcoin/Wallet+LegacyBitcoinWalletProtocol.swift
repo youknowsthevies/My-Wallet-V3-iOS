@@ -16,14 +16,12 @@ protocol LegacyBitcoinWalletProtocol: class {
     func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void)
     
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
-    
-    func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
 
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
 
     func saveBitcoinMemo(for transaction: String, memo: String?)
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
+    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError>
     
     func validateBitcoin(address: String) -> Bool
     
@@ -36,6 +34,11 @@ enum BitcoinReceiveAddressError: Error {
     case jsReturnedNil
     case jsValueNotString
     case jsValueEmptyString
+}
+
+enum BitcoinDerivation {
+    case `default`
+    case legacy
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
@@ -60,21 +63,28 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func validateBitcoin(address: String) -> Bool {
         let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScript("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError> {
+    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError> {
         guard isInitialized() else {
             return .failure(.uninitialized)
         }
-        let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\")"
-        guard let jsResult = context.evaluateScript(function) else {
+        let forceLegacy: String
+        switch derivation {
+        case .legacy:
+            forceLegacy = "true"
+        case .default:
+            forceLegacy = "false"
+        }
+        let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
+        guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
         guard let result: String = jsResult.toString() else {
@@ -96,7 +106,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
         }
-        context.evaluateScript(function)
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
@@ -106,7 +116,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getBitcoinNote(\"\(transaction.escapedForJS())\")"
         guard
-            let result: String = context.evaluateScript(function)?.toString(),
+            let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
             !result.isEmpty,
             result != "null",
             result != "undefined"
@@ -132,12 +142,12 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getDefaultBitcoinWalletIndexAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void) {
@@ -158,7 +168,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         let address = receiveAddress.escapedForJS()
         
         script = "\(function)(\"\(address)\")"
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -176,12 +186,12 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getBitcoinWalletsAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -199,11 +209,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getHDWalletAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }

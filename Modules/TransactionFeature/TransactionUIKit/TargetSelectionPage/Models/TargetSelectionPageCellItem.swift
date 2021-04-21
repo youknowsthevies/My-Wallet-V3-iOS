@@ -97,7 +97,8 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             presenter = .radioSelection(
                 RadioAccountCellPresenter(
                     account: account,
-                    selected: selected
+                    selected: selected,
+                    accessibilityPrefix: assetAction.accessibilityPrefix
                 )
             )
         case .singleAccount(let account, let interactor):

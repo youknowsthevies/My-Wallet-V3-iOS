@@ -196,6 +196,11 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 guard let self = self else {
                     return state
                 }
+                guard updater.sourceAccount != nil else {
+                    /// We cannot procede to the calcuation step without a `sourceAccount`
+                    Logger.shared.debug("No sourceAccount: \(updater)")
+                    return state
+                }
                 return self.calculateNextState(
                     with: state,
                     updater: updater,

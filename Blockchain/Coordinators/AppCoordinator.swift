@@ -41,6 +41,8 @@ import ToolKit
     @LazyInject private var appFeatureConfigurator: AppFeatureConfigurator
     @LazyInject private var credentialsStore: CredentialsStoreAPI
     @LazyInject private var walletUpgradeService: WalletUpgradeServicing
+    @LazyInject private var reactiveWallet: ReactiveWalletAPI
+    @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
@@ -77,17 +79,17 @@ import ToolKit
 
     // MARK: Public Methods
 
-    /// Should be called only by Authentication after wallet loads.
-    func startAfterWalletAuthentication() {
-        guard let dismissible = window.rootViewController else {
-            window.rootViewController = setupMainFlow()
-            return
-        }
-        dismissible.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
-            // Sets view controller as rootViewController of the window
-            self.window.rootViewController = self.setupMainFlow()
-        }
+    /// Called by AuthenticationCoordinator after wallet loads, this will set the correct view controller as root of the window
+    /// and then call the completion block.
+    func startAfterWalletAuthentication(completion: @escaping () -> Void) {
+        // Sets view controller as rootViewController of the window
+        setupMainFlow()
+            .subscribe(
+                onSuccess: { [weak self] rootViewController in
+                    self?.setRootViewController(rootViewController, animated: true, completion: completion)
+                }
+            )
+            .disposed(by: disposeBag)
     }
 
     func syncPinKeyWithICloud() {
@@ -142,44 +144,27 @@ import ToolKit
     }
 
     @discardableResult
-    func setupMainFlow() -> UIViewController {
-        if walletUpgradeService.needsWalletUpgrade {
-            return setupWalletUpgrade(completion: { [weak self] in
-                guard let self = self else { return }
-                self.window.rootViewController = self.setupLoggedInFlow()
-            })
-        } else {
-            return setupLoggedInFlow()
-        }
-    }
-
-    private func setupWalletUpgrade(completion: @escaping () -> Void) -> UIViewController {
-        let interactor = WalletUpgradeInteractor(completion: completion)
-        let presenter = WalletUpgradePresenter(interactor: interactor)
-        let viewController = WalletUpgradeViewController(presenter: presenter)
-        return viewController
-    }
-
-    private func setupLoggedInFlow() -> UIViewController {
-        self.setupTabControllerManager()
-        self.setupSideMenuViewController()
-        let viewController = ECSlidingViewController()
-        viewController.underLeftViewController = self.sideMenuViewController
-        viewController.topViewController = self.tabControllerManager?.tabViewController
-        self.slidingViewController = viewController
-        self.tabControllerManager?.tabViewController.loadViewIfNeeded()
-        self.tabControllerManager?.showDashboard()
-        return viewController
-    }
-
-    private func setupSideMenuViewController() {
-        let viewController = SideMenuViewController.makeFromStoryboard()
-        viewController.delegate = self
-        self.sideMenuViewController = viewController
-    }
-    
-    private func setupTabControllerManager() {
-        self.tabControllerManager = TabControllerManager()
+    func setupMainFlow() -> Single<UIViewController> {
+        reactiveWallet
+            .waitUntilInitializedSingle
+            .flatMap(weak: self) { (self, _) in
+                self.secondPasswordPrompter.secondPasswordIfNeeded(type: .login)
+            }
+            .flatMap(weak: self) { (self, secondPassword) -> Single<Bool> in
+                self.walletUpgradeService.needsWalletUpgrade
+                    .catchErrorJustReturn(false)
+            }
+            .observeOn(MainScheduler.asyncInstance)
+            .map(weak: self) { (self, needsWalletUpgrade) in
+                if needsWalletUpgrade {
+                    return self.setupWalletUpgrade(completion: { [weak self] in
+                        guard let self = self else { return }
+                        self.window.rootViewController = self.setupLoggedInFlow()
+                    })
+                } else {
+                    return self.setupLoggedInFlow()
+                }
+            }
     }
 
     func showSettingsView() {
@@ -221,15 +206,6 @@ import ToolKit
         closeSideMenu()
     }
 
-    /// Observes symbol changes so that view controllers can reflect the new symbol
-    private func observeSymbolChanges() {
-        BlockchainSettings.App.shared.onSymbolLocalChanged = { [unowned self] _ in
-            self.tabControllerManager?.reloadSymbols()
-            self.accountsAndAddressesNavigationController.reload()
-            self.sideMenuViewController?.reload()
-        }
-    }
-
     func reloadAfterMultiAddressResponse() {
         guard tabControllerManager != nil, tabControllerManager!.tabViewController.isViewLoaded else {
             // Nothing to reload
@@ -243,6 +219,66 @@ import ToolKit
         NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
         NotificationCenter.default.post(name: Constants.NotificationKeys.multiAddressResponseReload, object: nil)
     }
+
+    // MARK: Private Methods
+
+    private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
+        // Sets root view controller
+        window.rootViewController = rootViewController
+        // Animate if needed
+        if animated {
+            // Animate with `completion` block.
+            UIView.transition(
+                with: window,
+                duration: 0.3,
+                options: .transitionCrossDissolve,
+                animations: nil,
+                completion: { _ in completion() }
+            )
+        } else {
+            // Call `completion` block.
+            completion()
+        }
+    }
+
+    private func setupWalletUpgrade(completion: @escaping () -> Void) -> UIViewController {
+        let interactor = WalletUpgradeInteractor(completion: completion)
+        let presenter = WalletUpgradePresenter(interactor: interactor)
+        let viewController = WalletUpgradeViewController(presenter: presenter)
+        return viewController
+    }
+
+    private func setupLoggedInFlow() -> UIViewController {
+        self.setupTabControllerManager()
+        self.setupSideMenuViewController()
+        let viewController = ECSlidingViewController()
+        viewController.underLeftViewController = self.sideMenuViewController
+        viewController.topViewController = self.tabControllerManager?.tabViewController
+        self.slidingViewController = viewController
+        self.tabControllerManager?.tabViewController.loadViewIfNeeded()
+        self.tabControllerManager?.showDashboard()
+        return viewController
+    }
+
+    private func setupSideMenuViewController() {
+        let viewController = SideMenuViewController.makeFromStoryboard()
+        viewController.delegate = self
+        self.sideMenuViewController = viewController
+    }
+
+    private func setupTabControllerManager() {
+        self.tabControllerManager = TabControllerManager()
+    }
+
+    /// Observes symbol changes so that view controllers can reflect the new symbol
+    private func observeSymbolChanges() {
+        BlockchainSettings.App.shared.onSymbolLocalChanged = { [unowned self] _ in
+            self.tabControllerManager?.reloadSymbols()
+            self.accountsAndAddressesNavigationController.reload()
+            self.sideMenuViewController?.reload()
+        }
+    }
+
 }
 
 extension AppCoordinator: SideMenuViewControllerDelegate {

@@ -18,4 +18,5 @@ extension Accessibility.Identifier.Receive {
     static let walletNameLabel = "\(prefix)walletNameLabel"
     static let balanceLabel = "\(prefix)balanceLabel"
     static let addressLabel = "\(prefix)addressLabel"
+    static let memoLabel = "\(prefix)memoLabel"
 }

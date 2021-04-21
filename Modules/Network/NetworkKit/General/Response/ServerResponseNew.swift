@@ -16,11 +16,4 @@ public struct ServerResponseNew {
 public struct ServerErrorResponseNew: Error {
     public let response: HTTPURLResponse
     public let payload: Data?
-    
-    var legacyError: ServerErrorResponse {
-        ServerErrorResponse(
-            response: response,
-            payload: payload
-        )
-    }
 }

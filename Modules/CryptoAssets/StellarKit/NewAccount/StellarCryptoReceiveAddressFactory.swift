@@ -11,9 +11,12 @@ import RxSwift
 import TransactionKit
 
 final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
-    func makeExternalAssetAddress(address: String,
-                                  label: String,
-                                  onTxCompleted: @escaping (TransactionResult) -> Completable) throws -> CryptoReceiveAddress {
+    
+    func makeExternalAssetAddress(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) throws -> CryptoReceiveAddress {
         let items = address.split(separator: ":")
         guard let address = items.first else {
             throw TransactionValidationFailure(state: .invalidAddress)

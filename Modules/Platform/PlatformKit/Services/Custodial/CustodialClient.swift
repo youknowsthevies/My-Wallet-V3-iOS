@@ -38,17 +38,22 @@ final class CustodialClient: TradingBalanceClientAPI,
             path: path,
             authenticated: true
         )!
-        return communicator.performOptional(request: request, responseType: CustodialBalanceResponse.self)
+        return networkAdapter
+            .performOptional(
+                request: request,
+                responseType: CustodialBalanceResponse.self,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -60,7 +65,11 @@ final class CustodialClient: TradingBalanceClientAPI,
             body: try? body.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - TradingBalanceClientAPI
@@ -80,7 +89,11 @@ final class CustodialClient: TradingBalanceClientAPI,
             headers: headers,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
     
     // MARK: - CustodialPaymentAccountClientAPI
@@ -96,6 +109,10 @@ final class CustodialClient: TradingBalanceClientAPI,
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }

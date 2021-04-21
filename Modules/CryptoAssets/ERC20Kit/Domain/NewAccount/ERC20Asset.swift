@@ -33,16 +33,13 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
     private let errorRecorder: ErrorRecording
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
     
     init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
-        self.internalFeatureFlag = internalFeatureFlag
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {

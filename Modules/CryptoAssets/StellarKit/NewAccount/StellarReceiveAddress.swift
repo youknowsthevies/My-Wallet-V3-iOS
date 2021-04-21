@@ -10,20 +10,22 @@ import PlatformKit
 import RxSwift
 
 struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
+    
     let asset: CryptoCurrency = .stellar
     let address: String
     let label: String
     let memo: String?
-    let onTxCompleted: (TransactionResult) -> Completable
-
+    let onTxCompleted: TxCompleted
+    
     var metadata: CryptoAssetQRMetadata {
-        StellarURLPayload(address: address, amount: nil)
+        StellarURLPayload(address: address, amount: nil, memo: memo)
     }
-
+    
     init(address: String,
          label: String,
          memo: String? = nil,
-         onTxCompleted: @escaping (TransactionResult) -> Completable = { _ in .empty() }) {
+         onTxCompleted: @escaping TxCompleted = { _ in .empty() }
+    ) {
         self.address = address
         self.label = label
         self.memo = memo

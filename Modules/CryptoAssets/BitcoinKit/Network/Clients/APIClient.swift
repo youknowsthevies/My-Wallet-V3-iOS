@@ -14,11 +14,11 @@ import RxSwift
 
 protocol APIClientAPI {
     
-    func multiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse>
+    func multiAddress(for addresses: [APIWalletModel]) -> Single<BitcoinMultiAddressResponse>
     
-    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse>
+    func balances(for addresses: [APIWalletModel]) -> Single<BitcoinBalanceResponse>
     
-    func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse>
+    func unspentOutputs(for addresses: [APIWalletModel]) -> Single<UnspentOutputsResponse>
 }
 
 final class APIClient: APIClientAPI {
@@ -33,15 +33,15 @@ final class APIClient: APIClientAPI {
     
     // MARK: - APIClientAPI
     
-    func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse> {
+    func unspentOutputs(for addresses: [APIWalletModel]) -> Single<UnspentOutputsResponse> {
         client.unspentOutputs(for: addresses)
     }
     
-    func multiAddress(for addresses: [String]) -> Single<BitcoinMultiAddressResponse> {
+    func multiAddress(for addresses: [APIWalletModel]) -> Single<BitcoinMultiAddressResponse> {
         client.multiAddress(for: addresses)
     }
     
-    func balances(for addresses: [String]) -> Single<BitcoinBalanceResponse> {
+    func balances(for addresses: [APIWalletModel]) -> Single<BitcoinBalanceResponse> {
         client.balances(for: addresses)
     }
 }

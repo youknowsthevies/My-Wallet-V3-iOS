@@ -11,6 +11,10 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
+enum BridgeBitpayServiceError: Error {
+    case invalidTransactionSize
+}
+
 /// Bridging layer for Swift-ObjC, since ObjC isn't compatible with RxSwift
 @objc
 class BridgeBitpayService: NSObject {
@@ -73,7 +77,7 @@ class BridgeBitpayService: NSObject {
                                               transactionSize: String,
                                               completion: @escaping (String?, Error?) -> Void) {
         guard let size = Int(transactionSize) else {
-            completion(nil, NetworkError.default)
+            completion(nil, BridgeBitpayServiceError.invalidTransactionSize)
             return
         }
         let currency: CryptoCurrency = assetType == .bitcoin ? .bitcoin : .bitcoin

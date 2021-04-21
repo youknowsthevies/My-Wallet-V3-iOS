@@ -25,7 +25,6 @@
 #import "KeyPair.h"
 #import "ModuleXMLHttpRequest.h"
 #import "NSArray+EncodedJSONString.h"
-#import "NSData+BTCData.h"
 #import "NSData+Hex.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "NSString+JSONParser_NSString.h"
@@ -217,20 +216,12 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark Decryption
 
-    self.context[@"objc_message_sign"] = ^(KeyPair *keyPair, NSString *message, JSValue *network) {
-         return [[keyPair.key signatureForMessage:message] hexadecimalString];
-    };
-
-    self.context[@"objc_get_shared_key"] = ^(KeyPair *publicKey, KeyPair *privateKey) {
-        return [BTCSHA256([[publicKey.key diffieHellmanWithPrivateKey:privateKey.key] publicKey]) hexadecimalString];
-    };
-
-    self.context[@"objc_message_verify_base64"] = ^(NSString *address, NSString *signature, NSString *message) {
-        NSData *signatureData = [[NSData alloc] initWithBase64EncodedString:signature options:kNilOptions];
-        NSData *messageData = [message dataUsingEncoding:NSUTF8StringEncoding];
-        BTCKey *key = [BTCKey verifySignature:signatureData forBinaryMessage:messageData];
-        KeyPair *keyPair = [[KeyPair alloc] initWithKey:key network:nil];
-        return [[keyPair getAddress] isEqualToString:address];
+    self.context[@"objc_message_sign"] = ^(JSValue *privateKey, NSString *message, BOOL compressed) {
+        NSData *data = [[NSData alloc] initWithBase64EncodedString:[privateKey toString] options:kNilOptions];
+        BTCKey *btcKey = [[BTCKey alloc] initWithPrivateKey:data];
+        [btcKey setPublicKeyCompressed:compressed];
+        KeyPair *keyPair = [[KeyPair alloc] initWithKey:btcKey network:nil];
+        return [[keyPair.key signatureForMessage:message] hexadecimalString];
     };
 
     self.context[@"objc_message_verify"] = ^(NSString *address, NSString *signature, NSString *message) {
@@ -672,15 +663,7 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf did_get_swipe_addresses:swipeAddresses asset_type:LegacyAssetTypeBitcoinCash];
     };
 
-#pragma mark Exchange
-
-    self.context[@"objc_on_get_available_btc_balance_success"] = ^(JSValue *result) {
-        [weakSelf on_get_available_btc_balance_success:[result toDictionary]];
-    };
-
-    self.context[@"objc_on_get_available_btc_balance_error"] = ^(JSValue *result) {
-        [weakSelf on_get_available_balance_error:[result toString] symbol:CURRENCY_SYMBOL_BTC];
-    };
+#pragma mark Other
 
     [self.context evaluateScriptCheckIsOnMainQueue:[self getJSSource]];
 
@@ -1143,12 +1126,14 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context invokeOnceWithStringFunctionBlock:^(NSString * _Nonnull errorMessage) {
         error(errorMessage);
     } forJsFunctionName:@"objc_on_btc_tx_signed_error"];
-    
+
+    NSString *script;
     if (secondPassword) {
-        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment(\"%@\")", [secondPassword escapedForJS]]];
+        script = [NSString stringWithFormat:@"MyWalletPhone.tradeExecution.bitcoin.signPayment(\"%@\")", [secondPassword escapedForJS]];
     } else {
-        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.signBitcoinPayment()"]];
+        script = @"MyWalletPhone.tradeExecution.bitcoin.signPayment()";
     }
+    [self.context evaluateScriptCheckIsOnMainQueue:script];
 }
 
 - (void)signBitcoinCashPaymentWithSecondPassword:(NSString *_Nullable)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error
@@ -1918,93 +1903,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.xlm.saveAccount(\"%@\", \"%@\")", [publicKey escapedForJS], [label escapedForJS]]];
 }
 
-# pragma mark - Retail Core
-
-- (void)createOrderPaymentWithOrderTransaction:(OrderTransactionLegacy * _Nonnull)orderTransaction
-                                    completion:(void (^ _Nonnull)(void))completion
-                                       success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
-                                         error:(void (^ _Nonnull)(NSDictionary * _Nonnull))error
-{
-    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull responseValue) {
-        completion();
-        NSData *data = [[responseValue toString] dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        success(json);
-    } forJsFunctionName:@"objc_on_create_order_payment_success"];
-
-    uint64_t amount = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.amount];
-    uint64_t fees = [NSNumberFormatter parseBitcoinValueFrom:orderTransaction.fees];
-    NSString *formattedAmount = [NSString stringWithFormat:@"%lld", amount];
-    NSString *formattedFee = [NSString stringWithFormat:@"%lld", fees];
-    NSString *tradeExecutionType;
-    
-    if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoin) {
-        tradeExecutionType = @"bitcoin";
-        [self.context invokeOnceWithValueFunctionBlock:^(JSValue *_Nonnull errorValue) {
-            completion();
-            /// TODO: We used to provide a more user friendly message noting that the user may not have
-            /// enough BTC to cover fees. However we use this closure to report various error messages and
-            /// diagnose why trades may be expiring, so we need to display the actual error that is thrown
-            /// by the JS layer.
-            NSData *data = [[errorValue toString] dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            error(json);
-        } forJsFunctionName:@"objc_on_create_order_payment_error"];
-    } else if (orderTransaction.legacyAssetType == LegacyAssetTypeBitcoinCash) {
-        tradeExecutionType = @"bitcoinCash";
-        [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {
-            completion();
-            NSData *data = [[errorValue toString] dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-            error(json);
-        } forJsFunctionName:@"objc_on_create_order_payment_error"];
-    } else {
-        DLog(@"Unsupported legacy asset type");
-        return;
-    }
-    NSString *script = [NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.createPayment(%d, \"%@\", %@, %@, %@)",
-                        [tradeExecutionType escapedForJS],
-                        orderTransaction.from,
-                        [orderTransaction.to escapedForJS],
-                        [formattedAmount escapedForJS],
-                        [formattedFee escapedForJS],
-                        [orderTransaction.gasLimit escapedForJS]];
-    [self.context evaluateScriptCheckIsOnMainQueue:script];
-}
-
-- (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType secondPassword:(NSString* _Nullable)secondPassword completion:(void (^ _Nonnull)(void))completion success:(void (^ _Nonnull)(NSString *_Nonnull))success error:(void (^ _Nonnull)(NSString *_Nonnull))error cancel:(void (^ _Nonnull)(void))cancel
-{
-    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull txValue) {
-        NSString *txHash = [txValue toString];
-        completion();
-        success(txHash);
-    } forJsFunctionName:@"objc_on_send_order_transaction_success"];
-    
-    [self.context invokeOnceWithValueFunctionBlock:^(JSValue * _Nonnull errorValue) {
-        NSString *errorMessage = [errorValue toString];
-        completion();
-        error(errorMessage);
-    } forJsFunctionName:@"objc_on_send_order_transaction_error"];
-
-    [self.context invokeOnceWithFunctionBlock:^{
-        cancel();
-    } forJsFunctionName:@"objc_on_send_order_transaction_dismiss"];
-    
-    NSString *tradeExecutionType;
-    if (legacyAssetType == LegacyAssetTypeBitcoin) {
-        tradeExecutionType = @"bitcoin";
-    } else if (legacyAssetType == LegacyAssetTypeBitcoinCash) {
-        tradeExecutionType = @"bitcoinCash";
-    } else if (legacyAssetType == LegacyAssetTypeEther) {
-        tradeExecutionType = @"ether";
-    } else {
-        DLog(@"Unsupported legacy asset type");
-        return;
-    }
-    
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.tradeExecution.%@.send(\"%@\")", tradeExecutionType, [secondPassword escapedForJS]]];
-}
-
 # pragma mark - Ethereum
 
 - (NSDecimalNumber *)getEthBalance
@@ -2492,8 +2390,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)did_load_wallet
 {
     DLog(@"did_load_wallet");
-
-    [self.ethereum walletDidLoad];
 
     [self getHistoryForAllAssets];
 
@@ -3097,11 +2993,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (BOOL)hasAccount
 {
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.isUpgradedToHD"] toBool];
+    return [self didUpgradeToHd];
 }
 
 - (BOOL)didUpgradeToHd

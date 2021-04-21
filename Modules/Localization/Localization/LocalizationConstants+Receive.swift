@@ -48,6 +48,11 @@ extension LocalizationConstants.Receive.Text {
         comment: "Section header where wallet address is displayed."
     )
 
+    public static let memo = NSLocalizedString(
+        "Memo",
+        comment: "Section header where memo is displayed."
+    )
+
     public static let copiedToClipboard = NSLocalizedString(
         "Copied to clipboard",
         comment: "Text displayed when a crypto address has been copied to the users clipboard."

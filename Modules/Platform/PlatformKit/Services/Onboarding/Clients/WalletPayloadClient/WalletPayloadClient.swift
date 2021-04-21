@@ -90,7 +90,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
     /// Error returned from the server
     struct ErrorResponse: ErrorResponseConvertible {
         
-        static func from(_ communicatorError: NetworkCommunicatorErrorNew) -> WalletPayloadClient.ErrorResponse {
+        static func from(_ communicatorError: NetworkCommunicatorError) -> WalletPayloadClient.ErrorResponse {
             ErrorResponse(
                 isEmailAuthorizationRequired: true,
                 errorMessage: communicatorError.localizedDescription

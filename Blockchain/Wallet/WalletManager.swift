@@ -485,9 +485,3 @@ extension WalletManager: WalletDelegate {
         }
     }
 }
-
-extension WalletManager: WalletUpgradingProvider {
-    var walletUpgrading: WalletUpgradingAPI {
-        wallet
-    }
-}

@@ -13,6 +13,8 @@ public typealias AvailableActions = Set<AssetAction>
 
 public protocol TradingAccount { }
 
+public protocol BankAccount { }
+
 public protocol NonCustodialAccount { }
 
 public protocol BlockchainAccount {

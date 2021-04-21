@@ -17,6 +17,10 @@ import RxSwift
 import StellarKit
 import ToolKit
 
+enum AssetAddressRepositoryError: Error {
+    case jsonParsingError
+}
+
 /// Address usage status
 enum AddressUsageStatus {
     
@@ -299,7 +303,7 @@ extension AssetAddressRepository {
                 }
                 guard let json = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String: AnyObject],
                     let transactions = json["txs"] as? [NSDictionary] else {
-                    observer(.error(NetworkError.jsonParseError))
+                    observer(.error(AssetAddressRepositoryError.jsonParsingError))
                         return
                 }
                 let usage: AddressUsageStatus = transactions.isEmpty ? .unused(address: address) : .used(address: address)

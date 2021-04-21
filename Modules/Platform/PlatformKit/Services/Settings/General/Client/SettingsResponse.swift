@@ -10,7 +10,17 @@ import Foundation
 
 /// This model contains wallet-specific settings (e.g. the user's preferred language,
 /// currency symbol, 2-factor authentication type, etc.)
-public struct SettingsResponse {
+struct SettingsResponse {
+
+    // MARK: Types
+
+    /// List of known feature flags.
+    enum Feature: String {
+        case segwit
+    }
+
+    // MARK: Properties
+
     let language: String
     let currency: String
     let email: String
@@ -21,10 +31,13 @@ public struct SettingsResponse {
     let emailVerified: Bool
     let authenticator: Int
     let countryCode: String
-    let invited: [String: Bool]
+    let invited: [Feature: Bool]
 }
 
-extension SettingsResponse: Decodable {
+extension  SettingsResponse: Decodable {
+
+    // MARK: Types
+
     enum CodingKeys: String, CodingKey {
         case language
         case currency
@@ -39,7 +52,9 @@ extension SettingsResponse: Decodable {
         case invited
     }
 
-    public init(from decoder: Decoder) throws {
+    // MARK: Init
+
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         language = try values.decode(String.self, forKey: .language)
         currency = try values.decode(String.self, forKey: .currency)
@@ -50,8 +65,15 @@ extension SettingsResponse: Decodable {
         emailVerified = try values.decode(Int.self, forKey: .emailVerified) == 1
         authenticator = try values.decode(Int.self, forKey: .authenticator)
         countryCode = try values.decode(String.self, forKey: .countryCode)
-        invited = try values.decode([String: Bool].self, forKey: .invited)
         let notifications = try values.decode([Int].self, forKey: .notifications)
         emailNotificationsEnabled = notifications.contains(1)
+        invited = try values
+            .decode([String: Bool].self, forKey: .invited)
+            .reduce(into: [Feature: Bool]()) { (result, this) in
+                guard let feature = Feature(rawValue: this.key) else {
+                    return
+                }
+                result[feature] = this.value
+            }
     }
 }

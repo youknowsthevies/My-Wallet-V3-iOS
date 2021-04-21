@@ -8,6 +8,7 @@
 
 import BitcoinChainKit
 import BitcoinKit
+import DIKit
 import JavaScriptCore
 import PlatformKit
 import RxSwift
@@ -15,11 +16,17 @@ import ToolKit
 import TransactionKit
 
 final class BitcoinWallet: NSObject {
-    
+
+    // MARK: - Types
     fileprivate struct TransactionAmounts {
         let finalFee: MoneyValue
         let sweepAmount: MoneyValue
         let sweepFee: MoneyValue
+    }
+
+    enum BitcoinWalletError: Error {
+        case v3PayloadDecodingFailed
+        case v4PayloadDecodingFailed
     }
     
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
@@ -35,6 +42,7 @@ final class BitcoinWallet: NSObject {
 
     weak var reactiveWallet: ReactiveWalletAPI!
 
+    @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
@@ -129,42 +137,44 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
         ) -> Single<BitcoinChainTransactionCandidate<Token>> {
             Single.create(weak: self) { (self, observer) -> Disposable in
                 self.wallet?.createOrderPayment(
-                    withOrderTransaction: legacyOrderCandidate,
-                    completion: {
-                        // NOTE: No-op
-                    },
-                    success: { json in
-                        let amounts = Self.extractAmounts(
-                            from: json,
-                            cryptoCurrency: Token.coin.cryptoCurrency
-                        )
-                        let candidate = BitcoinChainTransactionCandidate<Token>(
-                            proposal: proposal,
-                            fees: amounts.finalFee,
-                            sweepAmount: amounts.sweepAmount,
-                            sweepFee: amounts.sweepFee
-                        )
-                        observer(.success(candidate))
-                    },
-                    error: { json in
-                        Logger.shared.error("BTC Candidate build failure: \(json)")
-                        /// NOTE: This error is mapped from the value that is returned from JS.
-                        /// It's possible this error is not important and we always want to return
-                        /// `.insufficientFunds`. However, we may want a different
-                        ///  `TransactionValidationFailure.State` in the event that the user has the funds
-                        /// but cannot cover fees.
-                        let amounts = Self.extractAmounts(
-                            from: json,
-                            cryptoCurrency: Token.coin.cryptoCurrency
-                        )
-                        let errorMessage = json["error"] as? String ?? ""
-                        let transactionError = BitcoinChainTransactionError(
-                            stringValue: errorMessage,
-                            finalFee: amounts.finalFee,
-                            sweepAmount: amounts.sweepAmount,
-                            sweepFee: amounts.sweepFee
-                        )
-                        return observer(.error(transactionError))
+                    orderTransaction: legacyOrderCandidate,
+                    completion: { result in
+                        switch result {
+                        case .success(let json):
+                            let amounts = Self.extractAmounts(
+                                from: json,
+                                cryptoCurrency: Token.coin.cryptoCurrency
+                            )
+                            let candidate = BitcoinChainTransactionCandidate<Token>(
+                                proposal: proposal,
+                                fees: amounts.finalFee,
+                                sweepAmount: amounts.sweepAmount,
+                                sweepFee: amounts.sweepFee
+                            )
+                            observer(.success(candidate))
+                        case .failure(let error):
+                            switch error {
+                            case .createOrderFailed(let json):
+                                Logger.shared.error("BTC Candidate build failure: \(json)")
+                                /// NOTE: This error is mapped from the value that is returned from JS.
+                                /// It's possible this error is not important and we always want to return
+                                /// `.insufficientFunds`. However, we may want a different
+                                ///  `TransactionValidationFailure.State` in the event that the user has the funds
+                                /// but cannot cover fees.
+                                let amounts = Self.extractAmounts(
+                                    from: json,
+                                    cryptoCurrency: Token.coin.cryptoCurrency
+                                )
+                                let errorMessage = json["error"] as? String ?? ""
+                                let transactionError = BitcoinChainTransactionError(
+                                    stringValue: errorMessage,
+                                    finalFee: amounts.finalFee,
+                                    sweepAmount: amounts.sweepAmount,
+                                    sweepFee: amounts.sweepFee
+                                )
+                                observer(.error(transactionError))
+                            }
+                        }
                     }
                 )
                 return Disposables.create()
@@ -175,8 +185,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             from: proposal.walletIndex,
             to: proposal.destination.address,
             amount: proposal.amount.toDisplayString(includeSymbol: false),
-            fees: proposal.fees.toDisplayString(includeSymbol: false),
-            gasLimit: nil
+            fees: proposal.fees.toDisplayString(includeSymbol: false)
         )
         return Single.just(())
             .observeOn(MainScheduler.asyncInstance)
@@ -214,18 +223,20 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             self.wallet?.sendOrderTransaction(
                 coin.cryptoCurrency.legacy,
                 secondPassword: secondPassword,
-                completion: {
-                    // no-op
-                },
-                success: { transactionHash in
-                    observer(.success(transactionHash))
-                },
-                error: { messsage in
-                    observer(.error(PlatformKitError.illegalStateException(message: messsage)))
-                },
-                cancel: {
-                    observer(.error(PlatformKitError.default))
-                })
+                completion: { result in
+                    switch result {
+                    case .success(let transactionHash):
+                        observer(.success(transactionHash))
+                    case .failure(let error):
+                        switch error {
+                        case .cancelled:
+                            observer(.error(PlatformKitError.default))
+                        case .sendOrderFailed(let message):
+                            observer(.error(PlatformKitError.illegalStateException(message: message)))
+                        }
+                    }
+                }
+            )
             return Disposables.create()
         }
     }
@@ -265,7 +276,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 guard let wallet = self.wallet else {
                     fatalError("Wallet was nil")
                 }
-                let result = wallet.getBitcoinReceiveAddress(forXPub: xpub)
+                let result = wallet.getBitcoinReceiveAddress(forXPub: xpub, derivation: .default)
                 switch result {
                 case .success(let address):
                     return address
@@ -315,28 +326,11 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
         return wallet.validateBitcoin(address: address)
     }
 
-    var hdWallet: Single<PayloadBitcoinHDWallet> {
-        reactiveWallet
-            .waitUntilInitializedSingle
-            .flatMap(weak: self) { (self, _) -> Single<String?> in
-                self.secondPasswordIfAccountCreationNeeded
-            }
-            .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
-                self.hdWallet(secondPassword: secondPassword)
-            }
-            .map(weak: self) { (self, hdWalletString) -> PayloadBitcoinHDWallet in
-                guard let data = hdWalletString.data(using: .utf8) else {
-                    throw WalletError.unknown
-                }
-                return try JSONDecoder().decode(PayloadBitcoinHDWallet.self, from: data)
-            }
-    }
-
     var defaultWallet: Single<BitcoinWalletAccount> {
         reactiveWallet
             .waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) -> Single<String?> in
-                self.secondPasswordIfAccountCreationNeeded
+                self.secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             }
             .flatMap(weak: self) { (self, secondPassword) -> Single<BitcoinWalletAccount> in
                 self.defaultWallet(secondPassword: secondPassword)
@@ -357,7 +351,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 
     var wallets: Single<[BitcoinWalletAccount]> {
-        secondPasswordIfAccountCreationNeeded
+        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<[BitcoinWalletAccount]> in
                 self.bitcoinWallets(secondPassword: secondPassword)
             }
@@ -366,32 +360,57 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
     
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
-        bitcoinLegacyWallets(secondPassword: secondPassword)
+        metadataWallets(secondPassword: secondPassword)
             .flatMap(weak: self) { (self, legacyWallets) -> Single<[BitcoinWalletAccount]> in
                 guard let data = legacyWallets.data(using: .utf8) else {
                     throw WalletError.unknown
                 }
-                let decodedLegacyWallets: [PayloadBitcoinWalletAccount]
-                do {
-                    decodedLegacyWallets = try JSONDecoder().decode([PayloadBitcoinWalletAccount].self, from: data)
-                } catch {
-                    throw error
-                }
-                let decodedWallets = decodedLegacyWallets
-                    .enumerated()
+                return self.decodeV3Wallets(from: data)
+                    .flatMapError { _ -> Result<[BitcoinWalletAccount], BitcoinWalletError> in
+                        self.decodeV4Wallets(from: data)
+                    }
+                    .single
+            }
+    }
+
+    private func decodeV3Wallets(from data: Data) -> Result<[BitcoinWalletAccount], BitcoinWalletError> {
+        Result { try JSONDecoder().decode([PayloadBitcoinWalletAccountV3].self, from: data) }
+            .replaceError(with: BitcoinWalletError.v3PayloadDecodingFailed)
+            .map { payload -> [BitcoinWalletAccount] in
+                payload.enumerated()
                     .map { (index, legacyAccount) -> BitcoinWalletAccount in
                         BitcoinWalletAccount(
                             index: index,
                             publicKey: legacyAccount.xpub,
                             label: legacyAccount.label,
+                            derivationType: .legacy,
                             archived: legacyAccount.archived
                         )
                     }
-                return Single.just(decodedWallets)
             }
     }
 
-    private func bitcoinLegacyWallets(secondPassword: String?) -> Single<String> {
+    private func decodeV4Wallets(from data: Data) -> Result<[BitcoinWalletAccount], BitcoinWalletError> {
+        Result { try JSONDecoder().decode([PayloadBitcoinWalletAccountV4].self, from: data) }
+            .replaceError(with: BitcoinWalletError.v4PayloadDecodingFailed)
+            .map { payload -> [BitcoinWalletAccount] in
+                payload.enumerated()
+                    .map { (index, legacyAccount) -> BitcoinWalletAccount in
+                        guard let derivation = legacyAccount.derivations.first(where: { $0.purpose == 84 }) else {
+                            preconditionFailure("bech32 derivation should exist.")
+                        }
+                        return BitcoinWalletAccount(
+                            index: index,
+                            publicKey: derivation.xpub,
+                            label: legacyAccount.label,
+                            derivationType: derivation.type,
+                            archived: legacyAccount.archived
+                        )
+                    }
+            }
+    }
+
+    private func metadataWallets(secondPassword: String?) -> Single<String> {
         Single<String>.create(weak: self) { (self, observer) -> Disposable in
             guard let wallet = self.wallet else {
                 observer(.error(WalletError.notInitialized))
@@ -405,22 +424,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             return Disposables.create()
         }
     }
-    
-    private func hdWallet(secondPassword: String?) -> Single<String> {
-        Single<String>.create(weak: self) { (self, observer) -> Disposable in
-            guard let wallet = self.wallet else {
-                observer(.error(WalletError.notInitialized))
-                return Disposables.create()
-            }
-            wallet.hdWallet(
-                with: secondPassword,
-                success: { wallet in observer(.success(wallet)) },
-                error: { errorMessage in observer(.error(WalletError.unknown)) }
-            )
-            return Disposables.create()
-        }
-    }
-    
+
     private func defaultWalletIndex(secondPassword: String?) -> Single<Int> {
         Single<Int>.create(weak: self) { (self, observer) -> Disposable in
             guard let wallet = self.wallet else {
@@ -441,16 +445,6 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 }
 
-extension BitcoinWallet: SecondPasswordPromptable {
-    var legacyWallet: LegacyWalletAPI? {
-        wallet
-    }
-    
-    var accountExists: Single<Bool> {
-        Single.just(true)
-    }
-}
-
 extension BitcoinWallet: PasswordAccessAPI {
     public var password: Maybe<String> {
         guard let password = credentialsProvider.legacyPassword else {
@@ -467,14 +461,7 @@ extension BitcoinWallet: MnemonicAccessAPI {
         }
         return wallet.mnemonic
     }
-    
-    var mnemonicForcePrompt: Maybe<Mnemonic> {
-        guard let wallet = wallet else {
-            return Maybe.empty()
-        }
-        return wallet.mnemonicForcePrompt
-    }
-    
+
     var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
         guard let wallet = wallet else {
             return Maybe.empty()

@@ -88,6 +88,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                     index: index.intValue,
                     publicKey: xpub,
                     label: label,
+                    derivationType: .legacy,
                     archived: archived
                 )
             }
@@ -116,6 +117,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                 index: index.intValue,
                 publicKey: xpub,
                 label: label,
+                derivationType: .legacy,
                 archived: archived
             )
             observer(.success(account))

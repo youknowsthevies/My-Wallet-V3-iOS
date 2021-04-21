@@ -11,6 +11,10 @@ import RxCocoa
 import RxSwift
 
 final class WalletViewViewModel {
+
+    struct Descriptors {
+        let accessibilityPrefix: String
+    }
     
     let identifier: String
     let accountTypeBadge: BadgeImageViewModel
@@ -18,7 +22,7 @@ final class WalletViewViewModel {
     let nameLabelContent: LabelContent
     let balanceLabelContent: Driver<LabelContent>
     
-    init(account: SingleAccount) {
+    init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
         let accountType = account.accountType
         identifier = account.id
@@ -74,7 +78,7 @@ final class WalletViewViewModel {
             font: .main(.semibold, 16.0),
             color: .textFieldText,
             alignment: .left,
-            accessibility: .none
+            accessibility: .init(id: .value("\(descriptor.accessibilityPrefix).wallet.name"))
         )
         guard !(account is CryptoExchangeAccount) else {
             /// Exchange accounts don't have a balance
@@ -92,7 +96,7 @@ final class WalletViewViewModel {
                             font: .main(.medium, 14.0),
                             color: .descriptionText,
                             alignment: .left,
-                            accessibility: .none
+                            accessibility: .init(id: .value("\(descriptor.accessibilityPrefix).wallet.balance"))
                         )
                     }
                     .asDriver(onErrorJustReturn: .empty)

@@ -135,10 +135,6 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         Maybe.just("")
     }
 
-    var mnemonicForcePrompt: Maybe<String> {
-        Maybe.just("")
-    }
-
     var mnemonicPromptingIfNeeded: Maybe<String> {
         Maybe.just("")
     }

@@ -75,7 +75,8 @@ public final class SendAuxiliaryViewPresenter {
         networkFeeContentViewPresenter = ContentLabelViewPresenter(
             title: LocalizationId.networkFee,
             alignment: .right,
-            interactor: interactor.networkFeeContentViewInteractor
+            interactor: interactor.networkFeeContentViewInteractor,
+            accessibilityPrefix: "NetworkFee."
         )
 
         maxButtonViewModel = ButtonViewModel.secondary(
@@ -86,7 +87,8 @@ public final class SendAuxiliaryViewPresenter {
         availableBalanceContentViewPresenter = ContentLabelViewPresenter(
             title: initialState.availableBalanceTitle,
             alignment: .left,
-            interactor: interactor.availableBalanceContentViewInteractor
+            interactor: interactor.availableBalanceContentViewInteractor,
+            accessibilityPrefix: "AvailableBalance."
         )
 
         imageContent = interactor

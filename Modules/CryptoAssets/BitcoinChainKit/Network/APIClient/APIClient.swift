@@ -11,13 +11,39 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
+public enum DerivationType: String, Codable {
+    case legacy
+    case bech32
+}
+
+public struct APIWalletModel {
+    let publicKey: String
+    let derivationType: DerivationType
+
+    public init(publicKey: String, type: DerivationType) {
+        self.publicKey = publicKey
+        self.derivationType = type
+    }
+}
+
 public protocol APIClientAPI {
     
-    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for addresses: [String]) -> Single<BitcoinChainMultiAddressResponse<T>>
+    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for wallets: [APIWalletModel]) -> Single<BitcoinChainMultiAddressResponse<T>>
     
-    func balances(for addresses: [String]) -> Single<BitcoinChainBalanceResponse>
+    func balances(for wallets: [APIWalletModel]) -> Single<BitcoinChainBalanceResponse>
     
-    func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse>
+    func unspentOutputs(for wallets: [APIWalletModel]) -> Single<UnspentOutputsResponse>
+}
+
+fileprivate extension DerivationType {
+    var activaParameter: String {
+        switch self {
+        case .legacy:
+            return "active"
+        case .bech32:
+            return "activeBech32"
+        }
+    }
 }
 
 final class APIClient: APIClientAPI {
@@ -44,12 +70,19 @@ final class APIClient: APIClientAPI {
     }
     
     private struct Parameter {
-        
-        static func active(addresses: [String]) -> URLQueryItem {
-            URLQueryItem(
-                name: "active",
-                value: "\(addresses.joined(separator: "|"))"
-            )
+        static func active(wallets: [APIWalletModel]) -> [URLQueryItem] {
+            wallets
+                .reduce(into: [DerivationType: [String]]()) { (result, wallet) in
+                    var list = result[wallet.derivationType] ?? []
+                    list.append(wallet.publicKey)
+                    result[wallet.derivationType] = list
+                }
+                .map { (type, addresses) -> URLQueryItem in
+                    URLQueryItem(
+                        name: type.activaParameter,
+                        value: addresses.joined(separator: "|")
+                    )
+                }
         }
     }
     
@@ -71,10 +104,8 @@ final class APIClient: APIClientAPI {
     
     // MARK: - APIClientAPI
     
-    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for addresses: [String]) -> Single<BitcoinChainMultiAddressResponse<T>> {
-        let parameters = [
-            Parameter.active(addresses: addresses)
-        ]
+    func multiAddress<T: BitcoinChainHistoricalTransactionResponse>(for wallets: [APIWalletModel]) -> Single<BitcoinChainMultiAddressResponse<T>> {
+        let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.get(
             path: endpoint.multiaddress,
             parameters: parameters,
@@ -83,10 +114,8 @@ final class APIClient: APIClientAPI {
         return networkAdapter.perform(request: request)
     }
 
-    func balances(for addresses: [String]) -> Single<BitcoinChainBalanceResponse> {
-        let parameters = [
-            Parameter.active(addresses: addresses)
-        ]
+    func balances(for wallets: [APIWalletModel]) -> Single<BitcoinChainBalanceResponse> {
+        let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.get(
             path: endpoint.balance,
             parameters: parameters,
@@ -95,10 +124,8 @@ final class APIClient: APIClientAPI {
         return networkAdapter.perform(request: request)
     }
     
-    func unspentOutputs(for addresses: [String]) -> Single<UnspentOutputsResponse> {
-        let parameters = [
-            Parameter.active(addresses: addresses)
-        ]
+    func unspentOutputs(for wallets: [APIWalletModel]) -> Single<UnspentOutputsResponse> {
+        let parameters = Parameter.active(wallets: wallets)
         let request = requestBuilder.post(
             path: endpoint.unspent,
             parameters: parameters,

@@ -6,12 +6,15 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
-import RxSwift
 import NetworkKit
 
 public protocol UpdateWalletInformationClientAPI: AnyObject {
-    func updateWalletInfo(jwtToken: String) -> Completable
+    
+    func updateWalletInfo(
+        jwtToken: String
+    ) -> AnyPublisher<EmptyNetworkResponse, NabuNetworkError>
 }
 
 final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
@@ -23,23 +26,25 @@ final class UpdateWalletInformationClient: UpdateWalletInformationClientAPI {
     // MARK: - Properties
      
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
      // MARK: - Setup
       
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-         
-    func updateWalletInfo(jwtToken: String) -> Completable {
+    
+    func updateWalletInfo(
+        jwtToken: String
+    ) -> AnyPublisher<EmptyNetworkResponse, NabuNetworkError> {
         let payload = JWTPayload(jwt: jwtToken)
         let request = requestBuilder.put(
             path: Path.updateWalletInfo,
             body: try? payload.encode(),
             authenticated: true
         )!
-        return communicator.perform(request: request)
-     }
+        return networkAdapter.perform(request: request)
+    }
 }

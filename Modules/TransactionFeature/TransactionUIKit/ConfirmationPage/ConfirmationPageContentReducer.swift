@@ -78,7 +78,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 DefaultLineItemCellInteractor(title: data.title, description: data.subtitle)
             }
             .map { interactor in
-                DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
+                DefaultLineItemCellPresenter(
+                    interactor: interactor,
+                    accessibilityIdPrefix: interactor.title.stateRelay.value.value?.text ?? ""
+                )
             }
 
         var bitpayItemIfNeeded: [DetailsScreen.CellType] = pendingTransaction.confirmations
@@ -91,7 +94,10 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 DefaultLineItemCellInteractor(title: data.title, description: data.subtitle)
             }
             .map { interactor -> DetailsScreen.CellType in
-                let presenter = DefaultLineItemCellPresenter(interactor: interactor, accessibilityIdPrefix: "")
+                let presenter = DefaultLineItemCellPresenter(
+                    interactor: interactor,
+                    accessibilityIdPrefix: interactor.title.stateRelay.value.value?.text ?? ""
+                )
                 setupBitPay(on: presenter)
                 return .lineItem(presenter)
             }

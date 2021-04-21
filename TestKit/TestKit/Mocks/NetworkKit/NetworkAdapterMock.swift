@@ -17,7 +17,7 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorErrorNew> {
+    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError> {
         decode()
     }
     
@@ -36,17 +36,17 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
     
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew> {
+    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
         decode()
     }
     
     private func decode<ResponseType: Decodable>(
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew> {
+    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
         guard
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(NetworkCommunicatorErrorNew.payloadError(.emptyData))
+            return .failure(NetworkCommunicatorError.payloadError(.emptyData))
         }
         return .just(fixture)
     }
@@ -57,7 +57,7 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(ErrorResponseType.from(NetworkCommunicatorErrorNew.payloadError(.emptyData)))
+            return .failure(ErrorResponseType.from(NetworkCommunicatorError.payloadError(.emptyData)))
         }
         return .just(fixture)
     }

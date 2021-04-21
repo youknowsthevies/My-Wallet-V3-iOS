@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
@@ -26,7 +27,11 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
 
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         repository.activeAccounts
-            .map { accounts in accounts.map(\.publicKey) }
+            .map { accounts in
+                accounts.map { account in
+                    APIWalletModel(publicKey: account.publicKey, type: account.derivationType)
+                }
+            }
             .flatMap(weak: self) { (self, addresses) -> Single<PageModel> in
                 self.client.multiAddress(for: addresses)
                     .map(\.transactions)

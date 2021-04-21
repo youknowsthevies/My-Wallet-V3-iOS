@@ -27,7 +27,7 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
 
     var balance: Single<MoneyValue> {
         balanceService
-            .balance(for: id)
+            .balance(for: .init(publicKey: id, type: derivationType))
             .moneyValue
     }
 
@@ -71,8 +71,10 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI
+    private let derivationType: DerivationType
 
     init(id: String,
+         derivationType: DerivationType,
          label: String?,
          isDefault: Bool,
          hdAccountIndex: Int,
@@ -80,6 +82,7 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
          bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.id = id
+        self.derivationType = derivationType
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
         self.isDefault = isDefault
         self.hdAccountIndex = hdAccountIndex

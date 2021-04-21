@@ -103,17 +103,17 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
     }
     
     // MARK: - Properties
-
-    private let communicator: NetworkCommunicatorAPI
+    
+    private let networkAdapter: NetworkAdapterAPI
     private let repository: ExchangeAccountRepositoryAPI
     private let urlPrefix: String
         
     // MARK: - Setup
     
     init(repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
-         communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          urlPrefix: String = BlockchainAPI.shared.retailCoreUrl) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.repository = repository
         self.urlPrefix = urlPrefix
     }
@@ -131,27 +131,29 @@ final class ExchangeAddressFetcher: ExchangeAddressFetching {
                 return ()
             }
             .flatMap(weak: self) { (self, token) -> Single<AddressResponseBody> in
-                self.communicator.perform(
-                    request: NetworkRequest(
-                        endpoint: URL(string: url)!,
-                        method: .put,
-                        body: try? JSONEncoder().encode(data),
-                        authenticated: true
+                self.networkAdapter
+                    .perform(
+                        request: NetworkRequest(
+                            endpoint: URL(string: url)!,
+                            method: .put,
+                            body: try? JSONEncoder().encode(data),
+                            authenticated: true
+                        ),
+                        errorResponseType: NabuNetworkError.self
                     )
-                )
             }
             // Catch two factor authentication errors and throw them, in case of other errors just rethrow
             .catchError { error in
-                guard let networkError = error as? NetworkCommunicatorError else {
+                guard let nabuNetworkError = error as? NabuNetworkError else {
                     throw error
                 }
-                if case let .serverError(serverError) = networkError,
-                        let nabuError = serverError.nabuError,
-                        nabuError.code == .bad2fa {
-                    throw FetchingError.twoFactorRequired
-                } else {
-                    throw networkError
+                guard case .nabuError(let nabuError) = nabuNetworkError else {
+                    throw nabuNetworkError
                 }
+                guard nabuError.code == .bad2fa else {
+                    throw nabuNetworkError
+                }
+                throw FetchingError.twoFactorRequired
             }
             .map { $0.address }
     }

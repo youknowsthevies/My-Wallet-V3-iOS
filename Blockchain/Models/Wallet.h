@@ -276,34 +276,6 @@
 - (void)signBitcoinCashPaymentWithSecondPassword:(nullable NSString *)secondPassword successBlock:(void (^)(NSString *_Nonnull))transactionHex error:(void (^ _Nonnull)(NSString *_Nonnull))error;
 - (void)sendPaymentWithListener:(TransactionProgressListeners*)listener secondPassword:(NSString *)secondPassword;
 
-/// Call this method to build an Exchange order.
-/// It constructs and stores a payment object with a given CryptoCurrency, to, from, and amount (properties of OrderTransactionLegacy).
-/// To send the order, call sendOrderTransaction:completion:success:error:cancel.
-///
-/// - Parameters:
-///   - orderTransaction: the object containing the payment information (AssetType, to, from, and amount)
-///   - completion: handler called when the payment is successfully built
-///   - error: handler called when an error occurs while building the payment
-- (void)createOrderPaymentWithOrderTransaction:(OrderTransactionLegacy * _Nonnull)orderTransaction
-                                    completion:(void (^ _Nonnull)(void))completion
-                                       success:(void (^ _Nonnull)(NSDictionary * _Nonnull))success
-                                         error:(void (^ _Nonnull)(NSDictionary * _Nonnull))error;
-
-/// Sign and publish a transaction that was built by createOrderPaymentWithOrderTransaction:completion:success:error.
-/// This is the last step in sending an exchange order via Homebrew.
-///
-/// - Parameters:
-///   - legacyAssetType: used to determine the type of payment to use
-///   - completion: handler called when the payment is successfully sent
-///   - error: handler called when an error occurs while sending the payment
-///   - cancel: handler called when the payment is cancelled (e.g., when an intermediate screen such as second password is dismissed)
-- (void)sendOrderTransaction:(LegacyAssetType)legacyAssetType
-              secondPassword:(NSString* _Nullable)secondPassword
-                  completion:(void (^ _Nonnull)(void))completion
-                     success:(void (^ _Nonnull)(NSString *_Nonnull))success
-                       error:(void (^ _Nonnull)(NSString *_Nonnull))error
-                      cancel:(void (^ _Nonnull)(void))cancel;
-
 # pragma mark - Wallet Recovery
 
 /// Recovers wallet associated with mnemonic passphrase, setting to it the given email and password and a new GUID.

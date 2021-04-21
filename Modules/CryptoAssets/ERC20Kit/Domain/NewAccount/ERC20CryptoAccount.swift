@@ -52,17 +52,14 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
 
     private let balanceFetching: SingleAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
-    private let featureFetcher: FeatureConfiguring
     
     init(id: String,
          balanceProviding: BalanceProviding = resolve(),
-         exchangeProviding: ExchangeProviding = resolve(),
-         featureFetcher: FeatureConfiguring = resolve()) {
+         exchangeProviding: ExchangeProviding = resolve()) {
         self.id = id
         self.label = Token.assetType.defaultWalletName
         self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceFetching = balanceProviding[Token.assetType.currency].wallet
-        self.featureFetcher = featureFetcher
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {

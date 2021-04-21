@@ -45,10 +45,14 @@ struct DisplayBundle {
     }
 
     struct AccessibilityIdentifiers {
+        let topSelectionFromIdentifier: String
+        let topSelectionToIdentifier: String
         let bottomAuxiliaryItemSeparatorTitle: String
 
-        init(bottomAuxiliaryItemSeparatorTitle: String) {
+        init(bottomAuxiliaryItemSeparatorTitle: String, topSelectionFromIdentifier: String, topSelectionToIdentifier: String) {
             self.bottomAuxiliaryItemSeparatorTitle = bottomAuxiliaryItemSeparatorTitle
+            self.topSelectionFromIdentifier = topSelectionFromIdentifier
+            self.topSelectionToIdentifier = topSelectionToIdentifier
         }
     }
 
