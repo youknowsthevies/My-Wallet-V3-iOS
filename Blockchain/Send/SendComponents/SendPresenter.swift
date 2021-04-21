@@ -219,6 +219,7 @@ final class SendPresenter {
                 }
             }
         )
+        .with(supportForCameraRoll: true)
         router.presentQRScan(using: builder)
     }
     

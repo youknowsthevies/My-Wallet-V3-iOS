@@ -37,6 +37,7 @@ final class PasswordScreenPresenter {
     let buttonViewModel = ButtonViewModel.primary(
         with: LocalizationConstants.continueString
     )
+    let leadingButton: Screen.Style.LeadingButton
     
     // MARK: - Injected
     
@@ -71,15 +72,22 @@ final class PasswordScreenPresenter {
         
         let title: String
         switch interactor.type {
+        case .login:
+            title = LocalizationConstants.Authentication.DefaultPasswordScreen.title
+            description = LocalizationConstants.Authentication.DefaultPasswordScreen.description
+            leadingButton = .none
         case .importPrivateKey:
             title = LocalizationConstants.Authentication.ImportKeyPasswordScreen.title
             description = LocalizationConstants.Authentication.ImportKeyPasswordScreen.description
+            leadingButton = .close
         case .actionRequiresPassword:
             title = LocalizationConstants.Authentication.DefaultPasswordScreen.title
             description = LocalizationConstants.Authentication.DefaultPasswordScreen.description
+            leadingButton = .close
         case .etherService:
             title = LocalizationConstants.Authentication.EtherPasswordScreen.title
             description = LocalizationConstants.Authentication.EtherPasswordScreen.description
+            leadingButton = .close
         }
         
         titleStyle = Screen.Style.TitleView.text(value: title)

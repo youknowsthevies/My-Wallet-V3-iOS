@@ -6,15 +6,17 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import RxSwift
+import Combine
+import NetworkKit
+import ToolKit
 
 @testable import PlatformKit
 
 final class NabuAuthenticationExecutorMock: NabuAuthenticationExecutorAPI {
     
-    var token: Single<String> { fatalError("TODO") }
-
-    func authenticate<Response>(singleFunction: @escaping (String) -> Single<Response>) -> Single<Response> {
-        fatalError("TODO")
+    func authenticate(
+        _ networkResponsePublisher: @escaping NetworkResponsePublisher
+    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+        unimplemented()
     }
 }

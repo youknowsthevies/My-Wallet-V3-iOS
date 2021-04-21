@@ -14,6 +14,10 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+enum BitpayServiceError: Error {
+    case invalidTransactionSize
+}
+
 final class BitpayService: BitpayServiceProtocol {
     
     // MARK: Public Properties
@@ -81,10 +85,7 @@ final class BitpayService: BitpayServiceProtocol {
                        "BP_PARTNER": "Blockchain",
                        "BP_PARTNER_VERSION": "V6.28.0"]
         
-        guard let url = URL(string: bitpayUrl + invoicePath + invoiceID) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
-        
+        let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
         return networkAdapter.perform(request: request)
     }
@@ -96,9 +97,7 @@ final class BitpayService: BitpayServiceProtocol {
                        HttpHeaderField.contentType: "application/payment",
                        "BP_PARTNER": "Blockchain",
                        "BP_PARTNER_VERSION": "V6.28.0"]
-        guard let url = URL(string: bitpayUrl + invoicePath + invoiceID) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
+        let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
         return networkAdapter.perform(request: request).do(onSuccess: { [weak self] _ in
             self?.recorder.record(event: AnalyticsEvents.Bitpay.bitpayPaymentSuccess)
@@ -115,9 +114,7 @@ final class BitpayService: BitpayServiceProtocol {
                        HttpHeaderField.contentType: "application/payment-request",
                        "BP_PARTNER": "Blockchain",
                        "BP_PARTNER_VERSION": "V6.28.0"]
-        guard let url = URL(string: bitpayUrl + invoicePath + invoiceID) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
+        let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(payload), headers: headers)
         return networkAdapter.perform(request: request)
     }
@@ -161,14 +158,9 @@ final class BitpayService: BitpayServiceProtocol {
     func getRawPaymentRequest(for invoiceId: String) -> Single<ObjcCompatibleBitpayObject> {
         let headers = [HttpHeaderField.accept: "application/payment-request",
                        HttpHeaderField.contentType: HttpHeaderValue.json]
-        
-        guard let url = URL(string: bitpayUrl + invoicePath + invoiceId) else {
-            return Single.error(NetworkError.generic(message: nil))
-        }
-        
+        let url = URL(string: bitpayUrl + invoicePath + invoiceId)!
         let request = NetworkRequest(endpoint:url, method: .get, headers: headers, contentType: .json)
         let networkReq: Single<BitpayPaymentRequest> = networkAdapter.perform(request: request)
-        
         return networkReq
             .map {
                 let expiresLocalTime = self.UTCToLocal(date: $0.expires)

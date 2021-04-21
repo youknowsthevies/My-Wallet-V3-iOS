@@ -36,20 +36,27 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     
     // MARK: - LegacyWalletAPI
 
-    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy,
-                            completion: @escaping () -> Void,
-                            success: @escaping ([AnyHashable : Any]) -> Void,
-                            error: @escaping ([AnyHashable : Any]) -> Void) {
-        error([:])
+    func createOrderPayment(
+        orderTransaction: OrderTransactionLegacy,
+        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+    ) {
+        completion(.success([:]))
     }
 
-    func sendOrderTransaction(_ legacyAssetType: LegacyAssetType, secondPassword: String?, completion: @escaping () -> Void, success: @escaping (String) -> Void, error: @escaping (String) -> Void, cancel: @escaping () -> Void) {
-        error("Not implemented")
+    func sendOrderTransaction(
+        _ legacyAssetType: LegacyAssetType,
+        secondPassword: String?,
+        completion: @escaping (Result<String, Wallet.SendOrderError>) -> Void
+    ) {
+        completion(.success(""))
     }
         
     var receiveAddress: String = "ReceiveAddress"
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
         receiveAddress
+    }
+
+    func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
     }
     
     // MARK: - LegacyEthereumWalletProtocol
@@ -220,12 +227,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     var mnemonic: Maybe<String> {
         mnemonicMaybe
     }
-    
-    var mnemonicForcePromptMaybe = Maybe.just("")
-    var mnemonicForcePrompt: Maybe<String> {
-        mnemonicForcePromptMaybe
-    }
-    
+
     var mnemonicPromptingIfNeededMaybe = Maybe.just("")
     var mnemonicPromptingIfNeeded: Maybe<String> {
         mnemonicPromptingIfNeededMaybe

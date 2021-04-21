@@ -73,10 +73,10 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     private let completed: ((Result<P.Success, P.Failure>) -> Void)
     private let deepLinkQRCodeRouter: DeepLinkQRCodeRouter
 
-    
     init?(parser: P,
           additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
           textViewModel: QRCodeScannerTextViewModel,
+          supportsCameraRoll: Bool,
           scanner: QRCodeScannerProtocol,
           completed: CompletionHandler?,
           closeHandler: (() -> Void)? = nil) {
@@ -95,7 +95,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         self.scanner = scanner
         self.completed = completed
         self.closeHandler = closeHandler
-        self.overlayViewModel = .init(supportsCameraRoll: parser is AddressQRCodeParser)
+        self.overlayViewModel = .init(supportsCameraRoll: supportsCameraRoll)
         self.scanner.delegate = self
     }
     
@@ -136,6 +136,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
 
 extension QRCodeScannerViewModel: QRCodeScannerDelegate {
     func scanComplete(with result: Result<String, QRScannerError>) {
+        overlayViewModel.scanSuccess.accept(result.isSuccess)
         scanComplete?(result)
     }
     

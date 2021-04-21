@@ -40,8 +40,7 @@ class PinScreenPresenterTests: XCTestCase {
 
     // Tests a standard authentication case on login
     func testAuthenticationSuccessOnLogin() {
-        let box = UnretainedContentBox(flowProvider)
-        let flow = PinRouting.Flow.authenticate(from: .background(flowProvider: box), logoutRouting: {})
+        let flow = PinRouting.Flow.authenticate(from: .background, logoutRouting: {})
         let useCase = PinScreenUseCase.authenticateOnLogin
         let interactor = MockPinInteractor()
         let forward: PinRouting.RoutingType.Forward = { input in
@@ -67,8 +66,7 @@ class PinScreenPresenterTests: XCTestCase {
     
     // Tests a case where the pin inserted is detected as incorrect by the interactor
     func testAuthenticationPinIncorrectOnLogin() {
-        let box = UnretainedContentBox(flowProvider)
-        let flow = PinRouting.Flow.authenticate(from: .background(flowProvider: box), logoutRouting: {})
+        let flow = PinRouting.Flow.authenticate(from: .background, logoutRouting: {})
         let useCase = PinScreenUseCase.authenticateOnLogin
         let interactor = MockPinInteractor(expectedError: .incorrectPin("pin incorrect"))
         let forward: PinRouting.RoutingType.Forward = { input in

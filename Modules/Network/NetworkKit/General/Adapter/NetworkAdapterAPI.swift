@@ -73,7 +73,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameter request: the request to perform
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew>
+    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError>
     
     /// Performs a request and maps the response or error response
     /// - Parameters:
@@ -91,7 +91,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     func perform<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew>
+    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError>
     
     /// Performs a request and maps the response or error response
     /// - Parameters:
@@ -128,7 +128,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorErrorNew>
+    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError>
     
     /// Performs a request and if there is content maps the response and always maps the error type
     /// - Parameters:
@@ -178,12 +178,11 @@ extension NetworkAdapterAPI {
         
         func performPublisher(
             request: NetworkRequest
-        ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew> {
+        ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
             perform(request: request)
         }
         
         return performPublisher(request: request)
-            .mapToLegacyError()
             .asObservable()
             .take(1)
             .asSingle()
@@ -225,12 +224,11 @@ extension NetworkAdapterAPI {
         
         func performOptionalPublisher(
             request: NetworkRequest
-        ) -> AnyPublisher<ResponseType?, NetworkCommunicatorErrorNew> {
+        ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError> {
             performOptional(request: request, responseType: ResponseType.self)
         }
 
         return performOptionalPublisher(request: request)
-            .mapToLegacyError()
             .asObservable()
             .take(1)
             .asSingle()
@@ -267,7 +265,7 @@ extension NetworkAdapterAPI {
     func perform<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorErrorNew> {
+    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
         perform(request: request)
     }
     

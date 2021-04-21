@@ -44,26 +44,33 @@ Then the project ruby dependencies (`fastlane`, etc.):
 
 ## Install JS Dependencies
 
-Install a node version manager such as [nvm](https://github.com/creationix/nvm) or [n](https://github.com/tj/n).
+You will be installing:
+    - [nvm](https://github.com/nvm-sh/nvm.git)
+    - [node](https://nodejs.org/)
+    - [yarn](https://github.com/yarnpkg/yarn)
 
-    # Install Yarn dependency
+### Install nvm and Node
+
+Check [nvm installaton instructions](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+    $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+
+Install the correct node version:
+
+    $ nvm install 8.17.0
+    $ nvm use 8.17.0
+
+### Install Yarn
     $ brew install yarn
 
-    # Install/Use node v7.9.0
-    $ npm install -g n
-    $ n v7.9.0
-
-    # Use npm 5.6.0
-    $ npm install -g npm@5.6.0
-
-    # Checkout ios branch from Submodules/My-Wallet-V3
+### Checkout ios branch from Submodules/My-Wallet-V3
     $ cd Submodules/My-Wallet-V3
     $ git checkout ios
     $ cd ../..
 
-
-    # Install and build js files
+### Install and build js files
     $ sh scripts/install-js.sh && sh scripts/build-js.sh
+
 
 ## Prepare OpenSSL
 

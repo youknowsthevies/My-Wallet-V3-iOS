@@ -39,13 +39,13 @@ final class SwapClient: SwapClientAPI {
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -79,7 +79,12 @@ final class SwapClient: SwapClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
+
     }
     
     func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
@@ -99,7 +104,12 @@ final class SwapClient: SwapClientAPI {
             parameters: parameters,
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
+
     }
     
 }

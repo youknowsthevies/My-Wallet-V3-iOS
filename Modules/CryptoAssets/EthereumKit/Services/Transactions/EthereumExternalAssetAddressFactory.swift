@@ -11,9 +11,12 @@ import RxSwift
 import TransactionKit
 
 final class EthereumExternalAssetAddressFactory: CryptoReceiveAddressFactory {
-    func makeExternalAssetAddress(address: String,
-                                  label: String,
-                                  onTxCompleted: @escaping (TransactionResult) -> Completable) throws -> CryptoReceiveAddress {
+    
+    func makeExternalAssetAddress(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) throws -> CryptoReceiveAddress {
         EthereumReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted)
     }
 }

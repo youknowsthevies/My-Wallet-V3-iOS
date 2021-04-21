@@ -30,16 +30,13 @@ final class EthereumAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: EthereumWalletAccountRepositoryAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
-        self.internalFeatureFlag = internalFeatureFlag
     }
 
     func initialize() -> Completable {

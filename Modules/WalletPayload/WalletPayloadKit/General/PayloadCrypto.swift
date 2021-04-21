@@ -96,7 +96,7 @@ extension PayloadCryptoAPI {
 final class PayloadCrypto: PayloadCryptoAPI {
     
     private enum Constants {
-        static let supportedEncryptionVersion = 3
+        static let supportedEncryptionVersion = 4
         static let saltBytes = 16
         static let keyBitLen: UInt = 256
         static let blockBitLen = 128
@@ -230,7 +230,7 @@ final class PayloadCrypto: PayloadCryptoAPI {
             )
         )
         .flatMap { wallet -> Result<String, PayloadCryptoError> in
-            decryptV2V3(wallet: wallet)
+            decryptV2V3V4(wallet: wallet)
         }
     }
     
@@ -241,8 +241,8 @@ final class PayloadCrypto: PayloadCryptoAPI {
         return .success(wallet)
     }
     
-    /// `V2`/ `V3`: `CBC`, `ISO10126`, iterations in wrapper
-    private func decryptV2V3(wallet: WalletData) -> Result<String, PayloadCryptoError> {
+    /// `V2`/ `V3` / `V4`: `CBC`, `ISO10126`, iterations in wrapper
+    private func decryptV2V3V4(wallet: WalletData) -> Result<String, PayloadCryptoError> {
         decrypt(
             data: wallet.payload.payload,
             with: wallet.password,

@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
-import DIKit
 
 @objc class AppFeatureConfigurator: NSObject, FeatureConfiguring {
     
@@ -70,61 +70,64 @@ extension AppFeatureConfigurator: FeatureFetching {
     ///
     /// - Parameter feature: the feature key
     /// - Returns: the decodable object wrapped in a `RxSwift.Single`
-    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
-    /// of the feature is missing or another error if the decoding has failed.
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing
+    /// or a Decoding error if decoding fails.
     func fetch<Feature: Decodable>(for key: AppFeature) -> Single<Feature> {
-        guard let keyRawValue = key.remoteEnabledKey else {
-            return .error(ConfigurationError.missingKeyRawValue)
-        }
-        let data = remoteConfig.configValue(forKey: keyRawValue).dataValue
-        do {
-            let feature = try data.decode(to: Feature.self)
-            return .just(feature)
-        } catch {
-            return .error(error)
-        }
+        fetchConfigValue(for: key)
+            .map(\.dataValue)
+            .map { data -> Feature in
+                try data.decode(to: Feature.self)
+            }
     }
     
     /// Returns an expected string for the provided feature key
     ///
     /// - Parameter feature: the feature key
     /// - Returns: the string value wrapped in a `RxSwift.Single`
-    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
-    /// is missing or `ConfigurationError.missingValue` if the value itself is missing.
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing
+    /// or `ConfigurationError.missingValue` if the value itself is missing.
     func fetchString(for key: AppFeature) -> Single<String> {
-        guard let keyRawValue = key.remoteEnabledKey else {
-            return .error(ConfigurationError.missingKeyRawValue)
-        }
-        guard let value = remoteConfig.configValue(forKey: keyRawValue).stringValue else {
-            return .error(ConfigurationError.missingValue)
-        }
-        return .just(value)
+        fetchConfigValue(for: key)
+            .map(\.stringValue)
+            .map { stringValue -> String in
+                guard let stringValue = stringValue else {
+                    throw ConfigurationError.missingValue
+                }
+                return stringValue
+            }
     }
     
     /// Returns an expected integer for the provided feature key
     ///
     /// - Parameter feature: the feature key
     /// - Returns: the integer value wrapped in a `RxSwift.Single`
-    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
-    /// is missing or `ConfigurationError.missingValue` if the value itself is missing.
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing.
     func fetchInteger(for key: AppFeature) -> Single<Int> {
-        guard let keyRawValue = key.remoteEnabledKey else {
-            return .error(ConfigurationError.missingKeyRawValue)
-        }
-        let number = remoteConfig.configValue(forKey: keyRawValue).numberValue.intValue
-        return .just(number)
+        fetchConfigValue(for: key)
+            .map(\.numberValue)
+            .map(\.intValue)
     }
     
     /// Returns an expected boolean for the provided feature key
     ///
     /// - Parameter feature: the feature key
     /// - Returns: The `Bool` value wrapped in a `RxSwift.Single`
-    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing.
     func fetchBool(for key: AppFeature) -> Single<Bool> {
+        fetchConfigValue(for: key)
+            .map(\.boolValue)
+    }
+
+    /// Returns the `RemoteConfigValue` for the given `AppFeature`
+    ///
+    /// - Parameter feature: the feature key
+    /// - Returns: Stream emitting a single `RemoteConfigValue`
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing.
+    private func fetchConfigValue(for key: AppFeature) -> Single<RemoteConfigValue> {
         guard let keyRawValue = key.remoteEnabledKey else {
             return .error(ConfigurationError.missingKeyRawValue)
         }
-        return .just(remoteConfig.configValue(forKey: keyRawValue).boolValue)
+        return .just(remoteConfig.configValue(forKey: keyRawValue))
     }
 }
 
@@ -135,8 +138,8 @@ extension AppFeatureConfigurator: FeatureVariantFetching {
     ///
     /// - Parameter feature: the feature key
     /// - Returns: the `FeatureTestingVariant` value wrapped in a `RxSwift.Single`
-    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value
-    /// is missing or `ConfigurationError.missingValue` if the value itself is missing.
+    /// - Throws: An `ConfigurationError.missingKeyRawValue` in case the key raw value is missing
+    /// or `ConfigurationError.missingValue` if the value itself is missing.
     func fetchTestingVariant(for key: AppFeature) -> Single<FeatureTestingVariant> {
         fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? .variantA }

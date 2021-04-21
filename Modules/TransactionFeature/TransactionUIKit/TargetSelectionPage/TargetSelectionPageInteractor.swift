@@ -75,13 +75,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             messageRecorder: messageRecorder
         )
 
-        cryptoAddressViewModel
-            .tapRelay
-            .bindAndCatch(weak: self) { (self) in
-                self.targetSelectionPageModel.process(action: .qrScannerButtonTapped)
-            }
-            .disposeOnDeactivate(interactor: self)
-
         // This returns an observable from the TransactionModel and its state.
         // Since the TargetSelection has it's own model/state/actions we need to intercept when the back button
         // of the TransactionFlow occurs and update the TargetSelection state
@@ -106,18 +99,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
 
-        /// Listens to the `step` which
-        /// triggers routing to a new screen or ending the flow
-        targetSelectionPageModel
-            .state
-            .distinctUntilChanged(\.step)
-            .withLatestFrom(sourceAccount) { ($0, $1) }
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe { [weak self] (state, sourceAccount) in
-                self?.handleStateChange(newState: state, sourceAccount: sourceAccount)
-            }
-            .disposeOnDeactivate(interactor: self)
-        
         /// Any text coming from the `State` we want to bind
         /// to the `cryptoAddressViewModel` textRelay.
         targetSelectionPageModel

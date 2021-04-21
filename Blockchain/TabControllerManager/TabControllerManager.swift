@@ -14,6 +14,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import RxSwift
 import ToolKit
 import TransactionUIKit
 
@@ -39,17 +40,22 @@ final class TabControllerManager: NSObject {
     private let sendReceiveCoordinator: SendReceiveCoordinator
     private let featureConfigurator: FeatureConfiguring
     private let internalFeatureFlag: InternalFeatureFlagServiceAPI
+    private let coincore: Coincore
+    private let disposeBag = DisposeBag()
+    @LazyInject private var walletManager: WalletManager
 
     init(sendControllerManager: SendControllerManager = resolve(),
          sendReceiveCoordinator: SendReceiveCoordinator = resolve(),
          analyticsEventRecorder: AnalyticsEventRecording = resolve(),
          featureConfigurator: FeatureConfiguring = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
+         coincore: Coincore = resolve()) {
         self.sendControllerManager = sendControllerManager
         self.sendReceiveCoordinator = sendReceiveCoordinator
         self.analyticsEventRecorder = analyticsEventRecorder
         self.featureConfigurator = featureConfigurator
         self.internalFeatureFlag = internalFeatureFlag
+        self.coincore = coincore
         tabViewController = TabViewController.makeFromStoryboard()
         super.init()
         tabViewController.delegate = self
@@ -97,14 +103,42 @@ final class TabControllerManager: NSObject {
             index: Constants.Navigation.tabSwap
         )
     }
-    
+
+    private var isSendP2Enabled: Bool {
+        internalFeatureFlag.isEnabled(.sendP2)
+            || featureConfigurator.configuration(for: .sendP2).isEnabled
+            || walletManager.wallet.didUpgradeToV4
+    }
+
     private func loadSend() {
-        guard sendP2ViewController == nil else { return }
-        let router = SendRootBuilder().build()
-        sendP2ViewController = router.viewControllable.uiviewController
-        sendRouter = router
-        router.interactable.activate()
-        router.load()
+        switch isSendP2Enabled {
+        case true:
+            guard sendP2ViewController == nil else { return }
+            let router = SendRootBuilder().build()
+            sendP2ViewController = router.viewControllable.uiviewController
+            sendRouter = router
+            router.interactable.activate()
+            router.load()
+        case false:
+            guard sendViewController == nil else { return }
+            sendViewController = sendReceiveCoordinator.builder.send()
+        }
+    }
+    private func setSendAsActive() {
+        switch isSendP2Enabled {
+        case true:
+            tabViewController.setActiveViewController(
+                sendP2ViewController,
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        case false:
+            tabViewController.setActiveViewController(
+                UINavigationController(rootViewController: sendViewController),
+                animated: true,
+                index: Constants.Navigation.tabSend
+            )
+        }
     }
     
     func send(from account: BlockchainAccount) {
@@ -115,23 +149,24 @@ final class TabControllerManager: NSObject {
         sendRouter.load()
         sendRouter.routeToSend(sourceAccount: account as! CryptoAccount)
     }
+    
+    func send(from account: BlockchainAccount, target: TransactionTarget) {
+        if sendRouter == nil {
+            sendRouter = SendRootBuilder().build()
+        }
+        sendRouter.interactable.activate()
+        sendRouter.load()
+        sendRouter.routeToSend(sourceAccount: account as! CryptoAccount, destination: target)
+    }
 
     func showSend(cryptoCurrency: CryptoCurrency) {
         loadSend()
-        tabViewController.setActiveViewController(
-            sendP2ViewController,
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        setSendAsActive()
     }
 
     func showSend() {
         loadSend()
-        tabViewController.setActiveViewController(
-            sendP2ViewController,
-            animated: true,
-            index: Constants.Navigation.tabSend
-        )
+        setSendAsActive()
     }
 
     func showReceive() {
@@ -165,11 +200,11 @@ final class TabControllerManager: NSObject {
     @objc func transferFundsToDefaultAccount(from address: String) {
         UIView.animate(
             withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
+            animations: {
+                self.showSend()
             },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.transferFundsToDefaultAccount(from: address)
+            completion: { _ in
+                self.sendControllerManager.transferFundsToDefaultAccount(from: address)
             }
         )
     }
@@ -179,11 +214,11 @@ final class TabControllerManager: NSObject {
     func setupTransferAllFunds() {
         UIView.animate(
             withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
+            animations: {
+                self.showSend()
             },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.setupTransferAllFunds()
+            completion: { _ in
+                self.sendControllerManager.setupTransferAllFunds()
             }
         )
     }
@@ -191,25 +226,38 @@ final class TabControllerManager: NSObject {
     // MARK: BitPay
 
     func setupBitpayPayment(from url: URL) {
-        UIView.animate(
-            withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
-            },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.setupBitpayPayment(from: url)
-            }
+        let data = url.absoluteString
+        guard let asset = coincore[.bitcoin] else { return }
+        let transactionPair = Single.zip(
+            BitPayInvoiceTarget.make(from: data, asset: .bitcoin),
+            asset.defaultAccount
         )
+        BitPayInvoiceTarget
+            .isBitcoin(data)
+            .andThen(transactionPair)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] target, defaultAccount in
+                UIView.animate(
+                    withDuration: 0.3,
+                    animations: { [weak self] in
+                        self?.showSend()
+                    },
+                    completion: { [weak self] _ in
+                        self?.send(from: defaultAccount, target: target)
+                    }
+                )
+            })
+            .disposed(by: disposeBag)
     }
 
     func setupBitcoinPaymentFromURLHandler(with amount: String?, address: String) {
         UIView.animate(
             withDuration: 0.3,
-            animations: { [weak self] in
-                self?.showSend()
+            animations: {
+                self.showSend()
             },
-            completion: { [weak self] _ in
-                self?.sendControllerManager.setupBitcoinPayment(amount: amount, address: address)
+            completion: { _ in
+                self.sendControllerManager.setupBitcoinPayment(amount: amount, address: address)
             }
         )
     }
@@ -301,7 +349,6 @@ extension TabControllerManager: TabViewControllerDelegate {
     // MARK: - View Life Cycle
 
     func tabViewControllerViewDidLoad(_ tabViewController: TabViewController) {
-        let walletManager = WalletManager.shared
         walletManager.settingsDelegate = self
         walletManager.sendBitcoinDelegate = self.sendControllerManager
         walletManager.sendEtherDelegate = self

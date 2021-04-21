@@ -49,6 +49,7 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
                 model.process(action: .returnToPreviousStep)
             }
         )
+        .with(supportForCameraRoll: true)
         
         guard let viewController = builder.build() else { return }
         

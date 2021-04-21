@@ -36,8 +36,14 @@ public final class LineItemTableViewCell: UITableViewCell {
                 .drive(rx.backgroundColor)
                 .disposed(by: disposeBag)
 
-            presenter.image
-                .map { $0 == nil ? 0 : LineItemTableViewCell.imageViewWidth }
+            presenter.imageWidth
+                .withLatestFrom(presenter.image) { ($0, $1) }
+                .map { (requestWidth, image) -> CGFloat in
+                    guard image != nil else {
+                        return 0
+                    }
+                    return requestWidth
+                }
                 .drive(imageWidthConstraint.rx.constant)
                 .disposed(by: disposeBag)
 

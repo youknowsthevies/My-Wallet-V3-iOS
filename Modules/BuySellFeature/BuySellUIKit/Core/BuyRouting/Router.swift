@@ -40,7 +40,6 @@ public final class Router: RouterAPI {
     private let settingsService: FiatCurrencySettingsServiceAPI
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let alertViewPresenter: AlertViewPresenterAPI
     
     private var cardRouter: CardRouter!
@@ -64,7 +63,6 @@ public final class Router: RouterAPI {
                 paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
                 settingsService: CompleteSettingsServiceAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
                 alertViewPresenter: AlertViewPresenterAPI = resolve(),
                 builder: Buildable,
                 kycRouter: KYCRouterAPI,
@@ -76,7 +74,6 @@ public final class Router: RouterAPI {
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
         self.builder = builder
-        self.internalFeatureFlagService = internalFeatureFlagService
         
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,

@@ -98,4 +98,13 @@ extension Wallet {
     }
 }
 
-extension Wallet: WalletUpgradingAPI {  }
+extension Wallet {
+
+    /// If the wallet was already upgraded to V4.
+    var didUpgradeToV4: Bool {
+        guard isInitialized() else {
+            return false
+        }
+        return context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.isUpgradedToV4")?.toBool() ?? false
+    }
+}

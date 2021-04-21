@@ -18,25 +18,30 @@ final class BitcoinAsset: CryptoAsset {
 
     var defaultAccount: Single<SingleAccount> {
         repository.defaultAccount
-            .map { BitcoinCryptoAccount(id: $0.publicKey, label: $0.label, isDefault: true, hdAccountIndex: $0.index) }
+            .map { account in
+                BitcoinCryptoAccount(
+                    id: account.publicKey,
+                    derivationType: account.derivationType,
+                    label: account.label,
+                    isDefault: true,
+                    hdAccountIndex: account.index
+                )
+            }
     }
 
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinWalletAccountRepository
     private let errorRecorder: ErrorRecording
     private let addressValidator: BitcoinAddressValidatorAPI
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: BitcoinWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         addressValidator: BitcoinAddressValidatorAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         addressValidator: BitcoinAddressValidatorAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.addressValidator = addressValidator
-        self.internalFeatureFlag = internalFeatureFlag
    }
 
     func initialize() -> Completable {
@@ -143,6 +148,7 @@ final class BitcoinAsset: CryptoAsset {
                 accounts.map { account in
                     BitcoinCryptoAccount(
                         id: account.publicKey,
+                        derivationType: account.derivationType,
                         label: account.label,
                         isDefault: account.publicKey == defaultAccount.publicKey,
                         hdAccountIndex: account.index

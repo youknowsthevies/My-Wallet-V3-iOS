@@ -16,14 +16,12 @@ protocol LegacyBitcoinWalletProtocol: class {
     func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void)
     
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
-    
-    func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
 
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
 
     func saveBitcoinMemo(for transaction: String, memo: String?)
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError>
+    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError>
     
     func validateBitcoin(address: String) -> Bool
     
@@ -36,6 +34,11 @@ enum BitcoinReceiveAddressError: Error {
     case jsReturnedNil
     case jsValueNotString
     case jsValueEmptyString
+}
+
+enum BitcoinDerivation {
+    case `default`
+    case legacy
 }
 
 extension Wallet: LegacyBitcoinWalletProtocol {
@@ -69,11 +72,18 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         return result.toBool()
     }
 
-    func getBitcoinReceiveAddress(forXPub xpub: String) -> Result<String, BitcoinReceiveAddressError> {
+    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError> {
         guard isInitialized() else {
             return .failure(.uninitialized)
         }
-        let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\")"
+        let forceLegacy: String
+        switch derivation {
+        case .legacy:
+            forceLegacy = "true"
+        case .default:
+            forceLegacy = "false"
+        }
+        let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
         guard let jsResult = context.evaluateScript(function) else {
             return .failure(.jsReturnedNil)
         }
@@ -132,7 +142,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getDefaultBitcoinWalletIndexAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
@@ -176,7 +186,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getBitcoinWalletsAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"
@@ -199,7 +209,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getHDWalletAsync"
         let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS() {
+        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
             script = "\(function)(\(escapedSecondPassword))"
         } else {
             script = "\(function)()"

@@ -54,19 +54,36 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
                 StellarKeyDerivationInput(mnemonic: mnemonic)
             }
             .flatMap(weak: self) { (self, input) -> Single<StellarKeyPair> in
-                self.deriver.derive(input: input).single
+                self.derive(input: input)
             }
     }
     
     public func loadKeyPair() -> Maybe<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
-            .flatMap { [unowned self] mnemonic -> Maybe<StellarKeyPair> in
-                self.deriver.derive(input: StellarKeyDerivationInput(mnemonic: mnemonic)).maybe
+            .map { mnemonic in
+                StellarKeyDerivationInput(mnemonic: mnemonic)
+            }
+            .flatMap(weak: self) { (self, input) -> Maybe<StellarKeyPair> in
+                self.derive(input: input).asMaybe()
             }
     }
     
     // MARK: Private
+
+    private func derive(input: StellarKeyDerivationInput) -> Single<StellarKeyPair> {
+        Single
+            .create(weak: self) { (self, observer) -> Disposable in
+                switch self.deriver.derive(input: input) {
+                case .success(let success):
+                    observer(.success(success))
+                case .failure(let error):
+                    observer(.error(error))
+                }
+                return Disposables.create()
+            }
+            .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
+    }
     
     private func loadDefaultAccount() -> Maybe<WalletAccount> {
         guard let defaultAccount = defaultAccount else {
@@ -107,5 +124,6 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
             )
             return Disposables.create()
         }
+        .subscribeOn(MainScheduler.asyncInstance)
     }
 }

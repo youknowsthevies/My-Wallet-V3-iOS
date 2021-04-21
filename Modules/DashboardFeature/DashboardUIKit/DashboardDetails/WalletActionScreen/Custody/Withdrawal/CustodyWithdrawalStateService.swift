@@ -21,15 +21,6 @@ enum WithdrawalError: LocalizedError {
     case unknown
     case withdrawalLocked
 
-    init(error: NetworkCommunicatorError) {
-        switch error {
-        case .serverError(let error) where error.nabuError?.code == .some(.withdrawalLocked):
-            self = .withdrawalLocked
-        default:
-            self = .unknown
-        }
-    }
-
     var localizedTitle: String {
         switch self {
         case .unknown:

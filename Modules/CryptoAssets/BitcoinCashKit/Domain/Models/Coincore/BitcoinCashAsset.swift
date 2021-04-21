@@ -18,25 +18,30 @@ class BitcoinCashAsset: CryptoAsset {
 
     var defaultAccount: Single<SingleAccount> {
         repository.defaultAccount
-            .map { BitcoinCashCryptoAccount(id: $0.publicKey, label: $0.label, isDefault: true, hdAccountIndex: $0.index) }
+            .map { account in
+                BitcoinCashCryptoAccount(
+                    id: account.publicKey,
+                    derivationType: account.derivationType,
+                    label: account.label,
+                    isDefault: true,
+                    hdAccountIndex: account.index
+                )
+            }
     }
 
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinCashWalletAccountRepository
     private let errorRecorder: ErrorRecording
     private let addressValidator: BitcoinCashAddressValidatorAPI
-    private let internalFeatureFlag: InternalFeatureFlagServiceAPI
 
     init(repository: BitcoinCashWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         addressValidator: BitcoinCashAddressValidatorAPI = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve()) {
+         addressValidator: BitcoinCashAddressValidatorAPI = resolve()) {
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
         self.addressValidator = addressValidator
-        self.internalFeatureFlag = internalFeatureFlag
     }
 
     func initialize() -> Completable {
@@ -141,12 +146,13 @@ class BitcoinCashAsset: CryptoAsset {
                     .map { ($0, accounts) }
             }
             .map { (defaultAccount, accounts) -> [SingleAccount] in
-                accounts.map {
+                accounts.map { account in
                     BitcoinCashCryptoAccount(
-                        id: $0.publicKey,
-                        label: $0.label,
-                        isDefault: $0.publicKey == defaultAccount.publicKey,
-                        hdAccountIndex: $0.index
+                        id: account.publicKey,
+                        derivationType: account.derivationType,
+                        label: account.label,
+                        isDefault: account.publicKey == defaultAccount.publicKey,
+                        hdAccountIndex: account.index
                     )
                 }
             }

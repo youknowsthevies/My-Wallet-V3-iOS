@@ -29,14 +29,14 @@ final class ExchangeAccountsClient: ExchangeAccountsClientAPI {
     
     // MARK: - Properties
     
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
     
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
     
@@ -49,6 +49,10 @@ final class ExchangeAccountsClient: ExchangeAccountsClientAPI {
             body: try? JSONEncoder().encode(model),
             authenticated: true
         )!
-        return communicator.perform(request: request)
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
     }
 }

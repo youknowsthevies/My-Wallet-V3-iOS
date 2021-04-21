@@ -31,7 +31,7 @@ struct PinRouting {
             case foreground(parent: UnretainedContentBox<UIViewController>)
             
             /// Background app state that requires the user's authentication to access the app
-            case background(flowProvider: UnretainedContentBox<MainFlowProviding>)
+            case background
         }
         
         /// Change old pin code to a new one

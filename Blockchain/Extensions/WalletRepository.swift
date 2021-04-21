@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -94,15 +95,62 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 Single.zip(self.userId, self.offlineToken)
             }
             .map { payload -> (userId: String, offlineToken: String) in
-                guard let userId = payload.0 else {
+                guard let userId = payload.0, !userId.isEmpty else {
                     throw MissingCredentialsError.userId
                 }
-                guard let offlineToken = payload.1 else {
+                guard let offlineToken = payload.1, !offlineToken.isEmpty else {
                     throw MissingCredentialsError.offlineToken
                 }
                 return (userId, offlineToken)
             }
             .map { NabuOfflineTokenResponse(userId: $0.userId, token: $0.offlineToken) }
+    }
+    
+    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
+        let userIdPublisher = self.userIdPublisher
+        let offlineTokenPublisher = self.offlineTokenPublisher
+        return reactiveWallet.waitUntilInitializedSinglePublisher
+            .mapError()
+            .flatMap { [userIdPublisher, offlineTokenPublisher] _ -> AnyPublisher<(String?, String?), WalletError> in
+                Publishers.Zip(userIdPublisher, offlineTokenPublisher)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+            .replaceError(with: MissingCredentialsError.offlineToken)
+            .flatMap { userId, offlineToken -> AnyPublisher<(userId: String, offlineToken: String), MissingCredentialsError> in
+                guard let userId = userId else {
+                    return .failure(.userId)
+                }
+                guard let offlineToken = offlineToken else {
+                    return .failure(.offlineToken)
+                }
+                return .just((userId: userId, offlineToken: offlineToken))
+            }
+            .map(NabuOfflineTokenResponse.init)
+            .eraseToAnyPublisher()
+    }
+    
+    private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
+        let jsContext = self.jsContextProvider.jsContext
+        return Deferred {
+            Future { [jsContext] promise in
+                guard WalletManager.shared.wallet.isInitialized() else {
+                    promise(.failure(.notInitialized))
+                    return
+                }
+                guard let jsValue = jsContext.evaluateScript(JSSetter.offlineToken) else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !jsValue.isNull, !jsValue.isUndefined else {
+                    promise(.success(nil))
+                    return
+                }
+                promise(.success(jsValue.toString()))
+            }
+        }
+        .subscribe(on: DispatchQueue.main)
+        .eraseToAnyPublisher()
     }
             
     private var offlineToken: Single<String?> {
@@ -122,6 +170,29 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         .subscribeOn(jsScheduler)
     }
     
+    private var userIdPublisher: AnyPublisher<String?, WalletError> {
+        let jsContext = self.jsContextProvider.jsContext
+        return Deferred {
+            Future { [jsContext] promise in
+                guard WalletManager.shared.wallet.isInitialized() else {
+                    promise(.failure(.notInitialized))
+                    return
+                }
+                guard let jsValue = jsContext.evaluateScript(JSSetter.userId) else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !jsValue.isNull, !jsValue.isUndefined else {
+                    promise(.success(nil))
+                    return
+                }
+                promise(.success(jsValue.toString()))
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+    
     private var userId: Single<String?> {
         Single.deferred { [weak self] in
             guard WalletManager.shared.wallet.isInitialized() else {
@@ -139,21 +210,54 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         .subscribeOn(jsScheduler)
     }
     
-    private let jsScheduler = MainScheduler.instance
     private let settings: AppSettingsAPI
-
+    private let jsScheduler: SerialDispatchQueueScheduler
+    private let combineJSScheduler: DispatchQueue
+    
     private unowned let jsContextProvider: JSContextProviderAPI
     
     // MARK: - Setup
     
-    init(jsContextProvider: JSContextProviderAPI, settings: AppSettingsAPI, reactiveWallet: ReactiveWalletAPI) {
+    init(jsContextProvider: JSContextProviderAPI,
+         settings: AppSettingsAPI,
+         reactiveWallet: ReactiveWalletAPI,
+         jsScheduler: SerialDispatchQueueScheduler = MainScheduler.instance,
+         combineJSScheduler: DispatchQueue = DispatchQueue.main) {
         self.jsContextProvider = jsContextProvider
         self.settings = settings
         self.reactiveWallet = reactiveWallet
+        self.jsScheduler = jsScheduler
+        self.combineJSScheduler = combineJSScheduler
         super.init()
     }
     
     // MARK: - Wallet Setters
+    
+    func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError> {
+        let jsContext = self.jsContextProvider.jsContext
+        return Deferred {
+            Future { [jsContext] promise in
+                jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
+                )
+                jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.success(()))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
+                )
+                let userId = offlineTokenResponse.userId.escapedForJS()
+                let offlineToken = offlineTokenResponse.token.escapedForJS()
+                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
+                jsContext.evaluateScript(script)?.toString()
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
     
     func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
         Completable
@@ -215,7 +319,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             self?.settings.sharedKey = sharedKey
         }
     }
-    
+
     /// Sets Password
     func set(password: String) -> Completable {
         perform { [weak passwordRelay] in
@@ -297,6 +401,18 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .subscribeOn(jsScheduler)
     }
     
+    fileprivate func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
+        AnyPublisher<Void, E>
+            .create { observer -> AnyCancellable in
+                operation()
+                observer.send(())
+                observer.send(completion: .finished)
+                return AnyCancellable {}
+            }
+            .subscribe(on: combineJSScheduler)
+            .eraseToAnyPublisher()
+    }
+    
     // MARK: - Legacy: PLEASE DONT USE THESE UNLESS YOU MUST HOOK LEGACY OBJ-C CODE
 
     @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
@@ -318,6 +434,52 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         }
         get {
             passwordRelay.value
+        }
+    }
+}
+
+// MARK: - SharedKeyRepositoryCombineAPI
+
+extension WalletRepository {
+    
+    /// Streams the cached shared key or `nil` if it is not cached
+    var sharedKeyPublisher: AnyPublisher<String?, Never> {
+        let settings = self.settings
+        return Deferred {
+            Future { [settings] promise in
+                promise(.success(settings.sharedKey))
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+    
+    /// Sets the shared key
+    func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.settings.sharedKey = sharedKey
+        }
+    }
+}
+
+// MARK: - GuidRepositoryCombineAPI
+
+extension WalletRepository {
+    
+    var guidPublisher: AnyPublisher<String?, Never> {
+        let settings = self.settings
+        return Deferred {
+            Future { [settings] promise in
+                promise(.success(settings.guid))
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+
+    func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.settings.guid = guid
         }
     }
 }

@@ -148,7 +148,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let cardListService: CardListServiceAPI
     private let balanceProvider: BalanceProviding
     private let linkedBankService: LinkedBanksServiceAPI
-    private let featureConfiguring: FeatureConfiguring
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     // MARK: - Setup
     
@@ -158,7 +157,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
          cardListService: CardListServiceAPI = resolve(),
          balanceProvider: BalanceProviding = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
-         featureConfiguring: FeatureConfiguring = resolve(),
          beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
@@ -166,7 +164,6 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.cardListService = cardListService
         self.balanceProvider = balanceProvider
         self.linkedBankService = linkedBankService
-        self.featureConfiguring = featureConfiguring
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
     }
         

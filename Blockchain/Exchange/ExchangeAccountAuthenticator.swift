@@ -28,10 +28,10 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
     
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          campaignComposer: CampaignComposer = CampaignComposer(),
-         clientAPI: ExchangeClientAPI = ExchangeClient(communicatorAPI: resolve(tag: DIKitContext.retail))) {
+         client: ExchangeClientAPI = resolve()) {
         self.blockchainRepository = blockchainRepository
         self.campaignComposer = campaignComposer
-        self.client = clientAPI
+        self.client = client
     }
     
     var exchangeLinkID: Single<LinkID> {

@@ -31,6 +31,13 @@ public extension TransactionTarget {
 
 public protocol ReceiveAddress: TransactionTarget {
     var address: String { get }
+    var memo: String? { get }
+}
+
+public extension ReceiveAddress {
+    var memo: String? {
+        nil
+    }
 }
 
 public protocol InvoiceTarget { }
@@ -39,9 +46,7 @@ public protocol CryptoTarget: TransactionTarget {
     var asset: CryptoCurrency { get }
 }
 
-public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget {
-    
-}
+public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget { }
 
 public protocol CryptoAssetQRMetadataProviding {
     var metadata: CryptoAssetQRMetadata { get }
@@ -49,11 +54,4 @@ public protocol CryptoAssetQRMetadataProviding {
 
 public enum ReceiveAddressError: Error {
     case notSupported
-}
-
-public struct TradingCryptoReceiveAddress: CryptoReceiveAddress {
-    public let asset: CryptoCurrency
-    public let label: String
-    public let address: String
-    public let onTxCompleted: (TransactionResult) -> Completable
 }

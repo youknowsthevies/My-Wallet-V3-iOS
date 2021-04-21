@@ -12,17 +12,17 @@ import TransactionKit
 
 final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: CryptoReceiveAddressFactory {
     
-    typealias TxCompleted = (TransactionResult) -> Completable
-    
     func makeExternalAssetAddress(
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) throws -> CryptoReceiveAddress {
-        BitcoinChainReceiveAddress<Token>(
-            address: address,
-            label: label,
-            onTxCompleted: onTxCompleted
-        )
+        switch Token.coin {
+        case .bitcoin:
+            return BitcoinChainReceiveAddress<BitcoinToken>(address: address, label: label, onTxCompleted: onTxCompleted)
+        case .bitcoinCash:
+            let address = address.removing(prefix: "\(AssetConstants.URLSchemes.bitcoinCash):")
+            return BitcoinChainReceiveAddress<BitcoinCashToken>(address: address, label: label, onTxCompleted: onTxCompleted)
+        }
     }
 }

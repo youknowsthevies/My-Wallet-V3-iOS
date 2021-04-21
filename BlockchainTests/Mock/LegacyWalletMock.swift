@@ -14,24 +14,19 @@ class LegacyWalletMock: LegacyWalletAPI {
 
     var password: String?
 
-    func createOrderPayment(withOrderTransaction orderTransaction: OrderTransactionLegacy,
-                            completion: @escaping () -> Void,
-                            success: @escaping ([AnyHashable : Any]) -> Void,
-                            error: @escaping ([AnyHashable : Any]) -> Void) {
-        success([:])
-        completion()
+    func createOrderPayment(
+        orderTransaction: OrderTransactionLegacy,
+        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+    ) {
+        completion(.success([:]))
     }
-    
+
     func sendOrderTransaction(
         _ legacyAssetType: LegacyAssetType,
         secondPassword: String?,
-        completion: @escaping () -> Void,
-        success: @escaping (String) -> Void,
-        error: @escaping (String) -> Void,
-        cancel: @escaping () -> Void
+        completion: @escaping (Result<String, Wallet.SendOrderError>) -> Void
     ) {
-        success("")
-        completion()
+        completion(.success(""))
     }
     
     func needsSecondPassword() -> Bool {
@@ -44,5 +39,8 @@ class LegacyWalletMock: LegacyWalletAPI {
 
     func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
         .empty()
+    }
+
+    func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
     }
 }

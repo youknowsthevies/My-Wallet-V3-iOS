@@ -39,6 +39,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
             parser: parser,
             additionalParsingOptions: .strict,
             textViewModel: textViewModel,
+            supportsCameraRoll: false,
             scanner: scanner,
             completed: completion
         )
@@ -106,6 +107,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
             parser: parser,
             additionalParsingOptions: .strict,
             textViewModel: textViewModel,
+            supportsCameraRoll: false,
             scanner: scanner,
             completed: { result in
                 guard case .success(let model) = result else {

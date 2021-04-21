@@ -40,7 +40,6 @@ final class DataProvider: DataProviding {
     let syncing: PortfolioSyncingService
     
     init(featureFetching: FeatureFetchingConfiguring = resolve(),
-         kycTierService: KYCTiersServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          enabledCurrencies: EnabledCurrenciesServiceAPI = resolve()) {
         

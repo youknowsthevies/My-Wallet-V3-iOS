@@ -27,10 +27,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         custodialAddressService
             .receiveAddress(for: asset)
             .map(weak: self) { (self, address) in
-                TradingCryptoReceiveAddress(
+                try self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
                     asset: self.asset,
-                    label: self.label,
                     address: address,
+                    label: self.label,
                     onTxCompleted: self.onTxCompleted
                 )
             }
@@ -91,8 +91,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var actions: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible)
-            .map { (balance, isEligible) -> AvailableActions in
+        Single.zip(balance, eligibilityService.isEligible, can(perform: .receive))
+            .map { (balance, isEligible, canReceive) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity]
                 if balance.isPositive {
                     base.insert(.send)
@@ -101,24 +101,35 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     base.insert(.sell)
                     base.insert(.swap)
                 }
+                if canReceive {
+                    base.insert(.receive)
+                }
                 return base
             }
             // TODO: (IOS-4437) Remove this observeOn MainScheduler
             .observeOn(MainScheduler.instance)
     }
-
+    
     private let balanceFetching: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let custodialAddressService: CustodialAddressServiceAPI
     private let eligibilityService: EligibilityServiceAPI
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
-
+    private let featureFetcher: FeatureFetching
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
+    private let kycTiersService: KYCTiersServiceAPI
+    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
+    
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
                 custodialAddressService: CustodialAddressServiceAPI = resolve(),
                 exchangeProviding: ExchangeProviding = resolve(),
                 custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
-                eligibilityService: EligibilityServiceAPI = resolve()) {
+                eligibilityService: EligibilityServiceAPI = resolve(),
+                featureFetcher: FeatureFetching = resolve(),
+                internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+                kycTiersService: KYCTiersServiceAPI = resolve(),
+                cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
         self.label = asset.defaultTradingWalletName
         self.asset = asset
         self.exchangeService = exchangeProviding[asset]
@@ -126,6 +137,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.eligibilityService = eligibilityService
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
+        self.featureFetcher = featureFetcher
+        self.internalFeatureFlagService = internalFeatureFlagService
+        self.kycTiersService = kycTiersService
+        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -145,8 +160,23 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     }
                     return self.eligibilityService.isEligible
                 }
+        case .receive:
+            return Single.just(internalFeatureFlagService.isEnabled(.tradingAccountReceive))
+                .flatMap(weak: self) { (self, isEnabled) -> Single<Bool> in
+                    guard isEnabled else {
+                        return self.featureFetcher.fetchBool(for: .tradingAccountReceive)
+                    }
+                    return .just(true)
+                }
+                .flatMap(weak: self) { (self, isEnabled) -> Single<Bool> in
+                    guard isEnabled else {
+                        return .just(false)
+                    }
+                    return self.kycTiersService.tiers.map { tiers -> Bool in
+                        tiers.isTier1Approved || tiers.isTier2Approved
+                    }
+                }
         case .deposit,
-             .receive,
              .withdraw:
             return .just(false)
         }

@@ -141,8 +141,14 @@ extension TransactionConfirmation.Model {
         public let secondsRemaining: TimeInterval
         public let type: TransactionConfirmation.Kind = .invoiceCountdown
 
+        private let countdownFormatter: DateComponentsFormatter
+        init(secondsRemaining: TimeInterval, countdownFormatter: DateComponentsFormatter = .countdownFormatter) {
+            self.secondsRemaining = secondsRemaining
+            self.countdownFormatter = countdownFormatter
+        }
+
         public var formatted: (title: String, subtitle: String)? {
-            nil
+            (LocalizedString.remainingTime, countdownFormatter.string(from: secondsRemaining) ?? "")
         }
     }
 

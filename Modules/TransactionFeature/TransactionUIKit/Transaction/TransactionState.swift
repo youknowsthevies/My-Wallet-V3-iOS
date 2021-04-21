@@ -10,7 +10,7 @@ import PlatformKit
 import ToolKit
 import TransactionKit
 
-struct TransactionState: Equatable {
+struct TransactionState: Equatable, StateType {
 
     var action: AssetAction = .send
     var allowFiatInput: Bool = false

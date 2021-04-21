@@ -71,6 +71,8 @@ extension DependencyContainer {
         
         factory(tag: "CrashlyticsRecorder") { CrashlyticsRecorder() as Recording }
 
+        factory { ExchangeClient() as ExchangeClientAPI }
+        
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
         factory { BackupFundsCustodialRouter() as BackupRouterAPI }
@@ -84,6 +86,10 @@ extension DependencyContainer {
         single { TradeLimitsService() as TradeLimitsAPI }
 
         factory { SiftService() as SiftServiceAPI }
+
+        single { SecondPasswordPrompter() as SecondPasswordPromptable }
+
+        single { SecondPasswordStore() as SecondPasswordStorable }
 
         // MARK: - Dashboard
         
@@ -258,11 +264,6 @@ extension DependencyContainer {
             return ethereum
         }
 
-        factory(tag: CryptoCurrency.ethereum) { () -> SecondPasswordPromptable in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-        
         factory { () -> CompleteEthereumWalletBridgeAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum as CompleteEthereumWalletBridgeAPI
@@ -294,6 +295,6 @@ extension DependencyContainer {
 
         // MARK: Wallet Upgrade
 
-        factory { WalletManager.shared as WalletUpgradingProvider }
+        factory { WalletUpgrading() as WalletUpgradingAPI }
     }
 }

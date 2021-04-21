@@ -53,7 +53,8 @@ final class ContentLabelViewPresenter {
     
     init(title: String,
          alignment: NSTextAlignment,
-         interactor: ContentLabelViewInteractorAPI) {
+         interactor: ContentLabelViewInteractorAPI,
+         accessibilityPrefix: String) {
         self.interactor = interactor
         titleRelay = BehaviorRelay<String>(value: title)
         titleLabelContent = titleRelay
@@ -64,7 +65,7 @@ final class ContentLabelViewPresenter {
                     font: .main(.medium, 12),
                     color: .secondary,
                     alignment: alignment,
-                    accessibility: .id(Accessibility.Identifier.ContentLabelView.title)
+                    accessibility: .id("\(accessibilityPrefix).\(Accessibility.Identifier.ContentLabelView.title)")
                 )
             }
         descriptionLabelContent = interactor.contentCalculationState
@@ -75,7 +76,7 @@ final class ContentLabelViewPresenter {
                     font: .main(.semibold, 14),
                     color: .titleText,
                     alignment: alignment,
-                    accessibility: .id(AccessibilityId.description)
+                    accessibility: .id("\(accessibilityPrefix).\(AccessibilityId.description)")
                 )
             }
             .asDriver(onErrorJustReturn: .empty)

@@ -7,6 +7,8 @@
 //
 
 @testable import Blockchain
+
+import Combine
 import PlatformKit
 import RxSwift
 
@@ -23,6 +25,19 @@ class MockWalletCredentialsProvider: WalletCredentialsProviding {
 }
 
 class GuidSharedKeyRepositoryAPIMock: GuidRepositoryAPI, SharedKeyRepositoryAPI {
+    
+    var hasGuidPublisher: AnyPublisher<Bool, Never> {
+        guidPublisher.map { $0 != nil }.eraseToAnyPublisher()
+    }
+    
+    var guidPublisher: AnyPublisher<String?, Never> {
+        .just(expectedGuid)
+    }
+    
+    func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
+        expectedGuid = guid
+        return .empty()
+    }
 
     var expectedGuid: String? = "123-abc-456-def-789-ghi"
     var expectedSharedKey: String? = "0123456789"

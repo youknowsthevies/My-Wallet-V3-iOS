@@ -6,20 +6,34 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 import DIKit
-import RxSwift
+import ToolKit
+
+public enum JWTServiceError: Error {
+    case failedToRetrieveCredentials(Error)
+    case failedToRetrieveJWTToken
+}
 
 public protocol JWTServiceAPI: AnyObject {
-    var token: Single<String> { get }
+    
+    var token: AnyPublisher<String, JWTServiceError> { get }
 }
 
 final class JWTService: JWTServiceAPI {
     
-    var token: Single<String> {
-        credentialsRepository.credentials
-            .flatMap(weak: self) { (self, payload) in
-                self.client.requestJWT(guid: payload.guid, sharedKey: payload.sharedKey)
+    var token: AnyPublisher<String, JWTServiceError> {
+        let client = self.client
+        return credentialsRepository.credentials
+            .asObservable()
+            .publisher
+            .eraseToAnyPublisher()
+            .mapError(JWTServiceError.failedToRetrieveCredentials)
+            .flatMap { [client] guid, sharedKey -> AnyPublisher<String, JWTServiceError> in
+                client.requestJWT(guid: guid, sharedKey: sharedKey)
+                    .replaceError(with: JWTServiceError.failedToRetrieveJWTToken)
             }
+            .eraseToAnyPublisher()
     }
     
     private let client: JWTClientAPI

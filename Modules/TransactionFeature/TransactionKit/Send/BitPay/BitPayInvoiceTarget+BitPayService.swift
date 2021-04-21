@@ -28,11 +28,35 @@ extension BitPayInvoiceTarget {
     private enum BitPayError: Error {
         case invalidBitPayURL
         case invoiceError
+        case invalidBitcoinURL
+        case invalidBitcoinCashURL
     }
     
     private static let bitpayService: BitPayServiceAPI = resolve()
     
     // MARK: - Public Factory
+    
+    public static func isBitcoin(_ data: String) -> Completable {
+        Completable.fromCallable {
+            guard data.contains(Prefix.bitpay) else {
+                throw BitPayError.invalidBitPayURL
+            }
+            guard data.contains(Prefix.bitcoin) else {
+                throw BitPayError.invalidBitcoinURL
+            }
+        }
+    }
+    
+    public static func isBitcoinCash(_ data: String) -> Completable {
+        Completable.fromCallable {
+            guard data.contains(Prefix.bitpay) else {
+                throw BitPayError.invalidBitPayURL
+            }
+            guard data.contains(Prefix.bitcoinCash) else {
+                throw BitPayError.invalidBitcoinCashURL
+            }
+        }
+    }
     
     public static func isValidBitPay(_ data: String) -> Completable {
         Completable.fromCallable {

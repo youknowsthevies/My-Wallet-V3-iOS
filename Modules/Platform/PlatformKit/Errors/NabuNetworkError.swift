@@ -1,5 +1,5 @@
 //
-//  NabuNetworkErrorNew.swift
+//  NabuNetworkError.swift
 //  NetworkKit
 //
 //  Created by Jack Pooley on 25/03/2021.
@@ -15,7 +15,7 @@ public struct NabuErrorDecodingFailure: Error {
     let description: String?
 }
 
-public enum NabuNetworkErrorNew: Error, Decodable {
+public enum NabuNetworkError: Error, Decodable {
     
     enum CodingKeys: CodingKey {
         case code
@@ -24,7 +24,7 @@ public enum NabuNetworkErrorNew: Error, Decodable {
     }
     
     case nabuError(NabuError)
-    case communicatorError(NetworkCommunicatorErrorNew)
+    case communicatorError(NetworkCommunicatorError)
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -54,14 +54,14 @@ public enum NabuNetworkErrorNew: Error, Decodable {
         self = .nabuError(NabuError(code: code, type: type, description: description))
     }
     
-    public init(from communicatorError: NetworkCommunicatorErrorNew) {
+    public init(from communicatorError: NetworkCommunicatorError) {
         self = .communicatorError(communicatorError)
     }
     
     private static func crashOnUnknownCodeOrType(
         code: NabuErrorCode,
         type: NabuErrorType,
-        values: KeyedDecodingContainer<NabuNetworkErrorNew.CodingKeys>
+        values: KeyedDecodingContainer<NabuNetworkError.CodingKeys>
     ) {
         guard code == .unknown || type == .unknown else { return }
         
@@ -87,10 +87,10 @@ public enum NabuNetworkErrorNew: Error, Decodable {
     }
 }
 
-extension NabuNetworkErrorNew: ErrorResponseConvertible {
+extension NabuNetworkError: ErrorResponseConvertible {
     
-    public static func from(_ communicatorError: NetworkCommunicatorErrorNew) -> NabuNetworkErrorNew {
-        NabuNetworkErrorNew(from: communicatorError)
+    public static func from(_ communicatorError: NetworkCommunicatorError) -> NabuNetworkError {
+        NabuNetworkError(from: communicatorError)
     }
 }
 
@@ -198,6 +198,8 @@ public enum NabuErrorCode: Int, Codable {
 
     /// Custodial Withdrawal Error Code
     case withdrawalLocked = 152
+
+    case forbidden = 160
 }
 
 public enum NabuErrorType: String, Codable {
@@ -217,6 +219,7 @@ public enum NabuErrorType: String, Codable {
     case badParamValue = "BAD_PARAM_VALUE"
 
     // Authentication errors
+    case forbidden = "FORBIDDEN"
     case invalidCredentials = "INVALID_CREDENTIALS"
     case wrongPassword = "WRONG_PASSWORD"
     case wrong2FA = "WRONG_2FA"
@@ -225,4 +228,5 @@ public enum NabuErrorType: String, Codable {
     case invalidRole = "INVALID_ROLE"
     case alreadyLoggedIn = "ALREADY_LOGGED_IN"
     case invalidStatus = "INVALID_STATUS"
+
 }

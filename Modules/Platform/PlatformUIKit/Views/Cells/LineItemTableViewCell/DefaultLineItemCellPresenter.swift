@@ -33,8 +33,12 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
         imageRelay.asDriver()
     }
 
-    /// The background color relay
+    public let imageWidth: Driver<CGFloat>
+
+    /// The image relay
     public let imageRelay = BehaviorRelay<UIImage?>(value: nil)
+    /// The image width relay
+    public let imageWidthRelay = BehaviorRelay<CGFloat>(value: 22)
 
     public var backgroundColor: Driver<UIColor> {
         backgroundColorRelay.asDriver()
@@ -68,5 +72,8 @@ public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
             interactor: interactor.description,
             descriptors: .lineItemDescription(accessibilityIdPrefix: accessibilityIdPrefix)
         )
+
+        imageWidth = imageWidthRelay
+            .asDriver()
     }
 }

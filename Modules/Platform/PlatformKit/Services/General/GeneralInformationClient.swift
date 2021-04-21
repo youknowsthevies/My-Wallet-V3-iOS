@@ -29,22 +29,24 @@ final class GeneralInformationClient: GeneralInformationClientAPI {
         let request = requestBuilder.get(
             path: Path.countries
         )!
-        return communicator.perform(
+        return networkAdapter.perform(
             request: request,
-            responseType: [CountryData].self
+            responseType: [CountryData].self,
+            errorResponseType: NabuNetworkError.self
         )
+
     }
     
     // MARK: - Properties
     
     private let requestBuilder: RequestBuilder
-    private let communicator: NetworkCommunicatorAPI
+    private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
     
-    init(communicator: NetworkCommunicatorAPI = resolve(tag: DIKitContext.retail),
+    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.communicator = communicator
+        self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 }

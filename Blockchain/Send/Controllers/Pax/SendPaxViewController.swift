@@ -447,6 +447,7 @@ extension SendPaxViewController {
             )
             .with(additionalParsingOptions: .lax(routes: [.exchangeLinking]))
             .with(presentationType: .modal(dismissWithAnimation: false))
+            .with(supportForCameraRoll: true)
         
         guard let viewController = builder.build() else { return }
         

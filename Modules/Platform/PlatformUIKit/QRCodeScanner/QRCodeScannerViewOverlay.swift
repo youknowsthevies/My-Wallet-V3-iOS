@@ -27,16 +27,29 @@ final class QRCodeScannerViewOverlay: UIView {
     private let flashButton = UIButton()
     private let cameraRollButton = UIButton()
     private let disposeBag = DisposeBag()
+    private let scanningBorder = CAShapeLayer()
     
     init(viewModel: QRCodeScannerOverlayViewModel, frame: CGRect) {
         self.viewModel = viewModel
         super.init(frame: frame)
         setupSubviews()
+
+        viewModel.scanSuccess
+            .subscribe(onNext: { [weak self] isSuccess in
+                self?.setScanningBorder(color: isSuccess ? .green500 : .white)
+            })
+            .disposed(by: disposeBag)
     }
     
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setScanningBorder(color: UIColor) {
+        UIView.animate(withDuration: 0.3) {
+            self.scanningBorder.strokeColor = color.cgColor
+        }
     }
     
     private func setupSubviews() {
@@ -107,14 +120,13 @@ final class QRCodeScannerViewOverlay: UIView {
         maskLayer.fillRule = .evenOdd
         maskLayer.path = path.cgPath
         layer.mask = maskLayer
-        
-        let border = CAShapeLayer()
-        border.path = UIBezierPath(
+
+        scanningBorder.path = UIBezierPath(
             roundedRect: scannableFrame,
             cornerRadius: 8
         ).cgPath
-        border.strokeColor = UIColor.white.cgColor
-        border.lineWidth = 8.0
-        layer.addSublayer(border)
+        scanningBorder.strokeColor = UIColor.white.cgColor
+        scanningBorder.lineWidth = 8.0
+        layer.addSublayer(scanningBorder)
     }
 }

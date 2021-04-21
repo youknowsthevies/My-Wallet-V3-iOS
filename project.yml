@@ -7,13 +7,15 @@ configs:
   Release: release
   Release Internal: release
   Release Staging: release
+fileGroups:
+  - README.md
 name: Blockchain
 options:
   bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
     iOS: '13.0'
-  groupSortPosition: top
+  groupSortPosition: bottom
   platform: iOS
 schemeTemplates:
   BlockchainScheme:
@@ -169,6 +171,7 @@ targetTemplates:
       excludes:
       - Scripts
       path: Modules/${featureName}/${target_name}
+    - path: Modules/${featureName}/README.md
     type: framework
   ModuleTests:
     dependencies:
@@ -961,25 +964,16 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
-    platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
       path: Modules/Network/NetworkKit/Scripts/get_ssl_certificate.sh
     scheme:
       testTargets:
       - NetworkKitTests
-    sources:
-    - excludes:
-      - Scripts
-      - Cert
-      path: Modules/Network/NetworkKit
-    - buildPhase:
-        copyFiles:
-          destination: resources
-      group: Modules/Network/NetworkKit/Cert
-      optional: true
-      path: Modules/Network/NetworkKit/Cert/blockchain.der
-    type: framework
+    templateAttributes:
+      featureName: Network
+    templates:
+    - Module
   NetworkKitTests:
     dependencies:
     - target: NetworkKit
