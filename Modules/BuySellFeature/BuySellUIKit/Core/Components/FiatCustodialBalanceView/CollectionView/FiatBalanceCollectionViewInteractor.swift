@@ -78,13 +78,11 @@ public final class FiatBalanceCollectionViewInteractor {
             .disposed(by: disposeBag)
     }()
     
-    public init(
-        tiersService: KYCTiersServiceAPI = resolve(),
-        balanceProvider: BalanceProviding = resolve(),
-        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
-        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
-    ) {
+    public init(tiersService: KYCTiersServiceAPI = resolve(),
+                balanceProvider: BalanceProviding = resolve(),
+                enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+                paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
         self.tiersService = tiersService
         self.balanceProvider = balanceProvider
         self.paymentMethodsService = paymentMethodsService
@@ -115,5 +113,4 @@ extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
     public func reloadBalances() {
         refresh()
     }
-    
 }

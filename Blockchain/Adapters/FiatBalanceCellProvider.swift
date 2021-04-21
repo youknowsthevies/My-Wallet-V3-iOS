@@ -18,5 +18,4 @@ class FiatBalanceCellProvider: FiatBalanceCellProviding {
         cell.presenter = presenter
         return cell
     }
-    
 }

@@ -27,5 +27,4 @@ final class DashboardFiatBalancesInteractor {
     func refresh() {
         fiatBalancesInteractor.reloadBalances()
     }
-    
 }

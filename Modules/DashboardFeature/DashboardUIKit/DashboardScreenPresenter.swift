@@ -18,7 +18,6 @@ public protocol AnnouncementPresenting {
     var announcement: Driver<AnnouncementDisplayAction> { get }
     
     func refresh()
-    
 }
 
 /// This enum aggregates possible action types that can be done in the dashboard

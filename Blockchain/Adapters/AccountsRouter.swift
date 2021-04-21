@@ -56,5 +56,4 @@ final class AccountsRouter: AccountsRouting {
         let navigationRouter: NavigationRouterAPI = resolve()
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
-    
 }

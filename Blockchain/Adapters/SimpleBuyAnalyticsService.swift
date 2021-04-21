@@ -31,5 +31,4 @@ class SimpleBuyAnalyticsService: SimpleBuyAnalayticsServicing {
         let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
         analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbTradingWalletClicked(asset: currency))
     }
-    
 }

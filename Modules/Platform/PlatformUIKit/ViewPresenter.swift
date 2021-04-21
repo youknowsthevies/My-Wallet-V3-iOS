@@ -15,7 +15,6 @@ open class ViewPresenter: Equatable {
     public static func == (lhs: ViewPresenter, rhs: ViewPresenter) -> Bool {
         lhs === rhs
     }
-    
 }
 
 open class CurrencyViewPresenter: ViewPresenter {
@@ -24,5 +23,4 @@ open class CurrencyViewPresenter: ViewPresenter {
     open var tap: Signal<CurrencyType>? {
         nil
     }
-    
 }

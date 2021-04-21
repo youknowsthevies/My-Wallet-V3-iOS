@@ -71,5 +71,4 @@ final class DashboardDetailsScreenInteractor {
         recoveryPhraseStatus.fetchTriggerRelay.accept(())
         balanceFetcher.refresh()
     }
-    
 }

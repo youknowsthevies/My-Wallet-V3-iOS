@@ -12,12 +12,6 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-public protocol AnalyticsUserPropertyInteracting {
-    
-    func record()
-    
-}
-
 final class DashboardScreenInteractor {
     
     // MARK: - Services

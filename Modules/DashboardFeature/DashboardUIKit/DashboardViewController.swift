@@ -25,6 +25,7 @@ public final class DashboardViewController: BaseScreenViewController {
     // MARK: - Injected
     
     private let presenter: DashboardScreenPresenter
+    let fiatBalanceCellProvider: FiatBalanceCellProviding
     
     // MARK: - Accessors
     
@@ -36,7 +37,8 @@ public final class DashboardViewController: BaseScreenViewController {
     
     // MARK: - Setup
     
-    public init() {
+    public init(fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()) {
+        self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.presenter = DashboardScreenPresenter()
         super.init(nibName: nil, bundle: nil)
     }
@@ -88,7 +90,6 @@ public final class DashboardViewController: BaseScreenViewController {
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(AnnouncementTableViewCell.self)
-        let fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()
         fiatBalanceCellProvider.registerFiatBalanceCell(for: tableView)
         tableView.register(NoticeTableViewCell.self)
         tableView.registerNibCell(TotalBalanceTableViewCell.self)

@@ -10,5 +10,4 @@ public protocol FiatBalancesInteracting {
     var hasBalances: Observable<Bool> { get }
     
     func reloadBalances()
-    
 }

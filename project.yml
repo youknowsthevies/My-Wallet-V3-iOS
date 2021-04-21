@@ -672,34 +672,36 @@ targets:
   DashboardKit:
     scheme:
       testTargets:
-        - DashboardKitTests
+      - DashboardKitTests
     templates:
-      - Module
+    - Module
     templateAttributes:
       featureName: DashboardFeature
   DashboardKitTests:
     dependencies:
-      - target: DashboardKit
+    - target: DashboardKit
     templates:
-      - ModuleTests
+    - ModuleTests
     templateAttributes:
       featureName: DashboardFeature
   DashboardUIKit:
     dependencies:
-      - target: DashboardKit
-      - target: PlatformUIKit
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - target: DashboardKit
+    - target: PlatformUIKit
     scheme:
       testTargets:
-        - DashboardUIKitTests
+      - DashboardUIKitTests
     templates:
-      - Module
+    - Module
     templateAttributes:
       featureName: DashboardFeature
   DashboardUIKitTests:
     dependencies:
-      - target: DashboardUIKit
+    - target: DashboardUIKit
     templates:
-      - ModuleTests
+    - ModuleTests
     templateAttributes:
       featureName: DashboardFeature
   CommonCryptoKit:
