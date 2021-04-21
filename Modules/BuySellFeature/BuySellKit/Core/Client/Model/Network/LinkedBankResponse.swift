@@ -26,6 +26,25 @@ public struct LinkedBankResponse: Decodable {
     let state: State
     let details: Details?
     let error: Error?
+
+    enum CodingKeys: CodingKey {
+        case id
+        case currency
+        case partner
+        case state
+        case details
+        case error
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        currency = try container.decode(String.self, forKey: .currency)
+        partner = try container.decode(String.self, forKey: .partner)
+        state = try container.decode(State.self, forKey: .state)
+        details = try? container.decodeIfPresent(Details.self, forKey: .details)
+        error = try container.decodeIfPresent(Error.self, forKey: .error)
+    }
 }
 
 extension LinkedBankResponse {
