@@ -41,15 +41,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let bridge: BitcoinChainSendBridgeAPI
     private var target: BitcoinChainReceiveAddress<Token> {
         switch transactionTarget {
-        case is CryptoExchangeAccountReceiveAddress:
-            let exchange = transactionTarget as! CryptoExchangeAccountReceiveAddress
-            /// If the destination is a `CryptoExchangeAccountReceiveAddress`,
-            /// we will not have a `BitcoinChainReceiveAddress`.
-            return .init(
-                address: exchange.address,
-                label: exchange.label,
-                onTxCompleted: exchange.onTxCompleted
-            )
         case let target as BitPayInvoiceTarget:
             return .init(
                 address: target.address,

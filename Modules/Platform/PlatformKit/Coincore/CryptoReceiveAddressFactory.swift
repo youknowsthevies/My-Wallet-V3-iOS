@@ -9,7 +9,7 @@
 import DIKit
 import RxSwift
 
-// Resolve this protocol with a CryptoCurrency tag to receive a factory that builds CryptoReceiveAddress.
+/// Resolve this protocol with a CryptoCurrency tag to receive a factory that builds CryptoReceiveAddress.
 public protocol CryptoReceiveAddressFactory {
     
     typealias TxCompleted = (TransactionResult) -> Completable
@@ -22,16 +22,19 @@ public protocol CryptoReceiveAddressFactory {
 }
 
 public final class CryptoReceiveAddressFactoryService {
-
-    public init() {}
-
+    
     public func makeExternalAssetAddress(
         asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping (TransactionResult) -> Completable
-    ) throws -> CryptoReceiveAddress {
+    ) -> Result<CryptoReceiveAddress, Error> {
         let factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset) }()
-        return try factory.makeExternalAssetAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+        do {
+            let address = try factory.makeExternalAssetAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+            return .success(address)
+        } catch {
+            return .failure(error)
+        }
     }
 }

@@ -26,13 +26,15 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public var receiveAddress: Single<ReceiveAddress> {
         custodialAddressService
             .receiveAddress(for: asset)
-            .map(weak: self) { (self, address) in
-                try self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
+            .flatMap(weak: self) { (self, address) in
+                self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
                     asset: self.asset,
                     address: address,
                     label: self.label,
                     onTxCompleted: self.onTxCompleted
                 )
+                .single
+                .map { $0 as ReceiveAddress }
             }
     }
 
