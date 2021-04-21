@@ -26,7 +26,7 @@ public final class AddressValidator: NSObject {
     @objc
     func validate(bitcoinAddress address: String) -> Bool {
         let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScript("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
 
@@ -35,7 +35,7 @@ public final class AddressValidator: NSObject {
     @objc
     func validate(bitcoinCashAddress address: String) -> Bool {
         let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScript("MyWalletPhone.bch.isValidAddress(\"\(escapedString)\");") else {
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.isValidAddress(\"\(escapedString)\");") else {
             return validate(bitcoinAddress: address)
         }
 
@@ -54,7 +54,7 @@ public final class AddressValidator: NSObject {
     @objc
     func validate(ethereumAddress address: String) -> Bool {
         let escapedString = address.description.escapedForJS()
-        guard let result = context.evaluateScript("MyWalletPhone.isEthAddress(\"\(escapedString)\");") else { return false }
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.isEthAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
 
