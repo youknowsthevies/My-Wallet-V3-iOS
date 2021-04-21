@@ -9,7 +9,7 @@
 import Combine
 
 public typealias NetworkResponsePublisher =
-    (String) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
+    (String) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
 
 public protocol AuthenticatorAPI: AnyObject {
     
@@ -17,5 +17,5 @@ public protocol AuthenticatorAPI: AnyObject {
     /// - Parameter responseProvider: method requiring authentication token
     func authenticate(
         _ responseProvider: @escaping NetworkResponsePublisher
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
 }

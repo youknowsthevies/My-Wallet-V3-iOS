@@ -16,7 +16,7 @@ protocol NetworkCommunicatorAPI {
     /// - Parameter request: the request object describes the network request to be performed
     func dataTaskPublisher(
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
 }
 
 final class NetworkCommunicator: NetworkCommunicatorAPI {
@@ -48,7 +48,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     func dataTaskPublisher(
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         guard request.authenticated else {
             return execute(request: request)
         }
@@ -60,7 +60,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 guard let self = self else {
                     let empty = Empty(
                         completeImmediately: true,
-                        outputType: ServerResponseNew.self,
+                        outputType: ServerResponse.self,
                         failureType: NetworkCommunicatorError.self
                     )
                     return empty.eraseToAnyPublisher()
@@ -75,10 +75,10 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     private func execute(
         request: NetworkRequest
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         session.erasedDataTaskPublisher(for: request.URLRequest)
             .mapError(NetworkCommunicatorError.urlError)
-            .flatMap { elements -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .flatMap { elements -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
                 request.responseHandler.handle(elements: elements, for: request)
             }
             .eraseToAnyPublisher()
@@ -110,14 +110,14 @@ extension URLSession: NetworkSession {
     }
 }
 
-extension AnyPublisher where Output == ServerResponseNew,
+extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkCommunicatorError {
     
     fileprivate func recordErrors(
         on recorder: AnalyticsEventRecording?,
         request: NetworkRequest,
         errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         handleEvents(
             receiveCompletion: { completion in
                 guard case .failure(let communicatorError) = completion else {

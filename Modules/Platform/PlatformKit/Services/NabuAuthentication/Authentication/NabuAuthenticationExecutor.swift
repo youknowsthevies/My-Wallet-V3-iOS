@@ -17,7 +17,7 @@ public protocol NabuAuthenticationExecutorAPI {
     /// - Parameter networkResponsePublisher: the closure taking a token and returning a publisher for a request
     func authenticate(
         _ networkResponsePublisher: @escaping NetworkResponsePublisher
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
 }
 
 public typealias NabuAuthenticationExecutorProvider = () -> NabuAuthenticationExecutorAPI
@@ -82,12 +82,12 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     
     func authenticate(
         _ networkResponsePublisher: @escaping NetworkResponsePublisher
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         getToken()
             .mapError(NetworkCommunicatorError.authentication)
-            .flatMap { payload -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .flatMap { payload -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
                 networkResponsePublisher(payload.sessionToken.token)
-                    .catch { communicatorError -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+                    .catch { communicatorError -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
                         refreshOrReturnError(
                             communicatorError: communicatorError,
                             offlineToken: payload.offlineToken,
@@ -180,8 +180,8 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     private func refreshOrReturnError(
         communicatorError: NetworkCommunicatorError,
         offlineToken: NabuOfflineTokenResponse,
-        publisherProvider: @escaping (String) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+        publisherProvider: @escaping (String) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         unauthenticated(communicatorError: communicatorError)
             .mapError()
             .flatMap { unauthenticated -> AnyPublisher<Void, NetworkCommunicatorError> in
@@ -192,10 +192,10 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     .mapError()
                     .eraseToAnyPublisher()
             }
-            .flatMap { _ -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .flatMap { _ -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
                 refreshToken(offlineToken: offlineToken)
                     .mapError(NetworkCommunicatorError.authentication)
-                    .flatMap { sessionToken -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+                    .flatMap { sessionToken -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
                         publisherProvider(sessionToken.token)
                     }
                     .eraseToAnyPublisher()
