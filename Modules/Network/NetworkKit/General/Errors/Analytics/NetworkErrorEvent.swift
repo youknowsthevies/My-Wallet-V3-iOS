@@ -41,7 +41,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
         }
     }
     
-    init?(request: NetworkRequest, error: URLError) {
+    init?(request: NetworkRequest, error: BlockchainURLError) {
         self = .clientError(ErrorDetails(request: request, message: error.localizedDescription))
     }
     
