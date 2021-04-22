@@ -40,6 +40,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     private let backButtonInterceptor: BackButtonInterceptor
+    private let featureConfigurator: FeatureConfiguring
     weak var listener: TargetSelectionPageListener?
 
     // MARK: - Init
@@ -50,12 +51,14 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
          listener: TargetSelectionListenerBridge,
          action: AssetAction,
          backButtonInterceptor: @escaping BackButtonInterceptor,
-         messageRecorder: MessageRecording = resolve()) {
+         messageRecorder: MessageRecording = resolve(),
+         featureConfigurator: FeatureConfiguring = resolve()) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
         self.messageRecorder = messageRecorder
         self.backButtonInterceptor = backButtonInterceptor
+        self.featureConfigurator = featureConfigurator
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -241,7 +244,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         }
         .sorted { $0.account.label < $1.account.label }
 
-        if sourceAccount is NonCustodialAccount {
+        let tradingAccountExternalSend = featureConfigurator.configuration(for: .tradingAccountExternalSend).isEnabled
+        if sourceAccount is NonCustodialAccount || tradingAccountExternalSend {
             if state.inputFieldInteractor == nil {
                 state = state
                     .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))

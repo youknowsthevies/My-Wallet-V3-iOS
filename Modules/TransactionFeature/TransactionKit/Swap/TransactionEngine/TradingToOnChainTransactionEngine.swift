@@ -41,30 +41,36 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         sourceAccount as? CryptoTradingAccount
     }
     
-    var target: CryptoAccount { transactionTarget as! CryptoAccount }
+    var target: CryptoReceiveAddress {
+        transactionTarget as! CryptoReceiveAddress
+    }
     var targetAsset: CryptoCurrency { target.asset }
     var sourceAsset: CryptoCurrency { sourceAccount.asset }
     
     // MARK: - Private Properties
-    
-    private let transferService: InternalTransferServiceAPI
+
+    private let feeCache: CachedValue<CustodialTransferFee>
+    private let transferService: CustodialTransferServiceAPI
     
     // MARK: - Init
 
     init(isNoteSupported: Bool = false,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
-         transferService: InternalTransferServiceAPI = resolve()) {
+         transferService: CustodialTransferServiceAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
         self.transferService = transferService
+        feeCache = CachedValue(configuration: .init(refreshType: .periodic(seconds: 20)))
+        feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
+            self.transferService.fees()
+        }
     }
-    
+
     func assertInputsValid() {
-        precondition(target is CryptoNonCustodialAccount)
-        precondition(sourceAccount is CryptoTradingAccount)
-        precondition((target as! CryptoNonCustodialAccount).asset == sourceAccount.asset)
+        precondition(transactionTarget is CryptoReceiveAddress)
+        precondition(sourceAsset == targetAsset)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -89,10 +95,18 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         guard sourceTradingAccount != nil else {
             return .just(pendingTransaction)
         }
-        return sourceTradingAccount
-            .withdrawableBalance
-            .map { actionableBalance -> PendingTransaction in
-                pendingTransaction.update(amount: amount, available: actionableBalance)
+        return
+            Single
+            .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
+            .map { (fees, withdrawableBalance) -> PendingTransaction in
+                let fee = fees[fee: amount.currencyType]
+                let available = try withdrawableBalance - fee
+                return pendingTransaction.update(
+                    amount: amount,
+                    available: available,
+                    fee: fee,
+                    feeForFullAvailable: fee
+                )
             }
     }
     
@@ -119,26 +133,20 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         validateAmounts(pendingTransaction: pendingTransaction)
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
-    
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmounts(pendingTransaction: pendingTransaction)
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        target
-            .receiveAddress
-            .map(\.address)
-            .flatMap(weak: self) { (self, destination) -> Single<TransactionResult> in
-                self.transferService
-                    .transfer(
-                        moneyValue: pendingTransaction.amount,
-                        destination: destination
-                    )
-                    .map(\.identifier)
-                    .map { (identifier) -> TransactionResult in
-                        TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
-                    }
+        transferService
+            .transfer(
+                moneyValue: pendingTransaction.amount,
+                destination: target.address
+            )
+            .map { identifier -> TransactionResult in
+                TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
             }
     }
     
@@ -158,14 +166,18 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
     
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        sourceTradingAccount
-            .withdrawableBalance
-            .flatMapCompletable(weak: self) { (self, balance) -> Completable in
+        Single
+            .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
+            .map { (minimumAmount: $0[minimumAmount: pendingTransaction.amount.currency], balance: $1) }
+            .flatMapCompletable(weak: self) { (self, data) -> Completable in
                 guard try pendingTransaction.amount > .zero(currency: self.sourceAsset) else {
                     throw TransactionValidationFailure(state: .invalidAmount)
                 }
-                guard try balance >= pendingTransaction.amount else {
+                guard try data.balance >= pendingTransaction.amount else {
                     throw TransactionValidationFailure(state: .insufficientFunds)
+                }
+                guard try data.minimumAmount <= pendingTransaction.amount else {
+                    throw TransactionValidationFailure(state: .belowMinimumLimit)
                 }
                 return .just(event: .completed)
             }

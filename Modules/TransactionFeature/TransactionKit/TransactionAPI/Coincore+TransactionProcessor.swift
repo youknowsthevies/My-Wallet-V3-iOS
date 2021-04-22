@@ -109,26 +109,49 @@ extension Coincore {
     private func createTradingProcessor(with account: CryptoTradingAccount,
                                         target: TransactionTarget,
                                         action: AssetAction) -> Single<TransactionProcessor> {
-        let engine: TransactionEngine
-        switch target {
-        case is CryptoReceiveAddress:
-            engine = TradingToOnChainTransactionEngine()
-        case is TradingAccount:
-            engine = TradingToTradingSwapTransactionEngine(
-                quotesEngine: SwapQuotesEngine()
-            )
-        case is CryptoAccount:
-            engine = TradingToOnChainTransactionEngine()
-        case is FiatAccount:
+        switch action {
+        case .swap:
+            return createTradingProcessorSwap(with: account, target: target)
+        case .send:
+            return createTradingProcessorSend(with: account, target: target)
+        case .sell:
             unimplemented() // CustodialSellTxEngine
+        case .deposit, .receive, .viewActivity, .withdraw:
+            unimplemented()
+        }
+    }
+
+    private func createTradingProcessorSwap(with account: CryptoTradingAccount,
+                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+        Single.just(
+            TransactionProcessor(
+                sourceAccount: account,
+                transactionTarget: target as! CryptoTradingAccount,
+                engine: TradingToTradingSwapTransactionEngine(
+                    quotesEngine: SwapQuotesEngine()
+                )
+            )
+        )
+    }
+
+    private func createTradingProcessorSend(with account: CryptoTradingAccount,
+                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+        let receiveAddressTarget: Single<ReceiveAddress>
+        switch target {
+        case is ReceiveAddress:
+            receiveAddressTarget = .just(target as! ReceiveAddress)
+        case is CryptoAccount:
+            receiveAddressTarget = (target as! CryptoAccount).receiveAddress
         default:
             impossible()
         }
-        let processor = TransactionProcessor(
-            sourceAccount: account,
-            transactionTarget: target,
-            engine: engine
-        )
-        return .just(processor)
+        return receiveAddressTarget
+            .map { receiveAddress -> TransactionProcessor in
+                TransactionProcessor(
+                    sourceAccount: account,
+                    transactionTarget: receiveAddress,
+                    engine: TradingToOnChainTransactionEngine()
+                )
+            }
     }
 }

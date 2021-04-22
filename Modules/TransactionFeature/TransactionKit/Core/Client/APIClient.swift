@@ -18,7 +18,7 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
                                     OrderTransactionLimitsClientAPI &
                                     OrderFetchingClientAPI &
                                     OrderUpdateClientAPI &
-                                    InternalTransferClientAPI &
+                                    CustodialTransferClientAPI &
                                     BitPayClientAPI
 
 /// TransactionKit network client
@@ -30,6 +30,10 @@ final class APIClient: TransactionKitClientAPI {
         static let minor = "minor"
         static let networkFee = "networkFee"
         static let currency = "currency"
+        static let product = "product"
+        static let paymentMethod = "paymentMethod"
+        static let simpleBuy = "SIMPLEBUY"
+        static let `default` = "DEFAULT"
     }
         
     private enum Path {
@@ -37,9 +41,12 @@ final class APIClient: TransactionKitClientAPI {
         static let createOrder = ["custodial", "trades"]
         static let availablePairs = ["custodial", "trades", "pairs"]
         static let fetchOrder = createOrder
-        static let updateOrder = createOrder
         static let limits = ["trades", "limits"]
         static let transfer = [ "payments", "withdrawals" ]
+        static let transferFees = [ "payments", "withdrawals", "fees" ]
+        static func updateOrder(transactionID: String) -> [String] {
+            createOrder + [transactionID]
+        }
     }
     
     private enum BitPay {
@@ -111,7 +118,7 @@ final class APIClient: TransactionKitClientAPI {
 
     func updateOrder(with transactionId: String, updateRequest: OrderUpdateRequest) -> Completable {
         let request = requestBuilder.post(
-            path: Path.createOrder + [transactionId],
+            path: Path.updateOrder(transactionID: transactionId),
             body: try? updateRequest.encode(),
             authenticated: true
         )!
@@ -136,15 +143,34 @@ final class APIClient: TransactionKitClientAPI {
             )
     }
     
-    // MARK: - InternalTransferClientAPI
+    // MARK: - CustodialTransferClientAPI
     
-    func send(transferRequest: InternalTransferRequest) -> Single<CustodialWithdrawalResponse> {
+    func send(transferRequest: CustodialTransferRequest) -> Single<CustodialTransferResponse> {
         let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let request = requestBuilder.post(
             path: Path.transfer,
             body: try? transferRequest.encode(),
             headers: headers,
             authenticated: true
+        )!
+        return networkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
+    }
+
+    func custodialTransferFees() -> Single<CustodialTransferFeesResponse> {
+        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
+        let parameters: [URLQueryItem] = [
+            URLQueryItem(name: Parameter.product, value: Parameter.simpleBuy),
+            URLQueryItem(name: Parameter.paymentMethod, value: Parameter.default)
+        ]
+        let request = requestBuilder.get(
+            path: Path.transferFees,
+            parameters: parameters,
+            headers: headers,
+            authenticated: false
         )!
         return networkAdapter
             .perform(

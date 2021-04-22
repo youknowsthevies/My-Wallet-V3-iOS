@@ -17,19 +17,17 @@ public protocol TradingBalanceClientAPI: class {
 }
 
 final class CustodialClient: TradingBalanceClientAPI,
-                             CustodyWithdrawalClientAPI,
                              CustodialPaymentAccountClientAPI,
                              CustodialPendingDepositClientAPI {
-    
+
     // MARK: - Types
-    
+
     private enum Path {
-        static let pendingDeposit = ["payments", "deposits", "pending"]
         static let withdrawal = ["payments", "withdrawals"]
         static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
         static let custodialBalance = [ "accounts", "simplebuy" ]
     }
-    
+
     // MARK: - Properties
     
     public var balance: Single<CustodialBalanceResponse?> {
@@ -77,25 +75,7 @@ final class CustodialClient: TradingBalanceClientAPI,
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?> {
         balance
     }
-    
-    // MARK: - CustodyWithdrawalClientAPI
-    
-    func withdraw(cryptoValue: CryptoValue, destination: String) -> Single<CustodialWithdrawalResponse> {
-        let withdrawalRequest = CustodialWithdrawalRequest(address: destination, cryptoValue: cryptoValue)
-        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
-        let request = requestBuilder.post(
-            path: Path.withdrawal,
-            body: try? withdrawalRequest.encode(),
-            headers: headers,
-            authenticated: true
-        )!
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
-    }
-    
+
     // MARK: - CustodialPaymentAccountClientAPI
     
     func custodialPaymentAccount(for cryptoCurrency: CryptoCurrency) -> Single<PaymentAccount.Response> {

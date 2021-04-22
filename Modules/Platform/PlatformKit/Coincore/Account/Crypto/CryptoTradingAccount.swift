@@ -63,7 +63,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .withdrawableMoney
     }
 
-    // swiftlint:disable:next opening_brace
     public var onTxCompleted: (TransactionResult) -> Completable {
         { [weak self] result -> Completable in
             guard let self = self else {
