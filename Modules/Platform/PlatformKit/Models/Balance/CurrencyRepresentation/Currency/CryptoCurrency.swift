@@ -93,7 +93,7 @@ extension CryptoCurrency {
         }
     }
 
-    /// CryptoCurrency is supported in Withdrawal.
+    /// CryptoCurrency is supported in Withdrawal (send crypto from custodial to non custodial account).
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialWithdrawalSupport: Bool {
         switch self {
