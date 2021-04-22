@@ -35,11 +35,9 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     private let closeButtonRelay = PublishRelay<Void>()
 
     private var keyboardInteractionController: KeyboardInteractionController!
-    private let noAnimationConfiguration = AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none)
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(animationConfiguration: noAnimationConfiguration,
-                     configureCell: { [weak self] dataSource, tableView, indexPath, item in
+        RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             
             let cell: UITableViewCell
