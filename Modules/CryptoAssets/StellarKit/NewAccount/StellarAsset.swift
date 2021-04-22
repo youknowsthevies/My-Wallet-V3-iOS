@@ -34,17 +34,20 @@ final class StellarAsset: CryptoAsset {
                 StellarCryptoAccount(id: account.publicKey, label: account.label, hdAccountIndex: account.index)
             }
     }
-    
+
+    let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let accountRepository: StellarWalletAccountRepository
     private let errorRecorder: ErrorRecording
 
     init(accountRepository: StellarWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.accountRepository = accountRepository
         self.errorRecorder = errorRecorder
+        self.kycTiersService = kycTiersService
     }
 
     func initialize() -> Completable {
