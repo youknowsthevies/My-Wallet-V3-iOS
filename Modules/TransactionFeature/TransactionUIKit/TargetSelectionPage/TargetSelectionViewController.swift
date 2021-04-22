@@ -37,7 +37,8 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
     private var keyboardInteractionController: KeyboardInteractionController!
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
+        RxDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none),
+                     configureCell: { [weak self] dataSource, tableView, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             
             let cell: UITableViewCell
