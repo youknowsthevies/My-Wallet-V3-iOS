@@ -60,19 +60,12 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         guard let authenticator = authenticator else {
             fatalError("Authenticator missing")
         }
+        let execute = self.execute
         return authenticator
-            .authenticate { [weak self] token in
-                guard let self = self else {
-                    let empty = Empty(
-                        completeImmediately: true,
-                        outputType: ServerResponse.self,
-                        failureType: NetworkCommunicatorError.self
-                    )
-                    return empty.eraseToAnyPublisher()
-                }
+            .authenticate { [execute] token in
                 var request = request
                 request.add(authenticationToken: token)
-                return self.execute(request: request)
+                return execute(request)
             }
     }
     
