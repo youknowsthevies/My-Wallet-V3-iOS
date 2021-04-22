@@ -12,13 +12,13 @@ import ToolKit
 public enum NetworkCommunicatorError: Error {
     case urlError(URLError)
     case serverError(HTTPRequestServerError)
-    case rawServerError(ServerErrorResponseNew)
+    case rawServerError(ServerErrorResponse)
     case payloadError(HTTPRequestPayloadError)
     case authentication(Error)
     
     func analyticsEvent(
         for request: NetworkRequest,
-        decodeErrorResponse: ((ServerErrorResponseNew) -> String?)? = nil
+        decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
     ) -> AnalyticsEvent? {
         switch self {
         case .urlError(let urlError):

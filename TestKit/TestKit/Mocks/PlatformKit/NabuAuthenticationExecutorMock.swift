@@ -16,7 +16,7 @@ final class NabuAuthenticationExecutorMock: NabuAuthenticationExecutorAPI {
     
     func authenticate(
         _ networkResponsePublisher: @escaping NetworkResponsePublisher
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         unimplemented()
     }
 }

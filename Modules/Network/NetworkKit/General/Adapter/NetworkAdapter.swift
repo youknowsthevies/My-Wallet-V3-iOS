@@ -51,7 +51,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     }
 }
 
-extension AnyPublisher where Output == ServerResponseNew,
+extension AnyPublisher where Output == ServerResponse,
                             Failure == NetworkCommunicatorError {
     
     fileprivate func decodeOptional<ResponseType: Decodable>(
@@ -87,13 +87,13 @@ extension AnyPublisher where Output == ServerResponseNew,
     }
 }
 
-extension AnyPublisher where Output == ServerResponseNew,
+extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkCommunicatorError {
     
     fileprivate func decodeError<ErrorResponseType: ErrorResponseConvertible>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
-    ) -> AnyPublisher<ServerResponseNew, ErrorResponseType> {
+    ) -> AnyPublisher<ServerResponse, ErrorResponseType> {
         mapError { communicatorError -> ErrorResponseType in
             switch communicatorError {
             case .rawServerError(let rawServerError):
@@ -108,7 +108,7 @@ extension AnyPublisher where Output == ServerResponseNew,
     }
 }
 
-extension AnyPublisher where Output == ServerResponseNew,
+extension AnyPublisher where Output == ServerResponse,
                              Failure: ErrorResponseConvertible {
     
     fileprivate func decodeSuccess<ResponseType: Decodable>(
@@ -139,7 +139,7 @@ extension AnyPublisher where Output == ServerResponseNew,
     }
 }
 
-extension AnyPublisher where Output == ServerResponseNew,
+extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkCommunicatorError {
     
     fileprivate func decodeSuccess<ResponseType: Decodable>(
