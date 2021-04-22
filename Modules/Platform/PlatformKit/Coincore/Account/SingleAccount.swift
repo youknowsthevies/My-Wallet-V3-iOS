@@ -11,12 +11,9 @@ import ToolKit
 
 /// A BlockchainAccount that represents a single account, opposed to a collection of accounts.
 public protocol SingleAccount: BlockchainAccount, TransactionTarget {
-
-    var actionableBalance: Single<MoneyValue> { get }
     var currencyType: CurrencyType { get }
     var accountType: SingleAccountType { get }
     var isDefault: Bool { get }
-    var receiveAddress: Single<ReceiveAddress> { get }
     var sourceState: Single<SourceState> { get }
 }
 

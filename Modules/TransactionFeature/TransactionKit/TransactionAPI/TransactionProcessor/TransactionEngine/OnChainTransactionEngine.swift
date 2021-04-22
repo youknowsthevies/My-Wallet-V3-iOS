@@ -12,6 +12,10 @@ import RxSwift
 public protocol OnChainTransactionEngine: TransactionEngine {}
 
 extension OnChainTransactionEngine {
+    
+    public var sourceCryptoAccount: CryptoAccount {
+        sourceAccount as! CryptoAccount
+    }
 
     /// A default implementation for `assertInputsValid()` that validates that `transactionTarget`
     /// is a `CryptoReceiveAddress` and that its address isn't empty, and that the source account and
@@ -21,7 +25,7 @@ extension OnChainTransactionEngine {
             preconditionFailure("\(String(describing: transactionTarget)) is not CryptoReceiveAddress")
         }
         precondition(!target.address.isEmpty)
-        precondition(sourceAccount.asset == target.asset)
+        precondition(sourceCryptoAccount.asset == target.asset)
     }
     
     public func doPostExecute(transactionResult: TransactionResult) -> Completable {
@@ -30,12 +34,8 @@ extension OnChainTransactionEngine {
     
     public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
-        guard let source = sourceAccount else {
-            fatalError("Expected a sourceAccount")
-        }
         if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {
             return updateFeeSelection(
-                cryptoCurrency: source.asset,
                 pendingTransaction: pendingTransaction,
                 newFeeLevel: level,
                 customFeeAmount: customFeeAmount
@@ -45,10 +45,11 @@ extension OnChainTransactionEngine {
         }
     }
     
-    public func updateFeeSelection(cryptoCurrency: CryptoCurrency,
-                                   pendingTransaction: PendingTransaction,
-                                   newFeeLevel: FeeLevel,
-                                   customFeeAmount: MoneyValue?) -> Single<PendingTransaction> {
+    public func updateFeeSelection(
+        pendingTransaction: PendingTransaction,
+        newFeeLevel: FeeLevel,
+        customFeeAmount: MoneyValue?
+    ) -> Single<PendingTransaction> {
         // TODO: Store default fee level
         let pendingTransaction = pendingTransaction
             .update(selectedFeeLevel: newFeeLevel, customFeeAmount: customFeeAmount)

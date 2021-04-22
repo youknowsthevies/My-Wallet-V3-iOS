@@ -14,6 +14,14 @@ import ToolKit
 final class AllAccountsGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
+    var actionableBalance: Single<MoneyValue> {
+        unimplemented()
+    }
+    
+    var receiveAddress: Single<ReceiveAddress> {
+        unimplemented()
+    }
+    
     let accounts: [SingleAccount]
     let id: String = "AllAccountsGroup"
     let label: String = LocalizedString.allWallets

@@ -34,7 +34,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     let requireSecondPassword: Bool = false
     let isNoteSupported: Bool
     var askForRefreshConfirmation: ((Bool) -> Completable)!
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     var sourceTradingAccount: CryptoTradingAccount! {
@@ -45,7 +45,6 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         transactionTarget as! CryptoReceiveAddress
     }
     var targetAsset: CryptoCurrency { target.asset }
-    var sourceAsset: CryptoCurrency { sourceAccount.asset }
     
     // MARK: - Private Properties
 
@@ -83,7 +82,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         available: .zero(currency: self.sourceAsset),
                         feeAmount: .zero(currency: self.sourceAsset),
                         feeForFullAvailable: .zero(currency: self.sourceAsset),
-                        feeSelection: .empty(asset: self.sourceAsset),
+                        feeSelection: .empty(asset: self.sourceCryptoCurrency),
                         selectedFiatCurrency: fiatCurrency,
                         minimumLimit: .zero(currency: self.sourceAsset)
                     )
@@ -186,8 +185,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceAsset)),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: sourceAsset))
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: sourceCryptoCurrency)),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: sourceCryptoCurrency))
         )
         .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
         .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
@@ -203,9 +202,9 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
 }

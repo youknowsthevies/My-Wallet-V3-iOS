@@ -32,7 +32,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var requireSecondPassword: Bool
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     var fiatCurrencyService: FiatCurrencyServiceAPI
     var priceService: PriceServiceAPI
@@ -53,9 +53,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         userFiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
 
@@ -85,7 +85,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceAccount.asset == .stellar)
+        precondition(sourceCryptoCurrency == .stellar)
     }
 
     func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {

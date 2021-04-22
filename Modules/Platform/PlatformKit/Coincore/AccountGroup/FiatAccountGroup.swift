@@ -24,6 +24,14 @@ public class FiatAccountGroup: AccountGroup {
         .error(AccountGroupError.noBalance)
     }
     
+    public var receiveAddress: Single<ReceiveAddress> {
+        .error(AccountGroupError.noReceiveAddress)
+    }
+    
+    public var actionableBalance: Single<MoneyValue> {
+        .error(AccountGroupError.noBalance)
+    }
+    
     public var pendingBalance: Single<MoneyValue> {
         .error(AccountGroupError.noBalance)
     }

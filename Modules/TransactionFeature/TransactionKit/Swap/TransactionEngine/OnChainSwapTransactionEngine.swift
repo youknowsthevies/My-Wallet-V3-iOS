@@ -28,7 +28,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let requireSecondPassword: Bool
     let tradeLimitsService: TradeLimitsAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     init(quotesEngine: SwapQuotesEngine,

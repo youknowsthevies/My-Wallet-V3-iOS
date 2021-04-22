@@ -47,6 +47,13 @@ public protocol BlockchainAccount {
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
+    
+    /// The `ReceiveAddress` for the given account
+    var receiveAddress: Single<ReceiveAddress> { get }
+    
+    /// The balance, not including uncleared and locked,
+    /// that the user is able to utilize in a transaction
+    var actionableBalance: Single<MoneyValue> { get }
 }
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {
