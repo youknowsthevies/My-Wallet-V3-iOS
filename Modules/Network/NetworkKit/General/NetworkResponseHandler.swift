@@ -16,7 +16,7 @@ public protocol NetworkResponseHandlerAPI {
     ///   - elements: the `data` and `response` to handle
     ///   - request: the request corresponding to this response
     func handle(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
 }
@@ -24,7 +24,7 @@ public protocol NetworkResponseHandlerAPI {
 final class NetworkResponseHandler: NetworkResponseHandlerAPI {
     
     func handle(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
         handler(elements: elements, for: request).publisher
@@ -33,10 +33,10 @@ final class NetworkResponseHandler: NetworkResponseHandlerAPI {
     // MARK: - Private methods
     
     private func handler(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
     ) -> Result<ServerResponse, NetworkCommunicatorError> {
-        Result<(data: Data, response: URLResponse), NetworkCommunicatorError>.success(elements)
+        Result<(data: Data?, response: URLResponse?), NetworkCommunicatorError>.success(elements)
             .flatMap { elements -> Result<ServerResponse, NetworkCommunicatorError> in
                 guard let response = elements.response as? HTTPURLResponse else {
                     return .failure(.serverError(.badResponse))

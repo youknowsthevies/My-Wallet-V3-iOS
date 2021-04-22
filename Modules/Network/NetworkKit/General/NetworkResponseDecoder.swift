@@ -129,7 +129,6 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedErrorResponse = try jsonDecoder.decode(ErrorResponseType.self, from: payload)
         } catch let decodingError {
-            Logger.shared.error(error.response.url!.absoluteString)
             let rawPayload = String(data: payload, encoding: .utf8) ?? ""
             let errorMessage = debugErrorMessage(
                 for: decodingError,
@@ -138,7 +137,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 request: request,
                 rawPayload: rawPayload
             )
-            Logger.shared.debug(errorMessage)
+            Logger.shared.error(errorMessage)
             // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
             // #if INTERNAL_BUILD
             // fatalError(errorMessage)
@@ -176,7 +175,6 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
         return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
             .flatMapError { decodingError -> Result<ResponseType, NetworkCommunicatorError> in
-                Logger.shared.error(response.response.url!.absoluteString)
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
                     for: decodingError,
@@ -185,7 +183,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                     request: request,
                     rawPayload: rawPayload
                 )
-                Logger.shared.debug(errorMessage)
+                Logger.shared.error(errorMessage)
                 // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
                 // #if INTERNAL_BUILD
                 // fatalError(errorMessage)
