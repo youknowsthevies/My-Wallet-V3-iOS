@@ -178,7 +178,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
        
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 AnyPublisher.just(
                     ServerResponse(
                         payload: token.data(using: .utf8),
@@ -301,7 +301,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 AnyPublisher.just(
                     ServerResponse(
                         payload: token.data(using: .utf8),
@@ -474,7 +474,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 if token == newSessionTokenResponse.token {
                     return AnyPublisher.just(
                         ServerResponse(

@@ -12,7 +12,7 @@ import NetworkKit
 
 public protocol UserCreationClientAPI: class {
     
-    func createUser(for jwtToken: String) -> AnyPublisher<NabuOfflineTokenResponse, NetworkCommunicatorError>
+    func createUser(for jwtToken: String) -> AnyPublisher<NabuOfflineTokenResponse, NetworkError>
 }
 
 final class UserCreationClient: UserCreationClientAPI {
@@ -40,7 +40,7 @@ final class UserCreationClient: UserCreationClientAPI {
         self.requestBuilder = requestBuilder
     }
     
-    func createUser(for jwtToken: String) -> AnyPublisher<NabuOfflineTokenResponse, NetworkCommunicatorError> {
+    func createUser(for jwtToken: String) -> AnyPublisher<NabuOfflineTokenResponse, NetworkError> {
         struct Payload: Encodable {
             let jwt: String
         }

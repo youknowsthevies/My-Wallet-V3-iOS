@@ -71,7 +71,7 @@ enum APIErrorEvent: AnalyticsEvent {
     }
     
     init?(request: NetworkRequest,
-          error: NetworkCommunicatorError,
+          error: NetworkError,
           decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil) {
         switch error {
         case .rawServerError(let rawServerError):

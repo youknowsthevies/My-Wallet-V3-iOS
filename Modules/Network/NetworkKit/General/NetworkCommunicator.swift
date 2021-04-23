@@ -16,7 +16,7 @@ protocol NetworkCommunicatorAPI {
     /// - Parameter request: the request object describes the network request to be performed
     func dataTaskPublisher(
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
 public enum BlockchainURLError: Error {
@@ -53,7 +53,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     func dataTaskPublisher(
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
         guard request.authenticated else {
             return execute(request: request)
         }
@@ -73,7 +73,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     
     private func execute(
         request: NetworkRequest
-    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
         let session = self.session
         return AnyPublisher<(data: Data?, response: URLResponse?), BlockchainURLError>.create { [session] observer -> Cancellable in
             let task = session.dataTask(with: request.URLRequest) { data, response, error in
@@ -95,8 +95,8 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 task.cancel()
             }
         }
-        .mapError(NetworkCommunicatorError.urlError)
-        .flatMap { elements -> AnyPublisher<ServerResponse, NetworkCommunicatorError> in
+        .mapError(NetworkError.urlError)
+        .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
             request.responseHandler.handle(elements: elements, for: request)
         }
         .eraseToAnyPublisher()
@@ -134,13 +134,13 @@ extension URLSession: NetworkSession {
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkCommunicatorError {
+                             Failure == NetworkError {
     
     fileprivate func recordErrors(
         on recorder: AnalyticsEventRecording?,
         request: NetworkRequest,
-        errorMapper: @escaping (NetworkRequest, NetworkCommunicatorError) -> AnalyticsEvent?
-    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
+        errorMapper: @escaping (NetworkRequest, NetworkError) -> AnalyticsEvent?
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
         handleEvents(
             receiveCompletion: { completion in
                 guard case .failure(let communicatorError) = completion else {

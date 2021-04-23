@@ -31,7 +31,7 @@ final class NabuAuthenticator: AuthenticatorAPI {
     
     func authenticate(
         _ networkResponsePublisher: @escaping NetworkResponsePublisher
-    ) -> AnyPublisher<ServerResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
         authenticationExecutor.authenticate(networkResponsePublisher)
     }
 }

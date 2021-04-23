@@ -17,18 +17,18 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ResponseType?, NetworkError> {
         decode()
     }
     
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         decode()
     }
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         decode()
@@ -36,28 +36,28 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
     
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ResponseType, NetworkError> {
         decode()
     }
     
     private func decode<ResponseType: Decodable>(
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ResponseType, NetworkError> {
         guard
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(NetworkCommunicatorError.payloadError(.emptyData))
+            return .failure(NetworkError.payloadError(.emptyData))
         }
         return .just(fixture)
     }
     
-    private func decode<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    private func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         guard
             let response = response,
             let fixture: ResponseType = Fixtures.load(name: response.filename, in: response.bundle)
         else {
-            return .failure(ErrorResponseType.from(NetworkCommunicatorError.payloadError(.emptyData)))
+            return .failure(ErrorResponseType.from(NetworkError.payloadError(.emptyData)))
         }
         return .just(fixture)
     }

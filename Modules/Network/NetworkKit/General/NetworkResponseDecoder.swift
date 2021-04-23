@@ -16,15 +16,15 @@ public protocol NetworkResponseDecoderAPI {
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
-    ) -> Result<ResponseType?, NetworkCommunicatorError>
+    ) -> Result<ResponseType?, NetworkError>
     
-    func decodeOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
     ) -> Result<ResponseType?, ErrorResponseType>
     
-    func decode<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType>
@@ -32,9 +32,9 @@ public protocol NetworkResponseDecoderAPI {
     func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
-    ) -> Result<ResponseType, NetworkCommunicatorError>
+    ) -> Result<ResponseType, NetworkError>
     
-    func decode<ErrorResponseType: ErrorResponseConvertible>(
+    func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType
@@ -66,7 +66,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
-    ) -> Result<ResponseType?, NetworkCommunicatorError> {
+    ) -> Result<ResponseType?, NetworkError> {
         decode(
             response: response,
             for: request,
@@ -79,7 +79,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
     
-    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
@@ -97,7 +97,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         .mapError(ErrorResponseType.from)
     }
     
-    public func decode<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    public func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType> {
@@ -108,7 +108,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     public func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
-    ) -> Result<ResponseType, NetworkCommunicatorError> {
+    ) -> Result<ResponseType, NetworkError> {
         decode(
             response: response,
             for: request,
@@ -118,7 +118,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
     
-    public func decode<ErrorResponseType: ErrorResponseConvertible>(
+    public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType {
@@ -159,8 +159,8 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     private func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest,
-        emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkCommunicatorError>
-    ) -> Result<ResponseType, NetworkCommunicatorError> {
+        emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
+    ) -> Result<ResponseType, NetworkError> {
         guard ResponseType.self != EmptyNetworkResponse.self else {
             let emptyResponse: ResponseType = EmptyNetworkResponse() as! ResponseType
             return .success(emptyResponse)
@@ -174,7 +174,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             return .success(rawResponse)
         }
         return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
-            .flatMapError { decodingError -> Result<ResponseType, NetworkCommunicatorError> in
+            .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
                     for: decodingError,

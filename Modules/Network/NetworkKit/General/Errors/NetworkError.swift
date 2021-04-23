@@ -1,5 +1,5 @@
 //
-//  NetworkCommunicatorError.swift
+//  NetworkError.swift
 //  NetworkKit
 //
 //  Created by Jack Pooley on 25/03/2021.
@@ -9,7 +9,7 @@
 import ToolKit
 
 /// A networking error returned by the network layer, this can be mapped to user facing errors at a high level
-public enum NetworkCommunicatorError: Error {
+public enum NetworkError: Error {
     case urlError(BlockchainURLError)
     case serverError(HTTPRequestServerError)
     case rawServerError(ServerErrorResponse)
