@@ -24,6 +24,17 @@ enum TargetSelectionInputValidation: Equatable {
             return nil
         }
     }
+
+    var isAccountSelection: Bool {
+        switch self {
+        case .account:
+            return true
+        case .empty,
+             .QR,
+             .text:
+            return false
+        }
+    }
     
     var isValid: Bool {
         switch self {

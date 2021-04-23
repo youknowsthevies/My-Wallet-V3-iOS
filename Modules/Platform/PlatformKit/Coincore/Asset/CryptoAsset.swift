@@ -13,9 +13,17 @@ import ToolKit
 public protocol CryptoAsset: Asset {
     var asset: CryptoCurrency { get }
     var defaultAccount: Single<SingleAccount> { get }
+    var kycTiersService: KYCTiersServiceAPI { get }
+    var canTransactToCustodial: Single<Bool> { get }
 }
 
 extension CryptoAsset {
+    public var canTransactToCustodial: Single<Bool> {
+        kycTiersService.tiers.map { tiers in
+            tiers.isTier1Approved || tiers.isTier2Approved
+        }
+    }
+
     public func initialize() -> Completable {
         .empty()
     }
@@ -53,7 +61,10 @@ extension CryptoAsset {
             return accountGroup(filter: .nonCustodial)
                 .map(\.accounts)
         case is CryptoNonCustodialAccount:
-            return accountGroup(filter: .all)
+            return canTransactToCustodial
+                .flatMap(weak: self) { (self, canTransactToCustodial) -> Single<AccountGroup> in
+                    self.accountGroup(filter: canTransactToCustodial ? .all : .nonCustodial)
+                }
                 .map(\.accounts)
                 .flatMapFilter(excluding: crypto.id)
         default:

@@ -29,6 +29,7 @@ class BitcoinCashAsset: CryptoAsset {
             }
     }
 
+    let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinCashWalletAccountRepository
     private let errorRecorder: ErrorRecording
@@ -37,11 +38,13 @@ class BitcoinCashAsset: CryptoAsset {
     init(repository: BitcoinCashWalletAccountRepository = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         addressValidator: BitcoinCashAddressValidatorAPI = resolve()) {
+         addressValidator: BitcoinCashAddressValidatorAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.repository = repository
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
         self.addressValidator = addressValidator
+        self.kycTiersService = kycTiersService
     }
 
     func initialize() -> Completable {

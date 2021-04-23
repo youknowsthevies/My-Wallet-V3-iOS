@@ -24,14 +24,14 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     }
 
     enum Interactor: Equatable {
-        case singleAccountAvailableTarget(SingleAccount, Bool)
+        case singleAccountAvailableTarget(RadioAccountCellInteractor)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
         case walletInputField(SingleAccount, TextFieldViewModel)
         
         var account: SingleAccount {
             switch self {
-            case .singleAccountAvailableTarget(let account, _):
-                return account
+            case .singleAccountAvailableTarget(let interactor):
+                return interactor.account
             case .singleAccount(let account, _):
                 return account
             case .walletInputField(let account, _):
@@ -92,12 +92,11 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
-        case .singleAccountAvailableTarget(let account, let selected):
-            self.account = account
+        case .singleAccountAvailableTarget(let interactor):
+            self.account = interactor.account
             presenter = .radioSelection(
                 RadioAccountCellPresenter(
-                    account: account,
-                    selected: selected,
+                    interactor: interactor,
                     accessibilityPrefix: assetAction.accessibilityPrefix
                 )
             )

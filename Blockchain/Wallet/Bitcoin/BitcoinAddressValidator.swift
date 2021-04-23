@@ -30,5 +30,6 @@ final class BitcoinAddressValidator: BitcoinAddressValidatorAPI {
                 throw BitcoinReceiveAddressError.jsReturnedNil
             }
         }
+        .subscribeOn(MainScheduler.asyncInstance)
     }
 }

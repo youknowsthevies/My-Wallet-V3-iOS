@@ -54,8 +54,6 @@ extension DependencyContainer {
 
         // MARK: CustodialClient
 
-        factory { CustodialClient() as CustodyWithdrawalClientAPI }
-
         factory { CustodialClient() as CustodialPaymentAccountClientAPI }
 
         factory { CustodialClient() as CustodialPendingDepositClientAPI }

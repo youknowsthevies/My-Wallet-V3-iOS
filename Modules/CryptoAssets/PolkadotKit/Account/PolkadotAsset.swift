@@ -34,12 +34,15 @@ final class PolkadotAsset: CryptoAsset {
 
     // MARK: - Private Properties
 
+    let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
 
     // MARK: - Init
 
-    init(exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
+    init(exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
+        self.kycTiersService = kycTiersService
    }
 
     func parse(address: String) -> Single<ReceiveAddress?> {

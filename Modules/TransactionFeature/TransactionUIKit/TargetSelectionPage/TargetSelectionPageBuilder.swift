@@ -64,12 +64,14 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
             action: action,
             selectionPageReducer: reducer
         )
+        let radioSelectionHandler = RadioSelectionHandler()
         let interactor = TargetSelectionPageInteractor(
             targetSelectionPageModel: .init(interactor: TargetSelectionInteractor()),
             presenter: presenter,
             accountProvider: accountProvider,
             listener: listener,
             action: action,
+            radioSelectionHandler: radioSelectionHandler,
             backButtonInterceptor: backButtonInterceptor
         )
         return TargetSelectionPageRouter(interactor: interactor, viewController: viewController)

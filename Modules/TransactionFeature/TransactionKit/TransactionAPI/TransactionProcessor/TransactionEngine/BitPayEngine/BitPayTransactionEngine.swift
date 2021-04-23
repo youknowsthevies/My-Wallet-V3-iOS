@@ -13,7 +13,7 @@ import ToolKit
 
 final class BitPayTransactionEngine: TransactionEngine {
     
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var transactionTarget: TransactionTarget!
     
@@ -56,7 +56,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         self.analyticsRecorder = analyticsRecorder
     }
     
-    func start(sourceAccount: CryptoAccount,
+    func start(sourceAccount: BlockchainAccount,
                transactionTarget: TransactionTarget,
                askForRefreshConfirmation: @escaping (Bool) -> Completable) {
         self.sourceAccount = sourceAccount
@@ -67,7 +67,7 @@ final class BitPayTransactionEngine: TransactionEngine {
     
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
-        precondition(sourceAccount.asset == .bitcoin)
+        precondition(sourceCryptoCurrency == .bitcoin)
         precondition(transactionTarget is BitPayInvoiceTarget)
         precondition(onChainEngine is BitPayClientEngine)
         onChainEngine.assertInputsValid()
@@ -179,7 +179,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         bitpayService
             .verifySignedTransaction(
                 invoiceID: invoiceId,
-                currency: sourceAccount.asset,
+                currency: sourceCryptoCurrency,
                 transactionHex: transaction.txHash,
                 transactionSize: transaction.msgSize
             )
@@ -188,7 +188,7 @@ final class BitPayTransactionEngine: TransactionEngine {
                 bitpayService
                         .submitBitPayPayment(
                             invoiceID: invoiceId,
-                            currency: self.sourceAccount.asset,
+                            currency: sourceCryptoCurrency,
                             transactionHex: transaction.txHash,
                             transactionSize: transaction.msgSize
                         )

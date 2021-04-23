@@ -18,7 +18,10 @@ public protocol TransactionEngine: AnyObject {
     var canTransactFiat: Bool { get }
     /// askForRefreshConfirmation: Must be set by TransactionProcessor
     var askForRefreshConfirmation: (AskForRefreshConfirmation)! { get set }
-    var sourceAccount: CryptoAccount! { get set }
+    
+    /// The account the user is transacting from
+    var sourceAccount: BlockchainAccount! { get set }
+    
     var transactionTarget: TransactionTarget! { get set }
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> { get }
     var requireSecondPassword: Bool { get }
@@ -27,7 +30,7 @@ public protocol TransactionEngine: AnyObject {
     var transactionExchangeRatePair: Observable<MoneyValuePair> { get }
 
     func assertInputsValid()
-    func start(sourceAccount: CryptoAccount,
+    func start(sourceAccount: BlockchainAccount,
                transactionTarget: TransactionTarget,
                askForRefreshConfirmation: @escaping AskForRefreshConfirmation)
     func stop(pendingTransaction: PendingTransaction)
@@ -81,12 +84,26 @@ public extension TransactionEngine {
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
+    
+    var sourceAsset: CurrencyType {
+        guard let account = sourceAccount as? SingleAccount else {
+            fatalError("Expected a SingleAccount: \(String(describing: sourceAccount))")
+        }
+        return account.currencyType
+    }
+    
+    var sourceCryptoCurrency: CryptoCurrency {
+        guard let crypto = sourceAsset.cryptoCurrency else {
+            fatalError("Expected a CryptoCurrency type: \(sourceAsset.currency)")
+        }
+        return crypto
+    }
 
     var canTransactFiat: Bool { false }
 
     func stop(pendingTransaction: PendingTransaction) { }
 
-    func start(sourceAccount: CryptoAccount,
+    func start(sourceAccount: BlockchainAccount,
                transactionTarget: TransactionTarget,
                askForRefreshConfirmation: @escaping (_ revalidate: Bool) -> Completable) {
         self.sourceAccount = sourceAccount

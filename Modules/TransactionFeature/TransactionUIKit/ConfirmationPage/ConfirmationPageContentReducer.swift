@@ -114,22 +114,19 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let errorModels: [DetailsScreen.CellType] = pendingTransaction.confirmations
             .filter(\.isErrorNotice)
             .compactMap(\.formatted)
-            .map { (_: String, subtitle: String) -> BadgeAsset.Value.Interaction.BadgeItem in
-                .init(type: .destructive, description: subtitle)
+            .map { (_: String, subtitle: String) -> DefaultLabelContentPresenter in
+                DefaultLabelContentPresenter(
+                    knownValue: subtitle,
+                    descriptors: .init(
+                        fontWeight: .semibold,
+                        contentColor: .destructive,
+                        fontSize: 14.0,
+                        accessibilityId: ""
+                    )
+                )
             }
-            .map { badgeItem -> DefaultBadgeAssetInteractor in
-                DefaultBadgeAssetInteractor(initialState: .loaded(next: badgeItem))
-            }
-            .map { interactor -> DefaultBadgeAssetPresenter in
-                DefaultBadgeAssetPresenter(interactor: interactor)
-            }
-            .map { presenter -> MultiBadgeViewModel in
-                let model = MultiBadgeViewModel()
-                model.badgesRelay.accept([presenter])
-                return model
-            }
-            .map { noticeViewModel -> DetailsScreen.CellType in
-                .badges(noticeViewModel)
+            .map { presenter -> DetailsScreen.CellType in
+                .label(presenter)
             }
 
         let memo: TransactionConfirmation.Model.Memo? = pendingTransaction.confirmations

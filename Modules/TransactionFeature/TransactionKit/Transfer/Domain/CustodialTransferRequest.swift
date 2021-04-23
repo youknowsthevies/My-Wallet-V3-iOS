@@ -1,5 +1,5 @@
 //
-//  InternalTransferRequest.swift
+//  CustodialTransferRequest.swift
 //  TransactionKit
 //
 //  Created by Alex McGregor on 2/3/21.
@@ -9,10 +9,8 @@
 import BigInt
 import PlatformKit
 
-/// The `InternalTransferRequest` submitted for transferring custodial funds
-/// from your custodial wallet to your non-custodial. The `address`
-/// should be the corresponding non-custodial wallet.
-public struct InternalTransferRequest: Encodable {
+/// A request submitted for transferring custodial funds from your custodial wallet to any non-custodial address.
+public struct CustodialTransferRequest: Encodable {
     public let address: String
     public let moneyValue: MoneyValue
 

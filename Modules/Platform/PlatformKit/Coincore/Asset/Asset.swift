@@ -11,7 +11,7 @@ import Localization
 import RxSwift
 import ToolKit
 
-public protocol Asset {
+public protocol Asset: AnyObject {
 
     /// Gives a chance for the `Asset` to initialize itself.
     func initialize() -> Completable

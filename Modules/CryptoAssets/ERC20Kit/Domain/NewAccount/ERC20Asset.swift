@@ -30,16 +30,19 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
             }
     }
     
+    let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
     private let errorRecorder: ErrorRecording
     
     init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder
         self.exchangeAccountProvider = exchangeAccountProvider
+        self.kycTiersService = kycTiersService
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {

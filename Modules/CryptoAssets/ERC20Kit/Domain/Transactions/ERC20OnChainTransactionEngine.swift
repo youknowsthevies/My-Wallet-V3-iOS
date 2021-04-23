@@ -33,7 +33,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
             .asObservable()
     }
     
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     
     let requireSecondPassword: Bool
@@ -78,7 +78,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceAccount.asset.isERC20)
+        precondition(sourceCryptoCurrency.isERC20)
     }
     
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -176,7 +176,6 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
             return updateFeeSelection(
-                cryptoCurrency: Token.assetType,
                 pendingTransaction: pendingTransaction,
                 newFeeLevel: value.selectedLevel,
                 customFeeAmount: nil
@@ -352,9 +351,9 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
 }

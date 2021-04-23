@@ -21,7 +21,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     var askForRefreshConfirmation: (AskForRefreshConfirmations)!
     
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     let requireSecondPassword: Bool
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
@@ -77,7 +77,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceAccount.asset == .ethereum)
+        precondition(sourceCryptoCurrency == .ethereum)
     }
     
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -175,7 +175,6 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
             return updateFeeSelection(
-                cryptoCurrency: .ethereum,
                 pendingTransaction: pendingTransaction,
                 newFeeLevel: value.selectedLevel,
                 customFeeAmount: nil
@@ -327,9 +326,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
 }
