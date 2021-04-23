@@ -39,11 +39,13 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
 
     private var textFields: [ValidationTextField] {
-        [addressTextField,
-                apartmentTextField,
-                cityTextField,
-                stateTextField,
-                postalCodeTextField]
+        [
+            addressTextField,
+            apartmentTextField,
+            cityTextField,
+            stateTextField,
+            postalCodeTextField
+        ]
     }
 
     private let webViewService: WebViewServiceAPI = resolve()
@@ -70,11 +72,12 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     /// This is just for convenience purposes when iterating over the fields
     /// and checking validation etc.
     var validationFields: [ValidationTextField] {
-        [addressTextField,
-                apartmentTextField,
-                cityTextField,
-                stateTextField,
-                postalCodeTextField
+        [
+            addressTextField,
+            apartmentTextField,
+            cityTextField,
+            stateTextField,
+            postalCodeTextField
         ]
     }
 
@@ -127,8 +130,8 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         primaryButtonContainer.title = LocalizationConstants.KYC.submit
         primaryButtonContainer.actionBlock = { [weak self] in
-            guard let this = self else { return }
-            this.primaryButtonTapped()
+            guard let self = self else { return }
+            self.primaryButtonTapped()
         }
 
         setupProgressView()

@@ -345,7 +345,7 @@ final class KYCCoordinator: KYCRouterAPI {
                 user: user,
                 country: country,
                 tiersResponse: response
-                ) else { return }
+            ) else { return }
 
             currentPage = nextPage
 
