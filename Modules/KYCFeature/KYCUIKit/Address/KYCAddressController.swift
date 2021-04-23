@@ -34,7 +34,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var addressTextField: ValidationTextField!
     @IBOutlet fileprivate var apartmentTextField: ValidationTextField!
     @IBOutlet fileprivate var cityTextField: ValidationTextField!
-    @IBOutlet fileprivate var stateTextField: ValidationTextField!
+    @IBOutlet fileprivate var stateTextField: ValidationPickerField!
     @IBOutlet fileprivate var postalCodeTextField: ValidationTextField!
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
 
@@ -93,6 +93,10 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     // MARK: KYCCoordinatorDelegate
 
     override func apply(model: KYCPageModel) {
+        // TODO: what about non-US states?
+        stateTextField.options = UnitedStates.states
+            .map(pickerItem(from:))
+            .sorted(by: { $0.title < $1.title })
         guard case let .address(user, country) = model else { return }
         self.user = user
         self.country = country
@@ -100,6 +104,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             validationFieldsPlaceholderSetup(country.code)
         }
 
+        // TODO: address is not prefilled. Bug?
         guard let address = user.address else { return }
         addressTextField.text = address.lineOne
         apartmentTextField.text = address.lineTwo
@@ -286,7 +291,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             lineTwo: apartmentTextField.text ?? "",
             postalCode: postalCodeTextField.text ?? "",
             city: cityTextField.text ?? "",
-            state: stateTextField.text ?? "",
+            state: stateTextField.selectedOption?.id ?? "",
             countryCode: country?.code ?? user?.address?.countryCode ?? ""
         )
         searchDelegate?.onSubmission(address, completion: { [weak self] in
@@ -332,8 +337,16 @@ extension KYCAddressController: LocationSuggestionInterface {
             addressTextField.text = "\(number) \(street)"
         }
         cityTextField.text = address.city
-        stateTextField.text = address.state
+        stateTextField.selectedOption = UnitedStates.states
+            .first(where: {
+                $0.abbreviation == address.state || $0.isoCode == address.state || $0.name == address.state
+            })
+            .map(pickerItem(from:))
         postalCodeTextField.text = address.postalCode
+    }
+    
+    func pickerItem(from item: PickerViewSelectable) -> ValidationPickerField.PickerItem {
+        ValidationPickerField.PickerItem(id: item.id, title: item.title)
     }
 
     func updateActivityIndicator(_ visibility: Visibility) {
