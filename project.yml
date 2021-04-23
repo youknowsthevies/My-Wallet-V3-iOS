@@ -183,6 +183,10 @@ targetTemplates:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Utilities
     type: bundle.unit-test
+packages:
+  ComposableArchitecture:
+    url: https://github.com/pointfreeco/swift-composable-architecture
+    version: 0.18.0
 targets:
   ActivityKit:
     dependencies:
@@ -663,6 +667,18 @@ targets:
       featureName: BuySellFeature
     templates:
     - ModuleTests
+  ComposableArchitectureKit:
+    dependencies:
+    - package: ComposableArchitecture
+    platform: iOS
+    deploymentTarget:
+        iOS: '13.0'
+    sources:
+    - createIntermediateGroups: true
+      excludes:
+      - Scripts
+      path: Modules/ComposableArchitectureKit
+    type: framework
   CommonCryptoKit:
     scheme:
       testTargets:
