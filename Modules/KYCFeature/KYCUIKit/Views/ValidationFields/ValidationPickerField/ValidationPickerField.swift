@@ -32,7 +32,10 @@ class ValidationPickerField: ValidationTextField, UIPickerViewDataSource, UIPick
     
     var selectedOption: PickerItem? {
         get {
-            options[pickerView.selectedRow(inComponent: 0)]
+            guard !options.isEmpty else {
+                return nil
+            }
+            return options[pickerView.selectedRow(inComponent: 0)]
         }
         set {
             if let newValue = newValue, let index = options.lastIndex(of: newValue) {
@@ -48,7 +51,7 @@ class ValidationPickerField: ValidationTextField, UIPickerViewDataSource, UIPick
         pickerView.reloadAllComponents()
         textFieldInputView = pickerView
         validationBlock = { [weak self] _ in
-            self?.options.isEmpty == true || self?.selectedOption == nil ? .invalid(.invalidSelection) : .valid
+            self?.options.isEmpty == false && self?.selectedOption == nil ? .invalid(.invalidSelection) : .valid
         }
     }
     
