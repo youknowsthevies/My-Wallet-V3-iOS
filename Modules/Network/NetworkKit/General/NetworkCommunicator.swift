@@ -63,9 +63,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         let execute = self.execute
         return authenticator
             .authenticate { [execute] token in
-                var request = request
-                request.add(authenticationToken: token)
-                return execute(request)
+                execute(request.adding(authenticationToken: token))
             }
     }
     
