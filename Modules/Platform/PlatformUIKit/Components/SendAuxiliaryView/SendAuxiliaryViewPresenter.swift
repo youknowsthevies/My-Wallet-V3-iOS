@@ -76,7 +76,7 @@ public final class SendAuxiliaryViewPresenter {
             title: LocalizationId.networkFee,
             alignment: .right,
             interactor: interactor.networkFeeContentViewInteractor,
-            accessibilityPrefix: "NetworkFee."
+            accessibilityPrefix: "NetworkFee"
         )
 
         maxButtonViewModel = ButtonViewModel.secondary(
@@ -88,7 +88,7 @@ public final class SendAuxiliaryViewPresenter {
             title: initialState.availableBalanceTitle,
             alignment: .left,
             interactor: interactor.availableBalanceContentViewInteractor,
-            accessibilityPrefix: "AvailableBalance."
+            accessibilityPrefix: "AvailableBalance"
         )
 
         imageContent = interactor

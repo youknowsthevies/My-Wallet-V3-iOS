@@ -250,19 +250,21 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         with state: State,
         updater: TransactionState
     ) -> State {
+        let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater)
+        let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater)
         let topSelection = TopSelectionState(
             sourceAccount: updater.source,
             destinationAccount: updater.destination as? BlockchainAccount,
-            action: updater.action
+            action: updater.action,
+            titleAccessibility: Accessibility(id: .value(topSelectionTitle), label: .value(topSelectionTitle)),
+            subtitleAccessibility: Accessibility(id: .value(topSelectionSubtitle), label: .value(topSelectionSubtitle))
         )
 
         return state
             .update(\.canContinue, value: updater.nextEnabled)
             .update(\.topSelection, value: topSelection)
-            .update(\.topSelection.title,
-                    value: TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater))
-            .update(\.topSelection.subtitle,
-                    value: TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater))
+            .update(\.topSelection.title, value: topSelectionTitle)
+            .update(\.topSelection.subtitle, value: topSelectionSubtitle)
     }
 
     private func handle(effects: Effects) {
@@ -320,13 +322,17 @@ extension EnterAmountPageInteractor {
         let isEnabled: Bool = false
         var trailingContent: SelectionButtonViewModel.TrailingContent
         var leadingContent: SelectionButtonViewModel.LeadingContentType?
+        var titleAccessibility: Accessibility = .none
+        var subtitleAccessibility: Accessibility = .none
         var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
 
         private init(titleDescriptor: (font: UIFont, textColor: UIColor),
                      subtitleDescriptor: (font: UIFont, textColor: UIColor),
                      trailingContent: SelectionButtonViewModel.TrailingContent,
                      leadingContent: SelectionButtonViewModel.LeadingContentType?,
-                     accessibilityContent: SelectionButtonViewModel.AccessibilityContent?) {
+                     accessibilityContent: SelectionButtonViewModel.AccessibilityContent?,
+                     titleAccessibility: Accessibility,
+                     subtitleAccessibility: Accessibility) {
             self.titleDescriptor = titleDescriptor
             self.subtitleDescriptor = subtitleDescriptor
             self.trailingContent = trailingContent
@@ -336,7 +342,9 @@ extension EnterAmountPageInteractor {
 
         init(sourceAccount: BlockchainAccount?,
              destinationAccount: BlockchainAccount?,
-             action: AssetAction) {
+             action: AssetAction,
+             titleAccessibility: Accessibility = .none,
+             subtitleAccessibility: Accessibility = .none) {
             let transactionImageViewModel = TransactionDescriptorViewModel(
                 sourceAccount: sourceAccount as? SingleAccount,
                 destinationAccount: action == .swap ? destinationAccount as? SingleAccount : nil,
@@ -348,7 +356,9 @@ extension EnterAmountPageInteractor {
                 subtitleDescriptor: (font: .main(.semibold, 14.0), textColor: .titleText),
                 trailingContent: .transaction(transactionImageViewModel),
                 leadingContent: .none,
-                accessibilityContent: nil
+                accessibilityContent: nil,
+                titleAccessibility: titleAccessibility,
+                subtitleAccessibility: subtitleAccessibility
             )
         }
     }
