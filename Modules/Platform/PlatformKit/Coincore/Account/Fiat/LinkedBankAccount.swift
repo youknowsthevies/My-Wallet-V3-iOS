@@ -7,8 +7,17 @@
 //
 
 import RxSwift
+import ToolKit
 
 public class LinkedBankAccount: FiatAccount, BankAccount {
+    
+    // MARK: - Public
+    
+    public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
+        unimplemented()
+    }
+    
+    // MARK: - BlockchainAccount
     
     public let isDefault: Bool = false
     
@@ -43,12 +52,12 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
     
-    public var fiatCurrency: FiatCurrency
-    public var accountType: SingleAccountType
-    public var id: String
-    public var label: String
-    public var accountNumber: String
-    public var paymentType: PaymentMethodPayloadType
+    public let fiatCurrency: FiatCurrency
+    public let accountType: SingleAccountType
+    public let id: String
+    public let label: String
+    public let accountNumber: String
+    public let paymentType: PaymentMethodPayloadType
     
     public init(label: String,
                 accountNumber: String,
@@ -63,6 +72,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         self.id = accountId
         self.paymentType = paymentType
     }
+    
+    // MARK: - BlockchainAccount
     
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         .just(.zero(currency: fiatCurrency))

@@ -76,7 +76,7 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
                 responseType: WalletPayloadWrapper.self
             )
             .catchError { error -> Single<WalletPayloadWrapper> in
-                guard let communicatorError = error as? NetworkCommunicatorError else {
+                guard let communicatorError = error as? NetworkError else {
                     throw error
                 }
                 switch communicatorError {

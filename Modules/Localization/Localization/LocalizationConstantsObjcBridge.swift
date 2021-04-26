@@ -129,4 +129,8 @@ import Foundation
     @objc public class func myBitcoinWallet() -> String { LocalizationConstants.Account.myWallet }
 
     @objc public class func myEtherWallet() -> String { LocalizationConstants.Account.myWallet }
+    
+    @objc public class func errorDecryptingWallet() -> String {
+        LocalizationConstants.WalletPayloadKit.Error.decryptionFailed
+    }
 }

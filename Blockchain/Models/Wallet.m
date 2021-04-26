@@ -294,7 +294,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     };
 
     self.context[@"objc_error_other_decrypting_wallet"] = ^(NSString *error, NSString *stack) {
-        [weakSelf error_other_decrypting_wallet:error stack:stack];
+        [weakSelf error_other_decrypting_wallet:[NSString stringWithFormat:@"TypeError:%@", [LocalizationConstantsObjcBridge errorDecryptingWallet]] stack:stack];
     };
 
     self.context[@"objc_loading_start_decrypt_wallet"] = ^(){
@@ -668,9 +668,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context evaluateScriptCheckIsOnMainQueue:[self getJSSource]];
 
     self.context[@"XMLHttpRequest"] = [ModuleXMLHttpRequest class];
-    self.context[@"Bitcoin"][@"HDNode"] = [HDNode class];
-    self.context[@"HDNode"] = [HDNode class];
-    
+
     [self useDebugSettingsIfSet];
 
     if ([delegate respondsToSelector:@selector(walletJSReady)]) {
@@ -2338,14 +2336,14 @@ NSString * const kLockboxInvitation = @"lockbox";
         [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
         return;
     }
-
+    
     if ([message hasPrefix:@"TypeError:"]) {
         dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC));
         dispatch_after(when, dispatch_get_main_queue(), ^{
-            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
+            NSString *value = [message substringFromIndex:[@"TypeError:" length]];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:value in:nil handler:nil];
         });
         [self logJavaScriptTypeError:message stack:stack];
-        return;
     }
 }
 

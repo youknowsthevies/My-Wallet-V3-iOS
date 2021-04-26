@@ -28,7 +28,7 @@ public struct NetworkRequest {
     
     var URLRequest: URLRequest {
         
-        if authenticated && headers?[HttpHeaderField.authorization] == nil {
+        if authenticated && headers[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
         }
         
@@ -40,17 +40,23 @@ public struct NetworkRequest {
         
         request.httpMethod = method.rawValue
         
-        if let headers = headers {
-            headers.forEach {
-                request.addValue($1, forHTTPHeaderField: $0)
-            }
+        let requestHeaders = headers.merging(defaultHeaders)
+        
+        for (key, value) in requestHeaders {
+            request.addValue(value, forHTTPHeaderField: key)
         }
         
         if request.value(forHTTPHeaderField: HttpHeaderField.accept) == nil {
-            request.addValue(HttpHeaderValue.json, forHTTPHeaderField: HttpHeaderField.accept)
+            request.addValue(
+                HttpHeaderValue.json,
+                forHTTPHeaderField: HttpHeaderField.accept
+            )
         }
         if request.value(forHTTPHeaderField: HttpHeaderField.contentType) == nil {
-            request.addValue(contentType.rawValue, forHTTPHeaderField: HttpHeaderField.contentType)
+            request.addValue(
+                contentType.rawValue,
+                forHTTPHeaderField: HttpHeaderField.contentType
+            )
         }
         
         addHttpBody(to: request)
@@ -60,7 +66,7 @@ public struct NetworkRequest {
     
     let method: NetworkMethod
     let endpoint: URL
-    private(set) var headers: HTTPHeaders?
+    private(set) var headers: HTTPHeaders
     let contentType: ContentType
     let decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
@@ -72,12 +78,18 @@ public struct NetworkRequest {
     let recordErrors: Bool
     
     let authenticated: Bool
+    
+    let requestId = UUID()
+    
+    private var defaultHeaders: HTTPHeaders {
+        [HttpHeaderField.requestId: requestId.uuidString]
+    }
 
     public init(
         endpoint: URL,
         method: NetworkMethod,
         body: Data? = nil,
-        headers: HTTPHeaders? = nil,
+        headers: HTTPHeaders = [:],
         authenticated: Bool = false,
         contentType: ContentType = .json,
         decoder: NetworkResponseDecoderAPI = resolve(),
@@ -95,11 +107,10 @@ public struct NetworkRequest {
         self.recordErrors = recordErrors
     }
     
-    mutating func add(authenticationToken: String) {
-        if headers == nil {
-            headers = [:]
-        }
-        headers?[HttpHeaderField.authorization] = authenticationToken
+    func adding(authenticationToken: String) -> Self {
+        var request = self
+        request.headers[HttpHeaderField.authorization] = authenticationToken
+        return request
     }
     
     private func addHttpBody(to request: NSMutableURLRequest) {

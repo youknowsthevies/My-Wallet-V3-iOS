@@ -24,7 +24,7 @@ public enum NabuNetworkError: Error, Decodable {
     }
     
     case nabuError(NabuError)
-    case communicatorError(NetworkCommunicatorError)
+    case communicatorError(NetworkError)
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -54,7 +54,7 @@ public enum NabuNetworkError: Error, Decodable {
         self = .nabuError(NabuError(code: code, type: type, description: description))
     }
     
-    public init(from communicatorError: NetworkCommunicatorError) {
+    public init(from communicatorError: NetworkError) {
         self = .communicatorError(communicatorError)
     }
     
@@ -87,9 +87,9 @@ public enum NabuNetworkError: Error, Decodable {
     }
 }
 
-extension NabuNetworkError: ErrorResponseConvertible {
+extension NabuNetworkError: FromNetworkErrorConvertible {
     
-    public static func from(_ communicatorError: NetworkCommunicatorError) -> NabuNetworkError {
+    public static func from(_ communicatorError: NetworkError) -> NabuNetworkError {
         NabuNetworkError(from: communicatorError)
     }
 }

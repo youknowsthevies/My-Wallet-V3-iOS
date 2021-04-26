@@ -14,11 +14,11 @@ import ToolKit
 
 final class UserCreationClientMock: UserCreationClientAPI {
     
-    var expectedResult: Result<NabuOfflineTokenResponse, NetworkCommunicatorError>!
+    var expectedResult: Result<NabuOfflineTokenResponse, NetworkError>!
     
     func createUser(
         for jwtToken: String
-    ) -> AnyPublisher<NabuOfflineTokenResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<NabuOfflineTokenResponse, NetworkError> {
         expectedResult.publisher
     }
 }
