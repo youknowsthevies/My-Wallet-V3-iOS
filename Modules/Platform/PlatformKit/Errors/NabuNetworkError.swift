@@ -24,7 +24,7 @@ public enum NabuNetworkError: Error, Decodable {
     }
     
     case nabuError(NabuError)
-    case communicatorError(NetworkCommunicatorError)
+    case communicatorError(NetworkError)
     
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
@@ -54,7 +54,7 @@ public enum NabuNetworkError: Error, Decodable {
         self = .nabuError(NabuError(code: code, type: type, description: description))
     }
     
-    public init(from communicatorError: NetworkCommunicatorError) {
+    public init(from communicatorError: NetworkError) {
         self = .communicatorError(communicatorError)
     }
     
@@ -87,9 +87,9 @@ public enum NabuNetworkError: Error, Decodable {
     }
 }
 
-extension NabuNetworkError: ErrorResponseConvertible {
+extension NabuNetworkError: FromNetworkErrorConvertible {
     
-    public static func from(_ communicatorError: NetworkCommunicatorError) -> NabuNetworkError {
+    public static func from(_ communicatorError: NetworkError) -> NabuNetworkError {
         NabuNetworkError(from: communicatorError)
     }
 }
@@ -178,8 +178,12 @@ public enum NabuErrorCode: Int, Codable {
     case weeklyLimitExceeded = 46
     case annualLimitExceeded = 47
     case notCryptoToCryptoCurrencyPair = 48
+    case invalidCountryStateCode = 49
+    case blockedPhone = 50
     case pendingOrdersLimitReached = 53
-
+    case tradingDisabled = 51
+    case mobileTooLong = 52
+    
     /// Campaign Related Errors - These errors are specific
     /// to users opting into an air drop campaign. Currently they're
     /// used when a user deep links into the application from a campaign
@@ -192,14 +196,71 @@ public enum NabuErrorCode: Int, Codable {
     case campaignWithdrawalFailed = 59
     case tradeForceExecuteError = 60
     case campaignInfoAlreadyUsed = 61
+    
+    case linkAccountError = 66
+    case userAlreadyLinked = 660
+    case linkExpired = 661
+    
+    case verificationExpired = 63
+    case verificationFailed = 64
+    case emailVerificationInProgress = 65
+    case userHasNoUsername = 67
+    case noAvailableUsername = 680
+    case userNotAllowedToGetCredentials = 70
+    case enablementFailed = 69
+    
+    // Payments related
+    case depositCheckError = 72
+    case couldNotInsertBeneficiary = 74
+    case beneficiaryAlreadyExists = 75
+    case beneficiaryNotFound = 76
+    case paymentsNotSupported = 77
+    case productNotSpecified = 78
+    case notAuthorizedForFiat = 79
+    case missingCryptoAddress = 87
+    case missingBeneficiary = 88
+    case invalidWithdrawalAmount = 90
+    case exchangeRateFetchFailure = 91
+    case minimumWithdrawalAmount = 92
+    case invalidCryptoCurrency = 93
+    case invalidCryptoAddress = 94
+    case tierTooLow = 98
+    case invalidAddress = 99
+    case notAuthorizedForGBP = 97
+    case notAuthorizedForTry = 100
+    case maxPaymentCards = 101
+    case maxPaymentBankAccounts = 143
+    case notAuthorizedForRub = 144
+    case maxAuthAttemptsReached = 145
 
     /// Buy-Sell Error Code
+    case withdrawalForbidden = 130
+    case insufficientBalance = 131
+    case orderInProgress = 132
+    case simpleBuyExpirationError = 133
+    case simpleBuyForceExecutionError = 134
     case invalidPaymentMethod = 135
-
+    case noRatesAvailable = 136
+    case eddQuestionairePending = 146
     /// Custodial Withdrawal Error Code
     case withdrawalLocked = 152
+    
+    /// Custodial related
+    case invalidDestinationAddress = 148
+    case invalidInputCurrency = 149
+    case orderDirectionDisabled = 151
+    case addressGenerationFailure = 153
+    case notFoundCustodialQuote = 155
+    case userNotEligibleForSwap = 156
+    case orderAmountNegative = 157
+    
+    case invalidKYCForSavings = 140
+    case currencyNotSupported = 141
+    case productNotSupported = 142
+    case missingRangeParameter = 147
+    case featureNotAvailable = 154
 
-    case forbidden = 160
+    case documentDataRequired = 160
 }
 
 public enum NabuErrorType: String, Codable {

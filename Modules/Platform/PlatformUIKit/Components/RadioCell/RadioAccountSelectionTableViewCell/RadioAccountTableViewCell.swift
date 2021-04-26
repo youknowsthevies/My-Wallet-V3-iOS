@@ -1,11 +1,3 @@
-//
-//  RadioSelectionTableViewCell.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 2/19/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
-
 import RxCocoa
 import RxSwift
 

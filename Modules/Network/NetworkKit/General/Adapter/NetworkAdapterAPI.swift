@@ -19,7 +19,7 @@ public protocol NetworkAdapterRxAPI {
     func perform(request: NetworkRequest) -> Completable
     
     @available(*, deprecated, message: "Don't use this. Clients should use the new publisher contract.")
-    func perform<ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> Completable
@@ -34,13 +34,13 @@ public protocol NetworkAdapterRxAPI {
     ) -> Single<ResponseType>
     
     @available(*, deprecated, message: "Don't use this. Clients should use the new publisher contract.")
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> Single<ResponseType>
     
     @available(*, deprecated, message: "Don't use this. Clients should use the new publisher contract.")
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -53,7 +53,7 @@ public protocol NetworkAdapterRxAPI {
     ) -> Single<ResponseType?>
     
     @available(*, deprecated, message: "Don't use this. Clients should use the new publisher contract.")
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -65,7 +65,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     
     /// Performs a request and maps the response or error response
     /// - Parameter request: the request to perform
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, ErrorResponseType>
     
@@ -73,13 +73,13 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameter request: the request to perform
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError>
+    ) -> AnyPublisher<ResponseType, NetworkError>
     
     /// Performs a request and maps the response or error response
     /// - Parameters:
     /// - Parameter request: the request to perform
     ///   - responseType: the type of the response to map to
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType, ErrorResponseType>
@@ -91,13 +91,13 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     func perform<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError>
+    ) -> AnyPublisher<ResponseType, NetworkError>
     
     /// Performs a request and maps the response or error response
     /// - Parameters:
     /// - Parameter request: the request to perform
     ///   - errorResponseType: the type of the error response to map to
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> AnyPublisher<ResponseType, ErrorResponseType>
@@ -107,7 +107,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameter request: the request to perform
     ///   - responseType: the type of the response to map to
     ///   - errorResponseType: the type of the error response to map to
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -117,7 +117,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameters:
     ///   - responseType: the type of the response to map to
     ///   - errorResponseType: the type of the error response to map to
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType>
@@ -128,13 +128,13 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError>
+    ) -> AnyPublisher<ResponseType?, NetworkError>
     
     /// Performs a request and if there is content maps the response and always maps the error type
     /// - Parameters:
     ///   - responseType: the type of the response to map to
     ///   - errorResponseType: the type of the error response to map to
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -154,7 +154,7 @@ extension NetworkAdapterAPI {
         .ignoreElements()
     }
     
-    func perform<ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> Completable {
@@ -178,7 +178,7 @@ extension NetworkAdapterAPI {
         
         func performPublisher(
             request: NetworkRequest
-        ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
+        ) -> AnyPublisher<ResponseType, NetworkError> {
             perform(request: request)
         }
         
@@ -188,7 +188,7 @@ extension NetworkAdapterAPI {
             .asSingle()
     }
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> Single<ResponseType> {
@@ -199,7 +199,7 @@ extension NetworkAdapterAPI {
         )
     }
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -224,7 +224,7 @@ extension NetworkAdapterAPI {
         
         func performOptionalPublisher(
             request: NetworkRequest
-        ) -> AnyPublisher<ResponseType?, NetworkCommunicatorError> {
+        ) -> AnyPublisher<ResponseType?, NetworkError> {
             performOptional(request: request, responseType: ResponseType.self)
         }
 
@@ -234,7 +234,7 @@ extension NetworkAdapterAPI {
             .asSingle()
     }
     
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -255,7 +255,7 @@ extension NetworkAdapterAPI {
 
 extension NetworkAdapterAPI {
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
@@ -265,18 +265,18 @@ extension NetworkAdapterAPI {
     func perform<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
-    ) -> AnyPublisher<ResponseType, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ResponseType, NetworkError> {
         perform(request: request)
     }
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         perform(request: request)
     }
     
-    func perform<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type
@@ -284,7 +284,7 @@ extension NetworkAdapterAPI {
         perform(request: request)
     }
     
-    func performOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
+    func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
         errorResponseType: ErrorResponseType.Type

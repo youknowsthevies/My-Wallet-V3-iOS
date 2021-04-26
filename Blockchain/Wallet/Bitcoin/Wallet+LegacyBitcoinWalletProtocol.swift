@@ -63,12 +63,12 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func validateBitcoin(address: String) -> Bool {
         let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScript("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
 
@@ -84,7 +84,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             forceLegacy = "false"
         }
         let function: String = "MyWalletPhone.getReceivingAddressForAccountXPub(\"\(xpub)\",\(forceLegacy))"
-        guard let jsResult = context.evaluateScript(function) else {
+        guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
         guard let result: String = jsResult.toString() else {
@@ -106,7 +106,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
         }
-        context.evaluateScript(function)
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
@@ -116,7 +116,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         }
         let function: String = "MyWalletPhone.getBitcoinNote(\"\(transaction.escapedForJS())\")"
         guard
-            let result: String = context.evaluateScript(function)?.toString(),
+            let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
             !result.isEmpty,
             result != "null",
             result != "undefined"
@@ -147,7 +147,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void) {
@@ -168,7 +168,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         let address = receiveAddress.escapedForJS()
         
         script = "\(function)(\"\(address)\")"
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -191,7 +191,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -214,6 +214,6 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }

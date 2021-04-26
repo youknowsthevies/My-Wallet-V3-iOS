@@ -16,8 +16,8 @@ import Foundation
 ///     where `unimplemented(file:line:)` is called.
 ///   - line: The line number to print along with `message`. The default is the
 ///     line number where `unimplemented(file:line:)` is called.
-public func unimplemented(file: StaticString = #file, line: UInt = #line) -> Never {
-    fatalError("Not implemented.", file: file, line: line)
+public func unimplemented(_ message: String = "", file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError("Not implemented. \(message)", file: file, line: line)
 }
 
 /// Unconditionally prints an impossible state message and stops execution.
@@ -28,6 +28,6 @@ public func unimplemented(file: StaticString = #file, line: UInt = #line) -> Nev
 ///     where `unimplemented(file:line:)` is called.
 ///   - line: The line number to print along with `message`. The default is the
 ///     line number where `unimplemented(file:line:)` is called.
-public func impossible(file: StaticString = #file, line: UInt = #line) -> Never {
-    fatalError("Impossible state.", file: file, line: line)
+public func impossible(_ message: String = "", file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError("Impossible state. \(message)", file: file, line: line)
 }

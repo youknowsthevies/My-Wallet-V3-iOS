@@ -23,7 +23,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let requireSecondPassword: Bool = false
     let tradeLimitsService: TradeLimitsAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     init(quotesEngine: SwapQuotesEngine,
@@ -45,7 +45,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     func assertInputsValid() {
         precondition(target is CryptoTradingAccount)
         precondition(sourceAccount is CryptoTradingAccount)
-        precondition((target as! CryptoTradingAccount).asset != sourceAccount.asset)
+        precondition((target as! CryptoTradingAccount).asset != sourceAsset)
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {

@@ -36,7 +36,7 @@ enum APIErrorEvent: AnalyticsEvent {
         let body: String?
         let requestId: String?
         
-        init?(request: NetworkRequest, errorResponse: ServerErrorResponseNew? = nil, body: String? = nil) {
+        init?(request: NetworkRequest, errorResponse: ServerErrorResponse? = nil, body: String? = nil) {
             guard
                 let url = request.URLRequest.url,
                 let host = url.host
@@ -71,8 +71,8 @@ enum APIErrorEvent: AnalyticsEvent {
     }
     
     init?(request: NetworkRequest,
-          error: NetworkCommunicatorError,
-          decodeErrorResponse: ((ServerErrorResponseNew) -> String?)? = nil) {
+          error: NetworkError,
+          decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil) {
         switch error {
         case .rawServerError(let rawServerError):
             self = .serverError(ErrorDetails(

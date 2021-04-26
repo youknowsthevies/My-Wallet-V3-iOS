@@ -16,43 +16,43 @@ public protocol NetworkResponseHandlerAPI {
     ///   - elements: the `data` and `response` to handle
     ///   - request: the request corresponding to this response
     func handle(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError>
+    ) -> AnyPublisher<ServerResponse, NetworkError>
 }
 
 final class NetworkResponseHandler: NetworkResponseHandlerAPI {
     
     func handle(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
-    ) -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> {
+    ) -> AnyPublisher<ServerResponse, NetworkError> {
         handler(elements: elements, for: request).publisher
     }
     
     // MARK: - Private methods
     
     private func handler(
-        elements: (data: Data, response: URLResponse),
+        elements: (data: Data?, response: URLResponse?),
         for request: NetworkRequest
-    ) -> Result<ServerResponseNew, NetworkCommunicatorError> {
-        Result<(data: Data, response: URLResponse), NetworkCommunicatorError>.success(elements)
-            .flatMap { elements -> Result<ServerResponseNew, NetworkCommunicatorError> in
+    ) -> Result<ServerResponse, NetworkError> {
+        Result<(data: Data?, response: URLResponse?), NetworkError>.success(elements)
+            .flatMap { elements -> Result<ServerResponse, NetworkError> in
                 guard let response = elements.response as? HTTPURLResponse else {
                     return .failure(.serverError(.badResponse))
                 }
                 let payload = elements.data
                 switch response.statusCode {
                 case 204:
-                    return .success(ServerResponseNew(payload: nil, response: response))
+                    return .success(ServerResponse(payload: nil, response: response))
                 case 200...299:
-                    return .success(ServerResponseNew(payload: payload, response: response))
+                    return .success(ServerResponse(payload: payload, response: response))
                 default:
                     let requestPath = request.URLRequest.url?.path ?? ""
                     Logger.shared.debug("\(requestPath) failed with status code: \(response.statusCode)")
                     return .failure(
                         .rawServerError(
-                            ServerErrorResponseNew(response: response, payload: payload)
+                            ServerErrorResponse(response: response, payload: payload)
                         )
                     )
                 }

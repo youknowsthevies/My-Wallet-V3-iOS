@@ -42,9 +42,9 @@ extension DependencyContainer {
             return client as OrderFetchingClientAPI
         }
         
-        factory { () -> InternalTransferClientAPI in
+        factory { () -> CustodialTransferClientAPI in
             let client: TransactionKitClientAPI = DIKit.resolve()
-            return client as InternalTransferClientAPI
+            return client as CustodialTransferClientAPI
         }
         
         factory { () -> BitPayClientAPI in
@@ -56,7 +56,7 @@ extension DependencyContainer {
         
         factory { APIClient() as TransactionKitClientAPI }
         
-        factory { InternalTransferService() as InternalTransferServiceAPI }
+        factory { CustodialTransferService() as CustodialTransferServiceAPI }
         
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
         

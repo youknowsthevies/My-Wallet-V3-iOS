@@ -59,7 +59,7 @@ class BridgeBitpayService: NSObject {
                 onError: { error in
                     let message: String
                     switch error {
-                    case NetworkCommunicatorError.payloadError(.badData(rawPayload: let payload)):
+                    case NetworkError.payloadError(.badData(rawPayload: let payload)):
                         message = payload
                     default:
                         message = error.localizedDescription

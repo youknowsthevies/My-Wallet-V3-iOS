@@ -131,14 +131,14 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
     
     private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
-        let jsContext = self.jsContextProvider.jsContext
+        let jsContextProvider = self.jsContextProvider
         return Deferred {
-            Future { [jsContext] promise in
+            Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
                     promise(.failure(.notInitialized))
                     return
                 }
-                guard let jsValue = jsContext.evaluateScript(JSSetter.offlineToken) else {
+                guard let jsValue = jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.offlineToken) else {
                     promise(.success(nil))
                     return
                 }
@@ -149,7 +149,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 promise(.success(jsValue.toString()))
             }
         }
-        .subscribe(on: DispatchQueue.main)
+        .subscribe(on: combineJSScheduler)
         .eraseToAnyPublisher()
     }
             
@@ -161,7 +161,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             guard let self = self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
-            guard let jsValue = self.jsContextProvider.jsContext.evaluateScript(JSSetter.offlineToken) else {
+            guard let jsValue = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.offlineToken) else {
                 return Single.just(nil)
             }
             guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
@@ -171,14 +171,14 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
     
     private var userIdPublisher: AnyPublisher<String?, WalletError> {
-        let jsContext = self.jsContextProvider.jsContext
+        let jsContextProvider = self.jsContextProvider
         return Deferred {
-            Future { [jsContext] promise in
+            Future { [jsContextProvider] promise in
                 guard WalletManager.shared.wallet.isInitialized() else {
                     promise(.failure(.notInitialized))
                     return
                 }
-                guard let jsValue = jsContext.evaluateScript(JSSetter.userId) else {
+                guard let jsValue = jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.userId) else {
                     promise(.success(nil))
                     return
                 }
@@ -201,7 +201,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             guard let self = self else {
                 return .error(ToolKitError.nullReference(Self.self))
             }
-            guard let jsValue = self.jsContextProvider.jsContext.evaluateScript(JSSetter.userId) else {
+            guard let jsValue = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.userId) else {
                 return Single.just(nil)
             }
             guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
@@ -234,16 +234,16 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     // MARK: - Wallet Setters
     
     func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError> {
-        let jsContext = self.jsContextProvider.jsContext
+        let jsContextProvider = self.jsContextProvider
         return Deferred {
-            Future { [jsContext] promise in
-                jsContext.invokeOnce(
+            Future { [jsContextProvider] promise in
+                jsContextProvider.jsContext.invokeOnce(
                     functionBlock: {
                         promise(.failure(.offlineToken))
                     },
                     forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
                 )
-                jsContext.invokeOnce(
+                jsContextProvider.jsContext.invokeOnce(
                     functionBlock: {
                         promise(.success(()))
                     },
@@ -252,7 +252,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 let userId = offlineTokenResponse.userId.escapedForJS()
                 let offlineToken = offlineTokenResponse.token.escapedForJS()
                 let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
-                jsContext.evaluateScript(script)?.toString()
+                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
             }
         }
         .subscribe(on: combineJSScheduler)
@@ -285,7 +285,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 let offlineToken = offlineTokenResponse.token.escapedForJS()
                 let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
                 
-                self.jsContextProvider.jsContext.evaluateScript(script)?.toString()
+                self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
                 
                 return Disposables.create()
             }
@@ -348,7 +348,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                     observer(.error(PasswordRepositoryError.syncFailed))
                 }, forJsFunctionName: JSSetter.Password.error as NSString)
                 
-                self.jsContextProvider.jsContext.evaluateScript(script)
+                self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
             return Disposables.create()
         }
     }
@@ -367,7 +367,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let value = syncPubKeys ? "true" : "false"
             let script = String(format: JSSetter.syncPubKeys, value)
-            jsContextProvider?.jsContext.evaluateScript(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     
@@ -376,7 +376,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let escaped = language.escapedForJS()
             let script = String(format: JSSetter.language, escaped)
-            jsContextProvider?.jsContext.evaluateScript(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     
@@ -385,7 +385,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let escaped = payload.escapedForJS()
             let script = String(format: JSSetter.payload, escaped)
-            jsContextProvider?.jsContext.evaluateScript(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     

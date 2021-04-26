@@ -1,3 +1,5 @@
+// MARK: Imports
+
 var Buffer = Blockchain.Buffer;
 var MyWallet = Blockchain.MyWallet;
 var WalletStore = Blockchain.WalletStore;
@@ -17,14 +19,9 @@ var Metadata = Blockchain.Metadata;
 var EthSocket = Blockchain.EthSocket;
 var BlockchainSocket = Blockchain.BlockchainSocket;
 
-if (typeof Buffer.prototype.reverse !== 'function') {
-    // required for sending BCH on iOS 9
-    console.log('reverse not defined - polyfill');
-    Buffer.prototype.reverse = function () {
-        return [].reverse.call(this)
-    }
-}
+// MARK: NativeEthSocket
 
+/// NativeEthSocket is injected in MyWallet.wallet and relays any message dealing to native iOS code.
 function NativeEthSocket () {
   this.handlers = []
 }
@@ -52,7 +49,28 @@ NativeEthSocket.prototype.subscribeToBlocks = function (ethWallet) {
   this.handlers.push(handler)
 }
 
-var ethSocketInstance = new NativeEthSocket();
+// MARK: WalletOptions
+
+function WalletOptions (api) {
+    var optionsCache = {};
+
+    this.getValue = function () {
+      return optionsCache[this.getFileName()];
+    };
+
+    this.fetch = function () {
+      var name = this.getFileName();
+      var readJson = function (res) { return res.json(); }
+      var cacheOptions = function (opts) { optionsCache[name] = opts; return opts; };
+      return fetch(api.ROOT_URL + 'Resources/' + name).then(readJson).then(cacheOptions);
+    };
+
+    this.getFileName = function () {
+      return 'wallet-options.json';
+    };
+}
+  
+// MARK: BlockchainAPI
 
 APP_NAME = 'javascript_iphone_app';
 APP_VERSION = '3.0';
@@ -65,16 +83,23 @@ BlockchainAPI.API_CODE = API_CODE;
 BlockchainAPI.AJAX_TIMEOUT = 30000; // 30 seconds
 BlockchainAPI.API_ROOT_URL = 'https://api.blockchain.info/'
 
-var MyWalletPhone = {};
+// MARK: Properties:
+
 var currentPayment = null;
-var currentEtherPayment = null;
 var currentBitcoinCashPayment = null;
-var currentShiftPayment = null;
 var transferAllBackupPayment = null;
 var transferAllPayments = {};
+var walletOptions = new WalletOptions(BlockchainAPI);
+var ethSocketInstance = new NativeEthSocket();
+
+// MARK: Overrides
+
+// MARK: - MyWallet overrides
 
 MyWallet.setIsInitialized = function () {
-    if (MyWallet.getIsInitialized()) return;
+    if (MyWallet.getIsInitialized()) {
+        return;
+    }
     MyWallet.socketConnect();
     MyWallet.updateToInitialized();
     console.log("Wallet is initialized");
@@ -109,10 +134,64 @@ MyWallet.decryptAndInitializeWallet = function (success, error, decryptSuccess) 
     };
 };
 
-var walletOptions = new WalletOptions(BlockchainAPI);
+MyWallet.socketConnect = function() {
+    // override socketConnect to prevent memory leaks
+}
+
+// MARK: - WalletCrypto overrides
+
+WalletCrypto.scrypt = function(passwd, salt, N, r, p, dkLen, callback) {
+    if (typeof(passwd) !== 'string') {
+        passwd = passwd.toJSON().data;
+    }
+
+    if (typeof(salt) !== 'string') {
+        salt = salt.toJSON().data;
+    }
+
+    objc_crypto_scrypt_salt_n_r_p_dkLen(passwd, salt, N, r, p, dkLen, function(buffer) {
+      var bytes = new Buffer(buffer, 'hex');
+      callback(bytes);
+    }, function(e) {
+      error(''+e);
+    });
+};
+
+WalletCrypto.stretchPassword = function (password, salt, iterations, keylen) {
+    var retVal = objc_sjcl_misc_pbkdf2(password, salt.toJSON().data, iterations, (keylen || 256) / 8);
+    return new Buffer(retVal, 'hex');
+}
+
+// MARK: - BIP39 overrides
+
+BIP39.mnemonicToSeed = function(mnemonic, enteredPassword) {
+    var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
+    var saltBuffer = new Buffer(BIP39.salt(enteredPassword), 'utf8');
+    var retVal = objc_pbkdf2_sync(mnemonicBuffer, saltBuffer, 2048, 64);
+    return new Buffer(retVal, 'hex');
+}
+
+BIP39.mnemonicToSeedHex = function(mnemonic, enteredPassword) {
+    return BIP39.mnemonicToSeed(mnemonic, enteredPassword).toString('hex');
+}
+
+// MARK: - Metadata overrides
+
+Metadata.verify = function (address, signature, message) {
+    return objc_message_verify(address, signature.toString('hex'), message);
+}
+
+Metadata.sign = function (keyPair, message) {
+    let privateKey = keyPair.privateKey.toString('base64');
+    let compressed = keyPair.compressed;
+    let signed = objc_message_sign(privateKey, message, compressed);
+    let result = new Buffer(signed, 'hex');
+    return result
+}
+
+// MARK: WalletStore
 
 // Register for JS event handlers and forward to Obj-C handlers
-
 WalletStore.addEventListener(function (event, obj) {
     var eventsWithObjCHandlers = ["did_multiaddr", "did_fail_set_guid", "error_restoring_wallet", "logging_out", "on_backup_wallet_start", "on_backup_wallet_error", "on_backup_wallet_success", "on_tx_received", "ws_on_close", "ws_on_open", "did_load_wallet"];
 
@@ -154,8 +233,9 @@ WalletStore.addEventListener(function (event, obj) {
     tmpFunc(obj);
 });
 
+// MARK: MyWalletPhone
 
-// My Wallet phone functions
+var MyWalletPhone = {};
 
 MyWalletPhone.upgradeToV4 = function() {
     var success = function () {
@@ -1276,58 +1356,6 @@ MyWalletPhone.getSecondPassword = function(callback, dismiss, helperText) {
     }, dismiss, helperText);
 };
 
-
-// Overrides
-
-MyWallet.socketConnect = function() {
-    // override socketConnect to prevent memory leaks
-}
-
-WalletCrypto.scrypt = function(passwd, salt, N, r, p, dkLen, callback) {
-    if(typeof(passwd) !== 'string') {
-        passwd = passwd.toJSON().data;
-    }
-
-    if(typeof(salt) !== 'string') {
-        salt = salt.toJSON().data;
-    }
-
-    objc_crypto_scrypt_salt_n_r_p_dkLen(passwd, salt, N, r, p, dkLen, function(buffer) {
-      var bytes = new Buffer(buffer, 'hex');
-      callback(bytes);
-    }, function(e) {
-      error(''+e);
-    });
-};
-
-WalletCrypto.stretchPassword = function (password, salt, iterations, keylen) {
-    var retVal = objc_sjcl_misc_pbkdf2(password, salt.toJSON().data, iterations, (keylen || 256) / 8);
-    return new Buffer(retVal, 'hex');
-}
-
-BIP39.mnemonicToSeed = function(mnemonic, enteredPassword) {
-    var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
-    var saltBuffer = new Buffer(BIP39.salt(enteredPassword), 'utf8');
-    var retVal = objc_pbkdf2_sync(mnemonicBuffer, saltBuffer, 2048, 64);
-    return new Buffer(retVal, 'hex');
-}
-
-BIP39.mnemonicToSeedHex = function(mnemonic, enteredPassword) {
-    return BIP39.mnemonicToSeed(mnemonic, enteredPassword).toString('hex');
-}
-
-Metadata.verify = function (address, signature, message) {
-    return objc_message_verify(address, signature.toString('hex'), message);
-}
-
-Metadata.sign = function (keyPair, message) {
-    let privateKey = keyPair.privateKey.toString('base64');
-    let compressed = keyPair.compressed;
-    let signed = objc_message_sign(privateKey, message, compressed);
-    let result = new Buffer(signed, 'hex');
-    return result
-}
-
 MyWalletPhone.addKey = function(keyString) {
     var success = function(address) {
         console.log('Add private key success');
@@ -1935,25 +1963,6 @@ MyWalletPhone.changeNetwork = function(newNetwork) {
     Blockchain.constants.NETWORK = newNetwork;
 }
 
-function WalletOptions (api) {
-  var optionsCache = {};
-
-  this.getValue = function () {
-    return optionsCache[this.getFileName()];
-  };
-
-  this.fetch = function () {
-    var name = this.getFileName();
-    var readJson = function (res) { return res.json(); }
-    var cacheOptions = function (opts) { optionsCache[name] = opts; return opts; };
-    return fetch(api.ROOT_URL + 'Resources/' + name).then(readJson).then(cacheOptions);
-  };
-
-  this.getFileName = function () {
-    return 'wallet-options.json';
-  };
-}
-
 // MARK: - Ethereum
 
 MyWalletPhone.ethereumAccountExists = function() {
@@ -2376,6 +2385,9 @@ MyWalletPhone.bch = {
     },
 
     getActiveLegacyAddresses : function() {
+        if (!MyWallet.wallet || !MyWallet.wallet.bch || !MyWallet.wallet.bch.importedAddresses) {
+            return [];
+        }
         return MyWallet.wallet.bch.importedAddresses.addresses.map(function(address) {
             var prefix = 'bitcoincash:';
             return Helpers.toBitcoinCash(address).slice(prefix.length);
@@ -2545,6 +2557,9 @@ MyWalletPhone.bch = {
     },
 
     getSocketOnOpenMessage : function() {
+        if (!MyWallet.wallet) {
+          return null;
+        }
         return BlockchainSocket.xpubSub(MyWallet.wallet.bch.activeAccounts.map(function(account) {return account.xpub}));
     },
 

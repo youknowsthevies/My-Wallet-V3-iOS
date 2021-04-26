@@ -57,10 +57,10 @@ extension PinStoreResponse {
     }
 }
 
-extension PinStoreResponse: ErrorResponseConvertible {
+extension PinStoreResponse: FromNetworkErrorConvertible {
     
     public static func from(
-        _ communicatorError: NetworkCommunicatorError
+        _ communicatorError: NetworkError
     ) -> PinStoreResponse {
         PinStoreResponse(
             statusCode: nil,

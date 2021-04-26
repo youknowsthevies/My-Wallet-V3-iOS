@@ -26,13 +26,15 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public var receiveAddress: Single<ReceiveAddress> {
         custodialAddressService
             .receiveAddress(for: asset)
-            .map(weak: self) { (self, address) in
-                try self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
+            .flatMap(weak: self) { (self, address) in
+                self.cryptoReceiveAddressFactory.makeExternalAssetAddress(
                     asset: self.asset,
                     address: address,
                     label: self.label,
                     onTxCompleted: self.onTxCompleted
                 )
+                .single
+                .map { $0 as ReceiveAddress }
             }
     }
 
@@ -61,7 +63,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             .withdrawableMoney
     }
 
-    // swiftlint:disable:next opening_brace
     public var onTxCompleted: (TransactionResult) -> Completable {
         { [weak self] result -> Completable in
             guard let self = self else {
@@ -92,9 +93,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     public var actions: Single<AvailableActions> {
         Single.zip(balance, eligibilityService.isEligible, can(perform: .receive))
-            .map { (balance, isEligible, canReceive) -> AvailableActions in
+            .map { [asset] (balance, isEligible, canReceive) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity]
-                if balance.isPositive {
+                if balance.isPositive, asset.hasNonCustodialWithdrawalSupport {
                     base.insert(.send)
                 }
                 if balance.isPositive && isEligible {
@@ -106,8 +107,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 return base
             }
-            // TODO: (IOS-4437) Remove this observeOn MainScheduler
-            .observeOn(MainScheduler.instance)
     }
     
     private let balanceFetching: CustodialAccountBalanceFetching
@@ -150,6 +149,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .send:
             return balance
                 .map(\.isPositive)
+                .map { [asset] isPositive in
+                    isPositive && asset.hasNonCustodialWithdrawalSupport
+                }
         case .sell,
              .swap:
             return balance

@@ -135,7 +135,8 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         let data = data.escapedForJS()
         let key = key.escapedForJS()
         let script = String(format: method.rawValue, data, key, iterations)
-        guard let result = jsContextProvider.jsContext.evaluateScript(script)?.toString() else {
+        let jsContext = jsContextProvider.jsContext
+        guard let result = jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString() else {
             throw ServiceError.failed
         }
         guard !result.isEmpty else {

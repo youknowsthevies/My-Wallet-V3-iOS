@@ -32,8 +32,11 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Secure Channel
     case secureChannel
     
-    // Enable receiving to trading account
+    /// Enable receiving to trading account
     case tradingAccountReceive
+
+    /// Enable sending from a trading account to any crypto address.
+    case tradingAccountExternalSend
 }
 
 extension AppFeature {
@@ -51,6 +54,8 @@ extension AppFeature {
             return "secure_channel_ios_dev"
         case .tradingAccountReceive:
             return "trading_account_receive_ios"
+        case .tradingAccountExternalSend:
+            return "trading_account_external_send_ios"
         case .biometry,
              .swipeToReceive,
              .transferFundsFromImportedAddress:

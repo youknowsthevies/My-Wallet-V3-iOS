@@ -105,8 +105,7 @@ final class TabControllerManager: NSObject {
     }
 
     private var isSendP2Enabled: Bool {
-        internalFeatureFlag.isEnabled(.sendP2)
-            || featureConfigurator.configuration(for: .sendP2).isEnabled
+        featureConfigurator.configuration(for: .sendP2).isEnabled
             || walletManager.wallet.didUpgradeToV4
     }
 

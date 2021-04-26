@@ -13,9 +13,9 @@ import NetworkKit
 
 final class NabuAuthenticationClientMock: NabuAuthenticationClientAPI {
     
-    var expectedSessionTokenResult: Result<NabuSessionTokenResponse, NetworkCommunicatorError>!
+    var expectedSessionTokenResult: Result<NabuSessionTokenResponse, NetworkError>!
     
-    var expectedRecoverUserResult: Result<Void, NetworkCommunicatorError>!
+    var expectedRecoverUserResult: Result<Void, NetworkError>!
     
     func sessionTokenPublisher(
         for guid: String,
@@ -23,14 +23,14 @@ final class NabuAuthenticationClientMock: NabuAuthenticationClientAPI {
         userIdentifier: String,
         deviceId: String,
         email: String
-    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError> {
         expectedSessionTokenResult.publisher.eraseToAnyPublisher()
     }
     
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String
-    ) -> AnyPublisher<Void, NetworkCommunicatorError> {
+    ) -> AnyPublisher<Void, NetworkError> {
         expectedRecoverUserResult.publisher.eraseToAnyPublisher()
     }
 }

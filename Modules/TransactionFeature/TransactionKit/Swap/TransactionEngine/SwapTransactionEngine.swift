@@ -38,7 +38,7 @@ fileprivate extension PendingTransaction {
 extension SwapTransactionEngine {
     var target: CryptoAccount { transactionTarget as! CryptoAccount }
     var targetAsset: CryptoCurrency { target.asset }
-    var sourceAsset: CryptoCurrency { sourceAccount.asset }
+    var sourceAsset: CryptoCurrency { sourceCryptoCurrency }
 
     var pair: OrderPair {
         OrderPair(
@@ -77,7 +77,7 @@ extension SwapTransactionEngine {
             .getRate(
                 direction: orderDirection,
                 pair: .init(
-                    sourceCurrencyType: sourceAccount.currencyType,
+                    sourceCurrencyType: sourceAsset,
                     destinationCurrencyType: target.currencyType
                 )
             )
@@ -85,7 +85,7 @@ extension SwapTransactionEngine {
                 MoneyValue(amount: pricedQuote.price, currency: self.target.currencyType)
             }
             .map(weak: self) { (self, rate) -> MoneyValuePair in
-                try MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), exchangeRate: rate)
+                try MoneyValuePair(base: .one(currency: self.sourceAsset), exchangeRate: rate)
             }
     }
 
@@ -132,14 +132,14 @@ extension SwapTransactionEngine {
                 let (tiers, min, max) = values
                 return self.priceService
                     .price(
-                        for: self.sourceAccount.currencyType,
+                        for: self.sourceAsset,
                         in: fiatCurrency
                     )
                     .map(\.moneyValue)
                     .map { $0.fiatValue ?? .zero(currency: fiatCurrency) }
                     .map { quote -> (KYC.UserTiers, MoneyValue, MoneyValue) in
-                        let minCrypto = min.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceAccount.currencyType.cryptoCurrency!)
-                        let maxCrypto = max.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceAccount.currencyType.cryptoCurrency!)
+                        let minCrypto = min.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
+                        let maxCrypto = max.convertToCryptoValue(exchangeRate: quote, cryptoCurrency: self.sourceCryptoCurrency)
                         return (tiers, .init(cryptoValue: minCrypto), .init(cryptoValue: maxCrypto))
                     }
             }
@@ -268,7 +268,7 @@ extension SwapTransactionEngine {
                 return self.orderQuoteService
                     .fetchQuote(
                         direction: self.orderDirection,
-                        sourceCurrencyType: self.sourceAccount.currencyType,
+                        sourceCurrencyType: self.sourceAsset,
                         destinationCurrencyType: self.target.currencyType
                     )
                     .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
@@ -296,9 +296,9 @@ extension SwapTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
     

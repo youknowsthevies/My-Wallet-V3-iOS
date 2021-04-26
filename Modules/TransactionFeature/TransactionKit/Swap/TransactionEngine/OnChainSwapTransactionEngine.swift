@@ -28,7 +28,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let requireSecondPassword: Bool
     let tradeLimitsService: TradeLimitsAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     init(quotesEngine: SwapQuotesEngine,
@@ -60,22 +60,26 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     }
 
     private func startOnChainEngine(pricedQuote: PricedQuote) -> Completable {
-        do {
-            let transactionTarget = try receiveAddressFactory.makeExternalAssetAddress(
+        receiveAddressFactory
+            .makeExternalAssetAddress(
                 asset: sourceAsset,
                 address: pricedQuote.sampleDepositAddress,
                 label: pricedQuote.sampleDepositAddress,
                 onTxCompleted: { _ in .empty() }
             )
-            onChainEngine.start(
-                sourceAccount: sourceAccount,
-                transactionTarget: transactionTarget,
-                askForRefreshConfirmation: { _ in .empty() }
-            )
-            return .just(event: .completed)
-        } catch let error {
-            return .just(event: .error(error))
-        }
+            .single
+            .do(onSuccess: { [weak self] transactionTarget in
+                self?.startOnChainEngine(with: transactionTarget)
+            })
+            .asCompletable()
+    }
+
+    private func startOnChainEngine(with transactionTarget: CryptoReceiveAddress) {
+        onChainEngine.start(
+            sourceAccount: sourceAccount,
+            transactionTarget: transactionTarget,
+            askForRefreshConfirmation: { _ in .empty() }
+        )
     }
     
     private func defaultFeeLevel(pendingTransaction: PendingTransaction) -> FeeLevel {
@@ -156,15 +160,18 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                 guard let depositAddress = swapOrder.depositAddress else {
                     throw PlatformKitError.illegalStateException(message: "Missing deposit address")
                 }
-                let transactionTarget = try self.receiveAddressFactory
+                return self.receiveAddressFactory
                     .makeExternalAssetAddress(
                         asset: self.sourceAsset,
                         address: depositAddress,
                         label: depositAddress,
                         onTxCompleted: { _ in .empty() }
                     )
-                return self.onChainEngine
-                    .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
+                    .single
+                    .flatMap(weak: self) { (self, transactionTarget) -> Single<PendingTransaction> in
+                        self.onChainEngine
+                            .restart(transactionTarget: transactionTarget, pendingTransaction: pendingTransaction)
+                    }
                     .flatMap(weak: self) { (self, pendingTransaction) -> Single<TransactionResult> in
                         self.onChainEngine
                             .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)

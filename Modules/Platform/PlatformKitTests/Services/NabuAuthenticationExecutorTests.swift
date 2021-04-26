@@ -6,6 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import CombineExt
 import Combine
 import XCTest
 import ToolKit
@@ -178,9 +179,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
        
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 AnyPublisher.just(
-                    ServerResponseNew(
+                    ServerResponse(
                         payload: token.data(using: .utf8),
                         response: HTTPURLResponse(
                             url: URL(string: "https://blockchain.com/")!,
@@ -301,9 +302,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 AnyPublisher.just(
-                    ServerResponseNew(
+                    ServerResponse(
                         payload: token.data(using: .utf8),
                         response: HTTPURLResponse(
                             url: URL(string: "https://blockchain.com/")!,
@@ -474,10 +475,10 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         
         // Act
         subject
-            .authenticate { token -> AnyPublisher<ServerResponseNew, NetworkCommunicatorError> in
+            .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
                 if token == newSessionTokenResponse.token {
                     return AnyPublisher.just(
-                        ServerResponseNew(
+                        ServerResponse(
                             payload: token.data(using: .utf8),
                             response: HTTPURLResponse(
                                 url: URL(string: "https://blockchain.com/")!,
@@ -494,7 +495,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                         httpVersion: nil,
                         headerFields: nil
                     )!
-                    let serverErrorResponse = ServerErrorResponseNew(
+                    let serverErrorResponse = ServerErrorResponse(
                         response: httpResponse,
                         payload: nil
                     )

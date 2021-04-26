@@ -21,6 +21,21 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
     
     public let accounts: [SingleAccount]
     
+    public var actionableBalance: Single<MoneyValue> {
+        if accounts.isEmpty {
+            return .just(.zero(currency: asset))
+        }
+        let asset = self.asset
+        return Single.zip(accounts.map(\.actionableBalance))
+                    .map { values -> MoneyValue in
+                        try values.reduce(MoneyValue.zero(currency: asset), +)
+                }
+    }
+    
+    public var receiveAddress: Single<ReceiveAddress> {
+        .error(AccountGroupError.noReceiveAddress)
+    }
+    
     public var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)

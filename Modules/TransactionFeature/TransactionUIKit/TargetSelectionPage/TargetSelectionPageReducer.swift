@@ -26,11 +26,14 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
     private typealias LocalizationIds = LocalizationConstants.Transaction.TargetSource
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
+    private let featureFetcher: FeatureFetching
 
     init(action: AssetAction,
-         navigationModel: ScreenNavigationModel) {
+         navigationModel: ScreenNavigationModel,
+         featureFetcher: FeatureFetching = resolve()) {
         self.action = action
         self.navigationModel = navigationModel
+        self.featureFetcher = featureFetcher
     }
 
     func presentableState(for interactorState: Driver<TargetSelectionPageInteractor.State>) -> Driver<TargetSelectionPagePresenter.State> {
@@ -47,12 +50,17 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 guard let self = self else { return .empty() }
                 return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
-        
+
+        let tradingAccountExternalSend = featureFetcher
+            .fetchBool(for: .tradingAccountExternalSend)
+            .asDriver(onErrorJustReturn: false)
+
         let sourceAccountStrategy = interactorState
             .compactMap(\.sourceInteractor)
             .map(\.account)
-            .map { account -> TargetDestinationsStrategyAPI in
-                if account is TradingAccount {
+            .withLatestFrom(tradingAccountExternalSend) { (account: $0, isEnabled: $1) }
+            .map { (account, isEnabled) -> TargetDestinationsStrategyAPI in
+                if account is TradingAccount, !isEnabled {
                     return TradingSourceDestinationStrategy(sourceAccount: account)
                 } else {
                     return NonTradingSourceDestinationStrategy(sourceAccount: account)

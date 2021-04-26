@@ -77,36 +77,32 @@ public final class Coincore {
         sourceAccount: CryptoAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
-        let crypto = cryptoAssets.map { $0.value }
-        guard let sourceAsset = crypto.filter({ $0.asset == sourceAccount.asset }).first else {
+        guard let sourceCryptoAsset = cryptoAssets[sourceAccount.asset] else {
             fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
         }
-        
-        let sameCurrencyTransactionTargets = sourceAsset.transactionTargets(account: sourceAccount)
-        let fiatTargets = fiatAsset
-            .accountGroup(filter: .all)
-            .map(\.accounts)
-        
-        let sameCurrencyPlusFiat = Single.zip(
-            sameCurrencyTransactionTargets,
-            fiatTargets
-        )
-        
         switch action {
-        case .swap,
-             .send:
+        case .swap:
             return allAccounts
                 .map(\.accounts)
-                .flatMap { accounts -> Single<[SingleAccount]> in
-                    if action == .send {
-                        return sameCurrencyPlusFiat.map { $0.0 + $0.1 }
-                    } else {
-                        return .just(accounts)
+                .map { (accounts) -> [SingleAccount] in
+                    accounts.filter { destinationAccount -> Bool in
+                        Self.getActionFilter(
+                            sourceAccount: sourceAccount,
+                            destinationAccount: destinationAccount,
+                            action: action
+                        )
                     }
                 }
-                .map(weak: self) { (self, accounts) -> [SingleAccount] in
+        case .send:
+            return Single
+                .zip(
+                    sourceCryptoAsset.transactionTargets(account: sourceAccount),
+                    fiatAsset.accountGroup(filter: .all).map(\.accounts)
+                )
+                .map(+)
+                .map { (accounts) -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
-                        self.getActionFilter(
+                        Self.getActionFilter(
                             sourceAccount: sourceAccount,
                             destinationAccount: destinationAccount,
                             action: action
@@ -118,11 +114,11 @@ public final class Coincore {
              .sell,
              .viewActivity,
              .withdraw:
-            unimplemented()
+            unimplemented("\(action) is not supported.")
         }
     }
 
-    private func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
+    private static func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
         switch action {
         case .sell:
             return destinationAccount is FiatAccount

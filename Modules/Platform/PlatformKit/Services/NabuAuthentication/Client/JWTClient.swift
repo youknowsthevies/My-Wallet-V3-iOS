@@ -73,7 +73,7 @@ final class JWTClient: JWTClientAPI {
             parameters: queryParameters
         )!
         return networkAdapter.perform(request: request)
-            .mapError { (networkError: NetworkCommunicatorError) -> JWTClient.ClientError in
+            .mapError { (networkError: NetworkError) -> JWTClient.ClientError in
                 .jwt(networkError.localizedDescription)
             }
             .flatMap { (response: JWTResponse) -> AnyPublisher<String, JWTClient.ClientError> in

@@ -16,7 +16,7 @@ enum NabuAuthenticationError: Int, Error {
     /// 409
     case alreadyRegistered = 409
     
-    init?(communicatorError: NetworkCommunicatorError) {
+    init?(communicatorError: NetworkError) {
         guard case .rawServerError(let serverError) = communicatorError else {
             return nil
         }

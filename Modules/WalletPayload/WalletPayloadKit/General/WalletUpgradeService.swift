@@ -89,8 +89,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
             return wallet.requiresV4Upgrade
                 .map { requiresV4Upgrade -> [PayloadVersion] in
                     if requiresV4Upgrade {
-                        /// TICKET: IOS-4513: Allow V4 Upgrade.
-                        // upgrades.append(.v4)
+                        upgrades.append(.v4)
                     }
                     return upgrades
                 }

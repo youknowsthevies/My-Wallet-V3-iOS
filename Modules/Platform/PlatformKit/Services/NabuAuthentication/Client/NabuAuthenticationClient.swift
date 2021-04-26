@@ -18,12 +18,12 @@ public protocol NabuAuthenticationClientAPI: AnyObject {
         userIdentifier: String,
         deviceId: String,
         email: String
-    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError>
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError>
     
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String
-    ) -> AnyPublisher<Void, NetworkCommunicatorError>
+    ) -> AnyPublisher<Void, NetworkError>
 }
 
 final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
@@ -61,7 +61,7 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
         userIdentifier: String,
         deviceId: String,
         email: String
-    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkCommunicatorError> {
+    ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError> {
         let headers: [String: String] = [
             HttpHeaderField.appVersion: Bundle.applicationVersion ?? "",
             HttpHeaderField.clientType: HttpHeaderValue.clientTypeApp,
@@ -87,7 +87,7 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String
-    ) -> AnyPublisher<Void, NetworkCommunicatorError> {
+    ) -> AnyPublisher<Void, NetworkError> {
         let request = requestBuilder.post(
             path: Path.recover(userId: offlineToken.userId),
             body: try? JWTPayload(jwt: jwt).encode(),

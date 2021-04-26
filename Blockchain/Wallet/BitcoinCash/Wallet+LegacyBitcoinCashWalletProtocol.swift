@@ -34,7 +34,7 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
     
     func validateBitcoinCash(address: String) -> Bool {
         let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScript("MyWalletPhone.bch.isValidAddress(\"\(escapedString)\");") else {
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.isValidAddress(\"\(escapedString)\");") else {
             return false
         }
         
@@ -46,7 +46,7 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
             return .failure(.uninitialized)
         }
         let function: String = "MyWalletPhone.bch.getReceivingAddressForAccountXPub(\"\(xpub)\")"
-        guard let jsResult = context.evaluateScript(function) else {
+        guard let jsResult = context.evaluateScriptCheckIsOnMainQueue(function) else {
             return .failure(.jsReturnedNil)
         }
         guard let result: String = jsResult.toString() else {
@@ -72,7 +72,7 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
         guard hasBitcoinCashAccount else {
             return nil
         }
-        guard let result = context.evaluateScript("MyWalletPhone.bch.getDefaultBCHAccount()")?.toString() else {
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.getDefaultBCHAccount()")?.toString() else {
             return nil
         }
         guard let data = result.data(using: .utf8),
@@ -89,7 +89,7 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
         guard hasBitcoinCashAccount else {
             return nil
         }
-        return context.evaluateScript("MyWalletPhone.bch.getDefaultAccountIndex()")?.toNumber()?.intValue
+        return context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.getDefaultAccountIndex()")?.toNumber()?.intValue
     }
 
     public func bitcoinCashWallets() -> [[String: Any]]? {
@@ -99,7 +99,7 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
         guard hasBitcoinCashAccount else {
             return nil
         }
-        guard let result = context.evaluateScript("MyWalletPhone.bch.getAllAccounts()")?.toString() else {
+        guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.getAllAccounts()")?.toString() else {
             return nil
         }
         guard let data = result.data(using: .utf8),

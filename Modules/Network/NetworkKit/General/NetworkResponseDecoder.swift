@@ -13,33 +13,33 @@ import ToolKit
 public protocol NetworkResponseDecoderAPI {
 
     func decodeOptional<ResponseType: Decodable>(
-        response: ServerResponseNew,
+        response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
-    ) -> Result<ResponseType?, NetworkCommunicatorError>
+    ) -> Result<ResponseType?, NetworkError>
     
-    func decodeOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
-        response: ServerResponseNew,
+    func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+        response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
     ) -> Result<ResponseType?, ErrorResponseType>
     
-    func decode<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
-        response: ServerResponseNew,
+    func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+        response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType>
     
     func decode<ResponseType: Decodable>(
-        response: ServerResponseNew,
+        response: ServerResponse,
         for request: NetworkRequest
-    ) -> Result<ResponseType, NetworkCommunicatorError>
+    ) -> Result<ResponseType, NetworkError>
     
-    func decode<ErrorResponseType: ErrorResponseConvertible>(
-        error: ServerErrorResponseNew,
+    func decode<ErrorResponseType: FromNetworkErrorConvertible>(
+        error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType
     
-    func decodeFailureToString(errorResponse: ServerErrorResponseNew) -> String?
+    func decodeFailureToString(errorResponse: ServerErrorResponse) -> String?
 }
 
 final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
@@ -63,10 +63,10 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     // MARK: - NetworkResponseDecoderAPI
     
     public func decodeOptional<ResponseType: Decodable>(
-        response: ServerResponseNew,
+        response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
-    ) -> Result<ResponseType?, NetworkCommunicatorError> {
+    ) -> Result<ResponseType?, NetworkError> {
         decode(
             response: response,
             for: request,
@@ -79,8 +79,8 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
     
-    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
-        response: ServerResponseNew,
+    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+        response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
     ) -> Result<ResponseType?, ErrorResponseType> {
@@ -97,8 +97,8 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         .mapError(ErrorResponseType.from)
     }
     
-    public func decode<ResponseType: Decodable, ErrorResponseType: ErrorResponseConvertible>(
-        response: ServerResponseNew,
+    public func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+        response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType> {
         decode(response: response, for: request)
@@ -106,9 +106,9 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     }
     
     public func decode<ResponseType: Decodable>(
-        response: ServerResponseNew,
+        response: ServerResponse,
         for request: NetworkRequest
-    ) -> Result<ResponseType, NetworkCommunicatorError> {
+    ) -> Result<ResponseType, NetworkError> {
         decode(
             response: response,
             for: request,
@@ -118,8 +118,8 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
     
-    public func decode<ErrorResponseType: ErrorResponseConvertible>(
-        error: ServerErrorResponseNew,
+    public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
+        error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType {
         guard let payload = error.payload else {
@@ -129,7 +129,6 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         do {
             decodedErrorResponse = try jsonDecoder.decode(ErrorResponseType.self, from: payload)
         } catch let decodingError {
-            Logger.shared.error(error.response.url!.absoluteString)
             let rawPayload = String(data: payload, encoding: .utf8) ?? ""
             let errorMessage = debugErrorMessage(
                 for: decodingError,
@@ -138,7 +137,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 request: request,
                 rawPayload: rawPayload
             )
-            Logger.shared.debug(errorMessage)
+            Logger.shared.error(errorMessage)
             // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
             // #if INTERNAL_BUILD
             // fatalError(errorMessage)
@@ -148,7 +147,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         return decodedErrorResponse
     }
     
-    public func decodeFailureToString(errorResponse: ServerErrorResponseNew) -> String? {
+    public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
         }
@@ -158,10 +157,10 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     // MARK: - Private methods
     
     private func decode<ResponseType: Decodable>(
-        response: ServerResponseNew,
+        response: ServerResponse,
         for request: NetworkRequest,
-        emptyPayloadHandler: (ServerResponseNew) -> Result<ResponseType, NetworkCommunicatorError>
-    ) -> Result<ResponseType, NetworkCommunicatorError> {
+        emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
+    ) -> Result<ResponseType, NetworkError> {
         guard ResponseType.self != EmptyNetworkResponse.self else {
             let emptyResponse: ResponseType = EmptyNetworkResponse() as! ResponseType
             return .success(emptyResponse)
@@ -175,8 +174,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             return .success(rawResponse)
         }
         return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
-            .flatMapError { decodingError -> Result<ResponseType, NetworkCommunicatorError> in
-                Logger.shared.error(response.response.url!.absoluteString)
+            .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
                 let errorMessage = debugErrorMessage(
                     for: decodingError,
@@ -185,7 +183,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                     request: request,
                     rawPayload: rawPayload
                 )
-                Logger.shared.debug(errorMessage)
+                Logger.shared.error(errorMessage)
                 // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
                 // #if INTERNAL_BUILD
                 // fatalError(errorMessage)

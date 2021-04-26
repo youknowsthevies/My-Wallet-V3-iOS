@@ -88,9 +88,9 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
     }
     
     /// Error returned from the server
-    struct ErrorResponse: ErrorResponseConvertible {
+    struct ErrorResponse: FromNetworkErrorConvertible {
         
-        static func from(_ communicatorError: NetworkCommunicatorError) -> WalletPayloadClient.ErrorResponse {
+        static func from(_ communicatorError: NetworkError) -> WalletPayloadClient.ErrorResponse {
             ErrorResponse(
                 isEmailAuthorizationRequired: true,
                 errorMessage: communicatorError.localizedDescription
@@ -204,7 +204,7 @@ extension WalletPayloadClient {
         
         func build(identifier: Identifier, guid: String) -> NetworkRequest {
             let pathComponents = self.pathComponents + [guid]
-            var headers: HTTPHeaders?
+            var headers: HTTPHeaders = [:]
             var parameters: [URLQueryItem] = []
             
             switch identifier {

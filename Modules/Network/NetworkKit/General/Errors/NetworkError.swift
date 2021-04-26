@@ -1,5 +1,5 @@
 //
-//  NetworkCommunicatorError.swift
+//  NetworkError.swift
 //  NetworkKit
 //
 //  Created by Jack Pooley on 25/03/2021.
@@ -9,16 +9,16 @@
 import ToolKit
 
 /// A networking error returned by the network layer, this can be mapped to user facing errors at a high level
-public enum NetworkCommunicatorError: Error {
-    case urlError(URLError)
+public enum NetworkError: Error {
+    case urlError(BlockchainURLError)
     case serverError(HTTPRequestServerError)
-    case rawServerError(ServerErrorResponseNew)
+    case rawServerError(ServerErrorResponse)
     case payloadError(HTTPRequestPayloadError)
     case authentication(Error)
     
     func analyticsEvent(
         for request: NetworkRequest,
-        decodeErrorResponse: ((ServerErrorResponseNew) -> String?)? = nil
+        decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
     ) -> AnalyticsEvent? {
         switch self {
         case .urlError(let urlError):

@@ -52,4 +52,5 @@ extension AccountGroup {
 
 public enum AccountGroupError: Error {
     case noBalance
+    case noReceiveAddress
 }

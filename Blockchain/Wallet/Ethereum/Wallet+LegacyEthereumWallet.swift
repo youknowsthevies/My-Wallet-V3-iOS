@@ -18,7 +18,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         }
         let function: String = "MyWalletPhone.getEtherNote(\"\(transaction.escapedForJS())\")"
         guard
-            let result: String = context.evaluateScript(function)?.toString(),
+            let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
             !result.isEmpty,
             result != "null"
             else {
@@ -35,7 +35,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         let memo: String = memo?.escapedForJS() ?? ""
         let transaction = transaction.escapedForJS()
         let function: String = "MyWalletPhone.saveEtherNote(\"\(transaction)\", \"\(memo)\")"
-        context.evaluateScript(function)
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     public func ethereumAccounts(with secondPassword: String?, success: @escaping ([[String: Any]]) -> Void, error: @escaping (String) -> Void) {
@@ -58,7 +58,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
     public func getLabelForEthereumAccount(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -113,7 +113,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)()"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     public func saveERC20Tokens(with secondPassword: String?, tokensJSONString: String, success: @escaping () -> Void, error: @escaping (String) -> Void) {
@@ -137,12 +137,12 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)(\'\(escapedTokens)\')"
         }
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     @objc public func checkIfEthereumAccountExists() -> Bool {
         guard isInitialized() else { return false }
-        return context.evaluateScript("MyWalletPhone.ethereumAccountExists()").toBool()
+        return context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.ethereumAccountExists()").toBool()
     }
 
     public func recordLastEthereumTransaction(transactionHash: String, success: @escaping () -> Void, error: @escaping (String) -> Void) {
@@ -161,6 +161,6 @@ extension Wallet: LegacyEthereumWalletAPI {
         let escapedTransactionHash = "'\(transactionHash.escapedForJS())'"
         let function: String = "MyWalletPhone.recordLastTransactionAsync"
         let script = "\(function)(\(escapedTransactionHash))"
-        context.evaluateScript(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }

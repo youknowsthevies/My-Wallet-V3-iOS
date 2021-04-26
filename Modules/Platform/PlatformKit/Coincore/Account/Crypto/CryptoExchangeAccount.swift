@@ -56,14 +56,15 @@ public class CryptoExchangeAccount: ExchangeAccount {
     }
     
     public var receiveAddress: Single<ReceiveAddress> {
-        .just(
-            CryptoExchangeAccountReceiveAddress(
+        cryptoReceiveAddressFactory
+            .makeExternalAssetAddress(
                 asset: asset,
-                label: label,
                 address: address,
+                label: label,
                 onTxCompleted: onTxCompleted
             )
-        )
+            .single
+            .map { $0 as ReceiveAddress }
     }
     
     public var pendingBalance: Single<MoneyValue> {
@@ -99,15 +100,18 @@ public class CryptoExchangeAccount: ExchangeAccount {
     
     private let address: String
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
+    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
     
     // MARK: - Init
     
     init(response: CryptoExchangeAddressResponse,
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
         self.label = response.assetType.defaultExchangeWalletName
         self.asset = response.assetType
         self.address = response.address
         self.state = .init(state: response.state)
         self.exchangeAccountProvider = exchangeAccountProvider
+        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
     }
 }

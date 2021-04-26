@@ -40,6 +40,8 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private let messageRecorder: MessageRecording
     private let didSelect: AccountPickerDidSelect?
     private let backButtonInterceptor: BackButtonInterceptor
+    private let featureConfigurator: FeatureConfiguring
+    private let radioSelectionHandler: RadioSelectionHandling
     weak var listener: TargetSelectionPageListener?
 
     // MARK: - Init
@@ -49,13 +51,17 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
          accountProvider: SourceAndTargetAccountProviding,
          listener: TargetSelectionListenerBridge,
          action: AssetAction,
+         radioSelectionHandler: RadioSelectionHandling,
          backButtonInterceptor: @escaping BackButtonInterceptor,
-         messageRecorder: MessageRecording = resolve()) {
+         messageRecorder: MessageRecording = resolve(),
+         featureConfigurator: FeatureConfiguring = resolve()) {
         self.action = action
         self.targetSelectionPageModel = targetSelectionPageModel
         self.accountProvider = accountProvider
         self.messageRecorder = messageRecorder
         self.backButtonInterceptor = backButtonInterceptor
+        self.featureConfigurator = featureConfigurator
+        self.radioSelectionHandler = radioSelectionHandler
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
@@ -74,6 +80,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             validator: CryptoAddressValidator(model: targetSelectionPageModel),
             messageRecorder: messageRecorder
         )
+
+        let transactionState = targetSelectionPageModel.state
+            .share(replay: 1, scope: .whileConnected)
 
         // This returns an observable from the TransactionModel and its state.
         // Since the TargetSelection has it's own model/state/actions we need to intercept when the back button
@@ -101,14 +110,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         /// Any text coming from the `State` we want to bind
         /// to the `cryptoAddressViewModel` textRelay.
-        targetSelectionPageModel
-            .state
+        transactionState
             .map(\.inputValidated)
             .map(\.text)
             .bind(to: cryptoAddressViewModel.originalTextRelay)
             .disposeOnDeactivate(interactor: self)
         
-        targetSelectionPageModel
+        let requiredValidationAction = targetSelectionPageModel
             .state
             .map(\.inputValidated)
             /// Only the QR scanner requires validation. The textfield
@@ -119,6 +127,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             /// conflating text entry with QR scanning or deep linking.
             .map(\.text)
             .distinctUntilChanged()
+            .share(replay: 1, scope: .whileConnected)
+
+        requiredValidationAction
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] text, account in
@@ -138,10 +149,13 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             /// when the text field is not in focus.
             .map { $0 == .on }
 
-        text
+        let isTypingAction = text
             .withLatestFrom(isFocused) { ($0, $1) }
             .filter { $0.1 }
             .map(\.0)
+            .share(replay: 1, scope: .whileConnected)
+
+        isTypingAction
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] text, account in
@@ -157,10 +171,32 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             }
             .disposeOnDeactivate(interactor: self)
 
+        /// Binding for radio selection state
+        let initialTargetsAction = transactionState
+            .map(\.availableTargets)
+            .map { $0.compactMap { $0 as? SingleAccount }.map(\.id) }
+            .distinctUntilChanged()
+            .map(RadioSelectionAction.initialValues)
+
+        let deselectAction = Observable.merge(isTypingAction, requiredValidationAction)
+            .map { _ in RadioSelectionAction.deselectAll }
+
+        let radioSelectionAction = transactionState
+            // a selected input is infered if the inputValidated is TargetSelectionInputValidation.account
+            .filter { $0.inputValidated.isAccountSelection }
+            .compactMap { $0.destination as? SingleAccount }
+            .map(\.id)
+            .map(RadioSelectionAction.select)
+
+        Observable.merge(initialTargetsAction,
+                         deselectAction,
+                         radioSelectionAction)
+            .bind(to: radioSelectionHandler.selectionAction)
+            .disposeOnDeactivate(interactor: self)
+
         /// Listens to the `step` which
         /// triggers routing to a new screen or ending the flow
-        targetSelectionPageModel
-            .state
+        transactionState
             .distinctUntilChanged(\.step)
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
@@ -189,11 +225,15 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             })
             .disposeOnDeactivate(interactor: self)
         
-        let interactorState = targetSelectionPageModel
-            .state
+        let interactorState = transactionState
             .observeOn(MainScheduler.instance)
             .scan(.empty) { [weak self] (state, updater) -> TargetSelectionPageInteractor.State in
                 guard let self = self else {
+                    return state
+                }
+                guard updater.sourceAccount != nil else {
+                    /// We cannot procede to the calcuation step without a `sourceAccount`
+                    Logger.shared.debug("No sourceAccount: \(updater)")
                     return state
                 }
                 return self.calculateNextState(
@@ -219,8 +259,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             fatalError("You should have a source account.")
         }
         var state = state
-        let targets = updater.availableTargets
-            .compactMap { $0 as? SingleAccount }
 
         if state.sourceInteractor?.account.id != sourceAccount.id {
             state = state
@@ -228,15 +266,20 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                             value: .singleAccount(sourceAccount, AccountAssetBalanceViewInteractor(account: sourceAccount)))
         }
 
-        let destinations: [TargetSelectionPageCellItem.Interactor] = targets.map { account in
-            guard account.id == (updater.destination as? SingleAccount)?.id else {
-                return .singleAccountAvailableTarget(account, false)
+        if state.destinationInteractors.isEmpty {
+            let targets = updater.availableTargets.compactMap { $0 as? SingleAccount }
+            let destinations: [TargetSelectionPageCellItem.Interactor] = targets.map { account in
+                .singleAccountAvailableTarget(
+                    RadioAccountCellInteractor(account: account, radioSelectionHandler: self.radioSelectionHandler)
+                )
             }
-            return .singleAccountAvailableTarget(account, true)
+            .sorted { $0.account.label < $1.account.label }
+            state = state
+                .update(keyPath: \.destinationInteractors, value: destinations)
         }
-        .sorted { $0.account.label < $1.account.label }
 
-        if sourceAccount is NonCustodialAccount {
+        let tradingAccountExternalSend = featureConfigurator.configuration(for: .tradingAccountExternalSend).isEnabled
+        if sourceAccount is NonCustodialAccount || tradingAccountExternalSend {
             if state.inputFieldInteractor == nil {
                 state = state
                     .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
@@ -247,8 +290,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         }
 
         return state
-            /// Update the `Interactors` for the cells.
-            .update(keyPath: \.destinationInteractors, value: destinations)
             /// Update the enabled state of the `Next` button.
             .update(keyPath: \.actionButtonEnabled, value: updater.nextEnabled)
     }

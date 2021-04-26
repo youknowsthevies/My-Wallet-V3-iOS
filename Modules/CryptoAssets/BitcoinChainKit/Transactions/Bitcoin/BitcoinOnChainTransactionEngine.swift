@@ -14,7 +14,7 @@ import TransactionKit
 
 final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTransactionEngine, BitPayClientEngine {
 
-    var sourceAccount: CryptoAccount!
+    var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var transactionTarget: TransactionTarget!
     
@@ -41,15 +41,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     private let bridge: BitcoinChainSendBridgeAPI
     private var target: BitcoinChainReceiveAddress<Token> {
         switch transactionTarget {
-        case is CryptoExchangeAccountReceiveAddress:
-            let exchange = transactionTarget as! CryptoExchangeAccountReceiveAddress
-            /// If the destination is a `CryptoExchangeAccountReceiveAddress`,
-            /// we will not have a `BitcoinChainReceiveAddress`.
-            return .init(
-                address: exchange.address,
-                label: exchange.label,
-                onTxCompleted: exchange.onTxCompleted
-            )
         case let target as BitPayInvoiceTarget:
             return .init(
                 address: target.address,
@@ -80,10 +71,10 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceAccount.asset == Token.coin.cryptoCurrency)
+        precondition(sourceCryptoAccount.asset == Token.coin.cryptoCurrency)
     }
     
-    func start(sourceAccount: CryptoAccount, transactionTarget: TransactionTarget, askForRefreshConfirmation: @escaping (Bool) -> Completable) {
+    func start(sourceAccount: BlockchainAccount, transactionTarget: TransactionTarget, askForRefreshConfirmation: @escaping (Bool) -> Completable) {
         self.sourceAccount = sourceAccount
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
@@ -165,7 +156,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                         with: self.target,
                         amount: amount,
                         fees: fees,
-                        source: self.sourceAccount
+                        source: self.sourceCryptoAccount
                     )
             }
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
@@ -233,7 +224,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     with: self.target,
                     amount: pendingTransaction.amount,
                     fees: fees,
-                    source: self.sourceAccount
+                    source: self.sourceCryptoAccount
                 )
             }
             .flatMap(weak: self) { (self, proposal) -> Single<BitcoinChainTransactionCandidate<Token>> in
@@ -272,9 +263,6 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             return .error(TransactionValidationFailure(state: .uninitialized))
         }
         return Completable.fromCallable { [pendingTransaction] in
-            guard (try? pendingTransaction.amount <= pendingTransaction.maxSpendable) == true else {
-                throw TransactionValidationFailure(state: .overMaximumLimit)
-            }
             guard pendingTransaction.amount.amount > 0 else {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
@@ -289,8 +277,11 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     
     private func validateSufficientFunds(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
+            guard (try? pendingTransaction.amount <= pendingTransaction.maxSpendable) == true else {
+                throw TransactionValidationFailure(state: .insufficientFunds)
+            }
             guard try pendingTransaction.available >= pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .invalidAmount)
+                throw TransactionValidationFailure(state: .insufficientFunds)
             }
         }
     }
@@ -353,9 +344,9 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAccount.currencyType, in: fiatCurrency)
+                    .price(for: self.sourceCryptoAccount.currencyType, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAccount.currencyType), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: self.sourceCryptoAccount.currencyType), quote: $0) }
             }
     }
 }

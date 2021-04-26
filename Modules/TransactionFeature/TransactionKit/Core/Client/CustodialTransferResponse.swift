@@ -1,32 +1,32 @@
 //
-//  CustodialWithdrawalResponse.swift
+//  CustodialTransferResponse.swift
 //  PlatformKit
 //
 //  Created by AlexM on 2/12/20.
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
+import PlatformKit
 
-/// The response object returned after submitting a `SimpleBuyWithdrawalRequest`.
+/// The response object returned after submitting a custodial transfer to a non custodial address.
 /// At the time of writing, `Status`/`State` is not exposed to clients.
-public struct CustodialWithdrawalResponse: Decodable {
-    
-    public enum Status: String {
+struct CustodialTransferResponse: Decodable {
+
+    enum Status: String {
         case none
         case pending
         case refunded
         case complete
         case rejected
     }
-    
-    public let identifier: String
-    public let userId: String
-    public let cryptoValue: CryptoValue
-    
+
+    let identifier: String
+    let userId: String
+    let cryptoValue: CryptoValue
+
     /// NOTE: `State`/`Status` is not mapped yet as it is not exposed
     /// by the API. However, it may well be in the future so as
-    /// we can show the status of the withdrawal after submission. 
+    /// we can show the status of the withdrawal after submission.
     enum CodingKeys: String, CodingKey {
         case id
         case user
@@ -34,8 +34,8 @@ public struct CustodialWithdrawalResponse: Decodable {
         case symbol
         case value
     }
-    
-    public init(from decoder: Decoder) throws {
+
+    init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         identifier = try values.decode(String.self, forKey: .id)
         userId = try values.decode(String.self, forKey: .user)

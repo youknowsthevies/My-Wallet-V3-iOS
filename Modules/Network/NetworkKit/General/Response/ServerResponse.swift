@@ -1,5 +1,5 @@
 //
-//  ServerResponseNew.swift
+//  ServerResponse.swift
 //  NetworkKit
 //
 //  Created by Jack Pooley on 25/03/2021.
@@ -8,12 +8,12 @@
 
 import Foundation
 
-public struct ServerResponseNew {
+public struct ServerResponse {
     let payload: Data?
     let response: HTTPURLResponse
 }
 
-public struct ServerErrorResponseNew: Error {
+public struct ServerErrorResponse: Error {
     public let response: HTTPURLResponse
     public let payload: Data?
 }

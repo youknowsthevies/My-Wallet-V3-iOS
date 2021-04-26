@@ -13,6 +13,8 @@ public typealias AvailableActions = Set<AssetAction>
 
 public protocol TradingAccount { }
 
+public protocol BankAccount { }
+
 public protocol NonCustodialAccount { }
 
 public protocol BlockchainAccount {
@@ -45,9 +47,16 @@ public protocol BlockchainAccount {
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
+    
+    /// The `ReceiveAddress` for the given account
+    var receiveAddress: Single<ReceiveAddress> { get }
+    
+    /// The balance, not including uncleared and locked,
+    /// that the user is able to utilize in a transaction
+    var actionableBalance: Single<MoneyValue> { get }
 }
 
-extension PrimitiveSequenceType where Trait == SingleTrait, Element == Array<BlockchainAccount> {
+extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {
     /// Filters an `[BlockchainAccount]` for only `BlockchainAccount`s that can perform the given action.
     /// - parameter failSequence: When `true` rethrows errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
     public func flatMapFilter(
@@ -79,7 +88,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == Array<Blo
     }
 }
 
-extension PrimitiveSequenceType where Trait == SingleTrait, Element == Array<SingleAccount> {
+extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAccount] {
     /// Filters an `[SingleAccount]` for only `SingleAccount`s that can perform the given action.
     /// - parameter failSequence: When `true` rethrows errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
     public func flatMapFilter(

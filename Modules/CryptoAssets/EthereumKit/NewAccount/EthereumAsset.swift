@@ -26,17 +26,20 @@ final class EthereumAsset: CryptoAsset {
                 )
             }
     }
-    
+
+    let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
     init(repository: EthereumWalletAccountRepositoryAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve()) {
+         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
+        self.kycTiersService = kycTiersService
     }
 
     func initialize() -> Completable {
