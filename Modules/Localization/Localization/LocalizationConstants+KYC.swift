@@ -382,5 +382,9 @@ extension LocalizationConstants {
         public static let state = NSLocalizedString("State", comment: "state")
         public static let stateRegionProvinceCountry = NSLocalizedString("State / Region / Province / Country", comment: "State / Region / Province / Country")
         public static let postalCode = NSLocalizedString("Postal Code", comment: "postal code")
+        
+        public struct Errors {
+            public static let genericErrorMessage = NSLocalizedString("Please check the information you provided and try again.", comment: "A message shown when something goes wrong on the backend, normally address validation.")
+        }
     }
 }

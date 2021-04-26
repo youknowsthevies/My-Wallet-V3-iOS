@@ -398,6 +398,18 @@ extension KYCAddressController: LocationSuggestionInterface {
         regionTextField.isHidden = countryHasStates
         regionTextField.text = regionTextField.isHidden ? nil : regionTextField.text
     }
+    
+    func didReceiveError(_ error: Error) {
+        let alert = UIAlertController(
+            title: LocalizationConstants.Errors.error,
+            message: LocalizationConstants.KYC.Errors.genericErrorMessage,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil))
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
 }
 
 extension KYCAddressController: LocationSuggestionCoordinatorDelegate {
