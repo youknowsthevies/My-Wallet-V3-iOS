@@ -36,6 +36,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     // MARK: - `Router` Properties
     
     public let completionRelay = PublishRelay<Void>()
+    public let analyticsService: SimpleBuyAnalayticsServicing
     
     private var stateService: CustodyActionStateServiceAPI!
     private let backupRouterAPI: BackupRouterAPI
@@ -55,7 +56,11 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
     
-    public convenience init(navigationRouter: NavigationRouterAPI = NavigationRouter(), backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
+    public convenience init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        backupRouterAPI: BackupRouterAPI,
+        tabSwapping: TabSwapping
+    ) {
         self.init(
             navigationRouter: navigationRouter,
             backupRouterAPI: backupRouterAPI,
@@ -70,7 +75,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
         dataProviding: DataProviding = resolve(),
-        accountProviding: BlockchainAccountProviding = resolve()
+        accountProviding: BlockchainAccountProviding = resolve(),
+        analyticsService: SimpleBuyAnalayticsServicing = resolve()
     ) {
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
@@ -78,6 +84,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
+        
+        self.analyticsService = analyticsService
 
         self.tabSwapping = tabSwapping
         
@@ -200,7 +208,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     
     private func showSendCustody() {
         if case let .crypto(cryptoCurrency) = currency {
-            let analyticsService: SimpleBuyAnalayticsServicing = resolve()
             analyticsService.recordTradingWalletClicked(for: cryptoCurrency)
         }
         let interactor = WalletActionScreenInteractor(

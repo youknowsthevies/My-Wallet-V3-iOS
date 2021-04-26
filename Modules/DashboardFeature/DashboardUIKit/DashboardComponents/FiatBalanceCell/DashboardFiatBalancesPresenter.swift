@@ -15,6 +15,8 @@ import RxSwift
 
 final class DashboardFiatBalancesPresenter {
     
+    let fiatBalancePresenter: FiatBalanceCollectionViewPresenting
+    
     // MARK: - Exposed Properties
     
     var tap: Driver<DashboardItemDisplayAction<CurrencyType>> {
@@ -49,11 +51,10 @@ final class DashboardFiatBalancesPresenter {
     
     // MARK: - Setup
     
-    init(interactor: DashboardFiatBalancesInteractor) {
+    init(interactor: DashboardFiatBalancesInteractor, fiatBalancePresenter: FiatBalanceCollectionViewPresenting = resolve()) {
         self.interactor = interactor
-        
-        let fiatPresenting: FiatBalanceCollectionViewPresenting = resolve()
-        guard let viewPresenter = fiatPresenting as? CurrencyViewPresenter else {
+        self.fiatBalancePresenter = fiatBalancePresenter
+        guard let viewPresenter = fiatBalancePresenter as? CurrencyViewPresenter else {
             abort()
         }
         fiatBalanceCollectionViewPresenter = viewPresenter
