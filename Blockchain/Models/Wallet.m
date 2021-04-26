@@ -2340,7 +2340,8 @@ NSString * const kLockboxInvitation = @"lockbox";
     if ([message hasPrefix:@"TypeError:"]) {
         dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC));
         dispatch_after(when, dispatch_get_main_queue(), ^{
-            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
+            NSString *value = [message substringFromIndex:[@"TypeError:" length]];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:value in:nil handler:nil];
         });
         [self logJavaScriptTypeError:message stack:stack];
     }
