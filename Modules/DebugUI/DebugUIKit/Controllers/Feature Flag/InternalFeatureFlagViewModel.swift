@@ -17,8 +17,6 @@ struct InternalFeatureItem: Equatable {
 
     var title: String {
         switch type {
-        case .sendP2:
-            return "Send P2"
         case .secureChannel:
             return "Secure Channel"
         case .tradingAccountReceive:
