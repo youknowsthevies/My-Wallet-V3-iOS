@@ -6,6 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import CombineExt
 import Combine
 import XCTest
 import ToolKit
