@@ -92,7 +92,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         self.states = states
         if let country = self.country {
             stateTextField.options = states
-                .map(pickerItem(from:))
+                .map({ ValidationPickerField.PickerItem($0) })
                 .sorted(by: { $0.title < $1.title })
             updateStateAndRegionFieldsVisibility()
             validationFieldsPlaceholderSetup(country.code)
@@ -341,7 +341,7 @@ extension KYCAddressController: LocationSuggestionInterface {
         // Ideally, we should reload the states, but since we're going to rewrite this module, I'm just patching it for now.
         if address.countryCode?.lowercased() == "us" {
             stateTextField.options = UnitedStates.states
-                .map(pickerItem(from:))
+                .map({ ValidationPickerField.PickerItem($0) })
                 .sorted(by: { $0.title < $1.title })
         } else {
             stateTextField.options = []
@@ -360,10 +360,6 @@ extension KYCAddressController: LocationSuggestionInterface {
         }
         regionTextField.text = address.state
         postalCodeTextField.text = address.postalCode
-    }
-    
-    func pickerItem(from item: PickerViewSelectable) -> ValidationPickerField.PickerItem {
-        ValidationPickerField.PickerItem(id: item.id, title: item.title)
     }
 
     func updateActivityIndicator(_ visibility: Visibility) {
