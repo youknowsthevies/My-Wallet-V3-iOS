@@ -11,7 +11,7 @@ import PlatformKit
 public enum KYCPageModel {
     case email(NabuUser)
     case personalDetails(NabuUser)
-    case address(NabuUser, CountryData?)
+    case address(NabuUser, CountryData?, [KYCState])
     case phone(NabuUser)
     case verifyIdentity(countryCode: String)
 }

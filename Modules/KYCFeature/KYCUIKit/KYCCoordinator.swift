@@ -54,6 +54,8 @@ final class KYCCoordinator: KYCRouterAPI {
     private(set) var user: NabuUser?
 
     private(set) var country: CountryData?
+    
+    private(set) var states: [KYCState] = []
 
     private var pager: KYCPagerAPI!
 
@@ -418,6 +420,8 @@ final class KYCCoordinator: KYCRouterAPI {
         switch payload {
         case .countrySelected(let country):
             self.country = country
+        case .stateSelected(_, let states):
+            self.states = states
         case .phoneNumberUpdated,
              .emailPendingVerification,
              .accountStatus:
@@ -491,7 +495,7 @@ final class KYCCoordinator: KYCRouterAPI {
             delegate?.apply(model: .personalDetails(current))
         case .address:
             guard let current = user else { return }
-            delegate?.apply(model: .address(current, country))
+            delegate?.apply(model: .address(current, country, states))
         case .enterPhone, .confirmPhone:
             guard let current = user else { return }
             delegate?.apply(model: .phone(current))

@@ -66,7 +66,7 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
 extension KYCStateSelectionController: KYCStateSelectionView {
     func continueKycFlow(state: KYCState) {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        coordinator.handle(event: .nextPageFromPageType(pageType, .stateSelected(state, statesMap.allItems ?? [])))
     }
 
     func showExchangeNotAvailable(state: KYCState) {
