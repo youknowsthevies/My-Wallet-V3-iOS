@@ -25,7 +25,7 @@ final class DashboardFiatBalancesPresenter {
     }
     
     /// Streams only distinct actions
-    var action: Driver<DashboardItemDisplayAction<ViewPresenter>> {
+    var action: Driver<DashboardItemDisplayAction<CurrencyViewPresenter>> {
         _ = setup
         return actionRelay
             .asDriver()
@@ -35,9 +35,9 @@ final class DashboardFiatBalancesPresenter {
     // MARK: - Private Properties
     
     private let selectionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyType>>(value: .hide)
-    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<ViewPresenter>>(value: .hide)
+    private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyViewPresenter>>(value: .hide)
     
-    private let fiatBalanceCollectionViewPresenter: ViewPresenter
+    private let fiatBalanceCollectionViewPresenter: CurrencyViewPresenter
     private let interactor: DashboardFiatBalancesInteractor
     private let disposeBag = DisposeBag()
     

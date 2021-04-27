@@ -119,7 +119,7 @@ public final class DashboardViewController: BaseScreenViewController {
         }
     }
     
-    private func execute(fiatBalanceAction: DashboardItemDisplayAction<ViewPresenter>) {
+    private func execute(fiatBalanceAction: DashboardItemDisplayAction<CurrencyViewPresenter>) {
         let previousCellIndex = (presenter.indexByCellType[.notice] ?? presenter.indexByCellType[.totalBalance]!)
         let index = previousCellIndex + 1
         let indexPaths = [IndexPath(item: index, section: 0)]

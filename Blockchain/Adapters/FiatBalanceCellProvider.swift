@@ -13,7 +13,7 @@ class FiatBalanceCellProvider: FiatBalanceCellProviding {
         tableView.register(FiatCustodialBalancesTableViewCell.self)
     }
     
-    func dequeueReusableFiatBalanceCell(for tableView: UITableView, indexPath: IndexPath, presenter: ViewPresenter) -> UITableViewCell {
+    func dequeueReusableFiatBalanceCell(for tableView: UITableView, indexPath: IndexPath, presenter: CurrencyViewPresenter) -> UITableViewCell {
         let cell = tableView.dequeue(FiatCustodialBalancesTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

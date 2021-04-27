@@ -17,7 +17,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Properties
     
-    public var presenter: ViewPresenter! {
+    public var presenter: CurrencyViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }

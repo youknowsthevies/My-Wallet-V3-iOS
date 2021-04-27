@@ -30,7 +30,7 @@ enum DashboardCollectionAction {
     case notice(DashboardItemDisplayAction<NoticeViewModel>)
     
     /// Any action related to the custodial fiat balances
-    case fiatBalance(DashboardItemDisplayAction<ViewPresenter>)
+    case fiatBalance(DashboardItemDisplayAction<CurrencyViewPresenter>)
     
     case actionScreen(DashboardItemDisplayAction<CurrencyType>)
 }
@@ -159,7 +159,7 @@ final class DashboardScreenPresenter {
     }
     
     var fiatBalanceState = DashboardItemState.hidden
-    private(set) var fiatBalanceCollectionViewPresenter: ViewPresenter!
+    private(set) var fiatBalanceCollectionViewPresenter: CurrencyViewPresenter!
     let fiatBalancePresenter: DashboardFiatBalancesPresenter
     
     // MARK: - Notice
