@@ -7,11 +7,12 @@
 //
 
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class FiatBalanceCollectionViewPresenter {
+public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, FiatBalanceCollectionViewPresenting {
     
     // MARK: - Exposed Properties
     
@@ -20,7 +21,7 @@ public final class FiatBalanceCollectionViewPresenter {
         return presentersRelay.asDriver()
     }
     
-    public var tap: Signal<CurrencyType> {
+    override public var tap: Signal<CurrencyType> {
         tapRelay
             .asSignal()
     }
@@ -55,6 +56,7 @@ public final class FiatBalanceCollectionViewPresenter {
     
     public init(interactor: FiatBalanceCollectionViewInteractor) {
         self.interactor = interactor
+        super.init()
     }
     
     // MARK: - Public
@@ -67,10 +69,10 @@ public final class FiatBalanceCollectionViewPresenter {
         _ = setup
         interactor.refresh()
     }
-}
-
-extension FiatBalanceCollectionViewPresenter: Equatable {
+    
+    // Equatable
     public static func == (lhs: FiatBalanceCollectionViewPresenter, rhs: FiatBalanceCollectionViewPresenter) -> Bool {
         lhs.interactor.interactorsStateRelay.value == rhs.interactor.interactorsStateRelay.value
     }
+    
 }

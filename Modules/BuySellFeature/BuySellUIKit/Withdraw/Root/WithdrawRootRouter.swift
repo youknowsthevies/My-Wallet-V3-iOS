@@ -20,11 +20,6 @@ protocol WithdrawFlowInteractable: Interactable,
     var listener: WithdrawFlowListener? { get set }
 }
 
-public protocol WithdrawFlowStarter: AnyObject {
-    /// Helper method for starting the withdraw flow
-    func startFlow(flowDismissed: @escaping () -> Void)
-}
-
 final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
                                 WithdrawFlowRouting,
                                 WithdrawFlowStarter {

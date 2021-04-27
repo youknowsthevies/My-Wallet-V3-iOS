@@ -24,7 +24,7 @@ final class BackupFundsSettingsRouter: BackupRouterAPI {
     private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
     private let disposeBag = DisposeBag()
     
-    init(navigationRouter: NavigationRouterAPI,
+    init(navigationRouter: NavigationRouterAPI = resolve(),
          recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI = resolve()) {
         self.navigationRouter = navigationRouter
         self.recoveryPhraseVerifyingService = recoveryPhraseVerifyingService
