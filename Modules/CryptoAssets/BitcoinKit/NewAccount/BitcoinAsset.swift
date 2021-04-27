@@ -142,7 +142,7 @@ final class BitcoinAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {
-        repository.accounts
+        repository.activeAccounts
             .flatMap(weak: self) { (self, accounts) -> Single<(defaultAccount: BitcoinWalletAccount, accounts: [BitcoinWalletAccount])> in
                 self.repository.defaultAccount
                     .map { ($0, accounts) }
