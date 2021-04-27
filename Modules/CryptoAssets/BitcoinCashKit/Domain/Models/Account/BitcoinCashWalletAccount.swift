@@ -9,13 +9,12 @@
 import BitcoinChainKit
 import PlatformKit
 
-public struct BitcoinCashWalletAccount: WalletAccount, Codable, Hashable {
+public struct BitcoinCashWalletAccount {
 
     public let archived: Bool
     public let index: Int
     public let label: String?
-    public let publicKey: String
-    public let derivationType: DerivationType
+    public let publicKey: XPub
 
     public init(index: Int,
                 publicKey: String,
@@ -25,7 +24,6 @@ public struct BitcoinCashWalletAccount: WalletAccount, Codable, Hashable {
         self.archived = archived
         self.index = index
         self.label = label
-        self.publicKey = publicKey
-        self.derivationType = derivationType
+        self.publicKey = XPub(address: publicKey, derivationType: derivationType)
     }
 }

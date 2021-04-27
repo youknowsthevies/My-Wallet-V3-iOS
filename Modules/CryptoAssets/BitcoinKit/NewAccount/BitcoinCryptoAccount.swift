@@ -28,10 +28,10 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var actionableBalance: Single<MoneyValue> {
         balance
     }
-
+    
     var balance: Single<MoneyValue> {
         balanceService
-            .balance(for: .init(publicKey: id, type: derivationType))
+            .balances(for: walletAccount.publicKeys.xpubs)
             .moneyValue
     }
 
@@ -65,25 +65,22 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
-    private let derivationType: DerivationType
     private let hdAccountIndex: Int
+    private let walletAccount: BitcoinWalletAccount
 
-    init(id: String,
-         derivationType: DerivationType,
-         label: String?,
+    init(walletAccount: BitcoinWalletAccount,
          isDefault: Bool,
-         hdAccountIndex: Int,
          exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
          bridge: BitcoinWalletBridgeAPI = resolve()) {
-        self.id = id
-        self.derivationType = derivationType
-        self.hdAccountIndex = hdAccountIndex
-        self.label = label ?? CryptoCurrency.bitcoin.defaultWalletName
+        self.id = walletAccount.publicKeys.default.address
+        self.hdAccountIndex = walletAccount.index
+        self.label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService
         self.bridge = bridge
+        self.walletAccount = walletAccount
     }
     
     func can(perform action: AssetAction) -> Single<Bool> {

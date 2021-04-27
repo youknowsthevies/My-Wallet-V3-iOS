@@ -10,9 +10,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
-    
-    typealias Account = BitcoinWalletAccount
+final class BitcoinWalletAccountRepository {
 
     // MARK: - Properties
 
@@ -36,11 +34,5 @@ final class BitcoinWalletAccountRepository: WalletAccountRepositoryAPI {
 
     init(bridge: BitcoinWalletBridgeAPI = resolve()) {
         self.bridge = bridge
-    }
-}
-
-extension BitcoinWalletAccount {
-    var isActive: Bool {
-        !archived
     }
 }

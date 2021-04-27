@@ -24,13 +24,13 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
         self.client = client
         self.repository = repository
     }
-
+    
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         repository.activeAccounts
             .map { accounts in
-                accounts.map { account in
-                    APIWalletModel(publicKey: account.publicKey, type: account.derivationType)
-                }
+                accounts
+                    .map(\.publicKeys.xpubs)
+                    .flatMap { $0 }
             }
             .flatMap(weak: self) { (self, addresses) -> Single<PageModel> in
                 self.client.multiAddress(for: addresses)

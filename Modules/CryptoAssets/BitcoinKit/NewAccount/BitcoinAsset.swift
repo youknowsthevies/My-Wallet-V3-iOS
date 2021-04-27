@@ -20,11 +20,8 @@ final class BitcoinAsset: CryptoAsset {
         repository.defaultAccount
             .map { account in
                 BitcoinCryptoAccount(
-                    id: account.publicKey,
-                    derivationType: account.derivationType,
-                    label: account.label,
-                    isDefault: true,
-                    hdAccountIndex: account.index
+                    walletAccount: account,
+                    isDefault: true
                 )
             }
     }
@@ -150,11 +147,8 @@ final class BitcoinAsset: CryptoAsset {
             .map { (defaultAccount, accounts) -> [SingleAccount] in
                 accounts.map { account in
                     BitcoinCryptoAccount(
-                        id: account.publicKey,
-                        derivationType: account.derivationType,
-                        label: account.label,
-                        isDefault: account.publicKey == defaultAccount.publicKey,
-                        hdAccountIndex: account.index
+                        walletAccount: account,
+                        isDefault: account.publicKeys.default == defaultAccount.publicKeys.default
                     )
                 }
             }

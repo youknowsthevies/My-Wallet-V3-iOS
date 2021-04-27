@@ -56,12 +56,12 @@ public final class BitcoinAllAccountsBalanceFetcher: CryptoAccountBalanceFetchin
     
     // MARK: - Private Properties
     
-    private var activeAccountAddresses: Single<[APIWalletModel]> {
+    private var activeAccountAddresses: Single<[XPub]> {
         repository.activeAccounts
             .map { accounts in
-                accounts.map { account in
-                    APIWalletModel(publicKey: account.publicKey, type: account.derivationType)
-                }
+                accounts
+                    .map(\.publicKeys.xpubs)
+                    .flatMap { $0 }
             }
     }
     
