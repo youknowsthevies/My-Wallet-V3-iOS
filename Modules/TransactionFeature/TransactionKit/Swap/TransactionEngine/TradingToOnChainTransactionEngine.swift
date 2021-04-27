@@ -100,12 +100,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             .map { (fees, withdrawableBalance) -> PendingTransaction in
                 let fee = fees[fee: amount.currencyType]
                 let available = try withdrawableBalance - fee
-                return pendingTransaction.update(
+                var pendingTransaction = pendingTransaction.update(
                     amount: amount,
                     available: available,
                     fee: fee,
                     feeForFullAvailable: fee
                 )
+                pendingTransaction.minimumLimit = fees[minimumAmount: amount.currencyType]
+                return pendingTransaction
             }
     }
     
@@ -165,21 +167,21 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
     
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
-        Single
-            .zip(feeCache.valueSingle, sourceTradingAccount.withdrawableBalance)
-            .map { (minimumAmount: $0[minimumAmount: pendingTransaction.amount.currency], balance: $1) }
-            .flatMapCompletable(weak: self) { (self, data) -> Completable in
-                guard try pendingTransaction.amount > .zero(currency: self.sourceAsset) else {
-                    throw TransactionValidationFailure(state: .invalidAmount)
-                }
-                guard try data.balance >= pendingTransaction.amount else {
-                    throw TransactionValidationFailure(state: .insufficientFunds)
-                }
-                guard try data.minimumAmount <= pendingTransaction.amount else {
-                    throw TransactionValidationFailure(state: .belowMinimumLimit)
-                }
-                return .just(event: .completed)
+        Completable.deferred { () -> Completable in
+            guard pendingTransaction.amount.isPositive else {
+                throw TransactionValidationFailure(state: .invalidAmount)
             }
+            guard try pendingTransaction.amount <= pendingTransaction.available else {
+                throw TransactionValidationFailure(state: .insufficientFunds)
+            }
+            guard let minimumLimit = pendingTransaction.minimumLimit else {
+                throw TransactionValidationFailure(state: .belowMinimumLimit)
+            }
+            guard try pendingTransaction.amount >= minimumLimit else {
+                throw TransactionValidationFailure(state: .belowMinimumLimit)
+            }
+            return .just(event: .completed)
+        }
     }
 
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {

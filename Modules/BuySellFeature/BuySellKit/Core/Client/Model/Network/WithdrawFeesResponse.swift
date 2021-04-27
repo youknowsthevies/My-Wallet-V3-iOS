@@ -15,4 +15,5 @@ struct CurrencyFeeResponse: Decodable {
 
 struct WithdrawFeesResponse: Decodable {
     let fees: [CurrencyFeeResponse]
+    let minAmounts: [CurrencyFeeResponse]
 }

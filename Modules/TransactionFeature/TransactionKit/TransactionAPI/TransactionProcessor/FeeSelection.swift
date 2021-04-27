@@ -18,7 +18,7 @@ public struct FeeSelection: Equatable {
     
     public init(selectedLevel: FeeLevel,
                 availableLevels: Set<FeeLevel>,
-                asset: CryptoCurrency) {
+                asset: CryptoCurrency? = nil) {
         self.selectedLevel = selectedLevel
         self.availableLevels = availableLevels
         self.asset = asset

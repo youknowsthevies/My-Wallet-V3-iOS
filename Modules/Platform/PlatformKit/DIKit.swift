@@ -121,6 +121,8 @@ extension DependencyContainer {
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
         
         factory { ExchangeAccountStatusService() as ExchangeAccountStatusServiceAPI }
+        
+        factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
         single { () -> Coincore in
             Coincore(
