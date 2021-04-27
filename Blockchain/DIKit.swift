@@ -117,6 +117,8 @@ extension DependencyContainer {
         
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
         
+        factory { WithdrawalRouter() as WithdrawalRouting }
+        
         // MARK: - Send
 
         factory { () -> SendScreenProvider in

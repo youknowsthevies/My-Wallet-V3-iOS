@@ -11,12 +11,20 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+enum BitPayError: Error {
+    case unsupportedCurrencyType
+    case invalidBitPayURL
+    case invoiceError
+    case invalidBitcoinURL
+    case invalidBitcoinCashURL
+}
+
 extension BitPayInvoiceTarget {
     
     // MARK: - Enums
     
     private enum Prefix {
-        static let bitpay = "https://bitpay.com/i/"
+        static let bitpay = "bitpay.com"
         static let bitcoin = "bitcoin:?r="
         static let bitcoinCash = "bitcoincash:?r="
     }
@@ -25,22 +33,12 @@ extension BitPayInvoiceTarget {
         static let forMerchant = "for merchant "
     }
     
-    private enum BitPayError: Error {
-        case invalidBitPayURL
-        case invoiceError
-        case invalidBitcoinURL
-        case invalidBitcoinCashURL
-    }
-    
     private static let bitpayService: BitPayServiceAPI = resolve()
     
     // MARK: - Public Factory
     
     public static func isBitcoin(_ data: String) -> Completable {
         Completable.fromCallable {
-            guard data.contains(Prefix.bitpay) else {
-                throw BitPayError.invalidBitPayURL
-            }
             guard data.contains(Prefix.bitcoin) else {
                 throw BitPayError.invalidBitcoinURL
             }
@@ -49,16 +47,21 @@ extension BitPayInvoiceTarget {
     
     public static func isBitcoinCash(_ data: String) -> Completable {
         Completable.fromCallable {
-            guard data.contains(Prefix.bitpay) else {
-                throw BitPayError.invalidBitPayURL
-            }
             guard data.contains(Prefix.bitcoinCash) else {
                 throw BitPayError.invalidBitcoinCashURL
             }
         }
     }
     
-    public static func isValidBitPay(_ data: String) -> Completable {
+    public static func isSupportedAsset(_ asset: CryptoCurrency) -> Completable {
+        Completable.fromCallable {
+            guard asset.supportsBitPay else {
+                throw BitPayError.unsupportedCurrencyType
+            }
+        }
+    }
+    
+    public static func isBitPay(_ data: String) -> Completable {
         Completable.fromCallable {
             guard data.contains(Prefix.bitpay) else {
                 throw BitPayError.invalidBitPayURL
@@ -68,7 +71,7 @@ extension BitPayInvoiceTarget {
     
     public static func make(from data: String,
                             asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
-        isValidBitPay(data)
+        isBitPay(data)
             .andThen(invoiceId(from: data))
             .flatMap { invoiceId in
                 BitPayInvoiceTarget

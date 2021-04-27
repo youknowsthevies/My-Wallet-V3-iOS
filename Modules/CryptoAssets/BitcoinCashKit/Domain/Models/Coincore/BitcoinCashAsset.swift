@@ -70,6 +70,7 @@ class BitcoinCashAsset: CryptoAsset {
 
     func parse(address: String) -> Single<ReceiveAddress?> {
         addressValidator.validate(address: address)
+            .subscribeOn(MainScheduler.instance)
             .andThen(
                 .just(
                     BitcoinChainReceiveAddress<BitcoinCashToken>(
