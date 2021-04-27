@@ -37,6 +37,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     
     public let completionRelay = PublishRelay<Void>()
     public let analyticsService: SimpleBuyAnalayticsServicing
+    public let walletOperationsRouter: WalletOperationsRouting
     
     private var stateService: CustodyActionStateServiceAPI!
     private let backupRouterAPI: BackupRouterAPI
@@ -56,13 +57,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
     
-    public convenience init(
-        navigationRouter: NavigationRouterAPI = NavigationRouter(),
-        backupRouterAPI: BackupRouterAPI,
-        tabSwapping: TabSwapping
-    ) {
+    public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
-            navigationRouter: navigationRouter,
             backupRouterAPI: backupRouterAPI,
             tabSwapping: tabSwapping,
             custodyWithdrawalRouter: CustodyWithdrawalRouter()
@@ -70,18 +66,20 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
     
     init(
-        navigationRouter: NavigationRouterAPI,
         backupRouterAPI: BackupRouterAPI,
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
+        navigationRouter: NavigationRouterAPI = resolve(),
         dataProviding: DataProviding = resolve(),
         accountProviding: BlockchainAccountProviding = resolve(),
-        analyticsService: SimpleBuyAnalayticsServicing = resolve()
+        analyticsService: SimpleBuyAnalayticsServicing = resolve(),
+        walletOperationsRouter: WalletOperationsRouting = resolve()
     ) {
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
 
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
+        self.walletOperationsRouter = walletOperationsRouter
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
         
@@ -236,17 +234,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     
     private func showCashIdentityViewController() {
         guard case .fiat = currency else { return }
-        dismissTopMost {
-            let router: WalletOperationsRouting = resolve()
-            router.showCashIdentityVerificationScreen()
+        dismissTopMost { [weak self] in
+            self?.walletOperationsRouter.showCashIdentityVerificationScreen()
         }
     }
     
     private func showPaymentMethods() {
         guard case let .fiat(fiatCurrency) = currency else { return }
-        dismissTopMost {
-            let router: WalletOperationsRouting = resolve()
-            router.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
+        dismissTopMost { [weak self] in
+            self?.walletOperationsRouter.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
         }
     }
     
@@ -254,8 +250,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                let router: WalletOperationsRouting = resolve()
-                router.switchTabToSwap()
+                self.walletOperationsRouter.switchTabToSwap()
             })
         }
     }
@@ -265,8 +260,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
                 guard case let .crypto(currency) = self.currency else { return }
-                let router: WalletOperationsRouting = resolve()
-                router.handleBuyCrypto(currency: currency)
+                self.walletOperationsRouter.handleBuyCrypto(currency: currency)
             })
         }
     }
@@ -275,8 +269,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                let router: WalletOperationsRouting = resolve()
-                router.handleSellCrypto()
+                self.walletOperationsRouter.handleSellCrypto()
             })
         }
     }
@@ -314,5 +307,4 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
-    
 }
