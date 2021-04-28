@@ -49,7 +49,14 @@ final class NetworkResponseHandler: NetworkResponseHandlerAPI {
                     return .success(ServerResponse(payload: payload, response: response))
                 default:
                     let requestPath = request.URLRequest.url?.path ?? ""
-                    Logger.shared.debug("\(requestPath) failed with status code: \(response.statusCode)")
+                    #if INTERNAL_BUILD
+                    if let data = payload {
+                        if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                            Logger.shared.error("\(json)")
+                        }
+                    }
+                    #endif
+                    Logger.shared.error("\(requestPath) failed with status code: \(response.statusCode)")
                     return .failure(
                         .rawServerError(
                             ServerErrorResponse(response: response, payload: payload)

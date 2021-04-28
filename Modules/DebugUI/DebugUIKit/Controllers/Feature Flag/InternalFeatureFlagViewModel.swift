@@ -21,6 +21,8 @@ struct InternalFeatureItem: Equatable {
             return "Secure Channel"
         case .tradingAccountReceive:
             return "Trading Account Receive"
+        case .withdrawAndDepositACH:
+            return "Withdraw and Deposit - US ACH"
         }
     }
 }
