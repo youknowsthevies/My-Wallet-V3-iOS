@@ -7,13 +7,13 @@
 //
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxDataSources
 import RxRelay
 import RxSwift
-import Localization
 
 final class ActivityScreenPresenter {
     

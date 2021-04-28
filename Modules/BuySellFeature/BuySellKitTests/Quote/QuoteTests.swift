@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import BigInt
 @testable import BuySellKit
 @testable import PlatformKit
+import XCTest
 
 final class SimpleBuyQuoteTests: XCTestCase {
         

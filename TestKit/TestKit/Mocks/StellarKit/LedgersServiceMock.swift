@@ -7,9 +7,9 @@
 //
 
 import Foundation
+@testable import StellarKit
 import stellarsdk
 import XCTest
-@testable import StellarKit
 
 final class LedgersServiceMock: LedgersServiceAPI {
 

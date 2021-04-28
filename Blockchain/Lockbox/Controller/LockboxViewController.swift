@@ -7,11 +7,11 @@
 //
 
 import DIKit
-import UIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import SafariServices
-import Localization
+import UIKit
 
 final class LockboxViewController: UIViewController {
 

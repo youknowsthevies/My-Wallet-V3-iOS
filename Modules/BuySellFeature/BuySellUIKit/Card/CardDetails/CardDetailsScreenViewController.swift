@@ -9,8 +9,8 @@
 import DIKit
 import Localization
 import PlatformUIKit
-import ToolKit
 import RxSwift
+import ToolKit
 
 final class CardDetailsScreenViewController: BaseTableViewController {
 

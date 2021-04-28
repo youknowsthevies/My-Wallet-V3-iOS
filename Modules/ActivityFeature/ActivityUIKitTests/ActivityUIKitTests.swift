@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import ActivityUIKit
+import XCTest
 
 class ActivityUIKitTests: XCTestCase {
 

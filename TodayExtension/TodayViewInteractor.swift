@@ -7,8 +7,8 @@
 //
 
 import LocalAuthentication
-import PlatformUIKit
 import PlatformKit
+import PlatformUIKit
 import RxRelay
 import RxSwift
 
@@ -60,7 +60,7 @@ final class TodayViewInteractor {
     
     /// Performs authentication
     private func performAuthentication() -> Single<Void> {
-        return Single.create { observer -> Disposable in
+        Single.create { observer -> Disposable in
             let context = LAContext()
             context.evaluatePolicy(
                 .deviceOwnerAuthenticationWithBiometrics,

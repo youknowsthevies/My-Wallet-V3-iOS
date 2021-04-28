@@ -41,7 +41,7 @@ class StaticUbiquitousKeyValueStore: UbiquitousKeyValueStore {
     }
 
     func dictionary(forKey aKey: String) -> [String : Any]? {
-        return data
+        data
     }
 
     func synchronize() -> Bool {

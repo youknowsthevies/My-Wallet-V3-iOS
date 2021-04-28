@@ -25,7 +25,7 @@ public enum MissingCredentialsError: Error {
     case offlineToken
 }
 
-//extension MissingCredentialsError: CustomDebugStringConvertible {
+// extension MissingCredentialsError: CustomDebugStringConvertible {
 //    public var debugDescription: String {
 //        switch self {
 //        case .guid:
@@ -40,7 +40,7 @@ public enum MissingCredentialsError: Error {
 //            return "missing offline token"
 //        }
 //    }
-//}
+// }
 
 public enum CredentialWritingError: Error {
     

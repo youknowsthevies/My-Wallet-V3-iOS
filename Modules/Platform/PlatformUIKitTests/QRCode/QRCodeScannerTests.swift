@@ -13,6 +13,7 @@ class QRCodeScannerTests: XCTestCase {
     var subject: QRCodeScanner!
     var deviceInputMock: MockCaptureInput!
     var captureSession: CaptureSessionMock!
+    // swiftlint:disable weak_delegate
     var delegate: QRCodeScannerDelegateMock!
 
     override func setUp() {

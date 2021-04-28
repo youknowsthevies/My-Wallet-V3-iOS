@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import PlatformUIKit
 import DIKit
 import PlatformKit
+@testable import PlatformUIKit
 import XCTest
 
 class QRCodeScannerViewModelTests: XCTestCase {
@@ -26,7 +26,7 @@ class QRCodeScannerViewModelTests: XCTestCase {
                 factory { MockDeepLinkHandler() as DeepLinkHandling }
                 factory { MockDeepLinkRouter() as DeepLinkRouting }
             }
-        });
+        })
     }
     override func setUp() {
         parser = MockQRCodeScannerParser()

@@ -7,8 +7,8 @@
 //
 
 import JavaScriptCore
-import ToolKit
 import PlatformKit
+import ToolKit
 
 public enum EthereumJSInteropDispatcherError: Error {
     case jsError(String)

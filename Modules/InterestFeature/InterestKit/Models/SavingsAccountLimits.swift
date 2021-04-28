@@ -39,7 +39,6 @@ public struct SavingsAccountLimitsResponse: Decodable {
     }
 }
 
-
 public struct SavingsAccountLimits: Decodable {
     
     public let currency: FiatCurrency

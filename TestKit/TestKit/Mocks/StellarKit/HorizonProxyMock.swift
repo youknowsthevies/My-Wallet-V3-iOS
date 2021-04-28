@@ -7,9 +7,9 @@
 //
 
 import PlatformKit
+import RxSwift
 @testable import StellarKit
 import stellarsdk
-import RxSwift
 
 final class HorizonProxyMock: HorizonProxyAPI {
 

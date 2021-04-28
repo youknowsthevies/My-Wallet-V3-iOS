@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
-import BitcoinChainKit
 import RxRelay
 import RxSwift
 

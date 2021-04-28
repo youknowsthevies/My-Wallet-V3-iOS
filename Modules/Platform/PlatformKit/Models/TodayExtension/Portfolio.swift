@@ -25,7 +25,7 @@ public struct Portfolio: Codable {
     }
     
     public subscript(currency: CryptoCurrency) -> Account {
-        return accounts[currency]!
+        accounts[currency]!
     }
     
     public let balanceChange: PortfolioBalanceChange

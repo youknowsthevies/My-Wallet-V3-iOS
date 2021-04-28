@@ -16,7 +16,7 @@ public struct YearnFinanceToken: ERC20Token {
     public static let assetType: CryptoCurrency = .yearnFinance
     public static let contractAddress: EthereumContractAddress = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
 
-    //swiftlint:disable:next force_try
+    // swiftlint:disable:next force_try
     public static let smallestSpendableValue: ERC20TokenValue<Self> = try! ERC20TokenValue<Self>(
         crypto: CryptoValue.create(minor: 1, currency: assetType)
     )

@@ -29,7 +29,7 @@ public enum CompositeStatusViewType: Equatable {
             }
             
             static var none: SideViewAttributes {
-                return .init(type: .none, position: .radiusDistanceFromCenter)
+                .init(type: .none, position: .radiusDistanceFromCenter)
             }
             
             let type: ViewType

@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
-import PlatformKit
 import KYCKit
+import PlatformKit
+import XCTest
 
 class KYCPageTypeTests: XCTestCase {
     

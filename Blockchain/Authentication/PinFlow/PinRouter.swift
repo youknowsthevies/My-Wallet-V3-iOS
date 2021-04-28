@@ -6,10 +6,10 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import ToolKit
-import DIKit
 
 /// PIN creation / changing / authentication. Responsible for routing screens during flow.
 final class PinRouter: NSObject {

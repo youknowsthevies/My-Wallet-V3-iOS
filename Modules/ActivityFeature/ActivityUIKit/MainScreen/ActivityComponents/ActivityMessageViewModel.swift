@@ -8,8 +8,8 @@
 
 import ActivityKit
 import DIKit
-import NetworkKit
 import Localization
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 

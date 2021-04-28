@@ -12,8 +12,8 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
-import TransactionKit
 import ToolKit
+import TransactionKit
 
 public final class SendReceiveSegmentedViewScreenPresenter: SegmentedViewScreenPresenting {
 

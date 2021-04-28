@@ -23,12 +23,12 @@ public final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, 
     
     private lazy var setup: Void = {
         deselectedTrigger
-            .map { return .deselected }
+            .map { .deselected }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
         
         selectedIndexRelay
-            .map { return .selected($0) }
+            .map { .selected($0) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()

@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformKit
 import ToolKit
+import UIKit
 
 class CurrencySymbol: NSObject {
     @objc let conversion: Double

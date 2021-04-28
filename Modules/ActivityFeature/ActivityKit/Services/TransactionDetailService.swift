@@ -7,8 +7,8 @@
 //
 
 import DIKit
-import PlatformKit
 import NetworkKit
+import PlatformKit
 
 public protocol TransactionDetailServiceAPI {
 

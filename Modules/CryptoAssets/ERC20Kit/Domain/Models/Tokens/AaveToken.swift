@@ -16,7 +16,7 @@ public struct AaveToken: ERC20Token {
     public static let assetType: CryptoCurrency = .aave
     public static let contractAddress: EthereumContractAddress = "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
 
-    //swiftlint:disable:next force_try
+    // swiftlint:disable:next force_try
     public static let smallestSpendableValue: ERC20TokenValue<Self> = try! ERC20TokenValue<Self>(
         crypto: CryptoValue.create(major: "0.01", currency: assetType)!
     )

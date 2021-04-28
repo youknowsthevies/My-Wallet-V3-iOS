@@ -7,9 +7,9 @@
 //
 
 import Localization
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 extension EnterAmountScreenPresenter.DisplayBundle {
     

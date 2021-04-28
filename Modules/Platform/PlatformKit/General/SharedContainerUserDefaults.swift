@@ -60,7 +60,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
     public var portfolioSyncEnabled: Observable<Bool> {
         rx.observe(Bool.self, Keys.shouldSyncPortfolio.rawValue)
             .map { value in
-                return value ?? false
+                value ?? false
             }
     }
     
@@ -75,7 +75,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
     
     public var shouldSyncPortfolio: Bool {
         get {
-            return bool(forKey: Keys.shouldSyncPortfolio.rawValue)
+            bool(forKey: Keys.shouldSyncPortfolio.rawValue)
         }
         set {
             set(newValue, forKey: Keys.shouldSyncPortfolio.rawValue)
@@ -89,13 +89,13 @@ public final class SharedContainerUserDefaults: UserDefaults {
 
 extension Reactive where Base: SharedContainerUserDefaults {
     public var portfolioSyncEnabled: Binder<Bool> {
-        return Binder(base) { container, payload in
+        Binder(base) { container, payload in
             container.shouldSyncPortfolio = payload
         }
     }
     
     public var rx_portfolio: Binder<Portfolio?> {
-        return Binder(base) { container, payload in
+        Binder(base) { container, payload in
             container.portfolio = payload
         }
     }

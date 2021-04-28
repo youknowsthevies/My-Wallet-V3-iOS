@@ -9,9 +9,9 @@
 import PlatformKit
 import RxBlocking
 import RxSwift
+@testable import StellarKit
 import stellarsdk
 import XCTest
-@testable import StellarKit
 
 class StellarLedgerServiceTests: XCTestCase {
 

@@ -6,8 +6,8 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformUIKit
+import UIKit
 
 public struct TargetSelectionHeaderBuilder: HeaderBuilder {
 

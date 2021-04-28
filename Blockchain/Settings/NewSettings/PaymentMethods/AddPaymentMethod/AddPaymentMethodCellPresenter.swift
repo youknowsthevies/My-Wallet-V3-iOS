@@ -10,9 +10,9 @@ import BuySellKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
+import RxDataSources
 import RxRelay
 import RxSwift
-import RxDataSources
 
 final class AddPaymentMethodCellPresenter: AsyncPresenting {
     

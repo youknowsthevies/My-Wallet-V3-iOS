@@ -6,10 +6,10 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import NetworkKit
-import RxSwift
-import PlatformKit
 @testable import KYCUIKit
+import NetworkKit
+import PlatformKit
+import RxSwift
 
 class MockKYCVerifyPhoneNumberInteractor: KYCVerifyPhoneNumberInteractor {
     var shouldSucceed = true

@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import RxSwift
 import RxCocoa
+import RxSwift
 
 final class CryptoAddressValidator: TextValidating {
     var validationState: Observable<TextValidationState> {

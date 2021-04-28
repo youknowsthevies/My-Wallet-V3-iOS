@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
-import UIKit
-import RxSwift
 import BuySellKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 import ToolKit
+import UIKit
 
 public protocol Buildable: AnyObject {
     

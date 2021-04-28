@@ -9,9 +9,9 @@
 import BigInt
 import ERC20Kit
 import EthereumKit
+import Localization
 import PlatformKit
 import PlatformUIKit
-import Localization
 
 struct ERC20ActivityDetailsViewModel: Equatable {
 
