@@ -7,8 +7,8 @@
 //
 
 import Localization
-import ToolKit
 import PlatformKit
+import ToolKit
 
 extension EnterAmountScreenPresenter {
 

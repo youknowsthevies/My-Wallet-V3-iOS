@@ -6,8 +6,8 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 import ToolKit
+import XCTest
 
 class AsyncBlockOperationTests: XCTestCase {
 

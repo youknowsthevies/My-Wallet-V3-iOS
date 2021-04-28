@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import Foundation
 import DIKit
+import Foundation
 import NetworkKit
 import RxSwift
 

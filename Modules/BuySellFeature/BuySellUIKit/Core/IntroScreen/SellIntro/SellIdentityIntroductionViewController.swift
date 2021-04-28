@@ -105,4 +105,3 @@ extension SellIdentityIntroductionViewController: UITableViewDelegate, UITableVi
     }
 }
 
-

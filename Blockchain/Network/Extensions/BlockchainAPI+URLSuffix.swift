@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import PlatformKit
 import NetworkKit
+import PlatformKit
 
 extension BlockchainAPI {
 

@@ -7,9 +7,9 @@
 //
 
 import DIKit
-import ToolKit
 import PlatformKit
 import PlatformUIKit
+import ToolKit
 
 extension DependencyContainer {
     

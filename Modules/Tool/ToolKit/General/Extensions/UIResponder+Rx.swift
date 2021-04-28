@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import RxCocoa
 import RxSwift
+import UIKit
 
 extension Reactive where Base: UIResponder {
     public var motionEnded: ControlEvent<UIEvent.EventSubtype> {

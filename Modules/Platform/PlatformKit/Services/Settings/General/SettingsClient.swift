@@ -6,9 +6,9 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import NetworkKit
 import RxSwift
-import DIKit
 
 final class SettingsClient: SettingsClientAPI {
         

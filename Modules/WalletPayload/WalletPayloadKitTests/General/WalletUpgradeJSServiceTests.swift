@@ -6,11 +6,11 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import WalletPayloadKit
 import JavaScriptCore
 import RxSwift
 import RxTest
 import ToolKit
+@testable import WalletPayloadKit
 import XCTest
 
 class WalletUpgradeJSServiceTests: XCTestCase {

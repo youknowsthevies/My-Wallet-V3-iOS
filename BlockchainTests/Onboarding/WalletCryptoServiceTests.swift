@@ -35,9 +35,9 @@ class WalletCryptoServiceTests: XCTestCase {
         super.setUp()
         // Force JS initialization before hand
         let container = modules {
-            DependencyContainer.platformKit;
-            DependencyContainer.walletPayloadKit;
-            DependencyContainer.blockchain;
+            DependencyContainer.platformKit
+            DependencyContainer.walletPayloadKit
+            DependencyContainer.blockchain
         }
         let walletManager: WalletManager = container.resolve()
         _ = walletManager.fetchJSContext()

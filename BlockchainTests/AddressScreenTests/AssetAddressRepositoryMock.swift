@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-@testable import Blockchain
 import BitcoinCashKit
 import BitcoinKit
+@testable import Blockchain
 import ERC20Kit
 import EthereumKit
 import PlatformKit

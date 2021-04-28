@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Combine
 @testable import NetworkKit
 import ToolKit
-import Combine
 
 enum CommunicatorMockError: Error {
     case unknown

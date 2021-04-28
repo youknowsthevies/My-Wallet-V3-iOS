@@ -7,8 +7,8 @@
 //
 
 import BigInt
-import PlatformKit
 import BitcoinChainKit
+import PlatformKit
 
 public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse, HistoricalTransaction, Tokenized {
 

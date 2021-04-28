@@ -199,7 +199,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         request: NetworkRequest,
         rawPayload: String
     ) -> String {
-        return """
+        """
         \n----------------------
         Payload decoding error.
           Error: '\(String(describing: ResponseType.self))': \(decodingError).

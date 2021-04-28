@@ -11,8 +11,8 @@ import BigInt
 import PlatformKit
 import RxSwift
 import RxTest
-import XCTest
 import TransactionKit
+import XCTest
 
 class EthereumWalletServiceTests: XCTestCase {
 

@@ -114,7 +114,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 extension TodayViewController: UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return presenter.numberOfSections
+        presenter.numberOfSections
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

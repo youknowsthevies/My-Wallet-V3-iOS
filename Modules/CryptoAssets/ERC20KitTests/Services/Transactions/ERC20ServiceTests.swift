@@ -12,8 +12,8 @@ import BigInt
 @testable import PlatformKit
 import RxSwift
 import RxTest
-import XCTest
 import ToolKit
+import XCTest
 
 enum ERC20ServiceMockError: Error {
     case mockError

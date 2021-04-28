@@ -7,9 +7,9 @@
 //
 
 import BigInt
-@testable import TransactionKit
 import RxSwift
 import RxTest
+@testable import TransactionKit
 import XCTest
 
 final class SwapQuotesEngineMock {

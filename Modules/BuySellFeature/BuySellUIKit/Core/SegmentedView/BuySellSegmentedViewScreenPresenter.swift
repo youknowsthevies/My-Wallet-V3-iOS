@@ -6,13 +6,13 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import BuySellKit
 import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
-import BuySellKit
 import ToolKit
 
 public final class BuySellSegmentedViewScreenPresenter: SegmentedViewScreenPresenting {

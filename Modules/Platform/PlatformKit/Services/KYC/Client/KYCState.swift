@@ -17,6 +17,6 @@ public struct KYCState: Codable {
     
     /// Returns a boolean indicating if this state is supported by Blockchain's native KYC
     public var isKycSupported: Bool {
-        return scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
+        scopes?.contains(where: { $0.lowercased() == "kyc" }) ?? false
     }
 }

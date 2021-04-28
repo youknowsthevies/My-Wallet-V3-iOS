@@ -7,11 +7,11 @@
 //
 
 import Foundation
+import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
-import KYCUIKit
 
 class ExchangeEmailVerificationViewController: UIViewController, BottomButtonContainerView {
     

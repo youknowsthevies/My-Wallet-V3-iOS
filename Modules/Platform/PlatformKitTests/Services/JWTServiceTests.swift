@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import CombineExt
 import Combine
-import XCTest
+import CombineExt
 import RxSwift
+import XCTest
 
 @testable import PlatformKit
 

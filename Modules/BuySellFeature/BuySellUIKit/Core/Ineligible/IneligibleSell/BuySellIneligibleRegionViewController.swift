@@ -7,8 +7,8 @@
 //
 
 import PlatformUIKit
-import UIKit
 import RxSwift
+import UIKit
 
 public final class BuySellIneligibleRegionViewController: UIViewController {
     

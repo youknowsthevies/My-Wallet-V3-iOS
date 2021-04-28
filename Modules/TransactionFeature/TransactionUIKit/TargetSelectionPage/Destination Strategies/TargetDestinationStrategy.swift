@@ -6,9 +6,9 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 import ToolKit
-import Localization
 
 /// Types adopting the `TargetDestinationsStrategyAPI` should provide a way to output an array of `TargetSelectionPageSectionModel` items
 protocol TargetDestinationsStrategyAPI {

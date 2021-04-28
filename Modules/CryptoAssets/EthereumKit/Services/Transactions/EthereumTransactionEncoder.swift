@@ -19,7 +19,7 @@ public protocol EthereumTransactionEncoderAPI {
 public struct EthereumTransactionEncoder: EthereumTransactionEncoderAPI {
     public func encode(signed: EthereumTransactionCandidateSigned) -> Result<EthereumTransactionFinalised, EthereumTransactionEncoderError> {
         
-        return .success(
+        .success(
             EthereumTransactionFinalised(
                 transaction: signed
             )

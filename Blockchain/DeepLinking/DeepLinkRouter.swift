@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import PlatformKit
 import KYCUIKit
+import PlatformKit
 
 /// The main `DeepLinkRouting`
 final class DeepLinkRouter: DeepLinkRouting {

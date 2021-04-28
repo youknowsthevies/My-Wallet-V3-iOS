@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import DIKit
 import RxSwift
 import ToolKit
-import DIKit
 
 public protocol NabuUserServiceAPI: AnyObject {
     var user: Single<NabuUser> { get }

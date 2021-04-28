@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import XCTest
 @testable import PlatformKit
+import XCTest
 
 final class MoneyValueChangeTests: XCTestCase {
 

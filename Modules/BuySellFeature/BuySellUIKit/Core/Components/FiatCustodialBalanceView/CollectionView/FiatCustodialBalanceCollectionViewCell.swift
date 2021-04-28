@@ -6,8 +6,8 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformUIKit
+import UIKit
 
 final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
 

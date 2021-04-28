@@ -6,9 +6,9 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import Localization
 import PlatformKit
 import ToolKit
-import Localization
 
 public protocol CameraPrompting: class {
     var permissionsRequestor: PermissionsRequestor { get set }

@@ -14,8 +14,8 @@ import KYCUIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
-import WalletPayloadKit
 import ToolKit
+import WalletPayloadKit
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use

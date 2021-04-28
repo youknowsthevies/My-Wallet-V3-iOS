@@ -46,7 +46,7 @@ final class BalanceService: BalanceServiceAPI {
     }
 }
 
-fileprivate struct BitcoinChainBalances {
+private struct BitcoinChainBalances {
 
     let total: CryptoValue
 

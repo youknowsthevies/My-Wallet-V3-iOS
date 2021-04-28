@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DIKit
 import BuySellKit
-import ToolKit
+import DIKit
 import RIBs
+import ToolKit
 
 protocol WithdrawFlowRouting: AnyObject {
     func routeToFlowRoot()

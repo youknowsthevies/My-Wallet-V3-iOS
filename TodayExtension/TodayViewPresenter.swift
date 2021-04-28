@@ -50,12 +50,12 @@ final class TodayViewPresenter {
             .portfolioInteractor
             .compactMap { $0 }
             .map { $0.cellType }
-            .map { TodayExtensionCellViewModel(cellType: $0)  }
+            .map { TodayExtensionCellViewModel(cellType: $0) }
             .bindAndCatch(to: portfolioCellRelay)
             .disposed(by: disposeBag)
     }()
     
-    // MARK: -  Private Properties
+    // MARK: - Private Properties
     
     private var portfolioCell: Observable<TodayExtensionCellViewModel?> {
         portfolioCellRelay.asObservable()

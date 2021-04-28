@@ -58,7 +58,7 @@ final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
         cryptoCurrencyRelay = BehaviorRelay(value: defaultSelectedData)
         
         selectedData
-            .map {  CryptoCurrency(code: $0.id)! }
+            .map { CryptoCurrency(code: $0.id)! }
             .bindAndCatch(to: cryptoCurrencyRelay)
             .disposed(by: disposeBag)
     }
