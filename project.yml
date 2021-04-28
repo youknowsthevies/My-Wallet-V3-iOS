@@ -33,6 +33,7 @@ schemeTemplates:
       config: ${debugConfig}
     test:
       config: ${debugConfig}
+      gatherCoverageData: true
       targets:
       - name: ToolKitTests
         randomExecutionOrder: true
@@ -166,6 +167,8 @@ targetTemplates:
     - carthage: DIKit
     - carthage: RxSwift
     platform: iOS
+    schemes:
+      gatherCoverageData: true
     sources:
     - createIntermediateGroups: true
       excludes:

@@ -34,17 +34,10 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var addressTextField: ValidationTextField!
     @IBOutlet fileprivate var apartmentTextField: ValidationTextField!
     @IBOutlet fileprivate var cityTextField: ValidationTextField!
-    @IBOutlet fileprivate var stateTextField: ValidationTextField!
+    @IBOutlet fileprivate var stateTextField: ValidationPickerField!
+    @IBOutlet fileprivate var regionTextField: ValidationTextField!
     @IBOutlet fileprivate var postalCodeTextField: ValidationTextField!
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
-
-    private var textFields: [ValidationTextField] {
-        [addressTextField,
-                apartmentTextField,
-                cityTextField,
-                stateTextField,
-                postalCodeTextField]
-    }
 
     private let webViewService: WebViewServiceAPI = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
@@ -70,11 +63,13 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     /// This is just for convenience purposes when iterating over the fields
     /// and checking validation etc.
     var validationFields: [ValidationTextField] {
-        [addressTextField,
-                apartmentTextField,
-                cityTextField,
-                stateTextField,
-                postalCodeTextField
+        [
+            addressTextField,
+            apartmentTextField,
+            cityTextField,
+            stateTextField,
+            regionTextField,
+            postalCodeTextField
         ]
     }
 
@@ -86,23 +81,31 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     fileprivate var dataProvider: LocationDataProvider!
     private var user: NabuUser?
     private var country: CountryData?
+    private var states: [KYCState] = []
 
     // MARK: KYCCoordinatorDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .address(user, country) = model else { return }
+        guard case let .address(user, country, states) = model else { return }
         self.user = user
         self.country = country
+        self.states = states
         if let country = self.country {
+            stateTextField.options = states
+                .map({ ValidationPickerField.PickerItem($0) })
+                .sorted(by: { $0.title < $1.title })
+            updateStateAndRegionFieldsVisibility()
             validationFieldsPlaceholderSetup(country.code)
         }
 
+        // NOTE: address is not prefilled. Bug?
         guard let address = user.address else { return }
         addressTextField.text = address.lineOne
         apartmentTextField.text = address.lineTwo
         postalCodeTextField.text = address.postalCode
         cityTextField.text = address.city
         stateTextField.text = address.state
+        regionTextField.text = address.state
     }
 
     // MARK: Lifecycle
@@ -127,8 +130,8 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         primaryButtonContainer.title = LocalizationConstants.KYC.submit
         primaryButtonContainer.actionBlock = { [weak self] in
-            guard let this = self else { return }
-            this.primaryButtonTapped()
+            guard let self = self else { return }
+            self.primaryButtonTapped()
         }
 
         setupProgressView()
@@ -142,7 +145,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         bar.items = [ flexibleSpace, doneButton ]
         bar.sizeToFit()
 
-        textFields.forEach { $0.accessoryView = bar }
+        validationFields.forEach { $0.accessoryView = bar }
     }
 
     @objc func dismissKeyboard() {
@@ -205,6 +208,9 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         stateTextField.returnKeyType = .next
         stateTextField.contentType = .addressState
+        
+        regionTextField.returnKeyType = .next
+        regionTextField.contentType = .addressState
 
         postalCodeTextField.returnKeyType = .done
         postalCodeTextField.contentType = .postalCode
@@ -225,7 +231,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     }
 
     fileprivate func validationFieldsPlaceholderSetup(_ countryCode: String) {
-        if countryCode == "US" {
+        if countryCode.lowercased() == "us" {
             addressTextField.placeholder = LocalizationConstants.KYC.streetLine + " 1"
             addressTextField.optionalField = false
 
@@ -237,6 +243,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
             stateTextField.placeholder = LocalizationConstants.KYC.state
             stateTextField.optionalField = false
+            regionTextField.optionalField = true
 
             postalCodeTextField.placeholder = LocalizationConstants.KYC.zipCode
             postalCodeTextField.optionalField = false
@@ -250,8 +257,9 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             cityTextField.placeholder = LocalizationConstants.KYC.cityTownVillage
             cityTextField.optionalField = false
 
-            stateTextField.placeholder = LocalizationConstants.KYC.stateRegionProvinceCountry
-            stateTextField.optionalField = false
+            regionTextField.placeholder = LocalizationConstants.KYC.stateRegionProvinceCountry
+            regionTextField.optionalField = false
+            stateTextField.optionalField = true
 
             postalCodeTextField.placeholder = LocalizationConstants.KYC.postalCode
             postalCodeTextField.optionalField = true
@@ -283,7 +291,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
             lineTwo: apartmentTextField.text ?? "",
             postalCode: postalCodeTextField.text ?? "",
             city: cityTextField.text ?? "",
-            state: stateTextField.text ?? "",
+            state: stateTextField.selectedOption?.id ?? regionTextField.text ?? "",
             countryCode: country?.code ?? user?.address?.countryCode ?? ""
         )
         searchDelegate?.onSubmission(address, completion: { [weak self] in
@@ -329,7 +337,28 @@ extension KYCAddressController: LocationSuggestionInterface {
             addressTextField.text = "\(number) \(street)"
         }
         cityTextField.text = address.city
-        stateTextField.text = address.state
+        // NOTE: This fixes a bug when the user selects a non-US country but then searches for an address within the US.
+        // Ideally, we should reload the states, but since we're going to rewrite this module, I'm just patching it for now.
+        if address.countryCode?.lowercased() == "us" {
+            stateTextField.options = UnitedStates.states
+                .map(ValidationPickerField.PickerItem.init)
+                .sorted(by: { $0.title < $1.title })
+        } else {
+            stateTextField.options = []
+        }
+        updateStateAndRegionFieldsVisibility()
+        if let state = address.state, !stateTextField.options.isEmpty {
+            stateTextField.selectedOption = stateTextField.options.first(where: { option in
+                if option.id == state || option.title == state {
+                    return true
+                }
+                return String(describing: option.id)
+                    .split(separator: "-")
+                    .map(String.init)
+                    .contains(state)
+            })
+        }
+        regionTextField.text = address.state
         postalCodeTextField.text = address.postalCode
     }
 
@@ -356,6 +385,26 @@ extension KYCAddressController: LocationSuggestionInterface {
 
     func searchFieldText(_ value: String?) {
         searchBar.text = value
+    }
+    
+    private func updateStateAndRegionFieldsVisibility() {
+        let countryHasStates = !stateTextField.options.isEmpty
+        stateTextField.isHidden = !countryHasStates
+        stateTextField.selectedOption = nil
+        regionTextField.isHidden = countryHasStates
+        regionTextField.text = regionTextField.isHidden ? nil : regionTextField.text
+    }
+    
+    func didReceiveError(_ error: Error) {
+        let alert = UIAlertController(
+            title: LocalizationConstants.Errors.error,
+            message: LocalizationConstants.KYC.Errors.genericErrorMessage,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: LocalizationConstants.okString, style: .cancel, handler: nil))
+        DispatchQueue.main.async {
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }
 

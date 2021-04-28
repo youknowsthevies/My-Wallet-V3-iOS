@@ -27,13 +27,15 @@ public final class KYCPager: KYCPagerAPI {
     }
     
     public func nextPage(from page: KYCPageType, payload: KYCPagePayload?) -> Maybe<KYCPageType> {
-        
         // Get country from payload if present
         var kycCountry: CountryData?
         if let payload = payload {
             switch payload {
             case .countrySelected(let country):
                 kycCountry = country
+            case .stateSelected:
+                // no-op: handled in coordinator
+                break
             case .phoneNumberUpdated,
                  .emailPendingVerification,
                  .accountStatus:

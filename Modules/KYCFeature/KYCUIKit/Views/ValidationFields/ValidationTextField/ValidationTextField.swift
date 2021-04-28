@@ -11,6 +11,7 @@ import UIKit
 
 enum ValidationError: Error {
     case unknown
+    case invalidSelection
     case minimumDateRequirement
 }
 

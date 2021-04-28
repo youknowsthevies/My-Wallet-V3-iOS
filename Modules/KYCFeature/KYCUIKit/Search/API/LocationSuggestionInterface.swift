@@ -19,4 +19,5 @@ protocol LocationSuggestionInterface: AnyObject {
     func populateAddressEntryView(_ address: PostalAddress)
     func searchFieldActive(_ isFirstResponder: Bool)
     func searchFieldText(_ value: String?)
+    func didReceiveError(_ error: Error)
 }

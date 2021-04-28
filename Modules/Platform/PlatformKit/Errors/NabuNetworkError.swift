@@ -226,6 +226,7 @@ public enum NabuErrorCode: Int, Codable {
     case invalidCryptoAddress = 94
     case tierTooLow = 98
     case invalidAddress = 99
+    case invalidPostcode = 158
     case notAuthorizedForGBP = 97
     case notAuthorizedForTry = 100
     case maxPaymentCards = 101

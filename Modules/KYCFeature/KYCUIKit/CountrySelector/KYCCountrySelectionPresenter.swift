@@ -46,7 +46,6 @@ class KYCCountrySelectionPresenter {
     // MARK: - Public Methods
 
     func selected(country: CountryData) {
-
         // Notify server of user's selection
         let interactorDisposable = interactor.selected(country: country)
         _ = disposables.insert(interactorDisposable)

@@ -10,7 +10,6 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import ToolKit
-import ToolKit
 
 protocol LocationSuggestionCoordinatorDelegate: AnyObject {
     func coordinator(_ locationCoordinator: LocationSuggestionCoordinator, updated model: LocationSearchResult)
@@ -103,6 +102,10 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             self?.interface?.primaryButtonActivityIndicator(.hidden)
             self?.interface?.primaryButtonEnabled(true)
         }
+        
+        let onError = { [weak self] error in
+            self?.interface?.didReceiveError(error)
+        }
 
         locationUpdateService
             .update(address: address)
@@ -113,7 +116,8 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
                     onDispose()
                     completion()
                 },
-                onError: { _ in
+                onError: { error in
+                    onError(error)
                     onDispose()
                 }
             )
