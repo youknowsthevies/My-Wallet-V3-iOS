@@ -102,7 +102,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 let available = try withdrawableBalance - fee
                 var pendingTransaction = pendingTransaction.update(
                     amount: amount,
-                    available: available,
+                    available: available.isNegative ? .zero(currency: available.currency) : available,
                     fee: fee,
                     feeForFullAvailable: fee
                 )
@@ -113,12 +113,14 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         fiatAmountAndFees(from: pendingTransaction)
-            .map(\.amount)
-            .map(weak: self) { (self, amount) -> [TransactionConfirmation] in
+            .map(weak: self) { (self, fiatAmountAndFees) -> [TransactionConfirmation] in
                 var confirmations: [TransactionConfirmation] = [
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
-                    .total(.init(total: amount.moneyValue))
+                    .networkFee(.init(fee: fiatAmountAndFees.fees.moneyValue,
+                                      feeType: .withdrawalFee,
+                                      asset: self.sourceAsset)),
+                    .total(.init(total: fiatAmountAndFees.amount.moneyValue))
                 ]
                 if self.isNoteSupported {
                     confirmations.append(.destination(.init(value: "")))

@@ -303,7 +303,7 @@ extension TransactionConfirmation.Model {
         }
         public let fee: MoneyValue
         public let feeType: FeeType
-        public let asset: CryptoCurrency
+        public let asset: CurrencyType
         public let type: TransactionConfirmation.Kind = .networkFee
 
         public var formatted: (title: String, subtitle: String)? {

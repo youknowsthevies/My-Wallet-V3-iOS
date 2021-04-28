@@ -193,11 +193,11 @@ extension SwapTransactionEngine {
                     .networkFee(.init(
                                     fee: pricedQuote.networkFee,
                                     feeType: .withdrawalFee,
-                                    asset: targetAsset)),
+                                    asset: targetAsset.currency)),
                     .networkFee(.init(
                                     fee: pendingTransaction.feeAmount,
                                     feeType: .depositFee,
-                                    asset: sourceAsset))
+                                    asset: sourceAsset.currency))
                 ]
 
                 var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
@@ -237,7 +237,7 @@ extension SwapTransactionEngine {
                 let networkFee = TransactionConfirmation.Model.NetworkFee(
                     fee: pricedQuote.networkFee,
                     feeType: .withdrawalFee,
-                    asset: targetAsset
+                    asset: targetAsset.currency
                 )
                 let resultValue = CryptoValue(amount: pricedQuote.price, currency: targetAsset).moneyValue
                 let swapExchangeRate = TransactionConfirmation.Model.SwapExchangeRate(
