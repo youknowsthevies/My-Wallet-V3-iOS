@@ -354,7 +354,7 @@ extension KYCAddressController: LocationSuggestionInterface {
                 }
                 return String(describing: option.id)
                     .split(separator: "-")
-                    .map({ String($0) })
+                    .map(String.init)
                     .contains(state)
             })
         }
