@@ -16,7 +16,6 @@ public enum AppFeature: Int, CaseIterable {
     
     case biometry
     case swipeToReceive
-    case transferFundsFromImportedAddress
     
     // MARK: - Firebase features
     
@@ -57,8 +56,7 @@ extension AppFeature {
         case .tradingAccountExternalSend:
             return "trading_account_external_send_ios"
         case .biometry,
-             .swipeToReceive,
-             .transferFundsFromImportedAddress:
+             .swipeToReceive:
             return nil
         }
     }

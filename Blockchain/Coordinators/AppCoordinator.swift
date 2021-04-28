@@ -55,17 +55,8 @@ import WalletPayloadKit
     @objc var slidingViewController: ECSlidingViewController!
     @objc var tabControllerManager: TabControllerManager?
     private(set) var sideMenuViewController: SideMenuViewController!
+    private weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
     private let disposeBag = DisposeBag()
-    
-    private lazy var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController = { [unowned self] in
-        let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
-        let viewController = storyboard.instantiateViewController(
-            withIdentifier: "AccountsAndAddressesNavigationController"
-        ) as! AccountsAndAddressesNavigationController
-        viewController.modalPresentationStyle = .fullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        return viewController
-    }()
 
     // MARK: NSObject
 
@@ -185,7 +176,7 @@ import WalletPayloadKit
     /// Reloads contained view controllers
     @objc func reload() {
         tabControllerManager?.reload()
-        accountsAndAddressesNavigationController.reload()
+        accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
         
         NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
@@ -212,7 +203,7 @@ import WalletPayloadKit
             return
         }
         tabControllerManager?.reloadAfterMultiAddressResponse()
-        accountsAndAddressesNavigationController.reload()
+        accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
 
         NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
@@ -274,7 +265,7 @@ import WalletPayloadKit
     private func observeSymbolChanges() {
         BlockchainSettings.App.shared.onSymbolLocalChanged = { [unowned self] _ in
             self.tabControllerManager?.reloadSymbols()
-            self.accountsAndAddressesNavigationController.reload()
+            self.accountsAndAddressesNavigationController?.reload()
             self.sideMenuViewController?.reload()
         }
     }
@@ -327,9 +318,20 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         backupRouter?.start()
     }
 
+    private func createAccountsAndAddressesViewController() -> UIViewController {
+        let storyboard = UIStoryboard(name: "AccountsAndAddresses", bundle: nil)
+        let viewController = storyboard.instantiateViewController(
+            withIdentifier: "AccountsAndAddressesNavigationController"
+        ) as! AccountsAndAddressesNavigationController
+        viewController.modalPresentationStyle = .fullScreen
+        viewController.modalTransitionStyle = .coverVertical
+        self.accountsAndAddressesNavigationController = viewController
+        return viewController
+    }
+
     private func handleAccountsAndAddresses() {
         UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
-            accountsAndAddressesNavigationController,
+            createAccountsAndAddressesViewController(),
             animated: true,
             completion: { [weak self] in
                 self?.didPresentAccountsAndAddressesNavigationController()
@@ -344,22 +346,30 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     private func didPresentAccountsAndAddressesNavigationController() {
         let wallet = walletManager.wallet
-        if !wallet.isInitialized() {
+        guard wallet.isInitialized() else {
             Logger.shared.error(WalletError.walletNotInitialized)
+            return
         }
-        if !wallet.didUpgradeToHd() {
+        guard wallet.didUpgradeToHd() else {
             Logger.shared.error(WalletError.walletNotUpgradedToHD)
+            return
         }
-        guard accountsAndAddressesNavigationController.viewControllers.count == 1 else {
+        guard !wallet.didUpgradeToV4 else {
+            return
+        }
+        guard !appFeatureConfigurator.configuration(for: .sendP2).isEnabled else {
+            return
+        }
+        guard accountsAndAddressesNavigationController?.viewControllers.count == 1 else {
             return
         }
         guard wallet.getTotalBalanceForSpendableActiveLegacyAddresses() >= wallet.dust() else {
             return
         }
-        guard accountsAndAddressesNavigationController.assetSelectorView().selectedAsset == .bitcoin else {
+        guard accountsAndAddressesNavigationController?.assetSelectorView().selectedAsset == .bitcoin else {
             return
         }
-        accountsAndAddressesNavigationController.alertUserToTransferAllFunds()
+        accountsAndAddressesNavigationController?.alertUserToTransferAllFunds()
     }
 
     private func handleSettings() {

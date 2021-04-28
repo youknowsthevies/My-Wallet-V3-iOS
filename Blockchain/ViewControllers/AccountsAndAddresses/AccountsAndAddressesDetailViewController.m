@@ -106,19 +106,21 @@ typedef enum {
 - (BOOL)isArchived
 {
     if (self.address) {
-      return [WalletManager.sharedInstance.wallet isAddressArchived:self.address];
+        return [WalletManager.sharedInstance.wallet isAddressArchived:self.address];
     } else {
-      return [WalletManager.sharedInstance.wallet isAccountArchived:self.account assetType:self.assetType];
+        return [WalletManager.sharedInstance.wallet isAccountArchived:self.account assetType:self.assetType];
     }
 }
 
 - (BOOL)canTransferFromAddress
 {
-    AppFeatureConfiguration *transferFundsConfiguration = [AppFeatureConfigurator.shared configurationFor:AppFeatureTransferFundsFromImportedAddress];
-    if (!transferFundsConfiguration.isEnabled) {
+    AppFeatureConfiguration *sendP2Configuration = [AppFeatureConfigurator.shared configurationFor:AppFeatureSendP2];
+    if (sendP2Configuration.isEnabled) {
         return NO;
     }
-
+    if (WalletManager.sharedInstance.wallet.didUpgradeToV4) {
+        return NO;
+    }
     if (self.address) {
         long long legacyBalance = [[WalletManager.sharedInstance.wallet getLegacyAddressBalance:self.address assetType:self.assetType] longLongValue];
         uint64_t dust = [WalletManager.sharedInstance.wallet dust];

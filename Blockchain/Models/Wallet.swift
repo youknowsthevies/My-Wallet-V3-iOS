@@ -101,7 +101,7 @@ extension Wallet {
 extension Wallet {
 
     /// If the wallet was already upgraded to V4.
-    var didUpgradeToV4: Bool {
+    @objc var didUpgradeToV4: Bool {
         guard isInitialized() else {
             return false
         }

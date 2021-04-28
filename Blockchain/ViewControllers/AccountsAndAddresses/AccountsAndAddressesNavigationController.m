@@ -50,8 +50,11 @@
 
 - (void)alertUserToTransferAllFunds
 {
-    AppFeatureConfiguration *transferFundsConfig = [AppFeatureConfigurator.shared configurationFor:AppFeatureTransferFundsFromImportedAddress];
-    if (!transferFundsConfig.isEnabled) {
+    AppFeatureConfiguration *sendP2Configuration = [AppFeatureConfigurator.shared configurationFor:AppFeatureSendP2];
+    if (sendP2Configuration.isEnabled) {
+        return;
+    }
+    if (WalletManager.sharedInstance.wallet.didUpgradeToV4) {
         return;
     }
 
