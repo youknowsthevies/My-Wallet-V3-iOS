@@ -30,7 +30,7 @@ public final class BitcoinCashHistoricalTransactionService: TokenizedHistoricalT
     
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         bridge.defaultWallet.flatMap(weak: self) { (self, walletAccount) -> Single<PageModel> in
-            self.client.multiAddress(for: [ .init(publicKey: walletAccount.publicKey, type: walletAccount.derivationType) ])
+            self.client.multiAddress(for: [ walletAccount.publicKey ])
                 .map { $0.transactions }
                 .map { PageModel(hasNextPage: false, items: $0) }
         }

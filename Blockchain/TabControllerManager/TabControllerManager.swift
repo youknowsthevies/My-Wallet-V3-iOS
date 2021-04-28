@@ -8,6 +8,7 @@
 
 import ActivityUIKit
 import BuySellUIKit
+import DashboardUIKit
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -15,6 +16,7 @@ import PlatformUIKit
 import RIBs
 import RxSwift
 import ToolKit
+import TransactionKit
 import TransactionUIKit
 
 final class TabControllerManager: NSObject {
@@ -231,7 +233,8 @@ final class TabControllerManager: NSObject {
             asset.defaultAccount
         )
         BitPayInvoiceTarget
-            .isBitcoin(data)
+            .isBitPay(data)
+            .andThen(BitPayInvoiceTarget.isBitcoin(data))
             .andThen(transactionPair)
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { [weak self] target, defaultAccount in

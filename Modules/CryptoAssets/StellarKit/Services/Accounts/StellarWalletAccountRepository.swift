@@ -18,8 +18,7 @@ public protocol StellarWalletAccountRepositoryAPI {
     func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair>
 }
 
-public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountRepositoryAPI, WalletAccountInitializer {
-    public typealias Account = StellarWalletAccount
+public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountInitializer {
     public typealias WalletAccount = StellarWalletAccount
 
     private let bridge: StellarWalletBridgeAPI

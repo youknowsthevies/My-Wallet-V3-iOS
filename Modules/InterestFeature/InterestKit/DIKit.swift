@@ -17,5 +17,7 @@ extension DependencyContainer {
         factory { SavingsAccountClient() as SavingsAccountClientAPI }
 
         factory { SavingAccountService() as SavingAccountServiceAPI }
+        
+        factory { SavingAccountService() as SavingsOverviewAPI }
     }
 }

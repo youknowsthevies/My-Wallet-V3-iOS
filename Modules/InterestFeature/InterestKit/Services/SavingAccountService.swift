@@ -11,12 +11,11 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-public protocol SavingAccountServiceAPI: AnyObject {
+public protocol SavingAccountServiceAPI: AnyObject, SavingsOverviewAPI {
     var balances: Single<CustodialAccountBalanceStates> { get }
     func fetchBalances() -> Single<CustodialAccountBalanceStates>
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>>
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
-    func rate(for currency: CryptoCurrency) -> Single<Double>
     func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?>
 }
 

@@ -20,8 +20,7 @@ class BitcoinCashAsset: CryptoAsset {
         repository.defaultAccount
             .map { account in
                 BitcoinCashCryptoAccount(
-                    id: account.publicKey,
-                    derivationType: account.derivationType,
+                    xPub: account.publicKey,
                     label: account.label,
                     isDefault: true,
                     hdAccountIndex: account.index
@@ -71,6 +70,7 @@ class BitcoinCashAsset: CryptoAsset {
 
     func parse(address: String) -> Single<ReceiveAddress?> {
         addressValidator.validate(address: address)
+            .subscribeOn(MainScheduler.instance)
             .andThen(
                 .just(
                     BitcoinChainReceiveAddress<BitcoinCashToken>(
@@ -151,8 +151,7 @@ class BitcoinCashAsset: CryptoAsset {
             .map { (defaultAccount, accounts) -> [SingleAccount] in
                 accounts.map { account in
                     BitcoinCashCryptoAccount(
-                        id: account.publicKey,
-                        derivationType: account.derivationType,
+                        xPub: account.publicKey,
                         label: account.label,
                         isDefault: account.publicKey == defaultAccount.publicKey,
                         hdAccountIndex: account.index

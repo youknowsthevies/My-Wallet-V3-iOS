@@ -59,17 +59,17 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
     
     private func fetchAllUnspentOutputs() -> Single<UnspentOutputs> {
         bridge.wallets
-            .map { wallets -> [APIWalletModel] in
-                wallets.map { wallet in
-                    APIWalletModel(publicKey: wallet.publicKey, type: wallet.derivationType)
-                }
+            .map { wallets -> [XPub] in
+                wallets
+                    .map(\.publicKeys.xpubs)
+                    .flatMap { $0 }
             }
             .flatMap(weak: self) { (self, addresses) -> Single<UnspentOutputs> in
                 self.fetchUnspentOutputs(for: addresses)
             }
     }
     
-    private func fetchUnspentOutputs(for addresses: [APIWalletModel]) -> Single<UnspentOutputs> {
+    private func fetchUnspentOutputs(for addresses: [XPub]) -> Single<UnspentOutputs> {
         client.unspentOutputs(for: addresses)
             .map { UnspentOutputs(networkResponse: $0) }
     }

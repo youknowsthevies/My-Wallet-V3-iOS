@@ -18,8 +18,8 @@ enum APIClientError: Error {
 
 protocol APIClientAPI {
     
-    func multiAddress(for wallets: [APIWalletModel]) -> Single<BitcoinCashMultiAddressResponse>
-    func balances(for wallets: [APIWalletModel]) -> Single<BitcoinCashBalanceResponse>
+    func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse>
+    func balances(for wallets: [XPub]) -> Single<BitcoinCashBalanceResponse>
 }
 
 final class APIClient: APIClientAPI {
@@ -34,11 +34,11 @@ final class APIClient: APIClientAPI {
     
     // MARK: - APIClientAPI
     
-    func multiAddress(for wallets: [APIWalletModel]) -> Single<BitcoinCashMultiAddressResponse> {
+    func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse> {
         client.multiAddress(for: wallets)
     }
 
-    func balances(for wallets: [APIWalletModel]) -> Single<BitcoinCashBalanceResponse> {
+    func balances(for wallets: [XPub]) -> Single<BitcoinCashBalanceResponse> {
         client.balances(for: wallets)
     }
 }

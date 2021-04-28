@@ -6,24 +6,31 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import UIKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
+import UIKit
 
 /// A cell that contains a horizontal collection view with the fiat balances
 public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Properties
     
-    public var presenter: FiatBalanceCollectionViewPresenter! {
+    public var presenter: CurrencyViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
+            guard presenter != nil else {
+                return
+            }
+            guard let presenter = presenter as? FiatBalanceCollectionViewPresenter else {
+                print("You should be passing a FiatBalanceCollectionViewPresenter here")
+                abort()
+            }
             collectionView.presenter = presenter
-            presenter?.presenters
+            presenter.presenters
                 .map { $0.count > 1 }
                 .drive(weak: self) { (self, hasMultipleBalances) in
                     if hasMultipleBalances {
@@ -44,6 +51,7 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
                     }
                 }
                 .disposed(by: disposeBag)
+            presenter.refresh()
         }
     }
 

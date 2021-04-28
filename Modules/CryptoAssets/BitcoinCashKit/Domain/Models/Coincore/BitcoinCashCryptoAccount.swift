@@ -27,7 +27,7 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
 
     var balance: Single<MoneyValue> {
         balanceService
-            .balance(for: .init(publicKey: id, type: derivationType))
+            .balance(for: xPub)
             .moneyValue
     }
 
@@ -46,8 +46,8 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         let receiveAddress: Single<String> = bridge.receiveAddress(forXPub: id)
         let account: Single<BitcoinCashWalletAccount> = bridge
             .wallets
-            .map { [id] wallets in
-                wallets.filter { $0.publicKey == id }
+            .map { [xPub] wallets in
+                wallets.filter { $0.publicKey == xPub }
             }
             .map { accounts -> BitcoinCashWalletAccount in
                 guard let account = accounts.first else {
@@ -67,22 +67,21 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    private let xPub: XPub
     private let hdAccountIndex: Int
     private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI
-    private let derivationType: DerivationType
 
-    init(id: String,
-         derivationType: DerivationType,
+    init(xPub: XPub,
          label: String?,
          isDefault: Bool,
          hdAccountIndex: Int,
          exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
          bridge: BitcoinCashWalletBridgeAPI = resolve()) {
-        self.id = id
-        self.derivationType = derivationType
+        self.xPub = xPub
+        self.id = xPub.address
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
         self.isDefault = isDefault
         self.hdAccountIndex = hdAccountIndex

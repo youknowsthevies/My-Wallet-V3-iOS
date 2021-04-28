@@ -378,14 +378,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .replaceError(with: BitcoinWalletError.v3PayloadDecodingFailed)
             .map { payload -> [BitcoinWalletAccount] in
                 payload.enumerated()
-                    .map { (index, legacyAccount) -> BitcoinWalletAccount in
-                        BitcoinWalletAccount(
-                            index: index,
-                            publicKey: legacyAccount.xpub,
-                            label: legacyAccount.label,
-                            derivationType: .legacy,
-                            archived: legacyAccount.archived
-                        )
+                    .map { (index, account) -> BitcoinWalletAccount in
+                        BitcoinWalletAccount(index: index, account: account)
                     }
             }
     }
@@ -395,17 +389,8 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .replaceError(with: BitcoinWalletError.v4PayloadDecodingFailed)
             .map { payload -> [BitcoinWalletAccount] in
                 payload.enumerated()
-                    .map { (index, legacyAccount) -> BitcoinWalletAccount in
-                        guard let derivation = legacyAccount.derivations.first(where: { $0.purpose == 84 }) else {
-                            preconditionFailure("bech32 derivation should exist.")
-                        }
-                        return BitcoinWalletAccount(
-                            index: index,
-                            publicKey: derivation.xpub,
-                            label: legacyAccount.label,
-                            derivationType: derivation.type,
-                            archived: legacyAccount.archived
-                        )
+                    .map { (index, account) -> BitcoinWalletAccount in
+                        BitcoinWalletAccount(index: index, account: account)
                     }
             }
     }

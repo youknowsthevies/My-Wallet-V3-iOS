@@ -20,11 +20,8 @@ final class BitcoinAsset: CryptoAsset {
         repository.defaultAccount
             .map { account in
                 BitcoinCryptoAccount(
-                    id: account.publicKey,
-                    derivationType: account.derivationType,
-                    label: account.label,
-                    isDefault: true,
-                    hdAccountIndex: account.index
+                    walletAccount: account,
+                    isDefault: true
                 )
             }
     }
@@ -142,7 +139,7 @@ final class BitcoinAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {
-        repository.accounts
+        repository.activeAccounts
             .flatMap(weak: self) { (self, accounts) -> Single<(defaultAccount: BitcoinWalletAccount, accounts: [BitcoinWalletAccount])> in
                 self.repository.defaultAccount
                     .map { ($0, accounts) }
@@ -150,11 +147,8 @@ final class BitcoinAsset: CryptoAsset {
             .map { (defaultAccount, accounts) -> [SingleAccount] in
                 accounts.map { account in
                     BitcoinCryptoAccount(
-                        id: account.publicKey,
-                        derivationType: account.derivationType,
-                        label: account.label,
-                        isDefault: account.publicKey == defaultAccount.publicKey,
-                        hdAccountIndex: account.index
+                        walletAccount: account,
+                        isDefault: account.publicKeys.default == defaultAccount.publicKeys.default
                     )
                 }
             }

@@ -10,9 +10,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-final class BitcoinCashWalletAccountRepository: WalletAccountRepositoryAPI {
-    
-    typealias Account = BitcoinCashWalletAccount
+final class BitcoinCashWalletAccountRepository {
     
     // MARK: - Properties
     
