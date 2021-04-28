@@ -12,7 +12,7 @@ import BitcoinChainKit
 
 public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse, HistoricalTransaction, Tokenized {
 
-    public static let requiredConfirmations: Int = 6
+    public static let requiredConfirmations: Int = 3
 
     // MARK: - HistoricalTransaction
 
