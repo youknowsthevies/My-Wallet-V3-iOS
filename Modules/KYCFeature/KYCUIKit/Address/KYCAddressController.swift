@@ -341,7 +341,7 @@ extension KYCAddressController: LocationSuggestionInterface {
         // Ideally, we should reload the states, but since we're going to rewrite this module, I'm just patching it for now.
         if address.countryCode?.lowercased() == "us" {
             stateTextField.options = UnitedStates.states
-                .map(ValidationPickerField.PickerItem)
+                .map(ValidationPickerField.PickerItem.init)
                 .sorted(by: { $0.title < $1.title })
         } else {
             stateTextField.options = []
