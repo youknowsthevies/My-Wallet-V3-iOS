@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -35,7 +36,8 @@ final class KYCInformationController: KYCBaseViewController {
     /// The view configuration for this view
     var viewConfig: KYCInformationViewConfig = KYCInformationViewConfig.defaultConfig
 
-    private let analyticsService: AnalyticsServiceAPI = resolve()
+    @Inject
+    private var analyticsRecorder: AnalyticsEventRecording
 
     // MARK: Factory
 
@@ -74,15 +76,14 @@ final class KYCInformationController: KYCBaseViewController {
             labelSubtitle.superview?.removeFromSuperview()
             labelDescription.text = ""
             buttonPrimaryContainer.title = ""
-            var parameters = [String: String]()
+            var presentingViewControllerName: String = ""
             if let presentingViewController = presentingViewController {
-                parameters["presenting_view_controller"] = NSStringFromClass(
+                presentingViewControllerName = NSStringFromClass(
                     presentingViewController.classForCoder
                 ).components(separatedBy: ".").last ?? ""
             }
-            analyticsService.trackEvent(
-                title: "kyc_information_controller_view_model_nil_error",
-                parameters: parameters
+            analyticsRecorder.record(
+                event: AnalyticsEvents.KYC.kycInformationControllerViewModelNilError(presentingViewController: presentingViewControllerName)
             )
             return
         }

@@ -6,7 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import AnalyticsKit
 
 public struct PaymentMethodRemovalData {
     public enum MethodType {

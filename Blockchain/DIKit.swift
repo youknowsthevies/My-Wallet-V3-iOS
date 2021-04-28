@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -63,7 +64,7 @@ extension DependencyContainer {
         
         factory { UIDevice.current as DeviceInfo }
 
-        single { AnalyticsService() as AnalyticsServiceAPI }
+        single { [FirebaseAnalyticsService()] as [AnalyticsServiceProviding] }
         
         factory { CrashlyticsRecorder() as MessageRecording }
         

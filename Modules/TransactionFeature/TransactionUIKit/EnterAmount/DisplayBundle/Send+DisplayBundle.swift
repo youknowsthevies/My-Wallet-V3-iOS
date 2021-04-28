@@ -6,6 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import Localization
 import PlatformKit
 import PlatformUIKit

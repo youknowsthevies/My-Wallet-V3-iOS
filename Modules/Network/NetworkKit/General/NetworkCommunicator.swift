@@ -6,10 +6,10 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import Combine
 import CombineExt
 import DIKit
-import ToolKit
 
 protocol NetworkCommunicatorAPI {
     

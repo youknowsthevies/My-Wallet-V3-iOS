@@ -14,18 +14,6 @@ extension DependencyContainer {
      
     public static var toolKit = module {
         
-        single { AnalyticsEventRecorder() as AnalyticsEventRecorderAPI }
-        
-        factory { () -> AnalyticsEventRecording in
-            let recorder: AnalyticsEventRecorderAPI = DIKit.resolve()
-            return recorder as AnalyticsEventRecording
-        }
-        
-        factory { () -> AnalyticsEventRelayRecording in
-            let recorder: AnalyticsEventRecorderAPI = DIKit.resolve()
-            return recorder as AnalyticsEventRelayRecording
-        }
-
         factory { UserDefaults.standard as CacheSuite }
     }
 }

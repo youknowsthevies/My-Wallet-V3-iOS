@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import RxSwift
-import ToolKit
 
 public protocol OrderCreationServiceAPI: class {
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData>

@@ -19,13 +19,13 @@ final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
     
     let recordRelay = PublishRelay<AnalyticsEvent>()
     
-    private let analyticsService: AnalyticsServiceAPI
+    private let analyticsServiceProviders: [AnalyticsServiceProviding]
     private let disposeBag = DisposeBag()
     
     // MARK: - Setup
     
-    init(analyticsService: AnalyticsServiceAPI = resolve()) {
-        self.analyticsService = analyticsService
+    init(analyticsServiceProviders: [AnalyticsServiceProviding] = resolve()) {
+        self.analyticsServiceProviders = analyticsServiceProviders
         
         recordRelay
             .subscribe(onNext: { [weak self] event in
@@ -35,6 +35,10 @@ final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
     }
 
     func record(event: AnalyticsEvent) {
-        analyticsService.trackEvent(title: event.name, parameters: event.params)
+        analyticsServiceProviders
+            .filter { $0.isEventSupported(event) }
+            .forEach {
+                $0.trackEvent(title: event.name, parameters: event.params)
+            }
     }
 }

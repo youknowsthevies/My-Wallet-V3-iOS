@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -23,8 +24,8 @@ extension KYCTiersPageModel {
         guard tierTwo.status != .rejected else { return nil }
         return LocalizationConstants.KYC.completingTierTwoAutoEligible
     }
-
-    func trackPresentation(analytics: AnalyticsServiceAPI) {
+    
+    func trackPresentation(analyticsRecorder: AnalyticsEventRecording = resolve()) {
         let metadata = cells.map({ ($0.tier, $0.status) })
         guard let tier1 = metadata.filter({ $0.0 == .tier1 }).first else { return }
         guard let tier2 = metadata.filter({ $0.0 == .tier2 }).first else { return }
@@ -32,12 +33,12 @@ extension KYCTiersPageModel {
         let tierTwoStatus = tier2.1
         switch (tierOneStatus, tierTwoStatus) {
         case (.none, .none):
-            analytics.trackEvent(title: KYC.Tier.lockedAnalyticsKey)
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTiersLocked)
         case (.approved, .none):
-            analytics.trackEvent(title: tier1.0.completionAnalyticsKey)
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier1Complete)
         case (_, .inReview),
              (_, .approved):
-            analytics.trackEvent(title: tier2.0.completionAnalyticsKey)
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Complete)
         default:
             break
         }

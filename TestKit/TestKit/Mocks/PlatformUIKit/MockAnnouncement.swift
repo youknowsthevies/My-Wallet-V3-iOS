@@ -9,11 +9,12 @@
 import RxSwift
 import XCTest
 
+@testable import AnalyticsKit
 @testable import PlatformKit
 @testable import PlatformUIKit
 @testable import ToolKit
 
-class MockAnalyticsService: AnalyticsServiceAPI {
+class MockAnalyticsService: AnalyticsServiceProviding {
     func trackEvent(title: String, parameters: [String: Any]?) { }
 }
 
@@ -34,7 +35,7 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     
     init(type: AnnouncementType,
          cacheSuite: CacheSuite,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder(analyticsService: MockAnalyticsService()),
+         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()]),
          dismiss: @escaping CardAnnouncementAction) {
         self.type = type
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: MockErrorRecorder())

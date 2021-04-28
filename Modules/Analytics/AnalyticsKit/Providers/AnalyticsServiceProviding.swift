@@ -8,16 +8,26 @@
 
 import Foundation
 
-public protocol AnalyticsServiceAPI {
+public protocol AnalyticsServiceProviding {
 
     func trackEvent(title: String)
 
     func trackEvent(title: String, parameters: [String: Any]?)
+    
+    var supportedEventTypes: [AnalyticsEventType] { get }
 }
 
-extension AnalyticsServiceAPI {
-
+extension AnalyticsServiceProviding {
+    
+    public var supportedEventTypes: [AnalyticsEventType] {
+        [.old]
+    }
+    
     public func trackEvent(title: String) {
         trackEvent(title: title, parameters: nil)
+    }
+    
+    func isEventSupported(_ event: AnalyticsEvent) -> Bool {
+        supportedEventTypes.contains(event.type)
     }
 }

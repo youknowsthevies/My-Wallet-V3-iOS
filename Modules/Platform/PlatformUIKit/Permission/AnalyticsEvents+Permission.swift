@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import AnalyticsKit
 
 extension AnalyticsEvents {
     public enum Permission: AnalyticsEvent {

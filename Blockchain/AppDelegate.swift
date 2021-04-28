@@ -84,6 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
+            DependencyContainer.analyticsKit;
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
             DependencyContainer.walletPayloadKit;

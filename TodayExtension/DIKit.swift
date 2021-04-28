@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -17,7 +18,7 @@ extension DependencyContainer {
     
     static var today = module {
         
-        factory { AnalyticsServiceMock() as AnalyticsServiceAPI }
+        factory { AnalyticsServiceMock() as AnalyticsServiceProviding }
         
         factory { UIDevice.current as DeviceInfo }
     }
@@ -29,7 +30,7 @@ extension UIDevice: DeviceInfo {
     }
 }
 
-final class AnalyticsServiceMock: AnalyticsServiceAPI {
+final class AnalyticsServiceMock: AnalyticsServiceProviding {
     func trackEvent(title: String, parameters: [String : Any]?) {
         // NOOP
     }

@@ -6,7 +6,7 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import AnalyticsKit
 
 /// A networking error returned by the network layer, this can be mapped to user facing errors at a high level
 public enum NetworkError: Error {

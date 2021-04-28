@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import PlatformKit
-import ToolKit
 
 /// Announcement that can be dismissed using `X` or a secondary button
 public protocol DismissibleAnnouncement: Announcement {
