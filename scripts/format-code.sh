@@ -1,0 +1,2 @@
+swiftlint --fix
+swiftformat .
