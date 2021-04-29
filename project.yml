@@ -718,6 +718,7 @@ targets:
     - carthage: RxRelay
     - target: DashboardKit
     - target: PlatformUIKit
+    - target: TransactionUIKit
     - target: SettingsKit
     scheme:
       testTargets:
@@ -1316,6 +1317,7 @@ targets:
     - target: PlatformUIKit
     - target: ToolKit
     - target: TransactionKit
+    - target: AnalyticsKit
     scheme:
       testTargets:
       - BuySellUIKitTests

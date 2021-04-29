@@ -15,6 +15,17 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
     
     public let accounts: [SingleAccount]
     
+    public var requireSecondPassword: Single<Bool> {
+        if accounts.isEmpty {
+            return .just(false)
+        }
+        
+        return Single.zip(accounts.map(\.requireSecondPassword))
+            .map { values -> Bool in
+                !values.contains(false)
+            }
+    }
+    
     public var actionableBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))

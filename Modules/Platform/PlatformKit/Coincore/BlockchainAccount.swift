@@ -48,6 +48,9 @@ public protocol BlockchainAccount {
     /// The balance, not including uncleared and locked,
     /// that the user is able to utilize in a transaction
     var actionableBalance: Single<MoneyValue> { get }
+    
+    /// Some wallets are double encrypted and have a second password.
+    var requireSecondPassword: Single<Bool> { get }
 }
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {

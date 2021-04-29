@@ -31,6 +31,17 @@ final class AllAccountsGroup: AccountGroup {
             }
     }
     
+    var requireSecondPassword: Single<Bool> {
+        if accounts.isEmpty {
+            return .just(false)
+        }
+        
+        return Single.zip(accounts.map(\.requireSecondPassword))
+            .map { values -> Bool in
+                !values.contains(false)
+            }
+    }
+    
     var pendingBalance: Single<MoneyValue> {
         .error(AccountGroupError.noBalance)
     }

@@ -10,6 +10,17 @@ public class CryptoAccountCustodialGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
     
+    public var requireSecondPassword: Single<Bool> {
+        if accounts.isEmpty {
+            return .just(false)
+        }
+        
+        return Single.zip(accounts.map(\.requireSecondPassword))
+            .map { values -> Bool in
+                !values.contains(false)
+            }
+    }
+    
     public var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)

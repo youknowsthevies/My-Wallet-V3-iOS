@@ -8,6 +8,7 @@ import RxRelay
 import RxSwift
 import SettingsKit
 import ToolKit
+import TransactionUIKit
 
 public protocol BackupRouterAPI {
     
@@ -38,6 +39,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private var stateService: CustodyActionStateServiceAPI!
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
+    private var depositRouter: DepositRootRouting!
     private let dataProviding: DataProviding
 
     private let navigationRouter: NavigationRouterAPI
@@ -46,6 +48,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
+    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
@@ -69,7 +72,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         dataProviding: DataProviding = resolve(),
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
-        walletOperationsRouter: WalletOperationsRouting = resolve()
+        walletOperationsRouter: WalletOperationsRouting = resolve(),
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
     ) {
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
@@ -82,6 +86,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         self.analyticsService = analyticsService
 
         self.tabSwapping = tabSwapping
+        self.internalFeatureFlagService = internalFeatureFlagService
         
         backupRouterAPI
             .completionRelay
@@ -237,8 +242,21 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     
     private func showPaymentMethods() {
         guard case let .fiat(fiatCurrency) = currency else { return }
-        dismissTopMost { [weak self] in
-            self?.walletOperationsRouter.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
+        switch internalFeatureFlagService.isEnabled(.withdrawAndDepositACH) {
+        case true:
+            let builder = DepositRootBuilder()
+            let router = builder.build()
+            let depositRootViewController = router.viewControllable.uiviewController
+            depositRouter = router
+            router.interactable.activate()
+            router.load()
+            dismissTopMost { [weak navigationRouter] in
+                navigationRouter?.present(viewController: depositRootViewController, using: .modalOverTopMost)
+            }
+        case false:
+            dismissTopMost { [weak self] in
+                self?.walletOperationsRouter.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
+            }
         }
     }
     

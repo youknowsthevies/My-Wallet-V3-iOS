@@ -6,8 +6,6 @@ import ToolKit
 public protocol CryptoAccount: SingleAccount {
     var asset: CryptoCurrency { get }
     var feeAsset: CryptoCurrency? { get }
-
-    var requireSecondPassword: Single<Bool> { get }
 }
 
 public extension CryptoAccount {

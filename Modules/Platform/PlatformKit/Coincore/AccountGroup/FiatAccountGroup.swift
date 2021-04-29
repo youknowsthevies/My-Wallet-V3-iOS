@@ -14,6 +14,10 @@ public class FiatAccountGroup: AccountGroup {
 
     public let accounts: [SingleAccount]
     
+    public var requireSecondPassword: Single<Bool> {
+        .just(false)
+    }
+    
     public var isFunded: Single<Bool> {
         .error(AccountGroupError.noBalance)
     }

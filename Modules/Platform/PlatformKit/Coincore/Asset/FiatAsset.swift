@@ -59,8 +59,8 @@ class FiatAsset: Asset {
         unimplemented()
     }
     
+    /// We cannot transfer for fiat
     func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
-        // TODO: Currently Android returns an empty array.
         .just([])
     }
     
