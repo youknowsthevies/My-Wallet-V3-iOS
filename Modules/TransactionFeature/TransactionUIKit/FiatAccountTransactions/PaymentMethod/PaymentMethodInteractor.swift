@@ -1,10 +1,4 @@
-//
-//  PaymentMethodInteractor.swift
-//  TransactionUIKit
-//
-//  Created by Alex McGregor on 4/28/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import DIKit
