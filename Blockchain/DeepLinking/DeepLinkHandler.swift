@@ -48,7 +48,7 @@ final class DeepLinkHandler: DeepLinkHandling {
     private func handleXlmAirdrop(_ params: [String: String]) {
         appSettings.didTapOnAirdropDeepLink = true
         appSettings.didAttemptToRouteForAirdrop = false
-        Analytics.setUserProperty(AnalyticsService.Campaigns.sunriver.rawValue, forName: "campaign")
+        Analytics.setUserProperty(FirebaseAnalyticsService.Campaigns.sunriver.rawValue, forName: "campaign")
     }
 
     private func handleKycDocumentResubmission(_ params: [String: String]) {

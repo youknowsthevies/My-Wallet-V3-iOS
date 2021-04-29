@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import BuySellUIKit
 import DIKit
 import InterestKit
@@ -43,6 +44,7 @@ import WalletPayloadKit
     @LazyInject private var walletUpgradeService: WalletUpgradeServicing
     @LazyInject private var reactiveWallet: ReactiveWalletAPI
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
+    @LazyInject private var recorder: AnalyticsEventRecording
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
@@ -529,7 +531,7 @@ extension AppCoordinator: WalletHistoryDelegate {
             AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork)
             return
         }
-        AnalyticsService.shared.trackEvent(title: "btc_history_error", parameters: ["error": errorMessage])
+        recorder.record(event: AnalyticsEvents.AppCoordinatorEvent.btcHistoryError(errorMessage))
         AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.balancesGeneric)
     }
 

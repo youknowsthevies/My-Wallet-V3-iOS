@@ -6,6 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import ToolKit
@@ -18,7 +19,7 @@ import ToolKit
 // Obj-C Bridge to AnalyticsEventRecording. Deprecate this once obj-c callers are updated to Swift
 @objc class BridgeAnalyticsRecorder : NSObject {
 
-    private let recorder: AnalyticsServiceAPI
+    private let recorder: AnalyticsServiceProviding
 
     override init() {
         self.recorder = resolve()

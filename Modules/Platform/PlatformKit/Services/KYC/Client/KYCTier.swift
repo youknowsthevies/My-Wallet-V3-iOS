@@ -9,8 +9,7 @@
 import Localization
 
 extension KYC.Tier {
-    public static let lockedAnalyticsKey: String = "kyc_tiers_locked"
-    
+
     public var headline: String? {
         switch self {
         case .tier0:
@@ -63,31 +62,6 @@ extension KYC.Tier {
             return LocalizationConstants.KYC.takesThreeMinutes
         case .tier2:
             return LocalizationConstants.KYC.takesTenMinutes
-        }
-    }
-    
-    public var startAnalyticsKey: String {
-        switch self {
-        case .tier0:
-            return "kyc_tier0_start"
-        case .tier1:
-            return "kyc_tier1_start"
-        case .tier2:
-            return "kyc_tier2_start"
-        }
-    }
-    
-    public var completionAnalyticsKey: String {
-        switch self {
-        case .tier0:
-            /// You should never be able to actually
-            /// complete `tier0` since it's not actually
-            /// a thing.
-            return ""
-        case .tier1:
-            return "kyc_tier1_complete"
-        case .tier2:
-            return "kyc_tier2_complete"
         }
     }
 }

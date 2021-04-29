@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import BigInt
 import DIKit
 import Foundation
@@ -37,7 +38,6 @@ public final class KYCTiersViewController: UIViewController {
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
-    private let analytics: AnalyticsServiceAPI = resolve()
     fileprivate var disposable: Disposable?
 
     // MARK: Public Properties
@@ -76,7 +76,7 @@ public final class KYCTiersViewController: UIViewController {
         registerSupplementaryViews()
         registerForNotifications()
         collectionView.reloadData()
-        pageModel.trackPresentation(analytics: analytics)
+        pageModel.trackPresentation(analyticsRecorder: analyticsRecorder)
         let backgroundColor = #colorLiteral(red: 0.9607843137, green: 0.968627451, blue: 0.9764705882, alpha: 1)
         collectionView.backgroundColor = backgroundColor
         view.backgroundColor = backgroundColor
@@ -282,7 +282,7 @@ extension KYCTiersViewController: KYCTiersInterface {
         pageModel = newModel
         registerSupplementaryViews()
         collectionView.reloadData()
-        pageModel.trackPresentation(analytics: analytics)
+        pageModel.trackPresentation(analyticsRecorder: analyticsRecorder)
     }
 
     func collectionViewVisibility(_ visibility: Visibility) {

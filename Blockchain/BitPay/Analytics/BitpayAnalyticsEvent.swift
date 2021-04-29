@@ -6,8 +6,8 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import PlatformKit
-import ToolKit
 
 // MARK: - Deprecate these once we SendBitcoinViewController is written in Swift
 

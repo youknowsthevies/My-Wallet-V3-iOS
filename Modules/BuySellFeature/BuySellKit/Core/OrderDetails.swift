@@ -6,10 +6,10 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import BigInt
 import Localization
 import PlatformKit
-import ToolKit
 
 /// `OrderDetails` is the primary model that should be accessed by
 /// `Buy`, `Sell`, etc. It has an internal `value` of type `OrderDetailsValue`.

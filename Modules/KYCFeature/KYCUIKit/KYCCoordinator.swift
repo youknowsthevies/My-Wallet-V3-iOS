@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import KYCKit
 import Localization
@@ -77,7 +78,7 @@ final class KYCCoordinator: KYCRouterAPI {
 
     private let tiersService: KYCTiersServiceAPI
     private let networkAdapter: NetworkAdapterAPI
-    private let analyticsService: AnalyticsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecording
     private let dataRepository: DataRepositoryAPI
     private let requestBuilder: RequestBuilder
 
@@ -106,19 +107,18 @@ final class KYCCoordinator: KYCRouterAPI {
         kycFinishedRelay.asObservable()
     }
 
-    init(
-        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
-        webViewServiceAPI: WebViewServiceAPI = resolve(),
-        tiersService: KYCTiersServiceAPI = resolve(),
-        appSettings: AppSettingsAPI = resolve(),
-        analyticsService: AnalyticsServiceAPI = resolve(),
-        dataRepository: DataRepositoryAPI = resolve(),
-        kycSettings: KYCSettingsAPI = resolve(),
-        loadingViewPresenter: LoadingViewPresenting = resolve(),
-        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
+    init(requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
+         webViewServiceAPI: WebViewServiceAPI = resolve(),
+         tiersService: KYCTiersServiceAPI = resolve(),
+         appSettings: AppSettingsAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         dataRepository: DataRepositoryAPI = resolve(),
+         kycSettings: KYCSettingsAPI = resolve(),
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
+         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.requestBuilder = requestBuilder
-        self.analyticsService = analyticsService
+        self.analyticsRecorder = analyticsRecorder
         self.dataRepository = dataRepository
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
@@ -151,8 +151,16 @@ final class KYCCoordinator: KYCRouterAPI {
     func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCParentFlow) {
         self.parentFlow = parentFlow
         rootViewController = viewController
-        analyticsService.trackEvent(title: tier.startAnalyticsKey)
-
+        
+        switch tier {
+        case .tier0:
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier0Start)
+        case .tier1:
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier1Start)
+        case .tier2:
+            analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Start)
+        }
+    
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let postTierObservable = post(tier: tier).asObservable()
         let userObservable = dataRepository.fetchNabuUser().asObservable()

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import AnalyticsKit
 
 enum NetworkErrorEvent: AnalyticsEvent {
     case unknown

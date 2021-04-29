@@ -6,9 +6,9 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import BigInt
 import PlatformKit
-import ToolKit
 
 public struct SellOrderDetails {
     

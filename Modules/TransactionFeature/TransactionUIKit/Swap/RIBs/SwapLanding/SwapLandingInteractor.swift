@@ -6,6 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -13,7 +14,6 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
-import ToolKit
 
 protocol SwapLandingRouting: ViewableRouting {
 }

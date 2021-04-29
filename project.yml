@@ -303,6 +303,13 @@ targets:
       featureName: CryptoAssets
     templates:
     - ModuleTests
+  AnalyticsKit:
+    dependencies:
+    - target: ToolKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - Module
   BitcoinCashKit:
     dependencies:
     - carthage: BigInt
@@ -440,6 +447,7 @@ targets:
     - carthage: WalletCore
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
+    - target: AnalyticsKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
@@ -657,6 +665,7 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
+    - target: AnalyticsKit
     scheme:
       testTargets:
       - BuySellUIKitTests
@@ -934,6 +943,7 @@ targets:
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
+    - target: AnalyticsKit
     scheme:
       testTargets:
       - KYCUIKitTests
@@ -974,6 +984,7 @@ targets:
     - carthage: RxSwift
     - carthage: RxCombine
     - carthage: DIKit
+    - target: AnalyticsKit
     - target: SharedPackagesKit
     - target: ToolKit
     info:
@@ -1060,6 +1071,7 @@ targets:
     - target: Localization
     - target: PlatformKit
     - target: ToolKit
+    - target: AnalyticsKit
     scheme:
       testTargets:
       - PlatformUIKitTests
@@ -1209,6 +1221,7 @@ targets:
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
+    - target: AnalyticsKit
     scheme:
       testTargets:
       - TransactionKitTests

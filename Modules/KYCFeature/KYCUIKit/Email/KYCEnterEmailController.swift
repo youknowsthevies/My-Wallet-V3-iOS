@@ -6,6 +6,7 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import KYCKit
 import Localization
@@ -40,8 +41,8 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
         VerifyEmailPresenter(view: self)
     }()
 
-    private let analyticsService: AnalyticsServiceAPI = resolve()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    @Inject
+    private var analyticsRecorder: AnalyticsEventRecording
 
     // MARK: KYCBaseViewController
 
@@ -85,7 +86,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
         }
         originalBottomButtonConstraint = layoutConstraintBottomButton.constant
         setupProgressView()
-        analyticsService.trackEvent(title: "kyc_email")
+        analyticsRecorder.record(event: AnalyticsEvents.KYC.kycEmail)
     }
 
     override func viewDidAppear(_ animated: Bool) {

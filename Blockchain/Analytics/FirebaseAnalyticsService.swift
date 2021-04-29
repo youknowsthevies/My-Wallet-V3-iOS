@@ -6,13 +6,14 @@
 //  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
 //
 
+import AnalyticsKit
 import DIKit
 import Firebase
 import Foundation
 import PlatformKit
 import ToolKit
 
-class AnalyticsService: AnalyticsServiceAPI {
+class FirebaseAnalyticsService: AnalyticsServiceProviding {
     
     // Enumerates campaigns that can be used in analytics events
     enum Campaigns: String, CaseIterable {
@@ -53,13 +54,10 @@ class AnalyticsService: AnalyticsServiceAPI {
     
     // MARK: - Properties
     
-    @Inject static var shared: AnalyticsServiceAPI
-    
     private let queue = DispatchQueue(label: "AnalyticsService", qos: .background)
     
     // MARK: Public Methods
     
-    // Simple custom event with no parameters
     func trackEvent(title: String, parameters: [String: Any]?) {
         queue.async { [weak self] in
             guard let self = self else { return }

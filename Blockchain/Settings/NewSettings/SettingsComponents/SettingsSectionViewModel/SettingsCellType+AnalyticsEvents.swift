@@ -6,7 +6,7 @@
 //  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import ToolKit
+import AnalyticsKit
 
 extension SettingsSectionType.CellType {
     var analyticsEvent: AnalyticsEvents.Settings? {

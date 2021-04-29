@@ -42,9 +42,9 @@ extension PrimitiveSequence where Trait == SingleTrait {
     
     /// Records analytics event using a given recorder on any `Single` lifecycle
     public func record(subscribeEvent: AnalyticsEvent,
-                      successEvent: AnalyticsEvent,
-                      errorEvent: AnalyticsEvent,
-                      using recorder: AnalyticsEventRecording) -> Single<Element> {
+                       successEvent: AnalyticsEvent,
+                       errorEvent: AnalyticsEvent,
+                       using recorder: AnalyticsEventRecording) -> Single<Element> {
         self.do(
             onSuccess: { _ in
                 recorder.record(event: successEvent)
