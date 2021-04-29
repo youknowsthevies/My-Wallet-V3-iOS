@@ -5,6 +5,7 @@ import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
+import SettingsKit
 import ToolKit
 
 // TODO: Refactor this when the coordinators are refactored

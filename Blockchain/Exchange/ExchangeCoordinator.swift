@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import SafariServices
+import SettingsKit
 import ToolKit
 
 class ExchangeCoordinator {

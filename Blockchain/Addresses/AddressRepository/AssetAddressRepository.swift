@@ -8,6 +8,7 @@ import EthereumKit
 import NetworkKit
 import PlatformKit
 import RxSwift
+import SettingsKit
 import StellarKit
 import ToolKit
 

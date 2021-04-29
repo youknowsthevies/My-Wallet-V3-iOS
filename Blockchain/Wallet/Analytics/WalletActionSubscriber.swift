@@ -3,6 +3,7 @@
 import DIKit
 import PlatformKit
 import RxSwift
+import SettingsKit
 import ToolKit
 
 /// Subscribes to events emited by `WalletActionPublisher`

@@ -9,23 +9,47 @@ import RxRelay
 import RxSwift
 import ToolKit
 
+public protocol KeychainItemWrapping {
+    func pinFromKeychain() -> String?
+    func removePinFromKeychain()
+    func setPINInKeychain(_ pin: String?)
+    
+    func guid() -> String?
+    func removeGuidFromKeychain()
+    func setGuidInKeychain(_ guid: String?)
+    
+    func sharedKey() -> String?
+    func removeSharedKeyFromKeychain()
+    func setSharedKeyInKeychain(_ sharedKey: String?)
+    
+    func getSingleSwipeAddress(for: CryptoCurrency) -> String?
+    func removeAllSwipeAddresses(for: CryptoCurrency)
+    func setSingleSwipeAddress(_ address: String, for: CryptoCurrency)
+}
+
+public protocol LegacyPasswordProviding: class {
+    func setLegacyPassword(_ legacyPassword: String?)
+}
+
 /**
  Settings for the current user.
  All settings are written and read from NSUserDefaults.
  */
 @objc
-final class BlockchainSettings: NSObject {
+public final class BlockchainSettings: NSObject {
 
     // MARK: - App
 
     @objc(BlockchainSettingsApp)
-    class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring, PermissionSettingsAPI {
+    public class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring, PermissionSettingsAPI {
 
-        @Inject @objc static var shared: App
+        @Inject
+        @objc
+        public static var shared: App
 
         @LazyInject private var defaults: CacheSuite
 
-        var isPairedWithWallet: Bool {
+        public var isPairedWithWallet: Bool {
             guid != nil
                 && sharedKey != nil
                 && pinKey != nil
@@ -43,7 +67,7 @@ final class BlockchainSettings: NSObject {
          - Important:
          This setting **should** be set reset upon logging the user out of the application.
          */
-        var appBecameActiveCount: Int {
+        public var appBecameActiveCount: Int {
             get {
                 defaults.integer(forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
             }
@@ -52,7 +76,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var didRequestCameraPermissions: Bool {
+        public var didRequestCameraPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
             }
@@ -61,7 +85,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var didRequestMicrophonePermissions: Bool {
+        public var didRequestMicrophonePermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestMicrophonePermissions.rawValue)
             }
@@ -70,7 +94,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var didRequestNotificationPermissions: Bool {
+        public var didRequestNotificationPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestNotificationPermissions.rawValue)
             }
@@ -89,7 +113,7 @@ final class BlockchainSettings: NSObject {
          The encryption key is generated from the pin created by the user.
          legacyEncryptedPinPassword is required for wallets that created a PIN prior to Homebrew release - see IOS-1537
          */
-        var encryptedPinPassword: String? {
+        public var encryptedPinPassword: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.encryptedPinPassword.rawValue) ??
                     defaults.string(forKey: UserDefaults.Keys.legacyEncryptedPinPassword.rawValue)
@@ -100,7 +124,8 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var hasEndedFirstSession: Bool {
+        @objc
+        public  var hasEndedFirstSession: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.hasEndedFirstSession.rawValue)
             }
@@ -109,24 +134,24 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var pin: String? {
+        public var pin: String? {
             get {
-                KeychainItemWrapper.pinFromKeychain()
+                keychainItemWrapper.pinFromKeychain()
             }
             set {
                 guard let pin = newValue else {
-                    KeychainItemWrapper.removePinFromKeychain()
+                    keychainItemWrapper.removePinFromKeychain()
                     return
                 }
-                KeychainItemWrapper.setPINInKeychain(pin)
+                keychainItemWrapper.setPINInKeychain(pin)
             }
         }
 
-        var isPinSet: Bool {
+        public var isPinSet: Bool {
             pinKey != nil && encryptedPinPassword != nil
         }
 
-        var pinKey: String? {
+        public var pinKey: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.pinKey.rawValue)
             }
@@ -135,11 +160,12 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var onSymbolLocalChanged: ((Bool) -> Void)?
+        public var onSymbolLocalChanged: ((Bool) -> Void)?
 
         /// Property indicating whether or not the currency symbol that should be used throughout the app
         /// should be fiat, if set to true, or the asset-specific symbol, if false.
-        @objc var symbolLocal: Bool {
+        @objc
+        public var symbolLocal: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.symbolLocal.rawValue)
             }
@@ -155,17 +181,18 @@ final class BlockchainSettings: NSObject {
         }
         
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
-        @objc var fiatCurrencySymbol: String {
+        @objc
+        public var fiatCurrencySymbol: String {
             fiatCurrency.symbol
         }
         
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
-        var fiatCurrency: FiatCurrency {
+        public var fiatCurrency: FiatCurrency {
             FiatCurrency(code: fiatSettings.legacyCurrency?.code ?? "USD")!
         }
 
         /// The first 5 characters of SHA256 hash of the user's password
-        var passwordPartHash: String? {
+        public var passwordPartHash: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.passwordPartHash.rawValue)
             }
@@ -184,7 +211,7 @@ final class BlockchainSettings: NSObject {
          - SeeAlso:
          [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/user-interaction/authentication)
          */
-        var biometryEnabled: Bool {
+        public var biometryEnabled: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.biometryEnabled.rawValue)
             }
@@ -193,43 +220,31 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var guid: String? {
+        @objc
+        public var guid: String? {
             get {
-                KeychainItemWrapper.guid()
+                keychainItemWrapper.guid()
             }
             set {
                 guard let guid = newValue else {
-                    KeychainItemWrapper.removeGuidFromKeychain()
+                    keychainItemWrapper.removeGuidFromKeychain()
                     return
                 }
-                KeychainItemWrapper.setGuidInKeychain(guid)
+                keychainItemWrapper.setGuidInKeychain(guid)
             }
         }
 
-        @objc var sharedKey: String? {
+        @objc
+        public var sharedKey: String? {
             get {
-                KeychainItemWrapper.sharedKey()
+                keychainItemWrapper.sharedKey()
             }
             set {
                 guard let sharedKey = newValue else {
-                    KeychainItemWrapper.removeSharedKeyFromKeychain()
+                    keychainItemWrapper.removeSharedKeyFromKeychain()
                     return
                 }
-                KeychainItemWrapper.setSharedKeyInKeychain(sharedKey)
-            }
-        }
-
-        @objc var selectedLegacyAssetType: LegacyAssetType {
-            get {
-                let rawValue = defaults.integer(forKey: UserDefaults.Keys.selectedLegacyAssetType.rawValue)
-                guard let value = LegacyAssetType(rawValue: rawValue),
-                    enabledCurrenciesService.allEnabledCryptoCurrencies.contains(CryptoCurrency(legacyAssetType: value)) else {
-                        return .bitcoin
-                }
-                return value
-            }
-            set {
-                defaults.set(newValue.rawValue, forKey: UserDefaults.Keys.selectedLegacyAssetType.rawValue)
+                keychainItemWrapper.setSharedKeyInKeychain(sharedKey)
             }
         }
 
@@ -241,7 +256,7 @@ final class BlockchainSettings: NSObject {
 
          The default of this setting is `true`.
          */
-        var cloudBackupEnabled: Bool {
+        public var cloudBackupEnabled: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
             }
@@ -258,7 +273,7 @@ final class BlockchainSettings: NSObject {
 
          The default of this setting is `true`.
          */
-        var swipeToReceiveEnabled: Bool {
+        public var swipeToReceiveEnabled: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
             }
@@ -268,52 +283,52 @@ final class BlockchainSettings: NSObject {
         }
 
         private func getSwipeAddress(for currency: CryptoCurrency) -> String? {
-            KeychainItemWrapper.getSingleSwipeAddress(for: currency.legacy)
+            keychainItemWrapper.getSingleSwipeAddress(for: currency)
         }
 
         private func setSwipeAddress(_ address: String?, for currency: CryptoCurrency) {
             guard let address = address else {
-                KeychainItemWrapper.removeAllSwipeAddresses(for: currency.legacy)
+                keychainItemWrapper.removeAllSwipeAddresses(for: currency)
                 return
             }
-            KeychainItemWrapper.setSingleSwipeAddress(address, for: currency.legacy)
+            keychainItemWrapper.setSingleSwipeAddress(address, for: currency)
         }
 
         /// ETH address to be used for swipe to receive
-        var swipeAddressForEther: String? {
+        public var swipeAddressForEther: String? {
             get { getSwipeAddress(for: .ethereum) }
             set { setSwipeAddress(newValue, for: .ethereum) }
         }
 
         /// XLM address to be used for swipe to receive
-        var swipeAddressForStellar: String? {
+        public var swipeAddressForStellar: String? {
             get { getSwipeAddress(for: .stellar) }
             set { setSwipeAddress(newValue, for: .stellar) }
         }
 
         /// PAX address to be used for swipe to receive
-        var swipeAddressForPax: String? {
+        public var swipeAddressForPax: String? {
             get { getSwipeAddress(for: .pax) }
             set { setSwipeAddress(newValue, for: .pax) }
         }
 
         /// USDT address to be used for swipe to receive
-        var swipeAddressForTether: String? {
+        public var swipeAddressForTether: String? {
             get { getSwipeAddress(for: .tether) }
             set { setSwipeAddress(newValue, for: .tether) }
         }
 
-        var swipeAddressForWDGLD: String? {
+        public var swipeAddressForWDGLD: String? {
             get { getSwipeAddress(for: .wDGLD) }
             set { setSwipeAddress(newValue, for: .wDGLD) }
         }
 
-        var swipeAddressForYearnFinance: String? {
+        public var swipeAddressForYearnFinance: String? {
             get { getSwipeAddress(for: .yearnFinance) }
             set { setSwipeAddress(newValue, for: .yearnFinance) }
         }
 
-        var swipeAddressForAave: String? {
+        public var swipeAddressForAave: String? {
             get { getSwipeAddress(for: .aave) }
             set { setSwipeAddress(newValue, for: .aave) }
         }
@@ -324,7 +339,8 @@ final class BlockchainSettings: NSObject {
          This value is set when the wallet has gotten its latest multi-address response.
          This setting is currently only used in the `didGet(_ response: MultiAddressResponse)` function of the wallet manager.
          */
-        @objc var defaultAccountLabelledAddressesCount: Int {
+        @objc
+        public var defaultAccountLabelledAddressesCount: Int {
             get {
                 defaults.integer(forKey: UserDefaults.Keys.defaultAccountLabelledAddressesCount.rawValue)
             }
@@ -339,7 +355,7 @@ final class BlockchainSettings: NSObject {
          - Note:
          This value is set to `true` if the user has chosen to write an app review or not to be asked again.
          */
-        var dontAskUserToShowAppReviewPrompt: Bool {
+        public var dontAskUserToShowAppReviewPrompt: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
             }
@@ -356,7 +372,8 @@ final class BlockchainSettings: NSObject {
          - Important:
          This setting **MUST** be set to `false` upon logging the user out of the application.
          */
-        @objc var didTapOnAirdropDeepLink: Bool {
+        @objc
+        public var didTapOnAirdropDeepLink: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didTapOnAirdropDeepLink.rawValue)
             }
@@ -367,7 +384,7 @@ final class BlockchainSettings: NSObject {
 
         /// Determines if the app already tried to route the user for the airdrop flow as a result
         /// of tapping on a deep link
-        var didAttemptToRouteForAirdrop: Bool {
+        public var didAttemptToRouteForAirdrop: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didAttemptToRouteForAirdrop.rawValue)
             }
@@ -378,7 +395,7 @@ final class BlockchainSettings: NSObject {
 
         /// Users that are linking their Exchange account to their blockchain wallet will deep-link
         /// from the Exchange into the mobile app.
-        var exchangeLinkIdentifier: String? {
+        public var exchangeLinkIdentifier: String? {
             get {
                 defaults.string(forKey: UserDefaults.Keys.exchangeLinkIdentifier.rawValue)
             }
@@ -387,7 +404,7 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        var didTapOnExchangeDeepLink: Bool {
+        public var didTapOnExchangeDeepLink: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didTapOnExchangeDeepLink.rawValue)
             }
@@ -396,7 +413,8 @@ final class BlockchainSettings: NSObject {
             }
         }
 
-        @objc var custodySendInterstitialViewed: Bool {
+        @objc
+        public var custodySendInterstitialViewed: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
             }
@@ -414,16 +432,21 @@ final class BlockchainSettings: NSObject {
         }
 
         private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+        private let legacyPasswordProvider: LegacyPasswordProviding
+        private let keychainItemWrapper: KeychainItemWrapping
 
-        init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
+        public init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+                    keychainItemWrapper: KeychainItemWrapping = resolve(),
+                    legacyPasswordProvider: LegacyPasswordProviding = resolve()) {
             self.enabledCurrenciesService = enabledCurrenciesService
+            self.legacyPasswordProvider = legacyPasswordProvider
+            self.keychainItemWrapper = keychainItemWrapper
 
             super.init()
 
             defaults.register(defaults: [
                 UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
-                UserDefaults.Keys.cloudBackupEnabled.rawValue: true,
-                UserDefaults.Keys.selectedLegacyAssetType.rawValue: LegacyAssetType.bitcoin.rawValue
+                UserDefaults.Keys.cloudBackupEnabled.rawValue: true
             ])
             migratePasswordAndPinIfNeeded()
             handleMigrationIfNeeded()
@@ -436,7 +459,7 @@ final class BlockchainSettings: NSObject {
          - Note:
          This function will not reset any settings which are derived from wallet options.
          */
-        func reset() {
+        public func reset() {
             // TICKET: IOS-1365 - Finish UserDefaults refactor (tickets, documentation, linter issues)
             // TODO: - reset all appropriate settings upon logging out
             clearPin()
@@ -457,12 +480,12 @@ final class BlockchainSettings: NSObject {
         }
 
         /// - Warning: Calling This function will remove **ALL** settings in the application.
-        func clear() {
+        public func clear() {
             UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
             Logger.shared.info("Application settings have been cleared.")
         }
 
-        func clearPin() {
+        public func clearPin() {
             pin = nil
             encryptedPinPassword = nil
             pinKey = nil
@@ -470,14 +493,14 @@ final class BlockchainSettings: NSObject {
         }
 
         /// Migrates pin and password from NSUserDefaults to the Keychain
-        func migratePasswordAndPinIfNeeded() {
+        public func migratePasswordAndPinIfNeeded() {
             guard let password = defaults.string(forKey: UserDefaults.Keys.password.rawValue),
                 let pinStr = defaults.string(forKey: UserDefaults.Keys.pin.rawValue),
                 let pinUInt = UInt(pinStr) else {
                     return
             }
 
-            WalletManager.shared.legacyRepository.legacyPassword = password
+            legacyPasswordProvider.setLegacyPassword(password)
 
             Pin(code: pinUInt).save(using: self)
 
@@ -486,57 +509,8 @@ final class BlockchainSettings: NSObject {
         }
 
         //: Handles settings migration when keys change
-        func handleMigrationIfNeeded() {
+        public func handleMigrationIfNeeded() {
             defaults.migrateLegacyKeysIfNeeded()
-        }
-    }
-
-    // MARK: - App
-
-    /// Encapsulates all onboarding-related settings for the user
-    final class Onboarding {
-        static let shared: Onboarding = Onboarding()
-
-        private lazy var defaults: UserDefaults = {
-            .standard
-        }()
-
-        var walletIntroLatestLocation: WalletIntroductionLocation? {
-            get {
-                guard let value = defaults.object(forKey: UserDefaults.Keys.walletIntroLatestLocation.rawValue) as? Data else { return nil }
-                do {
-                    let result = try JSONDecoder().decode(WalletIntroductionLocation.self, from: value)
-                    return result
-                } catch {
-                    return nil
-                }
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.walletIntroLatestLocation.rawValue)
-            }
-        }
-
-        /**
-         Determines if this is the first time the user is running the application.
-
-         - Note:
-         This value is set to `true` if the application is running for the first time.
-
-         This setting is currently not used for anything else.
-         */
-        var firstRun: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.firstRun.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.firstRun.rawValue)
-            }
-        }
-
-        private init() { }
-
-        func reset() {
-            walletIntroLatestLocation = nil
         }
     }
 }

@@ -4,6 +4,7 @@ import ERC20Kit
 import EthereumKit
 import Foundation
 import PlatformKit
+import SettingsKit
 
 struct SendPaxInput {
     var addressStatus: AddressStatus

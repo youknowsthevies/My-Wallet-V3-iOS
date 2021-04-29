@@ -6,6 +6,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import SettingsKit
 import ToolKit
 
 /// Presenter for the side menu of the app. This presenter
@@ -58,7 +59,7 @@ class SideMenuPresenter {
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
         appFeatureConfigurator: AppFeatureConfigurator = resolve(),
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
-        onboardingSettings: BlockchainSettings.Onboarding = .shared,
+        onboardingSettings: OnboardingSettings = resolve(),
         analyticsRecorder: AnalyticsEventRecording = resolve()
     ) {
         self.wallet = wallet

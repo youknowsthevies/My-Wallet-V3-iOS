@@ -20,6 +20,7 @@ import PlatformUIKit
 import PolkadotKit
 import RIBs
 import RxSwift
+import SettingsKit
 import ToolKit
 import TransactionUIKit
 import WalletPayloadKit
@@ -372,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func checkForNewInstall() {
 
         let appSettings = BlockchainSettings.App.shared
-        let onboardingSettings = BlockchainSettings.Onboarding.shared
+        let onboardingSettings: OnboardingSettings = resolve()
 
         guard !onboardingSettings.firstRun else {
             Logger.shared.info("This is not the 1st time the user is running the app.")

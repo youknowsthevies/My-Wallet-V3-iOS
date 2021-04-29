@@ -9,6 +9,8 @@
 #import "UIView+ChangeFrameAttribute.h"
 #import "NSNumberFormatter+Currencies.h"
 
+@import SettingsKit;
+
 #define CELL_HEIGHT_DEFAULT 44.0f
 
 @interface AccountsAndAddressesViewController () <AssetSelectorViewDelegate, UITableViewDelegate, UITableViewDataSource, LegacyPrivateKeyDelegate>

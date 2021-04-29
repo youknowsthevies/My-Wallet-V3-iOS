@@ -5,6 +5,7 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import SettingsKit
 
 final class SettingsScreenInteractor {
     

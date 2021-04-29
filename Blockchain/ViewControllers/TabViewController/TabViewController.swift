@@ -3,6 +3,7 @@
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import SettingsKit
 import ToolKit
 
 @objc protocol TabViewControllerDelegate: AnyObject {
@@ -136,10 +137,7 @@ import ToolKit
     }
 
     func setupIntroduction() {
-        introductionPresenter = WalletIntroductionPresenter(
-            onboardingSettings: BlockchainSettings.Onboarding.shared,
-            screen: .dashboard
-        )
+        introductionPresenter = WalletIntroductionPresenter(screen: .dashboard)
         introductionPresenter
             .introductionEvent
             .drive(onNext: { [weak self] event in

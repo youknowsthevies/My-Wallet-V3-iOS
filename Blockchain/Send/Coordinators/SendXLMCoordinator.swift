@@ -6,6 +6,7 @@ import Foundation
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import SettingsKit
 import StellarKit
 import ToolKit
 

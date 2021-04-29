@@ -3,6 +3,8 @@
 #import "NSNumberFormatter+Currencies.h"
 #import "Blockchain-Swift.h"
 
+@import SettingsKit;
+
 @implementation NSNumberFormatter (Currencies)
 
 #pragma mark - Format helpers

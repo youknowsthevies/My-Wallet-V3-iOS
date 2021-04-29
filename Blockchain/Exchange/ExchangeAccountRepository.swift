@@ -6,6 +6,7 @@ import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
+import SettingsKit
 
 protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }

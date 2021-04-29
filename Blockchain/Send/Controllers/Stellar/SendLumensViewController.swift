@@ -5,6 +5,7 @@ import DIKit
 import Foundation
 import PlatformKit
 import PlatformUIKit
+import SettingsKit
 import ToolKit
 
 protocol SendXLMViewControllerDelegate: class {

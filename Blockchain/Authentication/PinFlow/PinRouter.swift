@@ -3,6 +3,7 @@
 import DIKit
 import PlatformKit
 import PlatformUIKit
+import SettingsKit
 import ToolKit
 
 /// PIN creation / changing / authentication. Responsible for routing screens during flow.
