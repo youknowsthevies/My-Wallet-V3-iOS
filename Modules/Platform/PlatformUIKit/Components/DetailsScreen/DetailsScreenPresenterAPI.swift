@@ -1,10 +1,4 @@
-//
-//  DetailsScreenPresenterAPI.swift
-//  PlatformUIKit
-//
-//  Created by Paulo on 01/05/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 import RxCocoa

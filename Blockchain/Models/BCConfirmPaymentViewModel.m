@@ -1,10 +1,4 @@
-//
-//  BCConfirmPaymentViewModel.m
-//  Blockchain
-//
-//  Created by kevinwu on 8/29/17.
-//  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "BCConfirmPaymentViewModel.h"
 #import "NSNumberFormatter+Currencies.h"

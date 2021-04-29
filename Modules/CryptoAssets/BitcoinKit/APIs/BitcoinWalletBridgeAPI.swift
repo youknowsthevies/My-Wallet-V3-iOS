@@ -1,10 +1,4 @@
-//
-//  BitcoinWalletBridgeAPI.swift
-//  BitcoinKit
-//
-//  Created by kevinwu on 2/5/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
 import PlatformKit

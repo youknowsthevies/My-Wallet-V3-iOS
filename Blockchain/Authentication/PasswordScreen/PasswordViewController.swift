@@ -1,10 +1,4 @@
-//
-//  PasswordViewController.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 24/10/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformUIKit
 import RxSwift

@@ -1,10 +1,4 @@
-//
-//  LabeledButtonCollectionViewCell.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 23/01/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Represents a labeled-button embedded inside a `UICollectionViewCell`
 final class LabeledButtonCollectionViewCell<ViewModel: LabeledButtonViewModelAPI>: UICollectionViewCell {

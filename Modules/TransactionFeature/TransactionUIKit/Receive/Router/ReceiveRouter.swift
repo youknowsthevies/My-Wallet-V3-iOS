@@ -1,10 +1,4 @@
-//
-//  ReceiveRouter.swift
-//  TransactionUIKit
-//
-//  Created by Paulo on 01/09/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
 import PlatformKit

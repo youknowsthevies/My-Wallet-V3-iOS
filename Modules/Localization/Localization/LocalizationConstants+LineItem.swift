@@ -1,10 +1,4 @@
-//
-//  LocalizationConstants+LineItem.swift
-//  Localization
-//
-//  Created by Paulo on 18/05/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 // swiftlint:disable all
 

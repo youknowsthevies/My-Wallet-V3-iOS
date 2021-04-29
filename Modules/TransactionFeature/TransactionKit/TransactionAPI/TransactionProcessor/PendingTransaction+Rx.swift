@@ -1,10 +1,4 @@
-//
-//  PendingTransaction+Rx.swift
-//  TransactionKit
-//
-//  Created by Paulo on 07/04/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxSwift
 

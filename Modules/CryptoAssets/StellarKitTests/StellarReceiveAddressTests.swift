@@ -1,10 +1,4 @@
-//
-//  StellarReceiveAddressTests.swift
-//  ActivityKitTests
-//
-//  Created by Paulo on 20/04/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import StellarKit
 import XCTest

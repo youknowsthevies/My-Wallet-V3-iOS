@@ -1,10 +1,4 @@
-//
-//  BCLine.m
-//  Blockchain
-//
-//  Created by Mark Pfluger on 2/13/15.
-//  Copyright (c) 2015 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "BCLine.h"
 #import "Blockchain-Swift.h"

@@ -1,10 +1,4 @@
-//
-//  SendControllerManager.swift
-//  Blockchain
-//
-//  Created by Paulo on 20/07/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

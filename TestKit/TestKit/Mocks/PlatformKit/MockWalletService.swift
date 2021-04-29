@@ -1,10 +1,4 @@
-//
-//  WalletServiceMock.swift
-//  PlatformKitTests
-//
-//  Created by Chris Arriola on 6/13/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import PlatformKit
 import RxSwift

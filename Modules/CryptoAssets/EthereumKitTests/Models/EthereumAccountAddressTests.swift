@@ -1,10 +1,4 @@
-//
-//  EthereumAccountAddressTests.swift
-//  EthereumKitTests
-//
-//  Created by Jack on 21/10/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
 import XCTest

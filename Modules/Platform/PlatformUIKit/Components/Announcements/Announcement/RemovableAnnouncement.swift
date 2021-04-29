@@ -1,10 +1,4 @@
-//
-//  RemovableAnnouncement.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 02/09/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Announcement that can be totally removed. Typically used for one-time announcements.
 public protocol RemovableAnnouncement: DismissibleAnnouncement {

@@ -1,10 +1,4 @@
-//
-//  FiatAsset.swift
-//  PlatformKit
-//
-//  Created by Paulo on 19/08/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import RxSwift

@@ -1,10 +1,4 @@
-//
-//  ProbabilisticRunner.swift
-//  ToolKit
-//
-//  Created by Jack Pooley on 23/02/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Run a specified block probabilistically with an assigned probability
 public final class ProbabilisticRunner {

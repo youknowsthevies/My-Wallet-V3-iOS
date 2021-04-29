@@ -1,10 +1,4 @@
-//
-//  AnalyticsService.swift
-//  Blockchain
-//
-//  Created by Roberto Gil Del Sol on 01/11/2018.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import DIKit

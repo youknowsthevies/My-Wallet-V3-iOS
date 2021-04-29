@@ -1,10 +1,4 @@
-//
-//  SegmentedViewModel.swift
-//  PlatformUIKit
-//
-//  Created by AlexM on 11/7/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxCocoa
 import RxSwift

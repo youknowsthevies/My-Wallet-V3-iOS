@@ -1,10 +1,4 @@
-//
-//  GenericDeviceCapture.swift
-//  PlatformUIKit
-//
-//  Created by Jack Pooley on 13/02/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AVKit
 import DIKit

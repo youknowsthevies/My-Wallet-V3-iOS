@@ -1,10 +1,4 @@
-//
-//  SendFeeService.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 14/08/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 import DIKit

@@ -1,10 +1,4 @@
-//
-//  KeyPair.h
-//  Blockchain
-//
-//  Created by Kevin Wu on 11/2/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <Foundation/Foundation.h>
 

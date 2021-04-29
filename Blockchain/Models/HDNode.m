@@ -1,10 +1,4 @@
-//
-//  HDNode.m
-//  Blockchain
-//
-//  Created by Kevin Wu on 10/20/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "HDNode.h"
 #import "BTCBigNumber.h"

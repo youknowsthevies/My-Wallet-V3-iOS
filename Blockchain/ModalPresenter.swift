@@ -1,10 +1,4 @@
-//
-//  ModalPresenter.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 4/17/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import Foundation

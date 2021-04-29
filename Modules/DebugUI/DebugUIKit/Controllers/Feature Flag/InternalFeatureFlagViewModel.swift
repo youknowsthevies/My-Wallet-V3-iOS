@@ -1,10 +1,4 @@
-//
-//  InternalFeatureFlagViewModel.swift
-//  DebugUIKit
-//
-//  Created by Dimitrios Chatzieleftheriou on 26/10/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

@@ -1,10 +1,4 @@
-//
-//  Locale+Conveniences.swift
-//  PlatformKit
-//
-//  Created by Chris Arriola on 1/29/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

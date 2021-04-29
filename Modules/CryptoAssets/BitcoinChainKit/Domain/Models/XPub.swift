@@ -1,10 +1,4 @@
-//
-//  XPub.swift
-//  BitcoinChainKit
-//
-//  Created by Paulo on 27/04/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

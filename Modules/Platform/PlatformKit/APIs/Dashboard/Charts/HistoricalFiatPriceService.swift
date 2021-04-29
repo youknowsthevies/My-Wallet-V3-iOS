@@ -1,10 +1,4 @@
-//
-//  HistoricalFiatPriceService.swift
-//  PlatformKit
-//
-//  Created by AlexM on 10/30/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import RxRelay

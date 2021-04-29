@@ -1,10 +1,4 @@
-//
-//  AESCryptorTests.swift
-//  WalletKitTests
-//
-//  Created by Jack Pooley on 26/05/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import WalletPayloadKit
 import XCTest

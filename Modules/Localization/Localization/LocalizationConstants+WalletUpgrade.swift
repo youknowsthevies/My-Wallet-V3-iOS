@@ -1,10 +1,4 @@
-//
-//  LocalizationConstants+WalletUpgrade.swift
-//  Localization
-//
-//  Created by Paulo on 18/03/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 // swiftlint:disable all
 

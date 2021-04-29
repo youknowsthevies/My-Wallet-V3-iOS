@@ -1,10 +1,4 @@
-//
-//  InstanceID+Token.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 29/11/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Firebase
 import FirebaseInstanceID

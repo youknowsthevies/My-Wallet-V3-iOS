@@ -1,10 +1,4 @@
-//
-//  ThreeLabelStackView.swift
-//  PlatformUIKit
-//
-//  Created by Paulo on 15/10/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A simple UIStackView with three UILabel
 /// Hugging and Compression Resistance Priorities already set.

@@ -1,10 +1,4 @@
-//
-//  Accessibility+ActivityComponents.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 6/1/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension Accessibility.Identifier {
     public enum Activity {

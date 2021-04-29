@@ -1,10 +1,4 @@
-//
-//  SendLumensViewController.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 10/16/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import DIKit

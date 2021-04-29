@@ -1,10 +1,4 @@
-//
-//  LegacyWalletMock.swift
-//  BlockchainTests
-//
-//  Created by Jack on 03/07/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
 import PlatformKit

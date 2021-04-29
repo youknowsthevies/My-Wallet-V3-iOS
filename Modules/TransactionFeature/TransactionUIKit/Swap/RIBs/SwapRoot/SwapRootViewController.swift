@@ -1,10 +1,4 @@
-//
-//  SwapRootViewController.swift
-//  TransactionUIKit
-//
-//  Created by Paulo on 01/10/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformUIKit

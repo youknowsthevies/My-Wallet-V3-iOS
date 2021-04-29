@@ -1,10 +1,4 @@
-//
-//  BCQRCodeView.m
-//  Blockchain
-//
-//  Created by Kevin Wu on 1/29/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "BCQRCodeView.h"
 #import "Blockchain-Swift.h"

@@ -1,10 +1,4 @@
-//
-//  NSString+JSONParser_NSString.m
-//  Blockchain
-//
-//  Created by Ben Reeves on 24/07/2014.
-//  Copyright (c) 2014 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "NSString+JSONParser_NSString.h"
 

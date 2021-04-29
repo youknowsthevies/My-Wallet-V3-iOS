@@ -1,10 +1,4 @@
-//
-//  NewSwapAnnouncement.swift
-//  Blockchain
-//
-//  Created by Paulo on 08/01/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import DIKit

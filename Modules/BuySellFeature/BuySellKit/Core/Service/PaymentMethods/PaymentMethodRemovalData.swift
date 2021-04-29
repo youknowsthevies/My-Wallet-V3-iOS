@@ -1,10 +1,4 @@
-//
-//  PaymentMethodRemovalData.swift
-//  BuySellKit
-//
-//  Created by Dimitrios Chatzieleftheriou on 23/02/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 

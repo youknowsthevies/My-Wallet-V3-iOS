@@ -1,10 +1,4 @@
-//
-//  KYCCountrySelectionControllerTests.swift
-//  BlockchainTests
-//
-//  Created by Maurice A. on 7/25/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import KYCUIKit
 import PlatformKit

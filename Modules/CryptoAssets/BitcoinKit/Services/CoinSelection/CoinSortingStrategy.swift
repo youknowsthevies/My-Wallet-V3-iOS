@@ -1,10 +1,4 @@
-//
-//  CoinSortingStrategy.swift
-//  BitcoinKit
-//
-//  Created by Jack on 28/08/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 protocol CoinSortingStrategy {
     func sort(coins: [UnspentOutput]) -> [UnspentOutput]

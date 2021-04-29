@@ -1,10 +1,4 @@
-//
-//  AVCaptureDeviceInput.swift
-//  PlatformUIKit
-//
-//  Created by Chris Arriola on 5/2/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AVKit
 import PlatformKit

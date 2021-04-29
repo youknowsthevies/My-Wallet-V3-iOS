@@ -1,10 +1,4 @@
-//
-//  BitpayPaymentRequest.swift
-//  Blockchain
-//
-//  Created by Will Hay on 8/6/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

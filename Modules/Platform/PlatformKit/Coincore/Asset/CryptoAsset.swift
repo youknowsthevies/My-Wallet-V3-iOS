@@ -1,10 +1,4 @@
-//
-//  CryptoAsset.swift
-//  PlatformKit
-//
-//  Created by Paulo on 29/03/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
 import RxSwift

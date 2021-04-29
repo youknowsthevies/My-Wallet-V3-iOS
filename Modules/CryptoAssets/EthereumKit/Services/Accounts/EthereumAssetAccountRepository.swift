@@ -1,10 +1,4 @@
-//
-//  EthereumAssetAccountRepository.swift
-//  EthereumKit
-//
-//  Created by Jack on 19/03/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

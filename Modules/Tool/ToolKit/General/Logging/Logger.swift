@@ -1,10 +1,4 @@
-//
-//  Logger.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 7/24/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Class in charge of logging debug/info/warning/error messages to a `LogDestination`.
 @objc public class Logger: NSObject {

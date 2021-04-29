@@ -1,10 +1,4 @@
-//
-//  KYCTierCellModel.swift
-//  Blockchain
-//
-//  Created by AlexM on 12/11/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import Localization

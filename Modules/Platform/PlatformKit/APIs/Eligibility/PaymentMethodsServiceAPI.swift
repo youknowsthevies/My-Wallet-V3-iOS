@@ -1,10 +1,4 @@
-//
-//  PaymentMethodsServiceAPI.swift
-//  PlatformKit
-//
-//  Created by Dimitrios Chatzieleftheriou on 22/01/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxSwift
 

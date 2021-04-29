@@ -1,10 +1,4 @@
-//
-//  AssetFiatCryptoBalancePairs.swift
-//  PlatformKit
-//
-//  Created by AlexM on 1/30/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// `MoneyValueBalancePairs` represents all the balances
 /// for a given asset type. There are multiple `BalanceTypes`.

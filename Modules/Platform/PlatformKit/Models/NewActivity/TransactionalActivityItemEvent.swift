@@ -1,10 +1,4 @@
-//
-//  TransactionalActivityItemEvent.swift
-//  PlatformKit
-//
-//  Created by Alex McGregor on 4/27/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// An `Event` has a `Status` indicating
 /// whether it is complete or not, a `type`,

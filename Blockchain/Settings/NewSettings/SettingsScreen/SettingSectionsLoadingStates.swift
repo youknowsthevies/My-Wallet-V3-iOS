@@ -1,10 +1,4 @@
-//
-//  SettingSectionsLoadingStates.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 7/14/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// This construct provides access to aggregated fiat-crypto-pair calculation states.
 /// Any supported asset balance should be accessible here.

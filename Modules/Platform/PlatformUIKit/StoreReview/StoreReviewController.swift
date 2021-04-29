@@ -1,10 +1,4 @@
-//
-//  StoreReviewController.swift
-//  PlatformUIKit
-//
-//  Created by Paulo on 27/01/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import StoreKit
 import ToolKit

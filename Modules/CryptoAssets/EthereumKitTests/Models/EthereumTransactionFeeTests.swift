@@ -1,10 +1,4 @@
-//
-//  EthereumTransactionFeeTests.swift
-//  EthereumKitTests
-//
-//  Created by Paulo on 29/01/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
 import PlatformKit

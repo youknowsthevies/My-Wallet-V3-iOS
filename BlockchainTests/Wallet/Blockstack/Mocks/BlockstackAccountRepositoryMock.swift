@@ -1,10 +1,4 @@
-//
-//  BlockstackAccountRepositoryMock.swift
-//  BlockchainTests
-//
-//  Created by Jack on 29/10/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
 import Foundation

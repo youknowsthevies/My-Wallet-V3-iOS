@@ -1,10 +1,4 @@
-//
-//  AnnouncementRecord.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 23/08/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// The announcement dismissal / approval record
 public struct AnnouncementRecord: Codable {

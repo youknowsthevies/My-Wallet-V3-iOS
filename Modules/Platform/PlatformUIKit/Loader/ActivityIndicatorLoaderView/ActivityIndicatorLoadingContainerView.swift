@@ -1,10 +1,4 @@
-//
-//  ActivityIndicatorLoadingContainerView.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 16/07/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// This view is responsible to show the app's loading screen (a remake of the old loader)
 final class ActivityIndicatorLoadingContainerView: UIView {

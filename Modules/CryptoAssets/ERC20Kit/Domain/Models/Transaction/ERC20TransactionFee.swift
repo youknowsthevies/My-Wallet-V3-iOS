@@ -1,10 +1,4 @@
-//
-//  ERC20TransactionFee.swift
-//  ERC20Kit
-//
-//  Created by Paulo on 31/03/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import EthereumKit
 import PlatformKit

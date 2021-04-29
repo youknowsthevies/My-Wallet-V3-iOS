@@ -1,10 +1,4 @@
-//
-//  EthereumKitTests.swift
-//  EthereumKitTests
-//
-//  Created by AlexM on 12/6/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
 import XCTest

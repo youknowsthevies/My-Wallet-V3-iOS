@@ -1,10 +1,4 @@
-//
-//  ERC20Kit.h
-//  ERC20Kit
-//
-//  Created by Jack on 12/04/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <Foundation/Foundation.h>
 

@@ -1,10 +1,4 @@
-//
-//  BCModalView.m
-//  Blockchain
-//
-//  Created by Ben Reeves on 19/07/2014.
-//  Copyright (c) 2014 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "BCModalView.h"
 #import "LocalizationConstants.h"

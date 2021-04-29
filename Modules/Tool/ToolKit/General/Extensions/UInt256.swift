@@ -1,10 +1,4 @@
-//
-//  UInt256.swift
-//  web3swift-iOS
-//
-//  Created by Dmitry on 11/10/2018.
-//  Copyright © 2018 Bankex Foundation. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 

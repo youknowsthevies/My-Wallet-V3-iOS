@@ -1,10 +1,4 @@
-//
-//  OrderQuoteRequest.swift
-//  TransactionKit
-//
-//  Created by Alex McGregor on 10/13/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 struct OrderQuoteRequest: Encodable {
     let product: Product

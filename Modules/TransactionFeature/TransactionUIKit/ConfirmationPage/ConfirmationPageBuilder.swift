@@ -1,10 +1,4 @@
-//
-//  ConfirmationPageBuilder.swift
-//  BuySellUIKit
-//
-//  Created by Dimitrios Chatzieleftheriou on 29/10/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import PlatformUIKit

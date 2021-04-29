@@ -1,10 +1,4 @@
-//
-//  Assets.h
-//  Blockchain
-//
-//  Created by kevinwu on 8/23/17.
-//  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #ifndef Assets_h
 #define Assets_h

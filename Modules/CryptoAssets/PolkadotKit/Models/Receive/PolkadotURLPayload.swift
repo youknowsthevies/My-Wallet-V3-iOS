@@ -1,10 +1,4 @@
-//
-//  PolkadotURLPayload.swift
-//  PolkadotKit
-//
-//  Created by Cosmin-Ionut Baies on 16.04.2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 

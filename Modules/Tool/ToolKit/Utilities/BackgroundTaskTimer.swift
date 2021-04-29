@@ -1,10 +1,4 @@
-//
-//  BackgroundTaskTimer.swift
-//  ToolKit
-//
-//  Created by Paulo on 18/02/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Wrappes an UIBackgroundTaskIdentifier
 public struct BackgroundTaskIdentifier {

@@ -1,10 +1,4 @@
-//
-//  SingleAccountBalanceFetching.swift
-//  PlatformKit
-//
-//  Created by Daniel Huri on 12/08/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxRelay
 import RxSwift

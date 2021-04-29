@@ -1,10 +1,4 @@
-//
-//  AddressValidator.swift
-//  Blockchain
-//
-//  Created by Maurice A. on 5/24/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import JavaScriptCore
 

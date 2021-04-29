@@ -1,10 +1,4 @@
-//
-//  WalletIntroductionLocationTests.swift
-//  BlockchainTests
-//
-//  Created by AlexM on 9/3/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
 import XCTest

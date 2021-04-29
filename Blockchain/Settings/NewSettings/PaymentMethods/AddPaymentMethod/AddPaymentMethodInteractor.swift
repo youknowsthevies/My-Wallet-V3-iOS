@@ -1,10 +1,4 @@
-//
-//  AddCardBadgeInteractor.swift
-//  Blockchain
-//
-//  Created by Daniel on 22/07/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BuySellKit
 import DIKit

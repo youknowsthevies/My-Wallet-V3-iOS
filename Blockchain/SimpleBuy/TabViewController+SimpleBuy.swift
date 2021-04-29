@@ -1,10 +1,4 @@
-//
-//  TabViewController+SimpleBuy.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 7/13/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension TabViewController {
     func showCashIdentityVerificatonController(_ controller: CashIdentityVerificationViewController) {

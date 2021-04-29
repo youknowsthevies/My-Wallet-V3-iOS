@@ -1,10 +1,4 @@
-//
-//  AnyERC20TransactionalActivityItemEventsService.swift
-//  ERC20Kit
-//
-//  Created by Alex McGregor on 5/1/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import RxSwift

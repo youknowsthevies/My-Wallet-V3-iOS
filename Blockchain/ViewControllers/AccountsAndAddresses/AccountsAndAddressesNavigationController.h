@@ -1,10 +1,4 @@
-//
-//  AccountsAndAddressesNavigationController.h
-//  Blockchain
-//
-//  Created by Kevin Wu on 1/12/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <UIKit/UIKit.h>
 #import "AssetSelectorView.h"

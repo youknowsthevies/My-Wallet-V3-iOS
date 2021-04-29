@@ -1,10 +1,4 @@
-//
-//  DeepLinkHandling.swift
-//  PlatformKit
-//
-//  Created by Paulo on 26/02/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public protocol DeepLinkHandling {
     func handle(deepLink: String)

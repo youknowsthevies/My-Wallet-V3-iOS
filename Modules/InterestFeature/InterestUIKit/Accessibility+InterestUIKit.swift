@@ -1,10 +1,4 @@
-//
-//  Accessibility+InterestUIKit.swift
-//  InterestUIKit
-//
-//  Created by Alex McGregor on 8/12/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformUIKit
 

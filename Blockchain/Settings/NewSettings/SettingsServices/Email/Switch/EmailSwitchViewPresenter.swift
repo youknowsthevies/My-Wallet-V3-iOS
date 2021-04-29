@@ -1,10 +1,4 @@
-//
-//  EmailSwitchViewPresenter.swift
-//  Blockchain
-//
-//  Created by AlexM on 1/10/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import DIKit

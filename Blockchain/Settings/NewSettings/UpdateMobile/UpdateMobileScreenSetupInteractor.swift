@@ -1,10 +1,4 @@
-//
-//  UpdateMobileScreenSetupInteractor.swift
-//  Blockchain
-//
-//  Created by AlexM on 2/21/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import PlatformUIKit

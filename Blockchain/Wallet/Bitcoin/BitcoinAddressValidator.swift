@@ -1,10 +1,4 @@
-//
-//  BitcoinAddressValidator.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 3/16/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
 import DIKit

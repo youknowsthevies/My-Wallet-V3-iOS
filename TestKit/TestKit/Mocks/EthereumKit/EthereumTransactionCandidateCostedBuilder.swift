@@ -1,10 +1,4 @@
-//
-//  EthereumTransactionCandidateCostedBuilder.swift
-//  BlockchainTests
-//
-//  Created by Paulo on 06/04/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 @testable import EthereumKit
