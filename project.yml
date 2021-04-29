@@ -718,6 +718,7 @@ targets:
     - carthage: RxRelay
     - target: DashboardKit
     - target: PlatformUIKit
+    - target: SettingsKit
     scheme:
       testTargets:
       - DashboardUIKitTests
