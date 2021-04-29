@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import RxCocoa
@@ -37,7 +38,8 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
     // MARK: - Setup
     
     init(using interactor: WalletActionScreenInteracting,
-         stateService: NonCustodialActionStateServiceAPI) {
+         stateService: NonCustodialActionStateServiceAPI,
+         featureConfigurator: FeatureConfiguring = resolve()) {
         self.interactor = interactor
         let currency = interactor.currency
         let descriptionValue: () -> Observable<String> = {
@@ -62,7 +64,10 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         guard case let .crypto(crypto) = currency else { return }
         var actionPresenters: [DefaultWalletActionCellPresenter] = []
 
-        if crypto.hasLegacySendSupport {
+        let sendP2Enabled = featureConfigurator.configuration(for: .sendP2).isEnabled
+        let canSend = crypto.hasLegacySendSupport || (crypto.hasNonCustodialSupport && sendP2Enabled)
+
+        if canSend {
             actionPresenters.append(
                 .init(currencyType: currency, action: .send)
             )
@@ -80,7 +85,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             )
         }
         
-        if crypto.hasNonCustodialActivitySupport {
+        if crypto.hasNonCustodialSupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .activity)
             )

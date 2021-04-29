@@ -10,7 +10,7 @@ final class DashboardDetailsScreenInteractor {
     // MARK: - Public Properties
     
     var nonCustodialActivitySupported: Observable<Bool> {
-        Observable.just(currency.hasNonCustodialActivitySupport)
+        Observable.just(currency.hasNonCustodialSupport)
     }
     
     var custodialSavingsFunded: Observable<Bool> {

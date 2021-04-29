@@ -27,10 +27,11 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { isFunded -> AvailableActions in
+        Single
+            .zip(isFunded, featureFetcher.fetchBool(for: .sendP2))
+            .map { isFunded, sendP2 -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive]
-                if Token.legacySendSupport {
+                if Token.legacySendSupport || sendP2 {
                     base.insert(.send)
                 }
                 if Token.nonCustodialTransactionSupport.contains(.swap), isFunded {
@@ -46,14 +47,17 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
 
     private let balanceFetching: SingleAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
+    private let featureFetcher: FeatureFetching
     
     init(id: String,
          balanceProviding: BalanceProviding = resolve(),
-         exchangeProviding: ExchangeProviding = resolve()) {
+         exchangeProviding: ExchangeProviding = resolve(),
+         featureFetcher: FeatureFetching = resolve()) {
         self.id = id
         self.label = Token.assetType.defaultWalletName
         self.exchangeService = exchangeProviding[Token.assetType]
         self.balanceFetching = balanceProviding[Token.assetType.currency].wallet
+        self.featureFetcher = featureFetcher
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -62,7 +66,11 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .send:
-            return .just(Token.legacySendSupport)
+            return featureFetcher
+                .fetchBool(for: .sendP2)
+                .map { sendP2 -> Bool in
+                    sendP2 || Token.legacySendSupport
+                }
         case .deposit,
              .sell,
              .withdraw:

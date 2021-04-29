@@ -107,9 +107,9 @@ extension CryptoCurrency {
         }
     }
 
-    /// CryptoCurrency is supported in Activity
+    /// CryptoCurrency has non custodial support in the App.
     /// Used whenever we don't have access to the new Account architecture.
-    public var hasNonCustodialActivitySupport: Bool {
+    public var hasNonCustodialSupport: Bool {
         switch self {
         case .algorand,
              .polkadot:
