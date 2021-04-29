@@ -7,6 +7,8 @@
 #import "Blockchain-Swift.h"
 #import "NSNumberFormatter+Currencies.h"
 
+@import SettingsKit;
+
 #define DICTIONARY_KEY_ACCOUNTS @"accounts"
 #define DICTIONARY_KEY_ACCOUNT_LABELS @"accountLabels"
 #define ROW_HEIGHT 68

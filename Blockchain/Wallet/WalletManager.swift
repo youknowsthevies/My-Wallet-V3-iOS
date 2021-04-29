@@ -6,6 +6,7 @@ import JavaScriptCore
 import PlatformKit
 import RxCocoa
 import RxSwift
+import SettingsKit
 import ToolKit
 import WalletPayloadKit
 

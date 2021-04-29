@@ -5,6 +5,7 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import SettingsKit
 
 class CloudBackupSwitchViewInteractor: SwitchViewInteracting {
 

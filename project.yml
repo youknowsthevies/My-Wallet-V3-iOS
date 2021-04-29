@@ -79,6 +79,10 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: BlockchainTests
         randomExecutionOrder: true
+      - name: SettingsKitTests
+        randomExecutionOrder: true
+      - name: SettingsUIKitTests
+        randomExecutionOrder: true
 schemes:
   Blockchain:
     templateAttributes:
@@ -478,6 +482,8 @@ targets:
     - target: KYCKit
     - target: KYCUIKit
     - target: DebugUIKit
+    - target: SettingsUIKit
+    - target: SettingsKit
     - target: SharedPackagesKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
@@ -1123,6 +1129,58 @@ targets:
       featureName: CryptoAssets
     templates:
     - ModuleTests
+  SettingsKit:
+    scheme:
+      testTargets:
+        - SettingsKitTests
+    dependencies:
+    - target: ToolKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: CommonCryptoKit
+    - target: NetworkKit
+    - target: WalletPayloadKit
+    - target: KYCKit
+    - target: BuySellKit
+    - carthage: RxRelay
+    - carthage: RxCocoa
+    templateAttributes:
+      featureName: SettingsFeature
+    templates:
+    - Module
+  SettingsKitTests:
+    dependencies:
+      - target: SettingsKit
+    templates:
+      - ModuleTests
+    templateAttributes:
+      featureName: SettingsFeature
+  SettingsUIKit:
+    dependencies:
+      - target: BuySellKit
+      - target: KYCKit
+      - target: KYCUIKit
+      - target: ToolKit
+      - target: PlatformKit
+      - target: PlatformUIKit
+      - target: Localization
+      - target: SettingsKit
+      - carthage: RxRelay
+      - carthage: RxCocoa
+    scheme:
+      testTargets:
+        - SettingsUIKitTests
+    templates:
+      - Module
+    templateAttributes:
+      featureName: SettingsFeature
+  SettingsUIKitTests:
+    dependencies:
+      - target: SettingsUIKit
+    templates:
+      - ModuleTests
+    templateAttributes:
+      featureName: SettingsFeature
   StellarKit:
     dependencies:
     - target: PlatformKit

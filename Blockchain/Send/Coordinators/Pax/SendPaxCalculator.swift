@@ -8,6 +8,7 @@ import Foundation
 import PlatformKit
 import RxCocoa
 import RxSwift
+import SettingsKit
 import ToolKit
 
 enum SendMoniesEventPublic {

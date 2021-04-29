@@ -8,6 +8,7 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import SettingsKit
 import ToolKit
 import WalletPayloadKit
 
@@ -42,7 +43,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private var pinRouter: PinRouter!
     
     private let appSettings: BlockchainSettings.App
-    private let onboardingSettings: BlockchainSettings.Onboarding
+    private let onboardingSettings: OnboardingSettings
     private let wallet: Wallet
     private let remoteNotificationTokenSender: RemoteNotificationTokenSending
     private let remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
@@ -80,7 +81,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
          appSettings: BlockchainSettings.App = resolve(),
          sharedContainter: SharedContainerUserDefaults = .default,
-         onboardingSettings: BlockchainSettings.Onboarding = .shared,
+         onboardingSettings: OnboardingSettings = resolve(),
          wallet: Wallet = WalletManager.shared.wallet,
          alertPresenter: AlertViewPresenter = resolve(),
          walletManager: WalletManager = WalletManager.shared,

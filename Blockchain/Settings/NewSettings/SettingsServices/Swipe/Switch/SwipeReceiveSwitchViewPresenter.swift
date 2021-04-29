@@ -7,6 +7,7 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import SettingsKit
 import ToolKit
 
 final class SwipeReceiveSwitchViewPresenter: SwitchViewPresenting {

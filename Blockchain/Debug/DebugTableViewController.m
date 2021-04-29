@@ -3,6 +3,8 @@
 #import "DebugTableViewController.h"
 #import "Blockchain-Swift.h"
 
+@import SettingsKit;
+
 #define DICTIONARY_KEY_SERVER @"server"
 #define DICTIONARY_KEY_WEB_SOCKET @"webSocket"
 #define DICTIONARY_KEY_API @"api"

@@ -14,6 +14,7 @@ import EthereumKit
 import KYCKit
 import PlatformKit
 import PlatformUIKit
+import SettingsKit
 import StellarKit
 import ToolKit
 import TransactionKit
@@ -35,6 +36,8 @@ extension DependencyContainer {
     static var blockchain = module {
         
         factory { NavigationRouter() as NavigationRouterAPI }
+        
+        single { OnboardingSettings() }
 
         single { AuthenticationCoordinator() }
 
@@ -132,25 +135,6 @@ extension DependencyContainer {
             return app as DrawerRouting
         }
 
-        // MARK: - BlockchainSettings.App
-
-        single { BlockchainSettings.App() }
-
-        factory { () -> AppSettingsAPI in
-            let app: BlockchainSettings.App = DIKit.resolve()
-            return app as AppSettingsAPI
-        }
-
-        factory { () -> AppSettingsAuthenticating in
-            let app: BlockchainSettings.App = DIKit.resolve()
-            return app as AppSettingsAuthenticating
-        }
-
-        factory { () -> PermissionSettingsAPI in
-            let app: BlockchainSettings.App = DIKit.resolve()
-            return app
-        }
-
         // MARK: - WalletManager
 
         single { WalletManager() }
@@ -173,6 +157,29 @@ extension DependencyContainer {
         factory { () -> JSContextProviderAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager as JSContextProviderAPI
+        }
+        
+        // MARK: - BlockchainSettings.App
+        
+        single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
+        
+        factory { LegacyPasswordProvider() as LegacyPasswordProviding }
+
+        single { BlockchainSettings.App() }
+
+        factory { () -> AppSettingsAPI in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app as AppSettingsAPI
+        }
+
+        factory { () -> AppSettingsAuthenticating in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app as AppSettingsAuthenticating
+        }
+
+        factory { () -> PermissionSettingsAPI in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app
         }
 
         // MARK: - AppFeatureConfigurator

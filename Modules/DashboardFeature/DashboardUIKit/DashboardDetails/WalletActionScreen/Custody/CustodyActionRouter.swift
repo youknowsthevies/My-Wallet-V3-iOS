@@ -6,6 +6,8 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
+import SettingsKit
+import ToolKit
 
 public protocol BackupRouterAPI {
     

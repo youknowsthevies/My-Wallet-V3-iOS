@@ -4,6 +4,7 @@ import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
+import SettingsKit
 import ToolKit
 
 protocol ExchangeAccountAuthenticatorAPI {

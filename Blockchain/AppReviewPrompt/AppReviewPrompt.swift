@@ -2,6 +2,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import SettingsKit
 import ToolKit
 
 /**

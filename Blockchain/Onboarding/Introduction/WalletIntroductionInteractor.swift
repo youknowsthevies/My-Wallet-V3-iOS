@@ -2,6 +2,7 @@
 
 import Foundation
 import RxSwift
+import DIKit
 
 protocol WalletIntroductionInteracting {
     
@@ -27,10 +28,10 @@ protocol WalletIntroductionInteracting {
 class WalletIntroductionInteractor: WalletIntroductionInteracting {
     
     let screen: WalletIntroductionLocation.Screen
-    private let onboardingSettings: BlockchainSettings.Onboarding
+    private let onboardingSettings: OnboardingSettings
     private let stepperAPI: WalletIntroductionLocationSequenceAPI = WalletIntroductionLocationSequencer()
     
-    init(onboardingSettings: BlockchainSettings.Onboarding = .shared, screen: WalletIntroductionLocation.Screen) {
+    init(onboardingSettings: OnboardingSettings = resolve(), screen: WalletIntroductionLocation.Screen) {
         self.onboardingSettings = onboardingSettings
         self.screen = screen
     }

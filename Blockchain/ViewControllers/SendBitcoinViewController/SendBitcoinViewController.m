@@ -14,6 +14,7 @@
 
 @import BitcoinKit;
 @import BitcoinCashKit;
+@import SettingsKit;
 
 typedef NS_ENUM(NSUInteger, SendTransactionType) {
     SendTransactionTypeRegular = 100,

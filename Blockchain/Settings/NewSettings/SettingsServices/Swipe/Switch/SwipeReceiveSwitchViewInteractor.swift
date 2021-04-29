@@ -4,6 +4,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxRelay
+import SettingsKit
 import RxSwift
 
 class SwipeReceiveSwitchViewInteractor: SwitchViewInteracting {

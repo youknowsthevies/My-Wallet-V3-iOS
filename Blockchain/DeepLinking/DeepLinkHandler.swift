@@ -4,6 +4,7 @@ import DIKit
 import Firebase
 import KYCKit
 import PlatformKit
+import SettingsKit
 import ToolKit
 
 final class DeepLinkHandler: DeepLinkHandling {

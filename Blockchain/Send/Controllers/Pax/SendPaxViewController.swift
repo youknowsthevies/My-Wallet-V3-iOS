@@ -10,6 +10,7 @@ import PlatformUIKit
 import RxCocoa
 import RxSwift
 import SafariServices
+import SettingsKit
 import ToolKit
 
 protocol SendPaxViewControllerDelegate: class {

@@ -8,6 +8,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import SettingsKit
 import ToolKit
 
 // A `Presentation` event that is built from a `WalletIntroductionEventType`
@@ -44,11 +45,11 @@ final class WalletIntroductionPresenter: NSObject {
     private let interactor: WalletIntroductionInteractor
     private let recorder: AnalyticsEventRecording
     private let screen: WalletIntroductionLocation.Screen
-    private let onboardingSettings: BlockchainSettings.Onboarding
+    private let onboardingSettings: OnboardingSettings
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let disposeBag = DisposeBag()
 
-    init(onboardingSettings: BlockchainSettings.Onboarding = .shared,
+    init(onboardingSettings: OnboardingSettings = resolve(),
          screen: WalletIntroductionLocation.Screen,
          recorder: AnalyticsEventRecording = resolve()) {
         self.onboardingSettings = onboardingSettings
