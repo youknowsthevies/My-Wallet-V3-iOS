@@ -1,10 +1,4 @@
-//
-//  LockboxViewController.swift
-//  Blockchain
-//
-//  Created by Maurice A. on 10/10/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import Localization

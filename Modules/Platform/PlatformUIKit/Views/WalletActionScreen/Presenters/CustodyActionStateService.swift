@@ -1,10 +1,4 @@
-//
-//  CustodySendStateService.swift
-//  Blockchain
-//
-//  Created by AlexM on 2/6/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

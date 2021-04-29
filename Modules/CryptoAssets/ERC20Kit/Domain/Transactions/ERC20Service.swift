@@ -1,10 +1,4 @@
-//
-//  ERC20Service.swift
-//  ERC20Kit
-//
-//  Created by Jack on 19/05/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 import DIKit

@@ -1,10 +1,4 @@
-//
-//  AddressValidatorTests.swift
-//  BlockchainTests
-//
-//  Created by Maurice A. on 5/29/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import XCTest
 

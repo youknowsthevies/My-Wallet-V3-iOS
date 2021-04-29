@@ -1,10 +1,4 @@
-//
-//  WalletService.swift
-//  PlatformKit
-//
-//  Created by AlexM on 8/7/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import NetworkKit

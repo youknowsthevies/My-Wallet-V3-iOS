@@ -1,10 +1,4 @@
-//
-//  EmailVerificationService.swift
-//  PlatformKit
-//
-//  Created by Daniel Huri on 23/12/2019.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import RxRelay

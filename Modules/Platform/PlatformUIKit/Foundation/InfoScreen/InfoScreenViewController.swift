@@ -1,10 +1,4 @@
-//
-//  InfoScreenViewController.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 07/11/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class InfoScreenViewController: BaseScreenViewController {
 

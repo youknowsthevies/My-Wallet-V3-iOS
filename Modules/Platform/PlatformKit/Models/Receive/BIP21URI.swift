@@ -1,10 +1,4 @@
-//
-//  BIP21URI.swift
-//  PlatformKit
-//
-//  Created by AlexM on 12/10/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

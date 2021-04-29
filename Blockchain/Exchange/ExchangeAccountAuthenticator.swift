@@ -1,10 +1,4 @@
-//
-//  ExchangeAccountAuthenticator.swift
-//  Blockchain
-//
-//  Created by AlexM on 7/15/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import NetworkKit

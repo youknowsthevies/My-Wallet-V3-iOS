@@ -1,10 +1,4 @@
-//
-//  NumberFormatter+AssetsTests.swift
-//  BlockchainTests
-//
-//  Created by kevinwu on 5/2/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
 import XCTest

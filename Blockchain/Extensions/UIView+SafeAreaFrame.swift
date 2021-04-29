@@ -1,10 +1,4 @@
-//
-//  UIView+SafeAreaFrame.swift
-//  Blockchain
-//
-//  Created by Maurice A. on 6/21/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

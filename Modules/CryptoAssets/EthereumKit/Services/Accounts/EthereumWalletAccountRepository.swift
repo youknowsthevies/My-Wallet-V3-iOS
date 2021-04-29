@@ -1,10 +1,4 @@
-//
-//  EthereumWalletAccountRepository.swift
-//  EthereumKit
-//
-//  Created by Jack Pooley on 20/11/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

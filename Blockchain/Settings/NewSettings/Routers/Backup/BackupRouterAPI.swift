@@ -1,10 +1,4 @@
-//
-//  BackupRouterAPI.swift
-//  Blockchain
-//
-//  Created by AlexM on 2/9/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxRelay
 import RxSwift

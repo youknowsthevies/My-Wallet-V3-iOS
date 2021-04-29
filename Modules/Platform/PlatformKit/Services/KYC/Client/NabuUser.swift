@@ -1,10 +1,4 @@
-//
-//  NabuUser.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 8/10/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct NabuUser: Decodable {
     

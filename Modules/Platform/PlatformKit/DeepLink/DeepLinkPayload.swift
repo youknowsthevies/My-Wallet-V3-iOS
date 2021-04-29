@@ -1,10 +1,4 @@
-//
-//  DeepLinkPayload.swift
-//  PlatformKit
-//
-//  Created by Fred Cheng on 11/21/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct DeepLinkPayload {
     public let route: DeepLinkRoute

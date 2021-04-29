@@ -1,10 +1,4 @@
-//
-//  AsyncBlockOperationTests.swift
-//  BlockchainTests
-//
-//  Created by Alex McGregor on 8/22/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ToolKit
 import XCTest

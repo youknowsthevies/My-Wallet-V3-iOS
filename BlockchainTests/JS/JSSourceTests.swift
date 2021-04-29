@@ -1,10 +1,4 @@
-//
-//  JSSourceTests.swift
-//  BlockchainTests
-//
-//  Created by Paulo on 15/04/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Blockchain
 import XCTest

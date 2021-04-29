@@ -1,10 +1,4 @@
-//
-//  Pin.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 4/26/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Model for a user's 4-digit pin
 public struct Pin {

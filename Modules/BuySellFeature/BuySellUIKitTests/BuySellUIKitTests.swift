@@ -1,10 +1,4 @@
-//
-//  BuySellUIKitTests.swift
-//  BuySellUIKitTests
-//
-//  Created by Daniel Huri on 03/06/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BuySellUIKit
 import XCTest

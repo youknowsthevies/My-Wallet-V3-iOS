@@ -1,10 +1,4 @@
-//
-//  CryptoTargetQRCodeParser.swift
-//  PlatformKit
-//
-//  Created by Alex McGregor on 4/9/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import PlatformKit

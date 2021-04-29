@@ -1,10 +1,4 @@
-//
-//  ERC20HistoricalTransactionService.swift
-//  ERC20Kit
-//
-//  Created by AlexM on 5/16/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import EthereumKit

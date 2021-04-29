@@ -1,10 +1,4 @@
-//
-//  TransactionFee.swift
-//  PlatformKit
-//
-//  Created by AlexM on 3/1/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 import Foundation

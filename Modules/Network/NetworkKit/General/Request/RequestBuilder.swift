@@ -1,10 +1,4 @@
-//
-//  RequestBuilder.swift
-//  PlatformKit
-//
-//  Created by Jack on 20/09/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 

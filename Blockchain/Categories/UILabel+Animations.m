@@ -1,10 +1,4 @@
-//
-//  UILabel+Animations.m
-//  Blockchain
-//
-//  Created by kevinwu on 9/1/17.
-//  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "UILabel+Animations.h"
 

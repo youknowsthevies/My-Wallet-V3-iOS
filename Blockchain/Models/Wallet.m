@@ -1,11 +1,5 @@
 
-//
-//  Wallet.m
-//  Blockchain
-//
-//  Created by Ben Reeves on 16/03/2012.`
-//  Copyright (c) 2012 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @import CommonCryptoKit;
 @import WalletPayloadKit;

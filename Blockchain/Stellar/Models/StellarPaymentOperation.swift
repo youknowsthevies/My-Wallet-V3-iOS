@@ -1,10 +1,4 @@
-//
-//  StellarPaymentOperation.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 10/25/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 import StellarKit

@@ -1,10 +1,4 @@
-//
-//  TransactionAction.swift
-//  TransactionUIKit
-//
-//  Created by Paulo on 19/11/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import ToolKit

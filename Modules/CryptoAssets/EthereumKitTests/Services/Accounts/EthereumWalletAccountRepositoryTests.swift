@@ -1,10 +1,4 @@
-//
-//  EthereumWalletAccountRepositoryTests.swift
-//  EthereumKitTests
-//
-//  Created by Jack on 05/04/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
 @testable import PlatformKit

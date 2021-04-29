@@ -1,10 +1,4 @@
-//
-//  KYCCountrySelectionInteractor.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 9/14/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
 import DIKit

@@ -1,10 +1,4 @@
-//
-//  PriceQuoteAtTime.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 10/22/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct PriceQuoteAtTime: Equatable {
     

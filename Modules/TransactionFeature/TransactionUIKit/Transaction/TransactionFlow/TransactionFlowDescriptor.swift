@@ -1,10 +1,4 @@
-//
-//  TransactionFlowDescriptor.swift
-//  TransactionUIKit
-//
-//  Created by Alex McGregor on 11/13/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
 import PlatformKit

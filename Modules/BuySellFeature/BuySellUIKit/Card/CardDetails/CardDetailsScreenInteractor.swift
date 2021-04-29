@@ -1,10 +1,4 @@
-//
-//  CardDetailsScreenInteractor.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 29/04/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BuySellKit
 import DIKit

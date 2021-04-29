@@ -1,10 +1,4 @@
-//
-//  TransferAllFundsBuilder.h
-//  Blockchain
-//
-//  Created by Kevin Wu on 10/14/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import "Assets.h"

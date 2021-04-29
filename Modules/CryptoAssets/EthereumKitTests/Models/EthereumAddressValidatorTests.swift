@@ -1,10 +1,4 @@
-//
-//  EthereumAddressValidatorTests.swift
-//  EthereumKitTests
-//
-//  Created by Paulo on 08/02/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import EthereumKit
 import XCTest

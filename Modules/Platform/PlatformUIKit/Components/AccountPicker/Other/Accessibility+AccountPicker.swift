@@ -1,10 +1,4 @@
-//
-//  Accessibility+AccountPicker.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 10/6/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension Accessibility.Identifier {
     enum AccountPicker {

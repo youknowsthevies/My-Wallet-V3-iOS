@@ -1,10 +1,4 @@
-//
-//  DateFormatter+Conveniences.swift
-//  PlatformKit
-//
-//  Created by AlexM on 5/20/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

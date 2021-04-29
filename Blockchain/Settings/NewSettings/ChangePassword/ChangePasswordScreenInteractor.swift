@@ -1,10 +1,4 @@
-//
-//  ChangePasswordScreenInteractor.swift
-//  Blockchain
-//
-//  Created by AlexM on 3/11/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import RxRelay

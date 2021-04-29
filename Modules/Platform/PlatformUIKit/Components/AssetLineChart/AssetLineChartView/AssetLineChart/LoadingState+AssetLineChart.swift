@@ -1,10 +1,4 @@
-//
-//  LoadingState+AssetLineChart.swift
-//  Blockchain
-//
-//  Created by AlexM on 11/12/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Charts
 import PlatformKit

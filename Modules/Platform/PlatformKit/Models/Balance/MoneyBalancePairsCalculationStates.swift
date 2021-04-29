@@ -1,10 +1,4 @@
-//
-//  MoneyValuePairCalculationStates.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 31/10/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// This construct provides access to aggregated fiat-crypto-pair calculation states.
 /// Any supported asset balance should be accessible here.

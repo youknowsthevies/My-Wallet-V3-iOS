@@ -1,10 +1,4 @@
-//
-//  BitcoinCashActivityDetailsViewModel.swift
-//  Blockchain
-//
-//  Created by Paulo on 27/05/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinCashKit
 import Localization

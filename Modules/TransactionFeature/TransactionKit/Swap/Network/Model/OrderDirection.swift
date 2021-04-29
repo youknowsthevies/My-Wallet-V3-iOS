@@ -1,10 +1,4 @@
-//
-//  OrderDirection.swift
-//  TransactionKit
-//
-//  Created by Alex McGregor on 10/13/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public enum OrderDirection: String, Codable {
     /// From non-custodial to non-custodial

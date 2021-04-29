@@ -1,10 +1,4 @@
-//
-//  UICollectionViewCell+Conveniences.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 1/8/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import UIKit
 

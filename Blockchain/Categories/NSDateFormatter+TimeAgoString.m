@@ -1,10 +1,4 @@
-//
-//  NSDateFormatter+TimeAgoString.m
-//  Blockchain
-//
-//  Created by kevinwu on 2/10/17.
-//  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "NSDateFormatter+TimeAgoString.h"
 #import "Blockchain-Swift.h"

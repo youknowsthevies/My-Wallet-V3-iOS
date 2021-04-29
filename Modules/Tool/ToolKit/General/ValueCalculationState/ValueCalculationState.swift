@@ -1,10 +1,4 @@
-//
-//  ValueCalculationState.swift
-//  PlatformKit
-//
-//  Created by AlexM on 10/30/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A calculation state for value. Typically used to reflect an ongoing
 /// calculation of values

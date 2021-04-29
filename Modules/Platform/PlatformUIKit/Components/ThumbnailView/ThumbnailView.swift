@@ -1,10 +1,4 @@
-//
-//  ThumbnailView.swift
-//  Blockchain
-//
-//  Created by Daniel Huri on 16/03/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class ThumbnailView: UIView {
     

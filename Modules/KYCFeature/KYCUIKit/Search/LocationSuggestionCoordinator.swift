@@ -1,10 +1,4 @@
-//
-//  LocationSuggestionCoordinator.swift
-//  Blockchain
-//
-//  Created by Alex McGregor on 7/26/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 import PlatformUIKit

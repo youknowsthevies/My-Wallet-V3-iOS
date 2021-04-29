@@ -1,10 +1,4 @@
-//
-//  NabuAuthenticationExecutorTests.swift
-//  PlatformKitTests
-//
-//  Created by Jack Pooley on 03/04/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
 import CombineExt

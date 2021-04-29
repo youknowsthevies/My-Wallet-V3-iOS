@@ -1,10 +1,4 @@
-//
-//  BCFeeSelectionView.h
-//  Blockchain
-//
-//  Created by kevinwu on 5/8/17.
-//  Copyright © 2017 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <UIKit/UIKit.h>
 #import "FeeTypes.h"

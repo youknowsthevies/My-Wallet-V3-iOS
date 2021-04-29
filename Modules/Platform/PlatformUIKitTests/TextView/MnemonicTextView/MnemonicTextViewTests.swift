@@ -1,10 +1,4 @@
-//
-//  MnemonicTextViewTests.swift
-//  PlatformUIKitTests
-//
-//  Created by AlexM on 10/18/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import PlatformUIKit
 import RxBlocking

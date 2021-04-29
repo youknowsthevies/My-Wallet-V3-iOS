@@ -1,10 +1,4 @@
-//
-//  QRCodeScannerDelegateMock.swift
-//  TestKit
-//
-//  Created by Paulo on 25/02/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 @testable import PlatformUIKit

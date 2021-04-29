@@ -1,10 +1,4 @@
-//
-//  AnnouncementDisplayAction.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 19/07/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A action that needs to be taken to display an announcement to the user
 public enum AnnouncementDisplayAction: Equatable {

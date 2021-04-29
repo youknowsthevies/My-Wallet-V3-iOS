@@ -1,10 +1,4 @@
-//
-//  BounceButton.swift
-//  Blockchain
-//
-//  Created by AlexM on 9/21/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 class BounceButton: UIButton {
     

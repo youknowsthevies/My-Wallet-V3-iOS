@@ -1,10 +1,4 @@
-//
-//  UserDefaults+Conveniences.swift
-//  ToolKit
-//
-//  Created by Alex McGregor on 7/13/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public extension UserDefaults {
     func set<T: Encodable>(codable: T?, forKey key: String) {

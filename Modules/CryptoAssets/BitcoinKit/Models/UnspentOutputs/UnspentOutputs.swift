@@ -1,10 +1,4 @@
-//
-//  UnspentOutputs.swift
-//  BitcoinKit
-//
-//  Created by Jack on 08/09/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
 import BitcoinChainKit

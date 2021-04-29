@@ -1,10 +1,4 @@
-//
-//  Limit.swift
-//  PlatformKit
-//
-//  Created by Alex McGregor on 9/4/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct Limit: Decodable {
     public let limit: Decimal

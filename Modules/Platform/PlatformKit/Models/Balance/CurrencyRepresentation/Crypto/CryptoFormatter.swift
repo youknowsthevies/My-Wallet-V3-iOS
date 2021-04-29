@@ -1,10 +1,4 @@
-//
-//  CryptoFormatter.swift
-//  PlatformKit
-//
-//  Created by Chris Arriola on 12/5/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 

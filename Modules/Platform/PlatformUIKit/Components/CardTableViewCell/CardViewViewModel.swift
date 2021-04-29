@@ -1,10 +1,4 @@
-//
-//  CardViewViewModel.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 3/1/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct CardViewViewModel {
     

@@ -1,10 +1,4 @@
-//
-//  PeriodicAnnouncement.swift
-//  PlatformUIKit
-//
-//  Created by Daniel Huri on 28/08/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// Rules for periodic announcement. this is useful to prevent starvation of other
 /// announcements while only one displays constantly.

@@ -1,10 +1,4 @@
-//
-//  SettingsTableHeaderView.swift
-//  Blockchain
-//
-//  Created by AlexM on 12/13/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxCocoa
 import RxSwift

@@ -1,10 +1,4 @@
-//
-//  SparklineInteracting.swift
-//  PlatformUIKit
-//
-//  Created by AlexM on 10/23/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
 import PlatformKit

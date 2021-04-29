@@ -1,10 +1,4 @@
-//
-//  CardExpiryTextFieldViewModelTests.swift
-//  PlatformUIKitTests
-//
-//  Created by Daniel Huri on 25/03/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import PlatformUIKit
 import RxBlocking

@@ -1,10 +1,4 @@
-//
-//  ERC20Asset.swift
-//  ERC20Kit
-//
-//  Created by Paulo on 07/08/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
 import EthereumKit

@@ -1,10 +1,4 @@
-//
-//  MockKYCCountrySelectionView.swift
-//  BlockchainTests
-//
-//  Created by Chris Arriola on 8/13/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import KYCUIKit
 import PlatformKit

@@ -1,10 +1,4 @@
-//
-//  KYCPendingInteractor.swift
-//  Blockchain
-//
-//  Created by Paulo on 22/01/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BuySellKit
 import DIKit

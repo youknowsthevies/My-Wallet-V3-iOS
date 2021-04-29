@@ -1,10 +1,4 @@
-//
-//  BlockstackAddressDeriverTests.swift
-//  BitcoinKitTests
-//
-//  Created by Jack on 28/10/2019.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinKit
 import HDWalletKit

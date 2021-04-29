@@ -1,10 +1,4 @@
-//
-//  BitpayAnalyticsEvent.swift
-//  Blockchain
-//
-//  Created by Chris Arriola on 9/3/19.
-//  Copyright © 2019 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
 import PlatformKit

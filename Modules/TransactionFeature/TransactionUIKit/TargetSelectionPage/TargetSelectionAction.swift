@@ -1,10 +1,4 @@
-//
-//  TargetSelectionAction.swift
-//  TransactionUIKit
-//
-//  Created by Alex McGregor on 2/24/21.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
 

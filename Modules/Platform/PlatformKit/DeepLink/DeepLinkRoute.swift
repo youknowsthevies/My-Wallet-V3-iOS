@@ -1,10 +1,4 @@
-//
-//  DeepLinkRoute.swift
-//  PlatformKit
-//
-//  Created by Chris Arriola on 10/29/18.
-//  Copyright © 2018 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public enum DeepLinkRoute: CaseIterable {
     case xlmAirdop

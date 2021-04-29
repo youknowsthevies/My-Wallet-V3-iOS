@@ -1,10 +1,4 @@
-//
-//  TransferAllFundsViewController.m
-//  Blockchain
-//
-//  Created by Kevin Wu on 10/12/16.
-//  Copyright © 2016 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "TransferAllFundsViewController.h"
 #import "TransferAllFundsBuilder.h"

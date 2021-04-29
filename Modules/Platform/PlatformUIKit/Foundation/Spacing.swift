@@ -1,10 +1,4 @@
-//
-//  Spacing.swift
-//  PlatformUIKit
-//
-//  Created by Alex McGregor on 6/24/20.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct LayoutUnit {
     private static let unit: CGFloat = 8.0

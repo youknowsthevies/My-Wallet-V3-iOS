@@ -1,10 +1,4 @@
-//
-//  DebugTableViewController.m
-//  Blockchain
-//
-//  Created by Kevin Wu on 12/29/15.
-//  Copyright © 2015 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import "DebugTableViewController.h"
 #import "Blockchain-Swift.h"
