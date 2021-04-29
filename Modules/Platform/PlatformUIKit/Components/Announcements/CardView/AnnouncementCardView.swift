@@ -106,6 +106,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         NSLayoutConstraint.activate([
             button.heightAnchor.constraint(equalToConstant: 50)
             ])
+        button.accessibility = .init(id: .value(Accessibility.Identifier.Dashboard.Announcement.confirmButton))
         buttonsStackView.addArrangedSubview(button)
     }
     
