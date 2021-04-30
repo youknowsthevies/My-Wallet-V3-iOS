@@ -5,7 +5,8 @@ import UIKit
 extension UIColor {
     
     fileprivate convenience init(paletteColor: PaletteColor) {
-        self.init(named: paletteColor.rawValue.capitalized, in: .current, compatibleWith: .current)!
+        let colorName = paletteColor.rawValue.capitalizeFirstLetter
+        self.init(named: colorName, in: .current, compatibleWith: nil)!
     }
 }
 

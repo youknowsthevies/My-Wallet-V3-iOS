@@ -3,7 +3,8 @@ import SwiftUI
 extension Color {
     
     fileprivate init(paletteColor: PaletteColor) {
-        self.init(paletteColor.rawValue.capitalized, bundle: .current)
+        let colorName = paletteColor.rawValue.capitalizeFirstLetter
+        self.init(colorName, bundle: .current)
     }
     
     // MARK: Borders
