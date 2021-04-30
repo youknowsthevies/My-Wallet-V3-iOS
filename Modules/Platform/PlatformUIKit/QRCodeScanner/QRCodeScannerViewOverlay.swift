@@ -30,7 +30,7 @@ final class QRCodeScannerViewOverlay: UIView {
 
         viewModel.scanSuccess
             .subscribe(onNext: { [weak self] isSuccess in
-                self?.setScanningBorder(color: isSuccess ? .green500 : .white)
+                self?.setScanningBorder(color: isSuccess ? .successBorder : .white)
             })
             .disposed(by: disposeBag)
     }

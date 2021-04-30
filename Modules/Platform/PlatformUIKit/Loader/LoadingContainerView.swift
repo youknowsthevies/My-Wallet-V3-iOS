@@ -34,7 +34,7 @@ final class LoadingContainerView: UIView {
     
     init() {
         super.init(frame: UIScreen.main.bounds)
-        backgroundColor = .greyFade800
+        backgroundColor = .greyFadeBackground
         isUserInteractionEnabled = true
         
         for view in [loadingBackgroundView, loadingView] {

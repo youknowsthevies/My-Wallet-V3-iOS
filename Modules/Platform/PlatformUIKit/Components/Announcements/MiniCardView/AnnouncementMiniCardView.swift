@@ -79,7 +79,7 @@ public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConform
         descriptionLabel.textColor = .descriptionText
         
         disclosureIndicatorImageView.image = #imageLiteral(resourceName: "chevron_right").withRenderingMode(.alwaysTemplate)
-        disclosureIndicatorImageView.tintColor = .grey800
+        disclosureIndicatorImageView.tintColor = .disclosureIndicator
         
         bottomSeparatorView.backgroundColor = .mediumBorder
         

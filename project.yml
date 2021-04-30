@@ -1065,13 +1065,14 @@ targets:
     - carthage: PhoneNumberKit
     - carthage: RIBs
     - carthage: RxCocoa
-    - carthage: RxRelay
     - carthage: RxDataSources
+    - carthage: RxRelay
     - carthage: Zxcvbn
+    - target: AnalyticsKit
     - target: Localization
     - target: PlatformKit
     - target: ToolKit
-    - target: AnalyticsKit
+    - target: UIComponentsKit
     scheme:
       testTargets:
       - PlatformUIKitTests
@@ -1282,6 +1283,11 @@ targets:
       featureName: TransactionFeature
     templates:
     - ModuleTests
+  UIComponentsKit:
+    templateAttributes:
+      featureName: UIComponents
+    templates:
+    - Module
   WalletPayloadKit:
     dependencies:
     - carthage: CryptoSwift
