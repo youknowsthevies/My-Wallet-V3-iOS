@@ -52,20 +52,25 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     func assertInputsValid() {
         // We don't assert anything for On Chain Swap.
     }
-
+    
     private func startOnChainEngine(pricedQuote: PricedQuote) -> Completable {
-        receiveAddressFactory
-            .makeExternalAssetAddress(
-                asset: sourceAsset,
-                address: pricedQuote.sampleDepositAddress,
-                label: pricedQuote.sampleDepositAddress,
-                onTxCompleted: { _ in .empty() }
+        let value = receiveAddressFactory.makeExternalAssetAddress(
+            asset: sourceAsset,
+            address: pricedQuote.sampleDepositAddress,
+            label: pricedQuote.sampleDepositAddress,
+            onTxCompleted: { _ in .empty() }
+        )
+        switch value {
+        case .failure(let error):
+            return .just(event: .error(error))
+        case .success(let receiveAddress):
+            onChainEngine.start(
+                sourceAccount: sourceAccount,
+                transactionTarget: receiveAddress,
+                askForRefreshConfirmation: { _ in .empty() }
             )
-            .single
-            .do(onSuccess: { [weak self] transactionTarget in
-                self?.startOnChainEngine(with: transactionTarget)
-            })
-            .asCompletable()
+            return .just(event: .completed)
+        }
     }
 
     private func startOnChainEngine(with transactionTarget: CryptoReceiveAddress) {
