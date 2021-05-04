@@ -1051,6 +1051,7 @@ targets:
     - target: NetworkKit
     - target: ToolKit
     - target: WalletPayloadKit
+    - target: SharedPackagesKit
     scheme:
       testTargets:
       - PlatformKitTests
