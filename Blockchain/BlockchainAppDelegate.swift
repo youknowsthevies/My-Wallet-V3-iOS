@@ -25,8 +25,8 @@ import ToolKit
 import TransactionUIKit
 import WalletPayloadKit
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+@available(*, deprecated, message: "This is being replaced by newer AppDelegate @see App.swift file")
+class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
@@ -429,7 +429,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 // MARK: - Remote Notification Registration
 
-extension AppDelegate {
+extension BlockchainAppDelegate {
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
         remoteNotificationTokenReceiver.appDidFailToRegisterForRemoteNotifications(with: error)
@@ -437,11 +437,5 @@ extension AppDelegate {
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         remoteNotificationTokenReceiver.appDidRegisterForRemoteNotifications(with: deviceToken)
-    }
-}
-
-extension UIDevice: DeviceInfo {
-    public var uuidString: String {
-        UIDevice.current.identifierForVendor?.uuidString ?? ""
     }
 }
