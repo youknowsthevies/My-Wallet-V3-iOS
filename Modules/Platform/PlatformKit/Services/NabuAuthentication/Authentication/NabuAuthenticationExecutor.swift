@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import CombineExt
 import DIKit
 import NetworkKit
 import ToolKit
@@ -145,7 +146,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
                     .map { Token(sessionToken: $0, offlineToken: offlineToken) }
                     .eraseToAnyPublisher()
             }
-            .share()
+            .share(replay: 1)
             .eraseToAnyPublisher()
     }
     
@@ -223,7 +224,8 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
     }
     
     private func clearAccessToken() -> AnyPublisher<Void, Never> {
-        store.invalidate().mapError()
+        store.invalidate()
+            .mapError()
             .eraseToAnyPublisher()
     }
     
