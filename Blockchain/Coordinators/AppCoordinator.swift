@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import BuySellUIKit
 import DIKit
 import InterestKit
 import InterestUIKit
@@ -43,8 +42,8 @@ import WalletPayloadKit
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
-    private var buyRouter: BuySellUIKit.RouterAPI!
-    private var sellRouter: BuySellUIKit.SellRouter!
+    private var buyRouter: PlatformUIKit.RouterAPI!
+    private var sellRouter: PlatformUIKit.SellRouter!
     private var backupRouter: BackupRouterAPI?
     
     // MARK: - UIViewController Properties
@@ -436,10 +435,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     /// Starts Buy Crypto flow.
     func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
-        let builder = BuySellUIKit.Builder(
-            stateService: BuySellUIKit.StateService()
+        let builder = PlatformUIKit.Builder(
+            stateService: PlatformUIKit.StateService()
         )
-        buyRouter = BuySellUIKit.Router(builder: builder, currency: currency)
+        buyRouter = PlatformUIKit.Router(builder: builder, currency: currency)
         buyRouter.start()
     }
     
@@ -450,37 +449,37 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             accountSelectionService: accountSelectionService,
             balanceProvider: DataProvider.default.balance
         )
-        let builder = BuySellUIKit.SellBuilder(
+        let builder = PlatformUIKit.SellBuilder(
             accountSelectionService: accountSelectionService,
             routerInteractor: interactor,
             analyticsRecorder: resolve(),
             balanceProvider: DataProvider.default.balance
         )
-        sellRouter = BuySellUIKit.SellRouter(builder: builder)
+        sellRouter = PlatformUIKit.SellRouter(builder: builder)
         sellRouter.load()
     }
     
     func startSimpleBuyAtLogin() {
-        let stateService = BuySellUIKit.StateService()
+        let stateService = PlatformUIKit.StateService()
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }
         
-        let builder = BuySellUIKit.Builder(
+        let builder = PlatformUIKit.Builder(
             stateService: stateService
         )
         
-        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter = PlatformUIKit.Router(builder: builder)
         buyRouter.start()
     }
     
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        let stateService = BuySellUIKit.StateService()
-        let builder = BuySellUIKit.Builder(
+        let stateService = PlatformUIKit.StateService()
+        let builder = PlatformUIKit.Builder(
             stateService: stateService
         )
         
-        buyRouter = BuySellUIKit.Router(builder: builder)
+        buyRouter = PlatformUIKit.Router(builder: builder)
         buyRouter.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
             for: fiatCurrency,

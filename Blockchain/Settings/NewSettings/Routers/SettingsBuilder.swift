@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BuySellKit
 import DIKit
+import PlatformKit
 
 protocol SettingsBuilding: AnyObject {
     func removeCardPaymentMethodViewController(cardData: CardData) -> UIViewController

@@ -4,9 +4,9 @@
 //
 
 import AnalyticsKit
-import BuySellUIKit
 import DIKit
 import PlatformKit
+import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit

@@ -10,7 +10,7 @@ public enum AccountPickerListenerBridge {
     case listener(AccountPickerListener)
 }
 
-public protocol AccountPickerBuildable: Buildable {
+public protocol AccountPickerBuildable: RIBs.Buildable {
     func build(listener: AccountPickerListenerBridge,
                navigationModel: ScreenNavigationModel,
                headerModel: AccountPickerHeaderType) -> AccountPickerRouting

@@ -3,7 +3,6 @@
 import AlgorandKit
 import BitcoinCashKit
 import BitcoinKit
-import BuySellKit
 import DIKit
 import ERC20Kit
 import EthereumKit
@@ -177,7 +176,7 @@ extension CryptoEventService {
     private static func buildCryptoItemEventService(
         currency: CryptoCurrency,
         eventsService: TransactionalActivityItemEventServiceAPI,
-        orderService: BuySellKit.OrdersServiceAPI = resolve(),
+        orderService: OrdersServiceAPI = resolve(),
         swapActivity: SwapActivityServiceAPI = resolve()
     ) -> CryptoItemEventServiceAPI {
         let fetcher = SwapActivityItemEventsService(currency: currency, service: swapActivity)

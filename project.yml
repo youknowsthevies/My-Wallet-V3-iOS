@@ -66,10 +66,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: HDWalletKitTests
         randomExecutionOrder: true
-      - name: BuySellKitTests
-        randomExecutionOrder: true
-      - name: BuySellUIKitTests
-        randomExecutionOrder: true
       - name: TransactionKitTests
         randomExecutionOrder: true
       - name: TransactionUIKitTests
@@ -216,7 +212,6 @@ targets:
     - target: AlgorandKit
     - target: BitcoinCashKit
     - target: BitcoinKit
-    - target: BuySellKit
     - target: ERC20Kit
     - target: EthereumKit
     - target: NetworkKit
@@ -255,7 +250,6 @@ targets:
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
     - target: ActivityKit
-    - target: BuySellKit
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
@@ -462,8 +456,6 @@ targets:
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
-    - target: BuySellKit
-    - target: BuySellUIKit
     - target: InterestKit
     - target: InterestUIKit
     - target: TransactionKit
@@ -637,73 +629,6 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit
     type: bundle.unit-test
-  BuySellKit:
-    dependencies:
-    - target: CommonCryptoKit
-    - target: Localization
-    - target: NetworkKit
-    - target: PlatformKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - BuySellKitTests
-    templateAttributes:
-      featureName: BuySellFeature
-    templates:
-    - Module
-  BuySellKitTests:
-    dependencies:
-    - target: BuySellKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BuySellKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
-    templateAttributes:
-      featureName: BuySellFeature
-    templates:
-    - ModuleTests
-  BuySellUIKit:
-    dependencies:
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - target: BuySellKit
-    - target: CommonCryptoKit
-    - target: Localization
-    - target: NetworkKit
-    - target: PlatformKit
-    - target: PlatformUIKit
-    - target: ToolKit
-    - target: AnalyticsKit
-    scheme:
-      testTargets:
-      - BuySellUIKitTests
-    templateAttributes:
-      featureName: BuySellFeature
-    templates:
-    - Module
-  BuySellUIKitTests:
-    dependencies:
-    - target: BuySellUIKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BuySellKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformUIKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
-    templateAttributes:
-      featureName: BuySellFeature
-    templates:
-    - ModuleTests
   DashboardKit:
     scheme:
       testTargets:
@@ -1069,6 +994,8 @@ targets:
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/BuySellKit
     templateAttributes:
       featureName: Platform
     templates:
@@ -1151,7 +1078,6 @@ targets:
     - target: NetworkKit
     - target: WalletPayloadKit
     - target: KYCKit
-    - target: BuySellKit
     - carthage: RxRelay
     - carthage: RxCocoa
     templateAttributes:
@@ -1167,7 +1093,6 @@ targets:
       featureName: SettingsFeature
   SettingsUIKit:
     dependencies:
-      - target: BuySellKit
       - target: KYCKit
       - target: KYCUIKit
       - target: ToolKit
@@ -1326,9 +1251,6 @@ targets:
     - target: ToolKit
     - target: TransactionKit
     - target: AnalyticsKit
-    scheme:
-      testTargets:
-      - BuySellUIKitTests
     templateAttributes:
       featureName: TransactionFeature
     templates:

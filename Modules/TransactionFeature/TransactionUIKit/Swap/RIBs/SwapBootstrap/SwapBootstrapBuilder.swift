@@ -5,7 +5,7 @@ import RIBs
 
 // MARK: - Builder
 
-protocol SwapBootstrapBuildable: Buildable {
+protocol SwapBootstrapBuildable: RIBs.Buildable {
     func build(withListener listener: SwapBootstrapListener) -> SwapBootstrapRouting
 }
 

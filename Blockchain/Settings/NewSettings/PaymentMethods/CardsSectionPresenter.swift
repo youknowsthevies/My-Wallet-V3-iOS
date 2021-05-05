@@ -1,8 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BuySellKit
-import BuySellUIKit
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
 final class CardsSectionPresenter: SettingsSectionPresenting {

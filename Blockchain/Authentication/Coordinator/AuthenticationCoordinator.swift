@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
-import BuySellKit
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -61,7 +60,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
-    private lazy var supportedPairsInteractor: BuySellKit.SupportedPairsInteractorServiceAPI = resolve()
+    private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
     @LazyInject private var coincore: Coincore
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed

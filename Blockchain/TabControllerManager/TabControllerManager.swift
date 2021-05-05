@@ -2,7 +2,6 @@
 
 import ActivityUIKit
 import AnalyticsKit
-import BuySellUIKit
 import DashboardUIKit
 import DIKit
 import NetworkKit

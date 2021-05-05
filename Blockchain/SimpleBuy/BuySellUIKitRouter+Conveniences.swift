@@ -1,14 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BuySellKit
-import BuySellUIKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
 
-extension BuySellUIKit.Router {
+extension PlatformUIKit.Router {
     
-    convenience init(builder: BuySellUIKit.Buildable, currency: CryptoCurrency = .bitcoin) {
+    convenience init(builder: PlatformUIKit.Buildable, currency: CryptoCurrency = .bitcoin) {
         self.init(
             navigationRouter: NavigationRouter(),
             builder: builder,

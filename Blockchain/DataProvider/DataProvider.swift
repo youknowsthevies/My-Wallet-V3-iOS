@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
-import BuySellKit
 import DIKit
 import ERC20Kit
 import EthereumKit

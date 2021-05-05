@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 @testable import TransactionKit
 
-final class OrderQuoteServiceMock: OrderQuoteServiceAPI {
+final class OrderQuoteServiceMock: TransactionKit.OrderQuoteServiceAPI {
     var latestQuote: Single<OrderQuoteResponse> {
         // swiftlint:disable:next force_try
         let response = try! JSONDecoder().decode(OrderQuoteResponse.self, from: btc_eth_quote_response)

@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import BuySellKit
 @testable import PlatformKit
 
 typealias AgentResponse = PlatformKit.PaymentAccount.Response.Agent

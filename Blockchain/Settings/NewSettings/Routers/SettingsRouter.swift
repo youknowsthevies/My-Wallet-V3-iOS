@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import BuySellKit
-import BuySellUIKit
 import DIKit
 import KYCKit
 import KYCUIKit

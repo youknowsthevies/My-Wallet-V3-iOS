@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BuySellKit
 import DIKit
 import PlatformKit
 import RxRelay
@@ -76,12 +75,12 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let buySellActivityRelay = BehaviorRelay<[BuySellActivityItemEvent]>(value: [])
     private let currencyType: CurrencyType
-    private let service: BuySellKit.OrdersServiceAPI
+    private let service: OrdersServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let disposeBag = DisposeBag()
 
     init(currency: CryptoCurrency,
-         service: BuySellKit.OrdersServiceAPI,
+         service: OrdersServiceAPI,
          kycTiersSerivice: KYCTiersServiceAPI = resolve()) {
         self.currencyType = .crypto(currency)
         self.service = service

@@ -4,8 +4,6 @@ import AnalyticsKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
-import BuySellKit
-import BuySellUIKit
 import DashboardUIKit
 import DebugUIKit
 import DIKit

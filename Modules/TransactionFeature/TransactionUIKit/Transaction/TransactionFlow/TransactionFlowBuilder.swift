@@ -6,7 +6,7 @@ import RIBs
 
 // MARK: - Builder
 
-protocol TransactionFlowBuildable: Buildable {
+protocol TransactionFlowBuildable: RIBs.Buildable {
     func build(withListener listener: TransactionFlowListener,
                action: AssetAction,
                sourceAccount: CryptoAccount?,
