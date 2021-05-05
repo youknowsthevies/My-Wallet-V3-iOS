@@ -315,6 +315,13 @@ targets:
       featureName: Analytics
     templates:
     - Module
+  NabuAnalyticsKit:
+    dependencies:
+    - target: NetworkKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - Module
   BitcoinCashKit:
     dependencies:
     - carthage: BigInt
