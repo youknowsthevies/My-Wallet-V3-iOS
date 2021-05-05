@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import SettingsKit
 import PlatformKit
+import SettingsKit
 
 class ExchangeDeepLinkRouter: DeepLinkRouting {
     

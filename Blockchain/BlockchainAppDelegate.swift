@@ -102,6 +102,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.kycKit;
             DependencyContainer.kycUIKit;
             DependencyContainer.blockchain;
+            DependencyContainer.settingsKit;
+            DependencyContainer.settingsUIKit;
             #if INTERNAL_BUILD
             DependencyContainer.debugUIKit;
             #endif
