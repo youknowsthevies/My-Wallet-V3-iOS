@@ -36,13 +36,13 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     weak var listener: TransactionFlowListener?
     private let transactionModel: TransactionModel
     private let action: AssetAction
-    private let sourceAccount: CryptoAccount?
+    private let sourceAccount: BlockchainAccount?
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
 
     init(transactionModel: TransactionModel,
          action: AssetAction,
-         sourceAccount: CryptoAccount?,
+         sourceAccount: BlockchainAccount?,
          target: TransactionTarget?,
          presenter: TransactionFlowPresentable,
          analyticsHook: TransactionAnalyticsHook = resolve()) {

@@ -8,7 +8,7 @@ struct TransactionState: Equatable, StateType {
 
     var action: AssetAction = .send
     var allowFiatInput: Bool = false
-    var availableSources: [CryptoAccount] = []
+    var availableSources: [BlockchainAccount] = []
     var availableTargets: [TransactionTarget] = []
     var destination: TransactionTarget?
     var destinationToFiatPair: MoneyValuePair?
@@ -19,7 +19,7 @@ struct TransactionState: Equatable, StateType {
     var passwordRequired: Bool = false
     var pendingTransaction: PendingTransaction?
     var secondPassword: String = ""
-    var source: CryptoAccount?
+    var source: BlockchainAccount?
     var sourceDestinationPair: MoneyValuePair?
     var sourceToFiatPair: MoneyValuePair?
     var step: TransactionStep = .initial {
@@ -51,11 +51,14 @@ struct TransactionState: Equatable, StateType {
     }
 
     /// The source account `CryptoCurrency`.
-    var asset: CryptoCurrency {
-        guard let source = source else {
+    var asset: CurrencyType {
+        guard let sourceAccount = source else {
             preconditionFailure("Source should have been set at this point.")
         }
-        return source.asset
+        guard let account = sourceAccount as? SingleAccount else {
+            preconditionFailure("Expected a `SingleAccount`: \(String(describing: source))")
+        }
+        return account.currencyType
     }
     
     /// The fees associated with the transaction
@@ -89,11 +92,8 @@ struct TransactionState: Equatable, StateType {
     }
 
     func moneyValueFromSource() -> Result<MoneyValue, TransactionUIKitError> {
-        guard let source = source?.currencyType else {
-            return .failure(.emptySourceAccount)
-        }
         guard let rate = sourceToFiatPair else {
-            return .success(.zero(currency: source))
+            return .success(.zero(currency: asset))
         }
         guard let currencyType = rate.base.cryptoValue?.currencyType else {
             return .failure(.unexpectedMoneyValueType(rate.base))

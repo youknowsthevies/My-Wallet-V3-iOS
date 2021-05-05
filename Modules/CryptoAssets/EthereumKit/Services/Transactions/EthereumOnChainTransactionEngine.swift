@@ -86,7 +86,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: .ethereum
+                        asset: .crypto(.ethereum)
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )

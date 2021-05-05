@@ -7,13 +7,13 @@ import TransactionKit
 enum TransactionAction: MviAction {
 
     case initialiseWithNoSourceOrTargetAccount(action: AssetAction, passwordRequired: Bool)
-    case initialiseWithSourceAccount(action: AssetAction, sourceAccount: CryptoAccount, passwordRequired: Bool)
-    case initialiseWithSourceAndPreferredTarget(action: AssetAction, sourceAccount: CryptoAccount, target: TransactionTarget, passwordRequired: Bool)
-    case initialiseWithSourceAndTargetAccount(action: AssetAction, sourceAccount: CryptoAccount, target: TransactionTarget, passwordRequired: Bool)
-    case sourceAccountSelected(CryptoAccount)
+    case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount, passwordRequired: Bool)
+    case initialiseWithSourceAndPreferredTarget(action: AssetAction, sourceAccount: BlockchainAccount, target: TransactionTarget, passwordRequired: Bool)
+    case initialiseWithSourceAndTargetAccount(action: AssetAction, sourceAccount: BlockchainAccount, target: TransactionTarget, passwordRequired: Bool)
+    case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
-    case availableSourceAccountsListUpdated([CryptoAccount])
-    case availableDestinationAccountsListUpdated([SingleAccount])
+    case availableSourceAccountsListUpdated([BlockchainAccount])
+    case availableDestinationAccountsListUpdated([BlockchainAccount])
     case updateAmount(MoneyValue) // Anytime the amount changes
     case pendingTransactionUpdated(PendingTransaction)
     case prepareTransaction // When continue button is tapped on enter amount screen
@@ -128,7 +128,8 @@ enum TransactionAction: MviAction {
         case .availableDestinationAccountsListUpdated(let targets):
             let newStep: TransactionStep = oldState.passwordRequired ? .enterPassword : .selectTarget
             var newState = oldState
-            newState.availableTargets = targets
+            // FIXME:
+            newState.availableTargets = targets as! [TransactionTarget]
             newState.step = oldState.step == .enterAmount ? .enterAmount : newStep
             return newState.withUpdatedBackstack(oldState: oldState)
         case .pendingTransactionUpdated(let pendingTransaction):

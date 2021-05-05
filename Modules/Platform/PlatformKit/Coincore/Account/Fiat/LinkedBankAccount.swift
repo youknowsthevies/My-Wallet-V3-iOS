@@ -47,7 +47,6 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
     
     public let fiatCurrency: FiatCurrency
-    public let accountType: SingleAccountType
     public let id: String
     public let label: String
     public let accountNumber: String
@@ -56,13 +55,11 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public init(label: String,
                 accountNumber: String,
                 accountId: String,
-                accountType: SingleAccountType,
                 currency: FiatCurrency,
                 paymentType: PaymentMethodPayloadType) {
         self.label = label
         self.accountNumber = accountNumber
         self.fiatCurrency = currency
-        self.accountType = accountType
         self.id = accountId
         self.paymentType = paymentType
     }

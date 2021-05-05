@@ -108,7 +108,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                             return MoneyValuePair(
                                 fiat: fiat,
                                 priceInFiat: sourceToFiatPair.quote.fiatValue!,
-                                cryptoCurrency: state.source!.asset,
+                                cryptoCurrency: state.asset.cryptoCurrency!,
                                 usesFiatAsBase: true
                             ).quote
                         }

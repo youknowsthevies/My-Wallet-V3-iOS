@@ -68,10 +68,13 @@ public final class Coincore {
     /// We are looking for targets of our action.
     /// Action is considered what the source account wants to do.
     public func getTransactionTargets(
-        sourceAccount: CryptoAccount,
+        sourceAccount: BlockchainAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
-        guard let sourceCryptoAsset = cryptoAssets[sourceAccount.asset] else {
+        guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+            fatalError("Expected CryptoAccount: \(sourceAccount)")
+        }
+        guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
             fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
         }
         switch action {
@@ -81,7 +84,7 @@ public final class Coincore {
                 .map { (accounts) -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
-                            sourceAccount: sourceAccount,
+                            sourceAccount: cryptoAccount,
                             destinationAccount: destinationAccount,
                             action: action
                         )
@@ -90,14 +93,14 @@ public final class Coincore {
         case .send:
             return Single
                 .zip(
-                    sourceCryptoAsset.transactionTargets(account: sourceAccount),
+                    sourceCryptoAsset.transactionTargets(account: cryptoAccount),
                     fiatAsset.accountGroup(filter: .all).map(\.accounts)
                 )
                 .map(+)
                 .map { (accounts) -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
-                            sourceAccount: sourceAccount,
+                            sourceAccount: cryptoAccount,
                             destinationAccount: destinationAccount,
                             action: action
                         )

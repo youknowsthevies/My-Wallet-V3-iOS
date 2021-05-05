@@ -8,7 +8,7 @@ import ToolKit
 extension Coincore {
     
     public func createTransactionProcessor(
-        with account: SingleAccount,
+        with account: BlockchainAccount,
         target: TransactionTarget,
         action: AssetAction
     ) -> Single<TransactionProcessor> {

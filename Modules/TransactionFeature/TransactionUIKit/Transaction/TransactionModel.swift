@@ -195,7 +195,7 @@ final class TransactionModel {
     // the state object a bit more; depending on whether it's an internal, external,
     // bitpay or BTC Url address we can set things like note, amount, fee schedule
     // and hook up the correct processor to execute the transaction.
-    private func processTargetSelectionConfirmed(sourceAccount: SingleAccount,
+    private func processTargetSelectionConfirmed(sourceAccount: BlockchainAccount,
                                                  transactionTarget: TransactionTarget,
                                                  amount: MoneyValue,
                                                  action: AssetAction) -> Disposable {
@@ -226,7 +226,7 @@ final class TransactionModel {
         process(action: .updateAmount(amount))
     }
 
-    private func processAccountsListUpdate(fromAccount: CryptoAccount, action: AssetAction) -> Disposable {
+    private func processAccountsListUpdate(fromAccount: BlockchainAccount, action: AssetAction) -> Disposable {
         interactor
             .getTargetAccounts(sourceAccount: fromAccount, action: action)
             .subscribe { [weak self] accounts in

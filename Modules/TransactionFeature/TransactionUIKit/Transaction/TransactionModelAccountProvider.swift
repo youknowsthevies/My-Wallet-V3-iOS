@@ -23,7 +23,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
 
     var sourceAccount: Single<CryptoAccount?> {
         transactionModel.state
-            .map(\.source)
+            .compactMap { $0.source as? CryptoAccount }
             .take(1)
             .asSingle()
     }

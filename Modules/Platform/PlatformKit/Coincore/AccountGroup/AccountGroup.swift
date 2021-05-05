@@ -11,6 +11,14 @@ public protocol AccountGroup: BlockchainAccount {
 }
 
 extension AccountGroup {
+    public var currencyType: CurrencyType {
+        let types = accounts.map(\.currencyType)
+        guard let type = types.first else {
+            fatalError("AccountGroup should have at least one account")
+        }
+        return type
+    }
+    
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         let balances: [Single<MoneyValue>] = accounts
             .map { account in

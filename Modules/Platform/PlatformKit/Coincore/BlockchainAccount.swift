@@ -51,6 +51,9 @@ public protocol BlockchainAccount {
     
     /// Some wallets are double encrypted and have a second password.
     var requireSecondPassword: Single<Bool> { get }
+    
+    /// The `CurrencyType` of the account
+    var currencyType: CurrencyType { get }
 }
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {

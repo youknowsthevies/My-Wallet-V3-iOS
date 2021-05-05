@@ -87,7 +87,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: .ethereum
+                        asset: .crypto(.ethereum)
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )

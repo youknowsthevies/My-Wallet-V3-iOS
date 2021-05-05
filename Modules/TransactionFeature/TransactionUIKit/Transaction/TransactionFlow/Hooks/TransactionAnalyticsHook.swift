@@ -38,46 +38,40 @@ final class TransactionAnalyticsHook {
     }
 
     func onEnterAmountContinue(with state: TransactionState) {
-        let sourceCurrency = state.source!.currencyType
         let target = state.destination!.label
         switch state.action {
         case .swap:
-            analyticsRecorder.record(event: SwapAnalyticsEvent.enterAmountCtaClick(source: sourceCurrency, target: target))
+            analyticsRecorder.record(event: SwapAnalyticsEvent.enterAmountCtaClick(source: state.asset, target: target))
         default:
             break
         }
     }
 
     func onTransactionSuccess(with state: TransactionState) {
-        let sourceCurrency = state.source!.currencyType
         let target = state.destination!.label
-        let asset = state.asset.currency
         switch state.action {
         case .swap:
-            analyticsRecorder.record(event: SwapAnalyticsEvent.transactionSuccess(asset: asset, source: sourceCurrency.name, target: target))
+            analyticsRecorder.record(event: SwapAnalyticsEvent.transactionSuccess(asset: state.asset, source: state.asset.name, target: target))
         default:
             break
         }
     }
 
     func onTransactionFailure(with state: TransactionState) {
-        let sourceCurrency = state.source?.currencyType
         let target = state.destination?.label
-        let asset = state.asset.currency
         switch state.action {
         case .swap:
-            analyticsRecorder.record(event: SwapAnalyticsEvent.transactionFailed(asset: asset, target: target, source: sourceCurrency?.name))
+            analyticsRecorder.record(event: SwapAnalyticsEvent.transactionFailed(asset: state.asset, target: target, source: state.asset.name))
         default:
             break
         }
     }
 
     func onConfirmationCtaClick(with state: TransactionState) {
-        let sourceCurrency = state.source!.currencyType
         let target = state.destination!.label
         switch state.action {
         case .swap:
-            analyticsRecorder.record(event: SwapAnalyticsEvent.swapConfirmCta(source: sourceCurrency, target: target))
+            analyticsRecorder.record(event: SwapAnalyticsEvent.swapConfirmCta(source: state.asset, target: target))
         default:
             break
         }

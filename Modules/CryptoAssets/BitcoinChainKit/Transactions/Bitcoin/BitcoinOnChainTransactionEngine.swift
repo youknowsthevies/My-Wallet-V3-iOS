@@ -93,7 +93,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: Token.coin.cryptoCurrency
+                        asset: Token.coin.cryptoCurrency.currency
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )

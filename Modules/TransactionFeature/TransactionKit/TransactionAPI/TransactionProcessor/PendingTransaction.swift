@@ -183,7 +183,7 @@ public extension PendingTransaction {
             feeAmount: .zero(currency: currencyType),
             feeForFullAvailable: .zero(currency: currencyType),
             // TODO: Handle alternate currency types
-            feeSelection: .empty(asset: currencyType.cryptoCurrency!),
+            feeSelection: .empty(asset: currencyType),
             selectedFiatCurrency: .USD
         )
     }

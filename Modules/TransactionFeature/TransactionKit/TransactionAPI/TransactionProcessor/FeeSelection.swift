@@ -8,11 +8,11 @@ public struct FeeSelection: Equatable {
     public var availableLevels: Set<FeeLevel> = [.none]
     public var customLevelRates: FeeLevelRates?
     public var feeState: FeeState?
-    public var asset: CryptoCurrency?
+    public var asset: CurrencyType?
     
     public init(selectedLevel: FeeLevel,
                 availableLevels: Set<FeeLevel>,
-                asset: CryptoCurrency? = nil) {
+                asset: CurrencyType? = nil) {
         self.selectedLevel = selectedLevel
         self.availableLevels = availableLevels
         self.asset = asset
@@ -39,7 +39,7 @@ public struct FeeSelection: Equatable {
         return copy
     }
 
-    public static func empty(asset: CryptoCurrency) -> FeeSelection {
+    public static func empty(asset: CurrencyType?) -> FeeSelection {
         .init(selectedLevel: .none, availableLevels: [.none], asset: asset)
     }
 }

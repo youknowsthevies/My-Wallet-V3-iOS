@@ -18,7 +18,6 @@ final class WalletViewViewModel {
     
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
-        let accountType = account.accountType
         identifier = account.id
         badgeImageViewModel = .default(
             with: currency.logoImageName,
@@ -26,11 +25,11 @@ final class WalletViewViewModel {
             accessibilityIdSuffix: ""
         )
         
-        switch (accountType, currency) {
-        case (.nonCustodial, .fiat),
-             (.custodial, .fiat):
+        switch (account, currency) {
+        case (is NonCustodialAccount, .fiat),
+             (is TradingAccount, .fiat):
             accountTypeBadge = .empty
-        case (.custodial(.exchange), .crypto):
+        case (is ExchangeAccount, .crypto):
             accountTypeBadge = .template(
                 with: "ic-exchange-account",
                 templateColor: currency.brandColor,
@@ -38,7 +37,7 @@ final class WalletViewViewModel {
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case (.nonCustodial, .crypto):
+        case (is NonCustodialAccount, .crypto):
             accountTypeBadge = .template(
                 with: "ic-private-account",
                 templateColor: currency.brandColor,
@@ -46,7 +45,7 @@ final class WalletViewViewModel {
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case (.custodial(.trading), .crypto):
+        case (is TradingAccount, .crypto):
             accountTypeBadge = .template(
                 with: "ic-trading-account",
                 templateColor: currency.brandColor,
@@ -54,7 +53,7 @@ final class WalletViewViewModel {
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case (.custodial(.savings), .crypto):
+        case (is CryptoInterestAccount, .crypto):
             accountTypeBadge = .template(
                 with: "ic-interest-account",
                 templateColor: currency.brandColor,
@@ -62,6 +61,8 @@ final class WalletViewViewModel {
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
+        default:
+            fatalError("Unhandled account type: \(String(describing: account))")
         }
         
         badgeImageViewModel.marginOffsetRelay.accept(0.0)

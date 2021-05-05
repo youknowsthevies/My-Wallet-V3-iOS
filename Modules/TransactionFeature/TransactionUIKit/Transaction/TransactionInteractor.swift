@@ -13,6 +13,7 @@ final class TransactionInteractor {
     private let coincore: Coincore
     private let availablePairsService: AvailableTradingPairsServiceAPI
     private let swapEligibilityService: EligibilityServiceAPI
+    private let linkedBanksFactory: LinkedBanksFactoryAPI
     private var transactionProcessor: TransactionProcessor?
 
     /// Used to invalidate the transaction processor chain.
@@ -20,13 +21,15 @@ final class TransactionInteractor {
 
     init(coincore: Coincore = resolve(),
          availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
-         swapEligibilityService: EligibilityServiceAPI = resolve()) {
+         swapEligibilityService: EligibilityServiceAPI = resolve(),
+         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
         self.coincore = coincore
         self.availablePairsService = availablePairsService
         self.swapEligibilityService = swapEligibilityService
+        self.linkedBanksFactory = linkedBanksFactory
     }
 
-    func initializeTransaction(sourceAccount: SingleAccount,
+    func initializeTransaction(sourceAccount: BlockchainAccount,
                                transactionTarget: TransactionTarget,
                                action: AssetAction) -> Observable<PendingTransaction> {
         coincore
@@ -95,21 +98,26 @@ final class TransactionInteractor {
         }
     }
 
-    func getTargetAccounts(sourceAccount: CryptoAccount, action: AssetAction) -> Single<[SingleAccount]> {
-        let transactionTargets = coincore.getTransactionTargets(sourceAccount: sourceAccount, action: action)
+    func getTargetAccounts(sourceAccount: BlockchainAccount, action: AssetAction) -> Single<[SingleAccount]> {
         switch action {
         case .swap:
-            let tradingPairs = availablePairsService.availableTradingPairs
-            let isEligible = swapEligibilityService.isEligible
-            return Single.zip(transactionTargets, tradingPairs, isEligible)
-                .map { (accounts: [SingleAccount], pairs: [OrderPair], isEligible: Bool) -> [SingleAccount] in
-                    accounts
-                        .filter { $0 is CryptoAccount }
-                        .filter { pairs.contains(source: sourceAccount.currencyType, destination: $0.currencyType) }
-                        .filter { isEligible || $0 is NonCustodialAccount }
-                }
-        default:
-            return transactionTargets
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return swapTargets(sourceAccount: cryptoAccount)
+        case .send:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected a CryptoAccount.")
+            }
+            return sendTargets(sourceAccount: cryptoAccount)
+        case .deposit:
+            return linkedBanksFactory.nonWireTransferBanks.map { $0.map { $0 as SingleAccount } }
+        case .withdraw:
+            return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
+        case .receive,
+             .sell,
+             .viewActivity:
+            unimplemented()
         }
     }
 
@@ -155,6 +163,33 @@ final class TransactionInteractor {
             fatalError("Tx Processor is nil")
         }
         return transactionProcessor.validateAll()
+    }
+    
+    // MARK: - Private Functions
+    
+    private func sendTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .send
+            )
+    }
+    
+    private func swapTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
+        let transactionTargets = coincore
+            .getTransactionTargets(
+                sourceAccount: sourceAccount,
+                action: .swap
+            )
+        let tradingPairs = availablePairsService.availableTradingPairs
+        let isEligible = swapEligibilityService.isEligible
+        return Single.zip(transactionTargets, tradingPairs, isEligible)
+            .map { (accounts: [SingleAccount], pairs: [OrderPair], isEligible: Bool) -> [SingleAccount] in
+                accounts
+                    .filter { $0 is CryptoAccount }
+                    .filter { pairs.contains(source: sourceAccount.currencyType, destination: $0.currencyType) }
+                    .filter { isEligible || $0 is NonCustodialAccount }
+            }
     }
 }
 

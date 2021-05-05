@@ -170,7 +170,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let amount = state.pendingTransaction?.amount.toDisplayString(includeSymbol: true) ?? ""
         switch state.action {
         case .swap:
-            let source = state.source?.asset.displayCode ?? ""
+            let source = state.source?.currencyType.displayCode ?? ""
             let destination = (state.destination as? CryptoAccount)?.asset.displayCode ?? ""
             return String(format: LocalizedString.Swap.swapAForB, source, destination)
         case .send:

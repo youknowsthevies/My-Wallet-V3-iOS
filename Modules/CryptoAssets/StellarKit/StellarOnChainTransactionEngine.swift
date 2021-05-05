@@ -151,7 +151,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular],
-                        asset: .stellar
+                        asset: .crypto(.stellar)
                     ),
                     selectedFiatCurrency: fiatCurrency,
                     minimumLimit: nil,

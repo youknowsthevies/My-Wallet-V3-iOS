@@ -76,7 +76,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                         available: .zero(currency: self.sourceAsset),
                         feeAmount: .zero(currency: self.sourceAsset),
                         feeForFullAvailable: .zero(currency: self.sourceAsset),
-                        feeSelection: .empty(asset: self.sourceCryptoCurrency),
+                        feeSelection: .empty(asset: self.sourceAsset),
                         selectedFiatCurrency: fiatCurrency,
                         minimumLimit: .zero(currency: self.sourceAsset)
                     )

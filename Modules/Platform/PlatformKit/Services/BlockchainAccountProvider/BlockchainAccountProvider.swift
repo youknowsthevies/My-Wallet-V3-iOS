@@ -30,21 +30,70 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
-            .map { $0.accounts.filter { $0.accountType == accountType } }
+            .map(\.accounts)
+            .map { accounts in
+                accounts.filter { account in
+                    switch accountType {
+                    case .nonCustodial:
+                        return account is NonCustodialAccount
+                    case .custodial(let type):
+                        switch type {
+                        case .exchange:
+                            return account is ExchangeAccount
+                        case .savings:
+                            return account is CryptoInterestAccount
+                        case .trading:
+                            return account is TradingAccount
+                        }
+                    }
+                }
+            }
     }
     
     func accounts(for currency: CurrencyType, accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
             .map { $0.accounts.filter { $0.currencyType == currency } }
-            .map { $0.filter { $0.accountType == accountType } }
+            .map { accounts in
+                accounts.filter { account in
+                    switch accountType {
+                    case .nonCustodial:
+                        return account is NonCustodialAccount
+                    case .custodial(let type):
+                        switch type {
+                        case .exchange:
+                            return account is ExchangeAccount
+                        case .savings:
+                            return account is CryptoInterestAccount
+                        case .trading:
+                            return account is TradingAccount
+                        }
+                    }
+                }
+            }
     }
     
     func account(for currency: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount> {
         coincore
             .allAccounts
             .map { $0.accounts.filter { $0.currencyType == currency } }
-            .map { $0.filter { $0.accountType == accountType } }
+            .map { accounts in
+                accounts.filter { account in
+                    switch accountType {
+                    case .nonCustodial:
+                        return account is NonCustodialAccount
+                    case .custodial(let type):
+                        switch type {
+                        case .exchange:
+                            return account is ExchangeAccount
+                        case .savings:
+                            return account is CryptoInterestAccount
+                        case .trading:
+                            return account is TradingAccount
+                        }
+                    }
+                }
+            }
             .flatMap { accounts in
                 guard let value = accounts.first else {
                     return .error(BlockchainAccountProvidingError.doesNotExist)

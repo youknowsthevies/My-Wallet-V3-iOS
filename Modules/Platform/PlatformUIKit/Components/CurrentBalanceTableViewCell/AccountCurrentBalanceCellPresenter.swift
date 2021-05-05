@@ -113,8 +113,8 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         }
 
         let model: BadgeImageViewModel
-        switch account.accountType {
-        case .custodial(.trading):
+        switch account {
+        case is TradingAccount:
             model = .template(
                 with: "ic-trading-account",
                 templateColor: account.currencyType.brandColor,
@@ -122,7 +122,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case .custodial(.savings):
+        case is CryptoInterestAccount:
             model = .template(
                 with: "ic-interest-account",
                 templateColor: account.currencyType.brandColor,
@@ -130,7 +130,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case .custodial(.exchange):
+        case is ExchangeAccount:
             model = .template(
                 with: "ic-exchange-account",
                 templateColor: account.currencyType.brandColor,
@@ -138,7 +138,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case .nonCustodial:
+        case is NonCustodialAccount:
             model = .template(
                 with: "ic-private-account",
                 templateColor: account.currencyType.brandColor,
@@ -146,6 +146,8 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
+        default:
+            fatalError("Unsupported account type:\(String(describing: account))")
         }
         model.marginOffsetRelay.accept(1)
         iconImageViewContentRelay.accept(model)
