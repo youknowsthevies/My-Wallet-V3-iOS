@@ -34,7 +34,7 @@ public final class DashboardViewController: BaseScreenViewController {
     public init(fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
         self.presenter = DashboardScreenPresenter()
-        super.init(nibName: nil, bundle: nil)
+        super.init(nibName: DashboardViewController.objectName, bundle: DashboardViewController.bundle)
     }
     
     required init?(coder: NSCoder) {
