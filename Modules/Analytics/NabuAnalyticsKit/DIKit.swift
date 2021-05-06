@@ -5,6 +5,10 @@ import DIKit
 extension DependencyContainer {
      
     public static var nabuAnalyticsKit = module {
-
+        
+        single { ContextProvider() as ContextProviding }
+        
+        single { APIClient() as EventSendingAPI }
     }
+    
 }
