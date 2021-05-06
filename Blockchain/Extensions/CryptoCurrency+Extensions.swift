@@ -35,7 +35,21 @@ extension CryptoCurrency {
     
     /// Returns `true` if an asset's addresses can be reused
     var shouldAddressesBeReused: Bool {
-        Set<CryptoCurrency>([.ethereum, .stellar, .pax]).contains(self)
+        switch self {
+        case .bitcoin,
+             .bitcoinCash:
+            return false
+        case .aave,
+             .algorand,
+             .ethereum,
+             .pax,
+             .polkadot,
+             .stellar,
+             .tether,
+             .wDGLD,
+             .yearnFinance:
+            return true
+        }
     }
 
     init(legacyAssetType: LegacyAssetType) {
