@@ -13,11 +13,26 @@ import KYCKit
 import PlatformKit
 import PlatformUIKit
 import SettingsKit
+import SettingsUIKit
 import StellarKit
 import ToolKit
 import TransactionKit
 import TransactionUIKit
 import WalletPayloadKit
+
+// MARK: - Settings Dependencies
+
+extension AuthenticationCoordinator: SettingsUIKit.AuthenticationCoordinating { }
+
+extension AppCoordinator: SettingsUIKit.AppCoordinating { }
+
+extension ExchangeCoordinator: SettingsUIKit.ExchangeCoordinating { }
+
+extension UIApplication: SettingsUIKit.AppStoreOpening { }
+
+extension Wallet: WalletRecoveryVerifing { }
+
+// MARK: - Dashboard Dependencies
 
 extension BackupFundsSettingsRouter: DashboardUIKit.BackupRouterAPI {}
 
@@ -27,9 +42,9 @@ extension AnalyticsUserPropertyInteractor: DashboardUIKit.AnalyticsUserPropertyI
 
 extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
+// MARK: - Blockchain Module
+
 extension DependencyContainer {
-    
-    // MARK: - Blockchain Module
     
     static var blockchain = module {
         
@@ -44,8 +59,6 @@ extension DependencyContainer {
         factory { PaymentPresenter() }
 
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
-        
-        factory { RecoveryPhraseVerifyingService() as RecoveryPhraseVerifyingServiceAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }
         
@@ -71,9 +84,7 @@ extension DependencyContainer {
         
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
-        factory { BackupFundsCustodialRouter() as BackupRouterAPI }
-                
-        factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
+        factory { BackupFundsCustodialRouter() as SettingsUIKit.BackupRouterAPI }
         
         factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
         
@@ -178,6 +189,18 @@ extension DependencyContainer {
         factory { () -> PermissionSettingsAPI in
             let app: BlockchainSettings.App = DIKit.resolve()
             return app
+        }
+        
+        // MARK: - Settings
+        
+        factory { () -> RecoveryPhraseVerifyingServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return RecoveryPhraseVerifyingService(wallet: manager.wallet) as RecoveryPhraseVerifyingServiceAPI
+        }
+        
+        factory { () -> RecoveryPhraseStatusProviding in
+            let manager: WalletManager = DIKit.resolve()
+            return RecoveryPhraseStatusProvider(walletRecoveryVerifier: manager.wallet) as RecoveryPhraseStatusProviding
         }
 
         // MARK: - AppFeatureConfigurator

@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import SettingsKit
 import PlatformKit
+import SettingsKit
 
 struct KeychainItemSwiftWrapper: KeychainItemWrapping {
     

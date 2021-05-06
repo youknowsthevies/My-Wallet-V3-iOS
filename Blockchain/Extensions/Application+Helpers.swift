@@ -8,7 +8,7 @@ extension UIApplication {
 
     // MARK: - Open the AppStore at the app's page
 
-    @objc func openAppStore() {
+    @objc public func openAppStore() {
         let url = URL(string: "\(Constants.Url.appStoreLinkPrefix)\(Constants.AppStore.AppID)")!
         self.open(url)
     }

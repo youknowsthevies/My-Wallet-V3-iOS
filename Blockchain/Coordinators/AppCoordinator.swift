@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import DashboardUIKit
 import DIKit
 import InterestKit
 import InterestUIKit
@@ -9,6 +10,7 @@ import PlatformKit
 import PlatformUIKit
 import RxSwift
 import SettingsKit
+import SettingsUIKit
 import ToolKit
 import WalletPayloadKit
 
@@ -44,7 +46,7 @@ import WalletPayloadKit
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
     private var sellRouter: PlatformUIKit.SellRouter!
-    private var backupRouter: BackupRouterAPI?
+    private var backupRouter: SettingsUIKit.BackupRouterAPI?
     
     // MARK: - UIViewController Properties
     
@@ -155,7 +157,20 @@ import WalletPayloadKit
     }
 
     func showSettingsView() {
-        settingsRouterAPI = SettingsRouter(currencyRouting: self, tabSwapping: self)
+        settingsRouterAPI = SettingsRouter(
+            appCoordinator: self,
+            wallet: walletManager.wallet,
+            guidRepositoryAPI: walletManager.repository,
+            authenticationCoordinator: authenticationCoordinator,
+            exchangeCoordinator: ExchangeCoordinator.shared,
+            appStoreOpener: UIApplication.shared,
+            currencyRouter: self,
+            tabSwapping: self,
+            passwordRepository: walletManager.repository,
+            repository: BlockchainDataRepository.shared,
+            balanceProviding: DataProvider.default.balance,
+            balanceChangeProviding: DataProvider.default.balanceChange
+        )
         settingsRouterAPI?.presentSettings()
     }
 
