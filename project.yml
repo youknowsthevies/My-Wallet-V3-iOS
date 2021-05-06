@@ -1025,6 +1025,17 @@ targets:
     scheme:
       testTargets:
       - NetworkKitTests
+    sources:
+    - excludes:
+      - Scripts
+      - Cert
+      path: Modules/Network/NetworkKit
+    - buildPhase:
+        copyFiles:
+          destination: resources
+      group: Modules/Network/NetworkKit/Cert
+      optional: true
+      path: Modules/Network/NetworkKit/Cert/blockchain.der
     templateAttributes:
       featureName: Network
     templates:
