@@ -1820,13 +1820,18 @@ NSString * const kLockboxInvitation = @"lockbox";
     return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getNotePlaceholder(\"%@\")", myHash]] toString];
 }
 
-- (void)getSwipeAddresses:(int)numberOfAddresses assetType:(LegacyAssetType)assetType
+- (void)getSwipeAddresses:(NSInteger)numberOfAddresses assetType:(LegacyAssetType)assetType
 {
+
+    NSString *script;
     if (assetType == LegacyAssetTypeBitcoin) {
-        [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%d)", numberOfAddresses]] toArray];
+        script = [NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%ld)", (long)numberOfAddresses];
     } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getSwipeAddresses(%d)", numberOfAddresses]] toArray];
+        script = [NSString stringWithFormat:@"MyWalletPhone.bch.getSwipeAddresses(%ld)", (long)numberOfAddresses];
+    } else {
+        return;
     }
+    [self.context evaluateScriptCheckIsOnMainQueue:script];
 }
 
 - (int)getDefaultAccountLabelledAddressesCount

@@ -2564,17 +2564,22 @@ MyWalletPhone.bch = {
     },
 
     getSwipeAddresses : function(numberOfAddresses) {
+        const isV4 = MyWallet.wallet.hdwallet.accounts[0].derivations
+        let xpub = MyWallet.wallet.bch.defaultAccount.xpub
+        let receiveIndex = MyWallet.wallet.bch.getAccountIndexes(xpub).receive;
+        let accountIndex = MyWallet.wallet.bch.defaultAccountIdx;
+        let hdAccount = MyWallet.wallet.hdwallet.accounts[accountIndex];
         var addresses = [];
-
-        var xpub = MyWallet.wallet.bch.defaultAccount.xpub
-        var receiveIndex = MyWallet.wallet.bch.getAccountIndexes(xpub).receive;
-        const accountIndex = MyWallet.wallet.bch.defaultAccountIdx;
-
         for (var i = 0; i < numberOfAddresses; i++) {
-            var address = Helpers.toBitcoinCash(Blockchain.MyWallet.wallet.hdwallet.accounts[accountIndex].receiveAddressAtIndex(receiveIndex + i));
-            addresses.push(address);
+            var address = "";
+            if (isV4) {
+                address = hdAccount.receiveAddressAtIndex(receiveIndex + i, "legacy")
+            } else {
+                address = hdAccount.receiveAddressAtIndex(receiveIndex + i)
+            }
+            let bchAddress = Helpers.toBitcoinCash(address);
+            addresses.push(bchAddress);
         }
-
         objc_did_get_bch_swipe_addresses(addresses);
     },
 

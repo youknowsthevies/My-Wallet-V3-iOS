@@ -232,7 +232,7 @@
 - (void)getTransactionFeeWithUpdateType:(FeeUpdateType)updateType;
 - (void)getSurgeStatus;
 - (uint64_t)dust;
-- (void)getSwipeAddresses:(int)numberOfAddresses assetType:(LegacyAssetType)assetType;
+- (void)getSwipeAddresses:(NSInteger)numberOfAddresses assetType:(LegacyAssetType)assetType;
 
 # pragma mark - Transaction Details
 

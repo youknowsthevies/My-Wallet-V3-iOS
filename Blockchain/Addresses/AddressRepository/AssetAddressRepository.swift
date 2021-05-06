@@ -109,33 +109,24 @@ enum AssetAddressType {
             fatalError("Wallet upgrade is not optional.")
         }
 
-        // Only one address for ethereum and stellar
-        appSettings.swipeAddressForEther = wallet.getEtherAddress()
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            appSettings.swipeAddressForStellar = self.stellarWalletAccountRepository.defaultAccount?.publicKey
-            self.paxAssetAccountRepository
-                .assetAccountDetails
-                .subscribe(onSuccess: { details in
-                    appSettings.swipeAddressForPax = details.account.accountAddress
-                })
-                .disposed(by: self.disposeBag)
+        // Only one address for Ethereum and all other ERC20 coins.
+        let etherAddress = wallet.getEtherAddress()
+        appSettings.swipeAddressForEther = etherAddress
+        appSettings.swipeAddressForPax = etherAddress
+        appSettings.swipeAddressForAave = etherAddress
+        appSettings.swipeAddressForWDGLD = etherAddress
+        appSettings.swipeAddressForYearnFinance = etherAddress
+        appSettings.swipeAddressForTether = etherAddress
 
-            self.tetherAssetAccountRepository
-                .assetAccountDetails
-                .subscribe(onSuccess: { details in
-                    appSettings.swipeAddressForTether = details.account.accountAddress
-                })
-                .disposed(by: self.disposeBag)
-        }
+        // Only one address for Stellar.
+        appSettings.swipeAddressForStellar = self.stellarWalletAccountRepository.defaultAccount?.publicKey
         
         // Retrieve swipe addresses for bitcoin and bitcoin cash
-        let assetTypesWithHDAddresses = [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash]
-        assetTypesWithHDAddresses.forEach {
+        [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash].forEach {
             let swipeAddresses = self.swipeAddresses(for: $0)
-            let numberOfAddressesToDerive = Constants.Wallet.swipeToReceiveAddressCount - swipeAddresses.count
+            let numberOfAddressesToDerive: Int = Constants.Wallet.swipeToReceiveAddressCount - swipeAddresses.count
             if numberOfAddressesToDerive > 0 {
-                wallet.getSwipeAddresses(Int32(numberOfAddressesToDerive), assetType: $0.legacy)
+                wallet.getSwipeAddresses(numberOfAddressesToDerive, assetType: $0.legacy)
             }
         }
     }
@@ -278,36 +269,57 @@ extension AssetAddressRepository {
     }
     
     private func fetchAddressUsage(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            var assetAddress = AssetAddressFactory.create(fromAddressString: address, assetType: asset)
-            if let bchAddress = assetAddress as? BitcoinCashAssetAddress,
-                let transformedBtcAddress = bchAddress.bitcoinAssetAddress(from: self.walletManager.wallet) {
-                assetAddress = transformedBtcAddress
-            }
-            
-            guard let urlString = BlockchainAPI.shared.assetInfoURL(for: assetAddress), let url = URL(string: urlString) else {
-                Logger.shared.warning("Cannot construct URL to check if the address '\(address)' is unused.")
-                observer(.success(.unknown(address: address)))
-                return Disposables.create()
-            }
-            
-            let task = self.urlSession.dataTask(with: url, completionHandler: { data, _, error in
-                guard error == nil else {
-                    observer(.error(error!))
-                    return
-                }
-                guard let json = try? JSONSerialization.jsonObject(with: data!, options: .allowFragments) as? [String: AnyObject],
-                    let transactions = json["txs"] as? [NSDictionary] else {
-                    observer(.error(AssetAddressRepositoryError.jsonParsingError))
-                        return
-                }
-                let usage: AddressUsageStatus = transactions.isEmpty ? .unused(address: address) : .used(address: address)
-                observer(.success(usage))
-            })
-            task.resume()
-            return Disposables.create {
-                task.cancel()
-            }
+        let assetAddress: AssetAddress = AssetAddressFactory.create(fromAddressString: address, assetType: asset)
+
+        guard let urlString = BlockchainAPI.shared.assetInfoURL(for: assetAddress) else {
+            Logger.shared.warning("Cannot construct URL to check if the address '\(address)' is unused.")
+            return .just(.unknown(address: address))
         }
+        guard let url = URL(string: urlString) else {
+            Logger.shared.warning("Cannot construct URL to check if the address '\(address)' is unused.")
+            return .just(.unknown(address: address))
+        }
+
+        return isAddressUnused(address: address, url: url)
+            .map { unused -> AddressUsageStatus in
+                unused ? .unused(address: address) : .used(address: address)
+            }
+    }
+
+    private func isAddressUnused(address: String, url: URL) -> Single<Bool> {
+        struct Response: Decodable {
+            let n_tx: Int
+        }
+        return Single<Bool>
+            .create(weak: self) { (self, observer) -> Disposable in
+                let task = self.urlSession.dataTask(with: url, completionHandler: { data, _, error in
+                    guard error == nil else {
+                        observer(.error(error!))
+                        return
+                    }
+                    guard let data = data else {
+                        observer(.error(AssetAddressRepositoryError.jsonParsingError))
+                        return
+                    }
+                    guard let response = try? JSONDecoder().decode([String: Response].self, from: data) else {
+                        observer(.error(AssetAddressRepositoryError.jsonParsingError))
+                        return
+                    }
+                    if let result = response[address] {
+                        observer(.success(result.n_tx == 0))
+                        return
+                    } else if address.hasPrefix("bitcoincash"), response.count == 1, let result = response.first {
+                        observer(.success(result.value.n_tx == 0))
+                        return
+                    } else {
+                        observer(.error(AssetAddressRepositoryError.jsonParsingError))
+                        return
+                    }
+                })
+                task.resume()
+                return Disposables.create {
+                    task.cancel()
+                }
+            }
     }
 }
