@@ -17,7 +17,13 @@ final class CustodyInformationScreenPresenter {
     // MARK: - Navigation Properties
     
     var trailingButton: Screen.Style.TrailingButton {
-        .content(.init(title: nil, image: #imageLiteral(resourceName: "cancel_icon"), accessibility: .id(AccessibilityId.backButton)))
+        .content(
+            .init(
+                title: nil,
+                image: UIImage(named: "cancel_icon", in: .main, with: nil),
+                accessibility: .id(AccessibilityId.backButton)
+            )
+        )
     }
     
     var leadingButton: Screen.Style.LeadingButton {

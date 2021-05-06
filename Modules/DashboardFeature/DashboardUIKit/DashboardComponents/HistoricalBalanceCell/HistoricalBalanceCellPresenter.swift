@@ -14,7 +14,8 @@ final class HistoricalBalanceCellPresenter {
         .just(
             .init(
                 imageName: interactor.cryptoCurrency.logoImageName,
-                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)")
+                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)"),
+                bundle: Bundle(for: Self.self)
             )
         )
     }
