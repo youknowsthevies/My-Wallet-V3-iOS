@@ -2597,10 +2597,10 @@ MyWalletPhone.loadMetadata = function() {
 }
 
 MyWalletPhone.getHistoryForAllAssets = function() {
-    var getBitcoinHistory = MyWallet.wallet.getHistory();
-    var bch = MyWallet.wallet.bch;
-    var getBitcoinCashHistory = bch ? bch.getHistory() : {};
-    return Promise.all([getBitcoinHistory, getBitcoinCashHistory]);
+    var walletHistory = MyWallet.wallet.getHistory();
+    var bitcoinHistory = MyWallet.wallet.btc.getHistory();
+    var bitcoinCashHistory = MyWallet.wallet.bch.getHistory();
+    return Promise.all([walletHistory, bitcoinHistory, bitcoinCashHistory]);
 }
 
 MyWalletPhone.tradeExecution = {
