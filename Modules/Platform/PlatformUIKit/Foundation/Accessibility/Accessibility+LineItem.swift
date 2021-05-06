@@ -28,6 +28,7 @@ extension Accessibility.Identifier.LineItem.Transactional {
     public static let accountNumber = "\(prefix)accountNumber."
     public static let sortCode = "\(prefix)sortCode."
     public static let bankCode = "\(prefix)bankCode."
+    public static let routingNumber = "\(prefix)routingNumber."
     public static let recipient = "\(prefix)recipient."
     public static let amountToSend = "\(prefix)amountToSend."
     public static let date = "\(prefix)date."

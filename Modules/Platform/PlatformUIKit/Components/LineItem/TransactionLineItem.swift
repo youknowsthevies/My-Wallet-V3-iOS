@@ -206,6 +206,8 @@ extension PaymentAccountProperty.Field {
             return AccessibilityID.sortCode
         case .recipientName:
             return AccessibilityID.recipient
+        case .routingNumber:
+            return AccessibilityID.routingNumber
         case .bankName:
             return AccessibilityID.bankName
         case .bankCountry:

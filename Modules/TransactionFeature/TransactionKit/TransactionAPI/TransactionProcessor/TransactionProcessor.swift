@@ -45,7 +45,7 @@ public final class TransactionProcessor {
     
     // MARK: - Init
 
-    init(sourceAccount: CryptoAccount,
+    init(sourceAccount: BlockchainAccount,
          transactionTarget: TransactionTarget,
          engine: TransactionEngine) {
         self.engine = engine

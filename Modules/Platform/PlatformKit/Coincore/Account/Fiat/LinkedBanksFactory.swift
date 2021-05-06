@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -10,13 +11,50 @@ public protocol LinkedBanksFactoryAPI {
 
 final class LinkedBanksFactory: LinkedBanksFactoryAPI {
     
-    /// TODO: Inject `LinkedBanksServiceAPI` once moved to `PlatformKit`
+    private let linkedBankService: LinkedBanksServiceAPI
+    
+    init(linkedBankService: LinkedBanksServiceAPI = resolve()) {
+        self.linkedBankService = linkedBankService
+    }
     
     var linkedBanks: Single<[LinkedBankAccount]> {
-        unimplemented()
+        linkedBankService
+            .linkedBanks
+            .map { linkedBankData in
+                linkedBankData.filter { $0.isActive }
+            }
+            .map { linkedBankData in
+                linkedBankData.map { data in
+                    LinkedBankAccount(
+                        label: data.account?.name ?? "",
+                        accountNumber: data.account?.number ?? "",
+                        accountId: data.identifier,
+                        currency: data.currency,
+                        paymentType: .bankAccount
+                    )
+                }
+            }
     }
     
     var nonWireTransferBanks: Single<[LinkedBankAccount]> {
-        unimplemented()
+        // TODO: Filter for the correct payment method type.
+        // TICKET: IOS-4632
+        linkedBankService
+            .linkedBanks
+            .map { linkedBankData in
+                linkedBankData.filter { $0.isActive }
+            }
+            .map { linkedBankData in
+                linkedBankData.map { data in
+                    // TICKET: IOS-4632
+                    LinkedBankAccount(
+                        label: data.account?.name ?? "",
+                        accountNumber: data.account?.number ?? "",
+                        accountId: data.identifier,
+                        currency: data.currency,
+                        paymentType: .bankAccount
+                    )
+                }
+            }
     }
 }

@@ -9,12 +9,10 @@ protocol AddNewPaymentMethodBuildable {
 }
 
 final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
-
-    private let stateService: StateServiceAPI
+    
     private let paymentMethodService: SelectPaymentMethodService
 
-    init(stateService: StateServiceAPI, paymentMethodService: SelectPaymentMethodService) {
-        self.stateService = stateService
+    init(paymentMethodService: SelectPaymentMethodService) {
         self.paymentMethodService = paymentMethodService
     }
 

@@ -28,6 +28,15 @@ final class DepositRootViewController: UINavigationController, DepositRootViewCo
         unimplemented()
     }
     
+    // MARK: - Lifecycle
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        listener?.viewDidAppear()
+    }
+    
+    // MARK: - DepositRootViewControllable
+    
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
         guard let viewController = viewController else {
             return

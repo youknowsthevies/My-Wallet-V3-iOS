@@ -8,9 +8,8 @@ enum PaymentAccountBuilder {
     /// An array of possible `PaymentAccount.Type`s
     private static let builders: [PaymentAccountDescribing.Type] = [
         PaymentAccountGBP.self,
-        PaymentAccountEUR.self
-        // TODO: Uncomment and handle when USD is supported
-//        PaymentAccountUSD.self
+        PaymentAccountEUR.self,
+        PaymentAccountUSD.self
     ]
 
     // MARK: - Methods

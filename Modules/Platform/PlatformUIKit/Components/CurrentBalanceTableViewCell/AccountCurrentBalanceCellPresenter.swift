@@ -146,6 +146,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
+        case is FiatCustodialAccount:
+            model = .template(
+                with: "ic-trading-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .white,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         default:
             fatalError("Unsupported account type:\(String(describing: account))")
         }

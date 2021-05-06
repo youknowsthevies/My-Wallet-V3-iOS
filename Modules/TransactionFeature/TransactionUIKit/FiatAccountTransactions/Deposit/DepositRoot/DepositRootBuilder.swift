@@ -15,7 +15,7 @@ public final class DepositRootBuilder: DepositRootBuildable {
     public func build() -> DepositRootRouting {
         let viewController = DepositRootViewController()
         let interactor = DepositRootInteractor()
-        interactor.listener = interactor
+        viewController.listener = interactor
         let router = DepositRootRouter(interactor: interactor, viewController: viewController)
         interactor.router = router
         return router

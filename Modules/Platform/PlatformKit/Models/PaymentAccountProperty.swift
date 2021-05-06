@@ -16,6 +16,7 @@ public enum PaymentAccountProperty {
         case accountNumber(String)
         case sortCode(String)
         case recipientName(String)
+        case routingNumber(String)
         case bankName(String)
         case bankCountry(String)
         case iban(String)
@@ -28,6 +29,8 @@ public enum PaymentAccountProperty {
             case .sortCode(let value):
                 return value
             case .recipientName(let value):
+                return value
+            case .routingNumber(let value):
                 return value
             case .bankName(let value):
                 return value
@@ -49,6 +52,8 @@ public enum PaymentAccountProperty {
                 return LocalizedString.sortCode
             case .recipientName:
                 return LocalizedString.recipient
+            case .routingNumber:
+                return LocalizedString.routingNumber
             case .bankName:
                 return LocalizedString.bankName
             case .bankCountry:

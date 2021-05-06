@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import PlatformUIKit
 import RIBs
 import ToolKit
 
@@ -43,15 +44,11 @@ final class DepositRootRouter: ViewableRouter<DepositRootInteractable, DepositRo
     }
     
     func routeToDeposit(sourceAccount: FiatAccount) {
-        unimplemented()
-        // TODO: `build` function should take a `BlockchainAccount`
-        
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,
             action: .deposit,
-            // TODO: This will always fail until `sourceAccount` takes a `BlockchainAccount`
-            sourceAccount: sourceAccount as! CryptoAccount,
+            sourceAccount: sourceAccount,
             target: nil
         )
         if let router = transactionRouter {

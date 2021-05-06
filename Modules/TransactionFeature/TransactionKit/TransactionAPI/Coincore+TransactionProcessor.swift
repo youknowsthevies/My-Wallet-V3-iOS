@@ -25,6 +25,16 @@ extension Coincore {
                 target: target,
                 action: action
             )
+        case is BankAccount:
+            return createFiatDepositProcessor(
+                with: account as! LinkedBankAccount,
+                target: target
+            )
+        case is FiatAccount:
+            return createFiatWithdrawalProcessor(
+                with: account as! FiatAccount,
+                target: target
+            )
         default:
             impossible()
         }
@@ -113,6 +123,29 @@ extension Coincore {
         case .deposit, .receive, .viewActivity, .withdraw:
             unimplemented()
         }
+    }
+    
+    private func createFiatWithdrawalProcessor(with account: FiatAccount,
+                                               target: TransactionTarget) -> Single<TransactionProcessor> {
+        Single.just(
+            TransactionProcessor(
+                sourceAccount: account,
+                transactionTarget: target,
+                engine: FiatWithdrawalTransactionEngine()
+            )
+        )
+
+    }
+    
+    private func createFiatDepositProcessor(with account: LinkedBankAccount,
+                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+        Single.just(
+            TransactionProcessor(
+                sourceAccount: account,
+                transactionTarget: target,
+                engine: FiatDepositTransactionEngine()
+            )
+        )
     }
 
     private func createTradingProcessorSwap(with account: CryptoTradingAccount,

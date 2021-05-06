@@ -38,6 +38,10 @@ extension LocalizationConstants.LineItem.Transactional {
         "Sort Code",
         comment: "Simple Buy - Sort Code Label"
     )
+    public static let routingNumber = NSLocalizedString(
+        "Routing Number",
+        comment: "Simple Buy - Routing Number Label"
+    )
     public static let bankCode = NSLocalizedString(
         "Bank Code (SWIFT/BIC)",
         comment: "Simple Buy - Bank Code Label"

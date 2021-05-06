@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
 import RIBs
 
 // MARK: - Builder
@@ -21,10 +20,10 @@ final class ACHFlowRootBuilder: ACHFlowRootBuildable {
 
     func build(presentingController: NavigationControllerAPI?) -> ACHFlowStarter {
         let paymentMethodService = SelectPaymentMethodService()
-        let selectPaymentMethodBuilder = SelectPaymentMethodBuilder(stateService: stateService,
-                                                                    paymentMethodService: paymentMethodService)
-        let addNewPaymentMethodBuilder = AddNewPaymentMethodBuilder(stateService: stateService,
-                                                                    paymentMethodService: paymentMethodService)
+        let selectPaymentMethodBuilder = SelectPaymentMethodBuilder(
+            paymentMethodService: paymentMethodService
+        )
+        let addNewPaymentMethodBuilder = AddNewPaymentMethodBuilder(paymentMethodService: paymentMethodService)
         let interactor = ACHFlowRootInteractor(stateService: stateService, paymentMethodService: paymentMethodService)
         let router = ACHFlowRootRouter(interactor: interactor,
                                        navigation: presentingController,
