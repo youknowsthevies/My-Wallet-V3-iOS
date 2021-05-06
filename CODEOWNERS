@@ -1,0 +1,5 @@
+# https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+
+Modules/TransactionFeature/ @paulo-bc @thisisalexmcgregor
+
+Modules/Network/ @jackpooleybc
