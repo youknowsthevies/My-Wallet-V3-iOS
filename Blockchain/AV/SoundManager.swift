@@ -1,19 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import AudioToolbox
 import PlatformKit
 import ToolKit
 
 /// Manager object for playing sounds in the app.
-@objc class SoundManager: NSObject {
+final class SoundManager {
     static let shared = SoundManager()
 
-    @objc class func sharedInstance() -> SoundManager {
-        shared
-    }
-
-    override private init() {
-    }
+    private init() { }
 
     private lazy var beepSoundID: SystemSoundID? = {
         systemSoundID(forSoundFileName: "beep")
@@ -23,11 +18,11 @@ import ToolKit
         systemSoundID(forSoundFileName: "alert-received")
     }()
 
-    @objc func playBeep() {
+    func playBeep() {
         play(systemSoundID: beepSoundID)
     }
 
-    @objc func playAlert() {
+    func playAlert() {
         play(systemSoundID: alertSoundID)
     }
 

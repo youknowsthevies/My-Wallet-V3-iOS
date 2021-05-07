@@ -73,8 +73,6 @@
 {
     [super viewWillAppear:animated];
     [self.accountsAndAddressesNavigationController.assetSelectorView show];
-
-    [self displayTransferFundsWarningIfAppropriate];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -92,7 +90,6 @@
 {
     allKeys = [WalletManager.sharedInstance.wallet allLegacyAddresses:self.assetType];
     [self.tableView reloadData];
-    [self displayTransferFundsWarningIfAppropriate];
 }
 
 #pragma mark - Navigation
@@ -254,15 +251,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
 }
 
-- (void)displayTransferFundsWarningIfAppropriate
-{
-    if (self.assetType == LegacyAssetTypeBitcoin && [WalletManager.sharedInstance.wallet didUpgradeToHd] && [WalletManager.sharedInstance.wallet getTotalBalanceForSpendableActiveLegacyAddresses] >= [WalletManager.sharedInstance.wallet dust] && self.accountsAndAddressesNavigationController.visibleViewController == self) {
-        self.navigationItem.leftBarButtonItem = self.accountsAndAddressesNavigationController.warningButton;
-    } else {
-        self.navigationItem.leftBarButtonItem = nil;
-    }
-}
-
 #pragma mark - Table View Delegate
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -385,7 +373,7 @@
                 cell.watchLabel.center = CGPointMake(cell.watchLabel.center.x, watchLabelCenterY);
                 cell.watchLabel.textColor = [UIColor grayColor];
                 
-                CGFloat minimumBalanceButtonOriginX = IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 235 : 194;
+                CGFloat minimumBalanceButtonOriginX = IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 235 : 194;
                 CGFloat watchLabelEndX = cell.watchLabel.frame.origin.x + cell.watchLabel.frame.size.width + 8;
                 
                 if (watchLabelEndX > minimumBalanceButtonOriginX) {

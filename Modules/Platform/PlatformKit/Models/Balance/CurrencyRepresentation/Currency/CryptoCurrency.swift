@@ -147,26 +147,6 @@ extension CryptoCurrency {
         }
     }
 
-    /// CryptoCurrency is supported in Legacy Send
-    /// Used whenever we don't have access to the new Account architecture.
-    public var hasLegacySendSupport: Bool {
-        switch self {
-        case .aave,
-             .algorand,
-             .polkadot,
-             .tether,
-             .wDGLD,
-             .yearnFinance:
-            return false
-        case .bitcoin,
-             .bitcoinCash,
-             .ethereum,
-             .pax,
-             .stellar:
-            return true
-        }
-    }
-
     public var name: String {
         switch self {
         case .aave:

@@ -40,15 +40,10 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
-        return .merge(
-            Effect.fireAndForget {
-                environment.appCoordinator.window = window
-                environment.appCoordinator.start()
-            },
-            Effect.fireAndForget {
-                environment.walletActionSubscriber.subscribe()
-            }
-        )
+        return .fireAndForget {
+            environment.appCoordinator.window = window
+            environment.appCoordinator.start()
+        }
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {
             environment.dataProvider.syncing.sync()

@@ -42,8 +42,6 @@ final class BackgroundAppHandler {
 
         NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
 
-        wallet.didReceiveMessageForLastTransaction = false
-
         WalletManager.shared.closeWebSockets(withCloseCode: .backgroundedApp)
 
         if wallet.isInitialized() {

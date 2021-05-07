@@ -6,7 +6,6 @@ import PlatformKit
 
 public struct PaxToken: ERC20Token {
     public static let nonCustodialTransactionSupport: AvailableActions = [.swap]
-    public static let legacySendSupport: Bool = true
     public static let assetType: CryptoCurrency = .pax
     public static let contractAddress: EthereumContractAddress = "0x8E870D67F660D95d5be530380D0eC0bd388289E1"
 

@@ -197,10 +197,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
         // Handle airdrop routing
         deepLinkRouter.routeIfNeeded()
-
-        if let tabControllerManager = AppCoordinator.shared.tabControllerManager {
-            tabControllerManager.reload()
-        }
     }
 
     // MARK: - Start Flows
@@ -228,8 +224,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         
         let sift: SiftServiceAPI = resolve()
         sift.removeUserId()
-
-        StellarServiceProvider.shared.tearDown()
         sharedContainter.reset()
         appSettings.reset()
         onboardingSettings.reset()

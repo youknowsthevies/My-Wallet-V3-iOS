@@ -5,5 +5,4 @@ import RxSwift
 
 protocol AssetAccountRepositoryAPI: AnyObject {
     var accounts: Single<[AssetAccount]> { get }
-    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount>
 }

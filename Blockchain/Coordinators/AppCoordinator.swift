@@ -186,7 +186,6 @@ import WalletPayloadKit
 
     /// Reloads contained view controllers
     @objc func reload() {
-        tabControllerManager?.reload()
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
         
@@ -203,7 +202,6 @@ import WalletPayloadKit
         guard slidingViewController != nil else {
             return
         }
-        tabControllerManager?.hideSendAndReceiveKeyboards()
         tabControllerManager?.showDashboard()
         closeSideMenu()
     }
@@ -213,7 +211,6 @@ import WalletPayloadKit
             // Nothing to reload
             return
         }
-        tabControllerManager?.reloadAfterMultiAddressResponse()
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
 
@@ -274,13 +271,11 @@ import WalletPayloadKit
 
     /// Observes symbol changes so that view controllers can reflect the new symbol
     private func observeSymbolChanges() {
-        BlockchainSettings.App.shared.onSymbolLocalChanged = { [unowned self] _ in
-            self.tabControllerManager?.reloadSymbols()
-            self.accountsAndAddressesNavigationController?.reload()
-            self.sideMenuViewController?.reload()
+        BlockchainSettings.App.shared.onSymbolLocalChanged = { [weak self] _ in
+            self?.accountsAndAddressesNavigationController?.reload()
+            self?.sideMenuViewController?.reload()
         }
     }
-
 }
 
 extension AppCoordinator: SideMenuViewControllerDelegate {
@@ -343,44 +338,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     private func handleAccountsAndAddresses() {
         UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
             createAccountsAndAddressesViewController(),
-            animated: true,
-            completion: { [weak self] in
-                self?.didPresentAccountsAndAddressesNavigationController()
-            }
+            animated: true
         )
-    }
-
-    private enum WalletError: Error {
-        case walletNotInitialized
-        case walletNotUpgradedToHD
-    }
-
-    private func didPresentAccountsAndAddressesNavigationController() {
-        let wallet = walletManager.wallet
-        guard wallet.isInitialized() else {
-            Logger.shared.error(WalletError.walletNotInitialized)
-            return
-        }
-        guard wallet.didUpgradeToHd() else {
-            Logger.shared.error(WalletError.walletNotUpgradedToHD)
-            return
-        }
-        guard !wallet.didUpgradeToV4 else {
-            return
-        }
-        guard !appFeatureConfigurator.configuration(for: .sendP2).isEnabled else {
-            return
-        }
-        guard accountsAndAddressesNavigationController?.viewControllers.count == 1 else {
-            return
-        }
-        guard wallet.getTotalBalanceForSpendableActiveLegacyAddresses() >= wallet.dust() else {
-            return
-        }
-        guard accountsAndAddressesNavigationController?.assetSelectorView().selectedAsset == .bitcoin else {
-            return
-        }
-        accountsAndAddressesNavigationController?.alertUserToTransferAllFunds()
     }
 
     private func handleSettings() {
@@ -610,16 +569,5 @@ extension AppCoordinator: InterestIdentityVerificationAnnouncementRouting {
         }
         let controller = InterestDashboardAnnouncementViewController(presenter: presenter)
         tabControllerManager?.tabViewController.showInterestIdentityVerificationScreen(controller)
-    }
-}
-
-// MARK: - DevSupporting
-
-extension AppCoordinator: DevSupporting {
-    @objc func showDebugView(from presenter: DebugViewPresenter) {
-        let debugViewController = DebugTableViewController()
-        debugViewController.presenter = presenter
-        let navigationController = UINavigationController(rootViewController: debugViewController)
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(navigationController, animated: true)
     }
 }

@@ -64,19 +64,3 @@ final class WelcomeViewController: BaseScreenViewController {
             completion: nil)
     }
 }
-
-// MARK: - Dev Support
-
-#if DEBUG
-extension WelcomeViewController {
-    override var canBecomeFirstResponder: Bool { true }
-    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        switch motion {
-        case .motionShake:
-            presenter.devSupport.showDebugView(from: .welcome)
-        default:
-            break
-        }
-    }
-}
-#endif

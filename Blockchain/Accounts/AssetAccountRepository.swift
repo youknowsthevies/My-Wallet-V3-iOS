@@ -140,38 +140,6 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
         }
     }
 
-    func defaultAccount(for assetType: CryptoCurrency) -> Single<AssetAccount> {
-        switch assetType {
-        case .algorand, .polkadot:
-            return .error(AssetAccountRepositoryError.noDefaultAccount)
-        case .stellar:
-            guard let defaultAccount = stellarAccountService.currentAccount?.assetAccount else {
-                return .error(AssetAccountRepositoryError.noDefaultAccount)
-            }
-            return .just(defaultAccount)
-        case .bitcoin,
-             .bitcoinCash:
-            let index = wallet.getDefaultAccountIndex(for: assetType.legacy)
-            guard let defaultAccount = AssetAccount.create(assetType: assetType, index: index, wallet: wallet) else {
-                return .error(AssetAccountRepositoryError.noDefaultAccount)
-            }
-            return .just(defaultAccount)
-        case .aave,
-             .ethereum,
-             .pax,
-             .tether,
-             .wDGLD,
-             .yearnFinance:
-            return accounts(for: assetType, fromCache: false)
-                .map { accounts in
-                    guard let defaultAccount = accounts.first else {
-                        throw AssetAccountRepositoryError.noDefaultAccount
-                    }
-                    return defaultAccount
-                }
-        }
-    }
-
     // MARK: Private Methods
 
     private func stellarAccount(fromCache: Bool) -> Single<[AssetAccount]> {
@@ -179,12 +147,9 @@ class AssetAccountRepository: AssetAccountRepositoryAPI {
             return cachedAccount(assetType: .stellar)
         } else {
             return stellarAccountService
-                .currentStellarAccountAsSingle(fromCache: false)
+                .currentStellarAccount(fromCache: false)
                 .map { account in
-                    guard let account = account else {
-                        return []
-                    }
-                    return [account.assetAccount]
+                    [account.assetAccount]
                 }
                 .catchError { error -> Single<[AssetAccount]> in
                     /// Should Horizon go down or should we have an error when

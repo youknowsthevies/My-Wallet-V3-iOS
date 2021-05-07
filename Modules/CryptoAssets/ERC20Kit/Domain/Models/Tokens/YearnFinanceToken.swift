@@ -6,7 +6,6 @@ import PlatformKit
 
 public struct YearnFinanceToken: ERC20Token {
     public static let nonCustodialTransactionSupport: AvailableActions = [.swap]
-    public static let legacySendSupport: Bool = false
     public static let assetType: CryptoCurrency = .yearnFinance
     public static let contractAddress: EthereumContractAddress = "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e"
 

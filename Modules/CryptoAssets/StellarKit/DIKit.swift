@@ -47,8 +47,6 @@ extension DependencyContainer {
 
         factory { LedgersServiceProvider() as LedgersServiceProviderAPI }
 
-        single { StellarLedgerService() as StellarLedgerServiceAPI }
-
         factory(tag: CryptoCurrency.stellar) { StellarCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
 
     }

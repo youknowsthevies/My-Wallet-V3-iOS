@@ -192,7 +192,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         checkForNewInstall()
         
         appCoordinator.start()
-        WalletActionSubscriber.shared.subscribe()
         
         return true
     }
@@ -212,8 +211,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         AssetAddressRepository.shared.fetchSwipeToReceiveAddressesIfNeeded()
 
         NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
-
-        wallet.didReceiveMessageForLastTransaction = false
 
         WalletManager.shared.closeWebSockets(withCloseCode: .backgroundedApp)
 
@@ -315,16 +312,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         // Handle "bitcoin://" scheme
         if let bitcoinUrlPayload = BitcoinURLPayload(url: url) {
-
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
-
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
-
-            appCoordinator.tabControllerManager?.setupBitcoinPaymentFromURLHandler(
-                with: bitcoinUrlPayload.amount,
-                address: bitcoinUrlPayload.address
-            )
-
+            // TODO: Send P3: Handle deeplinks.
             return true
         }
         

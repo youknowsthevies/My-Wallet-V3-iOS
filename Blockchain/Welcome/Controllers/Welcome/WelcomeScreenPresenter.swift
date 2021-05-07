@@ -49,8 +49,7 @@ final class WelcomeScreenPresenter {
     let loginTapRelay = PublishRelay<Void>()
     
     // MARK: Injected
-    
-    let devSupport: DevSupporting
+
     private let launchAnnouncementPresenter: LaunchAnnouncementPresenter
     private let alertPresenter: AlertViewPresenter
     
@@ -61,11 +60,9 @@ final class WelcomeScreenPresenter {
     // MARK: - Setup
     
     init(alertPresenter: AlertViewPresenter = .shared,
-         launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
-         devSupport: DevSupporting = AppCoordinator.shared) {
+         launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter()) {
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
-        self.devSupport = devSupport
         
         let font = UIFont.main(.semibold, 16)
         let cornerRadius: CGFloat = 8

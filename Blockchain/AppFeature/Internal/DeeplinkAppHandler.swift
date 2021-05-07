@@ -56,16 +56,9 @@ final class DeeplinkAppHandler {
 
         // Handle "bitcoin://" scheme
         if let bitcoinUrlPayload = BitcoinURLPayload(url: url) {
-
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
-
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
-
-            appCoordinator.tabControllerManager?.setupBitcoinPaymentFromURLHandler(
-                with: bitcoinUrlPayload.amount,
-                address: bitcoinUrlPayload.address
-            )
-
+            // TODO: Send P3: Deal with deeplinks.
             return true
         }
 

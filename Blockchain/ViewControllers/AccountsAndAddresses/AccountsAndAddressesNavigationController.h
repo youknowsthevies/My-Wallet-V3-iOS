@@ -4,11 +4,9 @@
 #import "AssetSelectorView.h"
 
 @interface AccountsAndAddressesNavigationController : UINavigationController
-@property (nonatomic) UIBarButtonItem *warningButton;
 
 - (AssetSelectorView *)assetSelectorView;
 - (void)didGenerateNewAddress;
 - (void)reload;
-- (void)alertUserToTransferAllFunds;
 
 @end

@@ -9,15 +9,12 @@ extension DependencyContainer {
 
     public static var transactionUIKit = module {
 
-        factory { SendReceiveCoordinator() }
+        factory { ReceiveCoordinator() }
 
         // MARK: - Receive
 
         factory { ReceiveRouter() as ReceiveRouterAPI }
 
-        // MARK: - Send
-
-        factory { SendRouter() as SendRouterAPI }
 
         // MARK: - Hooks
 

@@ -3,7 +3,6 @@
 #import "AccountsAndAddressesNavigationController.h"
 #import "AccountsAndAddressesViewController.h"
 #import "AccountsAndAddressesDetailViewController.h"
-#import "SendBitcoinViewController.h"
 #import "UIView+ChangeFrameAttribute.h"
 #import "Blockchain-Swift.h"
 
@@ -17,14 +16,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.view.frame = [UIView rootViewSafeAreaFrameWithNavigationBar:YES tabBar:NO assetSelector:YES];
-
-    self.warningButton = [[UIBarButtonItem alloc]
-                          initWithImage:[UIImage imageNamed:@"warning"]
-                          style:UIBarButtonItemStylePlain
-                          target:self action:@selector(transferAllFundsWarningClicked)];
-
     WalletManager.sharedInstance.addressesDelegate = self;
 }
 
@@ -41,42 +33,6 @@
     
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_KEY_RELOAD_ACCOUNTS_AND_ADDRESSES object:nil];
 }
-
-- (void)alertUserToTransferAllFunds
-{
-    AppFeatureConfiguration *sendP2Configuration = [AppFeatureConfigurator.shared configurationFor:AppFeatureSendP2];
-    if (sendP2Configuration.isEnabled) {
-        return;
-    }
-    if (WalletManager.sharedInstance.wallet.didUpgradeToV4) {
-        return;
-    }
-
-    UIAlertController *alertToTransfer = [UIAlertController alertControllerWithTitle:BC_STRING_TRANSFER_FUNDS message:[NSString stringWithFormat:@"%@\n\n%@", BC_STRING_TRANSFER_FUNDS_DESCRIPTION_ONE, BC_STRING_TRANSFER_FUNDS_DESCRIPTION_TWO] preferredStyle:UIAlertControllerStyleAlert];
-    [alertToTransfer addAction:[UIAlertAction actionWithTitle:BC_STRING_NOT_NOW style:UIAlertActionStyleCancel handler:nil]];
-    [alertToTransfer addAction:[UIAlertAction actionWithTitle:BC_STRING_TRANSFER_FUNDS style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self transferAllFundsClicked];
-    }]];
-    
-    [self presentViewController:alertToTransfer animated:YES completion:nil];
-}
-
-#pragma mark - Transfer Funds
-
-- (void)transferAllFundsWarningClicked
-{
-    [self alertUserToTransferAllFunds];
-}
-
-- (void)transferAllFundsClicked
-{
-    [self dismissViewControllerAnimated:YES completion:^{
-        [AppCoordinator.shared closeSideMenu];
-        [[TransferAllCoordinator sharedInstance] startWithSendScreen];
-    }];
-
-}
-
 
 #pragma mark WalletAddressesDelegate
 

@@ -19,7 +19,6 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
 
     private let presenter: PinScreenPresenter
-    private let devSupport: DevSupporting
     private let alertViewPresenter: AlertViewPresenter
 
     private var serverStatusContainerView: UIStackView!
@@ -31,11 +30,9 @@ final class PinScreenViewController: BaseScreenViewController {
     // MARK: - Lifecycle
     
     init(using presenter: PinScreenPresenter,
-         alertViewPresenter: AlertViewPresenter = .shared,
-         devSupport: DevSupporting = AppCoordinator.shared) {
+         alertViewPresenter: AlertViewPresenter = .shared) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
-        self.devSupport = devSupport
         super.init(nibName: String(describing: PinScreenViewController.self), bundle: nil)
     }
     
@@ -409,25 +406,3 @@ extension PinScreenViewController: NavigationTransitionAnimating {
         return animator
     }
 }
-
-// MARK: - Developer modes
-
-#if DEBUG
-extension PinScreenViewController {
-    override var canBecomeFirstResponder: Bool {
-        true
-    }
-    
-    override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-        guard presenter.flow.isLoginAuthentication else {
-            return
-        }
-        switch motion {
-        case .motionShake:
-            devSupport.showDebugView(from: .pin)
-        default:
-            break
-        }
-    }
-}
-#endif

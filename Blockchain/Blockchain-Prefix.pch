@@ -10,79 +10,33 @@
 
 #pragma mark - Measurements
 
-#define HEIGHT_IPHONE_5S 568.0
-#define HEIGHT_IPHONE_6_PLUS 736.0
+#define HEIGHT_IPHONE_SE 568.0
+#define IS_USING_SCREEN_SIZE_LARGER_THAN_SE UIScreen.mainScreen.bounds.size.height > HEIGHT_IPHONE_SE
 
-#define IS_USING_6_OR_7_PLUS_SCREEN_SIZE UIScreen.mainScreen.bounds.size.height >= HEIGHT_IPHONE_6_PLUS
-#define IS_USING_SCREEN_SIZE_LARGER_THAN_5S UIScreen.mainScreen.bounds.size.height > HEIGHT_IPHONE_5S
-
-#define FONT_SIZE_EXTRA_EXTRA_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 14.0 : 11.0
-#define FONT_SIZE_EXTRA_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 15.0 : 12.0
-#define FONT_SIZE_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 16.0 : 13.0
-#define FONT_SIZE_SMALL_MEDIUM IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 17.0 : 14.0
-#define FONT_SIZE_MEDIUM IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 18.0 : 15.0
-#define FONT_SIZE_LARGE IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 20.0 : 17.0
-#define FONT_SIZE_EXTRA_EXTRA_LARGE IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 23.0 : 20.0
+#define FONT_SIZE_EXTRA_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 15.0 : 12.0
+#define FONT_SIZE_SMALL IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 16.0 : 13.0
+#define FONT_SIZE_SMALL_MEDIUM IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 17.0 : 14.0
+#define FONT_SIZE_MEDIUM IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 18.0 : 15.0
+#define FONT_SIZE_LARGE IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 20.0 : 17.0
 
 #define DEFAULT_HEADER_HEIGHT 65
-#define DEFAULT_FOOTER_HEIGHT 49
-
-// BCHDUpgradeView/BCWelcomeView
-#define BUTTON_HEIGHT 40
 
 #pragma mark - Strings
 
-// DEBUG MENU STRINGS
-#define DEBUG_STRING_DEBUG NSLocalizedString(@"Debug", nil)
-#define DEBUG_STRING_WALLET_JSON NSLocalizedString(@"Wallet JSON", nil)
-#define DEBUG_STRING_SIMULATE_SURGE NSLocalizedString(@"Simulate surge", nil)
-#define DEBUG_STRING_RESET_DONT_SHOW_AGAIN_PROMPT NSLocalizedString(@"Show all 'Dont Show Again' alerts", nil)
-#define DEBUG_STRING_RESET_DONT_SHOW_AGAIN_PROMPT_MESSAGE NSLocalizedString(@"This will allow the following alerts: Receive to watch-only, App Store review prompt, Transfer All Funds, and Survey prompt.", nil)
-#define DEBUG_STRING_PLEASE_LOGIN NSLocalizedString(@"Please Login", nil)
-#define DEBUG_STRING_RESET NSLocalizedString(@"Reset", nil)
-#define DEBUG_STRING_FROM_LOWERCASE NSLocalizedString(@"from", nil)
-#define DEBUG_STRING_WELCOME NSLocalizedString(@"Welcome", nil)
-#define DEBUG_STRING_CERTIFICATE_PINNING @"Certificate Pinning"
-#define DEBUG_STRING_SECURITY_REMINDER_PROMPT_TIMER NSLocalizedString(@"Security reminder prompt timer (seconds)", nil)
-#define DEBUG_STRING_ZERO_VALUE_TICKER NSLocalizedString(@"Simulate zero ticker values", nil)
-
 #define WEBSOCKET_ERROR_INVALID_SERVER_CERTIFICATE @"Invalid server certificate."
-
-#define LOCALE_IDENTIFIER_EN_US @"en_US"
-#define LOCALE_IDENTIFIER_AR @"ar"
 
 // TODO Start - Deprecate these in favor of Constants.FontNames
 #define FONT_MONTSERRAT_REGULAR @"Montserrat-Regular"
-#define FONT_MONTSERRAT_SEMIBOLD @"Montserrat-SemiBold"
 #define FONT_MONTSERRAT_LIGHT @"Montserrat-Light"
 // TODO End
 
-#define DICTIONARY_KEY_MESSAGE @"message"
-#define DICTIONARY_KEY_FEE @"fee"
-
-#define ERROR_NO_FREE_OUTPUTS_TO_SPEND @"No free outputs to spend"
 #define ERROR_FAILED_NETWORK_REQUEST @"Connectivity error, failed to send network request"
-#define ERROR_FEE_TOO_LOW @"Fee is too low / Not sufficient priority\n"
-#define ERROR_FETCH_UNSPENT @"ERR_FETCH_UNSPENT"
-#define ERROR_BELOW_DUST_THRESHOLD @"BELOW_DUST_THRESHOLD"
-#define ERROR_NO_UNSPENT_OUTPUTS @"NO_UNSPENT_OUTPUTS"
-#define ERROR_AMOUNTS_ADDRESSES_MUST_EQUAL @"The number of destiny addresses and destiny amounts should be the same."
 
 // TODO: Move these in Constants.NotificationKeys
 #define NOTIFICATION_KEY_RELOAD_ACCOUNTS_AND_ADDRESSES @"reloadAccountsAndAddresses"
 
 // Notifications used in settings
-#define NOTIFICATION_KEY_GET_ALL_CURRENCY_SYMBOLS_SUCCESS @"GetAllCurrencySymbols"
 #define NOTIFICATION_KEY_GET_ACCOUNT_INFO_SUCCESS @"GetAccountInfo"
-#define NOTIFICATION_KEY_CHANGE_EMAIL_SUCCESS @"ChangeEmail"
-#define NOTIFICATION_KEY_RESEND_VERIFICATION_EMAIL_SUCCESS @"ResendVerificationEmail"
-#define NOTIFICATION_KEY_CHANGE_TWO_STEP_SUCCESS @"ChangeTwoStep"
-#define NOTIFICATION_KEY_CHANGE_TWO_STEP_ERROR @"ChangeTwoStepError"
-
-#define NOTIFICATION_KEY_CHANGE_NOTIFICATIONS_SUCCESS @"ChangeEmailNotifications"
-#define NOTIFICATION_KEY_CHANGE_NOTIFICATIONS_ERROR @"ChangeEmailNotificationsError"
-
-#define URL_SUFFIX_ETH_IS_CONTRACT_ADDRESS_ARGUMENT @"/eth/account/%@/isContract"
 
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL @"accountsAndAddressesDetail"
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL_EDIT @"accountsAndAddressesDetailEdit"
@@ -99,47 +53,16 @@
 
 #define TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT @"/q/txresult/%@/%@"
 
-#define CURRENCY_SYMBOL_ETH @"ETH"
-#define CURRENCY_SYMBOL_BCH @"BCH"
-#define CURRENCY_SYMBOL_BTC @"BTC"
-
-#define DICTIONARY_KEY_ERROR @"error"
-
-#define DICTIONARY_KEY_FEE_REGULAR @"regular"
-#define DICTIONARY_KEY_FEE_PRIORITY @"priority"
-#define DICTIONARY_KEY_FEE_LIMITS @"limits"
-#define DICTIONARY_KEY_FEE_LIMITS_MIN @"min"
-#define DICTIONARY_KEY_FEE_LIMITS_MAX @"max"
-
-#define DICTIONARY_KEY_ADDRESS @"address"
-#define DICTIONARY_KEY_THRESHOLD @"threshold"
-#define DICTIONARY_KEY_VALUE @"value"
-#define DICTIONARY_KEY_HASH @"hash"
-
-#define DICTIONARY_KEY_OUT @"out"
 #define DICTIONARY_KEY_ADDRESS_OUTPUT @"addr"
-
-#define DICTIONARY_KEY_FEE @"fee"
+#define DICTIONARY_KEY_HASH @"hash"
 #define DICTIONARY_KEY_LAST @"last"
-#define DICTIONARY_KEY_USD @"USD"
-
 #define DICTIONARY_KEY_NAME @"name"
-#define DICTIONARY_KEY_LAST @"last"
+#define DICTIONARY_KEY_OUT @"out"
+#define DICTIONARY_KEY_VALUE @"value"
 
 #define USER_DEFAULTS_KEY_LOADED_SETTINGS @"loadedSettings"
-#define USER_DEFAULTS_KEY_HIDE_APP_REVIEW_PROMPT @"hideAppReviewPrompt"
 #define USER_DEFAULTS_KEY_SHARED_KEY @"sharedKey"
 #define USER_DEFAULTS_KEY_GUID @"guid"
-#define USER_DEFAULTS_KEY_HIDE_WATCH_ONLY_RECEIVE_WARNING @"hideWatchOnlyReceiveWarning"
-#define USER_DEFAULTS_KEY_HAS_SEEN_CUSTOM_FEE_WARNING @"hasSeenCustomFeeWarning"
-
-// TODO: - Migrate debug flags to DebugTableViewController
-
-#define USER_DEFAULTS_KEY_DEBUG_ENABLE_CERTIFICATE_PINNING @"certificatePinning"
-#define USER_DEFAULTS_KEY_DEBUG_SIMULATE_SURGE @"simulateSurge"
-#define USER_DEFAULTS_KEY_DEBUG_SIMULATE_ZERO_TICKER @"zeroTicker"
-#define USER_DEFAULTS_KEY_HAS_SEEN_SURVEY_PROMPT @"hasSeenSurveyPrompt"
-#define USER_DEFAULTS_KEY_DEBUG_SECURITY_REMINDER_CUSTOM_TIMER @"securiterReminderTimer"
 
 #define KEYCHAIN_KEY_SHARED_KEY @"sharedKey"
 #define KEYCHAIN_KEY_GUID @"guid"
@@ -167,9 +90,6 @@
 #define UNSAFE_CHECK_PATH_WRITE_TEST @"/private/test.txt"
 #define UNSAFE_CHECK_CYDIA_URL @"cydia://package/com.example.package"
 
-#define BTC_PLACEHOLDER_DECIMAL_SEPARATOR_ARGUMENT @"0%@000"
-#define FIAT_PLACEHOLDER_DECIMAL_SEPARATOR_ARGUMENT @"0%@00"
-
 #define JAVASCRIPTCORE_RESOURCE_MY_WALLET @"my-wallet"
 #define JAVASCRIPTCORE_RESOURCE_WALLET_IOS @"wallet-ios"
 #define JAVASCRIPTCORE_TYPE_JS @"js"
@@ -192,19 +112,11 @@
 
 #define SATOSHI 1e8 // 100,000,000
 
-#define TX_SIZE_ONE_KILOBYTE 1000
-
 #define ANIMATION_DURATION .2f
 #define ANIMATION_DURATION_LONG .5f
 
-#define CORNER_RADIUS_BUTTON 4
-
-#define TOTAL_AMOUNT_VIEW_HEIGHT IS_USING_SCREEN_SIZE_LARGER_THAN_5S ? 120 : 100
-
 #define DELAY_KEYBOARD_DISMISSAL 0.6f
-#define DELAY_GET_HISTORY_BACKUP 3.0f
 
-#define BTC_LIMIT_IN_SATOSHI 21e14 // 21,000,000 (Total possible Bitcoins) * 100,000,000 (Satoshi)
 #define ETH_DECIMAL_LIMIT 18
 #define RECOVERY_ACCOUNT_DEFAULT_NUMBER 10
 

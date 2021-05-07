@@ -6,7 +6,6 @@
 #import "BCEditAddressView.h"
 #import "BCQRCodeView.h"
 #import "UIViewController+AutoDismiss.h"
-#import "SendBitcoinViewController.h"
 #import "Blockchain-Swift.h"
 
 const int numberOfSectionsAccountUnarchived = 2;
@@ -106,36 +105,11 @@ typedef enum {
     }
 }
 
-- (BOOL)canTransferFromAddress
-{
-    AppFeatureConfiguration *sendP2Configuration = [AppFeatureConfigurator.shared configurationFor:AppFeatureSendP2];
-    if (sendP2Configuration.isEnabled) {
-        return NO;
-    }
-    if (WalletManager.sharedInstance.wallet.didUpgradeToV4) {
-        return NO;
-    }
-    if (self.address) {
-        long long legacyBalance = [[WalletManager.sharedInstance.wallet getLegacyAddressBalance:self.address assetType:self.assetType] longLongValue];
-        uint64_t dust = [WalletManager.sharedInstance.wallet dust];
-        return legacyBalance >= dust
-                    && ![WalletManager.sharedInstance.wallet isWatchOnlyLegacyAddress:self.address]
-                    && ![self isArchived]
-                    && [WalletManager.sharedInstance.wallet didUpgradeToHd];
-    } else {
-        return NO;
-    }
-}
-
 #pragma mark - Actions
 
 - (void)transferFundsFromAddressClicked
 {
-    [AppCoordinator.shared closeSideMenu];
-    [self dismissViewControllerAnimated:YES completion:^{
-        TabControllerManager* tabManager = AppCoordinator.shared.tabControllerManager;
-        [tabManager transferFundsToDefaultAccountFrom:self.address];
-    }];
+
 }
 
 - (void)labelAddressClicked
@@ -292,21 +266,8 @@ typedef enum {
 
 - (NSString *)getStringForFooterInSection:(NSInteger)section
 {
-    BOOL canTransferFromAddress = [self canTransferFromAddress];
-
-    int sectionTransfer = -1;
     int sectionMain = 0;
     int sectionArchived = 1;
-
-    if (canTransferFromAddress) {
-        sectionTransfer = 0;
-        sectionMain = 1;
-        sectionArchived = 2;
-    }
-
-    if (section == sectionTransfer) {
-        return BC_STRING_TRANSFER_FOOTER_TITLE;
-    }
 
     if (section == sectionMain) {
         if ([self isArchived]) {
@@ -333,9 +294,6 @@ typedef enum {
 
     if (self.address) {
         int numberOfSections = numberOfSectionsAddressUnarchived;
-        if ([self canTransferFromAddress]) {
-            numberOfSections++;
-        }
         return [WalletManager.sharedInstance.wallet isWatchOnlyLegacyAddress:self.address] ? numberOfSections + 1 : numberOfSections;
     } else {
         return [WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType] == self.account ? numberOfSectionsAccountUnarchived - 1 : numberOfSectionsAccountUnarchived;
@@ -344,44 +302,20 @@ typedef enum {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    BOOL canTransferFromAddress = [self canTransferFromAddress];
-
-    if (canTransferFromAddress) {
-        if (section == 0) {
-            if ([self isArchived]) {
-                return numberOfRowsArchived;
-            } else {
-                return numberOfRowsTransfer;
-            }
-        }
-
-        if (section == 1) {
+    if (section == 0) {
+        if ([self isArchived]) {
+            return numberOfRowsArchived;
+        } else {
             if (self.address) {
                 return numberOfRowsAddressUnarchived;
             } else {
                 return [WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType] == self.account ? numberOfRowsAccountUnarchived - 1 : numberOfRowsAccountUnarchived;
             }
         }
+    }
 
-        if (section == 2) {
-            return numberOfRowsArchived;
-        }
-    } else {
-        if (section == 0) {
-            if ([self isArchived]) {
-                return numberOfRowsArchived;
-            } else {
-                if (self.address) {
-                    return numberOfRowsAddressUnarchived;
-                } else {
-                    return [WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType] == self.account ? numberOfRowsAccountUnarchived - 1 : numberOfRowsAccountUnarchived;
-                }
-            }
-        }
-
-        if (section == 1) {
-            return numberOfRowsArchived;
-        }
+    if (section == 1) {
+        return numberOfRowsArchived;
     }
 
     return 0;
@@ -391,25 +325,8 @@ typedef enum {
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
-    BOOL canTransferFromAddress = [self canTransferFromAddress];
-
-    int sectionTransfer = -1;
     int sectionMain = 0;
     int sectionArchived = 1;
-
-    if (canTransferFromAddress) {
-        sectionTransfer = 0;
-        sectionMain = 1;
-        sectionArchived = 2;
-    }
-
-    if (indexPath.section == sectionTransfer) {
-        switch (indexPath.row) {
-            case 0: {
-                [self transferFundsFromAddressClicked];
-            }
-        }
-    }
 
     if (indexPath.section == sectionMain) {
         if ([self isArchived]) {
@@ -469,29 +386,8 @@ typedef enum {
     cell.detailTextLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_LIGHT size:FONT_SIZE_MEDIUM];
     cell.detailTextLabel.adjustsFontSizeToFitWidth = YES;
 
-    BOOL canTransferFromAddress = [self canTransferFromAddress];
-
-    int sectionTransfer = -1;
     int sectionMain = 0;
     int sectionArchived = 1;
-
-    if (canTransferFromAddress) {
-        sectionTransfer = 0;
-        sectionMain = 1;
-        sectionArchived = 2;
-    }
-
-    if (indexPath.section == sectionTransfer) {
-        switch (indexPath.row) {
-            case 0: {
-                cell.textLabel.text = BC_STRING_TRANSFER_FUNDS;
-                cell.textLabel.textColor = UIColor.brandSecondary;
-                cell.detailTextLabel.text = nil;
-                cell.accessoryType = UITableViewCellAccessoryNone;
-            }
-            return cell;
-        }
-    }
 
     if (indexPath.section == sectionMain) {
         switch (indexPath.row) {

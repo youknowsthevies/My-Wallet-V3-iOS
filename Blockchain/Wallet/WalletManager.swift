@@ -32,7 +32,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 
     @objc var didChangePassword: Bool = false
 
-    @objc weak var settingsDelegate: WalletSettingsDelegate?
     weak var authDelegate: WalletAuthDelegate?
     weak var accountInfoDelegate: WalletAccountInfoDelegate?
     @objc weak var addressesDelegate: WalletAddressesDelegate?
@@ -40,10 +39,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     @objc weak var historyDelegate: WalletHistoryDelegate?
     @objc weak var accountInfoAndExchangeRatesDelegate: WalletAccountInfoAndExchangeRatesDelegate?
     @objc weak var backupDelegate: WalletBackupDelegate?
-    @objc weak var sendBitcoinDelegate: WalletSendBitcoinDelegate?
-    @objc weak var sendEtherDelegate: WalletSendEtherDelegate?
     @objc weak var transactionDelegate: WalletTransactionDelegate?
-    @objc weak var transferAllDelegate: WalletTransferAllDelegate?
     weak var swipeAddressDelegate: WalletSwipeAddressDelegate?
     weak var keyImportDelegate: WalletKeyImportDelegate?
     weak var secondPasswordDelegate: WalletSecondPasswordDelegate?
@@ -149,20 +145,20 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     fileprivate func updateFiatSymbols() {
         guard wallet.hasLoadedAccountInfo == true else { return }
         
-        guard let fiatCode = self.wallet.accountInfo["currency"] as? String else {
+        guard let fiatCode = wallet.accountInfo["currency"] as? String else {
             Logger.shared.warning("Could not get fiat code")
             return
         }
-        
-        guard wallet.btcRates != nil else { return }
-        
-        guard let currencySymbols = self.wallet.btcRates?[fiatCode] as? [AnyHashable: Any] else {
+        guard let btcRates = wallet.btcRates else {
+            Logger.shared.warning("btcRates not present")
+            return
+        }
+        guard var currencySymbols = btcRates[fiatCode] as? [AnyHashable: Any] else {
             Logger.shared.warning("Currency symbols dictionary is nil")
             return
         }
-        var symbolLocalDict = currencySymbols
-        symbolLocalDict["code"] = fiatCode
-        self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: symbolLocalDict)
+        currencySymbols["code"] = fiatCode
+        self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
     }
 
     private func reloadAfterMultiaddressResponse() {
@@ -173,6 +169,10 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 extension WalletManager: WalletDelegate {
 
     // MARK: - Auth
+
+    func walletDidGetBtcExchangeRates() {
+        updateFiatSymbols()
+    }
 
     func walletDidLoad() {
         Logger.shared.info("walletDidLoad()")
@@ -222,80 +222,6 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    // MARK: - Send Bitcoin/Bitcoin Cash
-    func didCheck(forOverSpending amount: NSNumber!, fee: NSNumber!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didCheckForOverSpending(amount: amount, fee: fee)
-        }
-    }
-
-    func didGetMaxFee(_ fee: NSNumber!, amount: NSNumber!, dust: NSNumber?, willConfirm: Bool) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didGetMaxFee(fee: fee, amount: amount, dust: dust, willConfirm: willConfirm)
-        }
-    }
-
-    func didUpdateTotalAvailableBTC(_ sweepAmount: NSNumber!, finalFee: NSNumber!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didUpdateTotalAvailableBTC(sweepAmount: sweepAmount, finalFee: finalFee)
-        }
-    }
-    func didUpdateTotalAvailableBCH(_ sweepAmount: NSNumber!, finalFee: NSNumber!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didUpdateTotalAvailableBCH(sweepAmount: sweepAmount, finalFee: finalFee)
-        }
-    }
-
-    func didGetFee(_ fee: NSNumber!, dust: NSNumber?, txSize: NSNumber!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didGetFee(fee: fee, dust: dust, txSize: txSize)
-        }
-    }
-
-    func didChangeSatoshiPerByte(_ sweepAmount: NSNumber!, fee: NSNumber!, dust: NSNumber?, updateType: FeeUpdateType) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didChangeSatoshiPerByte(
-                sweepAmount: sweepAmount,
-                fee: fee,
-                dust: dust,
-                updateType: updateType
-            )
-        }
-    }
-
-    func enableSendPaymentButtons() {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.enableSendPaymentButtons()
-        }
-    }
-
-    func updateSendBalance(_ balance: NSNumber!, fees: [AnyHashable: Any]!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.updateSendBalance(balance: balance, fees: fees)
-        }
-    }
-
-    func didReceivePaymentNotice(_ notice: String?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didReceivePaymentNotice(notice: notice)
-        }
-    }
-
-    // Bitcoin only - not used for Bitcoin Cash
-    func didErrorWhenBuildingBitcoinPaymentWithError(_ error: String) {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendBitcoinDelegate?.didErrorWhileBuildingPayment(error: error)
-        }
-    }
-
-    // MARK: - Send Ether
-
-    func didGetEtherAddressWithSecondPassword() {
-        DispatchQueue.main.async { [unowned self] in
-            self.sendEtherDelegate?.didGetEtherAddressWithSecondPassword()
-        }
-    }
-
     // MARK: - Addresses
 
     func didGenerateNewAddress() {
@@ -324,14 +250,6 @@ extension WalletManager: WalletDelegate {
         }
     }
 
-    // MARK: - Currency Symbols
-
-    func walletDidGetBtcExchangeRates(_ wallet: Wallet!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.updateFiatSymbols()
-        }
-    }
-
     // MARK: - BTC Multiaddress
 
     func didGet(_ response: MultiAddressResponse) {
@@ -343,6 +261,7 @@ extension WalletManager: WalletDelegate {
         }
         let newCount = newDefaultAccountLabeledAddressesCount
         BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount = Int(newCount)
+        updateFiatSymbols()
     }
 
     // MARK: - Backup
@@ -396,12 +315,6 @@ extension WalletManager: WalletDelegate {
 
     // MARK: - Transaction
 
-    func didPushTransaction() {
-        DispatchQueue.main.async { [unowned self] in
-            self.transactionDelegate?.didPushTransaction()
-        }
-    }
-
     func receivedTransactionMessage() {
         DispatchQueue.main.async { [unowned self] in
             self.transactionDelegate?.onTransactionReceived()
@@ -415,35 +328,6 @@ extension WalletManager: WalletDelegate {
                                              asset: .init(legacyAssetType: assetType),
                                              address: address)
         paymentReceivedRelay.accept(details)
-    }
-
-    // MARK: - Transfer all
-    func updateTransferAllAmount(_ amount: NSNumber!, fee: NSNumber!, addressesUsed: [Any]!) {
-        DispatchQueue.main.async { [unowned self] in
-            self.transferAllDelegate?.updateTransferAll(
-                amount: amount,
-                fee: fee,
-                addressesUsed: addressesUsed
-            )
-        }
-    }
-
-    func showSummaryForTransferAll() {
-        DispatchQueue.main.async { [unowned self] in
-            self.transferAllDelegate?.showSummaryForTransferAll()
-        }
-    }
-
-    func sendDuringTransferAll(_ secondPassword: String?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.transferAllDelegate?.sendDuringTransferAll(secondPassword: secondPassword)
-        }
-    }
-
-    func didErrorDuringTransferAll(_ error: String!, secondPassword: String?) {
-        DispatchQueue.main.async { [unowned self] in
-            self.transferAllDelegate?.didErrorDuringTransferAll(error: error, secondPassword: secondPassword)
-        }
     }
 
     // MARK: - Swipe Address

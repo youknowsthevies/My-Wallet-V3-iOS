@@ -1,36 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-import RxSwift
-import StellarKit
+import Foundation
 
-final class StellarServiceProvider: NSObject {
-    
-    @objc static let shared: StellarServiceProvider = .init(services: .init())
+final class StellarServiceProvider {
+    static let shared: StellarServiceProvider = .init(services: StellarServices())
 
     let services: StellarDependenciesAPI
-    
-    private lazy var setup: Void = {
-        Observable
-            .combineLatest(
-                services.ledger.current,
-                services.accounts.currentStellarAccount(fromCache: false).asObservable()
-            )
-            .subscribe()
-            .disposed(by: disposeBag)
-    }()
 
-    private let disposeBag = DisposeBag()
-
-    private init(services: StellarServices) {
+    private init(services: StellarDependenciesAPI) {
         self.services = services
-        super.init()
-        _ = setup
-    }
-    
-    func tearDown() {
-        services.accounts.clear()
-        services.operation.clear()
-        services.operation.end()
     }
 }

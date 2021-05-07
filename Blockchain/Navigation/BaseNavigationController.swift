@@ -103,7 +103,6 @@ extension NavigatableView where Self: UIViewController {
     }
 }
 
-/// `BaseNavigationController` is meant to be a replacement of `BCNavigationController`
 /// It relies on `NavigatableView` to properly layout it's `UIBarButtonItems` as well
 /// as style itself. There is no default behavior should the current `UIViewController`
 /// not conform to `NavigatableView`. This is because the behaviors across all our different

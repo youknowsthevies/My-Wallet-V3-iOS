@@ -27,13 +27,9 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     }
 
     var actions: Single<AvailableActions> {
-        Single
-            .zip(isFunded, featureFetcher.fetchBool(for: .sendP2))
-            .map { isFunded, sendP2 -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive]
-                if Token.legacySendSupport || sendP2 {
-                    base.insert(.send)
-                }
+        isFunded
+            .map { isFunded -> AvailableActions in
+                var base: AvailableActions = [.viewActivity, .receive, .send]
                 if Token.nonCustodialTransactionSupport.contains(.swap), isFunded {
                     base.insert(.swap)
                 }
@@ -66,11 +62,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .send:
-            return featureFetcher
-                .fetchBool(for: .sendP2)
-                .map { sendP2 -> Bool in
-                    sendP2 || Token.legacySendSupport
-                }
+            return .just(true)
         case .deposit,
              .sell,
              .withdraw:

@@ -64,10 +64,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         guard case let .crypto(crypto) = currency else { return }
         var actionPresenters: [DefaultWalletActionCellPresenter] = []
 
-        let sendP2Enabled = featureConfigurator.configuration(for: .sendP2).isEnabled
-        let canSend = crypto.hasLegacySendSupport || (crypto.hasNonCustodialSupport && sendP2Enabled)
-
-        if canSend {
+        if crypto.hasNonCustodialSupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .send)
             )

@@ -6,7 +6,6 @@ import PlatformKit
 
 public struct TetherToken: ERC20Token {
     public static let nonCustodialTransactionSupport: AvailableActions = [.swap]
-    public static let legacySendSupport: Bool = false
     public static let assetType: CryptoCurrency = .tether
     public static let contractAddress: EthereumContractAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 

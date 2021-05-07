@@ -5,28 +5,23 @@ import PlatformKit
 import RxSwift
 import TransactionKit
 
-public class SendReceiveCoordinator {
+public class ReceiveCoordinator {
 
     // MARK: Public Properties
 
-    public let builder: SendReceiveBuilder
+    public let builder: ReceiveBuilder
 
     // MARK: Private Properties
 
-    private let sendRouter: SendRouterAPI
     private let receiveRouter: ReceiveRouterAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(sendRouter: SendRouterAPI = resolve(),
-         receiveRouter: ReceiveRouterAPI = resolve(),
-         sendSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
+    init(receiveRouter: ReceiveRouterAPI = resolve(),
          receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService()) {
-        self.sendRouter = sendRouter
         self.receiveRouter = receiveRouter
-        builder = SendReceiveBuilder(
-            sendSelectionService: sendSelectionService,
+        builder = ReceiveBuilder(
             receiveSelectionService: receiveSelectionService
         )
 
@@ -34,13 +29,6 @@ public class SendReceiveCoordinator {
             .selectedData
             .subscribe(onNext: { [weak self] account in
                 self?.receiveRouter.presentReceiveScreen(for: account)
-            })
-            .disposed(by: disposeBag)
-
-        sendSelectionService
-            .selectedData
-            .subscribe(onNext: { [weak self] account in
-                self?.sendRouter.send(account: account)
             })
             .disposed(by: disposeBag)
     }

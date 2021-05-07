@@ -17,7 +17,6 @@ public struct AppEnvironment {
     var remoteNotificationServiceContainer: RemoteNotificationServiceContainer
     var certificatePinner: CertificatePinnerAPI
     var siftService: SiftServiceAPI
-    var walletActionSubscriber: WalletActionSubscriber
     var alertViewPresenter: AlertViewPresenterAPI
     var userActivityHandler: UserActivityHandler
     var deeplinkAppHandler: DeeplinkAppHandler
@@ -36,7 +35,6 @@ extension AppEnvironment {
             remoteNotificationServiceContainer: .default,
             certificatePinner: resolve(),
             siftService: resolve(),
-            walletActionSubscriber: .shared,
             alertViewPresenter: resolve(),
             userActivityHandler: .init(),
             deeplinkAppHandler: .init(),

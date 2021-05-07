@@ -5,16 +5,12 @@ import PlatformKit
 import PlatformUIKit
 import UIKit
 
-public final class SendReceiveBuilder {
-    private typealias LocalizedSend = LocalizationConstants.Send
+public final class ReceiveBuilder {
     private typealias LocalizedReceive = LocalizationConstants.Receive
 
-    private let sendSelectionService: AccountSelectionServiceAPI
     private let receiveSelectionService: AccountSelectionServiceAPI
 
-    init(sendSelectionService: AccountSelectionServiceAPI,
-         receiveSelectionService: AccountSelectionServiceAPI) {
-        self.sendSelectionService = sendSelectionService
+    init(receiveSelectionService: AccountSelectionServiceAPI) {
         self.receiveSelectionService = receiveSelectionService
     }
 
@@ -57,40 +53,4 @@ public final class SendReceiveBuilder {
         receiveAccountPickerRouter.load()
         return receiveAccountPickerRouter.viewControllable.uiviewController
     }
-
-    var sendAccountPickerRouter: AccountPickerRouting!
-    public func send() -> UIViewController {
-        let header = AccountPickerHeaderModel(
-            title: LocalizedSend.Header.sendCryptoNow,
-            subtitle: LocalizedSend.Header.chooseAWalletToSendFrom,
-            imageContent: .init(
-                imageName: ImageAsset.iconSend.rawValue,
-                accessibility: .none,
-                renderingMode: .normal,
-                bundle: .transactionUIKit
-            )
-        )
-        let navigationModel = ScreenNavigationModel(
-            leadingButton: .drawer,
-            trailingButton: .none,
-            titleViewStyle: .text(value: LocalizedSend.Text.send),
-            barStyle: .lightContent()
-        )
-        let builder = AccountPickerBuilder(
-            accountProvider: SendAccountPickerAccountProvider(),
-            action: .send
-        )
-        let didSelect: AccountPickerDidSelect = { [weak self] account in
-            self?.sendSelectionService.record(selection: account)
-        }
-        sendAccountPickerRouter = builder.build(
-            listener: .simple(didSelect),
-            navigationModel: navigationModel,
-            headerModel: .default(header)
-        )
-        sendAccountPickerRouter.interactable.activate()
-        sendAccountPickerRouter.load()
-        return sendAccountPickerRouter.viewControllable.uiviewController
-    }
-
 }

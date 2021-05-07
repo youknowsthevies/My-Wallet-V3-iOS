@@ -125,15 +125,6 @@ extension DependencyContainer {
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
         
         factory { WithdrawalRouter() as WithdrawalRouting }
-        
-        // MARK: - Send
-
-        factory { () -> SendScreenProvider in
-            let manager: SendControllerManager = DIKit.resolve()
-            return manager
-        }
-
-        single { SendControllerManager() }
 
         // MARK: - AppCoordinator
 

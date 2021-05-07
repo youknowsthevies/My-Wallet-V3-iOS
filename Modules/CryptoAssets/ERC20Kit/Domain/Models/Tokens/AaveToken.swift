@@ -6,7 +6,6 @@ import PlatformKit
 
 public struct AaveToken: ERC20Token {
     public static let nonCustodialTransactionSupport: AvailableActions = [.swap]
-    public static let legacySendSupport: Bool = false
     public static let assetType: CryptoCurrency = .aave
     public static let contractAddress: EthereumContractAddress = "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
 
