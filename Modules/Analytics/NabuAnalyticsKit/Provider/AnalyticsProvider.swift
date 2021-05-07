@@ -1,28 +1,36 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
 import AnalyticsKit
+import Combine
 import DIKit
+import Foundation
 
-class AnalyticsProvider: AnalyticsServiceProviding {
+public class AnalyticsProvider: AnalyticsServiceProviding {
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
     
-    private let nabuAnalyticsClient: EventSendingAPI
-    private let contextProvider: ContextProviding
+    @LazyInject
+    private var nabuAnalyticsClient: EventSendingAPI
+    @LazyInject
+    private var contextProvider: ContextProviding
     
-    init(nabuAnalyticsClient: EventSendingAPI = resolve(),
-         contextProvider: ContextProviding = resolve()) {
-        self.nabuAnalyticsClient = nabuAnalyticsClient
-        self.contextProvider = contextProvider
+    private var cancellables = Set<AnyCancellable>()
+    
+    public init() { }
+    
+    public func trackEvent(title: String, parameters: [String: Any]?) {
+        let event = Event(title: title, properties: parameters)
+        let context = contextProvider.context
+        // TODO: IOS-4556 - batching
+        let eventsWrapper = EventsWrapper(context: context, events: [event])
+        nabuAnalyticsClient.publish(events: eventsWrapper)
+            .retry(Constant.retryCount)
+            .sink() { (error) in
+                print(error) // TODO: IOS-4556 - persistence
+            } receiveValue: { _ in }
+            .store(in: &cancellables)
     }
     
-    func trackEvent(title: String, parameters: [String : Any]?) {
-        let event = Event(originalTimestamp: Date(),
-                          name: title,
-                          type: .event,
-                          properties: nil)
-        let context = contextProvider.context
-        let eventsWrapper = EventsWrapper(id: UUID().uuidString, context: context, events: [event])
-        nabuAnalyticsClient.post(events: eventsWrapper)
+    private enum Constant {
+        static let retryCount = 3
     }
 }

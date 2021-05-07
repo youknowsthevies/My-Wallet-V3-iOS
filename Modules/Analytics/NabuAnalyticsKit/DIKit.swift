@@ -6,9 +6,10 @@ extension DependencyContainer {
      
     public static var nabuAnalyticsKit = module {
         
+        single { APIClient() as EventSendingAPI }
+        
         single { ContextProvider() as ContextProviding }
         
-        single { APIClient() as EventSendingAPI }
     }
     
 }

@@ -3,5 +3,5 @@
 import Foundation
 
 struct Context: Encodable {
-    
+    // TODO: IOS-4555 - Provide context with every event request
 }

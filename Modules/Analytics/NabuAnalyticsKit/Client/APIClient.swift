@@ -1,9 +1,38 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import DIKit
 import Foundation
+import NetworkKit
 
 class APIClient: EventSendingAPI {
-    func post(events: EventsWrapper) {
-        
+    
+    private enum Path {
+        static let transactions = ["events", "publish"]
+    }
+    
+    // MARK: - Properties
+    
+    private let requestBuilder: RequestBuilder
+    private let networkAdapter: NetworkAdapterAPI
+
+    // MARK: - Setup
+    
+    init(networkAdapter: NetworkAdapterAPI = resolve(),
+         requestBuilder: RequestBuilder = resolve()) {
+        self.networkAdapter = networkAdapter
+        self.requestBuilder = requestBuilder
+    }
+    
+    func publish(events: EventsWrapper) -> AnyPublisher<Empty?, NetworkError> {
+        let jsonEncoder = JSONEncoder()
+        jsonEncoder.dateEncodingStrategy = .iso8601
+        let body = try? jsonEncoder.encode(events)
+        guard let request = requestBuilder.post(path: Path.transactions, body: body) else {
+            return .empty()
+        }
+        return networkAdapter.performOptional(request: request, responseType: Empty.self)
     }
 }
+
+struct Empty: Decodable { }

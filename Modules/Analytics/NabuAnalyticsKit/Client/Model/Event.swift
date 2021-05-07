@@ -2,13 +2,30 @@
 
 import Foundation
 
-enum EventType: String, Encodable {
-    case event = "EVENT"
-}
-
 struct Event: Encodable {
-    let originalTimestamp: Date
+    var originalTimestamp: Date
     let name: String
     var type: EventType
-    let properties: [String: String]?
+    let properties: [String: JSONValue]?
+    
+    init(title: String, properties: [String: Any]?) {
+        self.originalTimestamp = Date()
+        self.name = title
+        self.type = .event
+        
+        self.properties = properties?.compactMapValues { value -> JSONValue? in
+            switch value {
+            case let value as String:
+                return .string(value)
+            case let value as Int:
+                return .int(value)
+            case let value as Double:
+                return .double(value)
+            case let value as Bool:
+                return .bool(value)
+            default:
+                return nil
+            }
+        }
+    }
 }
