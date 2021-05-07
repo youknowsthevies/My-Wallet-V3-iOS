@@ -22,7 +22,7 @@ final class WalletUpgrading: WalletUpgradingAPI {
     }
 
     var requiresV4Upgrade: Single<Bool> {
-        settings.fetch(force: false)
+        settings.fetch(force: true)
             .map(\.features)
             .map { features -> Bool in
                 features[.segwit] ?? false
