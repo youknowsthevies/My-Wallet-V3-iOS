@@ -484,6 +484,7 @@ targets:
     - target: SettingsUIKit
     - target: SettingsKit
     - target: SharedPackagesKit
+    - target: UIComponentsKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
