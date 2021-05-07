@@ -1019,6 +1019,7 @@ targets:
         WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
         WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
         WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
+    platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate
       path: Modules/Network/NetworkKit/Scripts/get_ssl_certificate.sh
@@ -1026,7 +1027,8 @@ targets:
       testTargets:
       - NetworkKitTests
     sources:
-    - excludes:
+    - createIntermediateGroups: true
+      excludes:
       - Scripts
       - Cert
       path: Modules/Network/NetworkKit
@@ -1036,10 +1038,9 @@ targets:
       group: Modules/Network/NetworkKit/Cert
       optional: true
       path: Modules/Network/NetworkKit/Cert/blockchain.der
-    templateAttributes:
-      featureName: Network
-    templates:
-    - Module
+    schemes:
+      gatherCoverageData: true
+    type: framework
   NetworkKitTests:
     dependencies:
     - target: NetworkKit
