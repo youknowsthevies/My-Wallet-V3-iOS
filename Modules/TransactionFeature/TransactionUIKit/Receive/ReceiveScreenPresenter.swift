@@ -23,6 +23,7 @@ final class ReceiveScreenPresenter {
     let memoLabelContentPresenting: LabelContentPresenting
     let walletAddressLabelContent: LabelContent
     let memoLabelContent: LabelContent
+    let memoNoteViewModel: InteractableTextViewModel
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
     private (set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
@@ -36,6 +37,7 @@ final class ReceiveScreenPresenter {
     var qrCode: Driver<UIImage?> {
         qrCodeRelay.asDriver()
     }
+    let webViewLaunchRelay = PublishRelay<URL>()
 
     // MARK: Private Properties
 
@@ -57,6 +59,14 @@ final class ReceiveScreenPresenter {
             text: LocalizedString.Text.memo,
             font: .main(.semibold, 12),
             color: .titleText
+        )
+        memoNoteViewModel = InteractableTextViewModel(
+            inputs: [
+                .text(string: LocalizedString.Text.memoNote),
+                .url(string: LocalizedString.Text.learnMore, url: Constants.Url.stellarMemo)
+            ],
+            textStyle: .init(color: .descriptionText, font: .main(.semibold, 12)),
+            linkStyle: .init(color: .linkableText, font: .main(.semibold, 12))
         )
         nameLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: interactor.account.label,
@@ -104,9 +114,6 @@ final class ReceiveScreenPresenter {
         let qrCodeMetadata = state
             .map(\.metadata)
 
-        let address = qrCodeMetadata
-            .map(\.address)
-
         qrCodeMetadata
             .map { metadata -> QRCodeAPI? in
                 QRCode(metadata: metadata)
@@ -116,7 +123,8 @@ final class ReceiveScreenPresenter {
             .bindAndCatch(to: qrCodeRelay)
             .disposed(by: disposeBag)
 
-        address
+        qrCodeMetadata
+            .map(\.address)
             .map { LabelContent.Value.Interaction.Content(text: $0) }
             .map { .loaded(next: $0) }
             .bindAndCatch(to: addressLabelContentPresenting.interactor.stateRelay)
@@ -138,11 +146,16 @@ final class ReceiveScreenPresenter {
             .map { .loaded(next: $0) }
             .bindAndCatch(to: memoLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
+        
+        memoNoteViewModel.tap
+            .map { $0.url }
+            .bindAndCatch(to: webViewLaunchRelay)
+            .disposed(by: disposeBag)
 
         // MARK: - Copy
 
         copyButton.tapRelay
-            .withLatestFrom(address)
+            .withLatestFrom(qrCodeMetadata.map(\.absoluteString))
             .bind { pasteboard.string = $0 }
             .disposed(by: disposeBag)
 

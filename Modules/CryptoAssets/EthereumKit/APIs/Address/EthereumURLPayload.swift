@@ -18,7 +18,7 @@ public class EthereumURLPayload: EIP67URI {
     public private(set) var amount: String?
     public private(set) var gas: String?
     public private(set) var paymentRequestUrl: String?
-    public let includeScheme: Bool = true
+    public let includeScheme: Bool = false
     
     public var absoluteString: String {
         components.url!.absoluteString

@@ -47,6 +47,16 @@ extension LocalizationConstants.Receive.Text {
         comment: "Section header where memo is displayed."
     )
 
+    public static let memoNote = NSLocalizedString(
+        "If you send funds without the XLM Memo Text, your funds will be lost and not credited to your account. Please send only XLM to this address.",
+        comment: "Note about Stellar Memos"
+    )
+    
+    public static let learnMore = NSLocalizedString(
+        " Learn more.",
+        comment: "Learn more"
+    )
+
     public static let copiedToClipboard = NSLocalizedString(
         "Copied to clipboard",
         comment: "Text displayed when a crypto address has been copied to the users clipboard."

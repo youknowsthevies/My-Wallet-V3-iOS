@@ -11,6 +11,9 @@ import TransactionKit
 final class ReceiveScreenViewController: BaseScreenViewController {
     private typealias LocalizedString = LocalizationConstants.Receive
 
+    private let scrollView: UIScrollView = UIScrollView()
+    private let contentView: UIView = UIView()
+
     private let nameLabel: UILabel = UILabel()
     private let balanceLabel: UILabel = UILabel()
     private let assetImageView: UIImageView = UIImageView()
@@ -24,12 +27,29 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     private let memoHeaderLabel: UILabel = UILabel()
     private let memoSeparator: UIView = UIView()
     private let memoLabel: UILabel = UILabel()
+    private let memoNoteContainer: UIView = UIView()
+    private let memoNoteTextView: InteractableTextView = InteractableTextView()
     private let copyButton: ButtonView = ButtonView()
     private let shareButton: ButtonView = ButtonView()
     
+    private var memoNoteContainerToLabelConstraint: NSLayoutConstraint!
+    private var memoNoteContainerHeightConstraint: NSLayoutConstraint!
     private var memoLabelToSeparatorConstraint: NSLayoutConstraint!
     private var memoHeaderToAddressLabelConstraint: NSLayoutConstraint!
     private var memoHeaderHeightConstraint: NSLayoutConstraint!
+    private var copyButtonHeightConstraint: NSLayoutConstraint!
+    private var contentSizeObserver: NSKeyValueObservation?
+    
+    private var copyButtonTopOffset: CGFloat {
+        switch DevicePresenter.type {
+        case .superCompact:
+            return 16
+        case .compact,
+             .regular,
+             .max:
+            return 48
+        }
+    }
 
     private let presenter: ReceiveScreenPresenter
     private let disposeBag: DisposeBag = DisposeBag()
@@ -124,12 +144,16 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     }
     
     private func displayMemo(show: Bool) {
+        memoNoteContainer.isHidden = !show
         memoLabel.isHidden = !show
         memoSeparator.isHidden = !show
         memoHeaderLabel.isHidden = !show
+        memoNoteContainerToLabelConstraint.constant = show ? 16 : 0
+        memoNoteContainerHeightConstraint.isActive = !show
         memoLabelToSeparatorConstraint.constant = show ? 16 : 0
         memoHeaderToAddressLabelConstraint.constant = show ? 16 : 0
         memoHeaderHeightConstraint.isActive = !show
+        copyButtonHeightConstraint.constant = show ? 16 : copyButtonTopOffset
     }
 
     private func setupNavigationBar() {
@@ -143,19 +167,29 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         view.backgroundColor = .white
         
         // MARK: Add Subviews
-        view.addSubview(nameLabel)
-        view.addSubview(balanceLabel)
-        view.addSubview(thumbImageView)
-        view.addSubview(assetImageView)
-        view.addSubview(qrCodeImageView)
-        view.addSubview(addressHeaderLabel)
-        view.addSubview(addressSeparator)
-        view.addSubview(addressLabel)
-        view.addSubview(memoHeaderLabel)
-        view.addSubview(memoSeparator)
-        view.addSubview(memoLabel)
-        view.addSubview(copyButton)
-        view.addSubview(shareButton)
+        view.addSubview(scrollView)
+        
+        // MARK: Scroll View
+        scrollView.layoutToSuperview(.leading, .trailing, .top, .bottom, usesSafeAreaLayoutGuide: true)
+        scrollView.addSubview(contentView)
+        
+        // MARK: Content View
+        contentView.layoutToSuperview(.leading, .trailing, .top, .bottom, .width)
+        contentView.layoutToSuperview(.height, relation: .greaterThanOrEqual)
+        contentView.addSubview(nameLabel)
+        contentView.addSubview(balanceLabel)
+        contentView.addSubview(thumbImageView)
+        contentView.addSubview(assetImageView)
+        contentView.addSubview(qrCodeImageView)
+        contentView.addSubview(addressHeaderLabel)
+        contentView.addSubview(addressSeparator)
+        contentView.addSubview(addressLabel)
+        contentView.addSubview(memoHeaderLabel)
+        contentView.addSubview(memoSeparator)
+        contentView.addSubview(memoLabel)
+        contentView.addSubview(memoNoteContainer)
+        contentView.addSubview(copyButton)
+        contentView.addSubview(shareButton)
 
         // MARK: Wallet Name
         nameLabel.layoutToSuperview(.top, offset: 9)
@@ -189,16 +223,21 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         // MARK: Copy Button
         copyButton.layout(dimension: .height, to: 48)
         copyButton.layoutToSuperview(axis: .horizontal, offset: 24)
-        let copyButtonTopOffset: CGFloat
-        switch DevicePresenter.type {
-        case .superCompact:
-            copyButtonTopOffset = 16
-        case .compact,
-             .regular,
-             .max:
-            copyButtonTopOffset = 48
-        }
-        copyButton.layout(edge: .top, to: .bottom, of: memoLabel, offset: copyButtonTopOffset)
+        copyButtonHeightConstraint = copyButton.layout(edge: .top, to: .bottom, of: memoNoteContainer, offset: copyButtonTopOffset)
+
+        // MARK: Memo Note Container
+        memoNoteContainer.backgroundColor = .mediumBackground
+        memoNoteContainer.layer.cornerRadius = 8
+        memoNoteContainer.layoutToSuperview(axis: .horizontal, offset: 24)
+        memoNoteContainerToLabelConstraint = memoNoteContainer.layout(edge: .top, to: .bottom, of: memoLabel, offset: 16)
+        memoNoteContainerHeightConstraint = memoNoteContainer.layout(dimension: .height, to: 0, activate: false)
+        memoNoteContainer.addSubview(memoNoteTextView)
+
+        // MARK: Memo Note
+        memoNoteTextView.viewModel = presenter.memoNoteViewModel
+        memoNoteTextView.backgroundColor = .clear
+        memoNoteTextView.layoutToSuperview(axis: .horizontal, offset: 12)
+        memoNoteTextView.layoutToSuperview(axis: .vertical, offset: 12)
 
         // MARK: Memo Label
         memoLabel.layoutToSuperview(axis: .horizontal, offset: 24)
@@ -241,14 +280,17 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         // MARK: UILayoutGuide for QRCodeImageView
         let topGuide = UILayoutGuide()
         let bottomGuide = UILayoutGuide()
-        view.addLayoutGuide(topGuide)
-        view.addLayoutGuide(bottomGuide)
+        contentView.addLayoutGuide(topGuide)
+        contentView.addLayoutGuide(bottomGuide)
         NSLayoutConstraint.activate([
-            topGuide.topAnchor.constraint(equalTo: view.topAnchor, constant: 64),
+            topGuide.topAnchor.constraint(equalTo: balanceLabel.bottomAnchor, constant: 16),
             topGuide.bottomAnchor.constraint(equalTo: qrCodeImageView.topAnchor),
             bottomGuide.topAnchor.constraint(equalTo: qrCodeImageView.bottomAnchor),
-            bottomGuide.bottomAnchor.constraint(equalTo: addressSeparator.topAnchor, constant: 15),
+            bottomGuide.bottomAnchor.constraint(equalTo: addressHeaderLabel.topAnchor, constant: -16),
             topGuide.heightAnchor.constraint(equalTo: bottomGuide.heightAnchor)
         ])
+        contentSizeObserver = scrollView.observe(\.contentSize) { (scrollView, _) in
+            scrollView.isScrollEnabled = scrollView.contentSize.height > scrollView.frame.height
+        }
     }
 }
