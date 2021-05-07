@@ -37,6 +37,12 @@ final class ReceiveRouter: ReceiveRouterAPI {
             .disposed(by: disposeBag)
         navigationRouter.present(viewController: nav)
     }
+    
+    func presentKYCScreen() {
+        let presenter = ReceiveKYCPresenter()
+        let viewController = DetailsScreenViewController(presenter: presenter)
+        navigationRouter.present(viewController: viewController)
+    }
 
     func shareDetails(for metadata: CryptoAssetQRMetadata) {
         let displayCode = metadata.cryptoCurrency.displayCode

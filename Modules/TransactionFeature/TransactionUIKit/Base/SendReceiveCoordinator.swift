@@ -1,35 +1,79 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import KYCKit
 import PlatformKit
 import RxSwift
 import TransactionKit
 
 public class ReceiveCoordinator {
 
-    // MARK: Public Properties
+    // MARK: - Types
+
+    private enum ReceiveAction {
+        case presentReceiveScreen(account: BlockchainAccount)
+        case presentKYCScreen
+        case presentError
+    }
+
+    // MARK: - Public Properties
 
     public let builder: ReceiveBuilder
 
-    // MARK: Private Properties
+    // MARK: - Private Properties
 
     private let receiveRouter: ReceiveRouterAPI
+    private let kycStatusChecker: KYCStatusChecking
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(receiveRouter: ReceiveRouterAPI = resolve(),
-         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService()) {
+         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
+         kycStatusChecker: KYCStatusChecking = resolve()) {
         self.receiveRouter = receiveRouter
+        self.kycStatusChecker = kycStatusChecker
         builder = ReceiveBuilder(
             receiveSelectionService: receiveSelectionService
         )
 
         receiveSelectionService
             .selectedData
-            .subscribe(onNext: { [weak self] account in
-                self?.receiveRouter.presentReceiveScreen(for: account)
+            .flatMap(weak: self) { (self, account) -> Observable<ReceiveAction> in
+                switch account {
+                case is TradingAccount:
+                    return self.didSelectTradingAccountForReceive(account: account)
+                default:
+                    return .just(.presentReceiveScreen(account: account))
+                }
+            }
+            .subscribe(onNext: { [weak self] action in
+                switch action {
+                case .presentReceiveScreen(let account):
+                    self?.receiveRouter.presentReceiveScreen(for: account)
+                case .presentKYCScreen:
+                    self?.receiveRouter.presentKYCScreen()
+                case .presentError:
+                    break
+                }
             })
             .disposed(by: disposeBag)
+    }
+
+    // MARK: - Private Methods
+
+    private func didSelectTradingAccountForReceive(account: BlockchainAccount) -> Observable<ReceiveAction> {
+        kycStatusChecker.checkStatus()
+            .map { (status) -> ReceiveAction in
+                switch status {
+                case .unverified, .verifying:
+                    return .presentKYCScreen
+                case .verified:
+                    return .presentReceiveScreen(account: account)
+                case .failed:
+                    return .presentError
+                }
+            }
+            .asObservable()
     }
 }

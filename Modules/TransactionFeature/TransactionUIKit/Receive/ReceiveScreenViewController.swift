@@ -37,7 +37,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     private var memoLabelToSeparatorConstraint: NSLayoutConstraint!
     private var memoHeaderToAddressLabelConstraint: NSLayoutConstraint!
     private var memoHeaderHeightConstraint: NSLayoutConstraint!
-    private var copyButtonHeightConstraint: NSLayoutConstraint!
+    private var copyButtonToMemoNoteConstraint: NSLayoutConstraint!
     private var contentSizeObserver: NSKeyValueObservation?
     
     private var copyButtonTopOffset: CGFloat {
@@ -153,7 +153,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         memoLabelToSeparatorConstraint.constant = show ? 16 : 0
         memoHeaderToAddressLabelConstraint.constant = show ? 16 : 0
         memoHeaderHeightConstraint.isActive = !show
-        copyButtonHeightConstraint.constant = show ? 16 : copyButtonTopOffset
+        copyButtonToMemoNoteConstraint.constant = show ? 16 : copyButtonTopOffset
     }
 
     private func setupNavigationBar() {
@@ -223,7 +223,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         // MARK: Copy Button
         copyButton.layout(dimension: .height, to: 48)
         copyButton.layoutToSuperview(axis: .horizontal, offset: 24)
-        copyButtonHeightConstraint = copyButton.layout(edge: .top, to: .bottom, of: memoNoteContainer, offset: copyButtonTopOffset)
+        copyButtonToMemoNoteConstraint = copyButton.layout(edge: .top, to: .bottom, of: memoNoteContainer, offset: copyButtonTopOffset)
 
         // MARK: Memo Note Container
         memoNoteContainer.backgroundColor = .mediumBackground

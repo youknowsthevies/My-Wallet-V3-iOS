@@ -3,13 +3,10 @@
 import DIKit
 import KYCKit
 import KYCUIKit
-import PlatformKit
-import PlatformUIKit
 import RIBs
 import RxSwift
 
-protocol SwapBootstrapRouting: ViewableRouting {
-}
+protocol SwapBootstrapRouting: ViewableRouting { }
 
 protocol SwapBootstrapPresentable: Presentable {
     func showLoading()
@@ -23,75 +20,77 @@ protocol SwapBootstrapListener: AnyObject {
 
 final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresentable>, SwapBootstrapInteractable {
 
-    private enum Effect {
+    // MARK: - Types
+
+    private enum Action {
         case userMustKYCForSwap
-        case userMustCompleteKYC(KYCTiersPageModel)
+        case userMustCompleteKYC(model: KYCTiersPageModel)
         case userReadyForSwap
+        case kycCheckError
     }
+
+    // MARK: - Internal Properties
 
     weak var router: SwapBootstrapRouting?
     weak var listener: SwapBootstrapListener?
 
-    private let kycTiersService: KYCTiersServiceAPI
-    private let kycSettings: KYCSettingsAPI
+    // MARK: - Private Properties
+
+    private let kycStatusChecker: KYCStatusChecking
     private let kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI
 
+    // MARK: - Initializer
+
     init(presenter: SwapBootstrapPresentable,
-         kycSettings: KYCSettingsAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve(),
+         kycStatusChecker: KYCStatusChecking = resolve(),
          kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
-        self.kycTiersService = kycTiersService
-        self.kycSettings = kycSettings
+        self.kycStatusChecker = kycStatusChecker
         self.kycTiersPageModelFactory = kycTiersPageModelFactory
         super.init(presenter: presenter)
     }
+
+    // MARK: - Internal Methods
 
     override func didBecomeActive() {
         super.didBecomeActive()
         checkStatus()
     }
 
+    // MARK: - Private Methods
+
     private func checkStatus() {
-        let isCompletingKyc: Single<Bool> = kycSettings.isCompletingKyc
-        let hasAnyApprovedKYCTier: Single<Bool> = kycTiersService
-            .fetchTiers()
-            .map { $0.latestApprovedTier > .tier0 }
-
-        Single.zip(hasAnyApprovedKYCTier, isCompletingKyc)
-            .observeOn(MainScheduler.asyncInstance)
-            .do(onSubscribe: { [weak presenter] in
-                presenter?.showLoading()
-            })
-            .flatMap(weak: self) { (self, payload) -> Single<Effect> in
-                let (hasAnyApprovedKYCTier, isCompletingKyc) = payload
-                switch (hasAnyApprovedKYCTier, isCompletingKyc) {
-                case (false, false):
-                    return .just(.userMustKYCForSwap)
-                case (false, true):
-                    return self.kycTiersPageModelFactory
-                        .tiersPageModel(suppressCTA: true)
-                        .map { .userMustCompleteKYC($0) }
-                        .observeOn(MainScheduler.asyncInstance)
-                case (true, _):
-                    return .just(.userReadyForSwap)
-                }
+        kycStatusChecker.checkStatus(whileLoading: { [weak presenter] in
+            presenter?.showLoading()
+        })
+        .flatMap(weak: self) { (self, status) -> Single<Action> in
+            switch status {
+            case .unverified:
+                return .just(.userMustKYCForSwap)
+            case .verifying:
+                return self.kycTiersPageModelFactory
+                    .tiersPageModel(suppressCTA: true)
+                    .map({ (model) -> Action in
+                        .userMustCompleteKYC(model: model)
+                    })
+                    .observeOn(MainScheduler.asyncInstance)
+            case .verified:
+                return .just(.userReadyForSwap)
+            case .failed:
+                return .just(.kycCheckError)
             }
-            .subscribe(
-                onSuccess: { [weak self] effect in
-                    guard let self = self else { return }
-                    switch effect {
-                    case .userMustKYCForSwap:
-                        self.listener?.userMustKYCForSwap()
-                    case .userMustCompleteKYC(let model):
-                        self.listener?.userMustCompleteKYC(model: model)
-                    case .userReadyForSwap:
-                        self.listener?.userReadyForSwap()
-                    }
-                },
-                onError: { error in
-
-                }
-            )
-            .disposeOnDeactivate(interactor: self)
+        }
+        .subscribe(onSuccess: { [weak self] action in
+            switch action {
+            case .userMustKYCForSwap:
+                self?.listener?.userMustKYCForSwap()
+            case .userMustCompleteKYC(let model):
+                self?.listener?.userMustCompleteKYC(model: model)
+            case .userReadyForSwap:
+                self?.listener?.userReadyForSwap()
+            case .kycCheckError:
+                break
+            }
+        })
+        .disposeOnDeactivate(interactor: self)
     }
 }

@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
 import RIBs
 
 protocol SwapBootstrapInteractable: Interactable {
@@ -8,8 +7,7 @@ protocol SwapBootstrapInteractable: Interactable {
     var listener: SwapBootstrapListener? { get set }
 }
 
-protocol SwapBootstrapViewControllable: ViewControllable {
-}
+protocol SwapBootstrapViewControllable: ViewControllable { }
 
 final class SwapBootstrapRouter: ViewableRouter<SwapBootstrapInteractable, SwapBootstrapViewControllable>, SwapBootstrapRouting {
     override init(interactor: SwapBootstrapInteractable, viewController: SwapBootstrapViewControllable) {

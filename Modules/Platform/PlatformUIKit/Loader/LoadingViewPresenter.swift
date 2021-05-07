@@ -56,15 +56,15 @@ import UIKit
     /// In case `isEnabled` is `false`, the loader does not show.
     /// `isEnabled` is thread-safe.
     @objc public var isEnabled: Bool {
-        set {
-            lock.lock()
-            defer { lock.unlock() }
-            self._isEnabled = newValue
-        }
         get {
             lock.lock()
             defer { lock.unlock() }
             return _isEnabled
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            self._isEnabled = newValue
         }
     }
     

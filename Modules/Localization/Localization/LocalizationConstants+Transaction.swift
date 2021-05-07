@@ -10,6 +10,9 @@ extension LocalizationConstants {
         public enum Confirmation {
             public enum Error { }
         }
+        public enum Receive {
+            public enum KYC { }
+        }
         public enum Send {
             public enum AmountPresenter {
                 public enum LimitView { }
@@ -43,6 +46,47 @@ extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
         "You can swap up to %@",
         comment: "You can swap up to"
     )
+}
+
+public extension LocalizationConstants.Transaction.Receive.KYC {
+    
+    static let title = NSLocalizedString(
+        "Verify to use the Trading Account",
+        comment: ""
+    )
+    static let subtitle = NSLocalizedString(
+        "Get access to the Trading Account in seconds by completing your profile and getting Silver access.",
+        comment: ""
+    )
+    static let card1Title = NSLocalizedString(
+        "Verify Your Email",
+        comment: ""
+    )
+    static let card1Subtitle = NSLocalizedString(
+        "Confirm your email address to protect your Blockchain.com Wallet.",
+        comment: ""
+    )
+    static let card2Title = NSLocalizedString(
+        "Add Your Name & Address",
+        comment: ""
+    )
+    static let card2Subtitle = NSLocalizedString(
+        "We need to know your name and address to comply with local laws.",
+        comment: ""
+    )
+    static let card3Title = NSLocalizedString(
+        "Use the Trading Account",
+        comment: ""
+    )
+    static let card3Subtitle = NSLocalizedString(
+        "Send, Receive, Buy and Swap cryptocurrencies with your Trading Account.",
+        comment: ""
+    )
+    static let verifyNow = NSLocalizedString(
+        "Verify Now",
+        comment: ""
+    )
+    
 }
 
 public extension LocalizationConstants.Transaction.Swap.KYC {

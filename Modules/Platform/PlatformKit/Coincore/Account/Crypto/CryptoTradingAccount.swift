@@ -164,14 +164,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     }
                     return .just(true)
                 }
-                .flatMap(weak: self) { (self, isEnabled) -> Single<Bool> in
-                    guard isEnabled else {
-                        return .just(false)
-                    }
-                    return self.kycTiersService.tiers.map { tiers -> Bool in
-                        tiers.isTier1Approved || tiers.isTier2Approved
-                    }
-                }
         case .deposit,
              .withdraw:
             return .just(false)

@@ -10,5 +10,7 @@ extension DependencyContainer {
     public static var kycKit = module {
 
         single { KYCSettings() as KYCSettingsAPI }
+        
+        factory { KYCStatusChecker() as KYCStatusChecking }
     }
 }

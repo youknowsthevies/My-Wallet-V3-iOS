@@ -63,14 +63,14 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
             let nav = UINavigationController(rootViewController: controller)
             viewController.present(viewController: nav)
         } else {
-            viewController.replaceRoot(viewController: controller)
+            viewController.replaceRoot(viewController: controller, animated: false)
         }
     }
 
     func routeToKYC() {
         let presenter = SwapKYCPresenter()
         let vc = DetailsScreenViewController(presenter: presenter)
-        viewController.replaceRoot(viewController: vc)
+        viewController.replaceRoot(viewController: vc, animated: false)
     }
     
     func routeToSwap(with pair: SwapTrendingPair?) {

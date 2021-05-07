@@ -530,7 +530,14 @@ final class KYCCoordinator: KYCRouterAPI {
         let navController = KYCOnboardingNavigationController.make()
         navController.pushViewController(viewController, animated: false)
         navController.modalTransitionStyle = .coverVertical
-        presentingViewController.present(navController, animated: true)
+        if let presentedViewController = presentingViewController.presentedViewController {
+            presentedViewController.dismiss(animated: true) {
+                presentingViewController.present(navController, animated: true)
+            }
+        } else {
+            presentingViewController.present(navController, animated: true)
+        }
+        
         return navController
     }
 }

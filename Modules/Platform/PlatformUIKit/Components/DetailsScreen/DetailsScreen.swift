@@ -29,5 +29,6 @@ public enum DetailsScreen {
         case defaultLight
         case defaultDark
         case custom(leading: Screen.Style.LeadingButton, trailing: Screen.Style.TrailingButton, barStyle: Screen.Style.Bar)
+        case hidden
     }
 }

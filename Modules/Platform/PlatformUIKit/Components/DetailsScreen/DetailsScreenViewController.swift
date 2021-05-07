@@ -106,6 +106,8 @@ public final class DetailsScreenViewController: BaseTableViewController {
             setStandardDarkContentStyle()
         case .defaultLight:
             setStandardLightContentStyle()
+        case .hidden:
+            setNavigationBar(visible: false)
         }
         presenter.titleView
             .distinctUntilChanged()
