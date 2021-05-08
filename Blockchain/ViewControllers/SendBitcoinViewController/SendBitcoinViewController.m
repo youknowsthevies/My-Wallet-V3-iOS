@@ -61,7 +61,6 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
 
 @property (nonatomic, strong) SendExchangeAddressStatePresenter *exchangeAddressPresenter;
 @property (nonatomic, strong) BridgeBitpayService *bitpayService;
-@property (nonatomic, strong) BridgeAnalyticsRecorder *analyticsRecorder;
 
 @property (nonatomic, strong) ExchangeAddressViewModel *exchangeAddressViewModel;
 
@@ -182,7 +181,6 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     self.exchangeAddressPresenter = [[SendExchangeAddressStatePresenter alloc] initWithAssetType:self.assetType];
     
     self.bitpayService = [[BridgeBitpayService alloc] init];
-    self.analyticsRecorder = [[BridgeAnalyticsRecorder alloc] init];
 
     self.view.frame = [UIView rootViewSafeAreaFrameWithNavigationBar:YES tabBar:YES assetSelector:YES];
 
@@ -1247,7 +1245,6 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     }
     
     if (hours + minutes <= 0 && seconds <= 2) {
-        [self.analyticsRecorder recordWithEvent:[[BitpayPaymentExpired alloc] init]];
         [timer invalidate];
         [self showBitPayExpiredAlert];
     }
@@ -1337,7 +1334,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     if ([self isBitpayURL:bitpayURL] && self.assetType == LegacyAssetTypeBitcoin)
     {
         NSString *bitpayInvoiceID = [self invoiceIDFromBitPayURL:bitpayURL];
-        [self handleBitpayInvoiceID:bitpayInvoiceID event:[BitpayUrlPasted createWithLegacyAssetType:self.assetType]];
+        [self handleBitpayInvoiceID:bitpayInvoiceID];
     }
 }
 
@@ -1854,7 +1851,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
             if ([self isBitpayURL:bitpayURLCandidate] && self.assetType == LegacyAssetTypeBitcoin)
             {
                 NSString *bitpayInvoiceID = [self invoiceIDFromBitPayURL:bitpayURLCandidate];
-                [self handleBitpayInvoiceID:bitpayInvoiceID event:[BitpayUrlPasted createWithLegacyAssetType:self.assetType]];
+                [self handleBitpayInvoiceID:bitpayInvoiceID];
                 return YES;
             }
         }
@@ -2305,10 +2302,9 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     }
 }
 
-- (void)handleBitpayInvoiceID:(NSString *)invoiceID event:(id<ObjcAnalyticsEvent> _Nonnull) event
+- (void)handleBitpayInvoiceID:(NSString *)invoiceID
 {
     [LoadingViewPresenter.shared showCircularIn:self.view with:nil];
-    [self.analyticsRecorder recordWithEvent:event];
     [self.bitpayService bitpayPaymentRequestWithInvoiceID:invoiceID assetType:self.assetType completion:^(ObjcCompatibleBitpayObject * _Nullable paymentReq, NSString * _Nullable error) {
         [LoadingViewPresenter.shared hide];
         if (error != nil) {
@@ -2375,7 +2371,7 @@ typedef NS_ENUM(NSUInteger, RejectionType) {
     if (paymentRequestUrl != nil) {
         if ([paymentRequestUrl hasPrefix:@"https://bitpay.com/i/"] && self.assetType == LegacyAssetTypeBitcoin) {
             NSString *invoiceId = [paymentRequestUrl stringByReplacingOccurrencesOfString:@"https://bitpay.com/i/" withString:@""];
-            [self handleBitpayInvoiceID:invoiceId event:[BitpayUrlScanned createWithLegacyAssetType:LegacyAssetTypeBitcoin]];
+            [self handleBitpayInvoiceID:invoiceId];
             return;
         } else {
             // There is a `paymentRequestUrl` but we don't support it.
