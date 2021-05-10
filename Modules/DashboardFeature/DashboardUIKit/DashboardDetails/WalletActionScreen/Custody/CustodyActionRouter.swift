@@ -10,22 +10,17 @@ import SettingsKit
 import ToolKit
 import TransactionUIKit
 
-public protocol BackupRouterAPI {
-    
+public protocol DashboardBackupRouterAPI {
     var completionRelay: PublishRelay<Void> { get }
-    
     func start()
-    
 }
 
 public protocol WalletOperationsRouting {
-    
     func handleSellCrypto()
     func handleBuyCrypto(currency: CryptoCurrency)
     func showCashIdentityVerificationScreen()
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
     func switchTabToSwap()
-    
 }
 
 public final class CustodyActionRouter: CustodyActionRouterAPI {
@@ -37,7 +32,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     public let walletOperationsRouter: WalletOperationsRouting
     
     private var stateService: CustodyActionStateServiceAPI!
-    private let backupRouterAPI: BackupRouterAPI
+    private let backupRouterAPI: DashboardBackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private var depositRouter: DepositRootRouting!
     private let dataProviding: DataProviding
@@ -56,7 +51,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
     
-    public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
+    public convenience init(backupRouterAPI: DashboardBackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
             tabSwapping: tabSwapping,
@@ -65,7 +60,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
     
     init(
-        backupRouterAPI: BackupRouterAPI,
+        backupRouterAPI: DashboardBackupRouterAPI,
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
         navigationRouter: NavigationRouterAPI = resolve(),

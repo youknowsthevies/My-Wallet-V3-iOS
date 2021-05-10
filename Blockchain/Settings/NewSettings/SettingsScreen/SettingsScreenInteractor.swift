@@ -55,7 +55,7 @@ final class SettingsScreenInteractor {
          settingsAuthenticating: AppSettingsAuthenticating = resolve(),
          tiersService: KYCTiersServiceAPI = resolve(),
          wallet: Wallet = WalletManager.shared.wallet,
-         balanceProviding: BalanceProviding = DataProvider.default.balance,
+         balanceProviding: BalanceProviding = resolve(),
          balanceChangeProviding: BalanceChangeProviding = DataProvider.default.balanceChange,
          paymentMethodTypesService: PaymentMethodTypesServiceAPI) {
         self.smsTwoFactorService = smsTwoFactorService

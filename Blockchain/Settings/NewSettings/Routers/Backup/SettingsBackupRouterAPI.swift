@@ -3,12 +3,7 @@
 import RxRelay
 import RxSwift
 
-protocol BackupRouterAPI: AnyObject {
+protocol SettingsBackupRouterAPI: AnyObject {
     var completionRelay: PublishRelay<Void> { get }
-    
-    var entry: BackupRouterEntry { get }
-    
-    func next(to state: BackupRouterStateService.State)
-    func previous()
     func start()
 }

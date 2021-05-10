@@ -21,8 +21,6 @@ import TransactionKit
 import TransactionUIKit
 import WalletPayloadKit
 
-extension BackupFundsSettingsRouter: DashboardUIKit.BackupRouterAPI {}
-
 extension AppCoordinator: DashboardUIKit.WalletOperationsRouting {}
 
 extension AnalyticsUserPropertyInteractor: DashboardUIKit.AnalyticsUserPropertyInteracting {}
@@ -73,8 +71,6 @@ extension DependencyContainer {
         
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
-        factory { BackupFundsCustodialRouter() as BackupRouterAPI }
-                
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
         
         factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
@@ -90,14 +86,12 @@ extension DependencyContainer {
         single { SecondPasswordStore() as SecondPasswordStorable }
 
         // MARK: - Dashboard
-        
-        factory { BackupFundsSettingsRouter() as DashboardUIKit.BackupRouterAPI }
-        
+
+        factory { BackupFundsCustodialRouter() as DashboardBackupRouterAPI }
+
         factory {
             AccountsRouter(
-                routing: AppCoordinator.shared,
-                balanceProvider: DataProvider.default.balance,
-                backupRouter: BackupFundsSettingsRouter()
+                routing: AppCoordinator.shared
             ) as AccountsRouting
         }
         

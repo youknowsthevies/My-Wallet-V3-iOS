@@ -27,7 +27,7 @@ final class SettingsRouter: SettingsRouterAPI {
         UpdateMobileRouter(navigationRouter: navigationRouter)
     }()
     
-    private lazy var backupRouterAPI: BackupRouterAPI = {
+    private lazy var backupRouterAPI: SettingsBackupRouterAPI = {
         BackupFundsSettingsRouter(navigationRouter: navigationRouter)
     }()
     

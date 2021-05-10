@@ -2,6 +2,7 @@
 
 import AnalyticsKit
 import BuySellUIKit
+import DashboardUIKit
 import DIKit
 import InterestKit
 import InterestUIKit
@@ -45,7 +46,7 @@ import WalletPayloadKit
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: BuySellUIKit.RouterAPI!
     private var sellRouter: BuySellUIKit.SellRouter!
-    private var backupRouter: BackupRouterAPI?
+    private var backupRouter: DashboardBackupRouterAPI?
     
     // MARK: - UIViewController Properties
     
@@ -447,14 +448,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     @objc func handleSellCrypto() {
         let accountSelectionService = AccountSelectionService()
         let interactor = SellRouterInteractor(
-            accountSelectionService: accountSelectionService,
-            balanceProvider: DataProvider.default.balance
+            accountSelectionService: accountSelectionService
         )
         let builder = BuySellUIKit.SellBuilder(
             accountSelectionService: accountSelectionService,
-            routerInteractor: interactor,
-            analyticsRecorder: resolve(),
-            balanceProvider: DataProvider.default.balance
+            routerInteractor: interactor
         )
         sellRouter = BuySellUIKit.SellRouter(builder: builder)
         sellRouter.load()

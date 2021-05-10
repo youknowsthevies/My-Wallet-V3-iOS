@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -33,13 +34,13 @@
                                     <rect key="frame" x="16" y="0.0" width="382" height="323"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Svy-Ri-FqR">
-                                            <rect key="frame" x="0.0" y="0.0" width="42" height="20.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="41.5" height="20.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WbU-TI-Kfz">
-                                            <rect key="frame" x="0.0" y="36.5" width="42" height="20.5"/>
+                                            <rect key="frame" x="0.0" y="36.5" width="41.5" height="20.5"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -90,7 +91,7 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="rM2-wO-ky2" secondAttribute="trailing" constant="-1" id="aGM-Cg-itF"/>
                         <constraint firstItem="rM2-wO-ky2" firstAttribute="leading" secondItem="a6h-HA-Yf1" secondAttribute="leading" id="kTA-U6-igF"/>
-                        <constraint firstItem="rM2-wO-ky2" firstAttribute="top" secondItem="keC-Hs-f78" secondAttribute="top" constant="20" symbolic="YES" id="pWw-8s-FBZ"/>
+                        <constraint firstItem="rM2-wO-ky2" firstAttribute="top" secondItem="keC-Hs-f78" secondAttribute="top" symbolic="YES" id="pWw-8s-FBZ"/>
                         <constraint firstItem="rM2-wO-ky2" firstAttribute="centerX" secondItem="a6h-HA-Yf1" secondAttribute="centerX" id="qhD-xe-SN3"/>
                         <constraint firstItem="rM2-wO-ky2" firstAttribute="height" relation="greaterThanOrEqual" secondItem="keC-Hs-f78" secondAttribute="height" id="yNd-Da-Pya"/>
                         <constraint firstItem="rM2-wO-ky2" firstAttribute="bottom" secondItem="jyl-GE-h2u" secondAttribute="bottom" id="ybn-E8-V9y"/>
@@ -99,19 +100,22 @@
                     <viewLayoutGuide key="frameLayoutGuide" id="keC-Hs-f78"/>
                 </scrollView>
             </subviews>
-            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+            <viewLayoutGuide key="safeArea" id="hgd-Xu-7Cn"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="hgd-Xu-7Cn" firstAttribute="bottom" secondItem="a6h-HA-Yf1" secondAttribute="bottom" id="IZR-8U-4BF"/>
                 <constraint firstItem="a6h-HA-Yf1" firstAttribute="top" secondItem="hgd-Xu-7Cn" secondAttribute="top" id="PnC-7Y-dUG"/>
                 <constraint firstItem="hgd-Xu-7Cn" firstAttribute="trailing" secondItem="a6h-HA-Yf1" secondAttribute="trailing" id="dcS-o9-pnK"/>
                 <constraint firstItem="a6h-HA-Yf1" firstAttribute="leading" secondItem="A2h-Aa-d9D" secondAttribute="leading" id="imX-Qs-9NO"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="hgd-Xu-7Cn"/>
             <point key="canvasLocation" x="139" y="88"/>
         </view>
     </objects>
     <resources>
         <image name="illo_wallet_bg" width="343" height="171"/>
         <image name="illo_wallet_fg" width="191" height="171"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>
