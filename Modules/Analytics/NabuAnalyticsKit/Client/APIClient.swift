@@ -34,9 +34,20 @@ class APIClient: EventSendingAPI {
         guard let body = try? jsonEncoder.encode(events) else {
             fatalError("Error encoding analytics event body.")
         }
-        guard let request = requestBuilder.post(path: Path.transactions, body: body) else {
-            fatalError("Error creating analytics event request.")
-        }
-        return networkAdapter.performOptional(request: request)
+        return jwtService.token
+            .map(Optional.init)
+            .replaceError(with: nil)
+            .compactMap { [unowned self] token in
+                var headers = HTTPHeaders()
+                if let token = token {
+                    headers[HttpHeaderField.authorization] = "Bearer \(token)"
+                }
+                return self.requestBuilder.post(path: Path.transactions, body: body, headers: headers)
+            }
+            .setFailureType(to: NetworkError.self)
+            .flatMap { [unowned self] request in
+                self.networkAdapter.performOptional(request: request)
+            }
+            .eraseToAnyPublisher()
     }
 }
