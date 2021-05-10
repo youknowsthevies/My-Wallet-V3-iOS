@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import Foundation
 import NetworkKit
+import PlatformKit
 
 class APIClient: EventSendingAPI {
     
@@ -15,13 +16,16 @@ class APIClient: EventSendingAPI {
     
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
+    private let jwtService: JWTServiceAPI
 
     // MARK: - Setup
     
     init(networkAdapter: NetworkAdapterAPI = resolve(),
-         requestBuilder: RequestBuilder = resolve()) {
+         requestBuilder: RequestBuilder = resolve(),
+         jwtService: JWTServiceAPI = resolve()) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
+        self.jwtService = jwtService
     }
     
     func publish(events: EventsWrapper) -> AnyPublisher<Void, NetworkError> {

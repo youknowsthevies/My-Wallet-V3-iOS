@@ -3,5 +3,9 @@
 import Foundation
 
 struct Context: Encodable {
-    // TODO: IOS-4555 - Provide context with every event request
+    let app: App
+    let device: Device
+    let locale: String
+    let screen: Screen
+    let timezone: String?
 }
