@@ -5,5 +5,5 @@ import Foundation
 import NetworkKit
 
 protocol EventSendingAPI {
-    func publish(events: EventsWrapper) -> AnyPublisher<Empty?, NetworkError>
+    func publish(events: EventsWrapper) -> AnyPublisher<Void, NetworkError>
 }
