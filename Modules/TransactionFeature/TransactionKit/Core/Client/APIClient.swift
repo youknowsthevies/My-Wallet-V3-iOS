@@ -192,8 +192,7 @@ final class APIClient: TransactionKitClientAPI {
         )
         return networkAdapter
             .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
+                request: request
             )
     }
     
@@ -222,8 +221,7 @@ final class APIClient: TransactionKitClientAPI {
         )
         return networkAdapter
             .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
+                request: request
             )
     }
     
@@ -251,8 +249,7 @@ final class APIClient: TransactionKitClientAPI {
         )
         return networkAdapter
             .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
+                request: request
             )
     }
     
