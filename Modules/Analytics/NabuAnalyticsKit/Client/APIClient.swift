@@ -27,9 +27,11 @@ class APIClient: EventSendingAPI {
     func publish(events: EventsWrapper) -> AnyPublisher<Empty?, NetworkError> {
         let jsonEncoder = JSONEncoder()
         jsonEncoder.dateEncodingStrategy = .iso8601
-        let body = try? jsonEncoder.encode(events)
+        guard let body = try? jsonEncoder.encode(events) else {
+            fatalError("Error encoding analytics event body.")
+        }
         guard let request = requestBuilder.post(path: Path.transactions, body: body) else {
-            return .empty()
+            fatalError("Error creating analytics event request.")
         }
         return networkAdapter.performOptional(request: request, responseType: Empty.self)
     }

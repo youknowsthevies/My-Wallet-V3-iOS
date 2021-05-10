@@ -8,10 +8,8 @@ import Foundation
 public class AnalyticsProvider: AnalyticsServiceProviding {
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
     
-    @LazyInject
-    private var nabuAnalyticsClient: EventSendingAPI
-    @LazyInject
-    private var contextProvider: ContextProviding
+    @LazyInject private var nabuAnalyticsClient: EventSendingAPI
+    @LazyInject private var contextProvider: ContextProviding
     
     private var cancellables = Set<AnyCancellable>()
     

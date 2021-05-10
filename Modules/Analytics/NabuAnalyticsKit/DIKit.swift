@@ -9,7 +9,5 @@ extension DependencyContainer {
         single { APIClient() as EventSendingAPI }
         
         single { ContextProvider() as ContextProviding }
-        
     }
-    
 }
