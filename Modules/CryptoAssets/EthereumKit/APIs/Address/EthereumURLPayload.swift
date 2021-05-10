@@ -21,7 +21,11 @@ public class EthereumURLPayload: EIP67URI {
     public let includeScheme: Bool = false
     
     public var absoluteString: String {
-        components.url!.absoluteString
+        var components = self.components
+        if !includeScheme {
+            components.scheme = nil
+        }
+        return components.url!.absoluteString
     }
     
     private let components: URLComponents
