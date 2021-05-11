@@ -93,7 +93,7 @@ extension SwapTransactionEngine {
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
         pendingTransaction.engineState[.quoteSubscription] = nil
-        pendingTransaction.update(confirmations: [])
+        _ = pendingTransaction.update(confirmations: [])
         return pendingTransaction
     }
 

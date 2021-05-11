@@ -48,7 +48,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                    fiatCurrencyService
                        .fiatCurrency)
             .map(weak: self) { (self, values) -> PendingTransaction in
-                let (actionableBalance, balance, feeAndLimit, fiatCurrency) = values
+                let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
                 let zero: MoneyValue = .zero(currency: self.sourceAsset)
                 return PendingTransaction(
                     amount: zero,
