@@ -80,8 +80,9 @@ private func defineDependencies() {
         DependencyContainer.activityUIKit;
         DependencyContainer.kycKit;
         DependencyContainer.kycUIKit;
-        DependencyContainer.blockchain;
         DependencyContainer.analyticsKit;
+        DependencyContainer.nabuAnalyticsKit;
+        DependencyContainer.blockchain;
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit;
         #endif

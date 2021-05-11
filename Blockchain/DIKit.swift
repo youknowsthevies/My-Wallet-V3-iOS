@@ -10,6 +10,7 @@ import DIKit
 import ERC20Kit
 import EthereumKit
 import KYCKit
+import NabuAnalyticsKit
 import PlatformKit
 import PlatformUIKit
 import SettingsKit
@@ -72,7 +73,7 @@ extension DependencyContainer {
         
         factory { UIDevice.current as DeviceInfo }
 
-        single { [FirebaseAnalyticsService()] as [AnalyticsServiceProviding] }
+        single { [FirebaseAnalyticsService(), AnalyticsProvider()] as [AnalyticsServiceProviding] }
         
         factory { CrashlyticsRecorder() as MessageRecording }
         

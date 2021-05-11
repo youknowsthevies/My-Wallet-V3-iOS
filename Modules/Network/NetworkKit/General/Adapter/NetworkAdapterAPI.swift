@@ -116,6 +116,11 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType>
     
+    /// Performs a request and maps response to `Void` and returns any errors.
+    func performOptional(
+        request: NetworkRequest
+    ) -> AnyPublisher<Void, NetworkError>
+    
     /// Performs a request and if there is content maps the response and returns any errors
     /// - Parameters:
     ///   - responseType: the type of the response to map to
@@ -284,5 +289,12 @@ extension NetworkAdapterAPI {
         errorResponseType: ErrorResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         performOptional(request: request, responseType: responseType)
+    }
+    
+    func performOptional(
+        request: NetworkRequest
+    ) -> AnyPublisher<Void, NetworkError> {
+        perform(request: request, responseType: EmptyNetworkResponse.self)
+            .mapToVoid()
     }
 }
