@@ -2,7 +2,6 @@
 
 import AnalyticsKit
 import DIKit
-import PlatformKit
 import RxSwift
 
 public protocol OrderCreationServiceAPI: class {

@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 public struct WithdrawalAmountResponse: Decodable {
     let symbol: String
     let value: String

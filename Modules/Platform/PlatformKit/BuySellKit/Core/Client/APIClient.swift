@@ -2,7 +2,6 @@
 
 import DIKit
 import NetworkKit
-import PlatformKit
 import RxSwift
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &

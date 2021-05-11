@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 public struct Order {
     public enum Action: String, Codable {
         case buy = "BUY"
