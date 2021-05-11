@@ -314,7 +314,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Handle "bitcoin://" scheme
-        if let bitcoinUrlPayload = BitcoinURLPayload(url: url) {
+        if BitcoinURLPayload(url: url) != nil {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
             // TODO: Send P3: Handle deeplinks.
@@ -323,7 +323,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         
         if authenticated {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
-            deepLinkRouter.routeIfNeeded()
+            _ = deepLinkRouter.routeIfNeeded()
             return true
         }
 

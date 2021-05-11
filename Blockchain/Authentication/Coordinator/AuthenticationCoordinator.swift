@@ -196,7 +196,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         }
 
         // Handle airdrop routing
-        deepLinkRouter.routeIfNeeded()
+        _ = deepLinkRouter.routeIfNeeded()
     }
 
     // MARK: - Start Flows
