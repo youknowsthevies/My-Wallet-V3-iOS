@@ -59,8 +59,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         self.ethereumAccounts(with: secondPassword,
                               success: { accounts in
             guard
-                let ethereumAccountsDicts = accounts as? [[String:Any]],
-                let defaultAccount = ethereumAccountsDicts.first,
+                let defaultAccount = accounts.first,
                 let label = defaultAccount["label"] as? String
             else {
                 error("No ethereum accounts.")
@@ -76,8 +75,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         self.ethereumAccounts(with: secondPassword,
                               success: { accounts in
             guard
-                let ethereumAccountsDicts = accounts as? [[String:Any]],
-                let defaultAccount = ethereumAccountsDicts.first,
+                let defaultAccount = accounts.first,
                 let addr = defaultAccount["addr"] as? String
             else {
                 error("No ethereum accounts.")
