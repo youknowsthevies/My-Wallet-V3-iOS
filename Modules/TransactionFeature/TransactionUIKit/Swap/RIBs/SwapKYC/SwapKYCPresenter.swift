@@ -8,8 +8,6 @@ import RIBs
 import RxRelay
 import RxSwift
 
-extension KYCTiersViewController: ViewControllable { }
-
 final class SwapKYCPresenter: DetailsScreenPresenterAPI {
 
     // MARK: Types

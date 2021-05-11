@@ -25,9 +25,9 @@ extension SettingsSectionType.CellType {
             case .walletID:
                 return .settingsWalletIdCopyClick
             }
-        case .cards(let type):
+        case .cards(_):
             return nil // TODO: IOS-3100 - Analytics
-        case .banks(let type):
+        case .banks(_):
             return nil // TODO: IOS-3100 - Analytics
         case .plain(let type):
             switch type {

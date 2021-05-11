@@ -30,6 +30,3 @@ final class ConfirmationPageBuilder: ConfirmationPageBuildable {
         return router
     }
 }
-
-/// Conforming to ConfirmationPageViewControllable for RIB compatibility
-extension DetailsScreenViewController: ViewControllable { }

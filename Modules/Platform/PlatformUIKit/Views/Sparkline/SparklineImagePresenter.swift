@@ -47,7 +47,7 @@ public class SparklineImagePresenter {
             switch calculationState {
             case .calculating:
                 return .loading
-            case .invalid(let error):
+            case .invalid(_):
                 return .invalid
             case .value(let points):
                 let path = self.calculator.sparkline(with: points)
@@ -59,7 +59,7 @@ public class SparklineImagePresenter {
         .disposed(by: disposeBag)
         
         stateRelay.compactMap { [weak self] state -> UIImage? in
-            guard let self = self else { return nil }
+            guard self != nil else { return nil }
             guard case let .valid(image) = state else { return nil }
             return image
         }

@@ -93,7 +93,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             navigateToIneligibilityPage()
         case .contactSupportURL:
             navigateToContactSupportPage()
-        case .cancel(let data):
+        case .cancel(_):
             break
         case .pendingOrderCompleted(orderDetails: let orderDetails):
             navigateToPendingScreen(orderDetails: orderDetails)
