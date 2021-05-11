@@ -119,7 +119,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                         // TODO: KYC with checkout data
                     }
                 }
-            case .failure(let error):
+            case .failure(_):
                 self.handleError()
             }
         }
