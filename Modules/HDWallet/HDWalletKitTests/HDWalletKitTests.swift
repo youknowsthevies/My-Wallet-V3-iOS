@@ -9,20 +9,22 @@ class HDWalletKitTests: XCTestCase {
     func test_hd_wallet() throws {
         
         // Test Mnemonic
-        
-        let allWords = [ "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "abandon",
-                         "about" ]
-        
+
+        let allWords = [
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "abandon",
+            "about"
+        ]
+
         let words = try Words(words: allWords)
         
         let passphrase = Passphrase(rawValue: "TREZOR")

@@ -210,16 +210,20 @@ public class AlertView: UIView {
                 let font = Font(.branded(.montserratSemiBold), size: .custom(18.0)).result
                 let attributedTitle = NSAttributedString(
                     string: title,
-                    attributes: [.font: font,
-                                 .foregroundColor: UIColor.white]
+                    attributes: [
+                        .font: font,
+                        .foregroundColor: UIColor.white
+                    ]
                 )
                 confirmButton.setAttributedTitle(attributedTitle, for: .normal)
             case .default(let title):
                 let font = Font(.branded(.montserratSemiBold), size: .custom(18.0)).result
                 let attributedTitle = NSAttributedString(
                     string: title,
-                    attributes: [.font: font,
-                                 .foregroundColor: UIColor.primaryButton]
+                    attributes: [
+                        .font: font,
+                        .foregroundColor: UIColor.primaryButton
+                    ]
                 )
                 defaultButton.setAttributedTitle(attributedTitle, for: .normal)
             case .dismiss:

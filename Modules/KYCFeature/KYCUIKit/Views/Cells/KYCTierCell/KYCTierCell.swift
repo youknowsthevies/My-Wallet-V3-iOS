@@ -39,13 +39,14 @@ class KYCTierCell: UICollectionViewCell {
     @IBOutlet fileprivate var tierRequirements: UILabel!
     @IBOutlet fileprivate var shadowView: UIView!
 
-    fileprivate var allLabels: [UILabel] {
-        [headlineDescription,
-        tierDescription,
-        limitAmountDescription,
-        limitTimeframe,
-        limitDurationEstimate,
-        tierApprovalStatus]
+    fileprivate var allLabels: [UILabel] {[
+            headlineDescription,
+            tierDescription,
+            limitAmountDescription,
+            limitTimeframe,
+            limitDurationEstimate,
+            tierApprovalStatus
+        ]
     }
 
     // MARK: Private Properties
@@ -95,8 +96,10 @@ class KYCTierCell: UICollectionViewCell {
         let tierPromptText = LocalizationConstants.KYC.unlock + "\n" + tier.tierDescription
         let attributedTierDescription = NSAttributedString(
             string: tierPromptText.uppercased(),
-            attributes: [.font: KYCTierCell.headlineFont(),
-                         .kern: NSNumber(value: 4.0)]
+            attributes: [
+                .font: KYCTierCell.headlineFont(),
+                .kern: NSNumber(value: 4.0)
+            ]
         )
 
         tierDescription.attributedText = attributedTierDescription
@@ -149,8 +152,10 @@ class KYCTierCell: UICollectionViewCell {
 
         let tierDescriptionHeight = NSAttributedString(
             string: LocalizationConstants.KYC.unlock + "\n" + tier.tierDescription,
-            attributes: [.font: headlineFont(),
-                         .kern: NSNumber(value: 4.0)]).heightForWidth(width: adjustedWidth)
+            attributes: [
+                .font: headlineFont(),
+                .kern: NSNumber(value: 4.0)
+            ]).heightForWidth(width: adjustedWidth)
 
         let limitAmountHeight = NSAttributedString(
             string: model.limitDescription,
@@ -178,12 +183,14 @@ class KYCTierCell: UICollectionViewCell {
         statusHeight = model.statusVisibility.isHidden ? 0.0 : statusHeight
         tierRequirementsHeight = model.requirementsVisibility.isHidden ? 0.0 : tierRequirementsHeight
 
-        let numberVisible = [tierDescriptionHeight,
-                             limitAmountHeight,
-                             timeframeHeight,
-                             durationEstimateHeight,
-                             tierRequirementsHeight,
-                             statusHeight].filter({ $0 > 0.0 }).count
+        let numberVisible = [
+            tierDescriptionHeight,
+            limitAmountHeight,
+            timeframeHeight,
+            durationEstimateHeight,
+            tierRequirementsHeight,
+            statusHeight
+        ].filter({ $0 > 0.0 }).count
 
         let stackviewPadding = CGFloat((numberVisible - 1)) * stackviewInteritemPadding
 

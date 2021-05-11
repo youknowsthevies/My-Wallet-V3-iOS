@@ -82,10 +82,12 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         addr: MockEthereumWalletTestData.account,
         label: "My ETH Wallet"
     )
-    static let ethereumAccounts: [[String : Any]] = [[
-        "addr": legacyAccount.addr,
-        "label": legacyAccount.label
-    ]]
+    static let ethereumAccounts: [[String : Any]] = [
+        [
+            "addr": legacyAccount.addr,
+            "label": legacyAccount.label
+        ]
+    ]
     var ethereumAccountsCompletion: Result<[[String : Any]], MockLegacyEthereumWalletError> = .success(ethereumAccounts)
     func ethereumAccounts(with secondPassword: String?,
                           success: @escaping ([[String: Any]]) -> Void,

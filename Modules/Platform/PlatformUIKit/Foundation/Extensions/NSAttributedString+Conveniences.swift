@@ -108,9 +108,9 @@ extension NSAttributedString {
         paragraphStyle.headIndent = bullet.width
         let copy = NSMutableAttributedString(attributedString: self)
         bullet.append(copy)
-        bullet.addAttributes(
-            [.paragraphStyle: paragraphStyle,
-             .font: fontAttribute() ?? UIFont.systemFont(ofSize: 17.0)
+        bullet.addAttributes([
+                .paragraphStyle: paragraphStyle,
+                .font: fontAttribute() ?? UIFont.systemFont(ofSize: 17.0)
             ],
             range: NSRange(location: 0, length: bullet.length)
         )

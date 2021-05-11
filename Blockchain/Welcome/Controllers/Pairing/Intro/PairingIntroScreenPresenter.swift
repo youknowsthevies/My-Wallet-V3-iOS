@@ -17,8 +17,9 @@ struct PairingIntroScreenPresenter {
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let instructionViewModels: [InstructionCellViewModel] = {
         let inputs: [[InteractableTextViewModel.Input]] = [
-            [.text(string: LocalizedString.Instruction.firstPrefix),
-             .url(string: LocalizedString.Instruction.firstSuffix, url: Constants.Url.blockchainWalletLogin)
+            [
+                .text(string: LocalizedString.Instruction.firstPrefix),
+                .url(string: LocalizedString.Instruction.firstSuffix, url: Constants.Url.blockchainWalletLogin)
             ],
             [.text(string: LocalizedString.Instruction.second)],
             [.text(string: LocalizedString.Instruction.third)]

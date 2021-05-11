@@ -65,8 +65,10 @@ final class AnnouncementRecorderTests: XCTestCase {
 final class AnnouncementTests: XCTestCase {
     func testAnnouncementQueue() {
         let cache = MemoryCacheSuite()
-        let oneTimeAnnouncements = [MockOneTimeAnnouncement(type: .cloudBackup, cacheSuite: cache, dismiss: {}),
-                                    MockOneTimeAnnouncement(type: .exchangeLinking, cacheSuite: cache, dismiss: {})]
+        let oneTimeAnnouncements = [
+            MockOneTimeAnnouncement(type: .cloudBackup, cacheSuite: cache, dismiss: {}),
+                                    MockOneTimeAnnouncement(type: .exchangeLinking, cacheSuite: cache, dismiss: {})
+        ]
         oneTimeAnnouncements[1].markRemoved()
         XCTAssertFalse(oneTimeAnnouncements[0].isDismissed)
         XCTAssertTrue(oneTimeAnnouncements[1].isDismissed)

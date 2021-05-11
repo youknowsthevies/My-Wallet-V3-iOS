@@ -75,10 +75,12 @@ final class BitpayService: BitpayServiceProtocol {
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
         let signed = Payment(chain: currency.rawValue, transactions: [transaction])
-        let headers = ["x-paypro-version": "2",
-                       HttpHeaderField.contentType: "application/payment-verification",
-                       "BP_PARTNER": "Blockchain",
-                       "BP_PARTNER_VERSION": "V6.28.0"]
+        let headers = [
+            "x-paypro-version": "2",
+            HttpHeaderField.contentType: "application/payment-verification",
+            "BP_PARTNER": "Blockchain",
+            "BP_PARTNER_VERSION": "V6.28.0"
+        ]
         
         let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
@@ -88,10 +90,12 @@ final class BitpayService: BitpayServiceProtocol {
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
         let signed = Payment(chain: currency.rawValue, transactions: [transaction])
-        let headers = ["x-paypro-version": "2",
-                       HttpHeaderField.contentType: "application/payment",
-                       "BP_PARTNER": "Blockchain",
-                       "BP_PARTNER_VERSION": "V6.28.0"]
+        let headers = [
+            "x-paypro-version": "2",
+            HttpHeaderField.contentType: "application/payment",
+            "BP_PARTNER": "Blockchain",
+            "BP_PARTNER_VERSION": "V6.28.0"
+        ]
         let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
         return networkAdapter.perform(request: request).do(onSuccess: { [weak self] _ in
@@ -104,11 +108,15 @@ final class BitpayService: BitpayServiceProtocol {
     // MARK: Private Functions
     
     private func buildBitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
-        let payload = ["chain": currency.rawValue]
-        let headers = ["x-paypro-version": "2",
-                       HttpHeaderField.contentType: "application/payment-request",
-                       "BP_PARTNER": "Blockchain",
-                       "BP_PARTNER_VERSION": "V6.28.0"]
+        let payload = [
+            "chain": currency.rawValue
+        ]
+        let headers = [
+            "x-paypro-version": "2",
+            HttpHeaderField.contentType: "application/payment-request",
+            "BP_PARTNER": "Blockchain",
+            "BP_PARTNER_VERSION": "V6.28.0"
+        ]
         let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(payload), headers: headers)
         return networkAdapter.perform(request: request)
@@ -151,8 +159,10 @@ final class BitpayService: BitpayServiceProtocol {
     }
     
     func getRawPaymentRequest(for invoiceId: String) -> Single<ObjcCompatibleBitpayObject> {
-        let headers = [HttpHeaderField.accept: "application/payment-request",
-                       HttpHeaderField.contentType: HttpHeaderValue.json]
+        let headers = [
+            HttpHeaderField.accept: "application/payment-request",
+            HttpHeaderField.contentType: HttpHeaderValue.json
+        ]
         let url = URL(string: bitpayUrl + invoicePath + invoiceId)!
         let request = NetworkRequest(endpoint:url, method: .get, headers: headers, contentType: .json)
         let networkReq: Single<BitpayPaymentRequest> = networkAdapter.perform(request: request)
