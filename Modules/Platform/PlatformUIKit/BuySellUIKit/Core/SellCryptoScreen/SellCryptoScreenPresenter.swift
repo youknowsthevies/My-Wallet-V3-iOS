@@ -3,7 +3,6 @@
 import AnalyticsKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift

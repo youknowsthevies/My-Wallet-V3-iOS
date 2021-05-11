@@ -2,7 +2,6 @@
 
 import Charts
 import PlatformKit
-import PlatformUIKit
 
 public extension LineChartData {
     convenience init(with value: AssetLineChart.Value.Interaction) {

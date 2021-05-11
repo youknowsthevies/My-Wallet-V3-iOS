@@ -3,7 +3,6 @@
 import DIKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RIBs
 import RxSwift
 import SafariServices

@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
-
 struct YodleeButtonsContent: Equatable {
     let identifier: UUID
     let continueButtonViewModel: ButtonViewModel?

@@ -2,7 +2,6 @@
 
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxDataSources
 import RxRelay

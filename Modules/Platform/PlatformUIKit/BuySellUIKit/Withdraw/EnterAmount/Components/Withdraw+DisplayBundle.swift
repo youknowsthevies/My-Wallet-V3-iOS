@@ -3,7 +3,6 @@
 import AnalyticsKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 
 struct DisplayBundle {

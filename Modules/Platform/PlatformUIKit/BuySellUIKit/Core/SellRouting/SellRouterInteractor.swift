@@ -2,7 +2,6 @@
 
 import DIKit
 import PlatformKit
-import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxRelay

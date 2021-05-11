@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import PlatformUIKit
 import RIBs
 
 protocol WithdrawAmountPageInteractable: Interactable {

@@ -2,7 +2,6 @@
 
 import DIKit
 import Localization
-import PlatformUIKit
 import RxSwift
 import ToolKit
 

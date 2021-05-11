@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
-
 final class SellIdentityIntroductionViewController: BaseScreenViewController {
     
     private let tableView = SelfSizingTableView()

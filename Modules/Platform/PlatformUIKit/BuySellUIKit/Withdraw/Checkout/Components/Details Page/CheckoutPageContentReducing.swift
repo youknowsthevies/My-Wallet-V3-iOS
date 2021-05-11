@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
-
 protocol CheckoutPageContentReducing {
     /// The title of the checkout screen
     var title: String { get }

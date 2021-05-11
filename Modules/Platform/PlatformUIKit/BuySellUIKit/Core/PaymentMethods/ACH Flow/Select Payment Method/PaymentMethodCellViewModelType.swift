@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
 import RxDataSources
 
 struct PaymentMethodCellModel: Equatable {
