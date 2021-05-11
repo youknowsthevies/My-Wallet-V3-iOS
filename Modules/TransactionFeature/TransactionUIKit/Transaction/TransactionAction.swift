@@ -155,7 +155,7 @@ enum TransactionAction: MviAction {
             newState.step = .inProgress
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
-        case .updateTransactionComplete(_):
+        case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
             newState.executionStatus = .completed

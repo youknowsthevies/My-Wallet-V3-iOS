@@ -47,7 +47,7 @@ public class SparklineImagePresenter {
             switch calculationState {
             case .calculating:
                 return .loading
-            case .invalid(_):
+            case .invalid:
                 return .invalid
             case .value(let points):
                 let path = self.calculator.sparkline(with: points)
