@@ -153,7 +153,9 @@ final class CredentialsStore: CredentialsStoreAPI {
         return Single
             .zip(
                 self.cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey, data: encryptedGuid), pbkdf2Iterations: PBKDF2Iterations.guid),
-                self.cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey, data: encryptedSharedKey), pbkdf2Iterations: PBKDF2Iterations.sharedKey)
+                self.cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey,
+                                                             data: encryptedSharedKey),
+                                           pbkdf2Iterations: PBKDF2Iterations.sharedKey)
             )
             .map { (payload) in
                 let (guid, sharedKey) = payload

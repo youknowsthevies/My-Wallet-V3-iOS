@@ -17,6 +17,7 @@ public final class CardOrderCheckoutInteractor {
         var localizedDescription: String {
             switch self {
             case .orderStateMismatch(is3DSConfirmedCardOrder: let is3DSConfirmedCardOrder, isPending3DSCardOrder: let isPending3DSCardOrder):
+                // swiftlint:disable line_length
                 return "Order state mismatch - got is3DSConfirmedCardOrder: \(is3DSConfirmedCardOrder), isPending3DSCardOrder: \(isPending3DSCardOrder)"
             case .missingFee:
                 return "Order fee is missing"

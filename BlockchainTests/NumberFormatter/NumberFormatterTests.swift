@@ -69,7 +69,8 @@ class NumberFormatterTests: XCTestCase {
             return
         }
         let localCurrencyAmount = NumberFormatter.localCurrencyAmount(fromAmount: amount, fiatPerAmount: rate)
-        XCTAssertEqual(localCurrencyAmount, "537\(Locale.current.safeDecimalSeparator)36",
+        XCTAssertEqual(localCurrencyAmount,
+                       "537\(Locale.current.safeDecimalSeparator)36",
                        "Formatted string should have two decimal places and round down when truncating")
     }
 }

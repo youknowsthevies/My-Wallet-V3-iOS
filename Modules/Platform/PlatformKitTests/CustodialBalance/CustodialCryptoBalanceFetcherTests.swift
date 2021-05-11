@@ -164,7 +164,11 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testZeroedResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "0", withdrawable: "0")])
+        let response = CustodialBalanceResponse(balances: [currency.code: .init(pending: "0",
+                                                                                pendingDeposit: "0",
+                                                                                pendingWithdrawal: "0",
+                                                                                available: "0",
+                                                                                withdrawable: "0")])
         let events = obervedBalanceEvents(
             data: [(20, response)]
         )
@@ -188,7 +192,11 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testValidResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "10", withdrawable: "10")])
+        let response = CustodialBalanceResponse(balances: [currency.code: .init(pending: "0",
+                                                                                pendingDeposit: "0",
+                                                                                pendingWithdrawal: "0",
+                                                                                available: "10",
+                                                                                withdrawable: "10")])
         let events = obervedBalanceEvents(data: [(40, response)])
         
         var expectedStates = CustodialAccountBalanceStates()
@@ -209,7 +217,8 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         XCTAssertEqual(value, expectedStates)
     }
 
-    private func obervedBalanceEvents(data: [(refresh: Int, response: CustodialBalanceResponse)]) -> [Recorded<Event<CustodialAccountBalanceStates>>] {
+    private func obervedBalanceEvents(data: [(refresh: Int,
+                                              response: CustodialBalanceResponse)]) -> [Recorded<Event<CustodialAccountBalanceStates>>] {
         let observer = scheduler.createObserver(CustodialAccountBalanceStates.self)
     
         for item in data {

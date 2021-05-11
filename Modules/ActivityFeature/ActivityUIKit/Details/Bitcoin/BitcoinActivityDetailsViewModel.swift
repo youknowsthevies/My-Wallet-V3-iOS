@@ -35,6 +35,7 @@ struct BitcoinActivityDetailsViewModel: Equatable {
     init(details: BitcoinActivityItemEventDetails, price: FiatValue?, memo: String?) {
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
+            // swiftlint:disable line_length
             title: "\(details.confirmation.confirmations) \(LocalizedString.of) \(details.confirmation.requiredConfirmations) \(LocalizedString.confirmations)",
             factor: details.confirmation.factor,
             statusBadge: BitcoinActivityDetailsViewModel.statusBadge(needConfirmation: details.confirmation.needConfirmation)

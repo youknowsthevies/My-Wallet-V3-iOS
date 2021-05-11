@@ -101,7 +101,9 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
             provider: biometryProviding,
             descriptors: .settings
         )
-        switchViewPresenting = BiometrySwitchViewPresenter(provider: biometryProviding, settingsAuthenticating: appSettingsAuthenticating, authenticationCoordinator: authenticationCoordinator)
+        switchViewPresenting = BiometrySwitchViewPresenter(provider: biometryProviding,
+                                                           settingsAuthenticating: appSettingsAuthenticating,
+                                                           authenticationCoordinator: authenticationCoordinator)
     }
 }
 

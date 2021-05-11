@@ -11,7 +11,9 @@ final class OrderQuoteServiceMock: TransactionKit.OrderQuoteServiceAPI {
         return .just(response)
     }
     
-    func fetchQuote(direction: OrderDirection, sourceCurrencyType: CurrencyType, destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
+    func fetchQuote(direction: OrderDirection,
+                    sourceCurrencyType: CurrencyType,
+                    destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
         latestQuote
     }
     

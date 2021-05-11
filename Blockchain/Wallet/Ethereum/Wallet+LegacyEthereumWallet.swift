@@ -110,7 +110,10 @@ extension Wallet: LegacyEthereumWalletAPI {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
-    public func saveERC20Tokens(with secondPassword: String?, tokensJSONString: String, success: @escaping () -> Void, error: @escaping (String) -> Void) {
+    public func saveERC20Tokens(with secondPassword: String?,
+                                tokensJSONString: String,
+                                success: @escaping () -> Void,
+                                error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return

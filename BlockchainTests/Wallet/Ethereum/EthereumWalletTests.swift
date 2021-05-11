@@ -202,7 +202,8 @@ class EthereumWalletTests: XCTestCase {
             XCTFail("Saving should complete successfully")
             return
         }
-        
+
+        // swiftlint:disable line_length
         XCTAssertEqual(legacyWalletMock.lastSavedTokensJSONString, "{\"pax\":{\"label\":\"My PAX Wallet\",\"contract\":\"0x8E870D67F660D95d5be530380D0eC0bd388289E1\",\"has_seen\":false,\"tx_notes\":{\"transaction_hash\":\"memo\"}}}")
     }
     
@@ -257,7 +258,8 @@ class EthereumWalletTests: XCTestCase {
             XCTFail("Saving should complete successfully")
             return
         }
-        
+
+        // swiftlint:disable line_length
         XCTAssertEqual(legacyWalletMock.lastSavedTokensJSONString, "{\"pax\":{\"label\":\"My PAX Wallet\",\"contract\":\"0x8E870D67F660D95d5be530380D0eC0bd388289E1\",\"has_seen\":false,\"tx_notes\":{\"transactionHash\":\"memo\",\"transaction_hash\":\"memo\"}}}")
     }
 }

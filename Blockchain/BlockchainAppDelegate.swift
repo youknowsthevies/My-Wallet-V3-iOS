@@ -241,7 +241,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    var backgroundTaskTimer = BackgroundTaskTimer(invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid))
+    var backgroundTaskTimer = BackgroundTaskTimer(
+        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
+            identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
         DataProvider.default.syncing.sync()
         backgroundTaskTimer.begin(application) { [weak self] in

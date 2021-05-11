@@ -158,7 +158,10 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     
     var lastRecordedEtherTransactionHashAsync: String?
     var recordLastEthereumTransactionCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
-    func recordLastEthereumTransaction(with secondPassword: String?, transactionHash: String, success: @escaping () -> Void, error: @escaping (String) -> Void) {
+    func recordLastEthereumTransaction(with secondPassword: String?,
+                                       transactionHash: String,
+                                       success: @escaping () -> Void,
+                                       error: @escaping (String) -> Void) {
         lastRecordedEtherTransactionHashAsync = transactionHash
         switch recordLastEthereumTransactionCompletion {
         case .success:

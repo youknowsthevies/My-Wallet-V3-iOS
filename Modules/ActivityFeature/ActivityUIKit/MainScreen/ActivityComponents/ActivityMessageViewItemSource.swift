@@ -17,7 +17,8 @@ class ImageActivityItemSource: NSObject, UIActivityItemSource {
         image
     }
     
-    func activityViewController(_ activityViewController: UIActivityViewController, itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
+    func activityViewController(_ activityViewController: UIActivityViewController,
+                                itemForActivityType activityType: UIActivity.ActivityType?) -> Any? {
         image
     }
     

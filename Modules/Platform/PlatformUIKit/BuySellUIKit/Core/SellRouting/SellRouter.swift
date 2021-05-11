@@ -175,6 +175,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
         navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
             guard let top = self.navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
+            // swiftlint:disable line_length
             guard let url = URL(string: "https://support.blockchain.com/hc/en-us/articles/360040015211-What-countries-are-supported-for-Buy-Crypto-") else { return }
             let controller = SFSafariViewController(url: url)
             controller.modalPresentationStyle = .overCurrentContext

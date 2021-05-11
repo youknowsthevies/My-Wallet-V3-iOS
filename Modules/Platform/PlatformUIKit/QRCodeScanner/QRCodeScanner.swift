@@ -144,7 +144,9 @@ extension QRCodeScanner: AVCaptureMetadataOutputObjectsDelegate {
 
     // MARK: - AVCaptureMetadataOutputObjectsDelegate
 
-    public func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+    public func metadataOutput(_ output: AVCaptureMetadataOutput,
+                               didOutput metadataObjects: [AVMetadataObject],
+                               from connection: AVCaptureConnection) {
         guard !metadataObjects.isEmpty,
             let metadataObject = metadataObjects.first,
             metadataObject.type == .qr,

@@ -159,7 +159,11 @@ final class BitpayService: BitpayServiceProtocol {
         return networkReq
             .map {
                 let expiresLocalTime = self.UTCToLocal(date: $0.expires)
-                return ObjcCompatibleBitpayObject(memo: $0.memo, expires: expiresLocalTime, paymentUrl: $0.paymentUrl, amount: $0.outputs[0].amount, address: $0.outputs[0].address)
+                return ObjcCompatibleBitpayObject(memo: $0.memo,
+                                                  expires: expiresLocalTime,
+                                                  paymentUrl: $0.paymentUrl,
+                                                  amount: $0.outputs[0].amount,
+                                                  address: $0.outputs[0].address)
             }
             .do(onSuccess: { [weak self] _ in
                 self?.announcementRecorder[.bitpay].markRemoved(category: .oneTime)

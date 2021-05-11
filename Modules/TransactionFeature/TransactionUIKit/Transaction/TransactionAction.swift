@@ -8,8 +8,14 @@ enum TransactionAction: MviAction {
 
     case initialiseWithNoSourceOrTargetAccount(action: AssetAction, passwordRequired: Bool)
     case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount, passwordRequired: Bool)
-    case initialiseWithSourceAndPreferredTarget(action: AssetAction, sourceAccount: BlockchainAccount, target: TransactionTarget, passwordRequired: Bool)
-    case initialiseWithSourceAndTargetAccount(action: AssetAction, sourceAccount: BlockchainAccount, target: TransactionTarget, passwordRequired: Bool)
+    case initialiseWithSourceAndPreferredTarget(action: AssetAction,
+                                                sourceAccount: BlockchainAccount,
+                                                target: TransactionTarget,
+                                                passwordRequired: Bool)
+    case initialiseWithSourceAndTargetAccount(action: AssetAction,
+                                              sourceAccount: BlockchainAccount,
+                                              target: TransactionTarget,
+                                              passwordRequired: Bool)
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])

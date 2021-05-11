@@ -31,7 +31,9 @@ class BridgeBitpayService: NSObject {
         super.init()
     }
     
-    @objc func bitpayPaymentRequest(invoiceID: String, assetType: LegacyAssetType, completion: @escaping (ObjcCompatibleBitpayObject?, String?) -> Void) {
+    @objc func bitpayPaymentRequest(invoiceID: String,
+                                    assetType: LegacyAssetType,
+                                    completion: @escaping (ObjcCompatibleBitpayObject?, String?) -> Void) {
         // TICKET: IOS-2498 - Support BCH
         let currency: CryptoCurrency = CryptoCurrency(legacyAssetType: assetType)
         guard currency == .bitcoin else {

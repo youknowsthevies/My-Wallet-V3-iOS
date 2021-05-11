@@ -100,7 +100,9 @@ class CoinSelection: CoinSelector {
         return .success(outputs)
     }
     
-    func select(all coins: [UnspentOutput], fee: Fee, sortingStrategy: CoinSortingStrategy? = nil) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
+    func select(all coins: [UnspentOutput],
+                fee: Fee,
+                sortingStrategy: CoinSortingStrategy? = nil) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
         let effectiveCoins = (sortingStrategy?.sort(coins: coins) ?? coins)
             .effective(for: fee)
         let effectiveValue = effectiveCoins.sum()

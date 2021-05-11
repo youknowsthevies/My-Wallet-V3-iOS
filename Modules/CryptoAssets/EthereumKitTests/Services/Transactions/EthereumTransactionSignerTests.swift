@@ -41,6 +41,7 @@ class EthereumTransactionSignerTests: XCTestCase {
             XCTFail("Transaction signing failed")
             return
         }
+        // swiftlint:disable line_length
         let rawTransaction = "0xf86c0985028fa6ae0082520894353535353535353535353535353535353535353588016345785d8a00008026a0521f82fef48c80ca3245cc1d2be289f42f5119613fc1eea8c8e9e673d48c7b8ba017cfd25094a4f81e2c5f766e76686bc9270f22d24e8998fa1549d0c9a3d5f786"
         XCTAssertEqual(signed.encodedTransaction, Data(hexString: rawTransaction))
     }

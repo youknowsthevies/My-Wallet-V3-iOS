@@ -39,7 +39,10 @@ class KYCPageTypeTests: XCTestCase {
         )
         XCTAssertEqual(
             KYCPageType.verifyIdentity,
-            KYCPageType.startingPage(forUser: createNabuUser(isMobileVerified: true, isEmailVerified: true, hasAddress: true), tiersResponse: noTiersResponse)
+            KYCPageType.startingPage(forUser: createNabuUser(isMobileVerified: true,
+                                                             isEmailVerified: true,
+                                                             hasAddress: true),
+                                     tiersResponse: noTiersResponse)
         )
     }
 
