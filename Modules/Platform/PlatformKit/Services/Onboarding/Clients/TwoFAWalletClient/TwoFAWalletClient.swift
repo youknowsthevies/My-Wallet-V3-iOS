@@ -30,7 +30,8 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
             } else if plainServerError.contains(RawErrorSubstring.wrongCode) {
                 let attemptsLeftString = plainServerError.components(
                     separatedBy: CharacterSet.decimalDigits.inverted
-                ).joined()
+                )
+                .joined()
                 guard let attemptsLeft = Int(attemptsLeftString) else {
                     return nil
                 }

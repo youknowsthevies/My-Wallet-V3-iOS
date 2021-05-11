@@ -35,7 +35,8 @@ public class BottomSheetView: UIView {
         
         let buttonsHeight = model.actions.map { _ -> CGFloat in
             actionHeight
-        }.reduce(0, +)
+        }
+        .reduce(0, +)
         let interitemPadding = ((buttonsHeight / actionHeight) - 1) * actionInterItemSpacing
         
         let titleHeight = NSAttributedString(string: model.title, attributes: [.font: titleFont()]).height

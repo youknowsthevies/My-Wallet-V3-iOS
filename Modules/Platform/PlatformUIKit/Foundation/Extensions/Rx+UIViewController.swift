@@ -73,7 +73,8 @@ public extension Reactive where Base: UIViewController {
     ///
     ///  **Note** this will be called once, hence the `firstTime` prefix
     var firstTimeViewWillAppear: Observable<Void> {
-        self.sentMessage(#selector(Base.viewWillAppear)).map { _ in () }
+        self.sentMessage(#selector(Base.viewWillAppear))
+            .map { _ in () }
             .take(1)
             .share(replay: 1, scope: .whileConnected)
     }
@@ -82,7 +83,8 @@ public extension Reactive where Base: UIViewController {
     ///
     ///  **Note** this will be called once, hence the `firstTime` prefix
     var firstTimeViewDidAppear: Observable<Void> {
-        self.sentMessage(#selector(Base.viewDidAppear)).map { _ in () }
+        self.sentMessage(#selector(Base.viewDidAppear))
+            .map { _ in () }
             .take(1)
             .share(replay: 1, scope: .whileConnected)
     }

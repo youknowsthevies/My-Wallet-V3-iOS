@@ -152,7 +152,8 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     fileprivate func progression() -> Float {
         let newProgression: Float = validationFields.map({
             $0.validate() == .valid ? 0.14 : 0.0
-        }).reduce(startingValue, +)
+        })
+        .reduce(startingValue, +)
         return max(newProgression, startingValue)
     }
 

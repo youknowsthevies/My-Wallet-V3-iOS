@@ -23,7 +23,8 @@ final class SecurePinView: UIView {
             titleLabel.textColor = viewModel.tint
             viewModel.fillCount.bind { [unowned self] count in
                 self.updatePin(to: count)
-            }.disposed(by: disposeBag)
+            }
+            .disposed(by: disposeBag)
         }
     }
     
