@@ -79,7 +79,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         
         // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
-            DependencyContainer.analyticsKit;
             DependencyContainer.toolKit;
             DependencyContainer.networkKit;
             DependencyContainer.walletPayloadKit;
@@ -104,6 +103,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.blockchain;
             DependencyContainer.settingsKit;
             DependencyContainer.settingsUIKit;
+            DependencyContainer.analyticsKit;
+            DependencyContainer.nabuAnalyticsKit;
             #if INTERNAL_BUILD
             DependencyContainer.debugUIKit;
             #endif

@@ -4,8 +4,6 @@ import DIKit
 
 extension DependencyContainer {
     
-    // MARK: - ToolKit Module
-     
     public static var analyticsKit = module {
         
         single { AnalyticsEventRecorder() as AnalyticsEventRecorderAPI }

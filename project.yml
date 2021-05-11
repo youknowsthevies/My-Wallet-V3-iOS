@@ -309,8 +309,14 @@ targets:
     templates:
     - ModuleTests
   AnalyticsKit:
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - Module
+  NabuAnalyticsKit:
     dependencies:
-    - target: ToolKit
+    - target: NetworkKit
+    - target: AnalyticsKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -453,6 +459,7 @@ targets:
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
+    - target: NabuAnalyticsKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
