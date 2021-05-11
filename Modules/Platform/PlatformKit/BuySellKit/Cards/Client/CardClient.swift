@@ -103,8 +103,8 @@ final class CardClient: CardClientAPI {
     // MARK: - CardAdditionClientAPI
     
     func add(for currency: String,
-                    email: String,
-                    billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
+             email: String,
+             billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
         struct RequestPayload: Encodable {
             let currency: String
             let email: String

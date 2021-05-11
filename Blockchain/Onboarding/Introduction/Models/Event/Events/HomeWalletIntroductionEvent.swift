@@ -37,7 +37,7 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     }
     
     init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
-        selection: @escaping WalletIntroductionAction) {
+         selection: @escaping WalletIntroductionAction) {
         self.introductionRecorder = introductionRecorder
         self.selection = selection
     }

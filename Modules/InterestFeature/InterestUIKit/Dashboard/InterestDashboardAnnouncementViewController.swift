@@ -51,12 +51,12 @@ public final class InterestDashboardAnnouncementViewController: UIViewController
 
 extension InterestDashboardAnnouncementViewController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+                          numberOfRowsInSection section: Int) -> Int {
         presenter.cellCount
     }
     
     public func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+                          cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {

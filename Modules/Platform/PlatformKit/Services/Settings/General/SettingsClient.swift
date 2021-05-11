@@ -73,9 +73,9 @@ final class SettingsClient: SettingsClientAPI {
     }
     
     func update(currency: String,
-                       context: FlowContext,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -92,9 +92,9 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
     func update(email: String,
-                       context: FlowContext?,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext?,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -111,9 +111,9 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
     func update(smsNumber: String,
-                       context: FlowContext?,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext?,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,

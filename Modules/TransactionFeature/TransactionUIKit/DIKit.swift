@@ -15,7 +15,6 @@ extension DependencyContainer {
 
         factory { ReceiveRouter() as ReceiveRouterAPI }
 
-
         // MARK: - Hooks
 
         factory { TransactionAnalyticsHook() }
