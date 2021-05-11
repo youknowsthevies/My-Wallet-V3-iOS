@@ -242,7 +242,8 @@ class ValidationTextField: NibBasedView {
         UIView.animate(
             withDuration: 0.2,
             delay: 0.0,
-            options: [.beginFromCurrentState, .curveEaseOut], animations: {
+            options: [.beginFromCurrentState, .curveEaseOut],
+            animations: {
                 self.layoutIfNeeded()
         }, completion: nil)
     }

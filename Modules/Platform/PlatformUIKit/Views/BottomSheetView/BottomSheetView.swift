@@ -91,7 +91,10 @@ public class BottomSheetView: UIView {
     }
     
     fileprivate func teardown(with selectedAction: BottomSheetAction? = nil) {
-        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: .calculationModeLinear, animations: {
+        UIView.animateKeyframes(withDuration: 0.3,
+                                delay: 0.0,
+                                options: .calculationModeLinear,
+                                animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
                 self.alpha = 0.0
             })
@@ -134,7 +137,10 @@ public class BottomSheetView: UIView {
         window.addSubview(dimmingView)
         window.addSubview(self)
         
-        UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: .calculationModeLinear, animations: {
+        UIView.animateKeyframes(withDuration: 0.4,
+                                delay: 0.0,
+                                options: .calculationModeLinear,
+                                animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
                 self.dimmingView.alpha = 0.4
             })

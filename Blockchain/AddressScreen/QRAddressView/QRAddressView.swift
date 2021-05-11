@@ -105,7 +105,10 @@ final class QRAddressView: UIView {
     }
     
     private func animateTouch(scale: CGFloat) {
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.allowUserInteraction, .curveEaseOut], animations: {
+        UIView.animate(withDuration: 0.1,
+                       delay: 0,
+                       options: [.allowUserInteraction, .curveEaseOut],
+                       animations: {
             self.transform = CGAffineTransform(scaleX: scale, y: scale)
         }, completion: nil)
     }

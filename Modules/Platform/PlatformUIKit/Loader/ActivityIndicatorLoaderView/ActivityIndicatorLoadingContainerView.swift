@@ -28,20 +28,27 @@ final class ActivityIndicatorLoadingContainerView: UIView {
 
 extension ActivityIndicatorLoadingContainerView: LoadingViewProtocol {
     func animate(from oldState: LoadingViewPresenter.State, text: String?) {
-        UIView.transition(with: messageLabel, duration: 0.25,
+        UIView.transition(with: messageLabel,
+                          duration: 0.25,
                           options: [.beginFromCurrentState, .curveEaseOut, .transitionCrossDissolve],
                           animations: {
                             self.messageLabel.text = text
         }, completion: nil)
         if !oldState.isAnimating {
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState], animations: {
+            UIView.animate(withDuration: 0.3,
+                           delay: 0,
+                           options: [.beginFromCurrentState],
+                           animations: {
                 self.alpha = Visibility.visible.defaultAlpha
             }, completion: nil)
         }
     }
     
     func fadeOut() {
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.beginFromCurrentState], animations: {
+        UIView.animate(withDuration: 0.3,
+                       delay: 0,
+                       options: [.beginFromCurrentState],
+                       animations: {
             self.alpha = Visibility.hidden.defaultAlpha
         }, completion: { _ in
             self.removeFromSuperview()

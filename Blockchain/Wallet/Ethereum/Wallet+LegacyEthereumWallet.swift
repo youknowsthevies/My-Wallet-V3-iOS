@@ -56,7 +56,8 @@ extension Wallet: LegacyEthereumWalletAPI {
     }
 
     public func getLabelForEthereumAccount(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        self.ethereumAccounts(with: secondPassword, success: { accounts in
+        self.ethereumAccounts(with: secondPassword,
+                              success: { accounts in
             guard
                 let ethereumAccountsDicts = accounts as? [[String:Any]],
                 let defaultAccount = ethereumAccountsDicts.first,
@@ -72,7 +73,8 @@ extension Wallet: LegacyEthereumWalletAPI {
     }
     
     public func getEthereumAddress(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        self.ethereumAccounts(with: secondPassword, success: { accounts in
+        self.ethereumAccounts(with: secondPassword,
+                              success: { accounts in
             guard
                 let ethereumAccountsDicts = accounts as? [[String:Any]],
                 let defaultAccount = ethereumAccountsDicts.first,

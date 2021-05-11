@@ -242,7 +242,10 @@ public class AlertView: UIView {
     }
     
     fileprivate func teardown(with selectedAction: AlertAction? = nil) {
-        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: .calculationModeCubic, animations: {
+        UIView.animateKeyframes(withDuration: 0.3,
+                                delay: 0.0,
+                                options: .calculationModeCubic,
+                                animations: {
             UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
                 self.alpha = 0.0
                 self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
@@ -340,7 +343,8 @@ public class AlertView: UIView {
             guard UIScreen.main.bounds.contains(point) == false else { return }
             guard let superview = self.superview else { return }
             guard superview.subviews.contains(self.dimmingView) else { return }
-            UIView.animate(withDuration: 0.5, animations: { [weak self] in
+            UIView.animate(withDuration: 0.5,
+                           animations: { [weak self] in
                 guard let self = self else { return }
                 self.alpha = 0.0
                 self.dimmingView.alpha = 0.0
@@ -426,7 +430,10 @@ public class AlertView: UIView {
         window.addSubview(dimmingView)
         window.addSubview(self)
         
-        UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: .calculationModeCubic, animations: {
+        UIView.animateKeyframes(withDuration: 0.4,
+                                delay: 0.0,
+                                options: .calculationModeCubic,
+                                animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
                 self.dimmingView.alpha = 0.4
             })
@@ -461,7 +468,10 @@ public class AlertView: UIView {
         
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         
-        UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: .calculationModeCubic, animations: {
+        UIView.animateKeyframes(withDuration: 0.4,
+                                delay: 0.0,
+                                options: .calculationModeCubic,
+                                animations: {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
                 self.dimmingView.alpha = 0.4
             })
