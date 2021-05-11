@@ -23,13 +23,13 @@ public struct SwitchViewModel {
     
     /// The theme of the view
     public var theme: Theme {
-        set {
-            fillColorRelay.accept(newValue.fillColor)
-            thumbTintColorRelay.accept(newValue.thumbTintColor)
-        }
         get {
             Theme(fillColor: fillColorRelay.value,
                          thumbTintColor: thumbTintColorRelay.value)
+        }
+        set {
+            fillColorRelay.accept(newValue.fillColor)
+            thumbTintColorRelay.accept(newValue.thumbTintColor)
         }
     }
     

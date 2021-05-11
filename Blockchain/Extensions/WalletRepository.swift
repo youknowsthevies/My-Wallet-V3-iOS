@@ -412,22 +412,22 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
     @objc
     var legacySessionToken: String? {
-        set {
-            sessionTokenRelay.accept(newValue)
-        }
         get {
             sessionTokenRelay.value
+        }
+        set {
+            sessionTokenRelay.accept(newValue)
         }
     }
 
     @available(*, deprecated, message: "Please do not use this unless you absolutely need direct access")
     @objc
     var legacyPassword: String? {
-        set {
-            passwordRelay.accept(newValue)
-        }
         get {
             passwordRelay.value
+        }
+        set {
+            passwordRelay.accept(newValue)
         }
     }
 }

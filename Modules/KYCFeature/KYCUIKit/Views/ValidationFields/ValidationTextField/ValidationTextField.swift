@@ -129,11 +129,11 @@ class ValidationTextField: NibBasedView {
     }
 
     var text: String? {
-        set {
-            textField.text = newValue
-        }
         get {
             textField.text
+        }
+        set {
+            textField.text = newValue
         }
     }
 

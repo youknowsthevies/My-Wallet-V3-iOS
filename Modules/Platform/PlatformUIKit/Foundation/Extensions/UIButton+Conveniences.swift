@@ -52,6 +52,22 @@ public struct ButtonContent: Equatable {
 
 extension UIButton {
     public var content: ButtonContent {
+        get {
+            var border: ButtonContent.Border = .no
+            if layer.borderWidth != 0,
+                let cgColor = layer.borderColor {
+                border = .yes(width: layer.borderWidth, color: UIColor(cgColor: cgColor))
+            }
+            return ButtonContent(
+                text: title(for: .normal) ?? "",
+                font: titleLabel?.font ?? ButtonContent.defaultFont,
+                color: titleColor(for: .normal) ?? ButtonContent.defaultColor,
+                backgroundColor: backgroundColor,
+                border: border,
+                cornerRadius: layer.cornerRadius,
+                accessibility: accessibility
+            )
+        }
         set {
             setTitle(newValue.text, for: .normal)
             titleLabel?.font = newValue.font
@@ -70,22 +86,6 @@ extension UIButton {
                 layer.borderWidth = width
                 layer.borderColor = borderColor.cgColor
             }
-        }
-        get {
-            var border: ButtonContent.Border = .no
-            if layer.borderWidth != 0,
-                let cgColor = layer.borderColor {
-                border = .yes(width: layer.borderWidth, color: UIColor(cgColor: cgColor))
-            }
-            return ButtonContent(
-                text: title(for: .normal) ?? "",
-                font: titleLabel?.font ?? ButtonContent.defaultFont,
-                color: titleColor(for: .normal) ?? ButtonContent.defaultColor,
-                backgroundColor: backgroundColor,
-                border: border,
-                cornerRadius: layer.cornerRadius,
-                accessibility: accessibility
-            )
         }
     }
 }

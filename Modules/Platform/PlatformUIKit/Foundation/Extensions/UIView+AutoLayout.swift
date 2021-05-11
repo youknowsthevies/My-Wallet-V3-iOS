@@ -118,60 +118,60 @@ extension UIView {
     // MARK: - Content Hugging Priority
     
     public var horizontalContentHuggingPriority: Priority {
-        set {
-            setContentHuggingPriority(newValue, for: .horizontal)
-        }
         get {
             contentHuggingPriority(for: .horizontal)
+        }
+        set {
+            setContentHuggingPriority(newValue, for: .horizontal)
         }
     }
     
     public var verticalContentHuggingPriority: Priority {
-        set {
-            setContentHuggingPriority(newValue, for: .vertical)
-        }
         get {
             contentHuggingPriority(for: .vertical)
+        }
+        set {
+            setContentHuggingPriority(newValue, for: .vertical)
         }
     }
 
     public var contentHuggingPriority: (horizontal: Priority, vertical: Priority) {
+        get {
+            (horizontalContentHuggingPriority, verticalContentHuggingPriority)
+        }
         set {
             horizontalContentHuggingPriority = newValue.horizontal
             verticalContentHuggingPriority = newValue.vertical
-        }
-        get {
-            (horizontalContentHuggingPriority, verticalContentHuggingPriority)
         }
     }
     
     // MARK: - Content Compression Resistance Priority
     
     public var verticalContentCompressionResistancePriority: Priority {
-        set {
-            setContentCompressionResistancePriority(newValue, for: .vertical)
-        }
         get {
             contentCompressionResistancePriority(for: .vertical)
+        }
+        set {
+            setContentCompressionResistancePriority(newValue, for: .vertical)
         }
     }
     
     public var horizontalContentCompressionResistancePriority: Priority {
-        set {
-            setContentCompressionResistancePriority(newValue, for: .horizontal)
-        }
         get {
             contentCompressionResistancePriority(for: .horizontal)
+        }
+        set {
+            setContentCompressionResistancePriority(newValue, for: .horizontal)
         }
     }
     
     public var contentCompressionResistancePriority: (horizontal: Priority, vertical: Priority) {
+        get {
+            (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
+        }
         set {
             horizontalContentCompressionResistancePriority = newValue.horizontal
             verticalContentCompressionResistancePriority = newValue.vertical
-        }
-        get {
-            (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
         }
     }
     

@@ -32,15 +32,15 @@ public final class EmailAuthorizationService {
     private let lock = NSRecursiveLock()
     private var _isActive = false
     private var isActive: Bool {
-        set {
-            lock.lock()
-            defer { lock.unlock() }
-            self._isActive = newValue
-        }
         get {
             lock.lock()
             defer { lock.unlock() }
             return _isActive
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            self._isActive = newValue
         }
     }
     

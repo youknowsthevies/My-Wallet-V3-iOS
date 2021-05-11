@@ -41,14 +41,6 @@ public struct ButtonViewModel {
     
     /// The theme of the view
     public var theme: Theme {
-        set {
-            backgroundColorRelay.accept(newValue.backgroundColor)
-            borderColorRelay.accept(newValue.borderColor)
-            contentColorRelay.accept(newValue.contentColor)
-            textRelay.accept(newValue.text)
-            imageName.accept(newValue.imageName)
-            contentInsetRelay.accept(newValue.contentInset)
-        }
         get {
             Theme(
                 backgroundColor: backgroundColorRelay.value,
@@ -58,6 +50,14 @@ public struct ButtonViewModel {
                 text: textRelay.value,
                 contentInset: contentInsetRelay.value
             )
+        }
+        set {
+            backgroundColorRelay.accept(newValue.backgroundColor)
+            borderColorRelay.accept(newValue.borderColor)
+            contentColorRelay.accept(newValue.contentColor)
+            textRelay.accept(newValue.text)
+            imageName.accept(newValue.imageName)
+            contentInsetRelay.accept(newValue.contentInset)
         }
     }
     

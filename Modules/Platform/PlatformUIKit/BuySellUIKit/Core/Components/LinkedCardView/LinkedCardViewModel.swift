@@ -60,17 +60,17 @@ final class LinkedCardViewModel {
     
     /// The theme of the view
     var content: Content {
-        set {
-            nameTextRelay.accept(newValue.nameText)
-            nameContentRelay.accept(newValue.nameContent)
-            limitTextRelay.accept(newValue.limitText)
-            limitContentRelay.accept(newValue.limitContent)
-        }
         get {
             Content(theme: Theme(
                 cardName: nameTextRelay.value,
                 limit: limitTextRelay.value)
             )
+        }
+        set {
+            nameTextRelay.accept(newValue.nameText)
+            nameContentRelay.accept(newValue.nameContent)
+            limitTextRelay.accept(newValue.limitText)
+            limitContentRelay.accept(newValue.limitContent)
         }
     }
     

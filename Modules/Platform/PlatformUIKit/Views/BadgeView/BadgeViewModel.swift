@@ -30,15 +30,15 @@ public struct BadgeViewModel {
     
     /// The theme of the view
     public var theme: Theme {
-        set {
-            backgroundColorRelay.accept(newValue.backgroundColor)
-            contentColorRelay.accept(newValue.contentColor)
-            textRelay.accept(newValue.text)
-        }
         get {
             Theme(backgroundColor: backgroundColorRelay.value,
                   contentColor: contentColorRelay.value,
                   text: textRelay.value)
+        }
+        set {
+            backgroundColorRelay.accept(newValue.backgroundColor)
+            contentColorRelay.accept(newValue.contentColor)
+            textRelay.accept(newValue.text)
         }
     }
     

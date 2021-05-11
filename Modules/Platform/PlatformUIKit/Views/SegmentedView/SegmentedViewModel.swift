@@ -75,6 +75,14 @@ public struct SegmentedViewModel {
     
     /// The theme of the view
     public var theme: Theme {
+        get {
+            Theme(
+                font: .main(.medium, 14),
+                selectedFont: .main(.medium, 14),
+                backgroundColor: backgroundColorRelay.value,
+                contentColor: contentColorRelay.value
+            )
+        }
         set {
             selectedFontRelay.accept(newValue.selectedFont)
             normalFontRelay.accept(newValue.font)
@@ -83,14 +91,6 @@ public struct SegmentedViewModel {
             backgroundColorRelay.accept(newValue.backgroundColor)
             borderColorRelay.accept(newValue.borderColor)
             contentColorRelay.accept(newValue.contentColor)
-        }
-        get {
-            Theme(
-                font: .main(.medium, 14),
-                selectedFont: .main(.medium, 14),
-                backgroundColor: backgroundColorRelay.value,
-                contentColor: contentColorRelay.value
-            )
         }
     }
     

@@ -3,11 +3,11 @@
 public final class SimpleHeaderView: UITableViewHeaderFooterView {
 
     public var text: String {
-        set {
-            label.text = newValue
-        }
         get {
             label.text ?? ""
+        }
+        set {
+            label.text = newValue
         }
     }
     
