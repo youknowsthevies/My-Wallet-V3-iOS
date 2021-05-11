@@ -26,7 +26,9 @@ final class APIClient: TransactionKitClientAPI {
         static let currency = "currency"
         static let product = "product"
         static let paymentMethod = "paymentMethod"
+        static let orderDirection = "orderDirection"
         static let simpleBuy = "SIMPLEBUY"
+        static let swap = "SWAP"
         static let `default` = "DEFAULT"
     }
         
@@ -252,16 +254,16 @@ final class APIClient: TransactionKitClientAPI {
                 request: request
             )
     }
-    
+
     // MARK: - OrderTransactionLimitsClientAPI
-    
-    func fetchTransactionLimits(for fiatCurrency: FiatCurrency,
-                                networkFee: FiatCurrency,
-                                minorValues: Bool) -> Single<TransactionLimits> {
-        let parameters = [
+
+    func fetchTransactionLimits(currency: CurrencyType,
+                                networkFee: CurrencyType,
+                                product: TransactionLimitsProduct) -> Single<TransactionLimits> {
+        var parameters: [URLQueryItem] = [
             URLQueryItem(
                 name: Parameter.currency,
-                value: fiatCurrency.code
+                value: currency.code
             ),
             URLQueryItem(
                 name: Parameter.networkFee,
@@ -269,9 +271,18 @@ final class APIClient: TransactionKitClientAPI {
             ),
             URLQueryItem(
                 name: Parameter.minor,
-                value: minorValues.description
+                value: "true"
             )
         ]
+        switch product {
+        case .swap(let orderDirection):
+            parameters.append(
+                URLQueryItem(name: Parameter.product, value: Parameter.swap)
+            )
+            parameters.append(
+                URLQueryItem(name: Parameter.orderDirection, value: orderDirection.rawValue)
+            )
+        }
         let request = requestBuilder.get(
             path: Path.limits,
             parameters: parameters,
