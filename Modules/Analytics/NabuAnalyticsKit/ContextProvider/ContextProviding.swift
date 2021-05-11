@@ -4,5 +4,5 @@ import Foundation
 
 protocol ContextProviding {
     var context: Context { get }
-    var anonymousId: String { get }
+    var anonymousId: String? { get }
 }

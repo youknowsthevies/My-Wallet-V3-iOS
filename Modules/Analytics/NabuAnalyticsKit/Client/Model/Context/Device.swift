@@ -4,25 +4,17 @@ import Foundation
 import UIKit
 
 struct Device: Encodable {
-    let id: String? = UIDevice.current.identifierForVendor?.uuidString
-    let manufacturer: String = "Apple"
-    let model: String = UIDevice.current.model
-    let name: String = UIDevice.current.name
-    let type: String = {
-        switch UIDevice.current.userInterfaceIdiom {
-        case .phone:
-            return "iPhone"
-        case .pad:
-            return "iPad"
-        case .tv:
-            return "AppleTV"
-        case .carPlay:
-            return "CarPlay"
-        case .mac:
-            return "Mac"
-        default:
-            return "Unspecified"
-        }
-    }()
-    let version: String = UIDevice.current.systemVersion
+    let id: String?
+    let manufacturer: String
+    let model: String
+    let name: String
+    let type: String
+    
+    init(device: UIDevice = UIDevice.current) {
+        id = device.identifierForVendor?.uuidString
+        manufacturer = "Apple"
+        model = device.model
+        name = device.name
+        type = "ios"
+    }
 }

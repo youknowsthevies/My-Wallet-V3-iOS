@@ -3,7 +3,7 @@
 import Foundation
 
 struct EventsWrapper: Encodable {
-    let id: String
+    let id: String?
     let context: Context
     let events: [Event]
     
