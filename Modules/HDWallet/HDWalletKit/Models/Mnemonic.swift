@@ -26,7 +26,7 @@ public struct Words {
     public let value: [String]
     
     public init(words: [String]) throws {
-        guard let _ = BIP39Mnemonic(words) else {
+        guard BIP39Mnemonic(words) != nil else {
             throw HDWalletKitError.unknown
         }
         self.value = words

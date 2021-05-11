@@ -3,7 +3,7 @@
 public extension UserDefaults {
     func set<T: Encodable>(codable: T?, forKey key: String) {
         let encoder = JSONEncoder()
-        guard let _ = codable else {
+        guard codable != nil else {
             self.set(nil, forKey: key)
             synchronize()
             return

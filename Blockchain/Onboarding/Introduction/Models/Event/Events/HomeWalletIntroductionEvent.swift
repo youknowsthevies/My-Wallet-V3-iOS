@@ -32,7 +32,7 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     }
     
     var shouldShow: Bool {
-        guard let _ = introductionEntry.value else { return true }
+        guard introductionEntry.value != nil else { return true }
         return false
     }
     
