@@ -167,6 +167,10 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let rawResponse = RawServerResponse(data: message) as! ResponseType
             return .success(rawResponse)
         }
+        guard ResponseType.self != String.self else {
+            let message = String(data: payload, encoding: .utf8) ?? ""
+            return .success(message as! ResponseType)
+        }
         return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
             .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
                 let rawPayload = String(data: payload, encoding: .utf8) ?? ""
@@ -204,4 +208,3 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         """
     }
 }
-

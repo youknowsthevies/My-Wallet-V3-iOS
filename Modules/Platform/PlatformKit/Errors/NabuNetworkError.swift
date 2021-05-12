@@ -81,6 +81,14 @@ public enum NabuNetworkError: Error, Decodable {
     }
 }
 
+extension NabuNetworkError: Equatable {
+    
+    /// Just a simple implementation to bubble up this to UI States. We can improve on this if needed.
+    public static func == (lhs: NabuNetworkError, rhs: NabuNetworkError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
+}
+
 extension NabuNetworkError: FromNetworkErrorConvertible {
     
     public static func from(_ communicatorError: NetworkError) -> NabuNetworkError {

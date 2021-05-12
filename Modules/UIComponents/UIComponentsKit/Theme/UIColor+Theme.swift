@@ -10,6 +10,7 @@ extension UIColor {
     }
 }
 
+// LEGACY, for UIKit support
 extension UIColor {
 
     // MARK: Crypto

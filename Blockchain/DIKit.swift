@@ -313,5 +313,9 @@ extension DependencyContainer {
         // MARK: Wallet Upgrade
 
         factory { WalletUpgrading() as WalletUpgradingAPI }
+        
+        // MARK: Helpers
+        
+        factory { UIApplication.shared as ExternalAppOpener }
     }
 }

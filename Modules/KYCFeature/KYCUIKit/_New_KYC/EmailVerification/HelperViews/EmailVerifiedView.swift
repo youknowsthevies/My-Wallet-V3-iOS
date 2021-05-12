@@ -1,0 +1,72 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import SharedPackagesKit
+import SwiftUI
+import UIComponentsKit
+
+struct EmailVerifiedState: Equatable {
+}
+
+enum EmailVerifiedAction: Equatable {
+    case acknowledgeEmailVerification
+}
+
+struct EmailVerifiedEnvironment: Equatable {
+}
+
+typealias EmailVerifiedReducer = Reducer<EmailVerifiedState, EmailVerifiedAction, EmailVerifiedEnvironment>
+
+let emailVerifiedReducer = EmailVerifiedReducer { state, action, environment in
+    .none
+}
+
+struct EmailVerifiedView: View {
+    
+    let store: Store<EmailVerifiedState, EmailVerifiedAction>
+    
+    var body: some View {
+        WithViewStore(store) { viewStore in
+            ActionableView(
+                image: {
+                    Image("email_verification_success", bundle: .kycUIKit)
+                },
+                title: L10n.EmailVerified.title,
+                message: L10n.EmailVerified.message,
+                buttons: [
+                    .init(
+                        title: L10n.EmailVerified.continueButtonTitle,
+                        action: {
+                            viewStore.send(.acknowledgeEmailVerification)
+                        }
+                    )
+                ],
+                imageSpacing: 0
+            )
+        }
+        .background(Color.viewPrimaryBackground)
+    }
+}
+
+#if DEBUG
+struct EmailVerifiedView_Previews: PreviewProvider {
+    static var previews: some View {
+        EmailVerifiedView(
+            store: .init(
+                initialState: .init(),
+                reducer: emailVerifiedReducer,
+                environment: EmailVerifiedEnvironment()
+            )
+        )
+        .preferredColorScheme(.light)
+        
+        EmailVerifiedView(
+            store: .init(
+                initialState: .init(),
+                reducer: emailVerifiedReducer,
+                environment: EmailVerifiedEnvironment()
+            )
+        )
+        .preferredColorScheme(.dark)
+    }
+}
+#endif

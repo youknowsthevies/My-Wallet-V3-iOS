@@ -17,6 +17,8 @@ struct InternalFeatureItem: Equatable {
             return "Trading Account Receive"
         case .withdrawAndDepositACH:
             return "Withdraw and Deposit - US ACH"
+        case .showEmailVerificationAtLogin:
+            return "Show Email Verification at Login"
         }
     }
 }

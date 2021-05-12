@@ -109,7 +109,6 @@ extension SettingsService {
                 guard case .timedOut = error as? ToolKitError else {
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
                 return .timedOut
             }
             .eraseToAnyPublisher()
@@ -122,7 +121,6 @@ extension SettingsService {
                 guard case .timedOut = error as? ToolKitError else {
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
                 return .timedOut
             }
             .eraseToAnyPublisher()
@@ -136,7 +134,6 @@ extension SettingsService {
                 guard case .timedOut = error as? ToolKitError else {
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
                 return .timedOut
             }
             .eraseToAnyPublisher()
@@ -208,6 +205,21 @@ extension SettingsService: EmailSettingsServiceAPI {
                     sharedKey: payload.sharedKey
                 )
             }
+    }
+    
+    func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError> {
+        credentialsRepository.fetchCredentials()
+            .mapError(EmailSettingsServiceError.credentialsError)
+            .flatMap { [client] (guid, sharedKey) in
+                client.update(
+                    email: email,
+                    context: nil,
+                    guid: guid,
+                    sharedKey: sharedKey
+                )
+                .mapError(EmailSettingsServiceError.networkError)
+            }
+            .eraseToAnyPublisher()
     }
 }
 

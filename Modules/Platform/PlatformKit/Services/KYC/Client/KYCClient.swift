@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import RxSwift
@@ -17,6 +18,10 @@ public protocol KYCClientAPI: AnyObject {
 
     func credentialsForVeriff() -> Single<VeriffCredentials>
     func submitToVeriffForVerification(applicantId: String) -> Completable
+    
+    // MARK: Combine Interface
+    
+    func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError>
 }
 
 public final class KYCClient: KYCClientAPI {
@@ -97,14 +102,10 @@ public final class KYCClient: KYCClientAPI {
     }
     
     public func user() -> Single<NabuUser> {
-        let request = requestBuilder.get(
-            path: Path.currentUser,
-            authenticated: true
-        )!
-        return networkAdapter.perform(
-            request: request,
-            errorResponseType: NabuNetworkError.self
-        )
+        fetchUser()
+            .asObservable()
+            .take(1)
+            .asSingle()
     }
     
     public func listOfStates(in country: String) -> Single<[KYCState]> {
@@ -224,5 +225,14 @@ public final class KYCClient: KYCClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
+    
+    // MARK: Combine Interface
+    
+    public func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.currentUser,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
 }
-

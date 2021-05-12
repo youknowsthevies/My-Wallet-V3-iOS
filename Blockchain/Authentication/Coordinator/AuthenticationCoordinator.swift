@@ -1,7 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinKit
+import Combine
 import DIKit
+import KYCKit
+import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
@@ -57,6 +60,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     private let deepLinkRouter: DeepLinkRouting
     
+    private let settingsAPIClient: SettingsServiceAPI
+    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
@@ -74,6 +80,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     var isCreatingWallet = false
     
     private let bag = DisposeBag()
+    private var cancellables = Set<AnyCancellable>()
         
    // MARK: - Initializer
 
@@ -87,6 +94,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouting = resolve(),
+         settingsAPIClient: SettingsServiceAPI = resolve(),
+         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
@@ -98,6 +107,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         self.dataRepository = dataRepository
         self.deepLinkRouter = deepLinkRouter
         self.loadingViewPresenter = loadingViewPresenter
+        self.settingsAPIClient = settingsAPIClient
+        self.featureFlagsService = featureFlagsService
         remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
         remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
         super.init()
@@ -172,19 +183,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         NotificationCenter.default.post(name: .login, object: nil)
 
         if isCreatingWallet {
-            fiatCurrencySettingsService
-                .update(currency: .locale, context: .walletCreation)
-                .flatMapSingle(weak: self) { (self) -> Single<Bool> in
-                    self.supportedPairsInteractor.fetch()
-                        .map { !$0.pairs.isEmpty }
-                        .take(1)
-                        .asSingle()
-                }
-                .subscribe(onSuccess: { isAvailable in
-                    guard isAvailable else { return }
-                    AppCoordinator.shared.startSimpleBuyAtLogin()
-                })
-                .disposed(by: bag)
+            if featureFlagsService.isEnabled(.showEmailVerificationAtLogin) {
+                presentEmailVerificationFlow()
+            } else {
+                presentSimpleBuyFlow()
+            }
         }
 
         if let route = postAuthenticationRoute {
@@ -300,7 +303,57 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             dismissHandler: dismissHandler
         )
     }
-
+    
+    // MARK: Email Verification
+    
+    private func presentEmailVerificationFlow() {
+        guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else {
+            fatalError("🔴 Could not present Email Verification Flow: topMostViewController is nil!")
+        }
+        settingsAPIClient.fetchPublisher(force: false)
+            .ignoreFailure()
+            .map { $0.email }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self, weak viewController] emailAddress in
+                guard let self = self, let viewController = viewController else {
+                    fatalError("Check you're retaining this instances!")
+                }
+                let router = KYCUIKit.Router()
+                router.routeToEmailVerification(
+                    from: viewController,
+                    emailAddress: emailAddress,
+                    flowCompletion: {
+                        viewController.dismiss(animated: true, completion: {
+                            self.presentSimpleBuyFlow()
+                        })
+                    }
+                )
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: Simple Buy
+    
+    private func presentSimpleBuyFlow() {
+        fiatCurrencySettingsService.update(currency: .locale, context: .walletCreation)
+            .asPublisher()
+            .flatMap { [supportedPairsInteractor] _ in
+                supportedPairsInteractor.fetch()
+                    .asPublisher()
+            }
+            .map { !$0.pairs.isEmpty }
+            .filter { $0 }
+            .eraseToAnyPublisher()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case .finished = completion {
+                    AppCoordinator.shared.startSimpleBuyAtLogin()
+                }
+            } receiveValue: { _ in
+                // noop: this is not called
+            }
+            .store(in: &cancellables)
+    }
 }
 
 // MARK: - WalletSecondPasswordDelegate

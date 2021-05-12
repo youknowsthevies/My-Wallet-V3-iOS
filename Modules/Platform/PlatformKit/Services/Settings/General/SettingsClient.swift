@@ -1,11 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import RxSwift
 
 final class SettingsClient: SettingsClientAPI {
-        
+    
     /// Enumerates the API methods supported by the wallet settings endpoint.
     enum Method: String {
         case getInfo = "get-info"
@@ -27,7 +28,7 @@ final class SettingsClient: SettingsClientAPI {
     
     private let apiCode: String
     private let networkAdapter: NetworkAdapterAPI
-
+    
     // MARK: - Setup
     
     init(apiCode: String = BlockchainAPI.Parameters.apiCode,
@@ -73,9 +74,9 @@ final class SettingsClient: SettingsClientAPI {
     }
     
     func update(currency: String,
-                       context: FlowContext,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -84,7 +85,7 @@ final class SettingsClient: SettingsClientAPI {
             context: context
         )
     }
-
+    
     /// Updates the user's email.
     /// - Parameter email: The email value.
     /// - Parameter context: The context in which the update is happening.
@@ -92,9 +93,9 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
     func update(email: String,
-                       context: FlowContext?,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext?,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -111,9 +112,9 @@ final class SettingsClient: SettingsClientAPI {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
     func update(smsNumber: String,
-                       context: FlowContext?,
-                       guid: String,
-                       sharedKey: String) -> Completable {
+                context: FlowContext?,
+                guid: String,
+                sharedKey: String) -> Completable {
         update(
             guid: guid,
             sharedKey: sharedKey,
@@ -169,7 +170,38 @@ final class SettingsClient: SettingsClientAPI {
                         method: Method,
                         payload: String,
                         context: FlowContext? = nil) -> Completable {
-        
+        networkAdapter.perform(
+            request: request(
+                guid: guid,
+                sharedKey: sharedKey,
+                method: method,
+                payload: payload,
+                context: context
+            )
+        )
+    }
+    
+    public func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
+        networkAdapter.perform(
+            request: request(
+                guid: guid,
+                sharedKey: sharedKey,
+                method: .updateEmail,
+                payload: email
+            )
+        )
+    }
+}
+
+extension SettingsClient {
+    
+    fileprivate func request(
+        guid: String,
+        sharedKey: String,
+        method: Method,
+        payload: String,
+        context: FlowContext? = nil
+    ) -> NetworkRequest {
         let url = URL(string: BlockchainAPI.shared.walletSettingsUrl)!
         let requestPayload = SettingsRequest(
             method: method.rawValue,
@@ -182,12 +214,12 @@ final class SettingsClient: SettingsClientAPI {
             context: context?.rawValue
         )
         let data = try? JSONEncoder().encode(requestPayload)
-        let request = NetworkRequest(
+        return NetworkRequest(
             endpoint: url,
             method: .post,
             body: data,
             contentType: .formUrlEncoded
         )
-        return networkAdapter.perform(request: request)
     }
+    
 }

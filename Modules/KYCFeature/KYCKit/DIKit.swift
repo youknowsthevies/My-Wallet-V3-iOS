@@ -12,5 +12,7 @@ extension DependencyContainer {
         single { KYCSettings() as KYCSettingsAPI }
         
         factory { KYCStatusChecker() as KYCStatusChecking }
+        
+        factory { EmailVerificationService() as EmailVerificationServiceAPI }
     }
 }

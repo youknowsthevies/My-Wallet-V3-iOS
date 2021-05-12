@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import RxSwift
 
 public protocol SharedKeyRepositoryAPI: class {
@@ -21,13 +22,21 @@ public extension SharedKeyRepositoryAPI {
                 return !sharedKey.isEmpty
             }
     }
+    
+    var sharedKeyPublisher: AnyPublisher<String?, Never> {
+        sharedKey.asPublisher()
+            .ignoreFailure()
+    }
 }
 
 public protocol CredentialsRepositoryAPI: SharedKeyRepositoryAPI, GuidRepositoryAPI {
     var credentials: Single<(guid: String, sharedKey: String)> { get }
+    
+    func fetchCredentials() -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError>
 }
 
 extension CredentialsRepositoryAPI {
+    
     public var credentials: Single<(guid: String, sharedKey: String)> {
         Single
             .zip(guid, sharedKey)
@@ -40,5 +49,20 @@ extension CredentialsRepositoryAPI {
                 }
                 return (guid, sharedKey)
             }
+    }
+    
+    public func fetchCredentials() -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError> {
+        guidPublisher.zip(sharedKeyPublisher)
+            .setFailureType(to: MissingCredentialsError.self)
+            .flatMap { guid, sharedKey -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError> in
+                guard let guid = guid else {
+                    return .failure(.guid)
+                }
+                guard let sharedKey = sharedKey else {
+                    return .failure(.guid)
+                }
+                return .just((guid, sharedKey))
+            }
+            .eraseToAnyPublisher()
     }
 }
