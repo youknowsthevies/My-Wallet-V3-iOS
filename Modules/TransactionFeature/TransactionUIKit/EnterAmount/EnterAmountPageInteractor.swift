@@ -216,14 +216,18 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
-            .compactMap { state -> (action: AssetAction, networkFeeAdjustmentSupported: Bool)? in
+            .compactMap { state -> (action: AssetAction,
+                                    amountIsZero: Bool,
+                                    networkFeeAdjustmentSupported: Bool)? in
                 guard let pendingTransaction = state.pendingTransaction else {
                     return nil
                 }
-                return (state.action, pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
+                return (state.action,
+                        state.amount.isZero,
+                        pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
             }
-            .map { (action, networkFeeAdjustmentSupported) in
-                (action, (networkFeeAdjustmentSupported && action == .send) ? .visible : .hidden)
+            .map { (action, amountIsZero, networkFeeAdjustmentSupported) in
+                (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)
             }
             .map { (action, networkFeeVisibility) -> SendAuxiliaryViewPresenter.State in
                 SendAuxiliaryViewPresenter.State(
