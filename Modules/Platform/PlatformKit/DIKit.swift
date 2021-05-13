@@ -187,10 +187,6 @@ extension DependencyContainer {
         // MARK: - KYC
         
         factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
-
-        // MARK: - Internal Feature Flag
-
-        factory { InternalFeatureFlagService(defaultsProvider: provideInternalUserDefaults) as InternalFeatureFlagServiceAPI }
     }
     
     // MARK: - BuySellKit Module

@@ -9,5 +9,9 @@ extension DependencyContainer {
     public static var toolKit = module {
         
         factory { UserDefaults.standard as CacheSuite }
+        
+        // MARK: - Internal Feature Flag
+
+        factory { InternalFeatureFlagService(defaultsProvider: provideInternalUserDefaults) as InternalFeatureFlagServiceAPI }
     }
 }
