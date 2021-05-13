@@ -158,8 +158,6 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     private func setupUI() {
         tableView.backgroundColor = .white
-        tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 80
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
         tableView.register(CurrentBalanceTableViewCell.self)
@@ -211,5 +209,9 @@ extension TargetSelectionViewController: UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         dataSource[section].header.defaultHeight
+    }
+
+    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        80.0
     }
 }
