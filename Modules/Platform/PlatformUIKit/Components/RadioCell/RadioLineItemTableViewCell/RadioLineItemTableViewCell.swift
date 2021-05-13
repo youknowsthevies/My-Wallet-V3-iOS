@@ -48,6 +48,10 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
         super.prepareForReuse()
         presenter = nil
     }
+    
+    public func separator(enabled: Bool) {
+        separatorView.isHidden = !enabled
+    }
 
     private func setup() {
         selectionStyle = .none

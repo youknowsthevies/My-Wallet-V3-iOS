@@ -27,18 +27,14 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
     
     private var disposeBag = DisposeBag()
     private let tableView = SelfSizingTableView()
-    
-    public override func loadView() {
-        view = UIView()
+        
+    override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = .white
         
         view.addSubview(tableView)
         tableView.separatorStyle = .none
         tableView.fillSuperview(usesSafeAreaLayoutGuide: true)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
         setupTableView()
     }
     
@@ -150,6 +146,7 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
             RadioLineItemTableViewCell.self,
             for: IndexPath(row: row, section: 0)
         )
+        cell.separator(enabled: false)
         cell.presenter = presenter
         return cell
     }
