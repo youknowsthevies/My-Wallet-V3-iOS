@@ -35,6 +35,7 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
         view.addSubview(tableView)
         tableView.separatorStyle = .none
         tableView.fillSuperview(usesSafeAreaLayoutGuide: true)
+        tableView.layoutToSuperview(.top)
         setupTableView()
     }
     
