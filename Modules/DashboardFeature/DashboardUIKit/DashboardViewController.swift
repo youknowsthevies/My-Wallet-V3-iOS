@@ -205,13 +205,11 @@ public final class DashboardViewController: BaseScreenViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
-    public func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter.cellCount
     }
     
-    public func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {

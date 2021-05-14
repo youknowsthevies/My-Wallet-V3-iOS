@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DashboardUIKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -7,8 +8,8 @@ import RxRelay
 import RxSwift
 import SettingsKit
 
-public final class BackupFundsCustodialRouter: BackupRouterAPI {
-    
+final class BackupFundsCustodialRouter: DashboardBackupRouterAPI {
+
     // MARK: - BackupRouterAPI
     
     public let entry: BackupRouterEntry = .custody

@@ -87,8 +87,18 @@ public class NavigationRouter: NavigationRouterAPI {
         case .modal(from: let parentViewController):
             presentModal(viewController: viewController, in: parentViewController)
         case .navigation(from: let originViewController):
+            #if INTERNAL_BUILD
+            if originViewController.navigationControllerAPI == nil {
+                fatalError("When presenting a \(type(of: viewController)), originViewController \(type(of: originViewController)), originViewController.navigationControllerAPI was nil.")
+            }
+            #endif
             originViewController.navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .navigationFromCurrent:
+            #if INTERNAL_BUILD
+            if navigationControllerAPI == nil {
+                fatalError("When presenting a \(type(of: viewController)), navigationControllerAPI was nil.")
+            }
+            #endif
             navigationControllerAPI?.pushViewController(viewController, animated: true)
         case .modalOverTopMost:
             if let parentViewController = topMostViewControllerProvider.topMostViewController {

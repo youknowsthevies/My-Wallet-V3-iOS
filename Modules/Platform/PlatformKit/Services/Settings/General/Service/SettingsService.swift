@@ -48,6 +48,10 @@ final class SettingsService: SettingsServiceAPI {
         NotificationCenter.when(.login) { [weak self] _ in
             self?.settingsRelay.accept(nil)
         }
+
+        NotificationCenter.when(.logout) { [weak self] _ in
+            self?.settingsRelay.accept(nil)
+        }
     }
     
     // MARK: - Public Methods

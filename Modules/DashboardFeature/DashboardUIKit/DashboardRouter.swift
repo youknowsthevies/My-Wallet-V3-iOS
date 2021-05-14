@@ -20,9 +20,10 @@ final class DashboardRouter {
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         balanceProviding: BalanceProviding = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
-        settingsService: FiatCurrencySettingsServiceAPI = resolve()
+        settingsService: FiatCurrencySettingsServiceAPI = resolve(),
+        accountsRouter: AccountsRouting = resolve()
     ) {
-        self.accountsRouter = resolve()
+        self.accountsRouter = accountsRouter
         self.navigationRouter = navigationRouter
         self.balanceProviding = balanceProviding
         self.exchangeProviding = exchangeProviding

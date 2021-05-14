@@ -13,7 +13,7 @@ protocol SwapTransactionEngine: TransactionEngine {
     var quotesEngine: SwapQuotesEngine { get }
     var orderCreationService: OrderCreationServiceAPI { get }
     var orderQuoteService: OrderQuoteServiceAPI { get }
-    var tradeLimitsService: TradeLimitsAPI { get }
+    var tradeLimitsService: TransactionLimitsServiceAPI { get }
     var fiatCurrencyService: FiatCurrencyServiceAPI { get }
     var kycTiersService: KYCTiersServiceAPI { get }
     var priceService: PriceServiceAPI { get }
@@ -93,8 +93,7 @@ extension SwapTransactionEngine {
         let quoteSubscription = pendingTransaction.quoteSubscription
         quoteSubscription?.dispose()
         pendingTransaction.engineState[.quoteSubscription] = nil
-        pendingTransaction.update(confirmations: [])
-        return pendingTransaction
+        return pendingTransaction.update(confirmations: [])
     }
 
     func stop(pendingTransaction: PendingTransaction) {
@@ -107,20 +106,16 @@ extension SwapTransactionEngine {
         Single
             .zip(
                 kycTiersService.tiers,
-                tradeLimitsService.getTradeLimits(withFiatCurrency: fiatCurrency.code, ignoringCache: true)
+                tradeLimitsService.fetchTransactionLimits(
+                    currency: fiatCurrency.currency,
+                    networkFee: targetAsset.currency,
+                    product: .swap(orderDirection)
+                )
             )
             .map { (tiers, limits) -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
                 // TODO: Convert to `MoneyValuePair` so that
-                // we can show crypto or fiat min/max values. 
-                let min = FiatValue.create(
-                    major: limits.minOrder,
-                    currency: fiatCurrency
-                )
-                let max = FiatValue.create(
-                    major: limits.maxOrder,
-                    currency: fiatCurrency
-                )
-                return (tiers, min, max)
+                // we can show crypto or fiat min/max values.
+                return (tiers, limits.minOrder, limits.maxOrder)
             }
             .flatMap(weak: self) { (self, values) -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
                 let (tiers, min, max) = values

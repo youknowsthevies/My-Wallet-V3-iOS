@@ -7,7 +7,7 @@ import RxRelay
 import RxSwift
 import SettingsKit
 
-public final class BackupFundsSettingsRouter: BackupRouterAPI {
+final class BackupFundsSettingsRouter: SettingsBackupRouterAPI {
     
     // MARK: - BackupRouterAPI
     
@@ -18,8 +18,8 @@ public final class BackupFundsSettingsRouter: BackupRouterAPI {
     private let navigationRouter: NavigationRouterAPI
     private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
     private let disposeBag = DisposeBag()
-    
-    public init(navigationRouter: NavigationRouterAPI = resolve(),
+
+    init(navigationRouter: NavigationRouterAPI,
          recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI = resolve()) {
         self.navigationRouter = navigationRouter
         self.recoveryPhraseVerifyingService = recoveryPhraseVerifyingService

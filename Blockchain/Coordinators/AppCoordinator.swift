@@ -46,7 +46,7 @@ import WalletPayloadKit
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
     private var sellRouter: PlatformUIKit.SellRouter!
-    private var backupRouter: SettingsUIKit.BackupRouterAPI?
+    private var backupRouter: DashboardBackupRouterAPI?
     
     // MARK: - UIViewController Properties
     
@@ -320,8 +320,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     func startBackupFlow() {
-        backupRouter = BackupFundsCustodialRouter()
-        backupRouter?.start()
+        let router: DashboardBackupRouterAPI = resolve()
+        backupRouter = router
+        router.start()
     }
 
     private func createAccountsAndAddressesViewController() -> UIViewController {
@@ -420,14 +421,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     @objc func handleSellCrypto() {
         let accountSelectionService = AccountSelectionService()
         let interactor = SellRouterInteractor(
-            accountSelectionService: accountSelectionService,
-            balanceProvider: DataProvider.default.balance
+            accountSelectionService: accountSelectionService
         )
         let builder = PlatformUIKit.SellBuilder(
             accountSelectionService: accountSelectionService,
-            routerInteractor: interactor,
-            analyticsRecorder: resolve(),
-            balanceProvider: DataProvider.default.balance
+            routerInteractor: interactor
         )
         sellRouter = PlatformUIKit.SellRouter(builder: builder)
         sellRouter.load()

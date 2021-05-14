@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
@@ -22,7 +23,7 @@ public final class RecoveryPhraseStatusProvider: RecoveryPhraseStatusProviding {
     private let isVerified = PublishRelay<Bool>()
     private let walletRecoveryVerifier: WalletRecoveryVerifing
     
-    public init(walletRecoveryVerifier: WalletRecoveryVerifing) {
+    public init(walletRecoveryVerifier: WalletRecoveryVerifing = resolve()) {
         self.walletRecoveryVerifier = walletRecoveryVerifier
         isVerified.accept(walletRecoveryVerifier.isRecoveryPhraseVerified())
     }

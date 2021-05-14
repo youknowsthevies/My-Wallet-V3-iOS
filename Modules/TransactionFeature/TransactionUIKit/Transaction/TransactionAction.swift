@@ -52,7 +52,6 @@ enum TransactionAction: MviAction {
                 action: action,
                 destination: target,
                 errorState: .none,
-                nextEnabled: passwordRequired,
                 passwordRequired: passwordRequired,
                 source: sourceAccount,
                 step: step
@@ -62,7 +61,6 @@ enum TransactionAction: MviAction {
                 action: action,
                 destination: target,
                 errorState: .none,
-                nextEnabled: true,
                 passwordRequired: passwordRequired,
                 source: sourceAccount,
                 step: .enterAmount
@@ -78,7 +76,6 @@ enum TransactionAction: MviAction {
             return TransactionState(
                 action: action,
                 errorState: .none,
-                nextEnabled: passwordRequired,
                 passwordRequired: passwordRequired,
                 source: sourceAccount
             )
@@ -149,7 +146,7 @@ enum TransactionAction: MviAction {
             newState.step = .inProgress
             newState.executionStatus = .inProgress
             return newState.withUpdatedBackstack(oldState: oldState)
-        case .updateTransactionComplete(let result):
+        case .updateTransactionComplete:
             var newState = oldState
             newState.nextEnabled = true
             newState.executionStatus = .completed

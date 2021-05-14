@@ -74,7 +74,7 @@ public final class SellBuilder: SellBuilderAPI {
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
                 priceService: PriceServiceAPI = resolve(),
-                balanceProvider: BalanceProviding) {
+                balanceProvider: BalanceProviding = resolve()) {
         self.accountSelectionService = accountSelectionService
         self.analyticsRecorder = analyticsRecorder
         self.supportedPairsInteractor = supportedPairsInteractor
