@@ -27,18 +27,15 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
     
     private var disposeBag = DisposeBag()
     private let tableView = SelfSizingTableView()
-    
-    public override func loadView() {
-        view = UIView()
+        
+    override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = .white
         
         view.addSubview(tableView)
         tableView.separatorStyle = .none
         tableView.fillSuperview(usesSafeAreaLayoutGuide: true)
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
+        tableView.layoutToSuperview(.top)
         setupTableView()
     }
     

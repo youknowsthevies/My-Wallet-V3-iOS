@@ -19,6 +19,11 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
             
             presenter
+                .isSeparatorHidden
+                .drive(separatorView.rx.isHidden)
+                .disposed(by: disposeBag)
+            
+            presenter
                 .viewModel
                 .drive(lineItemView.rx.rx_viewModel)
                 .disposed(by: disposeBag)
