@@ -29,7 +29,8 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
                 RadioLineItemCellPresenter(
                     title: FeeLevel.regular.title,
                     subtitle: "\(60)+ \(LocalizationId.min)",
-                    selected: $0 == .regular
+                    selected: $0 == .regular,
+                    showSeparator: false
                 )
             }
         let isOkEnabled = interactorState
@@ -41,7 +42,8 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
                 RadioLineItemCellPresenter(
                     title: FeeLevel.priority.title,
                     subtitle: "\(30) \(LocalizationId.minutes)",
-                    selected: $0 == .priority
+                    selected: $0 == .priority,
+                    showSeparator: false
                 )
             }
         

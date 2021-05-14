@@ -147,7 +147,6 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
             RadioLineItemTableViewCell.self,
             for: IndexPath(row: row, section: 0)
         )
-        cell.separator(enabled: false)
         cell.presenter = presenter
         return cell
     }

@@ -19,6 +19,12 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
             
             presenter
+                .separatorVisibility
+                .map { !$0 }
+                .drive(separatorView.rx.isHidden)
+                .disposed(by: disposeBag)
+            
+            presenter
                 .viewModel
                 .drive(lineItemView.rx.rx_viewModel)
                 .disposed(by: disposeBag)
@@ -47,10 +53,6 @@ public final class RadioLineItemTableViewCell: UITableViewCell {
     public override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
-    }
-    
-    public func separator(enabled: Bool) {
-        separatorView.isHidden = !enabled
     }
 
     private func setup() {
