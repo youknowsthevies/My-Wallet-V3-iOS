@@ -1,9 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import NetworkKit
 import PlatformKit
 import RxSwift
 
 final class KYCClientMock: KYCClientAPI {
+    
+    struct StubbedResults {
+        var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = {
+            Fail(error: NabuNetworkError(from: NetworkError.urlError(.urlError(URLError(.badURL)))))
+                .eraseToAnyPublisher()
+        }()
+    }
+    
+    var stubbedResults = StubbedResults()
     
     var expectedTiers: Result<KYC.UserTiers, Error>!
     func tiers() -> Single<KYC.UserTiers> {
@@ -53,5 +64,9 @@ final class KYCClientMock: KYCClientAPI {
     var jwtToken: Result<String, Error>!
     func requestJWT(guid: String, sharedKey: String) -> Single<String> {
         jwtToken.single
+    }
+    
+    func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
+        stubbedResults.fetchUser
     }
 }

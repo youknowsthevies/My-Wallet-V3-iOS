@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "email_verified.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

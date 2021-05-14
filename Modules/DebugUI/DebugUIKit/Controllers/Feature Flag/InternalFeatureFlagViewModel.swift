@@ -4,6 +4,7 @@ import DIKit
 import PlatformKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 struct InternalFeatureItem: Equatable {
     let type: InternalFeature
@@ -17,6 +18,10 @@ struct InternalFeatureItem: Equatable {
             return "Trading Account Receive"
         case .withdrawAndDepositACH:
             return "Withdraw and Deposit - US ACH"
+        case .requestConsoleLogging:
+            return "Enable Network Request Console Logs"
+        case .showEmailVerificationAtLogin:
+            return "Show Email Verification at Login"
         }
     }
 }

@@ -37,3 +37,11 @@ public enum HTTPRequestPayloadError: Error {
     case emptyData
     case badData(rawPayload: String)
 }
+
+/// A simple implementation of `Equatable` for now. I might make sense to improve this, eventually.
+extension NetworkError: Equatable {
+    
+    public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
+}

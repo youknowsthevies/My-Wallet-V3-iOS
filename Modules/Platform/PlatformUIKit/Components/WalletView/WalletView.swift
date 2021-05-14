@@ -80,7 +80,7 @@ final class WalletView: UIView {
         
         badgeImageView.layout(size: .edge(32.0))
         badgeImageView.layout(to: .centerY, of: self)
-        badgeImageView.layoutToSuperview(.leading, .top, .bottom)
+        badgeImageView.layoutToSuperview(.leading)
         badgeImageView.layout(edge: .trailing, to: .leading, of: stackView, offset: -16.0)
         stackView.layout(to: .centerY, of: self)
     }

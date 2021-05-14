@@ -11,8 +11,14 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable receiving to trading account
     case tradingAccountReceive
     
-    /// Enabled deposit and withdraw for US users
+    /// Enables deposit and withdraw for US users
     case withdrawAndDepositACH
+    
+    /// Enabled console logging of network requests for debug builds
+    case requestConsoleLogging
+    
+    /// Shows Email Verification insted of Simple Buy at Login
+    case showEmailVerificationAtLogin
     
     internal var defaultsKey: String {
         "internal-flag-\(rawValue)-key"

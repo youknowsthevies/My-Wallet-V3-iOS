@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Foundation
 import RxSwift
 import ToolKit
@@ -47,11 +48,14 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
     }()
 
     private let jsonDecoder: JSONDecoder
+    private let interalFeatureFlagService: InternalFeatureFlagServiceAPI
     
     // MARK: - Setup
 
-    init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder) {
+    init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder,
+         interalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()) {
         self.jsonDecoder = jsonDecoder
+        self.interalFeatureFlagService = interalFeatureFlagService
     }
     
     // MARK: - NetworkResponseDecoderAPI
@@ -155,6 +159,19 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         for request: NetworkRequest,
         emptyPayloadHandler: (ServerResponse) -> Result<ResponseType, NetworkError>
     ) -> Result<ResponseType, NetworkError> {
+        #if INTERNAL_BUILD
+        let consoleLoggingEnabled = interalFeatureFlagService.isEnabled(.requestConsoleLogging)
+        if let data = response.payload, consoleLoggingEnabled {
+            if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
+                Logger.shared.debug("""
+        \n----------------------
+        🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
+        📦 PAYLOAD: \n\(json)
+        ======================\n
+        """)
+            }
+        }
+        #endif
         guard ResponseType.self != EmptyNetworkResponse.self else {
             let emptyResponse: ResponseType = EmptyNetworkResponse() as! ResponseType
             return .success(emptyResponse)
@@ -166,6 +183,10 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             let message = String(data: payload, encoding: .utf8) ?? ""
             let rawResponse = RawServerResponse(data: message) as! ResponseType
             return .success(rawResponse)
+        }
+        guard ResponseType.self != String.self else {
+            let message = String(data: payload, encoding: .utf8) ?? ""
+            return .success(message as! ResponseType)
         }
         return Result { try self.jsonDecoder.decode(ResponseType.self, from: payload) }
             .flatMapError { decodingError -> Result<ResponseType, NetworkError> in
@@ -204,4 +225,3 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         """
     }
 }
-

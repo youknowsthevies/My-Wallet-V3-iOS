@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import NetworkKit
 import RxSwift
 
 /// Protocol definition for interacting with the `WalletSettings` object.
@@ -18,6 +20,8 @@ protocol SettingsClientAPI: class {
     /// - Parameter sharedKey: A shared key that must be valid.
     /// - Returns: a `Completable`.
     func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> Completable
+    
+    func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError>
     
     /// Updates the user's mobile number.
     /// - Parameter smsNumber: The mobile number value.

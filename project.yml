@@ -885,13 +885,15 @@ targets:
   KYCUIKit:
     dependencies:
     - carthage: Veriff
+    - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
     - target: PlatformUIKit
+    - target: SharedPackagesKit
     - target: ToolKit
-    - target: AnalyticsKit
+    - target: UIComponentsKit
     scheme:
       testTargets:
       - KYCUIKitTests

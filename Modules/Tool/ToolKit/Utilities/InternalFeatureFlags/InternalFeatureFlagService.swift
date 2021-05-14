@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import RxCocoa
-import RxSwift
 
 public protocol InternalFeatureFlagServiceAPI {
     func isEnabled(_ feature: InternalFeature) -> Bool

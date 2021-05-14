@@ -1,6 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import NetworkKit
 import RxSwift
+
+public enum EmailSettingsServiceError: Error {
+    case credentialsError(MissingCredentialsError)
+    case networkError(NetworkError)
+}
 
 public protocol EmailSettingsServiceAPI: class {
     
@@ -12,4 +19,6 @@ public protocol EmailSettingsServiceAPI: class {
     /// - Parameter context: The context in which the request has happened
     /// - Returns: A `Completable`
     func update(email: String, context: FlowContext?) -> Completable
+    
+    func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError>
 }
