@@ -13,8 +13,6 @@ open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
         currentAssetAccountDetails(fromCache: true)
     }
     
-    private var privateAccountDetails = BehaviorRelay<Details?>(value: nil)
-   
     private let service: EthereumAssetAccountDetailsService
     
     init(service: EthereumAssetAccountDetailsService = resolve()) {
@@ -30,9 +28,5 @@ open class EthereumAssetAccountRepository: AssetAccountRepositoryAPI {
     
     fileprivate func fetchAssetAccountDetails(for accountID: String) -> Single<Details> {
         service.accountDetails(for: accountID)
-            .do(onSuccess: { [weak self] account in
-                self?.privateAccountDetails.accept(account)
-            }
-        )
     }
 }
