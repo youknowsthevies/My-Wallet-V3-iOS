@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
+import RxRelay
 import ToolKit
 
 extension DependencyContainer {
@@ -12,7 +13,7 @@ extension DependencyContainer {
     
     static var today = module {
         
-        factory { AnalyticsServiceMock() as AnalyticsServiceProviding }
+        factory { AnalyticsServiceMock() as AnalyticsEventRecording }
         
         factory { UIDevice.current as DeviceInfo }
     }
@@ -24,8 +25,11 @@ extension UIDevice: DeviceInfo {
     }
 }
 
-final class AnalyticsServiceMock: AnalyticsServiceProviding {
-    func trackEvent(title: String, parameters: [String : Any]?) {
+final class AnalyticsServiceMock: AnalyticsEventRecorderAPI {
+    
+    let recordRelay = PublishRelay<AnalyticsEvent>()
+    
+    func record(event: AnalyticsEvent) {
         // NOOP
     }
 }
