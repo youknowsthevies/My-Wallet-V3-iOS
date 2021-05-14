@@ -100,6 +100,7 @@ public final class Router: RouterAPI {
     /// Should be called once
     public func setup(startImmediately: Bool) {
         stateService.action
+            .observeOn(MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
                 case .previous(let state):

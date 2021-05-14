@@ -44,6 +44,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         super.viewDidLoad()
         
         interactor.effect
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] effect in
                 switch effect {
                 case .failure:
@@ -67,6 +68,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.preferredPaymentMethodType,
                 interactor.paymentMethodTypes.map { $0.count }
             )
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
@@ -115,6 +117,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                         }
                     }
             }
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
@@ -182,6 +185,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
