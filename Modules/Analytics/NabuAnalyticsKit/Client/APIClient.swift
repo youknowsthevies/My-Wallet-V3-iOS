@@ -16,16 +16,16 @@ class APIClient: EventSendingAPI {
     
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
-    private let jwtService: JWTServiceAPI
+    private let nabuTokenStore: NabuTokenStore
 
     // MARK: - Setup
     
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
-         jwtService: JWTServiceAPI = resolve()) {
+         nabuTokenStore: NabuTokenStore = resolve()) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
-        self.jwtService = jwtService
+        self.nabuTokenStore = nabuTokenStore
     }
     
     func publish(events: EventsWrapper) -> AnyPublisher<Void, NetworkError> {
@@ -34,19 +34,17 @@ class APIClient: EventSendingAPI {
         guard let body = try? jsonEncoder.encode(events) else {
             fatalError("Error encoding analytics event body.")
         }
-        return jwtService.token
-            .map(Optional.init)
-            .replaceError(with: nil)
-            .compactMap { [unowned self] token in
+        return nabuTokenStore.sessionTokenDataPublisher
+            .compactMap { [requestBuilder] token in
                 var headers = HTTPHeaders()
                 if let token = token {
                     headers[HttpHeaderField.authorization] = "Bearer \(token)"
                 }
-                return self.requestBuilder.post(path: Path.transactions, body: body, headers: headers)
+                return requestBuilder.post(path: Path.transactions, body: body, headers: headers)
             }
             .setFailureType(to: NetworkError.self)
-            .flatMap { [unowned self] request in
-                self.networkAdapter.performOptional(request: request)
+            .flatMap { [networkAdapter] request in
+                networkAdapter.performOptional(request: request)
             }
             .eraseToAnyPublisher()
     }

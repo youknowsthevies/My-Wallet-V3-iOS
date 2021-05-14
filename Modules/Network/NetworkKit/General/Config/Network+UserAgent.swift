@@ -25,7 +25,7 @@ extension Bundle {
         }
         return buildVersion
     }
-    /// The build version of the application. Equivalent to CFBundleDisplayName.
+    /// The name of the application. Equivalent to CFBundleDisplayName.
     public static var applicationName: String? {
         guard let infoDictionary = main.infoDictionary else {
             return nil

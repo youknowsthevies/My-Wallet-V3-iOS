@@ -315,8 +315,10 @@ targets:
     - Module
   NabuAnalyticsKit:
     dependencies:
+    - target: PlatformKit
     - target: NetworkKit
     - target: AnalyticsKit
+    - target: SettingsKit
     templateAttributes:
       featureName: Analytics
     templates:
