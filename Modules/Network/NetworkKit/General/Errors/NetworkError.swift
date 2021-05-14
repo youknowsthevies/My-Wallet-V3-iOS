@@ -4,7 +4,7 @@ import AnalyticsKit
 
 /// A networking error returned by the network layer, this can be mapped to user facing errors at a high level
 public enum NetworkError: Error {
-    case urlError(BlockchainURLError)
+    case urlError(URLError)
     case serverError(HTTPRequestServerError)
     case rawServerError(ServerErrorResponse)
     case payloadError(HTTPRequestPayloadError)
