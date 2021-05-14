@@ -129,15 +129,19 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 guard case let .success(data) = result else { return nil }
                 return data.candidateOrderDetails
             }
-            .map(weak: self) { (self, candidateOrderDetails) in
+            .compactMap { [weak self] candidateOrderDetails in
                 let paymentMethod = candidateOrderDetails.paymentMethod?.method
-                return self.displayBundle.events.confirmTapped(
+                return self?.displayBundle.events.confirmTapped(
                     candidateOrderDetails.fiatValue.currency,
                     candidateOrderDetails.fiatValue.moneyValue,
+                    candidateOrderDetails.cryptoCurrency,
+                    candidateOrderDetails.cryptoValue,
                     [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : (paymentMethod?.analyticsParameter.string) ?? ""]
                 )
             }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: { [weak self] events in
+                self?.analyticsRecorder.record(events: events)
+            })
             .disposed(by: disposeBag)
 
         ctaObservable

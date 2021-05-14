@@ -8,4 +8,13 @@ public protocol AnalyticsEventRelayRecording {
 
 public protocol AnalyticsEventRecording: class {
     func record(event: AnalyticsEvent)
+    func record(events: [AnalyticsEvent])
+}
+
+extension AnalyticsEventRecording {
+    func record(events: [AnalyticsEvent]) {
+        events.forEach {
+            record(event: $0)
+        }
+    }
 }

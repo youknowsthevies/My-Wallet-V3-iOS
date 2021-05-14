@@ -159,7 +159,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     open override func viewWillAppear() {
         super.viewWillAppear()
-        analyticsRecorder.record(event: displayBundle.events.didAppear)
+        analyticsRecorder.record(events: displayBundle.events.didAppear)
     }
 
     func previous() {

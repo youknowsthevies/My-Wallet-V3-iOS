@@ -23,17 +23,18 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                 digitPadTopSeparator: .lightBorder,
                 bottomAuxiliaryItemSeparator: .clear
             ),
-            // TODO: Daniel - Events
             events: Events(
-                didAppear: AnalyticsEvent.sbBuyFormShown,
+                didAppear: [AnalyticsEvent.sbBuyFormShown],
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
-                confirmTapped: { (currencyType, amount, additionalParameters) in
-                    AnalyticsEvent.sbBuyFormConfirmClick(
-                        currencyCode: currencyType.code,
-                        amount: amount.toDisplayString(includeSymbol: true),
-                        additionalParameters: additionalParameters
-                    )
+                confirmTapped: { (currencyType, amount, _, _, additionalParameters) in
+                    [
+                        AnalyticsEvent.sbBuyFormConfirmClick(
+                            currencyCode: currencyType.code,
+                            amount: amount.toDisplayString(includeSymbol: true),
+                            additionalParameters: additionalParameters
+                        )
+                    ]
                 },
                 sourceAccountChanged: { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
             ),
