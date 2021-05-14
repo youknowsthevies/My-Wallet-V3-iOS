@@ -41,6 +41,8 @@ extension AnalyticsUserPropertyInteractor: DashboardUIKit.AnalyticsUserPropertyI
 
 extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
+extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
+
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
@@ -50,8 +52,6 @@ extension DependencyContainer {
         factory { NavigationRouter() as NavigationRouterAPI }
         
         single { OnboardingSettings() }
-
-        single { AuthenticationCoordinator() }
 
         single { OnboardingRouter() }
         
@@ -97,6 +97,24 @@ extension DependencyContainer {
 
         single { SecondPasswordStore() as SecondPasswordStorable }
 
+        // MARK: ExchangeCoordinator
+
+        factory { ExchangeCoordinator.shared }
+
+        factory { () -> ExchangeCoordinating in
+            let coordinator: ExchangeCoordinator = DIKit.resolve()
+            return coordinator as ExchangeCoordinating
+        }
+
+        // MARK: - AuthenticationCoordinator
+
+        single { AuthenticationCoordinator() }
+
+        factory { () -> AuthenticationCoordinating in
+            let coordinator: AuthenticationCoordinator = DIKit.resolve()
+            return coordinator as AuthenticationCoordinating
+        }
+
         // MARK: - Dashboard
 
         factory {
@@ -104,8 +122,20 @@ extension DependencyContainer {
                 routing: AppCoordinator.shared
             ) as AccountsRouting
         }
+
+        factory { AppCoordinator.shared as CurrencyRouting }
+
+        factory { AppCoordinator.shared as TabSwapping }
+
+        factory { UIApplication.shared as AppStoreOpening }
+
+        factory { AppCoordinator.shared as AppCoordinating }
+
+        factory {
+            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as DashboardUIKit.BackupRouterAPI
+        }
         
-        single { AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting }
+        factory { AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting }
         
         factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
         
@@ -157,6 +187,16 @@ extension DependencyContainer {
         factory { () -> WalletRecoveryVerifing in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as WalletRecoveryVerifing
+        }
+
+        factory { () -> GuidRepositoryAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.repository as GuidRepositoryAPI
+        }
+
+        factory { () -> PasswordRepositoryAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.repository as PasswordRepositoryAPI
         }
         
         // MARK: - BlockchainSettings.App

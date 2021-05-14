@@ -6,11 +6,10 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
-import SettingsKit
 import ToolKit
 import TransactionUIKit
 
-public protocol DashboardBackupRouterAPI {
+public protocol BackupRouterAPI {
     var completionRelay: PublishRelay<Void> { get }
     func start()
 }
@@ -32,7 +31,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     public let walletOperationsRouter: WalletOperationsRouting
     
     private var stateService: CustodyActionStateServiceAPI!
-    private let backupRouterAPI: DashboardBackupRouterAPI
+    private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private var depositRouter: DepositRootRouting!
     private let dataProviding: DataProviding
@@ -51,7 +50,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
     
-    public convenience init(backupRouterAPI: DashboardBackupRouterAPI, tabSwapping: TabSwapping) {
+    public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
             tabSwapping: tabSwapping,
@@ -60,7 +59,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
     
     init(
-        backupRouterAPI: DashboardBackupRouterAPI,
+        backupRouterAPI: BackupRouterAPI,
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
         navigationRouter: NavigationRouterAPI = resolve(),

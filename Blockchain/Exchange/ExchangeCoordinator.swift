@@ -9,7 +9,7 @@ import SafariServices
 import SettingsKit
 import ToolKit
 
-class ExchangeCoordinator {
+final class ExchangeCoordinator {
     
     // MARK: Public Properties
     

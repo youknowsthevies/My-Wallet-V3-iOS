@@ -46,7 +46,7 @@ import WalletPayloadKit
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
     private var sellRouter: PlatformUIKit.SellRouter!
-    private var backupRouter: DashboardBackupRouterAPI?
+    private var backupRouter: DashboardUIKit.BackupRouterAPI?
     
     // MARK: - UIViewController Properties
     
@@ -157,21 +157,9 @@ import WalletPayloadKit
     }
 
     func showSettingsView() {
-        settingsRouterAPI = SettingsRouter(
-            appCoordinator: self,
-            wallet: walletManager.wallet,
-            guidRepositoryAPI: walletManager.repository,
-            authenticationCoordinator: authenticationCoordinator,
-            exchangeCoordinator: ExchangeCoordinator.shared,
-            appStoreOpener: UIApplication.shared,
-            currencyRouter: self,
-            tabSwapping: self,
-            passwordRepository: walletManager.repository,
-            repository: BlockchainDataRepository.shared,
-            balanceProviding: DataProvider.default.balance,
-            balanceChangeProviding: DataProvider.default.balanceChange
-        )
-        settingsRouterAPI?.presentSettings()
+        let router: SettingsRouterAPI = resolve()
+        settingsRouterAPI = router
+        router.presentSettings()
     }
 
     @objc func closeSideMenu() {
@@ -320,7 +308,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     func startBackupFlow() {
-        let router: DashboardBackupRouterAPI = resolve()
+        let router: DashboardUIKit.BackupRouterAPI = resolve()
         backupRouter = router
         router.start()
     }

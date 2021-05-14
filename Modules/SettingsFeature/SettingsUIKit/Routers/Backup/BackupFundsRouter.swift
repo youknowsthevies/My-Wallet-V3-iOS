@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DashboardUIKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -8,22 +7,31 @@ import RxRelay
 import RxSwift
 import SettingsKit
 
-final class BackupFundsCustodialRouter: DashboardBackupRouterAPI {
+public protocol BackupFundsRouterAPI {
+    var completionRelay: PublishRelay<Void> { get }
+    func start()
+}
+
+public final class BackupFundsRouter: BackupFundsRouterAPI {
 
     // MARK: - BackupRouterAPI
-    
-    public let entry: BackupRouterEntry = .custody
+
     public let completionRelay = PublishRelay<Void>()
-    
-    private let navigationRouter: NavigationRouterAPI
+
     private var stateService: BackupRouterStateService!
+    private let navigationRouter: NavigationRouterAPI
     private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
     private let disposeBag = DisposeBag()
+    private let entry: BackupRouterEntry
     
-    public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI = resolve()) {
-        self.recoveryPhraseVerifyingService = recoveryPhraseVerifying
+    public init(
+        entry: BackupRouterEntry,
+        navigationRouter: NavigationRouterAPI,
+        recoveryPhraseVerifying: RecoveryPhraseVerifyingServiceAPI = resolve()
+    ) {
+        self.entry = entry
         self.navigationRouter = navigationRouter
+        self.recoveryPhraseVerifyingService = recoveryPhraseVerifying
     }
     
     public func start() {
@@ -36,19 +44,38 @@ final class BackupFundsCustodialRouter: DashboardBackupRouterAPI {
                 case .next(let state):
                     self.next(to: state)
                 case .dismiss:
-                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+                    self.dismiss()
                 case .complete:
-                    self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
-                        guard let self = self else { return }
-                        self.completionRelay.accept(())
-                    })
+                    self.complete()
                 }
             }
             .disposed(by: disposeBag)
         stateService.nextRelay.accept(())
     }
-    
-    public func next(to state: BackupRouterStateService.State) {
+
+    private func complete() {
+        switch entry {
+        case .settings:
+            self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+            self.completionRelay.accept(())
+        case .custody:
+            self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
+                guard let self = self else { return }
+                self.completionRelay.accept(())
+            })
+        }
+    }
+
+    private func dismiss() {
+        switch entry {
+        case .settings:
+            self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+        case .custody:
+            self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+        }
+    }
+
+    func next(to state: BackupRouterStateService.State) {
         switch state {
         case .start, .end:
             break
@@ -58,7 +85,7 @@ final class BackupFundsCustodialRouter: DashboardBackupRouterAPI {
             let presenter = RecoveryPhraseScreenPresenter(
                 stateService: stateService,
                 recoveryPhraseVerifying: recoveryPhraseVerifyingService
-                )
+            )
             let controller = RecoveryPhraseViewController(presenter: presenter)
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         case .verification:
@@ -70,13 +97,13 @@ final class BackupFundsCustodialRouter: DashboardBackupRouterAPI {
             navigationRouter.navigationControllerAPI?.pushViewController(controller, animated: true)
         }
     }
-    
-    public func previous() {
+
+    func previous() {
         navigationRouter.dismiss()
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func showBackupFunds(presentationType: PresentationType, entry: BackupRouterEntry) {
         let presenter = BackupFundsScreenPresenter(stateService: stateService, entry: entry)
         let controller = DetailsScreenViewController(presenter: presenter)
