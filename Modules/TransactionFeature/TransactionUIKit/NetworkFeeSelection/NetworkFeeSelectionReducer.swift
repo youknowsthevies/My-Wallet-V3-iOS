@@ -30,7 +30,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
                     title: FeeLevel.regular.title,
                     subtitle: "\(60)+ \(LocalizationId.min)",
                     selected: $0 == .regular,
-                    showSeparator: false
+                    hideSeparator: true
                 )
             }
         let isOkEnabled = interactorState
@@ -43,7 +43,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
                     title: FeeLevel.priority.title,
                     subtitle: "\(30) \(LocalizationId.minutes)",
                     selected: $0 == .priority,
-                    showSeparator: false
+                    hideSeparator: true
                 )
             }
         
