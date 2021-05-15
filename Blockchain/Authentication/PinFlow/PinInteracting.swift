@@ -9,5 +9,7 @@ protocol PinInteracting: class {
     func validate(using payload: PinPayload) -> Single<String>
     func password(from pinDecryptionKey: String) -> Single<String>
     func persist(pin: Pin)
-    func serverStatus() -> Observable<ServerIncidents>
+    
+    // TODO: Re-enable this once we have isolated the source of the crash
+//    func serverStatus() -> Observable<ServerIncidents>
 }

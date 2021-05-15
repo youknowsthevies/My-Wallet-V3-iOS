@@ -52,7 +52,9 @@ public struct ServerIncidents: Decodable {
 
 public protocol MaintenanceServicing {
     var serverUnderMaintenanceMessage: Single<String?> { get }
-    var serverStatus: Single<ServerIncidents> { get }
+    
+    // TODO: Re-enable this once we have isolated the source of the crash
+//    var serverStatus: Single<ServerIncidents> { get }
 }
 
 public protocol WalletOptionsAPI: MaintenanceServicing {

@@ -75,13 +75,15 @@ final class PinScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         serverStatusContainerView.isHidden = true
-        presenter.serverStatus
-            .drive(onNext: { [weak self] serverStatus in
-                self?.securePinViewTopConstraint.isActive = false
-                self?.serverStatusContainerView.isHidden = false
-                self?.showOutage(status: serverStatus)
-            })
-            .disposed(by: disposeBag)
+        
+        // TODO: Re-enable this once we have isolated the source of the crash
+//        presenter.serverStatus
+//            .drive(onNext: { [weak self] serverStatus in
+//                self?.securePinViewTopConstraint.isActive = false
+//                self?.serverStatusContainerView.isHidden = false
+//                self?.showOutage(status: serverStatus)
+//            })
+//            .disposed(by: disposeBag)
         
         NotificationCenter.when(UIApplication.willEnterForegroundNotification) { [weak self] _ in
             self?.prepareForAppearance()
