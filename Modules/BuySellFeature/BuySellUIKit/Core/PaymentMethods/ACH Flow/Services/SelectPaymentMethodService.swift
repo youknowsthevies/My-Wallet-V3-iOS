@@ -17,12 +17,15 @@ final class SelectPaymentMethodService {
 
         return Single
             .zip(
+                isUserEligibleForFunds,
                 methodTypes,
                 fiatCurrencyService.fiatCurrency
             )
             .map { payload in
-                let (methods, fiatCurrency) = payload
-                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency)
+                let (isUserEligibleForFunds, methods, fiatCurrency) = payload
+                return methods
+                    .filterValidForBuy(currentWalletCurrency: fiatCurrency,
+                                       accountForEligibility: isUserEligibleForFunds)
             }
     }
 

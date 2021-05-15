@@ -158,6 +158,9 @@ public struct PaymentMethod: Equatable, Comparable {
 
     /// The type of the payment method
     public let type: MethodType
+
+    /// `True` if the user is eligible to use the payment method, otherwise false
+    public let isEligible: Bool
     
     /// The maximum value of payment using that method
     public let max: FiatValue
@@ -173,9 +176,10 @@ public struct PaymentMethod: Equatable, Comparable {
         lhs.type < rhs.type
     }
 
-    public init(type: MethodType, max: FiatValue, min: FiatValue) {
+    public init(type: MethodType, max: FiatValue, min: FiatValue, isEligible: Bool) {
         self.type = type
         self.max = max
         self.min = min
+        self.isEligible = isEligible
     }
 }

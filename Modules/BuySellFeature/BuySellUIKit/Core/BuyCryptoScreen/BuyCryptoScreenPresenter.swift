@@ -259,7 +259,11 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         }
         
         let trailingImageViewContent: ImageViewContent
-        if methodCount > 1 {
+        // in case there's no preferredPaymentMethodType
+        // but the payment methods count is greater than zero
+        // we still need to allow the user to tap in order to show
+        // the payment selection modal
+        if methodCount > 0 {
             trailingImageViewContent = ImageViewContent(
                 imageName: "icon-disclosure-small"
             )

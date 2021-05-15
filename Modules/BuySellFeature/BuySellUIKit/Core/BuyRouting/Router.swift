@@ -507,10 +507,14 @@ public final class Router: RouterAPI {
 
     /// Show the pending kyc screen
     private func showPendingKycApprovalScreen() {
+        let dismissControllerOnSuccess: () -> Void = { [weak self] in
+            self?.navigationRouter.pop(animated: true)
+        }
         let interactor = KYCPendingInteractor()
         let presenter = KYCPendingPresenter(
             stateService: stateService,
-            interactor: interactor
+            interactor: interactor,
+            dismissControllerOnSuccess: dismissControllerOnSuccess
         )
         let viewController = PendingStateViewController(presenter: presenter)
         navigationRouter.present(viewController: viewController, using: .navigationFromCurrent)

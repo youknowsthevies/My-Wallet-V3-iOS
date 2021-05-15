@@ -104,11 +104,13 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         Observable
             .combineLatest(
                 paymentMethodTypesService.methodTypes,
-                fiatCurrencyService.fiatCurrencyObservable
+                fiatCurrencyService.fiatCurrencyObservable,
+                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
             )
             .map { payload in
-                let (methods, fiatCurrency) = payload
-                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency)
+                let (methods, fiatCurrency, isTier2Approved) = payload
+                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency,
+                                                 accountForEligibility: isTier2Approved)
             }
             .catchErrorJustReturn([])
     }

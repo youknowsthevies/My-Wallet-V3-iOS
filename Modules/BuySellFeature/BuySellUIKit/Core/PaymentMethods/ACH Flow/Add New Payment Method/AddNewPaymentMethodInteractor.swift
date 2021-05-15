@@ -18,7 +18,7 @@ enum AddNewPaymentMethodAction {
 
 enum AddNewPaymentMethodEffects {
     case closeFlow
-    case navigate(method: PaymentMethodType)
+    case navigate(method: PaymentMethod)
 }
 
 protocol AddNewPaymentMethodRouting: ViewableRouting {
@@ -30,7 +30,7 @@ protocol AddNewPaymentMethodPresentable: Presentable {
 
 protocol AddNewPaymentMethodListener: class {
     func closeFlow()
-    func navigate(with method: PaymentMethod.MethodType)
+    func navigate(with method: PaymentMethod)
 }
 
 final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMethodPresentable>,
@@ -51,7 +51,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     private let loadingViewPresenter: LoadingViewPresenting
     private let eventRecorder: AnalyticsEventRecording
 
-    private let selectionRelay = PublishRelay<PaymentMethodType>()
+    private let selectionRelay = PublishRelay<(method: PaymentMethod, methodType: PaymentMethodType)>()
 
     init(presenter: AddNewPaymentMethodPresentable,
          paymentMethodService: SelectPaymentMethodService,
@@ -82,18 +82,20 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
             .share(replay: 1, scope: .whileConnected)
 
         selectedPaymentMethod
+            .map(\.methodType)
             .filter { paymentMethod in
                 if case .funds(.fiat) = paymentMethod.method {
                     return false
                 }
                 return true
             }
-            .subscribe { method in
-                self.paymentMethodService.select(method: method)
-            }
+            .subscribe(onNext: { [weak self] method in
+                self?.paymentMethodService.select(method: method)
+            })
             .disposeOnDeactivate(interactor: self)
 
         selectedPaymentMethod
+            .map(\.method)
             .map(AddNewPaymentMethodEffects.navigate(method:))
             .asDriverCatchError()
             .drive(onNext: handle(effect:))
@@ -110,8 +112,8 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
         switch effect {
         case .closeFlow:
             listener?.closeFlow()
-        case .navigate(let type):
-            listener?.navigate(with: type.method)
+        case .navigate(let method):
+            listener?.navigate(with: method)
         }
     }
 
@@ -176,7 +178,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                         event: AnalyticsEvent.sbPaymentMethodSelected(selection: event)
                     )
                 }
-                .map { _ in paymentMethodType }
+                .map { _ in (method, paymentMethodType) }
                 .emit(to: selectionRelay)
                 .disposeOnDeactivate(interactor: self)
 

@@ -232,7 +232,7 @@ public final class StateService: StateServiceAPI {
                 states: self.states(byAppending: state)
             )
         case .pendingKycApproval(let data):
-            // After KYC - add card if necessary or go to checkout for bank transfer
+            // After KYC - add card if necessary or link a bank flow for bank transfer
             switch data.order.paymentMethod {
             case .bankAccount:
                 state = .checkout(data)
@@ -245,7 +245,7 @@ public final class StateService: StateServiceAPI {
                     isOriginDeposit: false
                 )
             case .bankTransfer:
-                state = .checkout(data)
+                state = .linkBank
             }
             apply(
                 action: .next(to: state),
