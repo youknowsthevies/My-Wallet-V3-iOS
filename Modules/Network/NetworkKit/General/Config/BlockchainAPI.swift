@@ -38,6 +38,9 @@ public final class BlockchainAPI: NSObject {
         case googleAnalytics = "www.google-analytics.com"
         case shapeshift = "shapeshift.io"
         case firebaseAnalytics = "app-measurement.com"
+        case blockchainStatus = "blockchain-status.com"
+        case everyPayCOM = "every-pay.com"
+        case everyPayEU = "every-pay.eu"
     }
 
     public struct Parameters {
