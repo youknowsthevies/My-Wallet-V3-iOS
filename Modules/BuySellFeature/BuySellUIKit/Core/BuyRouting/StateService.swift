@@ -148,7 +148,7 @@ public final class StateService: StateServiceAPI {
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
 
-    public let cache: EventCache
+    public let cache: Atomic<EventCache>
    
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let paymentAccountService: PaymentAccountServiceAPI
@@ -176,7 +176,7 @@ public final class StateService: StateServiceAPI {
         self.paymentAccountService = paymentAccountService
         self.pendingOrderDetailsService = pendingOrderDetailsService
         self.kycTiersService = kycTiersService
-        self.cache = cache
+        self.cache = Atomic(cache)
         self.loader = loader
         self.alert = alert
         self.messageRecorder = messageRecorder
@@ -195,6 +195,7 @@ public final class StateService: StateServiceAPI {
     public func cardRoutingInteractor(with checkoutData: CheckoutData) -> CardRouterInteractor {
         let interactor = CardRouterInteractor()
         interactor.completionCardData
+            .observeOn(MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self, cardData) in
                 let checkoutData = checkoutData.checkoutData(byAppending: cardData)
                 self.previous()
@@ -203,6 +204,7 @@ public final class StateService: StateServiceAPI {
             .disposed(by: disposeBag)
         
         interactor.cancellation
+            .observeOn(MainScheduler.asyncInstance)
             .bindAndCatch(weak: self) { (self) in
                 self.previous()
             }
@@ -305,6 +307,7 @@ public final class StateService: StateServiceAPI {
                 pendingOrderDetailsService.pendingOrderDetails,
                 isFiatCurrencySupported
             ) { (pendingOrderDetails: $0, isFiatCurrencySupported: $1) }
+            .observeOn(MainScheduler.asyncInstance)
             .handleLoaderForLifecycle(
                 loader: loader,
                 style: .circle
@@ -355,7 +358,7 @@ public final class StateService: StateServiceAPI {
                         }
                     }
                 } else {
-                    if cache[.hasShownIntroScreen] {
+                    if cache.value[.hasShownIntroScreen] {
                         return .just(data.isFiatCurrencySupported ? .buy : .selectFiat)
                     } else {
                         return .just(.intro)
@@ -369,7 +372,7 @@ public final class StateService: StateServiceAPI {
                     /// mark the intro screen as `shown`.
                     switch state {
                     case .checkout, .pendingOrderDetails, .pendingOrderCompleted, .bankTransferDetails:
-                        cache[.hasShownIntroScreen] = true
+                        cache.mutate { $0[.hasShownIntroScreen] = true }
                     default:
                         break
                     }
@@ -396,9 +399,9 @@ public final class StateService: StateServiceAPI {
     private func cache(state: State) {
         switch state {
         case .buy:
-            cache[.hasShownBuyScreen] = true
+            cache.mutate { $0[.hasShownBuyScreen] = true }
         case .intro:
-            cache[.hasShownIntroScreen] = true
+            cache.mutate { $0[.hasShownIntroScreen] = true }
         default:
             break
         }
@@ -420,18 +423,22 @@ public final class StateService: StateServiceAPI {
 extension StateService {
     
     public func showFundsTransferDetails(for fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
-        let currentState = statesRelay.value.current
-        if currentState.isPaymentMethods {
-            statesRelay.accept(statesByRemovingLast())
-        }
-        let states = self.states(
-            byAppending: .fundsTransferDetails(
-                currency: .fiat(fiatCurrency),
-                isOriginPaymentMethods: currentState.isPaymentMethods,
-                isOriginDeposit: isOriginDeposit
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let currentState = self.statesRelay.value.current
+            if currentState.isPaymentMethods {
+                self.statesRelay.accept(self.statesByRemovingLast())
+            }
+            let states = self.states(
+                byAppending: .fundsTransferDetails(
+                    currency: .fiat(fiatCurrency),
+                    isOriginPaymentMethods: currentState.isPaymentMethods,
+                    isOriginDeposit: isOriginDeposit
+                )
             )
-        )
-        apply(action: .next(to: states.current), states: states)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
@@ -440,8 +447,12 @@ extension StateService {
 extension StateService {
     
     public func ineligible(with currency: FiatCurrency) {
-        let states = self.states(byAppending: .unsupportedFiat(currency))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .unsupportedFiat(currency))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
@@ -449,8 +460,12 @@ extension StateService {
 
 extension StateService {
     public func show(url: URL) {
-        let states = self.states(byAppending: .showURL(url))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .showURL(url))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
@@ -459,62 +474,98 @@ extension StateService {
 extension StateService {
     
     public func nextFromBuyCrypto(with checkoutData: CheckoutData) {
-        let state: State
-        switch checkoutData.order.paymentMethod {
-        case .card where !checkoutData.isPaymentMethodFinalized:
-            state = .addCard(checkoutData)
-        case .bankTransfer where !checkoutData.isPaymentMethodFinalized:
-            state = .linkBank
-        default:
-            state = .checkout(checkoutData)
-        }
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let state: State
+            switch checkoutData.order.paymentMethod {
+            case .card where !checkoutData.isPaymentMethodFinalized:
+                state = .addCard(checkoutData)
+            case .bankTransfer where !checkoutData.isPaymentMethodFinalized:
+                state = .linkBank
+            default:
+                state = .checkout(checkoutData)
+            }
 
-        let states = self.states(byAppending: state)
-        apply(action: .next(to: states.current), states: states)
+            let states = self.states(byAppending: state)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 
     public func nextFromBankLinkSelection() {
-        let states = self.states(byAppending: .linkBank)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .linkBank)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
     
     public func kyc(with checkoutData: CheckoutData) {
-        let states = self.states(byAppending: .kycBeforeCheckout(checkoutData))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .kycBeforeCheckout(checkoutData))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 
     public func kyc() {
-        let currentState = statesRelay.value.current
-        if currentState.isPaymentMethods {
-            statesRelay.accept(statesByRemovingLast())
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let currentState = self.statesRelay.value.current
+            if currentState.isPaymentMethods {
+                self.statesRelay.accept(self.statesByRemovingLast())
+            }
+            let states = self.states(byAppending: .kyc)
+            self.apply(action: .next(to: states.current), states: states)
         }
-        let states = self.states(byAppending: .kyc)
-        apply(action: .next(to: states.current), states: states)
     }
     
     public func ineligible(with checkoutData: CheckoutData) {
-        let states = self.states(byAppending: .pendingKycApproval(checkoutData))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .pendingKycApproval(checkoutData))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
     
     public func ineligible() {
-        let states = self.states(byAppending: .ineligible)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .ineligible)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 
     public func paymentMethods() {
-        let states = self.states(byAppending: .paymentMethods)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .paymentMethods)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
     
     public func changeCurrency() {
-        let states = self.states(byAppending: .changeFiat)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .changeFiat)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 
     public func bankTransferDetails(with checkoutData: CheckoutData) {
-        let states = self.states(byAppending: .bankTransferDetails(checkoutData))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .bankTransferDetails(checkoutData))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
@@ -522,14 +573,22 @@ extension StateService {
 
 extension StateService {
     public func currencySelected() {
-        let states = self.states(byAppending: .buy)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .buy)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
     
     public func reselectCurrency() {
-        previousRelay.accept(())
-        let states = self.states(byAppending: .selectFiat)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.previousRelay.accept(())
+            let states = self.states(byAppending: .selectFiat)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
@@ -537,66 +596,86 @@ extension StateService {
 
 extension StateService {
     public func confirmCheckout(with checkoutData: CheckoutData, isOrderNew: Bool) {
-        let state: State
-        let data = (checkoutData.order.paymentMethod, isOrderNew)
-        switch data {
-        case (.funds, true):
-            state = .pendingOrderCompleted(
-                orderDetails: checkoutData.order
-            )
-        case (.bankAccount, true):
-            state = .bankTransferDetails(checkoutData)
-        case (.bankTransfer, true):
-            state = .pendingOrderCompleted(
-                orderDetails: checkoutData.order
-            )
-        case (.bankAccount, false),
-             (.bankTransfer, false),
-             (.funds, false):
-            state = .inactive
-        case (.card, _):
-            state = .authorizeCard(order: checkoutData.order)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let state: State
+            let data = (checkoutData.order.paymentMethod, isOrderNew)
+            switch data {
+            case (.funds, true):
+                state = .pendingOrderCompleted(
+                    orderDetails: checkoutData.order
+                )
+            case (.bankAccount, true):
+                state = .bankTransferDetails(checkoutData)
+            case (.bankTransfer, true):
+                state = .pendingOrderCompleted(
+                    orderDetails: checkoutData.order
+                )
+            case (.bankAccount, false),
+                 (.bankTransfer, false),
+                 (.funds, false):
+                state = .inactive
+            case (.card, _):
+                state = .authorizeCard(order: checkoutData.order)
+            }
+            
+            let states = self.states(byAppending: state)
+            self.apply(action: .next(to: state), states: states)
         }
-        
-        let states = self.states(byAppending: state)
-        apply(action: .next(to: state), states: states)
     }
 }
 
 extension StateService {
     public func cancelTransfer(with checkoutData: CheckoutData) {
-        let states = self.states(byAppending: .transferCancellation(checkoutData))
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending:.transferCancellation(checkoutData))
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
 extension StateService {
     public func cardAuthorized(with paymentMethodId: String) {
-        guard case .authorizeCard(order: let order) = statesRelay.value.current else {
-            return
-        }
-        let states = self.states(
-            byAppending: .pendingOrderCompleted(
-                orderDetails: order
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard case .authorizeCard(order: let order) = self.statesRelay.value.current else {
+                return
+            }
+            let states = self.states(
+                byAppending: .pendingOrderCompleted(
+                    orderDetails: order
+                )
             )
-        )
-        apply(action: .next(to: states.current), states: states)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
 }
 
 extension StateService {
     public func orderCompleted() {
-        let states = self.states(byAppending: .inactive)
-        apply(action: .next(to: states.current), states: states)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let states = self.states(byAppending: .inactive)
+            self.apply(action: .next(to: states.current), states: states)
+        }
     }
     
     public func orderPending(with orderDetails: OrderDetails) {
-        let checkoutData = CheckoutData(order: orderDetails)
-        let state = State.checkout(checkoutData)
-        self.apply(
-            action: .next(to: state),
-            states: self.states(byAppending: state)
-        )
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let checkoutData = CheckoutData(order: orderDetails)
+            let state = State.checkout(checkoutData)
+            self.apply(
+                action: .next(to: state),
+                states: self.states(byAppending: state)
+            )
+        }
     }
 }
 
