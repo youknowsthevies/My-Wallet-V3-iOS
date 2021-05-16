@@ -126,7 +126,7 @@ public class NavigationRouter: NavigationRouterAPI {
     }
     
     public func pop(animated: Bool) {
-        navigationControllerAPI!.popViewController(animated: true)
+        navigationControllerAPI?.popViewController(animated: true)
     }
 }
 

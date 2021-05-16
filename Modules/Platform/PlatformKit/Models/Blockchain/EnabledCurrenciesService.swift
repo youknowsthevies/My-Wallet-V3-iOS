@@ -9,6 +9,9 @@ public protocol EnabledCurrenciesServiceAPI {
     var depositEnabledFiatCurrencies: [FiatCurrency] { get }
     var withdrawEnabledFiatCurrencies: [FiatCurrency] { get }
     var allEnabledCurrencyTypes: [CurrencyType] { get }
+
+    /// This returns the supported currencies that a user can link a bank through a partner, eg Yodlee
+    var bankTransferEligibleFiatCurrencies: [FiatCurrency] { get }
 }
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
@@ -22,6 +25,10 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     
     var withdrawEnabledFiatCurrencies: [FiatCurrency] {
         featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
+    }
+
+    var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
+        [.USD]
     }
     
     var allEnabledCurrencyTypes: [CurrencyType] {

@@ -2,7 +2,6 @@
 
 import AnalyticsKit
 import Combine
-import CombineExt
 import DIKit
 
 protocol NetworkCommunicatorAPI {
@@ -12,11 +11,6 @@ protocol NetworkCommunicatorAPI {
     func dataTaskPublisher(
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError>
-}
-
-public enum BlockchainURLError: Error {
-    case urlError(URLError)
-    case unknown(Error)
 }
 
 final class NetworkCommunicator: NetworkCommunicatorAPI {
@@ -67,40 +61,20 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private func execute(
         request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        let session = self.session
-        return AnyPublisher<(data: Data?, response: URLResponse?), BlockchainURLError>.create { [session] observer -> Cancellable in
-            let task = session.dataTask(with: request.URLRequest) { data, response, error in
-                if let error = error {
-                    guard let urlError = error as? URLError else {
-                        observer.send(completion: .failure(.unknown(error)))
-                        return
-                    }
-                    observer.send(completion: .failure(.urlError(urlError)))
-                    return
+        session.erasedDataTaskPublisher(for: request.URLRequest)
+            .mapError(NetworkError.urlError)
+            .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
+                request.responseHandler.handle(elements: elements, for: request)
+            }
+            .eraseToAnyPublisher()
+            .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
+                error.analyticsEvent(for: request) { serverErrorResponse in
+                    request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
                 }
-                observer.send((data, response))
-                observer.send(completion: .finished)
             }
-            defer {
-                task.resume()
-            }
-            return AnyCancellable {
-                task.cancel()
-            }
-        }
-        .mapError(NetworkError.urlError)
-        .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
-            request.responseHandler.handle(elements: elements, for: request)
-        }
-        .eraseToAnyPublisher()
-        .recordErrors(on: eventRecorder, request: request) { request, error -> AnalyticsEvent? in
-            error.analyticsEvent(for: request) { serverErrorResponse in
-                request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
-            }
-        }
-        .subscribe(on: queue)
-        .receive(on: queue)
-        .eraseToAnyPublisher()
+            .subscribe(on: queue)
+            .receive(on: queue)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -109,11 +83,6 @@ protocol NetworkSession {
     func erasedDataTaskPublisher(
         for request: URLRequest
     ) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
-    
-    func dataTask(
-        with request: URLRequest,
-        completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void
-    ) -> URLSessionDataTask
 }
 
 extension URLSession: NetworkSession {

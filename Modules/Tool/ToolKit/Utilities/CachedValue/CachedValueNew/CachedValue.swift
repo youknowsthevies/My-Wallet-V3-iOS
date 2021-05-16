@@ -152,7 +152,7 @@ struct CachedValueRefreshControl {
             return false
         case .periodic(let refreshInterval):
             let lastRefreshInterval = Date(timeIntervalSinceNow: -refreshInterval)
-            let shouldRefresh = lastRefreshRelay.value.compare(lastRefreshInterval) == .orderedAscending
+            let shouldRefresh = lastRefresh.value.compare(lastRefreshInterval) == .orderedAscending
             return shouldRefresh
         case .custom(let shouldRefresh):
             return shouldRefresh()
@@ -165,7 +165,8 @@ struct CachedValueRefreshControl {
     
     let actionRelay = PublishRelay<Action>()
     
-    private let lastRefreshRelay = BehaviorRelay(value: Date.distantPast)
+    private let lastRefresh = Atomic<Date>(Date.distantPast)
+    
     private let configuration: CachedValueConfiguration
     
     init() {
@@ -191,7 +192,7 @@ struct CachedValueRefreshControl {
     }
     
     func update(refreshDate: Date) {
-        lastRefreshRelay.accept(refreshDate)
+        lastRefresh.mutate { $0 = refreshDate }
     }
     
 }

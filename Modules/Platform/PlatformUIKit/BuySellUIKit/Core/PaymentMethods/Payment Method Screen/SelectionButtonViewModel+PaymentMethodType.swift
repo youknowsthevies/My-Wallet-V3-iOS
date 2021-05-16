@@ -123,7 +123,7 @@ extension SelectionButtonViewModel {
                     size: .init(edge: 32)
                 )
             )
-            title = LocalizedString.Types.selectCashOrCard
+            title = LocalizedString.Types.addPaymentMethod
             subtitleRelay.accept(nil)
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,

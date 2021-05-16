@@ -74,14 +74,13 @@ final class ACHFlowRootInteractor: Interactor,
         router?.route(to: screen)
     }
 
-    func navigate(with method: PaymentMethod.MethodType) {
-        switch method {
+    func navigate(with method: PaymentMethod) {
+        switch method.type {
         case .bankAccount:
             self.stateService.previousRelay.accept(())
             router?.closeFlow()
         case .bankTransfer:
             self.stateService.previousRelay.accept(())
-            self.stateService.nextFromBankLinkSelection()
             router?.closeFlow()
         case .funds(.fiat(let currency)):
             self.showFundsTransferDetailsIfNeeded(for: currency)
