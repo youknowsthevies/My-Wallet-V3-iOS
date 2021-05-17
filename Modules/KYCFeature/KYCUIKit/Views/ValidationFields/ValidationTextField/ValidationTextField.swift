@@ -245,7 +245,9 @@ class ValidationTextField: NibBasedView {
             options: [.beginFromCurrentState, .curveEaseOut],
             animations: {
                 self.layoutIfNeeded()
-        }, completion: nil)
+            },
+            completion: nil
+        )
     }
 }
 

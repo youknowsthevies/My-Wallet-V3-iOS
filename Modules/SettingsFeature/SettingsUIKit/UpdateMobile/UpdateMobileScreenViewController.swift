@@ -93,13 +93,16 @@ extension Reactive where Base: UpdateMobileScreenViewController {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
             case .loaded(next: let value):
-                UIView.animate(withDuration: 0.2,
-                               delay: 0.0,
-                               options: .transitionCrossDissolve,
-                               animations: {
-                    view.badgeView.viewModel = value.viewModel
-                    view.badgeShimmeringView.stop()
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.badgeView.viewModel = value.viewModel
+                        view.badgeShimmeringView.stop()
+                    },
+                    completion: nil
+                )
             }
         }
     }

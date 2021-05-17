@@ -91,25 +91,28 @@ public class BottomSheetView: UIView {
     }
     
     fileprivate func teardown(with selectedAction: BottomSheetAction? = nil) {
-        UIView.animateKeyframes(withDuration: 0.3,
-                                delay: 0.0,
-                                options: .calculationModeLinear,
-                                animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
-                self.alpha = 0.0
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
-                self.dimmingView.alpha = 0.0
-                self.frame = self.frame.offsetBy(dx: 0.0, dy: self.bounds.height)
-            })
-        }, completion: { [weak self] _ in
-            guard let this = self else { return }
-            this.dimmingView.removeFromSuperview()
-            this.removeFromSuperview()
-            if let action = selectedAction {
-                this.completion?(action)
+        UIView.animateKeyframes(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: .calculationModeLinear,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
+                    self.alpha = 0.0
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
+                    self.dimmingView.alpha = 0.0
+                    self.frame = self.frame.offsetBy(dx: 0.0, dy: self.bounds.height)
+                })
+            },
+            completion: { [weak self] _ in
+                guard let this = self else { return }
+                this.dimmingView.removeFromSuperview()
+                this.removeFromSuperview()
+                if let action = selectedAction {
+                    this.completion?(action)
+                }
             }
-        })
+        )
     }
     
     @IBAction func dismissButtonTapped(_ sender: UIButton) {
@@ -137,21 +140,24 @@ public class BottomSheetView: UIView {
         window.addSubview(dimmingView)
         window.addSubview(self)
         
-        UIView.animateKeyframes(withDuration: 0.4,
-                                delay: 0.0,
-                                options: .calculationModeLinear,
-                                animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
-                self.dimmingView.alpha = 0.4
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
-                self.alpha = 1.0
-                self.frame.origin = CGPoint(
-                    x: self.frame.origin.x,
-                    y: window.frame.maxY - height
-                )
-            })
-        }, completion: nil)
+        UIView.animateKeyframes(
+            withDuration: 0.4,
+            delay: 0.0,
+            options: .calculationModeLinear,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
+                    self.dimmingView.alpha = 0.4
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
+                    self.alpha = 1.0
+                    self.frame.origin = CGPoint(
+                        x: self.frame.origin.x,
+                        y: window.frame.maxY - height
+                    )
+                })
+            },
+            completion: nil
+        )
     }
     
     fileprivate lazy var dimmingView: UIView = {

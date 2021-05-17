@@ -242,33 +242,36 @@ public class AlertView: UIView {
     }
     
     fileprivate func teardown(with selectedAction: AlertAction? = nil) {
-        UIView.animateKeyframes(withDuration: 0.3,
-                                delay: 0.0,
-                                options: .calculationModeCubic,
-                                animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
-                self.alpha = 0.0
-                self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
-                self.dimmingView.alpha = 0.0
-                switch self.model.style {
-                case .default:
-                    break
-                case .sheet:
-                    guard let window = UIApplication.shared.keyWindow else { return }
-                    self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
+        UIView.animateKeyframes(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: .calculationModeCubic,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
+                    self.alpha = 0.0
+                    self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
+                    self.dimmingView.alpha = 0.0
+                    switch self.model.style {
+                    case .default:
+                        break
+                    case .sheet:
+                        guard let window = UIApplication.shared.keyWindow else { return }
+                        self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
+                    }
+                })
+            },
+            completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.dimmingView.removeFromSuperview()
+                self.removeFromSuperview()
+                if let action = selectedAction {
+                    self.completion?(action)
                 }
-            })
-        }, completion: { [weak self] _ in
-            guard let self = self else { return }
-            self.dimmingView.removeFromSuperview()
-            self.removeFromSuperview()
-            if let action = selectedAction {
-                self.completion?(action)
+                self.observer?.invalidate()
             }
-            self.observer?.invalidate()
-        })
+        )
     }
     
     @objc func pannedView(panGestureRecognizer: UIPanGestureRecognizer) {
@@ -343,12 +346,14 @@ public class AlertView: UIView {
             guard UIScreen.main.bounds.contains(point) == false else { return }
             guard let superview = self.superview else { return }
             guard superview.subviews.contains(self.dimmingView) else { return }
-            UIView.animate(withDuration: 0.5,
-                           animations: { [weak self] in
-                guard let self = self else { return }
-                self.alpha = 0.0
-                self.dimmingView.alpha = 0.0
-            }) { [weak self] _ in
+            UIView.animate(
+                withDuration: 0.5,
+                animations: { [weak self] in
+                    guard let self = self else { return }
+                    self.alpha = 0.0
+                    self.dimmingView.alpha = 0.0
+                }
+            ) { [weak self] _ in
                 guard let self = self else { return }
                 guard let observer = self.observer else {
                     return
@@ -430,18 +435,21 @@ public class AlertView: UIView {
         window.addSubview(dimmingView)
         window.addSubview(self)
         
-        UIView.animateKeyframes(withDuration: 0.4,
-                                delay: 0.0,
-                                options: .calculationModeCubic,
-                                animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
-                self.dimmingView.alpha = 0.4
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
-                self.alpha = 1.0
-                self.transform = .identity
-            })
-        }, completion: nil)
+        UIView.animateKeyframes(
+            withDuration: 0.4,
+            delay: 0.0,
+            options: .calculationModeCubic,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
+                    self.dimmingView.alpha = 0.4
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
+                    self.alpha = 1.0
+                    self.transform = .identity
+                })
+            },
+            completion: nil
+        )
     }
     
     fileprivate func presentSheetView() {
@@ -468,22 +476,25 @@ public class AlertView: UIView {
         
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         
-        UIView.animateKeyframes(withDuration: 0.4,
-                                delay: 0.0,
-                                options: .calculationModeCubic,
-                                animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
-                self.dimmingView.alpha = 0.4
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
-                self.alpha = 1.0
-                self.transform = .identity
-                self.frame.origin = CGPoint(
-                    x: self.frame.origin.x,
-                    y: window.frame.maxY - height - AlertView.sheetBottomPadding
-                )
-            })
-        }, completion: nil)
+        UIView.animateKeyframes(
+            withDuration: 0.4,
+            delay: 0.0,
+            options: .calculationModeCubic,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
+                    self.dimmingView.alpha = 0.4
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
+                    self.alpha = 1.0
+                    self.transform = .identity
+                    self.frame.origin = CGPoint(
+                        x: self.frame.origin.x,
+                        y: window.frame.maxY - height - AlertView.sheetBottomPadding
+                    )
+                })
+            },
+            completion: nil
+        )
     }
     
     fileprivate lazy var dimmingView: UIView = {

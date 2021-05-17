@@ -57,22 +57,25 @@ final class SecurePinView: UIView {
     }
     
     private func updatePin(to count: Int) {
-        UIView.animate(withDuration: 0.3,
-                       delay: 0,
-                       usingSpringWithDamping: 1,
-                       initialSpringVelocity: 0,
-                       options: [.beginFromCurrentState],
-                       animations: {
-            for (index, view) in self.pinViewsArray.enumerated() {
-                if index < count {
-                    view.backgroundColor = self.viewModel.tint
-                    view.transform = .identity
-                } else {
-                    view.backgroundColor = self.viewModel.emptyPinColor
-                    view.transform = CGAffineTransform(scaleX: self.viewModel.emptyScaleRatio, y: self.viewModel.emptyScaleRatio)
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            usingSpringWithDamping: 1,
+            initialSpringVelocity: 0,
+            options: [.beginFromCurrentState],
+            animations: {
+                for (index, view) in self.pinViewsArray.enumerated() {
+                    if index < count {
+                        view.backgroundColor = self.viewModel.tint
+                        view.transform = .identity
+                    } else {
+                        view.backgroundColor = self.viewModel.emptyPinColor
+                        view.transform = CGAffineTransform(scaleX: self.viewModel.emptyScaleRatio, y: self.viewModel.emptyScaleRatio)
+                    }
                 }
-            }
-        }, completion: nil)
+            },
+            completion: nil
+        )
     }
     
     /// Returns the UIPropertyAnimator with jolt animation embedded witihin

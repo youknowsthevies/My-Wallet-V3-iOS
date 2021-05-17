@@ -71,12 +71,15 @@ extension Reactive where Base: AddPaymentMethodTableViewCell {
             case .loading:
                 break
             case .loaded(next: let value):
-                UIView.animate(withDuration: 0.2,
-                               delay: 0.0,
-                               options: .transitionCrossDissolve,
-                               animations: {
-                    view.badgeImageView.viewModel = value
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.badgeImageView.viewModel = value
+                    },
+                    completion: nil
+                )
             }
         }
     }
@@ -91,13 +94,16 @@ extension Reactive where Base: AddPaymentMethodTableViewCell {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
             case .loaded(next: let value):
-                UIView.animate(withDuration: 0.2,
-                               delay: 0.0,
-                               options: .transitionCrossDissolve,
-                               animations: {
-                    view.titleLabel.content = value.labelContent
-                    view.titleShimmeringView.stop()
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.titleLabel.content = value.labelContent
+                        view.titleShimmeringView.stop()
+                    },
+                    completion: nil
+                )
             }
         }
     }
