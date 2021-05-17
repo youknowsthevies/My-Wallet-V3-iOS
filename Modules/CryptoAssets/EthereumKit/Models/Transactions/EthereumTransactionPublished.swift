@@ -9,7 +9,7 @@ enum EthereumTransactionPublishedError: Error {
 
 public struct EthereumTransactionPublished: Equatable {
     public let transactionHash: String
-    
+
     init(finalisedTransaction: EthereumTransactionFinalised, responseHash: String) throws {
         guard finalisedTransaction.transactionHash == responseHash else {
             throw EthereumTransactionPublishedError.invalidResponseHash
@@ -19,7 +19,7 @@ public struct EthereumTransactionPublished: Equatable {
             transactionHash: finalisedTransaction.transactionHash
         )
     }
-    
+
     init(finalisedTransaction: EthereumTransactionFinalised, transactionHash: String) {
         self.transactionHash = transactionHash
     }

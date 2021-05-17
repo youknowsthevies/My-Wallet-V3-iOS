@@ -2,16 +2,16 @@
 
 /// A action that needs to be taken to display an announcement to the user
 public enum AnnouncementDisplayAction: Equatable {
-    
+
     /// Show an announcement
     case show(AnnouncementCardViewModel)
-    
+
     /// Agnostically hide whatever announcement that is currently displayed
     case hide
-    
+
     /// No announcement
     case none
-    
+
     public static func == (lhs: AnnouncementDisplayAction, rhs: AnnouncementDisplayAction) -> Bool {
         switch (lhs, rhs) {
         case (.show(let first), .show(let second)):
@@ -22,7 +22,7 @@ public enum AnnouncementDisplayAction: Equatable {
             return false
         }
     }
-    
+
     public var isHide: Bool {
         if case .hide = self {
             return true

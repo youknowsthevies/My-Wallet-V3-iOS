@@ -7,13 +7,13 @@ public protocol UserPropertyKey {
 
 /// The user property protocol defines the
 public protocol UserProperty {
-        
+
     /// The key for which the property should be recorded
     var key: UserPropertyKey { get }
-    
+
     /// The value corresponding to the key
     var value: String { get }
-    
+
     /// Truncates the value if needed
     /// Should be typically used when the sent value's length might exceed the allowed threshold
     var truncatesValueIfNeeded: Bool { get }

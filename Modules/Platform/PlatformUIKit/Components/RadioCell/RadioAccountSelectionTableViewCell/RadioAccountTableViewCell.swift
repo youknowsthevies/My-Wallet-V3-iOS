@@ -5,28 +5,28 @@ import RxSwift
 /// This radio button serves as a its selection state.
 /// The `RadioAccountTableViewCell` contains a `WalletView`
 public final class RadioAccountTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public Properties
-    
+
     public var presenter: RadioAccountCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else { return }
-            
+
             presenter
                 .imageContent
                 .drive(radioView.rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter
                 .viewModel
                 .drive(walletView.rx.rx_viewModel)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()

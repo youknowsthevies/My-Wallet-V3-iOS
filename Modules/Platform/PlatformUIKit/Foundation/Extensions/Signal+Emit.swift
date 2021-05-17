@@ -23,7 +23,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Si
             }
         )
     }
-    
+
     public func emit<A: AnyObject>(weak object: A,
                                    onNext: ((A, Element) -> Void)? = nil) -> Disposable {
         self.emit(
@@ -33,7 +33,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Si
             }
         )
     }
-    
+
     public func emit<A: AnyObject>(weak object: A,
                                    onNext: ((A) -> Void)? = nil) -> Disposable {
         self.emit(

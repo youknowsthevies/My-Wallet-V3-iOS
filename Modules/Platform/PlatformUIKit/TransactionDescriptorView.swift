@@ -4,9 +4,9 @@ import RxCocoa
 import RxSwift
 
 public final class TransactionDescriptorView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: TransactionDescriptorViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -15,17 +15,17 @@ public final class TransactionDescriptorView: UIView {
             guard let viewModel = viewModel else {
                 return
             }
-            
+
             viewModel
                 .fromAccountBadgeImageViewModel
                 .drive(fromAccountBadgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             viewModel
                 .toAccountBadgeImageViewModel
                 .drive(toAccountBadgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             viewModel
                 .transactionTypeBadgeImageViewModel
                 .drive(transactionTypeBadgeImageView.rx.viewModel)
@@ -39,13 +39,13 @@ public final class TransactionDescriptorView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     fileprivate let fromAccountBadgeImageView = BadgeImageView()
     fileprivate let transactionTypeBadgeImageView = BadgeImageView()
     fileprivate let toAccountBadgeImageView = BadgeImageView()
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
 
     public override init(frame: CGRect) {
@@ -92,4 +92,3 @@ public extension Reactive where Base: TransactionDescriptorView {
         }
     }
 }
-

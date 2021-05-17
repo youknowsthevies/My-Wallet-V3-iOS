@@ -7,7 +7,7 @@ enum TargetSelectionInputValidation: Equatable {
     case account(Account)
     case text(TextInput)
     case QR(QRInput)
-    
+
     var textInput: TextInput? {
         switch self {
         case .text(let value):
@@ -29,7 +29,7 @@ enum TargetSelectionInputValidation: Equatable {
             return false
         }
     }
-    
+
     var isValid: Bool {
         switch self {
         case .QR(let input):
@@ -42,7 +42,7 @@ enum TargetSelectionInputValidation: Equatable {
             return false
         }
     }
-    
+
     var text: String {
         switch self {
         case .text(let textInput):
@@ -54,7 +54,7 @@ enum TargetSelectionInputValidation: Equatable {
             return ""
         }
     }
-    
+
     var requiresValidation: Bool {
         switch self {
         case .QR:
@@ -65,11 +65,11 @@ enum TargetSelectionInputValidation: Equatable {
             return false
         }
     }
-    
+
     enum Account: Equatable {
         case none
         case account(BlockchainAccount)
-        
+
         var isValid: Bool {
             switch self {
             case .account:
@@ -79,12 +79,12 @@ enum TargetSelectionInputValidation: Equatable {
             }
         }
     }
-    
+
     enum TextInput: Equatable {
         case inactive
         case invalid(String)
         case valid(ReceiveAddress)
-        
+
         var textValue: String {
             switch self {
             case .inactive:
@@ -95,7 +95,7 @@ enum TargetSelectionInputValidation: Equatable {
                 return receiveAddress.address
             }
         }
-        
+
         var isValid: Bool {
             switch self {
             case .valid:
@@ -105,7 +105,7 @@ enum TargetSelectionInputValidation: Equatable {
             }
         }
     }
-    
+
     /// When the user scans from the QR scanner the input can be
     /// an address with an optional amount or memo.
     enum QRInput: Equatable {
@@ -114,7 +114,7 @@ enum TargetSelectionInputValidation: Equatable {
         /// TODO: Accomodate an amount, memo,
         /// and the address
         case valid(String)
-        
+
         var text: String {
             switch self {
             case .empty:
@@ -123,7 +123,7 @@ enum TargetSelectionInputValidation: Equatable {
                 return value
             }
         }
-        
+
         var isValid: Bool {
             switch self {
             case .valid:
@@ -175,4 +175,3 @@ extension TargetSelectionInputValidation.Account {
         }
     }
 }
-

@@ -18,17 +18,17 @@ public class CryptoInterestAccount: CryptoAccount {
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }
-    
+
     public var pendingBalance: Single<MoneyValue> {
         balanceFetching
             .pendingBalanceMoney
     }
-    
+
     public var balance: Single<MoneyValue> {
         balanceFetching
             .balanceMoney
     }
-    
+
     public var isFunded: Single<Bool> {
         balanceFetching
             .isFunded

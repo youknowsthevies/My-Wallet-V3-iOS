@@ -6,7 +6,7 @@ protocol UNUserNotificationCenterAPI: class {
     var delegate: UNUserNotificationCenterDelegate? { get set }
     func getNotificationSettings(completionHandler: @escaping (UNNotificationSettings) -> Void)
     func requestAuthorization(options: UNAuthorizationOptions, completionHandler: @escaping (Bool, Error?) -> Void)
-    
+
     func getAuthorizationStatus(completionHandler: @escaping (UNAuthorizationStatus) -> Void)
 }
 

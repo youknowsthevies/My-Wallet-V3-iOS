@@ -13,7 +13,7 @@ struct PricedQuote {
 }
 
 final class SwapQuotesEngine {
-    
+
     // MARK: - Private Properties
 
     private let stopSubject = PublishSubject<Void>()
@@ -22,13 +22,13 @@ final class SwapQuotesEngine {
     private var amountObservable: Observable<BigInt> {
         amount.asObservable()
     }
-    
+
     // MARK: - Init
-    
+
     init(service: OrderQuoteServiceAPI = resolve()) {
         self.service = service
     }
-    
+
     // MARK: - Public Functions
 
     func stop() {

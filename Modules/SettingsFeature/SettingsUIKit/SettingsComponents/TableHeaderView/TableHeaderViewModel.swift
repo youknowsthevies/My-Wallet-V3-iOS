@@ -5,25 +5,25 @@ import RxCocoa
 import RxSwift
 
 struct TableHeaderViewModel {
-    
+
     /// The content color relay
     let contentColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The content color of the title
     var contentColor: Driver<UIColor> {
         contentColorRelay.asDriver()
     }
-    
+
     /// The text relay
     let textRelay = BehaviorRelay<String>(value: "")
-    
+
     /// Text to be displayed on the badge
     var text: Driver<String> {
         textRelay.asDriver()
     }
-    
+
     let font: UIFont
-    
+
     /// - parameter cornerRadius: corner radius of the component
     public init(font: UIFont = .main(.medium, 12), title: String, textColor: UIColor) {
         self.font = font

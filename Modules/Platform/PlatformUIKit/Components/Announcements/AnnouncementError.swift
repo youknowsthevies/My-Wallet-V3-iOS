@@ -4,7 +4,7 @@ import Foundation
 
 /// Possible error types during announcement flow
 public enum AnnouncementError: Error {
-    
+
     /// Wallet uninitialized
     case uninitializedWallet
 }

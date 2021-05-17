@@ -11,23 +11,23 @@ enum APIClientError: Error {
 }
 
 protocol APIClientAPI {
-    
+
     func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse>
     func balances(for wallets: [XPub]) -> Single<BitcoinCashBalanceResponse>
 }
 
 final class APIClient: APIClientAPI {
-    
+
     private let client: BitcoinChainKit.APIClientAPI
-    
+
     // MARK: - Init
 
     init(client: BitcoinChainKit.APIClientAPI = resolve(tag: BitcoinChainCoin.bitcoinCash)) {
         self.client = client
     }
-    
+
     // MARK: - APIClientAPI
-    
+
     func multiAddress(for wallets: [XPub]) -> Single<BitcoinCashMultiAddressResponse> {
         client.multiAddress(for: wallets)
     }

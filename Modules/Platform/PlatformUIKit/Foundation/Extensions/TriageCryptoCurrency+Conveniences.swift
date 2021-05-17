@@ -3,7 +3,7 @@
 import PlatformKit
 
 public extension TriageCryptoCurrency {
-    
+
     var logoImageName: String {
         switch self {
         case .blockstack:
@@ -12,7 +12,7 @@ public extension TriageCryptoCurrency {
             return currency.logoImageName
         }
     }
-    
+
     var logoImage: UIImage {
         UIImage(named: logoImageName)!
     }

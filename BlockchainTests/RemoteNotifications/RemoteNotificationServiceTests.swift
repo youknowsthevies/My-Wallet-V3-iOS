@@ -9,11 +9,11 @@ import NetworkKit
 import PlatformKit
 
 final class RemoteNotificationServiceTests: XCTestCase {
-    
+
     // MARK: - Wide range interaction testing
-    
+
     func testTokenSendingSuccessUsingRealServices() {
-        
+
         // Instantiate all the mock services needed to test the notification domain
 
         let token = "remote-notification-token"
@@ -62,9 +62,9 @@ final class RemoteNotificationServiceTests: XCTestCase {
             XCTFail("expected success. got \(error) instead")
         }
     }
-    
+
     // MARK: - Happy Scenarios using mocks
-    
+
     func testRegistrationAndTokenSendingAreSuccessfulUsingMockServices() {
         let service: RemoteNotificationTokenSending = RemoteNotificationService(
             authorizer: MockRemoteNotificationAuthorizer(
@@ -79,18 +79,18 @@ final class RemoteNotificationServiceTests: XCTestCase {
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
             walletRepository: GuidSharedKeyRepositoryAPIMock()
         )
-        
+
         let result = service.sendTokenIfNeeded().toBlocking()
-        
+
         do {
             try result.first()
         } catch {
             XCTFail("expected token to be sent successfully, got \(error) instead")
         }
     }
-    
+
     // MARK: - Unauthorized permission
-    
+
     func testTokenSendWithUnauthorizedPermissionsUsingMockServices() {
         let service: RemoteNotificationTokenSending = RemoteNotificationService(
             authorizer: MockRemoteNotificationAuthorizer(
@@ -105,7 +105,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
             walletRepository: GuidSharedKeyRepositoryAPIMock()
         )
-        
+
         let result = service.sendTokenIfNeeded().toBlocking()
 
         do {
@@ -113,9 +113,9 @@ final class RemoteNotificationServiceTests: XCTestCase {
             XCTFail("expected permission authorization. got success instead")
         } catch {}
     }
-    
+
     // MARK: - Unauthorized permission
-    
+
     func testTokenSendWithExternalServiceFetchingFailure() {
         let service: RemoteNotificationTokenSending = RemoteNotificationService(
             authorizer: MockRemoteNotificationAuthorizer(
@@ -130,17 +130,17 @@ final class RemoteNotificationServiceTests: XCTestCase {
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
             walletRepository: GuidSharedKeyRepositoryAPIMock()
         )
-        
+
         let result = service.sendTokenIfNeeded().toBlocking()
-        
+
         do {
             try result.first()
             XCTFail("expected failure fetching the token. got success instead")
         } catch {}
     }
-    
+
     // MARK: - Unauthorized permission
-    
+
     func testTokenSendWithNetworkServiceFailure() {
         let service: RemoteNotificationTokenSending = RemoteNotificationService(
             authorizer: MockRemoteNotificationAuthorizer(
@@ -155,9 +155,9 @@ final class RemoteNotificationServiceTests: XCTestCase {
             networkService: MockRemoteNotificationNetworkService(expectedResult: .failure(.registrationFailure)),
             walletRepository: GuidSharedKeyRepositoryAPIMock()
         )
-        
+
         let result = service.sendTokenIfNeeded().toBlocking()
-        
+
         do {
             try result.first()
             XCTFail("expected failure sending the token. got success instead")

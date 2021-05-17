@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 public class FiatCustodialAccount: FiatAccount {
-    
+
     private typealias LocalizedString = LocalizationConstants.Account
 
     public let id: String
@@ -15,7 +15,7 @@ public class FiatCustodialAccount: FiatAccount {
     public let label: String
     public let fiatCurrency: FiatCurrency
     public let accountType: SingleAccountType = .custodial(.trading)
-    
+
     public var canWithdrawFunds: Single<Bool> {
         /// TODO: Fetch transaction history and filer
         /// for transactions that are `withdrawals` and have a
@@ -23,13 +23,13 @@ public class FiatCustodialAccount: FiatAccount {
         /// If there are no items, the user can withdraw funds.
         unimplemented()
     }
-    
+
     public var pendingBalance: Single<MoneyValue> {
         balanceProviding[currencyType]
             .trading
             .pendingBalanceMoney
     }
-    
+
     public var isFunded: Single<Bool> {
         balanceProviding[currencyType]
             .trading

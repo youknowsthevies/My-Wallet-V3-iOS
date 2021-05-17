@@ -6,14 +6,14 @@ public struct StellarAssetAccount: SingleAddressAssetAccount {
     public var walletIndex: Int
 
     public typealias Address = StellarAssetAddress
-    
+
     public var address: StellarAssetAddress
     public var accountAddress: String
     public var name: String
     public var description: String
     public var sequence: Int
     public var subentryCount: Int
-    
+
     public init(accountAddress: String,
                 name: String,
                 description: String,

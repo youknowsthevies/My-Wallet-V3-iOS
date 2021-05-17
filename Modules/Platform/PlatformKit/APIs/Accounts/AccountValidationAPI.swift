@@ -7,7 +7,7 @@ import RxSwift
 /// prior to sending a payload.
 public protocol AccountValidationAPI {
     typealias AccountID = String
-    
+
     // Checks if address is valid
     static func validate(accountID: AccountID) -> Single<Bool>
 }

@@ -4,7 +4,7 @@
 import XCTest
 
 class EthereumAccountAddressTests: XCTestCase {
-    
+
     func test_address_validation_fails_for_truncated_address() {
         var address = MockEthereumWalletTestData.account
         address.removeLast()

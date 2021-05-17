@@ -4,7 +4,7 @@ import DIKit
 import RxSwift
 
 public final class CardOrderCheckoutInteractor {
-    
+
     private enum InteractionError: Error {
         case orderStateMismatch(is3DSConfirmedCardOrder: Bool, isPending3DSCardOrder: Bool)
         case missingFee
@@ -31,11 +31,11 @@ public final class CardOrderCheckoutInteractor {
             }
         }
     }
-    
+
     private let cardListService: CardListServiceAPI
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
-    
+
     public init(cardListService: CardListServiceAPI = resolve(),
                 orderQuoteService: OrderQuoteServiceAPI = resolve(),
                 orderCreationService: OrderCreationServiceAPI = resolve()) {
@@ -43,7 +43,7 @@ public final class CardOrderCheckoutInteractor {
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }
-    
+
     /// Fetch the quote and append it to the result along with the checkout data.
     func prepare(using checkoutData: CheckoutData) -> Single<(interactionData: CheckoutInteractionData, checkoutData: CheckoutData)> {
         guard let paymentMethodId = checkoutData.order.paymentMethodId else {
@@ -80,7 +80,7 @@ public final class CardOrderCheckoutInteractor {
                     }
             }
     }
-    
+
     func prepare(using order: OrderDetails) -> Single<CheckoutInteractionData> {
         /// 3DS was confirmed on this order - just fetch the details
         guard order.is3DSConfirmedCardOrder || order.isPending3DSCardOrder else {
@@ -91,15 +91,15 @@ public final class CardOrderCheckoutInteractor {
                 ).localizedDescription
             )
         }
-        
+
         guard let paymentMethodId = order.paymentMethodId else {
             fatalError(InteractionError.missingPaymentMethodId.localizedDescription)
         }
-        
+
         guard let fee = order.fee else {
             fatalError(InteractionError.missingFee.localizedDescription)
         }
-        
+
         guard let price = order.price else {
             fatalError(InteractionError.missingPrice.localizedDescription)
         }

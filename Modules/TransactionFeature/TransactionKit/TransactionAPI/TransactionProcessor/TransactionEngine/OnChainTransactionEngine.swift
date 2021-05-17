@@ -6,7 +6,7 @@ import RxSwift
 public protocol OnChainTransactionEngine: TransactionEngine {}
 
 extension OnChainTransactionEngine {
-    
+
     public var sourceCryptoAccount: CryptoAccount {
         sourceAccount as! CryptoAccount
     }
@@ -21,11 +21,11 @@ extension OnChainTransactionEngine {
         precondition(!target.address.isEmpty)
         precondition(sourceCryptoAccount.asset == target.asset)
     }
-    
+
     public func doPostExecute(transactionResult: TransactionResult) -> Completable {
         transactionTarget.onTxCompleted(transactionResult)
     }
-    
+
     public func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         if pendingTransaction.hasFeeLevelChanged(newLevel: level, newAmount: customFeeAmount) {
@@ -38,7 +38,7 @@ extension OnChainTransactionEngine {
             return .just(pendingTransaction)
         }
     }
-    
+
     public func updateFeeSelection(
         pendingTransaction: PendingTransaction,
         newFeeLevel: FeeLevel,
@@ -56,7 +56,7 @@ extension OnChainTransactionEngine {
                 self.doBuildConfirmations(pendingTransaction: validatedTransaction)
             }
     }
-    
+
     public func getFeeState(pendingTransaction: PendingTransaction, feeOptions: FeeOptions? = nil) throws -> FeeState {
         switch (pendingTransaction.feeLevel, pendingTransaction.customFeeAmount) {
         case (.custom, nil):
@@ -67,7 +67,7 @@ extension OnChainTransactionEngine {
             guard let minimum = MoneyValue.create(minor: "1", currency: pendingTransaction.amount.currency) else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
-            
+
             switch amount {
             case _ where try amount < minimum:
                 return FeeState.feeUnderMinLimit

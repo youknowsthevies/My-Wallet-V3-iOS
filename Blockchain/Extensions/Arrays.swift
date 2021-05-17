@@ -12,7 +12,7 @@ extension Array where Element: Equatable {
 }
 
 extension Array where Element: Any {
-    
+
     /// Cast the `Any` objects in this Array to instances of `Type`
     ///
     /// - Parameter type: the type
@@ -30,7 +30,7 @@ extension Array where Element: Any {
 }
 
 extension Array where Element == [String: Any] {
-    
+
     /// Cast the `[String: Any]` objects in this Array to instances of `Type`
     ///
     /// - Parameter type: the type
@@ -42,13 +42,13 @@ extension Array where Element == [String: Any] {
                 Logger.shared.warning("Failed to serialize dictionary.")
                 return nil
             }
-            
+
             do {
                 return try jsonDecoder.decode(type.self, from: data)
             } catch {
                 Logger.shared.error("Failed to decode \(error)")
             }
-            
+
             return nil
         }
     }

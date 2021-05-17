@@ -7,22 +7,22 @@ import PlatformKit
 import ToolKit
 
 final class CardAuthorizationScreenPresenter: RibBridgePresenter {
-    
+
     let title = LocalizationConstants.AuthorizeCardScreen.title
-    
+
     var authorizationState: PartnerAuthorizationData.State {
         data.state
     }
-    
+
     private let eventRecorder: AnalyticsEventRecording
-    
+
     private let data: PartnerAuthorizationData
     private var hasRedirected = false
-    
+
     private let interactor: CardAuthorizationScreenInteractor
-    
+
     // MARK: - Setup
-    
+
     init(interactor: CardAuthorizationScreenInteractor,
          data: PartnerAuthorizationData,
          eventRecorder: AnalyticsEventRecording = resolve()) {
@@ -31,7 +31,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
         self.data = data
         super.init(interactable: interactor)
     }
-    
+
     func redirect() {
         /// Might get called multiple times from the `WKNavigationDelegate`
         guard !hasRedirected else { return }
@@ -40,4 +40,3 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
         interactor.cardAuthorized(with: data.paymentMethodId)
     }
 }
-

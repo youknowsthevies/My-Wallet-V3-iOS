@@ -5,33 +5,33 @@ import RxCocoa
 import RxSwift
 
 final class UpdateEmailScreenViewController: BaseScreenViewController {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var resendButtonView: ButtonView!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var emailTextFieldView: TextFieldView!
     @IBOutlet fileprivate var badgeView: BadgeView!
     @IBOutlet private var updateButtonView: ButtonView!
-    
+
     // MARK: - Private Properties
-    
+
     fileprivate var badgeShimmeringView: ShimmeringView!
     private var keyboardInteractionController: KeyboardInteractionController!
     private let presenter: UpdateEmailScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(presenter: UpdateEmailScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: UpdateEmailScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         shimmer()
@@ -44,17 +44,17 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
         updateButtonView.viewModel = presenter.updateButtonViewModel
         resendButtonView.viewModel = presenter.resendButtonViewModel
         emailTextFieldView.setup(viewModel: presenter.textField, keyboardInteractionController: keyboardInteractionController)
-        
+
         presenter.resendVisibility
             .map { $0.isHidden }
             .drive(resendButtonView.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         presenter.badgeState
             .bindAndCatch(to: rx.badgeViewModel)
             .disposed(by: disposeBag)
     }
-    
+
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
@@ -63,7 +63,7 @@ final class UpdateEmailScreenViewController: BaseScreenViewController {
             size: .init(width: 75, height: 24)
         )
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         presenter.viewWillDisappear()
@@ -78,7 +78,7 @@ extension Reactive where Base: UpdateEmailScreenViewController {
             let loading = {
                 view.badgeShimmeringView.start()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
@@ -97,4 +97,3 @@ extension Reactive where Base: UpdateEmailScreenViewController {
         }
     }
 }
-

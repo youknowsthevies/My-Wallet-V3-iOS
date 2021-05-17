@@ -5,21 +5,21 @@ import RxRelay
 import RxSwift
 
 public protocol PairExchangeServiceAPI: class {
-    
+
     /// The current fiat exchange price.
     /// The implementer should implement this as a `.shared(replay: 1)`
     /// resource for efficiency among multiple clients.
     var fiatPrice: Observable<FiatValue> { get }
-    
+
     /// A trigger that force the service to fetch the updated price.
     /// Handy to call on currency type and value changes
     var fetchTriggerRelay: PublishRelay<Void> { get }
 }
 
 public final class PairExchangeService: PairExchangeServiceAPI {
-    
+
     // TODO: Network failure
-    
+
     /// Fetches the fiat price, and shares its stream with other
     /// subscribers to keep external API usage count in check.
     /// Also handles currency code change
@@ -57,23 +57,23 @@ public final class PairExchangeService: PairExchangeServiceAPI {
             .fiatCurrencyObservable
             .map { FiatValue.zero(currency: $0) }
     }
-    
+
     /// A trigger for a fetch
     public let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Services
-    
+
     /// The exchange service
     private let priceService: PriceServiceAPI
-    
+
     /// The currency service
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-    
+
     /// The associated currency
     private let currency: Currency
-        
+
     // MARK: - Setup
-    
+
     public init(currency: Currency,
                 priceService: PriceServiceAPI = resolve(),
                 fiatCurrencyService: FiatCurrencyServiceAPI) {

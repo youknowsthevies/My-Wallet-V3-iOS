@@ -4,9 +4,9 @@ import Localization
 import PlatformUIKit
 
 extension SettingsSectionType.CellType.PlainCellType {
-    
+
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell.Plain
-    
+
     var title: String {
         switch self {
         case .rateUs:
@@ -25,11 +25,11 @@ extension SettingsSectionType.CellType.PlainCellType {
             return LocalizationConstants.Settings.cookiesPolicy
         }
     }
-    
+
     var accessibilityID: String {
         self.rawValue
     }
-    
+
     var viewModel: PlainCellViewModel {
         .init(
             title: title,
@@ -40,20 +40,20 @@ extension SettingsSectionType.CellType.PlainCellType {
 }
 
 extension SettingsSectionType.CellType.ClipboardCellType {
-    
+
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell
-    
+
     var title: String {
         switch self {
         case .walletID:
             return LocalizationConstants.Settings.walletID
         }
     }
-    
+
     var accessibilityID: String {
         self.rawValue
     }
-    
+
     var viewModel: ClipboardCellViewModel {
         .init(
             title: title,

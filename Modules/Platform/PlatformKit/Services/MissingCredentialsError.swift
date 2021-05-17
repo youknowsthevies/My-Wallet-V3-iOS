@@ -2,19 +2,19 @@
 
 /// An error thrown for missing credentials
 public enum MissingCredentialsError: Error {
-    
+
     /// Cannot send request because of missing GUID
     case guid
-        
+
     /// Cannot send request because of a missing session token
     case sessionToken
-    
+
     /// Cannot send request because of a missing shared key
     case sharedKey
-    
+
     /// Missing user id
     case userId
-    
+
     /// Missing offline token
     case offlineToken
 }
@@ -37,7 +37,7 @@ public enum MissingCredentialsError: Error {
 // }
 
 public enum CredentialWritingError: Error {
-    
+
     /// Error while writing the offline token
     case offlineToken
 }

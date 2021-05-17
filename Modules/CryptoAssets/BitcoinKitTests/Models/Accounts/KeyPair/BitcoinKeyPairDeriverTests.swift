@@ -27,12 +27,12 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
 
         super.tearDown()
     }
-    
+
     func test_expected_privateKey() throws {
-        
+
         let expectedPrivateKey = "xprv9s21ZrQH143K3fSXNaonDA6T8ZmP8JUMhTCZKhrFtZCxZX9DddfQ4wsUTWd7HgUPQB7TKg6eicuwWMdpC7TimacYb464NE4YdaaNnCya6e6"
         let expectedPublicKey = "xpub661MyMwAqRbcG9WzUcLnaJ3BgbbsXmCD4g8A86FsStjwSKUNBAyeckBxJoSQUaBe286hzUU7vtDku75jrvVcZ8JMMZfLqDZQV8dzbEDCYeL"
-        
+
         let password = MockWalletTestData.Bip39.passphrase
         let mnemonic =  MockWalletTestData.Bip39.mnemonic
         let passphrase = Passphrase(rawValue: password)
@@ -40,11 +40,11 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
         let mnemonics = try Mnemonic(words: words, passphrase: passphrase)
         let wallet = try HDWallet(mnemonic: mnemonics, network: .main(Bitcoin.self))
         let key = wallet.privateKey
-        
+
         XCTAssertEqual(key.xpriv!, expectedPrivateKey)
         XCTAssertEqual(key.xpub, expectedPublicKey)
     }
-    
+
     func test_derive() throws {
         // Arrange
         let password = MockWalletTestData.Bip39.emptyPassphrase
@@ -56,9 +56,9 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
         let privateKey = BitcoinPrivateKey(
             key: wallet.privateKey
         )
-        
+
         let expectedKeyPair = BitcoinKeyPair(privateKey: privateKey)
-        
+
         let keyDerivationInput = BitcoinKeyDerivationInput(
             mnemonic: mnemonic,
             password: password

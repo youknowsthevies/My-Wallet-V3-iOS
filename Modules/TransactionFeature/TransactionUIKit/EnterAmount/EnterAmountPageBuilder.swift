@@ -65,7 +65,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             displayBundle: displayBundle.amountDisplayBundle,
             inputTypeToggleVisiblity: .visible
         )
-        
+
         let amountViewProvider = {
             AmountTranslationView(presenter: amountTranslationPresenter)
         }
@@ -82,7 +82,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             topSelectionButtonViewModel: topSelectionButtonViewModel,
             amountViewProvider: amountViewProvider
         )
-        
+
         let interactor = EnterAmountPageInteractor(
             transactionModel: transactionModel,
             presenter: viewController,

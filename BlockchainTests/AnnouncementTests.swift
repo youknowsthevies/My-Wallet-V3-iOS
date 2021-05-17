@@ -10,7 +10,7 @@ import XCTest
 final class AnnouncementTests: XCTestCase {
 
     // MARK: CloudBackup
-    
+
     func testCloudBackupAnnouncementShows() {
         let cache = MemoryCacheSuite()
         let announcement = CloudBackupAnnouncement(
@@ -20,15 +20,15 @@ final class AnnouncementTests: XCTestCase {
         )
         XCTAssertTrue(announcement.shouldShow)
         XCTAssertFalse(announcement.isDismissed)
-        
+
         announcement.markRemoved()
-        
+
         XCTAssertFalse(announcement.shouldShow)
         XCTAssertTrue(announcement.isDismissed)
     }
-    
+
     // MARK: PIT
-    
+
     func testExchangeLinkingAnnouncementShows() {
         let cache = MemoryCacheSuite()
         let announcement = ExchangeLinkingAnnouncement(
@@ -39,9 +39,9 @@ final class AnnouncementTests: XCTestCase {
         )
         XCTAssertTrue(announcement.shouldShow)
         XCTAssertFalse(announcement.isDismissed)
-        
+
         announcement.markRemoved()
-        
+
         XCTAssertFalse(announcement.shouldShow)
         XCTAssertTrue(announcement.isDismissed)
     }

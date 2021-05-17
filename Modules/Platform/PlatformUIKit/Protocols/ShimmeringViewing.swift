@@ -7,24 +7,24 @@ public enum ShimmerDirection {
 
 /// Provides shimmering trait to the inheriting view
 public protocol ShimmeringViewing: class {
-    
+
     /// The direction of the shimmer
     var shimmerDirection: ShimmerDirection { get }
-    
+
     /// Returns `true` if currently shimmering
     var isShimmering: Bool { get }
 }
 
 public extension ShimmeringViewing where Self: UIView {
-        
+
     var shimmerDirection: ShimmerDirection {
         .leftToRight
     }
-    
+
     var isShimmering: Bool {
         layer.mask != nil
     }
-    
+
     /// Starts the shimmerring of the view's content.
     ///  This works by applying a `CAGradientLayer` mask to the receiving `UIView` layer.
     /// - parameter color: The color of the central section of the shimmering effect, this will be set to this view `backgroundColor`.
@@ -56,16 +56,15 @@ public extension ShimmeringViewing where Self: UIView {
         gradientLayer.frame = bounds
         layer.mask = gradientLayer
     }
-    
+
     /// Stops the shimerring effect
     func stopShimmering() {
         backgroundColor = .clear
         layer.mask = nil
     }
-    
+
     /// Should be called directly from `layoutSubviews`.
     func layoutShimmeringFrameIfNeeded() {
         layer.mask?.frame = bounds
     }
 }
-

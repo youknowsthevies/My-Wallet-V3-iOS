@@ -32,7 +32,7 @@ public extension LineChartData {
         set.drawFilledEnabled = true
         self.init(dataSet: set)
     }
-    
+
     /// Returns an `empty` grayish pie chart data
     static var empty: LineChartData {
         let set = LineChartDataSet(entries: [ChartDataEntry(x: 0.0, y: 0.0)], label: nil)
@@ -49,7 +49,7 @@ public extension LineChartData {
 }
 
 extension LoadingState where Content == (AssetLineChartMarkerView.Theme, LineChartData) {
-    
+
     /// Initializer that receives the interaction state and
     /// maps it to `self`
     init(with state: LoadingState<AssetLineChart.Value.Interaction>) {
@@ -62,4 +62,3 @@ extension LoadingState where Content == (AssetLineChartMarkerView.Theme, LineCha
         }
     }
 }
-

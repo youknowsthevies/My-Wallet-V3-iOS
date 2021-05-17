@@ -29,7 +29,7 @@ class QRCodeScannerTests: XCTestCase {
         subject = nil
         super.tearDown()
     }
-    
+
     // TODO:
     // * Fix these tests
     //    func test_setup() {

@@ -16,4 +16,3 @@ final class RecoveryPhraseBadgeInteractor: DefaultBadgeAssetInteractor {
             .disposed(by: disposeBag)
     }
 }
-

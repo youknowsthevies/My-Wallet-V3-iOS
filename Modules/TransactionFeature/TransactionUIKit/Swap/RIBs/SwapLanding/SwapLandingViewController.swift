@@ -14,15 +14,15 @@ protocol SwapLandingPresentableListener: AnyObject {
 }
 
 final class SwapLandingViewController: BaseTableViewController, SwapLandingPresentable, SwapLandingViewControllable {
-    
+
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<SwapLandingSectionModel>
     private typealias LocalizationIds = LocalizationConstants.Swap
-    
+
     private let headerRelay = BehaviorRelay<HeaderBuilder?>(value: nil)
     private var disposeBag = DisposeBag()
 
     weak var listener: SwapLandingPresentableListener?
-    
+
     public override init() {
         super.init()
     }
@@ -40,7 +40,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
             trailingButtonStyle: .none
         )
     }
-    
+
     func connect(state: Driver<SwapLandingScreenState>) -> Driver<SwapLandingSelectionEffects> {
         disposeBag = DisposeBag()
         let stateWait: Driver<SwapLandingScreenState> =
@@ -49,7 +49,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
             .flatMap { _ in
                 state
             }
-        
+
         let items: Driver<[SwapLandingSectionModel]> = stateWait
             .map(\.action)
             .flatMap { action in
@@ -58,7 +58,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
                     return .just(viewModels)
                 }
             }
-        
+
         stateWait
             .map(\.header)
             .map { AccountPickerHeaderBuilder(headerType: .default($0)) }
@@ -80,13 +80,13 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
         items
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
+
         let tap = setupButtonView()
-        
+
         tableView
           .rx.setDelegate(self)
           .disposed(by: disposeBag)
-        
+
         /// Effects
         let cellSelected = tableView.rx
             .modelSelected(SwapLandingSectionItem.self)
@@ -107,7 +107,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
     @objc private func didTapNewSwap() {
         listener?.newSwap(withPair: nil)
     }
-    
+
     private func setupTableView() {
         tableView.tableFooterView = UIView()
         tableView.selfSizingBehaviour = .fill
@@ -117,7 +117,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
         tableView.register(SwapTrendingPairTableViewCell.self)
         tableView.register(SeparatorTableViewCell.self)
     }
-    
+
     private func setupButtonView() -> Driver<SwapLandingSelectionEffects> {
         let viewModel: ButtonViewModel = .primary(with: LocalizationIds.Trending.newSwap)
         addButton(with: viewModel)
@@ -125,9 +125,9 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
             .tap
             .flatMap { _ in Driver.just(SwapLandingSelectionEffects.newSwap) }
     }
-    
+
     // MARK: - Accessors
-    
+
     private func swapTrendingTableViewCell(viewModel: SwapTrendingPairViewModel, for row: Int) -> UITableViewCell {
         let cell = tableView.dequeue(
             SwapTrendingPairTableViewCell.self,
@@ -136,7 +136,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func separatorCell(for row: Int) -> UITableViewCell {
         tableView.dequeue(SeparatorTableViewCell.self, for: IndexPath(row: row, section: 0))
     }
@@ -147,7 +147,7 @@ extension SwapLandingViewController: UITableViewDelegate {
         guard section == 0 else { return nil }
         return headerRelay.value?.view(fittingWidth: view.bounds.width, customHeight: nil)
     }
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard section == 0 else { return 0 }
         return headerRelay.value?.defaultHeight ?? 0

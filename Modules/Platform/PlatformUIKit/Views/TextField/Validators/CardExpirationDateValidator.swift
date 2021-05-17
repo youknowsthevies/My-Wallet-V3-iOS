@@ -5,15 +5,15 @@ import RxRelay
 import RxSwift
 
 public final class CardExpirationDateValidator: TextValidating {
-        
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.TextField.Gesture
-    
+
     // MARK: - Properties
-    
+
     public let valueRelay = BehaviorRelay<String>(value: "")
-    
+
     public var validationState: Observable<TextValidationState> {
         regexValidator.validationState
             .flatMap(weak: self) { (self, state) in
@@ -25,7 +25,7 @@ public final class CardExpirationDateValidator: TextValidating {
                 }
             }
     }
-        
+
     private var date: Single<Date?> {
         valueRelay
             .take(1)
@@ -37,7 +37,7 @@ public final class CardExpirationDateValidator: TextValidating {
             }
             .asSingle()
     }
-    
+
     private var dateValidationState: Single<TextValidationState> {
         self.date
             .map { date in
@@ -46,24 +46,24 @@ public final class CardExpirationDateValidator: TextValidating {
             }
             .map { $0 ? .valid : .invalid(reason: LocalizedString.invalidExpirationDate) }
     }
-    
+
     private let dateFormatter = DateFormatter.cardExpirationDate
     private let regexValidator: RegexTextValidator
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init() {
         regexValidator = RegexTextValidator(
             regex: .cardExpirationDate,
             invalidReason: LocalizedString.invalidExpirationDate
         )
-        
+
         valueRelay
             .bindAndCatch(to: regexValidator.valueRelay)
             .disposed(by: disposeBag)
     }
-    
+
     private func correctYear(rawDate: String) -> String {
         let components = rawDate.split(separator: "/")
         return "\(components[0])/20\(components[1])"

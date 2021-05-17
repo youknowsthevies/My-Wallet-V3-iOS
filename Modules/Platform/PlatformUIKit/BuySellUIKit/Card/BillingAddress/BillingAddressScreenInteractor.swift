@@ -7,35 +7,35 @@ import RxRelay
 import RxSwift
 
 final class BillingAddressScreenInteractor: Interactor {
-    
+
     // MARK: - Properties
-    
+
     var selectedCountry: Observable<Country> {
         countrySelectionService.selectedData
             .map { $0.id }
             .compactMap { Country(code: $0) }
     }
-        
+
     // MARK: - Setup
-    
+
     let countrySelectionService: CountrySelectionService
-    
+
     var billingAddress: Observable<BillingAddress> {
         billingAddressRelay
             .compactMap { $0 }
     }
-    
+
     let billingAddressRelay = BehaviorRelay<BillingAddress?>(value: nil)
-    
+
     private let userDataRepository: DataRepositoryAPI
     private let service: CardUpdateServiceAPI
-    private let cardData: CardData    
+    private let cardData: CardData
     private var disposeBag = DisposeBag()
-    
+
     private let routingInteractor: CardRouterInteractor
-    
+
     // MARK: - Setup
-    
+
     init(cardData: CardData,
          service: CardUpdateServiceAPI = resolve(),
          userDataRepository: DataRepositoryAPI = resolve(),
@@ -46,13 +46,13 @@ final class BillingAddressScreenInteractor: Interactor {
         self.routingInteractor = routingInteractor
         countrySelectionService = CountrySelectionService(defaultSelectedData: Country.current ?? .US)
     }
-    
+
     // MARK: - Interactor
-    
+
     override func didBecomeActive() {
         super.didBecomeActive()
         disposeBag = DisposeBag()
-        
+
         userDataRepository.userSingle
             .map { $0.address }
             .subscribe(
@@ -63,12 +63,12 @@ final class BillingAddressScreenInteractor: Interactor {
             )
             .disposed(by: disposeBag)
     }
-    
+
     override func willResignActive() {
         super.willResignActive()
         disposeBag = DisposeBag()
     }
-    
+
     /// Adds the billing address to the card
     /// - Parameter billingAddress: The data of the billing address
     /// - Returns: A completable indicating whether the op has been completed / error occured
@@ -91,7 +91,7 @@ final class BillingAddressScreenInteractor: Interactor {
                 }
             }
     }
-    
+
     func previous() {
         routingInteractor.previousRelay.accept(())
     }

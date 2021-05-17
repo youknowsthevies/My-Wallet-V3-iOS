@@ -7,7 +7,7 @@ enum JSONValue: Encodable {
     case int(Int)
     case double(Double)
     case bool(Bool)
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {

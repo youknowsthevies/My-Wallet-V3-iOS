@@ -6,16 +6,16 @@ import RxDataSources
 import ToolKit
 
 public final class ActivityItemViewModel: IdentifiableType, Hashable {
-    
+
     typealias AccessibilityId = Accessibility.Identifier.Activity
     typealias LocalizationStrings = LocalizationConstants.Activity.MainScreen.Item
-    
+
     public typealias Descriptors = AssetBalanceViewModel.Value.Presentation.Descriptors
 
     public var identity: AnyHashable {
         event
     }
-    
+
     public var descriptors: Descriptors {
         let accessibility = AccessibilityId.ActivityCell.self
         switch event.status {
@@ -36,7 +36,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             )
         }
     }
-    
+
     public var titleLabelContent: LabelContent {
         var text = ""
         switch event {
@@ -73,7 +73,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             accessibility: .id(AccessibilityId.ActivityCell.titleLabel)
         )
     }
-    
+
     public var descriptionLabelContent: LabelContent {
         switch event.status {
         case .pending(confirmations: let confirmations):
@@ -100,7 +100,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 alignment: .left,
                 accessibility: .id(AccessibilityId.ActivityCell.descriptionLabel)
             )
-            
+
             switch status {
             case .fiat(let fiatStatus):
                 if fiatStatus == .failed || fiatStatus == .rejected {
@@ -115,7 +115,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                     return failedLabelContent
                 }
             }
-            
+
             return .init(
                 text: DateFormatter.medium.string(from: event.creationDate),
                 font: descriptors.cryptoFont,
@@ -133,7 +133,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if orderDetails.status == .failed {
                 return .destructive
             }
-            
+
             switch orderDetails.isBuy {
             case true:
                 return orderDetails.outputValue.currencyType.brandColor
@@ -144,13 +144,13 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if event.status == .failed {
                 return .destructive
             }
-            
+
             return event.pair.inputCurrencyType.brandColor
         case .fiat(let event):
             if event.status == .failed || event.status == .rejected {
                 return .destructive
             }
-            
+
             return .fiat
         case .transactional(let event):
             switch event.status {
@@ -166,7 +166,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
     public var backgroundColor: UIColor {
         eventColor.withAlphaComponent(0.15)
     }
-    
+
     /// The `imageName` for the `BadgeImageViewModel`
     public var imageName: String {
         switch event {
@@ -174,13 +174,13 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if value.status == .failed {
                 return "activity-failed-icon"
             }
-            
+
             return value.isBuy ? "plus-icon" : "minus-icon"
         case .fiat(let event):
             if event.status == .failed || event.status == .rejected {
                 return "activity-failed-icon"
             }
-            
+
             let type = event.type
             switch type {
             case .deposit:
@@ -194,13 +194,13 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             if event.status == .failed {
                 return "activity-failed-icon"
             }
-            
+
             return "swap-icon"
         case .transactional(let event):
             if case .pending = event.status {
                 return "clock-icon"
             }
-            
+
             switch event.type {
             case .send:
                 return "send-icon"
@@ -210,7 +210,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
         }
     }
     public let event: ActivityItemEvent
-    
+
     public init(event: ActivityItemEvent) {
         self.event = event
     }

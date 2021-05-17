@@ -3,7 +3,7 @@
 // MARK: - Tether
 
 extension CryptoValue {
-    
+
     public static var tetherZero: CryptoValue {
         zero(currency: .tether)
     }

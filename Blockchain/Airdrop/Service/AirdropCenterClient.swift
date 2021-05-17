@@ -11,9 +11,9 @@ protocol AirdropCenterClientAPI: class {
 
 /// TODO: Move into `PlatformKit` when https://blockchain.atlassian.net/browse/IOS-2724 is merged
 final class AirdropCenterClient: AirdropCenterClientAPI {
-    
+
     // MARK: - Properties
-    
+
     var campaigns: Single<AirdropCampaigns> {
         let endpoint = URL.endpoint(
             URL(string: BlockchainAPI.shared.retailCoreUrl)!,
@@ -30,13 +30,13 @@ final class AirdropCenterClient: AirdropCenterClientAPI {
             errorResponseType: NabuNetworkError.self
         )
     }
-    
+
     private let pathComponents = [ "users", "user-campaigns" ]
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter

@@ -4,9 +4,9 @@ import RxCocoa
 import RxSwift
 
 public final class AssetPriceView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var presenter: AssetPriceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -20,12 +20,12 @@ public final class AssetPriceView: UIView {
             presenter.alignment
                 .drive(stackView.rx.alignment)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .compactMap { $0.value }
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .map { $0.isLoading }
                 .mapToVoid()
@@ -33,7 +33,7 @@ public final class AssetPriceView: UIView {
                     self?.startShimmering()
                 }
                 .disposed(by: disposeBag)
-                
+
             presenter.state
                 .filter { $0.isLoading == false }
                 .mapToVoid()
@@ -43,34 +43,34 @@ public final class AssetPriceView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - IBOutlet Properties
-    
+
     @IBOutlet fileprivate var priceLabel: UILabel!
     @IBOutlet fileprivate var changeLabel: UILabel!
     @IBOutlet fileprivate var stackView: UIStackView!
 
     fileprivate var priceLabelShimmeringView: ShimmeringView!
     fileprivate var changeLabelShimmeringView: ShimmeringView!
-    
+
     private var disposeBag = DisposeBag()
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         setNeedsLayout()
         layoutIfNeeded()
     }
-    
+
     /// Should be called once when the parent view loads
     public func shimmer(estimatedPriceLabelSize: CGSize,
                         estimatedChangeLabelSize: CGSize) {
@@ -85,20 +85,20 @@ public final class AssetPriceView: UIView {
             size: estimatedChangeLabelSize
         )
     }
-    
+
     private func stopShimmering() {
         guard priceLabelShimmeringView.isShimmering && changeLabelShimmeringView.isShimmering else { return }
-        
+
         changeLabel.alpha = 0
         priceLabel.alpha = 0
-        
+
         let animation = {
             self.priceLabel.alpha = 1
             self.changeLabel.alpha = 1
             self.priceLabelShimmeringView.stop()
             self.changeLabelShimmeringView.stop()
         }
-        
+
         UIView.animate(
             withDuration: 0.3,
             delay: 0,
@@ -106,7 +106,7 @@ public final class AssetPriceView: UIView {
             animations: animation
         )
     }
-    
+
     private func startShimmering() {
         guard priceLabel.content.isEmpty else { return }
         guard changeLabel.content.isEmpty else { return }

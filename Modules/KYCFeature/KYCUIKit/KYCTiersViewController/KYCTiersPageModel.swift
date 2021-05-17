@@ -18,7 +18,7 @@ extension KYCTiersPageModel {
         guard tierTwo.status != .rejected else { return nil }
         return LocalizationConstants.KYC.completingTierTwoAutoEligible
     }
-    
+
     func trackPresentation(analyticsRecorder: AnalyticsEventRecording = resolve()) {
         let metadata = cells.map({ ($0.tier, $0.status) })
         guard let tier1 = metadata.filter({ $0.0 == .tier1 }).first else { return }

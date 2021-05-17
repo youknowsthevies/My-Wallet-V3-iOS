@@ -4,34 +4,34 @@ import RxRelay
 import RxSwift
 
 public final class LoginService: LoginServiceAPI {
-    
+
     /// A potential login service error
     public enum ServiceError: Error {
-        
+
         /// A 2FA required in order to complete the login
         case twoFactorOTPRequired(AuthenticatorType)
-        
+
         /// A wrong code was sent
         case wrongCode(type: AuthenticatorType, attemptsLeft: Int)
-        
+
         /// Account locked
         case accountLocked
-        
+
         case message(String)
     }
-    
+
     // MARK: - Properties
-    
+
     private let payloadService: WalletPayloadServiceAPI
     private let twoFAPayloadService: TwoFAWalletServiceAPI
     private let walletRepository: WalletRepositoryAPI
-    
+
     /// Keeps authenticator type. Defaults to `.none` unless
     /// `func login() -> Completable` sets it to a different value
     private let authenticatorRelay = BehaviorRelay(value: AuthenticatorType.standard)
-    
+
     // MARK: - Setup
-    
+
     public init(payloadService: WalletPayloadServiceAPI,
                 twoFAPayloadService: TwoFAWalletServiceAPI,
                 walletRepository: WalletRepositoryAPI) {
@@ -39,9 +39,9 @@ public final class LoginService: LoginServiceAPI {
         self.twoFAPayloadService = twoFAPayloadService
         self.walletRepository = walletRepository
     }
-    
+
     // MARK: - API
-    
+
     public func login(walletIdentifier: String) -> Completable {
         /// Set the wallet identifier as `GUID`
         return walletRepository
@@ -72,7 +72,7 @@ public final class LoginService: LoginServiceAPI {
             }
             .asCompletable()
     }
-    
+
     public func login(walletIdentifier: String, code: String) -> Completable {
         let authenticator = authenticatorRelay.value
         return twoFAPayloadService

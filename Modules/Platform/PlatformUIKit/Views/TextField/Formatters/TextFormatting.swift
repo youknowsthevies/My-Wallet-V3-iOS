@@ -4,15 +4,15 @@ import RxSwift
 
 /// The result of the text format process
 public enum TextFormattingSource {
-    
+
     /// The text was corrected by the text formater and the new, formated value
     /// is associated
     case formatted(to: String)
-    
+
     /// The text was not formated by the text formater, so the old text should
     /// be in use
     case original(text: String)
-    
+
     var isCorrected: Bool {
         switch self {
         case .formatted:

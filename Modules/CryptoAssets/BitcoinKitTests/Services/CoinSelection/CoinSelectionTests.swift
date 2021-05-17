@@ -6,29 +6,29 @@ import PlatformKit
 import XCTest
 
 class CoinSelectionTests: XCTestCase {
-    
+
     private static let feePerByte = BigUInt(55)
-    
+
     var fee: Fee!
     var calculator: TransactionSizeCalculating!
     var subject: CoinSelection!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         fee = Fee(feePerByte: CoinSelectionTests.feePerByte)
         calculator = TransactionSizeCalculator()
         subject = CoinSelection(calculator: calculator)
     }
-    
+
     override func tearDown() {
         fee = nil
         calculator = nil
         subject = nil
-        
+
         super.tearDown()
     }
-    
+
     func test_ascent_draw_selection_with_change_output() throws {
         let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 100_000))
         let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
@@ -41,7 +41,7 @@ class CoinSelectionTests: XCTestCase {
                 sortingStrategy: strategy
             )
         )
-        
+
         let selected = unspents([ 20_000, 30_000, 50_000, 300_000 ])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
@@ -51,7 +51,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_ascent_draw_selection_with_no_change_output() throws {
         let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 472_000))
         let coins = unspents([ 200_000, 300_000, 500_000 ])
@@ -73,7 +73,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_descent_draw_selection_with_change_output() throws {
         let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 100_000))
         let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
@@ -94,7 +94,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_descent_draw_selection_with_no_change_output() throws {
         let outputAmount = try BitcoinValue(crypto: CryptoValue.bitcoin(satoshis: 485_000))
         let coins = unspents([ 200_000, 300_000, 500_000 ])
@@ -116,7 +116,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_select_all_selection_with_effective_inputs() throws {
         let coins = unspents([ 1, 20_000, 0, 0, 300_000 ])
         let result = subject.select(all: coins, fee: fee)
@@ -128,7 +128,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_select_all_selection_with_no_inputs() throws {
         let coins = unspents([])
         let result = subject.select(all: coins, fee: fee)
@@ -140,7 +140,7 @@ class CoinSelectionTests: XCTestCase {
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
-    
+
     func test_select_all_selection_with_no_effective_inputs() throws {
         let coins = unspents([ 1, 10, 100 ])
         let result = subject.select(all: coins, fee: fee)

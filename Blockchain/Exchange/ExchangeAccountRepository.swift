@@ -20,11 +20,11 @@ enum ExchangeLinkingAPIError: Error {
 }
 
 final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
-    
+
     private let blockchainRepository: BlockchainDataRepository
     private let clientAPI: ExchangeClientAPI
     private let accountRepository: AssetAccountRepositoryAPI
-    
+
     init(blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          client: ExchangeClientAPI = resolve(),
          accountRepository: AssetAccountRepositoryAPI = AssetAccountRepository.shared) {
@@ -32,15 +32,15 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
         self.clientAPI = client
         self.accountRepository = accountRepository
     }
-    
+
     var hasLinkedExchangeAccount: Single<Bool> {
         blockchainRepository
             .fetchNabuUser()
-            .flatMap(weak: self, { (self, user) -> Single<Bool> in
+            .flatMap(weak: self, { (_, user) -> Single<Bool> in
                 Single.just(user.hasLinkedExchangeAccount)
         })
     }
-    
+
     func syncDepositAddressesIfLinked() -> Completable {
         hasLinkedExchangeAccount.flatMapCompletable(weak: self, { (self, linked) -> Completable in
             if linked {
@@ -50,7 +50,7 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
             }
         })
     }
-    
+
     func syncDepositAddresses() -> Completable {
         accountRepository.accounts
             .flatMapCompletable(weak: self) { (self, accounts) -> Completable in

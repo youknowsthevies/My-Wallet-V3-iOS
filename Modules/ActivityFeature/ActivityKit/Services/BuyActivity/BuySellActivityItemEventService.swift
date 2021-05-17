@@ -6,26 +6,26 @@ import RxRelay
 import RxSwift
 
 final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI {
-    
+
     var state: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return stateRelay
             .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
-    
+
     var buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         _ = setup
         return _buySellActivityEvents
     }
-    
+
     var buySellActivityObservable: Observable<[BuySellActivityItemEvent]> {
         _ = setup
         return _buySellActivityObservable
     }
-    
+
     let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     private var _buySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         kycTiersService
             .tiers
@@ -37,13 +37,13 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
                 return self.fetchBuySellActivityEvents
             }
     }
-    
+
     private var _buySellActivityObservable: Observable<[BuySellActivityItemEvent]> {
         _buySellActivityEvents
             .catchErrorJustReturn([])
             .asObservable()
     }
-    
+
     private var fetchBuySellActivityEvents: Single<[BuySellActivityItemEvent]> {
         service
             .fetchOrders()
@@ -71,7 +71,7 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let buySellActivityRelay = BehaviorRelay<[BuySellActivityItemEvent]>(value: [])
     private let currencyType: CurrencyType

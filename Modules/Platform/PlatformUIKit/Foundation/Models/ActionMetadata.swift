@@ -14,7 +14,7 @@ public enum ActionMetadata {
     case pop
     case dismiss
     case payload(ActionPayload)
-    
+
     /// Returns the associated block closure (if any)
     public var block: (() -> Void)? {
         switch self {

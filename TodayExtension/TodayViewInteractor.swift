@@ -7,16 +7,16 @@ import RxRelay
 import RxSwift
 
 final class TodayViewInteractor {
-    
+
     // MARK: - Services
-    
+
     let historicalProvider: HistoricalFiatPriceProviding
     let container: SharedContainerUserDefaults
-    
+
     var isBalanceSyncingEnabled: Bool {
         container.shouldSyncPortfolio
     }
-    
+
     var assetInteractors: Observable<[TodayExtensionCellInteractor]> {
         let values: [TodayExtensionCellInteractor] = CryptoCurrency
             .allCases
@@ -29,7 +29,7 @@ final class TodayViewInteractor {
             .map { .assetPrice($0) }
         return Observable.just(values)
     }
-    
+
     var portfolioInteractor: Observable<TodayExtensionCellInteractor?> {
         Observable.just(container.portfolio)
             .map { portfolio in
@@ -37,21 +37,21 @@ final class TodayViewInteractor {
                 return .portfolio(.init(portfolio: value))
             }
     }
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
          container: SharedContainerUserDefaults = .default) {
         self.container = container
         self.historicalProvider = historicalProvider
     }
-    
+
     /// Returns the supported device biometrics, regardless if currently configured in app
     private var supportsBioAuthentication: Bool {
         let context = LAContext()
         return context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
     }
-    
+
     /// Performs authentication
     private func performAuthentication() -> Single<Void> {
         Single.create { observer -> Disposable in
@@ -73,7 +73,7 @@ final class TodayViewInteractor {
             return Disposables.create()
         }
     }
-    
+
     func refresh() {
         self.historicalProvider.refresh(window: .day(.oneHour))
     }

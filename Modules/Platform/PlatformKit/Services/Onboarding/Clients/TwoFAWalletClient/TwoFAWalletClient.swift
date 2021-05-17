@@ -11,18 +11,18 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
     /// Possiblly there are more than one error, but only one is known
     /// at the moment.
     enum ClientError: Error {
-        
+
         private struct RawErrorSubstring {
             static let accountLocked = "locked"
             static let wrongCode = "attempts left"
         }
-        
+
         /// Wrong code
         case wrongCode(attemptsLeft: Int)
-        
+
         // Account locked
         case accountLocked
-        
+
         /// Initialized with plain server error
         init?(plainServerError: String) {
             if plainServerError.contains(RawErrorSubstring.accountLocked) {
@@ -41,22 +41,22 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
             }
         }
     }
-        
+
     // MARK: - Properties
 
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: TwoFARequestBuilder
 
     // MARK: - Setup
-    
+
     public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
                 requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = TwoFARequestBuilder(requestBuilder: requestBuilder)
     }
-    
+
     // MARK: - API
-    
+
     public func payload(guid: String,
                         sessionToken: String,
                         code: String) -> Single<WalletPayloadWrapper> {
@@ -87,15 +87,15 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 // MARK: - TwoFAWalletClient
 
 extension TwoFAWalletClient {
-    
+
     private struct TwoFARequestBuilder {
-        
+
         private let pathComponents = [ "wallet" ]
-        
+
         private enum HeaderKey: String {
             case authorization = "Authorization"
         }
-        
+
         private struct Payload: Encodable {
             let method = "get-wallet"
             let guid: String
@@ -103,24 +103,24 @@ extension TwoFAWalletClient {
             let length: Int
             let format = "plain"
             let apiCode = "api_code"
-            
+
             init(guid: String, payload: String) {
                 self.guid = guid
                 self.payload = payload
                 self.length = payload.count
             }
         }
-        
+
         // MARK: - Builder
-        
+
         private let requestBuilder: RequestBuilder
 
         init(requestBuilder: RequestBuilder) {
             self.requestBuilder = requestBuilder
         }
-        
+
         // MARK: - API
-        
+
         func build(guid: String, sessionToken: String, code: String) -> NetworkRequest {
             let headers = [HeaderKey.authorization.rawValue: "Bearer \(sessionToken)"]
             let body = self.body(from: guid, code: code)
@@ -131,7 +131,7 @@ extension TwoFAWalletClient {
                 contentType: .formUrlEncoded
             )!
         }
-        
+
         private func body(from guid: String, code: String) -> Data! {
             let payload = Payload(guid: guid, payload: code)
             let data = ParameterEncoder(payload.dictionary).encoded!

@@ -3,21 +3,21 @@
 import Foundation
 
 public struct UnspentOutputsResponse: Codable {
-    
+
     public let unspent_outputs: [UnspentOutputResponse]
-    
+
     init(unspent_outputs: [UnspentOutputResponse]) {
         self.unspent_outputs = unspent_outputs
     }
 }
 
 public struct UnspentOutputResponse: Codable {
-    
+
     public struct XPub: Codable {
         public let m: String
         public let path: String
     }
-    
+
     public let tx_hash: String
     public let script: String
     public let value: Decimal

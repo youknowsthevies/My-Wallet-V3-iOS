@@ -23,12 +23,12 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
                 ERC20CryptoAccount<Token>(id: wallet.publicKey)
             }
     }
-    
+
     let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
     private let errorRecorder: ErrorRecording
-    
+
     init(walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
@@ -98,7 +98,7 @@ final class ERC20Asset<Token: ERC20Token>: CryptoAsset {
             .just(CryptoInterestAccount(asset: Token.assetType))
             .map { CryptoAccountCustodialGroup(asset: Token.assetType, accounts: [$0]) }
     }
-    
+
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
         return exchangeAccountProvider

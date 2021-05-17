@@ -4,7 +4,7 @@ import RxSwift
 
 /// Client API for SMS
 public protocol SMSClientAPI: class {
-    
+
     /// Requests the server to send a new OTP
     func requestOTP(sessionToken: String, guid: String) -> Completable
 }

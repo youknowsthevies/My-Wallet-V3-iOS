@@ -23,7 +23,7 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
     private let recoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI
     private let disposeBag = DisposeBag()
     private let entry: BackupRouterEntry
-    
+
     public init(
         entry: BackupRouterEntry,
         navigationRouter: NavigationRouterAPI,
@@ -33,7 +33,7 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
         self.navigationRouter = navigationRouter
         self.recoveryPhraseVerifyingService = recoveryPhraseVerifying
     }
-    
+
     public func start() {
         stateService = BackupRouterStateService(entry: entry)
         stateService.action

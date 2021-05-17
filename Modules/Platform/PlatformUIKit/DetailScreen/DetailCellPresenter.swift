@@ -3,9 +3,9 @@
 import RxDataSources
 
 public enum DetailCellPresenter: IdentifiableType, Equatable {
-    
+
     public typealias Identity = String
-    
+
     public var identity: String {
         switch self {
         case .currentBalance(let presenter):
@@ -16,7 +16,7 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
             return presenter.identifier
         }
     }
-    
+
     public enum LineItemType {
         public var identifier: String {
             switch self {
@@ -24,10 +24,10 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
                 return presenter.identifier
             }
         }
-        
+
         case `default`(DefaultLineItemCellPresenter)
     }
-    
+
     case currentBalance(CurrentBalanceCellPresenter)
     case footer(FooterTableViewCellPresenter)
     case lineItem(LineItemType)

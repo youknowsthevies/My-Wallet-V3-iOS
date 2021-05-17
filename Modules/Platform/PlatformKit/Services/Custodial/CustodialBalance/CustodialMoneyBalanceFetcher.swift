@@ -7,18 +7,18 @@ import ToolKit
 public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching {
 
     // MARK: - Public Properties
-    
+
     public var accountType: SingleAccountType {
         _ = setup
         return .custodial(fetcher.custodialAccountType)
     }
-    
+
     public var pendingBalanceMoney: Single<MoneyValue> {
         pendingBalanceMoneyObservable
             .take(1)
             .asSingle()
     }
-    
+
     public var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         _ = setup
         let currencyType = self.currencyType
@@ -26,13 +26,13 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
             .map { $0?.pending }
             .map { $0 ?? .zero(currency: currencyType) }
     }
-    
+
     public var balanceMoney: Single<MoneyValue> {
         balanceMoneyObservable
             .take(1)
             .asSingle()
     }
-     
+
     public var balanceMoneyObservable: Observable<MoneyValue> {
         _ = setup
         let currencyType = self.currencyType
@@ -58,7 +58,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
     public var isFunded: Observable<Bool> {
         fundsState.map { $0 != .absent }
     }
-    
+
     public var fundsState: Observable<AccountBalanceState<CustodialAccountBalance>> {
         _ = setup
         return balanceRelay
@@ -80,7 +80,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
     private let currencyType: CurrencyType
     private let disposeBag = DisposeBag()
     private let fetcher: CustodialBalanceStatesFetcherAPI
-    
+
     private lazy var setup: Void = {
         let currencyType = self.currencyType
         fetcher.balanceStatesObservable
@@ -89,7 +89,7 @@ public final class CustodialMoneyBalanceFetcher: CustodialAccountBalanceFetching
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: Init
 
     public init(currencyType: CurrencyType,

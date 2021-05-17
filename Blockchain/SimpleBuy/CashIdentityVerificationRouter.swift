@@ -6,7 +6,7 @@ import RxRelay
 import RxSwift
 
 final class CashIdentityVerificationRouter {
-    
+
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     private let kycRouter: KYCRouterAPI
 
@@ -15,7 +15,7 @@ final class CashIdentityVerificationRouter {
         self.kycRouter = kycRouter
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
-    
+
     func dismiss(startKYC: Bool = false) {
         let kycRouter = self.kycRouter
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {

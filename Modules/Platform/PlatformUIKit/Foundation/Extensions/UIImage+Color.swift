@@ -3,7 +3,7 @@
 import Foundation
 
 extension UIImage {
-    
+
     /// Geenrates an image for a given color
     public static func image(color: UIColor, size: CGSize) -> UIImage? {
         let rect = CGRect(origin: .zero, size: size)
@@ -12,7 +12,7 @@ extension UIImage {
         UIRectFill(rect)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
+
         guard let cgImage = image?.cgImage else { return nil }
         return UIImage(cgImage: cgImage)
     }

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public class DefaultWalletActionTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public
-    
+
     var presenter: DefaultWalletActionCellPresenter! {
         didSet {
             badgeImageView.viewModel = presenter.badgeImageViewModel
@@ -11,33 +11,33 @@ public class DefaultWalletActionTableViewCell: UITableViewCell {
             descriptionLabel.content = presenter.descriptionLabelContent
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let badgeImageView = BadgeImageView()
     private let stackView = UIStackView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
-    
+
     // MARK: - Setup
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setup() {
-        
+
         contentView.addSubview(badgeImageView)
         contentView.addSubview(stackView)
         stackView.axis = .vertical
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(descriptionLabel)
-        
+
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
         badgeImageView.layout(size: .init(edge: Sizing.badge))
         badgeImageView.layout(edges: .centerY, to: stackView)

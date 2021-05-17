@@ -5,7 +5,7 @@ import PlatformKit
 import PlatformUIKit
 
 extension PlatformUIKit.Router {
-    
+
     convenience init(builder: PlatformUIKit.Buildable, currency: CryptoCurrency = .bitcoin) {
         self.init(
             navigationRouter: NavigationRouter(),

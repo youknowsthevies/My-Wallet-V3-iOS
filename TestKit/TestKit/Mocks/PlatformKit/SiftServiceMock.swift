@@ -3,10 +3,10 @@
 @testable import PlatformKit
 
 final class SiftServiceMock: SiftServiceAPI {
-    
+
     func enable() {}
-    
+
     func set(userId: String) {}
-    
+
     func removeUserId() {}
 }

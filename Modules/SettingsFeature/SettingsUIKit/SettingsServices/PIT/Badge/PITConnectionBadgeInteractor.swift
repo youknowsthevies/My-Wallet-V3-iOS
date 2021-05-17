@@ -7,7 +7,7 @@ import RxSwift
 import SettingsKit
 
 final class PITConnectionBadgeInteractor: DefaultBadgeAssetInteractor {
-    
+
     init(provider: PITConnectionStatusProviding) {
         super.init()
         provider

@@ -37,19 +37,19 @@ class FakeAddress {
 }
 
 final class MockExchangeAddressFetcher: ExchangeAddressFetching {
-    
+
     // MARK: - Properties
-    
+
     private let expectedResult: Result<ExchangeAddressFetcher.AddressResponseBody.State, ExchangeAddressFetcher.FetchingError>
-    
+
     // MARK: - Setup
-    
+
     init(expectedResult: Result<ExchangeAddressFetcher.AddressResponseBody.State, ExchangeAddressFetcher.FetchingError>) {
         self.expectedResult = expectedResult
     }
-    
+
     // MARK: - ExchangeAddressFetching
-    
+
     func fetchAddress(for asset: CryptoCurrency) -> Single<String> {
         let expectedState: ExchangeAddressFetcher.AddressResponseBody.State
         switch expectedResult {

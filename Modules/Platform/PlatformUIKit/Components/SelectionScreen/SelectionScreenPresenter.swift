@@ -7,44 +7,44 @@ import RxSwift
 import ToolKit
 
 public final class SelectionScreenPresenter {
-    
+
     // MARK: - Properties
-    
+
     let title: String
     let tableHeaderViewModel: SelectionScreenTableHeaderViewModel?
     let searchBarPlaceholder: String
     var presenters: Observable<[SelectionItemViewPresenter]> {
         presentersRelay.asObservable()
     }
-    
+
     var displayPresenters: Observable<[SelectionItemViewPresenter]> {
         displayPresentersRelay.asObservable()
     }
-    
+
     var preselection: Observable<Int> {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
             .filter { $0.1 }
             .compactMap { $0.0 }
             .observeOn(MainScheduler.instance)
     }
-    
+
     var selection: Observable<Int> {
         Observable.combineLatest(selectionRelay, preselectionSupportedRelay)
             .filter { !$0.1 }
             .compactMap { $0.0 }
             .observeOn(MainScheduler.instance)
     }
-    
+
     let dismissRelay = PublishRelay<Void>()
     var dismiss: Signal<Void> {
         dismissRelay.asSignal()
     }
-    
+
     let searchTextRelay = BehaviorRelay<String>(value: "")
     var searchText: Observable<String> {
-        searchTextRelay.map { $0.lowercased() } 
+        searchTextRelay.map { $0.lowercased() }
     }
-    
+
     let preSelectionRelay = PublishRelay<Int>()
     private var shouldPreselect: Bool
     private let preselectionSupportedRelay = BehaviorRelay<Bool>(value: true)
@@ -53,9 +53,9 @@ public final class SelectionScreenPresenter {
     private let presentersRelay = BehaviorRelay<[SelectionItemViewPresenter]>(value: [])
     private let interactor: SelectionScreenInteractor
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(title: String,
                 description: String? = nil,
                 shouldPreselect: Bool = true,
@@ -67,15 +67,15 @@ public final class SelectionScreenPresenter {
         self.searchBarPlaceholder = searchBarPlaceholder
         self.title = title
         self.interactor = interactor
-        
+
         setupPresenters()
         setupSearch()
-        
+
         if shouldPreselect {
             setupDefaultSelection()
         }
     }
-    
+
     private func setupPresenters() {
         interactor.interactors
             .map { interactors in
@@ -83,7 +83,7 @@ public final class SelectionScreenPresenter {
             }
             .bindAndCatch(to: presentersRelay)
             .disposed(by: disposeBag)
-                
+
         presentersRelay
             .filter { !$0.isEmpty }
             .take(1)
@@ -94,10 +94,10 @@ public final class SelectionScreenPresenter {
                         presenter.setup {
                             let previousIndex = self.selectionRelay.value
                             guard previousIndex != index else { return }
-                            
+
                             presenters[index].select()
                             self.selectionRelay.accept(index)
-                            
+
                             if let previousIndex = previousIndex {
                                 self.dismissRelay.accept(())
                                 presenters[previousIndex].deselect()
@@ -109,7 +109,7 @@ public final class SelectionScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func setupSearch() {
         searchText
             .flatMapLatest(weak: self) { (self, text) in
@@ -124,12 +124,12 @@ public final class SelectionScreenPresenter {
             .bindAndCatch(to: displayPresentersRelay)
             .disposed(by: disposeBag)
     }
-    
+
     private func setupDefaultSelection() {
-        
+
         let presenters = self.presenters
             .filter { !$0.isEmpty }
-        
+
         let selectedIndex = Observable
             .zip(
                 presenters.take(1),
@@ -139,7 +139,7 @@ public final class SelectionScreenPresenter {
                 presenters.firstIndex { $0.data == selectedData }
             }
             .share(replay: 1)
-        
+
         Observable
             .zip(
                 presenters,
@@ -150,7 +150,7 @@ public final class SelectionScreenPresenter {
                 presenters[selectedIndex].select()
             }
             .disposed(by: disposeBag)
-        
+
         selectedIndex
             .bindAndCatch(to: selectionRelay)
             .disposed(by: disposeBag)

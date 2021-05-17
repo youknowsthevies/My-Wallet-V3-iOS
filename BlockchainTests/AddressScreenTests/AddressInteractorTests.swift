@@ -7,7 +7,7 @@ import XCTest
 @testable import Blockchain
 
 class AddressInteractorTests: XCTestCase {
-    
+
     func testBitcoinAddressSuccessfulPaymentInteraction() {
         let addresses = ["bitcoin1", "bitcoin2"]
         let receivingAddress = addresses[0]
@@ -25,14 +25,14 @@ class AddressInteractorTests: XCTestCase {
         do {
             // Fetch the next address
             _ = try interactor.address.toBlocking().first()
-            
+
             // The address must not be there
             XCTAssert(!addressFetcher.addresses.contains(receivingAddress))
         } catch {
             XCTFail("expected success. got \(error.localizedDescription) instead")
         }
     }
-    
+
     func testBitcoinCashPaymentToAnotherAddressInteraction() {
         let addresses = ["bitcoin-cash-1", "bitcoin-cash-2"]
         let receivingAddress = "another-address"
@@ -55,7 +55,7 @@ class AddressInteractorTests: XCTestCase {
             XCTFail("expected success. got \(error) instead")
         }
     }
-    
+
     func testReusableAddress() {
         let addresses = ["stellar-address"]
         let receivingAddress = addresses[0]

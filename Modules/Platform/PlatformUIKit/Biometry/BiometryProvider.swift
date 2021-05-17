@@ -8,7 +8,7 @@ import RxSwift
 
 /// This objectp provides biometry authentication support
 public final class BiometryProvider: BiometryProviding {
-    
+
     // MARK: - Properties
 
     /// Returns the status of biometrics configuration on the app and device
@@ -19,7 +19,7 @@ public final class BiometryProvider: BiometryProviding {
             guard self.featureConfigurator.configuration(for: .biometry).isEnabled else {
                 return .unconfigurable(Biometry.EvaluationError.notAllowed)
             }
-            
+
             // Biometrics id is already configured - therefore, return it
             if self.settings.biometryEnabled {
                 return .configured(biometryType)
@@ -30,7 +30,7 @@ public final class BiometryProvider: BiometryProviding {
             return .unconfigurable(error)
         }
     }
-    
+
     /// Returns the configured biometrics, if any
     public var configuredType: Biometry.BiometryType {
         if configurationStatus.isConfigured {
@@ -39,14 +39,14 @@ public final class BiometryProvider: BiometryProviding {
             return .none
         }
     }
-    
+
     /// Returns the supported device biometrics, regardless if currently configured in app
     public var supportedBiometricsType: Biometry.BiometryType {
         let context = LAContext()
         _ = context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
         return .init(with: context.biometryType)
     }
-    
+
     /// Evaluates whether the device owner can authenticate using biometrics.
     public var canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError> {
         let context = LAContext()
@@ -64,20 +64,20 @@ public final class BiometryProvider: BiometryProviding {
             return .success(.init(with: context.biometryType))
         }
     }
-    
+
     // MARK: - Services
-    
+
     private let featureConfigurator: FeatureConfiguring
     private let settings: AppSettingsAuthenticating
-    
+
     // MARK: - Setup
-    
+
     public init(settings: AppSettingsAuthenticating = resolve(),
                 featureConfigurator: FeatureConfiguring) {
         self.settings = settings
         self.featureConfigurator = featureConfigurator
     }
-                
+
     /// Performs authentication if possible
     public func authenticate(reason: Biometry.Reason) -> Single<Void> {
         switch canAuthenticate {
@@ -87,9 +87,9 @@ public final class BiometryProvider: BiometryProviding {
             return .error(error)
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     /// Performs authentication
     private func performAuthentication(with reason: Biometry.Reason) -> Single<Void> {
         Single.create { observer -> Disposable in

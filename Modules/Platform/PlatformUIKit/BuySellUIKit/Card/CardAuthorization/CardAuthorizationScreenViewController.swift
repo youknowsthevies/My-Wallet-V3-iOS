@@ -3,9 +3,9 @@
 import WebKit
 
 final class CardAuthorizationScreenViewController: BaseScreenViewController {
-    
+
     // MARK: - UI Properties
-    
+
     private lazy var webView: WKWebView = {
         // swiftlint:disable line_length
         let script = "var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);"
@@ -16,37 +16,37 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
         config.userContentController = userContentController
         return WKWebView(frame: view.bounds, configuration: config)
     }()
-    
+
     // MARK: - Injected
-    
+
     private let presenter: CardAuthorizationScreenPresenter
     private var exitUrl: URL!
-    
+
     // MARK: - Setup
-    
+
     init(presenter: CardAuthorizationScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
@@ -61,7 +61,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
             break
         }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         switch presenter.authorizationState {
@@ -71,12 +71,12 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
             break
         }
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
-        
+
     private func setupNavigationBar() {
         set(barStyle: .darkContent())
         titleViewStyle = .text(value: presenter.title)

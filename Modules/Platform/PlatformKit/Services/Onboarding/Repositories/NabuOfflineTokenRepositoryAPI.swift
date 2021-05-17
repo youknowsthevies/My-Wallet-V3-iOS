@@ -4,9 +4,9 @@ import Combine
 import RxSwift
 
 public protocol NabuOfflineTokenRepositoryCombineAPI: AnyObject {
-    
+
     var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> { get }
-    
+
     func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError>
 }
 

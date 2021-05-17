@@ -3,12 +3,12 @@ struct UnitedStates {
     struct State {
         let abbreviation: String
         let name: String
-        
+
         var isoCode: String {
             "US-\(abbreviation)"
         }
     }
-    
+
     static let states: [UnitedStates.State] = [
         UnitedStates.State(abbreviation: "AK", name: "Alaska"),
         UnitedStates.State(abbreviation: "AL", name: "Alabama"),
@@ -72,9 +72,8 @@ extension UnitedStates.State: PickerViewSelectable {
     var id: String {
         isoCode
     }
-    
+
     var title: String {
         name
     }
 }
-

@@ -10,7 +10,7 @@ extension String {
         }
         return digestCryptoHex(input: data)
     }
-    
+
     private func digestCryptoHex(input: Data) -> String {
         let hash = CryptoKit.SHA256.hash(data: input)
         return hash.compactMap { String(format: "%02x", $0) }.joined()

@@ -12,7 +12,7 @@ extension Result {
             return false
         }
     }
-    
+
     public var isSuccess: Bool {
         switch self {
         case .success:
@@ -55,7 +55,7 @@ extension Result where Failure == Never {
     public func mapError<E: Error>(to type: E.Type) -> Result<Success, E> {
         mapError()
     }
-    
+
     public func mapError<E: Error>() -> Result<Success, E> {
         mapError { _ -> E in
             fatalError("This can never be executed")
@@ -67,7 +67,7 @@ extension Result where Success == Never {
     public func map<T>(to type: T.Type) -> Result<T, Failure> {
         map()
     }
-    
+
     public func map<T>() -> Result<T, Failure> {
         map { _ in
             fatalError("This can never be executed")

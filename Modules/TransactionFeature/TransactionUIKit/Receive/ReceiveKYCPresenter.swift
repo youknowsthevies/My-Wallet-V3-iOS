@@ -18,7 +18,7 @@ final class ReceiveKYCPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Types
 
-    private typealias LocalizedString = LocalizationConstants.Transaction.Receive 
+    private typealias LocalizedString = LocalizationConstants.Transaction.Receive
 
     // MARK: - DetailsScreenPresenterAPI
 
@@ -77,15 +77,15 @@ final class ReceiveKYCPresenter: DetailsScreenPresenterAPI {
         ]
         verifyNowButton
             .tap
-            .emit { (self) in
+            .emit { (_) in
                 let kycRouter: KYCRouterAPI = resolve()
                 kycRouter.start()
             }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Internal Methods
-    
+
     func header(for section: Int) -> HeaderBuilder? {
         headers[section]
     }

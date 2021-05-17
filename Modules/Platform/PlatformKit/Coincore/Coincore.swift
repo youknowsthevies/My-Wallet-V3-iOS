@@ -5,7 +5,7 @@ import RxSwift
 import ToolKit
 
 public final class Coincore {
-    
+
     // MARK: - Public Properties
 
     public var allAccounts: Single<AccountGroup> {
@@ -22,21 +22,21 @@ public final class Coincore {
                 AllAccountsGroup(accounts: accounts)
             }
     }
-    
+
     // MARK: - Private Properties
 
     private var allAssets: [Asset] {
         [fiatAsset] + sortedCryptoAssets
     }
-    
+
     private var sortedCryptoAssets: [CryptoAsset] {
         cryptoAssets.sorted(by: { $0.key < $1.key }).map { $0.value }
     }
-    
+
     private let cryptoAssets: [CryptoCurrency: CryptoAsset]
     private let fiatAsset: FiatAsset
     private let reactiveWallet: ReactiveWalletAPI
-    
+
     // MARK: - Setup
 
     init(cryptoAssets: [CryptoCurrency: CryptoAsset],

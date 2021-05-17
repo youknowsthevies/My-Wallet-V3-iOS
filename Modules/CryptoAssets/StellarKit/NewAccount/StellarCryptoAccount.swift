@@ -30,7 +30,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
             }
             .catchNonExistentAccount()
     }
-    
+
     var pendingBalance: Single<MoneyValue> {
         balanceFetching
             .pendingBalanceMoney

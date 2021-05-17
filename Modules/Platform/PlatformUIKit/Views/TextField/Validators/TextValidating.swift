@@ -4,13 +4,13 @@ import RxRelay
 import RxSwift
 
 public enum TextValidationState {
-    
+
     // The text is valid
     case valid
-    
+
     /// The text is invalid
     case invalid(reason: String?)
-    
+
     var isValid: Bool {
         switch self {
         case .valid:

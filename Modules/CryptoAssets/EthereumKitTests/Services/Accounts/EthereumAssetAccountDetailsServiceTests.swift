@@ -7,17 +7,17 @@ import RxTest
 import XCTest
 
 class EthereumAssetAccountDetailsServiceTests: XCTestCase {
-    
+
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
-    
+
     var bridge: EthereumWalletBridgeMock!
     var client: EthereumAPIClientMock!
     var subject: EthereumAssetAccountDetailsService!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         client = EthereumAPIClientMock()
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
@@ -30,13 +30,13 @@ class EthereumAssetAccountDetailsServiceTests: XCTestCase {
     }
 
     override func tearDown() {
-        
+
         client = nil
         scheduler = nil
         disposeBag = nil
         bridge = nil
         subject = nil
-        
+
         super.tearDown()
     }
 
@@ -59,11 +59,11 @@ class EthereumAssetAccountDetailsServiceTests: XCTestCase {
         let sendObservable: Observable<EthereumAssetAccountDetails> = subject
             .accountDetails(for: accountID)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumAssetAccountDetails> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumAssetAccountDetails>>] = Recorded.events(
             .next(
@@ -72,7 +72,7 @@ class EthereumAssetAccountDetailsServiceTests: XCTestCase {
             ),
             .completed(200)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
     }
 }

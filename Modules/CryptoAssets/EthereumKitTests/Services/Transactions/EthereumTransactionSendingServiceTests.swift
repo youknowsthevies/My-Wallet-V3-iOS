@@ -8,36 +8,36 @@ import RxTest
 import XCTest
 
 class EthereumTransactionSendingServiceTests: XCTestCase {
-    
+
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
-    
+
     var bridge: EthereumWalletBridgeMock!
     var client: EthereumAPIClientMock!
     var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
-    
+
     var transactionBuilder: EthereumTransactionBuilder!
     var transactionSigner: EthereumTransactionSigner!
     var transactionEncoder: EthereumTransactionEncoder!
-    
+
     var subject: EthereumTransactionSendingService!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        
+
         bridge = EthereumWalletBridgeMock()
         client = EthereumAPIClientMock()
         feeService = AnyCryptoFeeService(
             service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
         )
-        
+
         transactionBuilder = EthereumTransactionBuilder()
         transactionSigner = EthereumTransactionSigner()
         transactionEncoder = EthereumTransactionEncoder()
-        
+
         subject = EthereumTransactionSendingService(
             with: bridge,
             client: client,
@@ -47,7 +47,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             transactionEncoder: transactionEncoder
         )
     }
-    
+
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
@@ -58,32 +58,32 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         transactionSigner = nil
         transactionEncoder = nil
         subject = nil
-        
+
         super.tearDown()
     }
-    
+
     func test_send() {
         // Arrange
         let candidate = EthereumTransactionCandidateBuilder().build()!
-        
+
         let expectedPublished = EthereumTransactionPublishedBuilder()
             .with(candidate: candidate)
             .build()!
-        
+
         client.pushTransactionValue = Single.just(
             EthereumPushTxResponse(txHash: expectedPublished.transactionHash)
         )
-        
+
         let keyPair = MockEthereumWalletTestData.keyPair
-        
+
         let sendObservable: Observable<EthereumTransactionPublished> = subject
             .send(transaction: candidate, keyPair: keyPair)
             .asObservable()
-        
+
         // Act
         let result: TestableObserver<EthereumTransactionPublished> = scheduler
             .start { sendObservable }
-        
+
         // Assert
         let expectedEvents: [Recorded<Event<EthereumTransactionPublished>>] = Recorded.events(
             .next(
@@ -92,7 +92,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
             ),
             .completed(200)
         )
-        
+
         XCTAssertEqual(result.events, expectedEvents)
     }
 }

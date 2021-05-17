@@ -200,11 +200,11 @@ extension TransactionConfirmation.Model {
     public struct Description: TransactionConfirmationModelable {
         public let value: String
         public let type: TransactionConfirmation.Kind = .description
-        
+
         public var formatted: (title: String, subtitle: String)? {
             (LocalizedString.description, value)
         }
-        
+
         public init(value: String = "") {
             self.value = value
         }

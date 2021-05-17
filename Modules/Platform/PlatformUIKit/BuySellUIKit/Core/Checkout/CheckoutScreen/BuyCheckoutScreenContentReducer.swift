@@ -204,7 +204,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
         fiatAmountLabelPresenter.interactor.stateRelay.accept(
             .loaded(next: .init(text: "\(totalCost) \(LocalizedSummary.of) \(data.outputCurrency.displayCode)"))
         )
-        
+
         let description = data.order.state.localizedDescription
 
         statusBadge.interactor.stateRelay.accept(
@@ -272,7 +272,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
         case (.funds, _, _, _):
-            
+
             cells = [
                 .label(cryptoAmountLabelPresenter),
                 .badges(badgesModel),
@@ -289,7 +289,7 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
                 .separator,
                 .staticLabel(BuyCheckoutScreenContentReducer.notice(data: data))
             ]
-            
+
         case (.bankAccount, _, true, _):
 
             // MARK: Cells Setup

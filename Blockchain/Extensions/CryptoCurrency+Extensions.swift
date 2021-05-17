@@ -32,7 +32,7 @@ extension CryptoCurrency {
             return .yearnFinance
         }
     }
-    
+
     /// Returns `true` if an asset's addresses can be reused
     var shouldAddressesBeReused: Bool {
         switch self {

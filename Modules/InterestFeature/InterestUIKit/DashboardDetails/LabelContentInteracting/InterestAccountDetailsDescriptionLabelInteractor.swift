@@ -8,12 +8,12 @@ import RxRelay
 import RxSwift
 
 final class InterestAccountDetailsDescriptionLabelInteractor {
-    
+
     typealias InteractionState = LabelContent.State.Interaction
     typealias LocalizationId = LocalizationConstants.Interest.Screen.AccountDetails
-    
+
     final class TotalInterest: LabelContentInteracting {
-        
+
         private lazy var setup: Void = {
             service
                 .details(for: cryptoCurrency)
@@ -26,30 +26,30 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
-        
+
         let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
         var state: Observable<InteractionState> {
             _ = setup
             return stateRelay.asObservable()
         }
-        
+
         // MARK: - Private Properties
-        
+
         private let service: SavingAccountServiceAPI
         private let cryptoCurrency: CryptoCurrency
         private let disposeBag = DisposeBag()
-        
+
         // MARK: - Private Accessors
-        
+
         init(service: SavingAccountServiceAPI,
              cryptoCurrency: CryptoCurrency) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
     }
-    
+
     final class PendingDeposit: LabelContentInteracting {
-        
+
         private lazy var setup: Void = {
             service
                 .details(for: cryptoCurrency)
@@ -62,30 +62,30 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
-        
+
         let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
         var state: Observable<InteractionState> {
             _ = setup
             return stateRelay.asObservable()
         }
-        
+
         // MARK: - Private Properties
-        
+
         private let service: SavingAccountServiceAPI
         private let cryptoCurrency: CryptoCurrency
         private let disposeBag = DisposeBag()
-        
+
         // MARK: - Private Accessors
-        
+
         init(service: SavingAccountServiceAPI,
              cryptoCurrency: CryptoCurrency) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
     }
-    
+
     final class LockUpDuration: LabelContentInteracting {
-        
+
         private lazy var setup: Void = {
             service
                 .limits(for: cryptoCurrency)
@@ -96,30 +96,30 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
-        
+
         let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
         var state: Observable<InteractionState> {
             _ = setup
             return stateRelay.asObservable()
         }
-        
+
         // MARK: - Private Properties
-        
+
         private let service: SavingAccountServiceAPI
         private let cryptoCurrency: CryptoCurrency
         private let disposeBag = DisposeBag()
-        
+
         // MARK: - Private Accessors
-        
+
         init(service: SavingAccountServiceAPI,
              cryptoCurrency: CryptoCurrency) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
     }
-    
+
     final class Rates: LabelContentInteracting {
-        
+
         private lazy var setup: Void = {
             service
                 .rate(for: cryptoCurrency)
@@ -130,30 +130,30 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
-        
+
         let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
         var state: Observable<InteractionState> {
             _ = setup
             return stateRelay.asObservable()
         }
-        
+
         // MARK: - Private Properties
-        
+
         private let service: SavingAccountServiceAPI
         private let cryptoCurrency: CryptoCurrency
         private let disposeBag = DisposeBag()
-        
+
         // MARK: - Private Accessors
-        
+
         init(service: SavingAccountServiceAPI,
              cryptoCurrency: CryptoCurrency) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
     }
-    
+
     final class NextPayment: LabelContentInteracting {
-        
+
         private lazy var setup: Void = {
             var components = Calendar.current.dateComponents([.year, .month, .day], from: date)
             components.day = 1
@@ -166,21 +166,21 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
                 .bindAndCatch(to: stateRelay)
                 .disposed(by: disposeBag)
         }()
-        
+
         let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
         var state: Observable<InteractionState> {
             _ = setup
             return stateRelay.asObservable()
         }
-        
+
         // MARK: - Private Properties
-        
+
         private let date: Date
         private let cryptoCurrency: CryptoCurrency
         private let disposeBag = DisposeBag()
-        
+
         // MARK: - Private Accessors
-        
+
         init(date: Date = Date(),
              cryptoCurrency: CryptoCurrency) {
             self.date = date

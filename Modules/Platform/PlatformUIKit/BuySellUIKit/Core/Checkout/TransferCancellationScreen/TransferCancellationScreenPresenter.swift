@@ -9,33 +9,33 @@ import RxSwift
 import ToolKit
 
 final class TransferCancellationScreenPresenter {
-    
+
     // MARK: - Localization
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias AccessibilityIDs = Accessibility.Identifier.SimpleBuy.Cancellation
     private typealias LocalizationIDs = LocalizationConstants.SimpleBuy.TransferDetails.Cancellation
-    
+
     // MARK: - Public Properties
-    
+
     let titleContent: LabelContent
     let descriptionContent: LabelContent
-    
+
     let noButtonViewModel: ButtonViewModel
     let yesButtonViewModel: ButtonViewModel
-    
+
     let dismissalRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let routingInteractor: TransferOrderRoutingInteracting
     private let interactor: TransferCancellationInteractor
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(routingInteractor: TransferOrderRoutingInteracting,
          currency: CurrencyType,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -62,7 +62,7 @@ final class TransferCancellationScreenPresenter {
             alignment: .center,
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
-        
+
         noButtonViewModel = .cancel(
             with: LocalizationConstants.no,
             accessibilityId: AccessibilityIDs.noButton
@@ -71,17 +71,17 @@ final class TransferCancellationScreenPresenter {
             with: LocalizationConstants.yes,
             accessibilityId: AccessibilityIDs.yesButton
         )
-        
+
         noButtonViewModel.tapRelay
             .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderGoBack)
                 self.routingInteractor.previousRelay.accept(())
             }
             .disposed(by: disposeBag)
-        
+
         setupCancellationBinding()
     }
-    
+
     private func setupCancellationBinding() {
         let cancellationResult = yesButtonViewModel
             .tapRelay
@@ -110,14 +110,14 @@ final class TransferCancellationScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func cancellationDidFail() {
         alert.error(in: nil) { [dismissalRelay] in
             dismissalRelay.accept(())
         }
         analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderError)
     }
-    
+
     func viewDidLoad() {
         analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderPrompt)
     }

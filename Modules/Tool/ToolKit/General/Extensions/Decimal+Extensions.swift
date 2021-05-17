@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension Decimal {
-    
+
     public var doubleValue: Double {
         (self as NSDecimalNumber).doubleValue
     }

@@ -5,9 +5,9 @@ import UIKit
 final class LoadingContainerView: UIView {
 
     // MARK: - Properties
-    
+
     private let max: CGRect = .init(origin: .zero, size: .init(width: 85.0, height: 85.0))
-    
+
     private lazy var loadingBackgroundView: LoadingCircleView = {
         let circle = LoadingCircleView(
             diameter: self.frame.min(max).width,
@@ -17,7 +17,7 @@ final class LoadingContainerView: UIView {
         )
         return circle
     }()
-    
+
     private lazy var loadingView: LoadingAnimatingView = {
         let loading = LoadingAnimatingView(
             diameter: self.frame.min(max).width,
@@ -27,32 +27,32 @@ final class LoadingContainerView: UIView {
         )
         return loading
     }()
-    
+
     private var statusLabel: UILabel!
-    
+
     // MARK: - Setup
-    
+
     init() {
         super.init(frame: UIScreen.main.bounds)
         backgroundColor = .greyFadeBackground
         isUserInteractionEnabled = true
-        
+
         for view in [loadingBackgroundView, loadingView] {
             self.addSubview(view)
             view.layoutToSuperviewCenter()
             view.layout(size: CGSize(width: frame.min(max).width, height: frame.min(max).height))
         }
-        
+
         alpha = Visibility.hidden.defaultAlpha
         let scale = CGAffineTransform(scaleX: 0, y: 0)
         loadingBackgroundView.transform = scale
         loadingView.transform = scale
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setupStatusLabelIfNeeded() {
         guard statusLabel == nil else {
             return
@@ -79,7 +79,7 @@ extension LoadingContainerView: LoadingViewProtocol {
         if text != nil {
             setupStatusLabelIfNeeded()
         }
-        
+
         // Animate status label text transition if needed
         if let statusLabel = statusLabel {
             UIView.transition(
@@ -107,7 +107,7 @@ extension LoadingContainerView: LoadingViewProtocol {
             animator.startAnimation()
         }
     }
-    
+
     func fadeOut() {
         let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeIn)
         animator.addAnimations {

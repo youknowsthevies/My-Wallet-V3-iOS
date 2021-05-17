@@ -22,7 +22,7 @@ extension AnalyticsEvents {
         case settingsPinSelected
         case settingsPasswordSelected
         case settingsCurrencySelected(currency: String)
-        
+
         var name: String {
             switch self {
             // Settings - email clicked
@@ -80,7 +80,7 @@ extension AnalyticsEvents {
                 return "settings_currency_selected"
             }
         }
-        
+
         var params: [String : String]? {
             nil
         }

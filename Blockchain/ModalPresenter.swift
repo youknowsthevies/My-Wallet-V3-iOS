@@ -11,13 +11,13 @@ typealias OnModalDismissed = () -> Void
 typealias OnModalResumed = () -> Void
 
 @objc class ModalPresenter: NSObject {
-    
+
     static let shared = ModalPresenter()
     // class function declared so that the ModalPresenter singleton can be accessed from obj-C
     @objc class func sharedInstance() -> ModalPresenter {
         ModalPresenter.shared
     }
-    
+
     @objc private(set) var modalView: BCModalView?
 
     private var modalChain: [BCModalView] = []
@@ -25,7 +25,7 @@ typealias OnModalResumed = () -> Void
     private var topMostView: UIView? {
         UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.view
     }
-    
+
     private let recorder: UIOperationRecording
     private let loadingViewPresenter: LoadingViewPresenting
 
@@ -40,11 +40,11 @@ typealias OnModalResumed = () -> Void
         recorder.recordIllegalUIOperationIfNeeded()
 
         loadingViewPresenter.hide()
-        
+
         WalletManager.shared.wallet.isSyncing = false
 
         guard let modalView = modalView else { return }
-        
+
         modalView.endEditing(true)
         modalView.removeFromSuperview()
 
@@ -76,7 +76,7 @@ typealias OnModalResumed = () -> Void
             Logger.shared.warning("Cannot close modal. modalView is nil.")
             return
         }
-        
+
         NotificationCenter.default.post(name: Constants.NotificationKeys.modalViewDismissed, object: nil)
 
         modalView.removeFromSuperview()

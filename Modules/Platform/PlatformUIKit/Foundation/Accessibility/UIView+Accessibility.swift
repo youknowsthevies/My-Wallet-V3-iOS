@@ -4,7 +4,7 @@ import UIKit
 
 /// An extension to `UIView` which contains all the accessibility
 extension UIView {
-    
+
     /// Represents a `UIView` accessibility.
     /// In case one of `Accessibility`'s properties are `.none`, the value won't be assigned at all
     /// To nullify a value just pass an `empty` value, like this: `value(nil)` for id,

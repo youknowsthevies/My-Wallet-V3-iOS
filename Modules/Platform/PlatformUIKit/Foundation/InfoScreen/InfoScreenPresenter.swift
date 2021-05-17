@@ -14,23 +14,23 @@ public protocol InfoScreenContent {
 }
 
 public struct InfoScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.InfoScreen
-    
+
     // MARK: - Properties
-    
+
     let imageViewContent: ImageViewContent
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
     public let disclaimerViewModel: InteractableTextViewModel
     let buttonViewModel: ButtonViewModel
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(with content: InfoScreenContent, action: @escaping () -> Void) {
         imageViewContent = .init(
             imageName: content.image,

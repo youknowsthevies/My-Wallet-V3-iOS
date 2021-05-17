@@ -16,11 +16,11 @@ protocol ConfirmationPageBuildable {
 
 final class ConfirmationPageBuilder: ConfirmationPageBuildable {
     private let transactionModel: TransactionModel
-    
+
     init(transactionModel: TransactionModel) {
         self.transactionModel = transactionModel
     }
-    
+
     func build(listener: ConfirmationPageListener) -> ConfirmationPageRouter {
         let detailsPresenter = ConfirmationPageDetailsPresenter()
         let viewController = DetailsScreenViewController(presenter: detailsPresenter)

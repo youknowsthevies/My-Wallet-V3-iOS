@@ -7,7 +7,7 @@ import ToolKit
 
 /// A `UIView` containing two `UILabel`, one on top of the other, an a `UIButton` on top to intercept touch events.
 public final class ContentLabelView: UIView {
-    
+
     var presenter: ContentLabelViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -23,7 +23,7 @@ public final class ContentLabelView: UIView {
                 .descriptionLabelContent
                 .drive(descriptionLabel.rx.content)
                 .disposed(by: disposeBag)
-            
+
             button.rx.tap
                 .throttle(
                     .milliseconds(200),
@@ -35,28 +35,28 @@ public final class ContentLabelView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
     private let button = UIButton()
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Properties
-    
+
     public init() {
         super.init(frame: UIScreen.main.bounds)
-        
+
         addSubview(titleLabel)
         addSubview(descriptionLabel)
         addSubview(button)
-        
+
         titleLabel.layoutToSuperview(.top, .leading, .trailing)
         descriptionLabel.layoutToSuperview(.bottom, .leading, .trailing)
         descriptionLabel.layout(edge: .top, to: .bottom, of: titleLabel, offset: Spacing.standard)
         button.fillSuperview()
     }
-    
+
     required init?(coder: NSCoder) { unimplemented() }
 }

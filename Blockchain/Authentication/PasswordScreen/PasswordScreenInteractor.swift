@@ -10,26 +10,26 @@ protocol PasswordScreenInteracting: class {
 }
 
 final class PasswordScreenInteractor: PasswordScreenInteracting {
-    
+
     // MARK: - Exposed Properties
-        
+
     let passwordRelay = BehaviorRelay<String>(value: "")
     let type: PasswordScreenType
 
     // MARK: - Injected
-    
+
     private let wallet: Wallet
-    
+
     // MARK: - Setup
-    
+
     init(type: PasswordScreenType,
          wallet: Wallet = WalletManager.shared.wallet) {
         self.type = type
         self.wallet = wallet
     }
-    
+
     // MARK: - API
-    
+
     var isValid: Bool {
         switch type {
         case .importPrivateKey:

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class TextFieldTableViewCell: UITableViewCell {
-    
+
     // MARK: - Properties
-    
+
     public var bottomInset: CGFloat {
         get {
             textFieldView.bottomInset
@@ -12,16 +12,16 @@ public final class TextFieldTableViewCell: UITableViewCell {
             textFieldView.bottomInset = newValue
         }
     }
-    
+
     private let textFieldView: TextFieldView = .init()
-    
+
     // MARK: - Lifecycle
-    
+
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
@@ -34,7 +34,7 @@ public final class TextFieldTableViewCell: UITableViewCell {
         textFieldView.layoutToSuperview(axis: .vertical)
         textFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
-        
+
     public func setup(viewModel: TextFieldViewModel,
                       keyboardInteractionController: KeyboardInteractionController,
                       scrollView: UIScrollView) {

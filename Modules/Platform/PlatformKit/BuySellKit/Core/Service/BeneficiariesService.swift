@@ -6,16 +6,16 @@ import RxSwift
 import ToolKit
 
 public protocol BeneficiariesServiceAPI: PaymentMethodDeletionServiceAPI {
-    
+
     /// Streams the beneficiaries
     var beneficiaries: Observable<[Beneficiary]> { get }
-    
+
     /// Keeps updating a new value of whether the user has at least one linked bank
     var hasLinkedBank: Observable<Bool> { get }
-    
+
     /// Streams the available currencies for bank linkage
     var availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>> { get }
-    
+
     /// Fetch beneficiaries once, but other subscribers to `beneficiaries` would get the new value
     func fetch() -> Observable<[Beneficiary]>
 }
@@ -35,9 +35,9 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
     private let client: BeneficiariesClientAPI
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
-        
+
     // MARK: - Setup
-    
+
     init(client: BeneficiariesClientAPI = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
@@ -92,14 +92,14 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
         hasLinkedBank = beneficiaries
             .map { !$0.isEmpty }
     }
-    
+
     func fetch() -> Observable<[Beneficiary]> {
         performFetch()
             .do(afterNext: { [weak self] beneficiaries in
                 self?.beneficiariesRelay.accept(beneficiaries)
             })
     }
-    
+
     func delete(by data: PaymentMethodRemovalData) -> Completable {
         guard case .beneficiary(let accountType) = data.type else {
             return .just(event: .completed)
@@ -111,9 +111,9 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             })
             .ignoreElements()
     }
-        
+
     // MARK: - Private
-        
+
     private func performFetch() -> Observable<[Beneficiary]> {
         Observable
             .combineLatest(

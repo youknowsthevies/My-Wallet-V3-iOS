@@ -6,7 +6,7 @@ import PlatformUIKit
 
 /// Responsible for showing an alert for recommended update and force update if needed.
 protocol VersionUpdateAlertDisplaying {
-    
+
     /**
      Notifies the user for any updates if necessary.
      - Parameter updateType: the type of the update
@@ -19,7 +19,7 @@ extension VersionUpdateAlertDisplaying {
         guard let rawAppVersion = Bundle.applicationVersion, let appVersion = AppVersion(string: rawAppVersion) else {
             return
         }
-        
+
         switch updateType {
         case .recommended(latestVersion: let version) where version > appVersion:
             displayRecommendedUpdateAlert(currentVersion: rawAppVersion)
@@ -30,7 +30,7 @@ extension VersionUpdateAlertDisplaying {
             break // Arrives at this cases if value `.none` or other cases haven't been satisfied.
         }
     }
-    
+
     private func displayRecommendedUpdateAlert(currentVersion: String) {
         let updateNowAction = AlertAction(style: .default(LocalizationConstants.VersionUpdate.updateNowButton))
         let alert = AlertModel(

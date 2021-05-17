@@ -3,9 +3,9 @@
 import PlatformUIKit
 
 final class WelcomeViewController: BaseScreenViewController {
-    
+
     // MARK: Private IBOutlets
-        
+
     @IBOutlet private var welcomeLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var versionLabel: UILabel!
@@ -14,24 +14,24 @@ final class WelcomeViewController: BaseScreenViewController {
     @IBOutlet private var createWalletButtonView: ButtonView!
     @IBOutlet private var loginButtonView: ButtonView!
     @IBOutlet private var recoverFundsButtonView: ButtonView!
-        
+
     // MARK: Private Properties
-    
+
     private let presenter: WelcomeScreenPresenter
-    
+
     // MARK: - Setup
-    
+
     init(presenter: WelcomeScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: String(describing: WelcomeViewController.self), bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         set(barStyle: presenter.navBarStyle)
@@ -42,13 +42,13 @@ final class WelcomeViewController: BaseScreenViewController {
         loginButtonView.viewModel = presenter.loginButtonViewModel
         recoverFundsButtonView.viewModel = presenter.recoverFundsButtonViewModel
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
         fadeIn()
     }
-    
+
     private func fadeIn() {
         let fade = { (alpha: CGFloat) -> Void in
             self.welcomeLabel.alpha = alpha

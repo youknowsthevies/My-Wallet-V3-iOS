@@ -7,7 +7,7 @@ import PlatformKit
 import RxSwift
 
 class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, KeyPairProviderAPI {
-    
+
     var keyPairValue = Single.just(MockEthereumWalletTestData.keyPair)
     var keyPair: Single<EthereumKeyPair> {
         keyPairValue
@@ -27,11 +27,11 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, K
     var defaultAccount: Single<EthereumWalletAccount> {
         .just(defaultAccountValue)
     }
-    
+
     var accounts: Single<[EthereumWalletAccount]> {
         defaultAccount.map { [ $0 ] }
     }
-    
+
     var activeAccounts: Single<[EthereumWalletAccount]> {
         accounts
     }
@@ -52,19 +52,19 @@ class EthereumAPIClientMock: APIClientAPI {
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
         balanceDetailsValue
     }
-    
+
     var latestBlockValue: Single<LatestBlockResponse> = Single.error(EthereumAPIClientMockError.mockError)
     var latestBlock: Single<LatestBlockResponse> {
         latestBlockValue
     }
-    
+
     var lastTransactionsForAccount: String?
     var transactionsForAccountValue: Single<[EthereumHistoricalTransactionResponse]> = Single.just([])
     func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
         lastTransactionsForAccount = account
         return transactionsForAccountValue
     }
-    
+
     var lastPushedTransaction: EthereumTransactionFinalised?
     var pushTransactionValue = Single.just(EthereumPushTxResponse(txHash: "txHash"))
     func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {

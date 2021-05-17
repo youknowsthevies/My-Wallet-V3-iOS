@@ -2,19 +2,19 @@
 
 /// Instruction cell view model
 public struct InstructionCellViewModel {
-    
+
     // MARK: - Properties
-    
+
     /// The number of instruction
     let number: Int
 
     let numberViewModel: LabelContent
-    
+
     /// The text view model
     let textViewModel: InteractableTextViewModel
-    
+
     // MARK: - Setup
-    
+
     public init(number: Int, inputs: [InteractableTextViewModel.Input]) {
         self.number = number
         numberViewModel = .init(

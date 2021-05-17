@@ -5,9 +5,9 @@ import RxCocoa
 import RxSwift
 
 public struct DigitPadButtonViewModel {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.DigitPad
     private typealias LocalizedString = LocalizationConstants.Accessibility.DigitPad
 
@@ -16,7 +16,7 @@ public struct DigitPadButtonViewModel {
             case touchId
             case faceId
             case backspace
-            
+
             /// The computed image value corresponding to `self`.
             var image: UIImage {
                 let name: String
@@ -30,7 +30,7 @@ public struct DigitPadButtonViewModel {
                 }
                 return UIImage(named: name)!.withRenderingMode(.alwaysTemplate)
             }
-            
+
             /// Accessibility id for image
             var accessibility: Accessibility {
                 let accessibility: Accessibility
@@ -54,16 +54,16 @@ public struct DigitPadButtonViewModel {
                 return accessibility
             }
         }
-        
+
         /// Image based button
         case image(type: Image, tint: UIColor)
-        
+
         /// Text based button
         case label(text: String, tint: UIColor)
-        
+
         /// Just an empty content
         case none
-        
+
         /// Tint of the content
         var tint: UIColor {
             switch self {
@@ -75,7 +75,7 @@ public struct DigitPadButtonViewModel {
                 return .clear
             }
         }
-        
+
         /// Accessibility for any nested value
         var accessibility: Accessibility {
             switch self {
@@ -88,40 +88,40 @@ public struct DigitPadButtonViewModel {
             }
         }
     }
-    
+
     public struct Background {
         let cornerRadius: CGFloat
         let highlightColor: UIColor
-        
+
         /// Just a clear background
         public static var clear: Background {
             Background(cornerRadius: 0, highlightColor: .clear)
         }
-        
+
         public init(cornerRadius: CGFloat = 4, highlightColor: UIColor) {
             self.cornerRadius = cornerRadius
             self.highlightColor = highlightColor
         }
     }
-    
+
     public static var empty: DigitPadButtonViewModel {
         DigitPadButtonViewModel(content: .none, background: .clear)
     }
-    
+
     // MARK: - Properties
-    
+
     let content: Content
     let background: Background
-    
+
     private let tapRelay = PublishRelay<Content>()
     var tapObservable: Observable<Content> {
         tapRelay.asObservable()
     }
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(content: Content, background: Background) {
         self.content = content
         self.background = background
@@ -133,7 +133,7 @@ public struct DigitPadButtonViewModel {
             }
             .disposed(by: disposeBag)
     }
-    
+
     /// Invocation makes `tapRelay` to stream a new value
     func tap() {
         tapRelay.accept(content)

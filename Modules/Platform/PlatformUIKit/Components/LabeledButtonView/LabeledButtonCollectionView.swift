@@ -4,11 +4,11 @@ import RxRelay
 import RxSwift
 
 public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModelAPI>: UICollectionView {
-     
+
     // MARK: - Types
- 
+
     private typealias CellType = LabeledButtonCollectionViewCell<ViewModel>
-    
+
     /// The flow layout of the collection view
     private class CollectionViewFlowLayout: UICollectionViewFlowLayout {
         override init() {
@@ -23,18 +23,18 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
         @available(*, unavailable)
         required init?(coder aDecoder: NSCoder) { nil }
     }
-    
+
     // MARK: - Injected
-    
+
     public let viewModelsRelay = BehaviorRelay<[ViewModel]>(value: [])
 
     // MARK: - Private Properties
-    
+
     private let collectionViewFlowLayout: CollectionViewFlowLayout
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Lifecycle
-    
+
     public init() {
         let collectionViewFlowLayout = CollectionViewFlowLayout()
         self.collectionViewFlowLayout = collectionViewFlowLayout
@@ -55,7 +55,7 @@ public final class LabeledButtonCollectionView<ViewModel: LabeledButtonViewModel
             )
             .disposed(by: disposeBag)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 }

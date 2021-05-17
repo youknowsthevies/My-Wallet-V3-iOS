@@ -31,11 +31,11 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
     }
 
     // MARK: - Properties
-    
+
     private let jsContextProvider: JSContextProviderAPI
     private let payloadCryptor: WalletPayloadCryptorAPI
     private let recorder: Recording
-    
+
     // MARK: - Setup
 
     init(contextProvider: JSContextProviderAPI = resolve(),
@@ -45,7 +45,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         self.payloadCryptor = payloadCryptor
         self.recorder = recorder
     }
-    
+
     // MARK: - Public methods
 
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
@@ -69,7 +69,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
                 }
             }
     }
-    
+
     /// Receives a `KeyDataPair` and encrypt `data` using `key`.
     /// - Parameter pair: A pair of key and data used in the encription process.
     public func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
@@ -77,15 +77,15 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
     }
 
     // MARK: - Private methods
-    
+
     private func encryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
         payloadCryptor.encrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
-    
+
     private func decryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
         payloadCryptor.decrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
-    
+
     private func decryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Single<String> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             do {
@@ -103,7 +103,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         }
         .subscribeOn(MainScheduler.instance)
     }
-    
+
     private func encryptJS(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             do {
@@ -121,7 +121,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         }
         .subscribeOn(MainScheduler.instance)
     }
-    
+
     private func jsCrypto(_ method: JSMethod,
                           data: String,
                           key: String,

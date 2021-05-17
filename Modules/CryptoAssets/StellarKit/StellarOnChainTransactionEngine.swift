@@ -8,11 +8,11 @@ import ToolKit
 import TransactionKit
 
 final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
-    
+
     typealias AskForRefreshConfirmation = (Bool) -> Completable
-    
+
     // MARK: - Properties
-    
+
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -32,9 +32,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     var priceService: PriceServiceAPI
     var transactionDispatcher: StellarTransactionDispatcher
     var feeService: AnyCryptoFeeService<StellarTransactionFee>
-    
+
     // MARK: - Private properties
-    
+
     private var receiveAddress: ReceiveAddress {
         transactionTarget as! ReceiveAddress
     }
@@ -60,9 +60,9 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
     private var absoluteFee: Single<CryptoValue> {
         feeService.fees.map(\.regular)
     }
-    
+
     // MARK: - Init
-    
+
     init(requireSecondPassword: Bool,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
@@ -74,7 +74,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionDispatcher = transactionDispatcher
         self.feeService = feeService
     }
-    
+
     // MARK: - Internal Methods
 
     func assertInputsValid() {
@@ -202,7 +202,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             .andThen(validateSufficientFunds(pendingTransaction: pendingTransaction))
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
     }
-    
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateTargetAddress()
             .andThen(validateAmounts(pendingTransaction: pendingTransaction))
@@ -221,7 +221,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
                 TransactionResult.hashed(txHash: result.transactionHash, amount: pendingTransaction.amount)
             }
     }
-    
+
     // MARK: - Private methods
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
@@ -241,7 +241,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .asCompletable()
     }
-    
+
     private func createTransaction(pendingTransaction: PendingTransaction) -> Single<SendDetails> {
         let label = sourceAccount.label
         return sourceAccount.receiveAddress
@@ -320,7 +320,7 @@ final class StellarOnChainTransactionEngine: OnChainTransactionEngine {
 }
 
 extension PendingTransaction {
-    
+
     fileprivate var memo: TransactionConfirmation.Model.Memo {
         engineState[.xlmMemo] as! TransactionConfirmation.Model.Memo
     }
@@ -331,7 +331,7 @@ extension PendingTransaction {
 }
 
 extension TransactionConfirmation.Model.Memo {
-    
+
     fileprivate var stellarMemo: StellarMemo? {
         switch value {
         case .none:
@@ -345,7 +345,7 @@ extension TransactionConfirmation.Model.Memo {
 }
 
 extension PrimitiveSequence where Trait == CompletableTrait, Element == Never {
-    
+
     fileprivate func mapErrorToTransactionValidationFailure() -> Completable {
         catchError { error -> Completable in
             switch error {

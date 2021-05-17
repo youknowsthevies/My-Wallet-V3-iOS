@@ -12,9 +12,9 @@ import RxSwift
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
 final class AnnouncementPresenter {
-    
+
     // MARK: Services
-    
+
     private let appCoordinator: AppCoordinator
     private let featureFetcher: FeatureFetching
     private let airdropRouter: AirdropRouterAPI
@@ -28,7 +28,7 @@ final class AnnouncementPresenter {
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let interactor: AnnouncementInteracting
     private let webViewServiceAPI: WebViewServiceAPI
-    
+
     // MARK: - Rx
 
     /// Returns a driver with `.none` as default value for announcement action
@@ -38,14 +38,14 @@ final class AnnouncementPresenter {
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     private let announcementRelay = BehaviorRelay<AnnouncementDisplayAction>(value: .hide)
     private let disposeBag = DisposeBag()
-    
+
     private var currentAnnouncement: Announcement?
-    
+
     // MARK: - Setup
-    
+
     init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
          topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
          featureFetcher: FeatureFetching = DIKit.resolve(),
@@ -72,7 +72,7 @@ final class AnnouncementPresenter {
         self.kycSettings = kycSettings
         self.featureFetcher = featureFetcher
         self.wallet = wallet
-        
+
         announcement
             .asObservable()
             .filter { $0.isHide }
@@ -82,7 +82,7 @@ final class AnnouncementPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     /// Refreshes announcements on demand
     func refresh() {
         reactiveWallet
@@ -92,7 +92,7 @@ final class AnnouncementPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func calculate() {
         let announcementsMetadata: Single<AnnouncementsMetadata> = featureFetcher.fetch(for: .announcements)
         let data: Single<AnnouncementPreliminaryData> = interactor.preliminaryData
@@ -108,7 +108,7 @@ final class AnnouncementPresenter {
             .bindAndCatch(to: announcementRelay)
             .disposed(by: disposeBag)
     }
-    
+
     /// Resolves the first valid announcement according by the provided types and preloiminary data
     private func resolve(metadata: AnnouncementsMetadata,
                          preliminaryData: AnnouncementPreliminaryData) -> AnnouncementDisplayAction {
@@ -183,9 +183,9 @@ final class AnnouncementPresenter {
         // None of the types were resolved into a displayable announcement
         return .none
     }
-    
+
     // MARK: - Accessors
-    
+
     /// Hides whichever announcement is now displaying
     private func hideAnnouncement() {
         announcementRelay.accept(.hide)
@@ -215,7 +215,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Computes Simple Buy Finish Signup Announcement
     private func simpleBuyFinishSignup(tiers: KYC.UserTiers,
                                        hasIncompleteBuyFlow: Bool) -> Announcement {
@@ -244,7 +244,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     // Computes kyc airdrop announcement
     private func kycAirdrop(user: NabuUser,
                             tiers: KYC.UserTiers,
@@ -267,7 +267,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     // Computes transfer in bitcoin announcement
     private func transferBitcoin(isKycSupported: Bool, reappearanceTimeInterval: TimeInterval) -> Announcement {
         TransferInCryptoAnnouncement(
@@ -283,7 +283,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Computes identity verification card announcement
     private func verifyIdentity(using user: NabuUser) -> Announcement {
         VerifyIdentityAnnouncement(
@@ -302,7 +302,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Computes Bitpay announcement
     private var bitpay: Announcement {
         BitpayAnnouncement(
@@ -311,7 +311,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Computes Wallet-Exchange linking announcement
     private func exchangeLinking(user: NabuUser) -> Announcement {
         ExchangeLinkingAnnouncement(
@@ -369,7 +369,7 @@ extension AnnouncementPresenter {
             }
         )
     }
-    
+
     /// Interest Account Announcement for users who have not KYC'd
     private func interestAnnouncement(isKYCVerified: Bool) -> Announcement {
         InterestIdentityVerificationAnnouncement(
@@ -381,7 +381,7 @@ extension AnnouncementPresenter {
                 interestIdentityVerificationRouter?.showInterestDashboardAnnouncementScreen(isKYCVerfied: isKYCVerified)
             })
     }
-    
+
     /// Cash Support Announcement for users who have KYC'd
     /// and have not linked a bank.
     private func fiatFundsLinkBank(isKYCVerified: Bool, hasLinkedBanks: Bool) -> Announcement {
@@ -394,7 +394,7 @@ extension AnnouncementPresenter {
                 // TODO: Route to bank linking
             })
     }
-    
+
     /// Computes Buy BTC announcement
     private func buyBitcoin(reappearanceTimeInterval: TimeInterval) -> Announcement {
         BuyBitcoinAnnouncement(

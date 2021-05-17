@@ -13,7 +13,7 @@ protocol TransactionFlowInteractable: Interactable,
                                       AccountPickerListener,
                                       PendingTransactionPageListener,
                                       TargetSelectionPageListener {
-    
+
     var router: TransactionFlowRouting? { get set }
     var listener: TransactionFlowListener? { get set }
 
@@ -31,7 +31,7 @@ public protocol TransactionFlowViewControllable: ViewControllable {
 final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, TransactionFlowViewControllable>, TransactionFlowRouting {
 
     private let alertViewPresenter: AlertViewPresenterAPI
-    
+
     init(
         interactor: TransactionFlowInteractable,
         viewController: TransactionFlowViewControllable,
@@ -41,7 +41,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
-    
+
     func routeToConfirmation(transactionModel: TransactionModel) {
         let builder = ConfirmationPageBuilder(transactionModel: transactionModel)
         let router = builder.build(listener: interactor)
@@ -57,7 +57,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         attachChild(router)
         viewController.push(viewController: viewControllable)
     }
-    
+
     func closeFlow() {
         viewController.dismiss()
         interactor.listener?.dismissTransactionFlow()

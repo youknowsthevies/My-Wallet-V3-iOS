@@ -7,13 +7,13 @@ import PlatformUIKit
 import ToolKit
 
 final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
-    
+
     var type: WalletIntroductionEventType {
         let location: WalletIntroductionLocation = .init(
             screen: .dashboard,
             position: .home
         )
-        
+
         let viewModel = WalletIntroductionPulseViewModel(
             location: location,
             action: {
@@ -22,20 +22,20 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
         })
         return .pulse(viewModel)
     }
-    
+
     let selection: WalletIntroductionAction
-    
+
     let introductionRecorder: WalletIntroductionRecorder
-    
+
     var introductionEntry: WalletIntroductionRecorder.Entry {
         introductionRecorder[UserDefaults.Keys.walletIntroLatestLocation.rawValue]
     }
-    
+
     var shouldShow: Bool {
         guard introductionEntry.value != nil else { return true }
         return false
     }
-    
+
     init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
          selection: @escaping WalletIntroductionAction) {
         self.introductionRecorder = introductionRecorder
@@ -44,9 +44,9 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
 }
 
 final class HomeDescriptionWalletIntroductionEvent: WalletIntroductionEvent, WalletIntroductionAnalyticsEvent {
-    
+
     var type: WalletIntroductionEventType {
-        
+
         let viewModel = IntroductionSheetViewModel(
             title: LocalizationConstants.Onboarding.IntroductionSheet.Home.title,
             description: LocalizationConstants.Onboarding.IntroductionSheet.Home.description,
@@ -56,20 +56,20 @@ final class HomeDescriptionWalletIntroductionEvent: WalletIntroductionEvent, Wal
                 self.selection()
             }
         )
-        
+
         return .sheet(viewModel)
     }
-    
+
     let selection: WalletIntroductionAction
-    
+
     var eventType: AnalyticsEvents.WalletIntro {
         .walletIntroPortfolioViewed
     }
-    
+
     var shouldShow: Bool {
         true
     }
-    
+
     init(selection: @escaping WalletIntroductionAction) {
         self.selection = selection
     }

@@ -8,24 +8,24 @@ import RxCocoa
 import RxSwift
 
 public final class InterestIdentityVerificationScreenPresenter: InterestDashboardAnnouncementPresenting {
-    
+
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.IdentityVerification
-    
+
     /// Returns the total count of cells
     public var cellCount: Int {
         cellArrangement.count
     }
-    
+
     public let cellArrangement: [InterestAnnouncementCellType]
-    
+
     let announcement: AnnouncementCardViewModel
     let notNowButtonViewModel: ButtonViewModel
     let verifyIdentityButtonViewModel: ButtonViewModel
     let badgeNumberedItemViewModels: [BadgeNumberedItemViewModel]
-    
+
     private let router: InterestDashboardAnnouncementRouting
     private let disposeBag = DisposeBag()
-    
+
     public init(router: InterestDashboardAnnouncementRouting) {
         self.router = router
         badgeNumberedItemViewModels = [
@@ -63,7 +63,7 @@ public final class InterestIdentityVerificationScreenPresenter: InterestDashboar
             description: LocalizationId.description,
             dismissState: .undismissible
         )
-        
+
         notNowButtonViewModel = .secondary(with: LocalizationId.notNow)
         verifyIdentityButtonViewModel = .primary(with: LocalizationId.action)
 
@@ -71,14 +71,14 @@ public final class InterestIdentityVerificationScreenPresenter: InterestDashboar
         cellArrangement = [.announcement(announcement)] +
             badgedNumberedItems +
             [.buttons([notNowButtonViewModel, verifyIdentityButtonViewModel])]
-        
+
         notNowButtonViewModel
             .tapRelay
             .bindAndCatch(weak: self) { (self) in
                 self.router.dismiss(startKYC: false)
             }
             .disposed(by: disposeBag)
-        
+
         verifyIdentityButtonViewModel
             .tapRelay
             .bindAndCatch(weak: self) { (self) in
@@ -87,4 +87,3 @@ public final class InterestIdentityVerificationScreenPresenter: InterestDashboar
             .disposed(by: disposeBag)
     }
 }
-

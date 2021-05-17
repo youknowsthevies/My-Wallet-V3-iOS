@@ -13,7 +13,7 @@ enum SwapOrderState {
     case failed
     case unknown
     case none
-    
+
     var isPending: Bool {
         switch self {
         case .pendingDeposit,
@@ -32,7 +32,7 @@ enum SwapOrderState {
             return false
         }
     }
-    
+
     public init(value: String) {
         switch value {
         case "NONE":

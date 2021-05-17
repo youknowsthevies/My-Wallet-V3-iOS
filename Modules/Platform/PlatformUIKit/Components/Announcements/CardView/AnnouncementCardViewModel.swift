@@ -10,16 +10,16 @@ import ToolKit
 public final class AnnouncementCardViewModel {
 
     // MARK: - Types
-    
+
     public typealias AccessibilityId = Accessibility.Identifier.AnnouncementCard
     public typealias DidAppear = () -> Void
-    
+
     /// The priority under which the announcement should show
     public enum Priority {
         case high
         case low
     }
-    
+
     /// The style of the background
     public struct Background {
 
@@ -27,13 +27,13 @@ public final class AnnouncementCardViewModel {
         public static var white: Background {
             Background(color: .white)
         }
-        
+
         /// The background color
         let color: UIColor
-        
+
         /// The background image
         let imageName: String?
-        
+
         let bundle: Bundle
 
         /// Computes the `UIImage` out of `imageName`
@@ -43,42 +43,42 @@ public final class AnnouncementCardViewModel {
                            in: bundle,
                            compatibleWith: .none)
         }
-        
+
         public init(color: UIColor = .clear, imageName: String? = nil, bundle: Bundle = .main) {
             self.imageName = imageName
             self.color = color
             self.bundle = bundle
         }
     }
-    
+
     /// The border style of the card
     public enum Border {
-        
+
         /// Round corners with radius value
         case roundCorners(_ radius: CGFloat)
-        
+
         /// Separator
         case bottomSeparator(_ color: UIColor)
-        
+
         /// No border
         case none
     }
-    
+
     /// The alignment of the content
     public enum Alignment {
-        
+
         /// Natual alignment (leading -> trailing)
         case natural
-        
+
         /// Center alignment
         case center
-        
+
     }
-    
+
     public enum BadgeImage {
         case hidden
         case visible(BadgeImageViewModel, CGSize)
-        
+
         public init(imageName: String,
                     contentColor: UIColor = .defaultBadge,
                     backgroundColor: UIColor = .lightBadgeBackground,
@@ -95,7 +95,7 @@ public final class AnnouncementCardViewModel {
                 size
             )
         }
-        
+
         var verticalPadding: CGFloat {
             switch self {
             case .hidden:
@@ -104,7 +104,7 @@ public final class AnnouncementCardViewModel {
                 return 16.0
             }
         }
-        
+
         var size: CGSize {
             switch self {
             case .hidden:
@@ -113,7 +113,7 @@ public final class AnnouncementCardViewModel {
                 return value
             }
         }
-        
+
         var viewModel: BadgeImageViewModel? {
             switch self {
             case .hidden:
@@ -122,7 +122,7 @@ public final class AnnouncementCardViewModel {
                 return value
             }
         }
-        
+
         var isVisible: Bool {
             switch self {
             case .hidden:
@@ -132,11 +132,11 @@ public final class AnnouncementCardViewModel {
             }
         }
     }
-    
+
     public enum Image {
         case hidden
         case visible(ImageDescriptor)
-        
+
         public init(name: String,
                     size: CGSize = CGSize(width: 40, height: 40),
                     tintColor: UIColor? = nil,
@@ -148,7 +148,7 @@ public final class AnnouncementCardViewModel {
                       bundle: bundle)
             )
         }
-        
+
         var verticalPadding: CGFloat {
             switch self {
             case .hidden:
@@ -157,7 +157,7 @@ public final class AnnouncementCardViewModel {
                 return 16.0
             }
         }
-        
+
         var size: CGSize {
             switch self {
             case .hidden:
@@ -166,7 +166,7 @@ public final class AnnouncementCardViewModel {
                 return value.size
             }
         }
-        
+
         var tintColor: UIColor? {
             switch self {
             case .hidden:
@@ -175,7 +175,7 @@ public final class AnnouncementCardViewModel {
                 return value.tintColor
             }
         }
-        
+
         var isVisible: Bool {
             switch self {
             case .hidden:
@@ -184,7 +184,7 @@ public final class AnnouncementCardViewModel {
                 return true
             }
         }
-        
+
         var uiImage: UIImage? {
             switch self {
             case .hidden:
@@ -202,14 +202,14 @@ public final class AnnouncementCardViewModel {
             }
         }
     }
-    
+
     /// The image descriptor
     public struct ImageDescriptor {
         let name: String
         let size: CGSize
         let tintColor: UIColor?
         let bundle: Bundle
-        
+
         var uiImage: UIImage? {
             UIImage(named: name, in: bundle, compatibleWith: .none)
                 .map {
@@ -219,7 +219,7 @@ public final class AnnouncementCardViewModel {
                     return $0
                 }
         }
-        
+
         public init(name: String,
                     size: CGSize = CGSize(width: 40, height: 40),
                     tintColor: UIColor? = nil,
@@ -230,39 +230,39 @@ public final class AnnouncementCardViewModel {
             self.bundle = bundle
         }
     }
-    
+
     /// The dismissal state of the card announcement
     public enum DismissState {
-        
+
         public typealias Action = () -> Void
 
         /// Indicates the announcement is dismissable and the associated `Action`
         /// is should be executed upon dismissal
         case dismissible(Action)
-        
+
         /// Indicates the announcement is not dismissable. Therefore `X` button is hidden.
         case undismissible
     }
-    
+
     /// The presentation type of the card
     public enum Presentation {
-        
+
         /// This will render a regular full size card
         case regular
-        
+
         /// This will render a mini card that can have an optional action
         case mini
     }
-    
+
     /// The interaction of the user with the card itself
     public enum Interaction {
-        
+
         /// The background is tappable
         case tappable(() -> Void)
-        
+
         /// No interaction
         case none
-        
+
         var isTappable: Bool {
             switch self {
             case .tappable:
@@ -272,13 +272,13 @@ public final class AnnouncementCardViewModel {
             }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     public var priority: Priority { .high }
-    
+
     public let presentation: Presentation
-    
+
     let type: AnnouncementType?
     let interaction: Interaction
     let badgeImage: BadgeImage
@@ -290,7 +290,7 @@ public final class AnnouncementCardViewModel {
     let description: String?
     let buttons: [ButtonViewModel]
     let didAppear: DidAppear?
-    
+
     /// Returns `true` if the dismiss button should be hidden
     var isDismissButtonHidden: Bool {
         switch dismissState {
@@ -300,7 +300,7 @@ public final class AnnouncementCardViewModel {
             return false
         }
     }
-    
+
     /// The action associated with the announcement dismissal.
     var dismissAction: DismissState.Action? {
         switch dismissState {
@@ -310,25 +310,25 @@ public final class AnnouncementCardViewModel {
             return nil
         }
     }
-        
+
     private let dismissState: DismissState
-    
+
     /// Upon receiving events triggers dismissal.
     /// This comes in handy when the user has performed an indirect
     /// action that should cause card dismissal.
     let dismissalRelay = PublishRelay<Void>()
-    
+
     private var dismissal: Completable {
         dismissalRelay
             .take(1)
             .ignoreElements()
             .observeOn(MainScheduler.instance)
     }
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(type: AnnouncementType? = nil,
                 presentation: Presentation = .regular,
                 interaction: Interaction = .none,
@@ -355,7 +355,7 @@ public final class AnnouncementCardViewModel {
         self.dismissState = dismissState
         self.buttons = buttons
         self.didAppear = didAppear
-        
+
         if let dismissAction = dismissAction {
             dismissal
                 .subscribe(onCompleted: dismissAction)

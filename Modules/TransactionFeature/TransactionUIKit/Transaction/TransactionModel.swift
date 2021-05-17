@@ -8,19 +8,19 @@ import ToolKit
 import TransactionKit
 
 final class TransactionModel {
-    
+
     // MARK: - Private Properties
 
     private var mviModel: MviModel<TransactionState, TransactionAction>!
     private let interactor: TransactionInteractor
     private var hasInitializedTransaction: Bool = false
-    
+
     // MARK: - Public Properties
 
     var state: Observable<TransactionState> {
         mviModel.state
     }
-    
+
     // MARK: - Init
 
     init(initialState: TransactionState = TransactionState(), transactionInteractor: TransactionInteractor) {
@@ -32,9 +32,9 @@ final class TransactionModel {
             }
         )
     }
-    
+
     // MARK: - Internal methods
-    
+
     func process(action: TransactionAction) {
         mviModel.process(action: action)
     }
@@ -124,11 +124,11 @@ final class TransactionModel {
             return proccessInvalidateTransaction()
         }
     }
-    
+
     func destroy() {
         mviModel.destroy()
     }
-    
+
     // MARK: - Private methods
 
     private func processModifyTransactionConfirmation(confirmation: TransactionConfirmation) -> Disposable {
@@ -140,7 +140,7 @@ final class TransactionModel {
                 }
             )
     }
-    
+
     private func processSetFeeLevel(_ feeLevel: FeeLevel, amount: MoneyValue?) -> Disposable {
         interactor.updateTransactionFees(with: feeLevel, amount: amount)
             .subscribe(onCompleted: {
@@ -190,7 +190,7 @@ final class TransactionModel {
                 self?.process(action: .fatalTransactionError(error))
             })
     }
-    
+
     // At this point we can build a transactor object from coincore and configure
     // the state object a bit more; depending on whether it's an internal, external,
     // bitpay or BTC Url address we can set things like note, amount, fee schedule
@@ -202,7 +202,7 @@ final class TransactionModel {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
-            .do(onNext: { [weak self] value in
+            .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 guard !self.hasInitializedTransaction else { return }
                 self.hasInitializedTransaction.toggle()
@@ -218,7 +218,7 @@ final class TransactionModel {
                 }
             )
     }
-    
+
     private func onFirstUpdate(amount: MoneyValue) {
         process(action: .pendingTransactionStarted(allowFiatInput: interactor.canTransactFiat))
         process(action: .fetchFiatRates)
@@ -233,7 +233,7 @@ final class TransactionModel {
                 self?.process(action: .availableDestinationAccountsListUpdated(accounts))
             }
     }
-    
+
     private func processFiatRatePairs() -> Disposable {
         interactor
             .startFiatRatePairsFetch
@@ -241,7 +241,7 @@ final class TransactionModel {
                 self?.process(action: .transactionFiatRatePairs(transactionMoneyValuePairs))
             }
     }
-    
+
     private func processTransactionRatePair() -> Disposable {
         interactor
             .startCryptoRatePairFetch

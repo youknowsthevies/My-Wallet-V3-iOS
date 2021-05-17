@@ -11,16 +11,16 @@ final class AllAccountsGroup: AccountGroup {
     var actionableBalance: Single<MoneyValue> {
         unimplemented()
     }
-    
+
     var receiveAddress: Single<ReceiveAddress> {
         unimplemented()
     }
-    
+
     let accounts: [SingleAccount]
     let id: String = "AllAccountsGroup"
     let label: String = LocalizedString.allWallets
     let actions: AvailableActions = [.viewActivity]
-    
+
     var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
@@ -30,18 +30,18 @@ final class AllAccountsGroup: AccountGroup {
                 !values.contains(false)
             }
     }
-    
+
     var requireSecondPassword: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
         }
-        
+
         return Single.zip(accounts.map(\.requireSecondPassword))
             .map { values -> Bool in
                 !values.contains(false)
             }
     }
-    
+
     var pendingBalance: Single<MoneyValue> {
         .error(AccountGroupError.noBalance)
     }

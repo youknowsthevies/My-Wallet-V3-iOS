@@ -8,41 +8,41 @@ import RxSwift
 import ToolKit
 
 final class AirdropStatusScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     typealias LocalizedString = LocalizationConstants.Airdrop.StatusScreen
     typealias AccessibilityId = Accessibility.Identifier.AirdropStatusScreen
-    
+
     // MARK: - Exposed Properties
 
     var backgroundImage: Driver<ImageViewContent> {
         backgroundImageRelay.asDriver()
     }
-    
+
     var image: Driver<ImageViewContent> {
         imageRelay.asDriver()
     }
-    
+
     var title: Driver<LabelContent> {
         titleRelay.asDriver()
     }
-    
+
     var description: Driver<LabelContent> {
         descriptionRelay.asDriver()
     }
-    
+
     var cellPresenters: Observable<[AirdropStatusCellPresenter]> {
         cellPresentersRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     var cellPresentersValue: [AirdropStatusCellPresenter] {
         cellPresentersRelay.value
     }
-    
+
     // MARK: - Private Relays
-    
+
     private let backgroundImageRelay = BehaviorRelay(
         value: ImageViewContent(accessibility: .id(AccessibilityId.thumbImageView))
     )
@@ -56,24 +56,24 @@ final class AirdropStatusScreenPresenter {
         value: LabelContent(accessibility: .id(AccessibilityId.descriptionLabel))
     )
     private let cellPresentersRelay = BehaviorRelay<[AirdropStatusCellPresenter]>(value: [])
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     let presentationType: PresentationType
     private let alertPresenter: AlertViewPresenter
     private let interactor: AirdropStatusScreenInteractor
-    
+
     // MARK: - Setup
-    
+
     init(presentationType: PresentationType,
          alertPresenter: AlertViewPresenter = .shared,
          interactor: AirdropStatusScreenInteractor) {
         self.alertPresenter = alertPresenter
         self.presentationType = presentationType
         self.interactor = interactor
-        
+
         interactor.calculationState
             .bind { [weak self] state in
                 guard let self = self else { return }
@@ -89,13 +89,13 @@ final class AirdropStatusScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Private Methods
-        
+
     /// Setups the campaign
     private func setupCellPresenters(using campaign: AirdropCampaigns.Campaign) {
         var dataSource: [AirdropStatusCellData] = []
-        
+
         // Drop user state
         let status: String
         switch campaign.currentState {
@@ -112,7 +112,7 @@ final class AirdropStatusScreenPresenter {
         case .expired:
             status = LocalizedString.Cell.Status.expired
         }
-        
+
         dataSource.append(
             AirdropStatusCellData(
                 title: .init(
@@ -125,7 +125,7 @@ final class AirdropStatusScreenPresenter {
                 )
             )
         )
-        
+
         // Drop date
         if let date = campaign.dropDate {
             let formatter = DateFormatter.ddMMyyyy(separatedBy: "/")
@@ -143,7 +143,7 @@ final class AirdropStatusScreenPresenter {
                 )
             )
         }
-        
+
         // Drop amount
         if let transaction = campaign.latestTransaction {
             var amount = String(
@@ -152,7 +152,7 @@ final class AirdropStatusScreenPresenter {
                 transaction.fiat.toDisplayString(includeSymbol: false),
                 transaction.fiatCurrency
             )
-            
+
             /// Prepend either the crypto amount if exists, or a placeholder otherwise
             let crypto = campaign.cryptoDisplayValue ?? LocalizedString.Cell.Amount.valuePlaceholder
             amount = crypto + amount
@@ -175,16 +175,16 @@ final class AirdropStatusScreenPresenter {
             dataSource.map { AirdropStatusCellPresenter(data: $0) }
         )
     }
-    
+
     private func setupGeneralInfo(using campaign: AirdropCampaigns.Campaign) {
         guard let campaignName = AirdropCampaigns.Campaign.Name(rawValue: campaign.name) else {
             return
         }
-        
+
         let title: String
         let description: String
         let imageName: String
-        
+
         switch campaignName {
         case .blockstack:
             title = LocalizedString.Blockstack.title
@@ -204,7 +204,7 @@ final class AirdropStatusScreenPresenter {
                 accessibility: .id(AccessibilityId.titleLabel)
             )
         )
-        
+
         descriptionRelay.accept(
             .init(
                 text: description,
@@ -213,7 +213,7 @@ final class AirdropStatusScreenPresenter {
                 accessibility: .id(AccessibilityId.descriptionLabel)
             )
         )
-        
+
         imageRelay.accept(
             ImageViewContent(
                 imageName: imageName,
@@ -221,7 +221,7 @@ final class AirdropStatusScreenPresenter {
             )
         )
     }
-    
+
     private func handle(error: ValueCalculationState<AirdropCampaigns.Campaign>.CalculationError) {
         switch error {
         case .empty:

@@ -6,16 +6,16 @@ import PlatformKit
 import RxSwift
 
 struct ERC20ReceiveAddress<Token: ERC20Token>: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
-    
+
     let asset: CryptoCurrency
     let address: String
     let label: String
     let onTxCompleted: TxCompleted
-    
+
     var metadata: CryptoAssetQRMetadata {
         EthereumURLPayload(address: address, amount: nil)!
     }
-    
+
     init(asset: CryptoCurrency,
          address: String,
          label: String,

@@ -5,10 +5,10 @@ import RxCocoa
 import RxSwift
 
 public final class BuySellIneligibleScreenPresenter {
-    
+
     private typealias LocalizationId = LocalizationConstants.SimpleBuy.IneligibleScreen.Country
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.IneligibleScreen
-    
+
     var titleLabelContent: Driver<LabelContent> {
         regionName
             .map { "\(LocalizationId.title) \($0)" }
@@ -22,7 +22,7 @@ public final class BuySellIneligibleScreenPresenter {
             }
             .asDriver(onErrorJustReturn: .empty)
     }
-    
+
     var subtitleLabelContent: Driver<LabelContent> {
         regionName
             .map { String(format: "\(LocalizationId.subtitle)", $0) }
@@ -36,7 +36,7 @@ public final class BuySellIneligibleScreenPresenter {
             }
             .asDriver(onErrorJustReturn: .empty)
     }
-    
+
     var imageViewContent: Driver<ImageViewContent> {
         Driver.just(
             ImageViewContent(
@@ -45,17 +45,17 @@ public final class BuySellIneligibleScreenPresenter {
             )
         )
     }
-    
+
     private var regionName: Single<String> {
         interactor
             .region
     }
-    
+
     let buttonViewModel: ButtonViewModel
-    
+
     private let interactor: BuySellIneligibleScreenInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(interactor: BuySellIneligibleScreenInteractor,
          router: SellRouterInteractor) {
         self.interactor = interactor

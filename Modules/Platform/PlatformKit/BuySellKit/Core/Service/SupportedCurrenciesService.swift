@@ -15,7 +15,7 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
     var supportedCurrencies: Single<Set<FiatCurrency>> {
         cachedValue.valueSingle
     }
-    
+
     // MARK: - Private properties
 
     private let cachedValue: CachedValue<Set<FiatCurrency>>
@@ -24,7 +24,7 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
 
     init(pairsService: SupportedPairsServiceAPI = resolve(),
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
-        
+
         cachedValue = .init(
             configuration: .init(
                 identifier: "simple-buy-supported-currencies",
@@ -32,7 +32,7 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
                 flushNotificationName: .logout
             )
         )
-        
+
         cachedValue
             .setFetch { () -> Single<Set<FiatCurrency>> in
                 pairsService

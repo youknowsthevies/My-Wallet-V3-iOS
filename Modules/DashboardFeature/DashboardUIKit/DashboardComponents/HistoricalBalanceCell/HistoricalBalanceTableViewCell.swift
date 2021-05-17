@@ -6,7 +6,7 @@ import RxCocoa
 import RxSwift
 
 final class HistoricalBalanceTableViewCell: UITableViewCell {
-    
+
     /// Presenter should be injected
     var presenter: HistoricalBalanceCellPresenter! {
         willSet { disposeBag = DisposeBag() }
@@ -23,11 +23,11 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
             }
         }
     }
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: Private IBOutlets
-    
+
     @IBOutlet private var assetTitleLabel: UILabel!
     @IBOutlet private var assetImageView: UIImageView!
     @IBOutlet private var assetSparklineView: AssetSparklineView!
@@ -35,9 +35,9 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
     @IBOutlet private var assetBalanceView: AssetBalanceView!
     @IBOutlet private var separatorView: UIView!
     @IBOutlet private var bottomSeparatorView: UIView!
-    
+
     // MARK: - Lifecycle
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         separatorView.backgroundColor = .lightBorder
@@ -51,12 +51,12 @@ final class HistoricalBalanceTableViewCell: UITableViewCell {
             estimatedCryptoLabelSize: CGSize(width: 100, height: 14)
         )
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }
-    
+
     private func setup() {
         presenter.thumbnail
             .drive(assetImageView.rx.content)

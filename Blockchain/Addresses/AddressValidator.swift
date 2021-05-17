@@ -42,7 +42,7 @@ public final class AddressValidator: NSObject {
 
         return isValidBCHAddress
     }
-    
+
     // MARK: - Ethereum Address Validation
 
     @objc

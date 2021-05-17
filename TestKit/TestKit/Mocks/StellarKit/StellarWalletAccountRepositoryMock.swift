@@ -6,17 +6,17 @@ import RxSwift
 import StellarKit
 
 class StellarWalletAccountRepositoryMock: StellarWalletAccountRepositoryAPI {
-    
+
     var defaultAccount: StellarWalletAccount?
-    
+
     func initializeMetadataMaybe() -> Maybe<StellarWalletAccount> {
         Maybe.empty()
     }
-    
+
     func loadKeyPair() -> Maybe<StellarKeyPair> {
         Maybe.empty()
     }
-    
+
     func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
         .never()
     }

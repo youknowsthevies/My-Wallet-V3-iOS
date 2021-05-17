@@ -151,7 +151,7 @@ final class LinkBankSplashScreenContentReducer {
         )
 
         let continueButtonModel = ButtonViewModel.primary(with: LocalizedStrings.continueButtonTitle)
-            
+
         return State(
             topTitle: topTitleContent,
             topSubtitle: topSubtitleContent,

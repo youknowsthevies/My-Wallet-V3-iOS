@@ -8,7 +8,7 @@ import SettingsKit
 
 /// A `BadgeCellPresenting` class for showing the user's PIT connection status
 final class PITConnectionCellPresenter: BadgeCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
 
     // MARK: - Properties

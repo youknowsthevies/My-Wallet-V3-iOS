@@ -31,11 +31,11 @@ protocol CustodialTransferServiceAPI {
 final class CustodialTransferService: CustodialTransferServiceAPI {
 
     // MARK: - Properties
-    
+
     private let client: CustodialTransferClientAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: CustodialTransferClientAPI = resolve()) {
         self.client = client
     }

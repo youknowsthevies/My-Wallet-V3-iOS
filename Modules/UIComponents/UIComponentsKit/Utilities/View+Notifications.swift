@@ -3,7 +3,7 @@
 import SwiftUI
 
 extension View {
-    
+
     public func onNotification(
         _ notificationName: Notification.Name,
         perform action: @escaping () -> Void
@@ -23,7 +23,7 @@ extension View {
             perform: action
         )
     }
-    
+
     public func onAppEnteredForeground(
         perform action: @escaping () -> Void
     ) -> some View {

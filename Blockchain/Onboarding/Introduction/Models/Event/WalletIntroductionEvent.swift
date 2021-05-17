@@ -11,13 +11,13 @@ typealias WalletIntroductionAction = () -> Void
 
 // Basic Introduction Event.
 protocol WalletIntroductionEvent {
-    
+
     // Action when the user selects `Next` or taps the `Pulse`
     var selection: WalletIntroductionAction { get }
-    
+
     /// Indicates whether the event should occur
     var shouldShow: Bool { get }
-    
+
     /// The type of WalletIntroductionEvent
     var type: WalletIntroductionEventType { get }
 }
@@ -30,10 +30,10 @@ protocol WalletIntroductionAnalyticsEvent {
 // An Introduction Event that needs to be flagged as completed in order for it to
 // no longer be viewed
 protocol CompletableWalletIntroductionEvent: WalletIntroductionEvent {
-    
+
     /// Record that the user interacted with the Introduction Event
     var introductionRecorder: WalletIntroductionRecorder { get }
-    
+
     /// Represents the entry in the data-set (memory/disk)
     var introductionEntry: WalletIntroductionRecorder.Entry { get }
 }

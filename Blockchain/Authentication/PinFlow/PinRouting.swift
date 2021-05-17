@@ -5,7 +5,7 @@ import PlatformKit
 import ToolKit
 
 struct PinRouting {
-    
+
     /// Any possible routing error along displaying / dismissing the PIN flow
     enum FlowError: Error {
         /// Navigation controller is not initialized for some reason
@@ -14,32 +14,32 @@ struct PinRouting {
         /// Parent view controller must not be `nil` for foreground authentication
         case parentViewControllerNilOnForegroundAuthentication
     }
-    
+
     /// The flow of the pin
     enum Flow {
-        
+
         /// The origin of the flow
         enum Origin {
-            
+
             /// In-app state that requires the user to re-authenticate to enable a feature
             case foreground(parent: UnretainedContentBox<UIViewController>)
-            
+
             /// Background app state that requires the user's authentication to access the app
             case background
         }
-        
+
         /// Change old pin code to a new one
         case change(parent: UnretainedContentBox<UIViewController>, logoutRouting: RoutingType.Logout)
-        
+
         /// Creation of a new pin code where none existed before
         case create(parent: UnretainedContentBox<UIViewController>)
-        
+
         /// Authentication flow: upon entering foreground
         case authenticate(from: Origin, logoutRouting: RoutingType.Logout)
-        
+
         /// Enable biometrics
         case enableBiometrics(parent: UnretainedContentBox<UIViewController>, logoutRouting: RoutingType.Logout)
-        
+
         /// Returns `true` if the flow is `create`
         var isCreate: Bool {
             switch self {
@@ -49,7 +49,7 @@ struct PinRouting {
                 return false
             }
         }
-        
+
         // Returns `true` for change pin flow
         var isChange: Bool {
             switch self {
@@ -59,7 +59,7 @@ struct PinRouting {
                 return false
             }
         }
-        
+
         /// Returns `true` for login authnetication
         var isLoginAuthentication: Bool {
             switch self {
@@ -74,7 +74,7 @@ struct PinRouting {
                 return false
             }
         }
-        
+
         /// Returns the origin of the pin flow. The only possible background origin is for `.authneticate`.
         var origin: Origin {
             switch self {
@@ -88,7 +88,7 @@ struct PinRouting {
                 return .foreground(parent: boxedParent)
             }
         }
-        
+
         // Returns logout routing if configured for flow
         var logoutRouting: RoutingType.Logout? {
             switch self {
@@ -102,7 +102,7 @@ struct PinRouting {
                 return nil
             }
         }
-        
+
         /// Returns the parent of the login container. The only case that the login
         /// has no parent is authentication from background. In this case, the login container
         /// replaces the root view controller of the window.
@@ -124,18 +124,18 @@ struct PinRouting {
             }
         }
     }
-    
+
     struct RoutingType {
         typealias Forward = (RoutingType.Input) -> Void
         typealias Backward = () -> Void
         typealias Logout = () -> Void
         typealias Effect = (EffectType) -> Void
-        
+
         enum Input {
             case authentication(password: String)
             case pin(value: Pin)
             case none
-            
+
             var pin: Pin? {
                 switch self {
                 case .pin(value: let pin):
@@ -144,7 +144,7 @@ struct PinRouting {
                     return nil
                 }
             }
-            
+
             // The decrypted password using the PIN decryption key
             var password: String? {
                 switch self {

@@ -9,13 +9,13 @@ import RxSwift
 import ToolKit
 
 final class CustodyInformationScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.CustodyInfo
-    
+
     // MARK: - Navigation Properties
-    
+
     var trailingButton: Screen.Style.TrailingButton {
         .content(
             .init(
@@ -25,23 +25,23 @@ final class CustodyInformationScreenPresenter {
             )
         )
     }
-    
+
     var leadingButton: Screen.Style.LeadingButton {
         .none
     }
-    
+
     var titleView: Screen.Style.TitleView {
         .text(value: LocalizationID.title)
     }
-    
+
     var barStyle: Screen.Style.Bar {
         .darkContent()
     }
-    
+
     private typealias LocalizationID = LocalizationConstants.CustodyWalletInformation
-    
+
     // MARK: - Public Properites
-    
+
     var description: LabelContent {
         .init(
             text: LocalizationID.Description.partOne,
@@ -51,7 +51,7 @@ final class CustodyInformationScreenPresenter {
             accessibility: .id(AccessibilityId.descriptionLabel)
         )
     }
-    
+
     var subDescription: LabelContent {
         .init(
             text: LocalizationID.Description.partTwo,
@@ -61,35 +61,35 @@ final class CustodyInformationScreenPresenter {
             accessibility: .id(AccessibilityId.subDescriptionLabel)
         )
     }
-    
+
     let okButtonViewModel: ButtonViewModel
-    
+
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
     private unowned let stateService: CustodyActionStateServiceAPI
-    
+
     init(stateService: CustodyActionStateServiceAPI) {
         self.stateService = stateService
-    
+
         okButtonViewModel = .primary(with: LocalizationConstants.okString, accessibilityId: AccessibilityId.okButton)
         sendAnalytics()
     }
-    
+
     func navigationBarTrailingButtonTapped() {
         stateService.previousRelay.accept(())
     }
-    
+
     private func sendAnalytics() {
         let analyticsService: SimpleBuyAnalayticsServicing = resolve()
         analyticsService.recordCustodyWalletCardShownEvent()
         analyticsService.bind(okButtonViewModel.tapRelay)
-        
+
         okButtonViewModel.tapRelay
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }
-    
+
 }
 
 fileprivate extension Accessibility.Identifier {

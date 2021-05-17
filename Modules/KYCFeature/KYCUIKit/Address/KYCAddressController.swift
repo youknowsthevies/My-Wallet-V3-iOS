@@ -203,7 +203,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         stateTextField.returnKeyType = .next
         stateTextField.contentType = .addressState
-        
+
         regionTextField.returnKeyType = .next
         regionTextField.contentType = .addressState
 
@@ -381,7 +381,7 @@ extension KYCAddressController: LocationSuggestionInterface {
     func searchFieldText(_ value: String?) {
         searchBar.text = value
     }
-    
+
     private func updateStateAndRegionFieldsVisibility() {
         let countryHasStates = !stateTextField.options.isEmpty
         stateTextField.isHidden = !countryHasStates
@@ -389,7 +389,7 @@ extension KYCAddressController: LocationSuggestionInterface {
         regionTextField.isHidden = countryHasStates
         regionTextField.text = regionTextField.isHidden ? nil : regionTextField.text
     }
-    
+
     func didReceiveError(_ error: Error) {
         let alert = UIAlertController(
             title: LocalizationConstants.Errors.error,

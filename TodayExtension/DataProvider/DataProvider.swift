@@ -4,15 +4,15 @@ import PlatformKit
 import RxSwift
 
 final class UserInformationService: FiatCurrencyServiceAPI {
-    
+
     var legacyCurrency: FiatCurrency? {
         .USD
     }
-    
+
     var fiatCurrencyObservable: Observable<FiatCurrency> {
         fiatCurrency.asObservable()
     }
-    
+
     var fiatCurrency: Single<FiatCurrency> {
         let code = Locale.current.currencyCode ?? "USD"
         let currency = FiatCurrency.init(code: code) ?? .USD
@@ -21,18 +21,18 @@ final class UserInformationService: FiatCurrencyServiceAPI {
 }
 
 final class DataProvider {
-    
+
     /// The default container
     static let `default` = DataProvider()
-    
+
     /// Historical service that provides past prices for a given asset type
     let historicalPrices: HistoricalFiatPriceProviding
-    
+
     /// Exchange service for any asset
     let exchange: ExchangeProviding
-    
+
     init(fiatCurrencyService: FiatCurrencyServiceAPI = UserInformationService()) {
-        
+
         var cryptoExchangeServices: [CryptoCurrency: PairExchangeServiceAPI] = [:]
         for cryptoCurrency in CryptoCurrency.allCases {
             cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
@@ -47,7 +47,7 @@ final class DataProvider {
                 fiatCurrencyService: fiatCurrencyService
             )
         }
-        
+
         self.exchange = ExchangeProvider(
             fiats: fiatExchangeServices,
             cryptos: cryptoExchangeServices

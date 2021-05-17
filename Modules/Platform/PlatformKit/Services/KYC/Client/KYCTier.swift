@@ -14,7 +14,7 @@ extension KYC.Tier {
             return LocalizationConstants.KYC.freeCrypto
         }
     }
-    
+
     public var tierDescription: String {
         switch self {
         case .tier0:
@@ -25,7 +25,7 @@ extension KYC.Tier {
             return LocalizationConstants.KYC.tierTwoVerification
         }
     }
-    
+
     public var requirementsDescription: String {
         switch self {
         case .tier0:
@@ -36,7 +36,7 @@ extension KYC.Tier {
             return LocalizationConstants.KYC.tierTwoRequirements
         }
     }
-    
+
     public var limitTimeframe: String {
         switch self {
         case .tier0:
@@ -47,7 +47,7 @@ extension KYC.Tier {
             return LocalizationConstants.KYC.dailySwapLimit
         }
     }
-    
+
     public var duration: String {
         switch self {
         case .tier0:

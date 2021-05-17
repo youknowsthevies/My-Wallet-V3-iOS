@@ -8,11 +8,11 @@ public class AppFeatureConfiguration: NSObject {
 
     /// To be thrown if necessary when the feature is not remotely disabled
     public enum ConfigError: Error {
-        
+
         /// Feature is remotely disabled
         case disabled
     }
-    
+
     @objc
     public let isEnabled: Bool
 

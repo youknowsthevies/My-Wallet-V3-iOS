@@ -6,19 +6,19 @@ import RxRelay
 import RxSwift
 
 final class PreferredCurrencyBadgePresenter: BadgeAssetPresenting {
-    
+
     typealias PresentationState = BadgeAsset.State.BadgeItem.Presentation
-    
+
     var state: Observable<PresentationState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     private let interactor: PreferredCurrencyBadgeInteractor
     private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     init(interactor: PreferredCurrencyBadgeInteractor) {
         self.interactor = interactor
         interactor.state
@@ -27,4 +27,3 @@ final class PreferredCurrencyBadgePresenter: BadgeAssetPresenting {
             .disposed(by: disposeBag)
     }
 }
-

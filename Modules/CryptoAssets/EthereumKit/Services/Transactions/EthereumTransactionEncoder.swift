@@ -12,7 +12,7 @@ public protocol EthereumTransactionEncoderAPI {
 
 public struct EthereumTransactionEncoder: EthereumTransactionEncoderAPI {
     public func encode(signed: EthereumTransactionCandidateSigned) -> Result<EthereumTransactionFinalised, EthereumTransactionEncoderError> {
-        
+
         .success(
             EthereumTransactionFinalised(
                 transaction: signed

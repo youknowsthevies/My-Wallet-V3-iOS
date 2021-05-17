@@ -10,14 +10,14 @@ import ToolKit
 /// `PulseAnimationView` isn't necessarily meant for loading, but rather an on-boarding
 /// tutorial. It servers as a CTA when the user creats a wallet for the first time. 
 @objc public final class PulseViewPresenter: NSObject, PulseViewPresenting {
-    
+
     // MARK: - Types
-    
+
     /// Describes the state of the `PulseAnimationView`
     enum State {
         case animating
         case hidden
-        
+
         /// Returns `true` if the `PulseAnimationView` is currently animating
         var isAnimating: Bool {
             switch self {
@@ -28,26 +28,26 @@ import ToolKit
             }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// The shared instance of the pulse view
     public static let shared = PulseViewPresenter()
-    
+
     /// sharedInstance function declared so that the LoadingViewPresenter singleton can be accessed
     /// from Obj-C. Should deprecate this once all Obj-c references have been removed.
     @objc public class func sharedInstance() -> PulseViewPresenter { shared }
-    
+
     // Returns `.visible` if the `PulseAnimationView` is currently visible and animating
     public var visibility: Visibility {
         state.isAnimating ? .visible : .hidden
     }
-    
+
     /// Returns `true` if the `PulseAnimationView` is currently visible and animating
     @objc public var isVisible: Bool {
         state.isAnimating
     }
-    
+
     /// Controls the availability of the `PulseAnimationView` from outside.
     /// In case `isEnabled` is `false`, the loader does not show.
     /// `isEnabled` is thread-safe.
@@ -63,18 +63,18 @@ import ToolKit
             self._isEnabled = newValue
         }
     }
-    
+
     private let bag: DisposeBag = DisposeBag()
-    
+
     // Privately used by exposed `isEnabled` only.
     private var _isEnabled = true
-    
+
     // The container of the `PulseAnimationView`. Allocated on demand, when done spinning it should be deallocated.
     private var view: PulseContainerViewProtocol!
-    
+
     // Recursive lock for shared resources held by that class
     private let lock = NSRecursiveLock()
-    
+
     /// The state of the `PulseAnimationView`
     private var state = State.hidden {
         didSet {
@@ -88,9 +88,9 @@ import ToolKit
             }
         }
     }
-    
+
     // MARK: - API
-    
+
     /// Hides the `PulseAnimationView`
     public func hide() {
         Execution.MainQueue.dispatch { [weak self] in
@@ -100,7 +100,7 @@ import ToolKit
             self.view = nil
         }
     }
-    
+
     /// Shows the `PulseAnimationView` in a provided view
     public func show(viewModel: PulseViewModel) {
         guard viewModel.container.subviews.contains(where: { $0 is PulseContainerView }) == false else { return }
@@ -117,14 +117,14 @@ import ToolKit
             self.state = .animating
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     private func setupView(in superview: UIView) {
         view = PulseContainerView()
         attach(to: superview)
     }
-    
+
     /// Add the view to a superview
     private func attach(to superview: UIView) {
         superview.addSubview(view.viewRepresentation)

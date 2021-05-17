@@ -7,7 +7,7 @@ struct Event: Encodable {
     let name: String
     var type: EventType
     let properties: [String: JSONValue]?
-    
+
     init(title: String, properties: [String: Any]?) {
         self.originalTimestamp = Date()
         self.name = title

@@ -87,7 +87,7 @@ final class WalletUpgradeService: WalletUpgradeServicing {
                     }
                     return upgrades
                 }
-                .catchError { error -> PrimitiveSequence<SingleTrait, [PayloadVersion]> in
+                .catchError { _ -> PrimitiveSequence<SingleTrait, [PayloadVersion]> in
                     .just(upgrades)
                 }
         }

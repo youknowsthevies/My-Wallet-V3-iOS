@@ -19,7 +19,7 @@ print(s + "\n}")
 
 /// An implementation of `ISO 4217` currency codes
 public enum FiatCurrency: String, Currency, Codable, CaseIterable {
-    
+
     /// Andorran Peseta
     case ADP
 
@@ -927,9 +927,9 @@ public enum FiatCurrency: String, Currency, Codable, CaseIterable {
 }
 
 extension FiatCurrency {
-    
+
     public static let `default` = FiatCurrency.USD
-    
+
     public static var locale: FiatCurrency {
         let locale = NSLocale.current as NSLocale
         guard let code = locale.currencyCode else { return .default }
@@ -944,12 +944,12 @@ extension FiatCurrency {
     public static let maxDisplayableDecimalPlaces: Int = {
         Self.allCases.map { $0.maxDisplayableDecimalPlaces }.max() ?? 0
     }()
-    
+
     /// The code of the currency. e.g `USD`, `GBP`, `EUR`
     public var code: String { rawValue }
-    
+
     public var displayCode: String { code }
-    
+
     /// The symbol of the currency. e.g $, £, €
     public var symbol: String {
         let locale = NSLocale.current as NSLocale
@@ -957,13 +957,13 @@ extension FiatCurrency {
     }
 
     public var displaySymbol: String { symbol }
-    
+
     /// The name of the currency. e.g US Dollar, Euro, Great British Pound
     public var name: String {
         let locale = NSLocale.current as NSLocale
         return locale.localizedString(forCurrencyCode: code) ?? ""
     }
-    
+
     /// The number of decimal places as specified in `ISO 4217`
     public var maxDecimalPlaces: Int {
         switch self {
@@ -999,9 +999,9 @@ extension FiatCurrency {
             return 2
         }
     }
-    
+
     public var maxDisplayableDecimalPlaces: Int { maxDecimalPlaces }
-    
+
     public init?(code: String) {
         self.init(rawValue: code.uppercased())
     }

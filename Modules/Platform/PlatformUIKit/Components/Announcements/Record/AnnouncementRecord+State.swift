@@ -1,33 +1,33 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension AnnouncementRecord {
-    
+
     enum State {
-        
+
         // MARK: - Types
-        
+
         private enum Base: String, Codable {
             case removed
             case valid
             case dismissed
         }
-        
+
         private enum CodingKeys: CodingKey {
             case removed
             case valid
             case dateOfDismissal
             case numberOfDismissals
         }
-        
+
         // MARK: - Cases
-        
+
         /// Dismissed state with associated date of dismissal and the number of times
         /// the announcement has been dismissed so far
         case dismissed(on: Date, count: Int)
-        
+
         /// Permanent removal of announcement
         case removed
-        
+
         /// Valid state of record
         case valid
     }
@@ -36,11 +36,11 @@ extension AnnouncementRecord {
 // MARK: - Decodable
 
 extension AnnouncementRecord.State: Decodable {
-    
+
     enum DecodingError: Error {
         case parse
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         if (try? container.decode(Base.self, forKey: .valid)) != nil {

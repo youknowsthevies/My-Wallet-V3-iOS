@@ -8,7 +8,7 @@ public struct UserAddress {
     public let city: String
     public let state: String?
     public let countryCode: String
-    
+
     public var country: Country {
         Country(code: countryCode)!
     }

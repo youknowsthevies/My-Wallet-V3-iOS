@@ -6,56 +6,56 @@ import ToolKit
 
 /// The type of the text field
 public enum TextFieldType: Hashable {
-    
+
     /// Address line
     case addressLine(Int)
-    
+
     /// City
     case city
-    
+
     /// State (country)
     case state
-    
+
     /// Post code
     case postcode
-    
+
     /// Person full name
     case personFullName
-    
+
     /// Cardholder name
     case cardholderName
-    
+
     /// Expiry date formatted as MMyy
     case expirationDate
-    
+
     /// CVV
     case cardCVV
 
     /// Credit card number
     case cardNumber
-    
+
     /// Wallet identifier field
     case walletIdentifier
-    
+
     /// Email field
     case email
-    
+
     /// New password field. Sometimes appears alongside `.confirmNewPassword`
     case newPassword
-    
+
     /// New password confirmation field. Always alongside `.newPassword`
     case confirmNewPassword
-    
+
     /// Password for auth
     case password
-    
+
     /// A single word from the mnemonic used for backup verification.
     /// The index is the index of the word in the mnemonic.
     case backupVerification(index: Int)
-    
+
     /// Mobile phone number entry
     case mobile
-    
+
     /// One time code entry
     case oneTimeCode
 
@@ -121,7 +121,7 @@ extension TextFieldType: CustomDebugStringConvertible {
 // MARK: - Information Sensitivity
 
 extension TextFieldType {
-    
+
     /// Whether the text field should cleanup on backgrounding
     var requiresCleanupOnBackgroundState: Bool {
         switch self {
@@ -200,7 +200,7 @@ extension TextFieldType {
             return .id(AccessibilityId.memo)
         }
     }
-    
+
     /// This is `true` if the text field should show hints during typing
     var showsHintWhileTyping: Bool {
         switch self {
@@ -228,7 +228,7 @@ extension TextFieldType {
             return true
         }
     }
-    
+
     /// The title of the text field
     var placeholder: String {
         typealias LocalizedString = LocalizationConstants.TextField.Placeholder
@@ -306,7 +306,7 @@ extension TextFieldType {
             return LocalizedString.memo
         }
     }
-    
+
     // `UIKeyboardType` of the textField
     var keyboardType: UIKeyboardType {
         switch self {
@@ -335,7 +335,7 @@ extension TextFieldType {
             return .asciiCapable
         }
     }
-    
+
     var autocapitalizationType: UITextAutocapitalizationType {
         switch self {
         case .oneTimeCode:
@@ -392,7 +392,7 @@ extension TextFieldType {
 
     /// Returns `UITextAutocorrectionType`
     var autocorrectionType: UITextAutocorrectionType { .no }
-    
+
     /// The `UITextContentType` of the textField which can
     /// drive auto-fill behavior.
     var contentType: UITextContentType? {
@@ -472,5 +472,5 @@ private extension Int {
             return ""
         }
     }
-    
+
 }

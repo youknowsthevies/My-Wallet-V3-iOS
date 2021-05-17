@@ -13,20 +13,20 @@ struct MockPinClient: PinClientAPI {
                                 key: "key",
                                 value: "value")
     }
-    
+
     private let statusCode: PinStoreResponse.StatusCode?
     private let error: String?
-    
+
     init(statusCode: PinStoreResponse.StatusCode?,
          error: String? = nil) {
         self.statusCode = statusCode
         self.error = error
     }
-    
+
     func create(pinPayload: PinPayload) -> Single<PinStoreResponse> {
         .just(response)
     }
-    
+
     func validate(pinPayload: PinPayload) -> Single<PinStoreResponse> {
         .just(response)
     }

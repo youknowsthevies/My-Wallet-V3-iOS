@@ -15,13 +15,13 @@ public protocol TransactionDetailServiceAPI {
 }
 
 final class TransactionDetailService: TransactionDetailServiceAPI {
-    
+
     private let blockchainAPI: BlockchainAPI
-    
+
     init(blockchainAPI: BlockchainAPI = resolve()) {
         self.blockchainAPI = blockchainAPI
     }
-    
+
     func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
         switch cryptoCurrency {
         case .algorand, .polkadot:

@@ -11,7 +11,7 @@ struct EmailVerificationHelpState: Equatable {
     var emailAddress: String
     fileprivate var sendingVerificationEmail: Bool = false
     fileprivate var sentFailedAlert: AlertState<EmailVerificationHelpAction>?
-    
+
     init(emailAddress: String) {
         self.emailAddress = emailAddress
     }
@@ -35,7 +35,7 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
     switch action {
     case .editEmailAddress:
         return .none
-        
+
     case .sendVerificationEmail:
         state.sendingVerificationEmail = true
         return environment.emailVerificationService.sendVerificationEmail(to: state.emailAddress)
@@ -49,13 +49,13 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
                     return .didReceiveEmailSendingResponse(.failure(error))
                 }
             }
-        
+
     case .didReceiveEmailSendingResponse(let result):
         state.sendingVerificationEmail = false
         switch result {
         case .success:
             return .none
-        
+
         case .failure:
             state.sentFailedAlert = AlertState(
                 title: TextState(L10n.GenericError.title),
@@ -68,7 +68,7 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
             )
             return .none
         }
-        
+
     case .dismissEmailSendingFailureAlert:
         state.sentFailedAlert = nil
         return .none
@@ -76,9 +76,9 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
 }
 
 struct EmailVerificationHelpView: View {
-    
+
     let store: Store<EmailVerificationHelpState, EmailVerificationHelpAction>
-    
+
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
@@ -124,7 +124,7 @@ struct EmailVerificationHelpView_Previews: PreviewProvider {
             )
         )
         .preferredColorScheme(.light)
-        
+
         EmailVerificationHelpView(
             store: .init(
                 initialState: .init(emailAddress: "test@example.com"),

@@ -18,20 +18,20 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     var balance: Single<CryptoValue> {
         balanceValue
     }
-    
+
     var balanceMoney: Single<MoneyValue> {
         Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
     }
-    
+
     var pendingBalanceMoney: Single<MoneyValue> {
         Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
     }
-    
+
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
             .asObservable()
     }
-    
+
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         .empty()
     }
@@ -68,7 +68,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     var balanceObservable: Observable<CryptoValue> {
         balance.asObservable()
     }
-    
+
     var balanceMoneyObservable: Observable<MoneyValue> {
         balanceObservable.map { MoneyValue(cryptoValue: $0) }
     }

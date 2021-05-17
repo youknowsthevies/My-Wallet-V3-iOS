@@ -37,7 +37,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         #endif
         return isDebug
     }
-    
+
     private lazy var visualEffectView: UIVisualEffectView = {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.frame = UIScreen.main.bounds
@@ -46,7 +46,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     }()
 
     // MARK: - Properties
-    
+
     /// The overlay shown when the application resigns active state.
     private lazy var deepLinkHandler: DeepLinkHandler = {
         DeepLinkHandler()
@@ -59,7 +59,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     private lazy var remoteNotificationRegistrationService: RemoteNotificationRegistering = {
         RemoteNotificationServiceContainer.default.authorizer
     }()
-    
+
     /// A receipient for device tokens
     private lazy var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving = {
         RemoteNotificationServiceContainer.default.tokenReceiver
@@ -67,16 +67,16 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject(tag: DebugScreenContext.tag)
     private var debugCoordinator: DebugCoordinating
-    
+
     private let disposeBag = DisposeBag()
     private var appCoordinator: AppCoordinator { .shared }
     private lazy var bitpayRouter = BitPayLinkRouter()
 
     override init() {
         super.init()
-        
+
         FirebaseApp.configure()
-        
+
         // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
             DependencyContainer.toolKit;
@@ -141,19 +141,19 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         // Trigger routing hierarchy
         appCoordinator.window = window
-        
+
         // Migrate announcements
         AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
-        
+
         // Register the application for remote notifications
         remoteNotificationRegistrationService.registerForRemoteNotificationsIfAuthorized()
             .subscribe()
             .disposed(by: disposeBag)
-        
+
         BlockchainSettings.App.shared.appBecameActiveCount += 1
-        
+
         // MARK: - Global Appearance
-        
+
         //: Navigation Bar
         let defaultBarStyle = Screen.Style.Bar.lightContent()
         let navigationBarAppearance = UINavigationBar.appearance()
@@ -191,9 +191,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         sift.enable()
 
         checkForNewInstall()
-        
+
         appCoordinator.start()
-        
+
         return true
     }
 
@@ -300,12 +300,12 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             return true
         }
-        
+
         let isInitialized = WalletManager.shared.wallet.isInitialized()
         let hasGuid = BlockchainSettings.App.shared.guid != nil
         let hasSharedKey = BlockchainSettings.App.shared.sharedKey != nil
         let authenticated = isInitialized && hasGuid && hasSharedKey
-        
+
         if BitPayLinkRouter.isBitPayURL(url) {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             BitpayService.shared.contentRelay.accept(url)
@@ -320,7 +320,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             // TODO: Send P3: Handle deeplinks.
             return true
         }
-        
+
         if authenticated {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             deepLinkRouter.routeIfNeeded()
@@ -404,7 +404,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
                 }
             })
     }
-    
+
     // MARK: - Private
 
     private func showUpdateAppAlert() {

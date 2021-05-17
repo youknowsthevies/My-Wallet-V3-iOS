@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 
 @objc class AppFeatureConfigurator: NSObject, FeatureConfiguring {
-    
+
     enum ConfigurationError: Error {
         case missingKeyRawValue
         case missingValue
@@ -59,7 +59,7 @@ import RxSwift
 // MARK: - FeatureDecoding
 
 extension AppFeatureConfigurator: FeatureFetching {
-    
+
     /// Returns an expected decodable construct for the provided feature key
     ///
     /// - Parameter feature: the feature key
@@ -73,7 +73,7 @@ extension AppFeatureConfigurator: FeatureFetching {
                 try data.decode(to: Feature.self)
             }
     }
-    
+
     /// Returns an expected string for the provided feature key
     ///
     /// - Parameter feature: the feature key
@@ -90,7 +90,7 @@ extension AppFeatureConfigurator: FeatureFetching {
                 return stringValue
             }
     }
-    
+
     /// Returns an expected integer for the provided feature key
     ///
     /// - Parameter feature: the feature key
@@ -101,7 +101,7 @@ extension AppFeatureConfigurator: FeatureFetching {
             .map(\.numberValue)
             .map(\.intValue)
     }
-    
+
     /// Returns an expected boolean for the provided feature key
     ///
     /// - Parameter feature: the feature key
@@ -138,7 +138,7 @@ extension AppFeatureConfigurator: FeatureVariantFetching {
         fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? .variantA }
     }
-    
+
     func fetchTestingVariant(for key: AppFeature, onErrorReturn defaultVariant: FeatureTestingVariant) -> Single<FeatureTestingVariant> {
         fetchString(for: key)
             .map { FeatureTestingVariant(rawValue: $0) ?? defaultVariant }

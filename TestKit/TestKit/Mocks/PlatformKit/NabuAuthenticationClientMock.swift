@@ -6,11 +6,11 @@ import NetworkKit
 @testable import PlatformKit
 
 final class NabuAuthenticationClientMock: NabuAuthenticationClientAPI {
-    
+
     var expectedSessionTokenResult: Result<NabuSessionTokenResponse, NetworkError>!
-    
+
     var expectedRecoverUserResult: Result<Void, NetworkError>!
-    
+
     func sessionTokenPublisher(
         for guid: String,
         userToken: String,
@@ -20,7 +20,7 @@ final class NabuAuthenticationClientMock: NabuAuthenticationClientAPI {
     ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError> {
         expectedSessionTokenResult.publisher.eraseToAnyPublisher()
     }
-    
+
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String

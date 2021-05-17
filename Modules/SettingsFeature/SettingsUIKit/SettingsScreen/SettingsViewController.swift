@@ -8,48 +8,48 @@ import RxSwift
 import ToolKit
 
 final class SettingsViewController: BaseScreenViewController {
-    
+
     // MARK: - Accessibility
-    
+
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.SettingsCell
     private typealias RxDataSource = RxTableViewSectionedAnimatedDataSource<SettingsSectionViewModel>
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var tableView: UITableView!
-    
+
     // MARK: - Private Properties
-    
+
     private let presenter: SettingsScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: SettingsScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: SettingsViewController.objectName, bundle: Bundle(for: Self.self))
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = LocalizationConstants.settings
         setupTableView()
         presenter.refresh()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.settings)
         set(barStyle: presenter.barStyle,
@@ -57,7 +57,7 @@ final class SettingsViewController: BaseScreenViewController {
             trailingButtonStyle: presenter.trailingButton
         )
     }
-    
+
     private func setupTableView() {
         tableView.backgroundColor = .background
         tableView.tableFooterView = AboutView()
@@ -79,7 +79,7 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.registerNibCell(LinkedCardTableViewCell.self)
         tableView.register(SettingsSkeletonTableViewCell.self)
         tableView.registerHeaderView(TableHeaderView.objectName, bundle: Bundle(for: TableHeaderView.self))
-        
+
         let dataSource = RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
@@ -127,7 +127,7 @@ final class SettingsViewController: BaseScreenViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     override func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonTapped()
     }
@@ -136,7 +136,7 @@ final class SettingsViewController: BaseScreenViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension SettingsViewController: UITableViewDelegate {
-    
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderView.objectName) as? TableHeaderView else {
             return nil
@@ -146,36 +146,36 @@ extension SettingsViewController: UITableViewDelegate {
         header.viewModel = viewModel
         return header
     }
-    
+
     private func skeletonCell(for indexPath: IndexPath) -> SettingsSkeletonTableViewCell {
         let cell = tableView.dequeue(SettingsSkeletonTableViewCell.self, for: indexPath)
         return cell
     }
-    
+
     private func switchCell(for indexPath: IndexPath, presenter: SwitchCellPresenting) -> SwitchTableViewCell {
         let cell = tableView.dequeue(SwitchTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
-    
+
     private func clipboardCell(for indexPath: IndexPath, viewModel: ClipboardCellViewModel) -> ClipboardTableViewCell {
         let cell = tableView.dequeue(ClipboardTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func plainCell(for indexPath: IndexPath, viewModel: PlainCellViewModel) -> PlainTableViewCell {
         let cell = tableView.dequeue(PlainTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func addPaymentMethodCell(for indexPath: IndexPath, presenter: AddPaymentMethodCellPresenter) -> AddPaymentMethodTableViewCell {
         let cell = tableView.dequeue(AddPaymentMethodTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
-    
+
     private func linkedCardCell(for indexPath: IndexPath,
                                 presenter: LinkedCardCellPresenter) -> LinkedCardTableViewCell {
         let cell = tableView.dequeue(LinkedCardTableViewCell.self, for: indexPath)
@@ -189,7 +189,7 @@ extension SettingsViewController: UITableViewDelegate {
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func badgeCell(for indexPath: IndexPath, presenter: BadgeCellPresenting) -> BadgeTableViewCell {
         let cell = tableView.dequeue(BadgeTableViewCell.self, for: indexPath)
         cell.presenter = presenter

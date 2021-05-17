@@ -8,7 +8,7 @@ import XCTest
 @testable import Blockchain
 
 class BitpayServicesTests: XCTestCase {
-    
+
     func testBitPayServiceGetRawPaymentRequest() {
         let invoiceId = "4vzRL5oK5EuJ31cqLmkLp5"
         let mock = MockBitpayService()
@@ -22,5 +22,5 @@ class BitpayServicesTests: XCTestCase {
             XCTFail("expected success, got \(error) instead")
         }
     }
-    
+
 }

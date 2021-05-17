@@ -8,27 +8,27 @@ import RxRelay
 import RxSwift
 
 final class RecoverFundsScreenPresenter {
-    
+
     /// The total state of the input
     enum State {
-        
+
         /// The values associated with a `valid` state
         struct Values {
             let mneumonic: String
         }
-        
+
         enum InvalidReason {
             case incompleteMnemonic
             case invalidMnemonic
             case emptyTextView
         }
-        
+
         /// Valid state of input with `Values` associated
         case valid(Values)
-        
+
         /// Invalid state of input with `InvalidReason` associated
         case invalid(InvalidReason)
-        
+
         /// Returns `true` if state is valid
         var isValid: Bool {
             switch self {
@@ -39,11 +39,11 @@ final class RecoverFundsScreenPresenter {
             }
         }
     }
-    
+
     // MARK: - Exposed Properties
-    
+
     let continueTappedRelay = PublishRelay<String>()
-    
+
     let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizationConstants.Onboarding.RecoverFunds.title)
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
@@ -55,22 +55,22 @@ final class RecoverFundsScreenPresenter {
     let continueButtonViewModel = ButtonViewModel.primary(
         with: LocalizationConstants.Onboarding.PasswordRequiredScreen.continueButton
     )
-    
+
     /// The total state of the view model
     var state: Driver<State> {
         stateRelay.asDriver()
     }
-    
+
     // MARK: - Private Properties
-    
+
     /// Content relay
     private let mnemonicEntryRelay: BehaviorRelay<String> = BehaviorRelay(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.emptyTextView))
     private let disposeBag = DisposeBag()
     private let feedback: UINotificationFeedbackGenerator = UINotificationFeedbackGenerator()
-    
+
     // MARK: - Setup
-    
+
     init() {
         let stateObservable = mnemonicTextViewModel.state.map { payload -> State in
             switch payload {
@@ -85,16 +85,16 @@ final class RecoverFundsScreenPresenter {
             }
         }
         .catchErrorJustReturn(.invalid(.invalidMnemonic))
-        
+
         stateObservable
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         stateObservable
             .map { $0.isValid }
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         stateRelay.compactMap { [weak self] state -> String? in
             guard case let .valid(values) = state else { return nil }
             self?.feedback.prepare()
@@ -103,15 +103,14 @@ final class RecoverFundsScreenPresenter {
         }
         .bindAndCatch(to: mnemonicEntryRelay)
         .disposed(by: disposeBag)
-        
+
         continueButtonViewModel.tapRelay.bind { [unowned self] _ in
             self.execute()
         }
         .disposed(by: disposeBag)
     }
-    
+
     private func execute() {
         continueTappedRelay.accept(mnemonicEntryRelay.value)
     }
 }
-

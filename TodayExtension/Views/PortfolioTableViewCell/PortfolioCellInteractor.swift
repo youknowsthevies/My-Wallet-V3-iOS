@@ -3,12 +3,12 @@
 import PlatformKit
 
 final class PortfolioCellInteractor {
-    
+
     let balanceFiatValue: FiatValue
     let changeFiatValue: FiatValue
     let delta: String
     let isPositive: Bool
-    
+
     init(portfolio: Portfolio) {
         let balanceChange = portfolio.balanceChange
         self.isPositive = balanceChange.changePercentage >= .zero

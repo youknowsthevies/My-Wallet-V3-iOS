@@ -11,7 +11,7 @@ final class LoginContainerViewController: UIViewController {
     enum Input {
         case view(UIView)
         case viewController(UIViewController)
-        
+
         var view: UIView {
             switch self {
             case .view(let view):
@@ -20,7 +20,7 @@ final class LoginContainerViewController: UIViewController {
                 return viewController.view
             }
         }
-        
+
         var viewController: UIViewController? {
             switch self {
             case .viewController(let vc):
@@ -39,7 +39,7 @@ final class LoginContainerViewController: UIViewController {
             }
         }
     }
-    
+
     /// The flow layout of the collection view
     private class CollectionViewFlowLayout: UICollectionViewFlowLayout {
         override init() {
@@ -55,20 +55,20 @@ final class LoginContainerViewController: UIViewController {
             unimplemented()
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private lazy var collectionViewFlowLayout = CollectionViewFlowLayout()
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var pageControl: UIPageControl!
-    
+
     private var isPageControlCurrentlyInteracted = false
-    
+
     private let inputs: [Input]
     private let translationAnimator = UIViewPropertyAnimator(duration: 1, curve: .linear)
-    
+
     // MARK: - Lifecycle
-    
+
     init(using inputs: [Input]) {
         self.inputs = inputs
         super.init(nibName: String(describing: LoginContainerViewController.self), bundle: nil)
@@ -103,24 +103,24 @@ final class LoginContainerViewController: UIViewController {
         translationAnimator.pausesOnCompletion = true
         view.layoutIfNeeded()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Following an issue that occurred only on iPhone 5 + iOS 10, that the PIN gets stretched,
         // need to refresh the collection view layout when the view appears
         prepareCollectionViewLayout()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         translationAnimator.stopAnimation(true)
     }
-    
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         prepareCollectionViewLayout()
     }
-    
+
     private func prepareCollectionViewLayout() {
         collectionViewFlowLayout.itemSize = CGSize(
             width: view.bounds.width,
@@ -128,21 +128,21 @@ final class LoginContainerViewController: UIViewController {
         )
         collectionViewFlowLayout.invalidateLayout()
     }
-    
+
     private func didFinishScrolling() {
         let isNavigationEnabled = collectionView.contentOffset.x == 0
         navigationItem.leftBarButtonItem?.isEnabled = isNavigationEnabled
         navigationItem.rightBarButtonItem?.isEnabled = isNavigationEnabled
         isPageControlCurrentlyInteracted = false
     }
-    
+
     private func setStatusBarStateIfNeeded() {
         let current = UIApplication.shared.statusBarStyle
         let next: UIStatusBarStyle = currentItemIndex == 0 ? .lightContent : .default
         guard next != current else { return }
         UIApplication.shared.statusBarStyle = next
     }
-    
+
     /// Returns the currently displayed item index
     private var currentItemIndex: Int {
         let offset = collectionView.contentOffset.x + collectionView.bounds.width * 0.5
@@ -157,17 +157,17 @@ final class LoginContainerViewController: UIViewController {
 // MARK: - UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout
 
 extension LoginContainerViewController: UICollectionViewDelegate, UICollectionViewDataSource {
-    
+
     func collectionView(_ collectionView: UICollectionView,
                         numberOfItemsInSection section: Int) -> Int {
         inputs.count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: LoginContainerCollectionViewCell.self),
                                                       for: indexPath) as! LoginContainerCollectionViewCell
-        
+
         let input = inputs[indexPath.row]
         if let viewController = input.viewController {
             addChild(viewController)
@@ -181,7 +181,7 @@ extension LoginContainerViewController: UICollectionViewDelegate, UICollectionVi
 // MARK: - UIScrollViewDelegate
 
 extension LoginContainerViewController {
-    
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         var firstTouch = true
         translationAnimator.addAnimations { [weak self] in
@@ -197,16 +197,16 @@ extension LoginContainerViewController {
             self.navigationItem.rightBarButtonItem?.tintColor = .clear
         }
     }
-    
+
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         didFinishScrolling()
     }
-    
+
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         guard !decelerate else { return }
         didFinishScrolling()
     }
-    
+
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         let visibleRect = scrollView.bounds
         let expectedRect = CGRect(x: CGFloat(pageControl.currentPage + 1) * scrollView.contentOffset.x,
@@ -216,19 +216,19 @@ extension LoginContainerViewController {
         guard visibleRect == expectedRect else { return }
         didFinishScrolling()
     }
-    
+
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let maxOffset = scrollView.bounds.width
         let normalizedOffset = max(min(scrollView.contentOffset.x, maxOffset), 0)
         let fraction = min(normalizedOffset / maxOffset, 0.99)
         translationAnimator.fractionComplete = fraction
-        
+
         if !isPageControlCurrentlyInteracted && scrollView.contentSize.width > 0 {
             let offset = scrollView.contentOffset.x - scrollView.bounds.width * 0.5
             let page = Int(offset / scrollView.contentSize.width * CGFloat(inputs.count))
             pageControl.currentPage = max(page, 0)
         }
-        
+
         setStatusBarStateIfNeeded()
     }
 }

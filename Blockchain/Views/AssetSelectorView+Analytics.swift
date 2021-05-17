@@ -5,9 +5,9 @@ import DIKit
 import PlatformKit
 
 extension AssetSelectorView {
-    
+
     private var analyticsEventRecorder: AnalyticsEventRecording { resolve() }
-    
+
     @objc
     func reportOpen() {
         let asset = CryptoCurrency(legacyAssetType: selectedAsset)
@@ -15,7 +15,7 @@ extension AssetSelectorView {
             event: AnalyticsEvents.AssetSelection.assetSelectorOpen(asset: asset)
         )
     }
-    
+
     @objc
     func reportClose() {
         let asset = CryptoCurrency(legacyAssetType: selectedAsset)

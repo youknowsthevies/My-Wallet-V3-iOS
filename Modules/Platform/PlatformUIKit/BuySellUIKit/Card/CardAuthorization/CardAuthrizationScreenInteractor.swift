@@ -3,13 +3,13 @@
 import RIBs
 
 final class CardAuthorizationScreenInteractor: Interactor {
-    
+
     private let routingInteractor: CardAuthorizationRoutingInteractorAPI
-    
+
     init(routingInteractor: CardAuthorizationRoutingInteractorAPI) {
         self.routingInteractor = routingInteractor
     }
-    
+
     public func cardAuthorized(with identifier: String) {
         routingInteractor.cardAuthorized(with: identifier)
     }

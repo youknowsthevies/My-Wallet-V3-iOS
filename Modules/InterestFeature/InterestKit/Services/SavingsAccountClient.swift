@@ -12,13 +12,13 @@ public protocol SavingsAccountClientAPI: AnyObject {
 }
 
 final class SavingsAccountClient: SavingsAccountClientAPI {
-    
+
     private enum Path {
         static let balance = [ "accounts", "savings" ]
         static let rate = [ "savings", "rates" ]
         static let limits = [ "savings", "limits" ]
     }
-    
+
     private enum Parameter {
         static let currency = "currency"
         static let ccy = "ccy"
@@ -38,7 +38,7 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
     }
 
     // MARK: - SavingsAccountClientAPI
-    
+
     func limits(fiatCurrency: FiatCurrency) -> Single<SavingsAccountLimitsResponse> {
         let parameters = [
             URLQueryItem(
@@ -57,7 +57,7 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     func balance(with fiatCurrency: FiatCurrency) -> Single<SavingsAccountBalanceResponse?> {
         let parameters = [
             URLQueryItem(
@@ -77,7 +77,7 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse> {
         let parameters = [
             URLQueryItem(

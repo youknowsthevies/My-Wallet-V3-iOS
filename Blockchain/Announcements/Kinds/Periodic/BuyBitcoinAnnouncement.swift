@@ -65,7 +65,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     private let isEnabled: Bool
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(isEnabled: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,

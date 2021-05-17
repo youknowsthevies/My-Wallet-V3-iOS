@@ -3,19 +3,19 @@
 // TODO:
 // * This should probably conform to either WalletAccount or AssetAccount
 public struct ERC20TokenAccount: Codable {
-    
+
     enum CodingKeys: String, CodingKey {
         case label
         case contractAddress = "contract"
         case hasSeen = "has_seen"
         case transactionNotes = "tx_notes"
     }
-    
+
     public let label: String
     public let contractAddress: String
     public let hasSeen: Bool
     public private(set) var transactionNotes: [String: String]
-    
+
     public init(
         label: String,
         contractAddress: String,
@@ -26,7 +26,7 @@ public struct ERC20TokenAccount: Codable {
         self.hasSeen = hasSeen
         self.transactionNotes = transactionNotes
     }
-    
+
     public mutating func update(memo: String, for transactionHash: String) {
         transactionNotes[transactionHash] = memo
     }

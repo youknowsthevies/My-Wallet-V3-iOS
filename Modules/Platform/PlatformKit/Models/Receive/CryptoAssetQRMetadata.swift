@@ -10,18 +10,18 @@ public protocol CryptoAssetQRMetadata {
     static var scheme: String { get }
 
     var cryptoCurrency: CryptoCurrency { get }
-    
+
     /// The asset's address (e.g. "1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
     var address: String { get }
-    
+
     var amount: String? { get }
-    
+
     /// Legacy send
     var paymentRequestUrl: String? { get }
-    
+
     /// Converts this URL to an absolute string (e.g. "bitcoin:1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")
     var absoluteString: String { get }
-    
+
     /// Render the `absoluteString` with the scheme prefix
     var includeScheme: Bool { get }
 }

@@ -8,34 +8,34 @@ public protocol ActivityProviding: class {
     subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI { get }
     subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI { get }
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI { get }
-    
+
     var activityItems: Observable<ActivityItemEventsLoadingState> { get }
-    
+
     func refresh()
 }
 
 public final class ActivityProvider: ActivityProviding {
-    
+
     // MARK: - Public Properties
-    
+
     public subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI {
         services[currency]!
     }
-    
+
     public subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI {
         services[.crypto(cryptoCurrency)] as! CryptoItemEventServiceAPI
     }
-    
+
     public subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI {
         services[.fiat(fiatCurrency)] as! FiatItemEventServiceAPI
     }
-    
+
     // MARK: - Services
-    
+
     private var services: [CurrencyType: ActivityItemEventServiceAPI] = [:]
-    
+
     // MARK: - Setup
-    
+
     public init(fiats: [FiatCurrency: ActivityItemEventServiceAPI],
                 cryptos: [CryptoCurrency: ActivityItemEventServiceAPI]) {
         for (currency, service) in fiats {
@@ -45,11 +45,11 @@ public final class ActivityProvider: ActivityProviding {
             services[currency.currency] = service
         }
     }
-    
+
     public var activityItems: Observable<ActivityItemEventsLoadingState> {
         activityItemsLoadingStates.map { $0.allActivity }
     }
-    
+
     public func refresh() {
         services.values.forEach { $0.refresh() }
     }

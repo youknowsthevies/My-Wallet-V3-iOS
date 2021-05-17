@@ -12,10 +12,10 @@ import XCTest
 @testable import PlatformUIKit
 
 final class CardTextFieldViewModelTests: XCTestCase {
-    
+
     private var validator: CardNumberValidator!
     private var viewModel: CardTextFieldViewModel!
-    
+
     override func setUp() {
         validator = TextValidationFactory.Card.number
         viewModel = CardTextFieldViewModel(
@@ -23,7 +23,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             messageRecorder: MockMessageRecorder()
         )
     }
-    
+
     func testValidMastercardNumbers() throws {
         let numbers = [
             "5555555555554444",
@@ -38,7 +38,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             "5100 0600 00000002",
             "5424 0000 0000 0015"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -49,13 +49,13 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidDiscoverCardNumbers() throws {
         let numbers = [
             "6011 6011 6011 6611",
             "6445 6445 6445 6445"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -66,14 +66,14 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidJCBCardNumbers() throws {
         let numbers = [
             "3569 9900 1009 5841",
             "3530111333300000",
             "3566002020360505"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -90,7 +90,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             "3600 6666 3333 44",
             "3607 0500 0010 20"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -101,13 +101,13 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidAmexCardNumbers() throws {
         let numbers = [
             "3700 0000 0000 002",
             "3700 0000 0100 018"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -118,7 +118,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
+
     func testValidVisaCardNumbers() throws {
         let numbers = [
             "4850 6526 8106 5604",
@@ -136,7 +136,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             "4547755341068618",
             "4544876317716122"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!
@@ -147,7 +147,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             }
         }
     }
-    
+
     func testInvalidCardNumbers() throws {
         let numbers = [
             "850652681065604",
@@ -165,7 +165,7 @@ final class CardTextFieldViewModelTests: XCTestCase {
             "947755341068618",
             "14544876317716122"
         ]
-        
+
         try numbers.forEach {
             _ = viewModel.editIfNecessary($0, operation: .addition)
             let state = try viewModel.state.toBlocking().first()!

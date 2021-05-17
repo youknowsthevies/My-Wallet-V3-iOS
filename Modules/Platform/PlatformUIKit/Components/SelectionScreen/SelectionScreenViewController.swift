@@ -8,34 +8,34 @@ import RxSwift
 public final class SelectionScreenViewController: BaseScreenViewController {
 
     // MARK: - IBOutlets
-    
+
     @IBOutlet private var tableView: UITableView!
 
     // MARK: - Injected
-    
+
     private let presenter: SelectionScreenPresenter
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Lifecycle
-    
+
     public init(presenter: SelectionScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: SelectionScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
-    
+
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupSearchController()
         setupTableView()
-        
+
         presenter.dismiss
             .emit(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -51,14 +51,14 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Setup
-    
+
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
         setStandardDarkContentStyle()
     }
-    
+
     private func setupSearchController() {
         let searchController = SearchController(placeholderText: presenter.searchBarPlaceholder)
         searchController.obscuresBackgroundDuringPresentation = false
@@ -66,16 +66,16 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
         definesPresentationContext = true
-        
+
         searchController.text
             .bindAndCatch(to: presenter.searchTextRelay)
             .disposed(by: disposeBag)
     }
-    
+
     private func setupTableView() {
-        
+
         // Table view setup
-        
+
         if let viewModel = presenter.tableHeaderViewModel {
             let width = tableView.bounds.width
             let height = SelectionScreenTableHeaderView.estimatedHeight(for: width, model: viewModel)
@@ -89,19 +89,19 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             headerView.viewModel = viewModel
             tableView.tableHeaderView = headerView
         }
-        
+
         tableView.register(SelectionItemTableViewCell.self)
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 72
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 24)
-        
+
         // Table view binding
-        
+
         let displayPresenters = presenter
             .displayPresenters
             .share(replay: 1)
-        
+
         displayPresenters
             .bind(
                 to: tableView.rx.items(
@@ -131,14 +131,14 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Navigation
-    
+
     override public func navigationBarLeadingButtonPressed() {
         super.navigationBarLeadingButtonPressed()
         presenter.previousTapped()
     }
-    
+
     override public func navigationBarTrailingButtonPressed() {
         super.navigationBarTrailingButtonPressed()
         presenter.previousTapped()

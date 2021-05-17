@@ -23,7 +23,7 @@ final class CustodialClient: TradingBalanceClientAPI,
     }
 
     // MARK: - Properties
-    
+
     public var balance: Single<CustodialBalanceResponse?> {
         let path = Path.custodialBalance
         let request = requestBuilder.get(
@@ -37,18 +37,18 @@ final class CustodialClient: TradingBalanceClientAPI,
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     // MARK: - CustodialPendingDepositClientAPI
 
     func createPendingDeposit(body: CreatePendingDepositRequestBody) -> Completable {
@@ -63,7 +63,7 @@ final class CustodialClient: TradingBalanceClientAPI,
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - TradingBalanceClientAPI
 
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?> {
@@ -71,12 +71,12 @@ final class CustodialClient: TradingBalanceClientAPI,
     }
 
     // MARK: - CustodialPaymentAccountClientAPI
-    
+
     func custodialPaymentAccount(for cryptoCurrency: CryptoCurrency) -> Single<PaymentAccount.Response> {
         struct Payload: Encodable {
             let currency: String
         }
-        
+
         let payload = Payload(currency: cryptoCurrency.code)
         let request = requestBuilder.put(
             path: Path.paymentAccount,

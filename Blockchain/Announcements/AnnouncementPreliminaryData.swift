@@ -8,25 +8,25 @@ struct AnnouncementPreliminaryData {
 
     /// The nabu user
     let user: NabuUser
-    
+
     /// User tiers information
     let tiers: KYC.UserTiers
-    
+
     let hasLinkedBanks: Bool
-    
+
     let country: CountryData?
 
     /// The authentication type (2FA / standard)
     let authenticatorType: AuthenticatorType
-    
+
     var hasLinkedExchangeAccount: Bool {
         user.hasLinkedExchangeAccount
     }
-    
+
     var isKycSupported: Bool {
         country?.isKycSupported ?? false
     }
-    
+
     var hasTwoFA: Bool {
         authenticatorType != .standard
     }
@@ -36,12 +36,12 @@ struct AnnouncementPreliminaryData {
     }
 
     let isSimpleBuyEligible: Bool
-    
+
     let pendingOrderDetails: OrderDetails?
 
     private let isSimpleBuyAvailable: Bool
     private let simpleBuyEventCache: EventCache
-    
+
     init(user: NabuUser,
          tiers: KYC.UserTiers,
          hasLinkedBanks: Bool,

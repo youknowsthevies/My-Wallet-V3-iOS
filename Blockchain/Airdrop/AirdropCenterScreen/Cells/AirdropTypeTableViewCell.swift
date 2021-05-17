@@ -5,12 +5,12 @@ import UIKit
 final class AirdropTypeTableViewCell: UITableViewCell {
 
     // MARK: - Properties
-    
+
     @IBOutlet private var iconImageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var disclosureImageView: UIImageView!
-    
+
     var presenter: AirdropTypeCellPresenter! {
         didSet {
             guard let presenter = presenter else { return }
@@ -19,7 +19,7 @@ final class AirdropTypeTableViewCell: UITableViewCell {
             descriptionLabel.content = presenter.description
         }
     }
-    
+
     // MARK: - Lifecycle
 
     override func prepareForReuse() {

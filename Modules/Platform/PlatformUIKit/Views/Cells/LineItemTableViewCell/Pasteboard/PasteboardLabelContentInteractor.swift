@@ -20,11 +20,11 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
     /// After the `interactionDuration` has passed (in seconds) the original
     /// text will be shown.
     public var pasteboardTriggerRelay = PublishRelay<Void>()
-    
+
     /// Returns whether or not the pasteboarding effect is still visible.
     /// Effect lasts as long as the `interactionDuration` provided.
     public var isPasteboarding = BehaviorRelay(value: false)
-    
+
     public let stateRelay: BehaviorRelay<InteractionState>
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
@@ -37,11 +37,11 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
     }
 
     // MARK: - Private Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(text: String, interactionText: String, interactionDuration: Int) {
 
         let originalValue: InteractionState = .loaded(next: .init(text: text))
@@ -74,4 +74,3 @@ public final class PasteboardLabelContentInteractor: PasteboardLabelContentInter
             .disposed(by: disposeBag)
     }
 }
-

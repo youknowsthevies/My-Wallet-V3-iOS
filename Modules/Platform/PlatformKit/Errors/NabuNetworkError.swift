@@ -10,23 +10,23 @@ public struct NabuErrorDecodingFailure: Error {
 }
 
 public enum NabuNetworkError: Error, Decodable {
-    
+
     enum CodingKeys: CodingKey {
         case code
         case type
         case description
     }
-    
+
     case nabuError(NabuError)
     case communicatorError(NetworkError)
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         var code: NabuErrorCode = .unknown
         var type: NabuErrorType = .unknown
         let description = try values.decodeIfPresent(String.self, forKey: .description)
-        
+
         do {
             code = try values.decode(NabuErrorCode.self, forKey: .code)
             type = try values.decode(NabuErrorType.self, forKey: .type)
@@ -44,23 +44,23 @@ public enum NabuNetworkError: Error, Decodable {
                 description: description
             )
         }
-        
+
         self = .nabuError(NabuError(code: code, type: type, description: description))
     }
-    
+
     public init(from communicatorError: NetworkError) {
         self = .communicatorError(communicatorError)
     }
-    
+
     private static func crashOnUnknownCodeOrType(
         code: NabuErrorCode,
         type: NabuErrorType,
         values: KeyedDecodingContainer<NabuNetworkError.CodingKeys>
     ) {
         guard code == .unknown || type == .unknown else { return }
-        
+
         var messages: [String] = []
-        
+
         if code == .unknown {
             if let code = try? values.decode(Int.self, forKey: .code) {
                 messages.append("Unknown code: \(code)")
@@ -68,7 +68,7 @@ public enum NabuNetworkError: Error, Decodable {
                 messages.append("Missing code")
             }
         }
-        
+
         if type == .unknown {
             if let type = try? values.decode(String.self, forKey: .type) {
                 messages.append("Unknown type: \(type)")
@@ -76,13 +76,13 @@ public enum NabuNetworkError: Error, Decodable {
                 messages.append("Missing type")
             }
         }
-        
+
         fatalError(messages.joined(separator: ", "))
     }
 }
 
 extension NabuNetworkError: Equatable {
-    
+
     /// Just a simple implementation to bubble up this to UI States. We can improve on this if needed.
     public static func == (lhs: NabuNetworkError, rhs: NabuNetworkError) -> Bool {
         String(describing: lhs) == String(describing: rhs)
@@ -90,7 +90,7 @@ extension NabuNetworkError: Equatable {
 }
 
 extension NabuNetworkError: FromNetworkErrorConvertible {
-    
+
     public static func from(_ communicatorError: NetworkError) -> NabuNetworkError {
         NabuNetworkError(from: communicatorError)
     }
@@ -98,11 +98,11 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 
 /// Describes an error returned by Nabu
 public struct NabuError: Error, Codable {
-    
+
     public let code: NabuErrorCode
     public let type: NabuErrorType
     public let description: String?
-    
+
     public init(code: NabuErrorCode,
                 type: NabuErrorType,
                 description: String?) {
@@ -113,7 +113,7 @@ public struct NabuError: Error, Codable {
 }
 
 public enum NabuErrorCode: Int, Codable {
-    
+
     // Unknown code
     case unknown = 0
 
@@ -185,7 +185,7 @@ public enum NabuErrorCode: Int, Codable {
     case pendingOrdersLimitReached = 53
     case tradingDisabled = 51
     case mobileTooLong = 52
-    
+
     /// Campaign Related Errors - These errors are specific
     /// to users opting into an air drop campaign. Currently they're
     /// used when a user deep links into the application from a campaign
@@ -198,11 +198,11 @@ public enum NabuErrorCode: Int, Codable {
     case campaignWithdrawalFailed = 59
     case tradeForceExecuteError = 60
     case campaignInfoAlreadyUsed = 61
-    
+
     case linkAccountError = 66
     case userAlreadyLinked = 660
     case linkExpired = 661
-    
+
     case verificationExpired = 63
     case verificationFailed = 64
     case emailVerificationInProgress = 65
@@ -210,7 +210,7 @@ public enum NabuErrorCode: Int, Codable {
     case noAvailableUsername = 680
     case userNotAllowedToGetCredentials = 70
     case enablementFailed = 69
-    
+
     // Payments related
     case depositCheckError = 72
     case couldNotInsertBeneficiary = 74
@@ -247,7 +247,7 @@ public enum NabuErrorCode: Int, Codable {
     case eddQuestionairePending = 146
     /// Custodial Withdrawal Error Code
     case withdrawalLocked = 152
-    
+
     /// Custodial related
     case invalidDestinationAddress = 148
     case invalidInputCurrency = 149
@@ -256,7 +256,7 @@ public enum NabuErrorCode: Int, Codable {
     case notFoundCustodialQuote = 155
     case userNotEligibleForSwap = 156
     case orderAmountNegative = 157
-    
+
     case invalidKYCForSavings = 140
     case currencyNotSupported = 141
     case productNotSupported = 142
@@ -267,7 +267,7 @@ public enum NabuErrorCode: Int, Codable {
 }
 
 public enum NabuErrorType: String, Codable {
-    
+
     // Unknown
     case unknown
 

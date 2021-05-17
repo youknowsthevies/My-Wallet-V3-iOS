@@ -6,11 +6,11 @@ import RxSwift
 import PlatformKit
 
 public final class MockAccountBalanceFetcher: SingleAccountBalanceFetching {
-    
+
     public var pendingBalanceMoney: Single<MoneyValue> {
         .just(MoneyValue.zero(currency: expectedBalance.currency))
     }
-    
+
     public var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
             .asObservable()

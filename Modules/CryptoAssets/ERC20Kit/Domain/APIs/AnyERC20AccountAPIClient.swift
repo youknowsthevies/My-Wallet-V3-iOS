@@ -20,7 +20,7 @@ final class AnyERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAP
     func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<Token>> {
         fetchTransactions(address, page)
     }
-    
+
     func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
         isContract(address)
     }

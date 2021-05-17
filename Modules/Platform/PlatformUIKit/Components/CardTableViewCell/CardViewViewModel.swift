@@ -1,20 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct CardViewViewModel {
-    
+
     public var identifier: String {
         titleContent.text + "." + descriptionContent.text
     }
-    
+
     let titleContent: LabelContent
     let descriptionContent: LabelContent
-    
+
     public struct Style {
         let titleFont: UIFont
         let titleTextColor: UIColor
         let descriptionFont: UIFont
         let descriptionTextColor: UIColor
-        
+
         static let transaction: Style = .init(
             titleFont: .main(.semibold, 14.0),
             titleTextColor: .textFieldText,
@@ -22,7 +22,7 @@ public struct CardViewViewModel {
             descriptionTextColor: .descriptionText
         )
     }
-    
+
     public init(title: String, description: String, style: Style) {
         titleContent = .init(
             text: title,
@@ -31,7 +31,7 @@ public struct CardViewViewModel {
             alignment: .left,
             accessibility: .none
         )
-        
+
         descriptionContent = .init(
             text: description,
             font: style.descriptionFont,

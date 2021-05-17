@@ -9,7 +9,7 @@ public struct NabuSessionTokenResponse {
     public let token: String
     public let isActive: Bool
     public let expiresAt: Date?
-    
+
     public init(identifier: String,
                 userId: String,
                 token: String,
@@ -31,7 +31,7 @@ extension NabuSessionTokenResponse: Decodable {
         case isActive = "isActive"
         case expiresAt = "expiresAt"
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         identifier = try values.decode(String.self, forKey: .identifier)

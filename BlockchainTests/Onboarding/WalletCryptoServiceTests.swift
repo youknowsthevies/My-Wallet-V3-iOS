@@ -12,7 +12,7 @@ import XCTest
 class MockRecorder: Recording {
     func record(_ message: String) {}
     func record() {}
-    
+
     func error(_ error: Error) {}
     func error(_ errorMessage: String) {}
     func error() {}
@@ -24,7 +24,7 @@ class WalletCryptoServiceTests: XCTestCase {
 
     var walletManager: WalletManager!
     var service: WalletCryptoServiceAPI!
-    
+
     override func setUp() {
         super.setUp()
         // Force JS initialization before hand
@@ -39,7 +39,7 @@ class WalletCryptoServiceTests: XCTestCase {
         self.walletManager = walletManager
         self.service = service
     }
-    
+
     func testDecryption() {
         let key = "keykeykeykeykey"
         let data = "datadatadatadatadata"

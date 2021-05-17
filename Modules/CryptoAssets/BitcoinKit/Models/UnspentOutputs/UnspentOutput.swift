@@ -5,32 +5,32 @@ import BitcoinChainKit
 import PlatformKit
 
 struct UnspentOutput: Equatable {
-    
+
     struct XPub: Equatable {
         let m: String
         let path: String
     }
-    
+
     var magnitude: BigUInt {
         value.amount.magnitude
     }
 
     let hash: String
-    
+
     let script: String
-    
+
     let value: BitcoinValue
-    
+
     let confirmations: UInt
-    
+
     let transactionIndex: Int
-    
+
     let xpub: XPub
 
     let isReplayable: Bool
-    
+
     let isForceInclude: Bool
-    
+
     init(hash: String,
          script: String,
          value: BitcoinValue,
@@ -98,11 +98,11 @@ extension Array where Element == UnspentOutput {
                 value + acc
             }
     }
-    
+
     func effective(for fee: Fee) -> [UnspentOutput] {
         filter { $0.isForceInclude || $0.effectiveValue(for: fee) > BigUInt.zero }
     }
-    
+
     func balance(for fee: Fee, outputs: Int, calculator: TransactionSizeCalculating) -> BigUInt {
         let balance = BigInt(sum()) - BigInt(calculator.transactionBytes(inputs: count, outputs: outputs)) * BigInt(fee.feePerByte)
         guard balance > BigInt.zero else {
@@ -110,7 +110,7 @@ extension Array where Element == UnspentOutput {
         }
         return balance.magnitude
     }
-    
+
     var replayProtected: Bool {
         guard let firstElement = first else {
             return false

@@ -6,14 +6,14 @@ import PlatformKit
 import RxSwift
 
 final class EthereumActivityDetailsInteractor {
-    
+
     // MARK: - Private Properties
 
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     private let wallet: EthereumWalletBridgeAPI
-    
+
     // MARK: - Init
 
     init(wallet: EthereumWalletBridgeAPI = resolve(),
@@ -25,7 +25,7 @@ final class EthereumActivityDetailsInteractor {
         self.priceService = priceService
         self.wallet = wallet
     }
-    
+
     // MARK: - Public Functions
 
     func updateMemo(for identifier: String, to memo: String?) -> Completable {
@@ -49,13 +49,13 @@ final class EthereumActivityDetailsInteractor {
             )
             .map { EthereumActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue, memo: $2) }
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func memo(for identifier: String) -> Single<String?> {
         wallet.memo(for: identifier)
     }
-    
+
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency

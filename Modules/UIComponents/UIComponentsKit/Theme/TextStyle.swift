@@ -3,7 +3,7 @@
 import SwiftUI
 
 public struct TextStyle: ViewModifier {
-    
+
     public enum FontStyle {
         case title
         case heading
@@ -11,15 +11,15 @@ public struct TextStyle: ViewModifier {
         case body
         case formField
     }
-    
+
     public let fontStyle: FontStyle
-    
+
     public func body(content: Content) -> some View {
         let textColor: Color
         let fontWeight: FontWeight
         let fontSize: CGFloat
         let lineSpacing: CGFloat
-        
+
         switch fontStyle {
         case .title:
             textColor = .textTitle
@@ -56,7 +56,7 @@ public struct TextStyle: ViewModifier {
 }
 
 extension TextStyle {
-    
+
     public static let title = TextStyle(fontStyle: .title)
     public static let heading = TextStyle(fontStyle: .heading)
     public static let subheading = TextStyle(fontStyle: .subheading)
@@ -65,7 +65,7 @@ extension TextStyle {
 }
 
 extension View {
-    
+
     public func textStyle(_ style: TextStyle) -> some View {
         self.modifier(style)
     }
@@ -73,13 +73,13 @@ extension View {
 
 #if DEBUG
 struct TextStyle_Previews: PreviewProvider {
-    
+
     static let shortSentence = "Almost before we knew it, we had left the ground."
     // swiftlint:disable line_length
     static let mediumSentence = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec condimentum id lacus vitae lacinia. Morbi accumsan lorem eu mauris rhoncus facilisis. Integer ut consectetur massa."
     // swiftlint:disable line_length
     static let longSentence = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec condimentum id lacus vitae lacinia. Morbi accumsan lorem eu mauris rhoncus facilisis. Integer ut consectetur massa. Mauris vulputate nisi vel elementum rutrum. Donec lobortis lectus sed posuere euismod. Nulla vitae justo nisl. Nam nec urna arcu. Aliquam imperdiet sed enim sed tincidunt. In vitae est quis massa venenatis sagittis nec ac metus."
-    
+
     static var previews: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text(shortSentence)

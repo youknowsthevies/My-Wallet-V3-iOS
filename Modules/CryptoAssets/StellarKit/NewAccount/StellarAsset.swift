@@ -108,7 +108,7 @@ final class StellarAsset: CryptoAsset {
             .just(CryptoInterestAccount(asset: asset))
             .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
-    
+
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
         return exchangeAccountProvider

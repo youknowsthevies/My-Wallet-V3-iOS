@@ -19,7 +19,7 @@ final class KYCTiersCoordinator {
     func refreshViewModel(suppressCTA: Bool) {
         interface?.collectionViewVisibility(.hidden)
         interface?.loadingIndicator(.visible)
-        
+
         disposable = pageModelFactory.tiersPageModel(suppressCTA: suppressCTA)
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(

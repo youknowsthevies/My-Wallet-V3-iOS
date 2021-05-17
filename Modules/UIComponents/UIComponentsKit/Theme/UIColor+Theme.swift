@@ -3,7 +3,7 @@
 import UIKit
 
 extension UIColor {
-    
+
     fileprivate convenience init(paletteColor: PaletteColor) {
         let colorName = paletteColor.rawValue.capitalizeFirstLetter
         self.init(named: colorName, in: .current, compatibleWith: nil)!
@@ -36,7 +36,7 @@ extension UIColor {
     static let greyFade400 = UIColor(paletteColor: .greyFade400)
     static let greyFade600 = UIColor(paletteColor: .greyFade600)
     static let greyFade800 = UIColor(paletteColor: .greyFade800)
-    
+
     // MARK: White Fade
     static let whiteFade100 = UIColor(paletteColor: .whiteFade100)
     static let whiteFade400 = UIColor(paletteColor: .whiteFade400)
@@ -132,7 +132,7 @@ extension UIColor {
 // MARK: - Thematic Color Definitions
 
 extension UIColor {
-    
+
     // MARK: Primary
     public static let primary = blue900
     public static let secondary = blue600
@@ -140,13 +140,13 @@ extension UIColor {
 
     // MARK: Navigation
     public enum NavigationBar {
-        
+
         public enum DarkContent {
             public static let background = white
             public static let title = black
             public static let tintColor = black
         }
-        
+
         public enum LightContent {
             public static let background = grey900
             public static let title = white
@@ -155,12 +155,12 @@ extension UIColor {
 
         public static let closeButton = grey400
     }
-    
+
     // MARK: Today Extension
     public enum TodayExtension {
         public static let background = grey900
     }
-    
+
     // MARK: Backgrounds & Borders
     public static let background = grey000
     public static let mediumBackground = grey100
@@ -169,11 +169,11 @@ extension UIColor {
     public static let lightRedBackground = red000
     public static let darkBlueBackground = blue700
     public static let greyFadeBackground = greyFade800
-    
+
     public static let lightBorder = grey000
     public static let mediumBorder = grey100
     public static let successBorder = green500
-    
+
     public static let destructiveBackground = red100
     public static let affirmativeBackground = green000
     public static let defaultBadgeBackground = blue100
@@ -190,38 +190,38 @@ extension UIColor {
     // MARK: Texts
     public static let defaultBadge = blue600
     public static let affirmativeBadgeText = green500
-    
+
     public static let normalPassword = green600
     public static let strongPassword = blue600
     public static let destructive = red500
-    
+
     public static let darkTitleText = grey900
     public static let titleText = grey800
     public static let descriptionText = grey600
     public static let textFieldPlaceholder = grey400
     public static let textFieldText = grey800
     public static let mutedText = grey400
-    
+
     public static let dashboardAssetTitle = grey800
     public static let dashboardFiatPriceTitle = grey800
-    
+
     public static let negativePrice = red400
     public static let positivePrice = green500
 
     // MARK: Buttons
     public static let airdropCTAButton = green600
-    
+
     public static let destructiveButton = red600
     public static let successButton = green600
     public static let primaryButton = blue600
     public static let secondaryButton = grey800
     public static let tertiaryButton = grey900
     public static let linkableText = blue600
-    
+
     public static let iconDefault = grey400
     public static let iconSelected = grey400
     public static let iconWarning = orange600
-    
+
     // MARK: Currency
     public static let aave = _aave
     public static let algorand = _algo
@@ -240,7 +240,7 @@ extension UIColor {
     public static let silverTier = tiersSilver
     public static let goldTier = tiersGold
     public static let diamondTier = tiersDiamond
-    
+
     // MARK: Feature Themes
     public static let exchangeAnnouncementButton = grey800
 }

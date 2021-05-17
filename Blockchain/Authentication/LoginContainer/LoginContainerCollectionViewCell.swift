@@ -5,7 +5,7 @@ import UIKit
 class LoginContainerCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Injected
-    
+
     var input: LoginContainerViewController.Input! {
         didSet {
             let view = input.view
@@ -15,9 +15,9 @@ class LoginContainerCollectionViewCell: UICollectionViewCell {
             contentView.layoutIfNeeded()
         }
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         input.viewController?.remove()

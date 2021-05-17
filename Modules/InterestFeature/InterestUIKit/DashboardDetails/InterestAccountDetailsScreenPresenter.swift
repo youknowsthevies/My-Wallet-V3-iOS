@@ -6,28 +6,28 @@ import PlatformUIKit
 import RxSwift
 
 public final class InterestAccountDetailsScreenPresenter {
-    
+
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.AccountDetails
     private typealias AccessibilityId = Accessibility.Identifier.Interest.Dashboard.InterestDetails
-    
+
     // MARK: - Navigation Properties
-    
+
     var trailingButton: Screen.Style.TrailingButton {
         .none
     }
-    
+
     var leadingButton: Screen.Style.LeadingButton {
         .close
     }
-    
+
     var titleView: Screen.Style.TitleView {
         .text(value: interactor.cryptoCurrency.name)
     }
-    
+
     var barStyle: Screen.Style.Bar {
         .lightContent()
     }
-    
+
     var sectionObservable: Observable<[DetailSectionViewModel]> {
         interactor
             .interactors
@@ -68,10 +68,10 @@ public final class InterestAccountDetailsScreenPresenter {
             .map { $0.map { presenter in DetailCellViewModel(presenter: presenter) } }
             .map { [DetailSectionViewModel(identifier: "", items: $0)] }
     }
-    
+
     private let interactor: InterestAccountDetailsScreenInteractor
     private let footerPresenter: FooterTableViewCellPresenter
-    
+
     public init(interactor: InterestAccountDetailsScreenInteractor) {
         self.interactor = interactor
         self.footerPresenter = .init(

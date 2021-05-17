@@ -32,19 +32,18 @@ public protocol DetailsScreenPresenterAPI: AnyObject {
 public extension DetailsScreenPresenterAPI {
 
     var extendSafeAreaUnderNavigationBar: Bool { false }
-    
+
     var buttons: [ButtonViewModel] { [] }
 
     var titleView: Driver<Screen.Style.TitleView> {
         titleViewRelay.asDriver()
     }
-    
+
     var reload: Signal<Void> {
         reloadRelay.asSignal()
     }
 
     func viewDidLoad() { /* NOOP */ }
-    
+
     func header(for section: Int) -> HeaderBuilder? { nil }
 }
-

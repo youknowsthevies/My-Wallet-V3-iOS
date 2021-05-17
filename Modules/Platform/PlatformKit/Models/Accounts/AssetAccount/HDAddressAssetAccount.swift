@@ -7,7 +7,7 @@ import Foundation
 /// Wallets using the HD protocol are called HD wallets.
 public protocol HDAddressAssetAccount: MultiAddressAssetAccount {
     associatedtype Address: AssetAddress
-    
+
     // The xpub address where addresses are derived from
     var xpub: String { get }
 

@@ -1,16 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 final class CardExpirationDateFormatter: TextFormatting {
-        
+
     func format(_ string: String, operation: TextInputOperation) -> TextFormattingSource {
-    
+
         var text = ""
         let (monthString, yearString) = prepareComponents(string)
         processMonth(from: string, operation: operation, month: monthString, year: yearString, output: &text)
         processYear(from: string, year: yearString, output: &text)
         return text == string ? .original(text: text) : .formatted(to: text)
     }
-    
+
     private func processYear(from string: String,
                              year: String,
                              output: inout String) {
@@ -26,14 +26,14 @@ final class CardExpirationDateFormatter: TextFormatting {
             break
         }
     }
-    
+
     private func processMonth(from string: String,
                               operation: TextInputOperation,
                               month: String,
                               year: String,
                               output: inout String) {
         guard let monthInteger = Int(month) else { return }
-        
+
         if string.count == 2 && operation == .deletion {
             output = String(string.prefix(1))
         } else {
@@ -63,7 +63,7 @@ final class CardExpirationDateFormatter: TextFormatting {
             }
         }
     }
-    
+
     private func prepareComponents(_ string: String) -> (monthString: String, yearString: String) {
         let components = string.split(separator: "/")
         let rawComponents: [String]
@@ -84,10 +84,10 @@ final class CardExpirationDateFormatter: TextFormatting {
             }
             rawComponents = [String(components[0]), yearComponent]
         }
-        
+
         let monthString = String(rawComponents[0])
         let yearString = String(rawComponents[1])
-        
+
         return (monthString, yearString)
     }
 }

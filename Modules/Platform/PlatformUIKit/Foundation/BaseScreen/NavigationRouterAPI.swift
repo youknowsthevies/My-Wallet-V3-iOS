@@ -21,14 +21,14 @@ public typealias RoutingStateEmitterAPI = RoutingPreviousStateEmitterAPI & Routi
 public protocol NavigationRouterAPI: AnyObject {
     var navigationControllerAPI: NavigationControllerAPI? { get set }
     var topMostViewControllerProvider: TopMostViewControllerProviding! { get }
-    
+
     func present(viewController: UIViewController, using presentationType: PresentationType)
     func present(viewController: UIViewController)
-    
+
     func dismiss(completion: (() -> Void)?)
     func dismiss(using presentationType: PresentationType)
     func dismiss()
-    
+
     func pop(animated: Bool)
 }
 
@@ -38,10 +38,10 @@ public enum RoutingType {
 }
 
 public class NavigationRouter: NavigationRouterAPI {
-        
+
     public weak var navigationControllerAPI: NavigationControllerAPI?
     public weak var topMostViewControllerProvider: TopMostViewControllerProviding!
-    
+
     public var defaultPresentationType: PresentationType {
         if navigationControllerAPI != nil {
             return .navigationFromCurrent
@@ -49,7 +49,7 @@ public class NavigationRouter: NavigationRouterAPI {
             return .modalOverTopMost
         }
     }
-    
+
     public var defaultDismissalType: PresentationType? {
         guard let navigationControllerAPI = navigationControllerAPI else {
             return nil
@@ -60,11 +60,11 @@ public class NavigationRouter: NavigationRouterAPI {
             return .navigationFromCurrent
         }
     }
-    
+
     public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
     }
-    
+
     public func present(viewController: UIViewController) {
         present(viewController: viewController, using: defaultPresentationType)
     }
@@ -81,7 +81,7 @@ public class NavigationRouter: NavigationRouterAPI {
             self?.navigationControllerAPI = navigationController
         }
     }
-    
+
     public func present(viewController: UIViewController, using presentationType: PresentationType) {
         switch presentationType {
         case .modal(from: let parentViewController):
@@ -89,6 +89,7 @@ public class NavigationRouter: NavigationRouterAPI {
         case .navigation(from: let originViewController):
             #if INTERNAL_BUILD
             if originViewController.navigationControllerAPI == nil {
+                // swiftlint:disable line_length
                 fatalError("When presenting a \(type(of: viewController)), originViewController \(type(of: originViewController)), originViewController.navigationControllerAPI was nil.")
             }
             #endif
@@ -106,16 +107,16 @@ public class NavigationRouter: NavigationRouterAPI {
             }
         }
     }
-    
+
     public func dismiss(completion: (() -> Void)?) {
         navigationControllerAPI?.dismiss(animated: true, completion: completion)
         DispatchQueue.main.async { }
     }
-    
+
     public func dismiss() {
         dismiss(using: defaultPresentationType)
     }
-    
+
     public func dismiss(using presentationType: PresentationType) {
         switch presentationType {
         case .modal, .modalOverTopMost:
@@ -124,9 +125,8 @@ public class NavigationRouter: NavigationRouterAPI {
             navigationControllerAPI?.popViewController(animated: true)
         }
     }
-    
+
     public func pop(animated: Bool) {
         navigationControllerAPI?.popViewController(animated: true)
     }
 }
-

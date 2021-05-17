@@ -10,17 +10,17 @@ public typealias AnalyticsEventRecorderAPI = AnalyticsEventRecording & Analytics
 final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
 
     // MARK: - Properties
-    
+
     let recordRelay = PublishRelay<AnalyticsEvent>()
-    
+
     private let analyticsServiceProviders: [AnalyticsServiceProviding]
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(analyticsServiceProviders: [AnalyticsServiceProviding] = resolve()) {
         self.analyticsServiceProviders = analyticsServiceProviders
-        
+
         recordRelay
             .subscribe(onNext: { [weak self] event in
                 self?.record(event: event)

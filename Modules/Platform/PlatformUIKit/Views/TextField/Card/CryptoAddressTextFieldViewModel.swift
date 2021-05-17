@@ -4,13 +4,13 @@ import RxSwift
 import ToolKit
 
 public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
-    
+
     // MARK: - Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(validator: TextValidating,
                 messageRecorder: MessageRecording) {
         super.init(
@@ -18,7 +18,7 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
             validator: validator,
             messageRecorder: messageRecorder
         )
-        
+
         let content = ImageViewContent(
             imageName: "Icon-qr",
             accessibility: .none,
@@ -29,7 +29,7 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
         viewModel.marginOffsetRelay.accept(0)
         viewModel.imageContentRelay.accept(content)
         viewModel.backgroundColorRelay.accept(.white)
-        
+
         Observable.just(.badgeImageView(viewModel))
             .bindAndCatch(to: accessoryContentTypeRelay)
             .disposed(by: disposeBag)

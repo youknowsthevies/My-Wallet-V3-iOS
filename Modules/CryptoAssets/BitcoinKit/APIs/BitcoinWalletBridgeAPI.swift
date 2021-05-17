@@ -60,11 +60,10 @@ public protocol BitcoinWalletBridgeAPI: AnyObject {
     func updateMemo(for transactionHash: String, memo: String?) -> Completable
 
     func receiveAddress(forXPub xpub: String) -> Single<String>
-    
+
     func walletIndex(for receiveAddress: String) -> Single<Int32>
-    
+
     func validateBitcoin(address: String) -> Bool
 
     func update(accountIndex: Int, label: String) -> Completable
 }
-

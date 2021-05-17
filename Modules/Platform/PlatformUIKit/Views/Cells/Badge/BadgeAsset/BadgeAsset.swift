@@ -5,7 +5,7 @@ import PlatformKit
 import RxSwift
 
 public enum BadgeAsset {
-    
+
     public enum State {
 
         /// The state of the `BadgeItem` interactor and presenter
@@ -14,7 +14,7 @@ public enum BadgeAsset {
             public typealias Presentation = LoadingState<Value.Presentation.BadgeItem>
         }
     }
-    
+
     public enum Value {
         public enum Interaction {
             public struct BadgeItem: Equatable {
@@ -39,9 +39,9 @@ public enum BadgeAsset {
                         }
                     }
                 }
-                
+
                 public let type: BadgeType
-                
+
                 // TODO-Settings: Should not be in the interaction layer
                 public let description: String
 
@@ -51,12 +51,12 @@ public enum BadgeAsset {
                 }
             }
         }
-        
+
         public enum Presentation {
             public struct BadgeItem {
-                
+
                 public let viewModel: BadgeViewModel
-                
+
                 public init(with value: Interaction.BadgeItem) {
                     switch value.type {
                     case .default(accessibilitySuffix: let suffix):
@@ -84,17 +84,17 @@ extension BadgeAsset.Value.Interaction.BadgeItem {
         type: .destructive,
         description: LocalizationConstants.unverified
     )
-    
+
     public static let connect: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .default(accessibilitySuffix: "Connect"),
         description: LocalizationConstants.Exchange.connect
     )
-    
+
     public static let confirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .default(accessibilitySuffix: "Confirmed"),
         description: LocalizationConstants.Settings.Badge.confirmed
     )
-    
+
     public static let unconfirmed: BadgeAsset.Value.Interaction.BadgeItem = .init(
         type: .destructive,
         description: LocalizationConstants.Settings.Badge.unconfirmed

@@ -48,7 +48,7 @@ public final class CryptoFormatterProvider {
 }
 
 public final class CryptoFormatter {
-    
+
     private let shortFormatter: NumberFormatter
     private let longFormatter: NumberFormatter
     private let cryptoCurrency: CryptoCurrency

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension Accessibility.Identifier {
-    
+
     public struct CurrentBalanceCell {
         public static let prefix = "CurrentBalance."
         public static let view = "\(prefix)view"
@@ -9,7 +9,7 @@ extension Accessibility.Identifier {
         public static let description = "\(prefix)description"
         public static let pending = "\(prefix)pending"
     }
-    
+
     public struct Dashboard {
         private static let prefix = "Dashboard."
         public struct FiatCustodialCell {
@@ -43,7 +43,7 @@ extension Accessibility.Identifier {
         }
         struct Announcement {
             private static let prefix = "\(Dashboard.prefix)Announcement."
-            
+
             static let titleLabel = "\(prefix)titleLabel"
             static let descriptionLabel = "\(prefix)descriptionLabel"
             static let imageView = "\(prefix)thumbImageView"
@@ -52,7 +52,7 @@ extension Accessibility.Identifier {
             static let backgroundButton = "\(prefix)backgroundButton"
         }
     }
-    
+
     public struct WalletActionSheet {
         public static let prefix = "WalletActionSheet."
         public enum NonCustodial {
@@ -80,7 +80,7 @@ extension Accessibility.Identifier {
             public static let description = "\(WalletActionSheet.prefix)Description"
         }
     }
-    
+
     public struct DashboardDetails {
         private static let prefix = "DashboardDetails."
         public struct CurrentBalanceCell {

@@ -9,13 +9,13 @@ import ToolKit
 final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Types
-    
+
     enum State {
         case inBounds(data: CandidateOrderDetails, upperLimit: FiatValue)
         case tooLow(min: FiatValue)
         case tooHigh(max: FiatValue)
         case empty(currency: FiatCurrency)
-                
+
         var isValid: Bool {
             switch self {
             case .inBounds:
@@ -24,7 +24,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 return false
             }
         }
-        
+
         var isEmpty: Bool {
             switch self {
             case .empty:
@@ -39,24 +39,24 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         case failure
         case none
     }
-    
+
     // MARK: - Properties
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
    override var selectedCurrencyType: Observable<CurrencyType> {
         cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency.currency }.asObservable()
     }
-    
+
     /// The state of the screen with associated data
     var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     /// Whether the state of the screen is valid
     override var hasValidState: Observable<Bool> {
         state.map(\.isValid)
     }
-    
+
     /// The (optional) data, in case the state's value is `inBounds`.
     /// `nil` otherwise.
     var candidateOrderDetails: Observable<CandidateOrderDetails?> {
@@ -70,14 +70,14 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 }
             }
     }
-    
+
     // MARK: - Output (readable)
-            
+
     /// Calculation state of the supported pairs
     var pairsCalculationState: Observable<BuyCryptoSupportedPairsCalculationState> {
         pairsCalculationStateRelay.asObservable()
     }
-                
+
     /// Suggested amounts, each represented a `Decimal value`
     var suggestedAmounts: Observable<[FiatValue]> {
         suggestedAmountsRelay.asObservable()
@@ -112,7 +112,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .catchErrorJustReturn([])
     }
-    
+
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
         paymentMethodTypesService.preferredPaymentMethodType
     }
@@ -122,9 +122,9 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
         effectRelay
             .asObservable()
     }
-    
+
     // MARK: - Dependencies
-        
+
     private let kycTiersService: KYCTiersServiceAPI
     private let suggestedAmountsService: SuggestedAmountsServiceAPI
     private let pairsService: SupportedPairsInteractorServiceAPI
@@ -133,14 +133,14 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     private let orderCreationService: OrderCreationServiceAPI
 
     // MARK: - Accessors
-    
+
     private let suggestedAmountsRelay = BehaviorRelay<[FiatValue]>(value: [])
-    
+
     /// The fiat-crypto pairs
     private let pairsCalculationStateRelay = BehaviorRelay<BuyCryptoSupportedPairsCalculationState>(
         value: .invalid(.empty)
     )
-    
+
     /// The state of the screen
     private let stateRelay = BehaviorRelay<State>(value: .empty(currency: FiatCurrency.default))
 
@@ -148,9 +148,9 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     private let effectRelay = BehaviorRelay<Effect>(value: .none)
 
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(kycTiersService: KYCTiersServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
@@ -173,19 +173,19 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             initialActiveInput: .fiat
         )
     }
-    
+
     // MARK: - Interactor
-    
+
     override func didLoad() {
-        
+
         let cryptoCurrencySelectionService = self.cryptoCurrencySelectionService
         let fiatCurrencyService = self.fiatCurrencyService
-        
+
         amountTranslationInteractor.effect
             .map(\.toBuyCryptoInteractorEffect)
             .bindAndCatch(to: effectRelay)
             .disposed(by: disposeBag)
-        
+
         state
             .flatMapLatest(weak: self) { (self, state) -> Observable<AmountTranslationInteractor.State> in
                 Single
@@ -224,7 +224,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     }
                     .asObservable()
             }
-            .do(onError: { [effectRelay] error in
+            .do(onError: { [effectRelay] _ in
                 if effectRelay.value == .none {
                     effectRelay.accept(.failure)
                 }
@@ -238,22 +238,22 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .bindAndCatch(to: amountTranslationInteractor.stateRelay)
             .disposed(by: disposeBag)
-        
+
         suggestedAmountsService.calculationState
             .compactMap { $0.value }
             .bindAndCatch(to: suggestedAmountsRelay)
             .disposed(by: disposeBag)
-        
+
         pairsService.fetch()
             .map { .value($0) }
             .catchErrorJustReturn(.invalid(.valueCouldNotBeCalculated))
             .startWith(.invalid(.empty))
             .bindAndCatch(to: pairsCalculationStateRelay)
             .disposed(by: disposeBag)
-        
+
         let pairs = pairsCalculationState
             .compactMap { $0.value }
-        
+
         let pairForCryptoCurrency = Observable
             .combineLatest(
                 pairs,
@@ -262,10 +262,10 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .map { (pairs, item) -> SupportedPairs.Pair? in
                 pairs.pairs(per: item.cryptoCurrency).first
             }
-        
+
         let preferredPaymentMethod = self.preferredPaymentMethodType
             .compactMap { $0 }
-        
+
         Observable
             .combineLatest(
                 preferredPaymentMethod,
@@ -275,16 +275,16 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 fiatCurrencyService.fiatCurrencyObservable
             )
             .map { (preferredPaymentMethod, fiat, crypto, pair, currency) -> State in
-                
+
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair else {
                     return .empty(currency: currency)
                 }
-                
+
                 let minFiatValue = pair.minFiatValue
                 let maxFiatValue: FiatValue
                 let paymentMethodId: String?
-                
+
                 switch preferredPaymentMethod {
                 case .card(let cardData):
                     maxFiatValue = cardData.topLimit
@@ -308,11 +308,11 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     maxFiatValue = data.topLimit
                     paymentMethodId = data.identifier
                 }
-                
+
                 guard fiat.currencyType == minFiatValue.currencyType && fiat.currencyType == maxFiatValue.currencyType else {
                     return .empty(currency: currency)
                 }
-                
+
                 if fiat.amount.isZero {
                     return .empty(currency: currency)
                 } else if try fiat > maxFiatValue {
@@ -326,7 +326,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     cryptoValue: crypto,
                     paymentMethodId: paymentMethodId
                 )
-                
+
                 return .inBounds(data: data, upperLimit: pair.maxFiatValue)
             }
             // Handle possible errors: it is unlikely to get here unless
@@ -338,12 +338,12 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         suggestedAmountsService.refresh()
     }
 
     // MARK: - Actions
-    
+
     func createOrder(from candidate: CandidateOrderDetails) -> Single<CheckoutData> {
         orderCreationService.create(using: candidate)
     }

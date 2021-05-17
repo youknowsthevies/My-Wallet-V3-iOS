@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class FooterTableViewCellPresenter {
-    
+
     public var identifier: String {
         content.text
     }
-    
+
     public let content: LabelContent
-    
+
     public init(text: String,
                 accessibility: Accessibility) {
         content = .init(

@@ -15,7 +15,7 @@ extension PaymentMethodRemovalData {
             type: .card
         )
     }
-    
+
     init(beneficiary: Beneficiary) {
         self.init(
             id: beneficiary.identifier,

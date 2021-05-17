@@ -3,29 +3,29 @@
 import RxSwift
 
 public final class WalletPayloadService: WalletPayloadServiceAPI {
-    
+
     // MARK: - Types
-    
+
     enum ServiceError: Error {
         case unspported2FAType
         case accountLocked
         case message(String)
     }
-    
+
     // MARK: - Properties
-    
+
     private let client: WalletPayloadClientAPI
     private let repository: WalletRepositoryAPI
 
     // MARK: - Setup
-    
+
     public init(client: WalletPayloadClientAPI = WalletPayloadClient(), repository: WalletRepositoryAPI) {
         self.client = client
         self.repository = repository
     }
-        
+
     // MARK: - API
-    
+
     public func requestUsingSessionToken() -> Single<AuthenticatorType> {
         Single
             .zip(repository.guid, repository.sessionToken)
@@ -39,7 +39,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
                 return self.request(guid: guid, sessionToken: sessionToken)
             }
     }
-    
+
     public func requestUsingSharedKey() -> Completable {
         Single
             .zip(repository.guid, repository.sharedKey)
@@ -53,7 +53,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
                 return self.request(guid: guid, sharedKey: sharedKey)
             }
     }
-    
+
     /// Performs the request using given parameters: guid and shared-key
     public func request(guid: String, sharedKey: String) -> Completable {
         client
@@ -63,7 +63,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             }
             .asCompletable()
     }
-    
+
     /// Performs the request using cached GUID and session-token
     private func request(guid: String, sessionToken: String) -> Single<AuthenticatorType> {
         client
@@ -71,7 +71,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
                 self.cacheWalletData(from: response)
             }
-            .map(weak: self) { (self, response) -> AuthenticatorType in
+            .map(weak: self) { (_, response) -> AuthenticatorType in
                 guard let type = AuthenticatorType(rawValue: response.authType) else {
                     throw ServiceError.unspported2FAType
                 }
@@ -90,7 +90,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
                 }
             }
     }
-    
+
     /// Used to cache the client response
     private func cacheWalletData(from clientResponse: WalletPayloadClient.ClientResponse) -> Single<WalletPayloadClient.ClientResponse> {
         Completable

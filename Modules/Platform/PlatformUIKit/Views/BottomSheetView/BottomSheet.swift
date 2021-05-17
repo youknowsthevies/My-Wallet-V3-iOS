@@ -7,7 +7,7 @@ public struct BottomSheet {
     public let dismissalTitle: String
     public let dismissable: Bool
     public let actions: [BottomSheetAction]
-    
+
     public init(
         title: String,
         dismissalTitle: String,
@@ -25,10 +25,10 @@ public struct BottomSheet {
 // `AlertView` and `BottomSheetView`. 
 public struct BottomSheetAction {
     public typealias Action = () -> Void
-    
+
     public let title: String
     public let metadata: ActionMetadata?
-    
+
     public init(title: String, metadata: ActionMetadata? = nil) {
         self.title = title
         self.metadata = metadata

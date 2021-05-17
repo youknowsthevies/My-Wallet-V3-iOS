@@ -3,7 +3,7 @@
 import PlatformKit
 
 extension CurrencyType {
-    
+
     public var logoImageName: String {
         switch self {
         case .crypto(let currency):
@@ -12,7 +12,7 @@ extension CurrencyType {
             return currency.logoImageName
         }
     }
-    
+
     public var brandColor: UIColor {
         switch self {
         case .crypto(let currency):

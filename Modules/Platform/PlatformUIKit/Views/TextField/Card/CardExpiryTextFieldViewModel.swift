@@ -3,9 +3,9 @@
 import ToolKit
 
 public final class CardExpiryTextFieldViewModel: TextFieldViewModel {
-            
+
     // MARK: - Setup
-    
+
     public init(messageRecorder: MessageRecording) {
         super.init(
             with: .expirationDate,

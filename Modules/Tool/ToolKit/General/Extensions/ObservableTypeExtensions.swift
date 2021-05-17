@@ -4,7 +4,7 @@ import RxSwift
 
 public protocol OptionalType {
     associatedtype Wrapped
-    
+
     var value: Wrapped? { get }
 }
 
@@ -52,7 +52,7 @@ extension ObservableType {
             return try selector(object, value)
         }
     }
-    
+
     public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
         flatMapFirst { [weak object] (value) -> Observable<R> in
             guard let object = object else {
@@ -92,13 +92,13 @@ extension ObservableType {
 // MARK: - Result<Element, Error> mapping
 
 extension ObservableType {
-    
+
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> Observable<Result<Element, Error>> {
         self.map { .success($0) }
             .catchError { .just(.failure($0)) }
     }
-    
+
     /// Map with success and failure mappers.
     /// This is useful in case we would like to have a custom error type.
     public func mapToResult<ResultElement, OutputError: Error>(
@@ -107,7 +107,7 @@ extension ObservableType {
         self.map { .success(successMap($0)) }
             .catchError { .just(.failure(errorMap($0))) }
     }
-    
+
     /// Map with success mapper only.
     public func mapToResult<ResultElement>(
         successMap: @escaping (Element) -> ResultElement) -> Observable<Result<ResultElement, Error>> {
@@ -119,7 +119,7 @@ extension ObservableType {
 import RxRelay
 
 extension ObservableType {
-    
+
     public func bindAndCatch(
         to relays: PublishRelay<Element>...,
         file: String = #file,
@@ -128,7 +128,7 @@ extension ObservableType {
     ) -> Disposable {
         _bind(to: relays, file: file, line: line, function: function)
     }
-    
+
     private func _bind(
         to relays: [PublishRelay<Element>],
         file: String = #file,
@@ -151,7 +151,7 @@ extension ObservableType {
             }
         }
     }
-    
+
     public func bindAndCatch(
         to relays: BehaviorRelay<Element>...,
         file: String = #file,
@@ -160,7 +160,7 @@ extension ObservableType {
     ) -> Disposable {
         _bind(to: relays, file: file, line: line, function: function)
     }
-    
+
     private func _bind(
         to relays: [BehaviorRelay<Element>],
         file: String = #file,
@@ -183,7 +183,7 @@ extension ObservableType {
             }
         }
     }
-    
+
     public func bindAndCatch(
         to relays: BehaviorRelay<Element?>...,
         file: String = #file,
@@ -192,7 +192,7 @@ extension ObservableType {
     ) -> Disposable {
         map { $0 as Element? }._bind(to: relays, file: file, line: line, function: function)
     }
-    
+
     public func bindAndCatch<Observer: ObserverType>(
         to observers: Observer...,
         file: String = #file,
@@ -201,7 +201,7 @@ extension ObservableType {
     ) -> Disposable where Observer.Element == Element {
         _bind(to: observers, file: file, line: line, function: function)
     }
-    
+
     public func bindAndCatch<Observer: ObserverType>(
         to observers: Observer...,
         file: String = #file,
@@ -210,7 +210,7 @@ extension ObservableType {
     ) -> Disposable where Observer.Element == Element? {
         map { $0 as Element? }._bind(to: observers, file: file, line: line, function: function)
     }
-    
+
     private func _bind<Observer: ObserverType>(
         to observers: [Observer],
         file: String = #file,
@@ -224,18 +224,18 @@ extension ObservableType {
             observers.forEach { $0.on(event) }
         }
     }
-    
+
     public func bindAndCatch<Result>(to binder: (Self) -> Result) -> Result {
         binder(self)
     }
 }
 
 extension ObservableType {
-    
+
     public func _debug(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
         debug("\(file).\(function)", trimOutput: false, file: file, line: line, function: function)
     }
-    
+
     public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
         self.do(onError: { error in
             fatalError(error.localizedDescription)

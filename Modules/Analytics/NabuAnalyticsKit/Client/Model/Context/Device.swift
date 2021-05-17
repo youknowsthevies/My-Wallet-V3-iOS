@@ -9,7 +9,7 @@ struct Device: Encodable {
     let model: String
     let name: String
     let type: String
-    
+
     init(device: UIDevice = UIDevice.current) {
         id = device.identifierForVendor?.uuidString
         manufacturer = "Apple"

@@ -5,7 +5,7 @@ import PlatformUIKit
 
 struct TodayExtensionSectionHeaderViewModel {
     let titleLabelContent: LabelContent
-    
+
     init(title: LabelContent) {
         self.titleLabelContent = title
     }
@@ -21,7 +21,7 @@ extension TodayExtensionSectionHeaderViewModel {
             accessibility: .none
         )
     )
-    
+
     static let prices: TodayExtensionSectionHeaderViewModel = .init(
         title: LabelContent(
             text: LocalizationConstants.TodayExtension.Headers.prices.uppercased(),

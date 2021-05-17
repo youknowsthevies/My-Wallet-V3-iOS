@@ -58,10 +58,10 @@ class FiatAsset: Asset {
     private var nonCustodialGroup: Single<AccountGroup> {
         unimplemented()
     }
-    
+
     /// We cannot transfer for fiat
     func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
         .just([])
     }
-    
+
 }

@@ -6,9 +6,9 @@ import ToolKit
 import WalletPayloadKit
 
 public final class PinLoginService: PinLoginServiceAPI {
-    
+
     // MARK: - Types
-    
+
     public typealias PasscodeRepositoryAPI = SharedKeyRepositoryAPI & GuidRepositoryAPI & PasswordRepositoryAPI
 
     /// Potential errors
@@ -26,9 +26,9 @@ public final class PinLoginService: PinLoginServiceAPI {
     private let service: WalletPayloadServiceAPI
     private let walletRepository: PasscodeRepositoryAPI
     private let walletCryptoService: WalletCryptoServiceAPI
-    
+
     // MARK: - Setup
-    
+
     public init(settings: AppSettingsAuthenticating,
                 service: WalletPayloadServiceAPI,
                 walletRepository: PasscodeRepositoryAPI,
@@ -38,7 +38,7 @@ public final class PinLoginService: PinLoginServiceAPI {
         self.walletRepository = walletRepository
         self.walletCryptoService = walletCryptoService
     }
-    
+
     public func password(from pinDecryptionKey: String) -> Single<String> {
         service
             .requestUsingSharedKey()
@@ -73,7 +73,7 @@ public final class PinLoginService: PinLoginServiceAPI {
                 )
             }
     }
-    
+
     /// Caches the passcode payload using wallet repository
     private func cache(passcodePayload: PasscodePayload) -> Completable {
         Completable

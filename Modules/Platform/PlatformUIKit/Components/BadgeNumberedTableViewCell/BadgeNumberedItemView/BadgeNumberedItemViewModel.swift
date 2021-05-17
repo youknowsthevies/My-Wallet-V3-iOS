@@ -4,7 +4,7 @@ public struct BadgeNumberedItemViewModel {
     let badgeViewModel: BadgeViewModel
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
-    
+
     public struct Descriptors {
         let titleFont: UIFont
         let titleTextColor: UIColor
@@ -14,7 +14,7 @@ public struct BadgeNumberedItemViewModel {
         let descriptionAccessibility: Accessibility
         let badgeAccessibilitySuffix: String
     }
-    
+
     public init(number: Int,
                 title: String,
                 description: String,
@@ -44,7 +44,7 @@ public struct BadgeNumberedItemViewModel {
 
 public extension BadgeNumberedItemViewModel.Descriptors {
     typealias Descriptors = BadgeNumberedItemViewModel.Descriptors
-    
+
     static func dashboard(badgeAccessibilitySuffix: String) -> Descriptors {
         Descriptors(
             titleFont: .main(.semibold, 16.0),

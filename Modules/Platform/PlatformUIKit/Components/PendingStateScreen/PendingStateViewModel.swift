@@ -11,7 +11,7 @@ public struct PendingStateViewModel {
         case circleError
         case success
         case custom(String)
-        
+
         public var name: String {
             switch self {
             case .circleError:
@@ -36,14 +36,14 @@ public struct PendingStateViewModel {
     let button: ButtonViewModel?
     let supplementaryButton: ButtonViewModel?
     let displayCloseButton: Bool
-    
+
     /// Steams the url upon each tap
     public var tap: Observable<URL> {
         subtitleTextViewModel
             .tap
             .map(\.url)
     }
-    
+
     static private func title(_ string: String) -> NSAttributedString {
         NSAttributedString(
             string,
@@ -51,7 +51,7 @@ public struct PendingStateViewModel {
             color: .titleText
         )
     }
-    
+
     public init(compositeStatusViewType: CompositeStatusViewType,
                 title: String,
                 subtitle: String,
@@ -66,7 +66,7 @@ public struct PendingStateViewModel {
         if let interactableText = interactibleText, let url = url {
             inputs.append(.url(string: interactableText, url: url))
         }
-        
+
         self.subtitleTextViewModel = .init(
             inputs: inputs,
             textStyle: .init(

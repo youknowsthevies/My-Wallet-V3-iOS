@@ -5,22 +5,22 @@ import RxRelay
 import RxSwift
 
 public final class EmailVerificationService: EmailVerificationServiceAPI {
-    
+
     // MARK: - Types
-    
+
     private enum ServiceError: Error {
         case emailNotVerified
         case pollCancelled
     }
 
     // MARK: - Properties
-    
+
     private let syncService: WalletNabuSynchronizerServiceAPI
     private let settingsService: SettingsServiceAPI & EmailSettingsServiceAPI
     private let isActiveRelay = BehaviorRelay<Bool>(value: false)
 
     // MARK: - Setup
-    
+
     init(syncService: WalletNabuSynchronizerServiceAPI = resolve(),
          settingsService: CompleteSettingsServiceAPI = resolve()) {
         self.syncService = syncService
@@ -35,20 +35,20 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                 return Disposables.create()
             }
     }
-    
+
     public func verifyEmail() -> Completable {
         start()
             .flatMapCompletable(weak: self) { (self, _) -> Completable in
                 self.syncService.sync()
             }
     }
-    
+
     public func requestVerificationEmail(to email: String, context: FlowContext?) -> Completable {
         settingsService
             .update(email: email, context: context)
             .andThen(syncService.sync())
     }
-    
+
     /// Start polling by triggering the wallet settings fetch
     private func start() -> Single<Void> {
         Single
@@ -59,7 +59,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
             }
             .flatMap(waitForVerification)
     }
-    
+
     /// Continues the polling only if it has not been cancelled
     private func `continue`() -> Single<Void> {
         isActiveRelay
@@ -75,7 +75,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                 self.settingsService.fetch(force: true).mapToVoid()
             }
     }
-    
+
     /// Returns a Single that upon subscription waits until the email is verified.
     /// Only when it streams a value (`Void`) the email is considered `verified`.
     private func waitForVerification() -> Single<Void> {
@@ -86,7 +86,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                     /// by converting it to a `Single`
                     .valueSingle
                     /// Make sure the email is verified, if not throw an error
-                    .map(weak: self) { (self, settings) -> Void in
+                    .map(weak: self) { (_, settings) -> Void in
                         guard settings.isEmailVerified else {
                             throw ServiceError.emailNotVerified
                         }

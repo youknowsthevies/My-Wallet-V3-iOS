@@ -20,9 +20,9 @@ import ToolKit
         return asset.legacy
     }
     private var cryptoCurrency: CryptoCurrency?
-    
+
     @objc weak var delegate: AssetTypeCellDelegate?
-    
+
     @IBOutlet private var assetImageView: UIImageView!
     @IBOutlet private var label: UILabel!
 

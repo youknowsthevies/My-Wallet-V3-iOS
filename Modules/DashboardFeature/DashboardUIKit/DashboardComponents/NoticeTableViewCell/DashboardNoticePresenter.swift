@@ -7,29 +7,29 @@ import RxRelay
 import RxSwift
 
 final class DashboardNoticePresenter {
-    
+
     // MARK: - Exposed Properties
-    
+
     /// Streams only distinct actions
     var action: Driver<DashboardItemDisplayAction<NoticeViewModel>> {
         actionRelay
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     // MARK: - Private Properties
-    
+
     let actionRelay = BehaviorRelay<DashboardItemDisplayAction<NoticeViewModel>>(value: .hide)
-    
+
     private let interactor: DashboardNoticeInteractor
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(interactor: DashboardNoticeInteractor = .init()) {
         self.interactor = interactor
     }
-    
+
     func refresh() {
         interactor.lockbox
             .subscribe(onSuccess: { [weak self] shouldDisplay in
@@ -39,7 +39,7 @@ final class DashboardNoticePresenter {
             })
             .disposed(by: disposeBag)
     }
-    
+
     private func displayLockboxNotice() {
         typealias LocalizedString = LocalizationConstants.Dashboard.Balance
         typealias AccessibilityId = Accessibility.Identifier.Dashboard.Notice

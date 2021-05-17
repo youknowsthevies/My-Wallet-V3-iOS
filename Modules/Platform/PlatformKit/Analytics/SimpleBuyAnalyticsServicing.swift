@@ -6,7 +6,7 @@
 import RxRelay
 
 public protocol SimpleBuyAnalayticsServicing {
-    
+
     func bind(_ relay: PublishRelay<Void>)
     func recordCustodyWalletCardShownEvent()
     func recordTradingWalletClicked(for currency: CryptoCurrency)

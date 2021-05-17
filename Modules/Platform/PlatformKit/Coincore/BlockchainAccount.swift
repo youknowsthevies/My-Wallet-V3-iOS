@@ -41,17 +41,17 @@ public protocol BlockchainAccount {
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
-    
+
     /// The `ReceiveAddress` for the given account
     var receiveAddress: Single<ReceiveAddress> { get }
-    
+
     /// The balance, not including uncleared and locked,
     /// that the user is able to utilize in a transaction
     var actionableBalance: Single<MoneyValue> { get }
-    
+
     /// Some wallets are double encrypted and have a second password.
     var requireSecondPassword: Single<Bool> { get }
-    
+
     /// The `CurrencyType` of the account
     var currencyType: CurrencyType { get }
 }
@@ -117,7 +117,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
                 }
         }
     }
-    
+
     public func flatMapFilter(excluding identifier: String) -> PrimitiveSequence<SingleTrait, Element> {
         flatMap { accounts -> Single<Element> in
             let elements: [Single<SingleAccount?>] = accounts.map { account in

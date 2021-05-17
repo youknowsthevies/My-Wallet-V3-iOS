@@ -11,9 +11,9 @@ import UIKit
 /// 4. Supports accessibility.
 /// - Tag: `ButtonViewModel`
 public struct ButtonViewModel {
-    
+
     // MARK: - Types
-    
+
     public struct Theme {
         public let backgroundColor: UIColor
         public let borderColor: UIColor
@@ -21,7 +21,7 @@ public struct ButtonViewModel {
         public let imageName: String?
         public let text: String
         public let contentInset: UIEdgeInsets
-        
+
         public init(backgroundColor: UIColor,
                     borderColor: UIColor = .clear,
                     contentColor: UIColor,
@@ -36,9 +36,9 @@ public struct ButtonViewModel {
             self.contentInset = contentInset
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// The theme of the view
     public var theme: Theme {
         get {
@@ -60,13 +60,13 @@ public struct ButtonViewModel {
             contentInsetRelay.accept(newValue.contentInset)
         }
     }
-    
+
     /// Accessibility for the button view
     public let accessibility: Accessibility
-    
+
     /// Corner radius
     public let cornerRadius: CGFloat
-    
+
     /// The font of the label
     public let font: UIFont
 
@@ -80,7 +80,7 @@ public struct ButtonViewModel {
 
     /// Observe the button enabled state
     public let isEnabledRelay = BehaviorRelay(value: true)
-    
+
     /// Is the button enabled
     public var isEnabled: Driver<Bool> {
         isEnabledRelay.asDriver()
@@ -110,50 +110,50 @@ public struct ButtonViewModel {
                 }
             }
     }
-    
+
     /// The background color relay
     public let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The background color of the button
     public var backgroundColor: Driver<UIColor> {
         backgroundColorRelay.asDriver()
     }
-    
+
     /// The content color relay
     public let contentColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The content color of the button, that includes image's and label's
     public var contentColor: Driver<UIColor> {
         contentColorRelay.asDriver()
     }
-    
+
     /// Border color relay
     public let borderColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The border color around the button
     public var borderColor: Driver<UIColor> {
         borderColorRelay.asDriver()
     }
-    
+
     /// The text relay
     public let textRelay = BehaviorRelay<String>(value: "")
-    
+
     /// Text to be displayed on the button
     public var text: Driver<String> {
         textRelay.asDriver()
     }
-    
+
     /// Name for the image
     public let imageName = BehaviorRelay<String?>(value: nil)
-    
+
     /// Streams events when the component is being tapped
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     /// Streams events when the component is being tapped
     public let tapRelay = PublishRelay<Void>()
-    
+
     /// The image corresponding to `imageName`, rendered as template
     public var image: Driver<UIImage?> {
         imageName.asDriver()
@@ -164,13 +164,13 @@ public struct ButtonViewModel {
                 return nil
         }
     }
-    
+
     /// Streams `true` if the view model contains an image
     public var containsImage: Observable<Bool> {
         imageName.asObservable()
             .map { $0 != nil }
     }
-    
+
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
     public init(font: UIFont = .main(.semibold, 16), cornerRadius: CGFloat = 8, accessibility: Accessibility) {
@@ -178,7 +178,7 @@ public struct ButtonViewModel {
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
     }
-    
+
     /// Set the theme using a mild fade animation
     public func animate(theme: Theme) {
         UIView.animate(
@@ -198,7 +198,7 @@ public struct ButtonViewModel {
 }
 
 extension ButtonViewModel {
-    
+
     /// Returns a primary button with text only
     public static func primary(
         with text: String,
@@ -222,7 +222,7 @@ extension ButtonViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a secondary button with text only
     public static func secondary(
         with text: String,
@@ -246,7 +246,7 @@ extension ButtonViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a destructive button with text only
     public static func destructive(
         with text: String,
@@ -265,7 +265,7 @@ extension ButtonViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a cancel button with text only
     public static func cancel(
         with text: String,

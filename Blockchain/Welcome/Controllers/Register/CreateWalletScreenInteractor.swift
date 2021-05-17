@@ -11,14 +11,14 @@ import ToolKit
 // TODO: Refactor this when the coordinators are refactored
 /// The interaction layer for wallet creation
 final class CreateWalletScreenInteractor: NSObject {
-    
+
     // MARK: - Exposed Properties
-    
+
     let contentStateRelay = BehaviorRelay(value: WalletRegistrationContent())
     var content: Observable<WalletRegistrationContent> {
         contentStateRelay.asObservable()
     }
-    
+
     /// Any error related to the interaction should be reflected to the presenter
     /// Since the JS is async and callbacks oriented, we
     /// want to use a relay to let the presentation layer
@@ -26,18 +26,18 @@ final class CreateWalletScreenInteractor: NSObject {
     var error: Observable<String> {
         errorRelay.asObservable()
     }
-    
+
     // MARK: - Injected
-    
+
     private let reachability: InternetReachabilityAPI
     private let analyticsRecorder: AnalyticsEventRecording
     private let wallet: Wallet
     private let walletManager: WalletManager
     private let authenticationCoordinator: AuthenticationCoordinator
     private let errorRelay = PublishRelay<String>()
-    
+
     // MARK: - Setup
-    
+
     init(reachability: InternetReachabilityAPI = InternetReachability(),
          analyticsRecorder: AnalyticsEventRecording =  resolve(),
          authenticationCoordinator: AuthenticationCoordinator = .shared,
@@ -62,9 +62,9 @@ extension CreateWalletScreenInteractor: RegisterWalletScreenInteracting {
         guard reachability.canConnect else {
             throw InternetReachability.ErrorType.internetUnreachable
         }
-        
+
         analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletCreation)
-        
+
         // Get callback when wallet is done loading
         // Continue in walletJSReady callback
         wallet.delegate = self
@@ -78,7 +78,7 @@ extension CreateWalletScreenInteractor: WalletDelegate {
     func walletJSReady() {
         wallet.newAccount(contentStateRelay.value.password, email: contentStateRelay.value.email)
     }
-    
+
     func didCreateNewAccount(_ guid: String!, sharedKey: String!, password: String!) {
         wallet.delegate = walletManager
 
@@ -94,7 +94,7 @@ extension CreateWalletScreenInteractor: WalletDelegate {
 
         BlockchainSettings.App.shared.hasEndedFirstSession = false
     }
-    
+
     func errorCreatingNewAccount(_ message: String!) {
         errorRelay.accept(message ?? "")
     }

@@ -7,13 +7,13 @@ import RxRelay
 import RxSwift
 
 class MockBitpayService: BitpayServiceProtocol {
-    
+
     let contentRelay = BehaviorRelay<URL?>(value: nil)
-    
+
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         Single.just(BitPayMemo(memo: "Test"))
     }
-    
+
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         Single.just(BitPayMemo(memo: "Test"))
     }

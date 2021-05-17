@@ -8,36 +8,36 @@ import ToolKit
 import UserNotifications
 
 final class RemoteNotificationAuthorizer {
-    
+
     // MARK: - Types
-    
+
     /// Any potential error that may be risen during authrorization request
     enum ServiceError: Error {
-    
+
         /// Any system error
         case system(Error)
-        
+
         /// End-user has not granted
         case permissionDenied
-        
+
         /// Thrown if the authorization status should be `.authorized` but it's not
         case unauthorizedStatus
-        
+
         /// Authrization was already granted / refused
         case statusWasAlreadyDetermined
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let application: UIApplicationRemoteNotificationsAPI
     private let analyticsRecorder: AnalyticsEventRecording
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let options: UNAuthorizationOptions
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
@@ -49,7 +49,7 @@ final class RemoteNotificationAuthorizer {
     }
 
     // MARK: - Private Accessors
-    
+
     private func requestAuthorization() -> Single<Void> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
@@ -71,7 +71,7 @@ final class RemoteNotificationAuthorizer {
                 return Disposables.create()
         }
     }
-    
+
     private var isNotDetermined: Single<Bool> {
         status.map { $0 == .notDetermined }
     }
@@ -131,7 +131,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
                 return ()
             }
             .observeOn(MainScheduler.instance)
-            .flatMap(weak: self) { (self, status) -> Single<Void> in
+            .flatMap(weak: self) { (self, _) -> Single<Void> in
                 self.requestAuthorization()
             }
             .observeOn(MainScheduler.instance)

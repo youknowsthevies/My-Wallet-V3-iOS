@@ -12,7 +12,7 @@ protocol LedgersServiceProviderAPI: AnyObject {
 final class LedgersServiceProvider: LedgersServiceProviderAPI {
 
     private let configurationService: StellarConfigurationAPI
-    
+
     public init(configurationService: StellarConfigurationAPI = resolve()) {
         self.configurationService = configurationService
     }

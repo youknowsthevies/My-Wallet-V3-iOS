@@ -9,19 +9,19 @@ import RxSwift
 /// that takes a `AssetLineChartUserInteracting`. This allows the view to be
 /// updated with price selections as the user interacts with the `LineChartView`
 public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
-    
+
     public typealias InteractionState = DashboardAsset.State.AssetPrice.Interaction
-    
+
     // MARK: - Exposed Properties
-    
+
     public var state: Observable<InteractionState> {
          _ = setup
         return stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
@@ -31,7 +31,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
             .map { tuple -> InteractionState in
                 let calculationState = tuple.0
                 let userInteractionState = tuple.1
-                
+
                 switch (calculationState, userInteractionState) {
                 case (.calculating, _),
                      (.invalid, _):
@@ -61,7 +61,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                     guard let selected = prices.last else { return .loading }
                     let priceInFiatValue = try PriceQuoteAtTime(response: selected, currency: fiatCurrency)
                     let adjusted = HistoricalPriceSeries(currency: historicalPrices.currency, prices: prices)
-                    
+
                     let fiatChange = FiatValue.create(
                         major: adjusted.fiatChange,
                         currency: fiatCurrency
@@ -81,15 +81,15 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     private let historicalPriceProvider: HistoricalFiatPriceServiceAPI
     private let chartUserInteracting: AssetLineChartUserInteracting
-    
+
     // MARK: - Setup
-    
+
     public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI,
                 chartUserInteracting: AssetLineChartUserInteracting) {
         self.historicalPriceProvider = historicalPriceProvider

@@ -5,17 +5,17 @@ import RxRelay
 import RxSwift
 
 final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
-    
+
     private let fiatCurrencyRelay: BehaviorRelay<FiatCurrency>
-    
+
     var fiatCurrencyObservable: Observable<FiatCurrency> {
         fiatCurrencyRelay.asObservable()
     }
-    
+
     var fiatCurrency: Single<FiatCurrency> {
         fiatCurrencyRelay.take(1).asSingle()
     }
-    
+
     var legacyCurrency: FiatCurrency? {
         fiatCurrencyRelay.value
     }
@@ -24,7 +24,7 @@ final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
         fiatCurrencyRelay.accept(currency)
         return .empty()
     }
-    
+
     init(expectedCurrency: FiatCurrency) {
         fiatCurrencyRelay = BehaviorRelay(value: expectedCurrency)
     }

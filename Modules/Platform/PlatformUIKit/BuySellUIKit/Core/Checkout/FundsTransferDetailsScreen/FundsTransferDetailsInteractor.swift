@@ -15,20 +15,20 @@ protocol FundsTransferDetailsInteractorAPI: AnyObject {
 }
 
 final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInteractorAPI {
-                        
+
     // MARK: - Properties
-    
+
     var state: Observable<FundsTransferDetailsInteractionState> {
         _ = setup
         return paymentAccountRelay.compactMap { $0 }
     }
-    
+
     let fiatCurrency: FiatCurrency
-    
+
     private let paymentAccountService: PaymentAccountServiceAPI
     private let paymentAccountRelay = BehaviorRelay<FundsTransferDetailsInteractionState>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
-    
+
     private lazy var setup: Void = {
         paymentAccountService.paymentAccount(for: fiatCurrency)
             .asObservable()
@@ -38,9 +38,9 @@ final class InteractiveFundsTransferDetailsInteractor: FundsTransferDetailsInter
             .bindAndCatch(to: paymentAccountRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Setup
-    
+
     init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
          fiatCurrency: FiatCurrency) {
         self.paymentAccountService = paymentAccountService

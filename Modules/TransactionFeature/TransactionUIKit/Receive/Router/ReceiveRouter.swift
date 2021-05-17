@@ -11,9 +11,9 @@ final class ReceiveRouter: ReceiveRouterAPI {
     private typealias LocalizedString = LocalizationConstants.Receive
 
     private let navigationRouter: NavigationRouterAPI
-    
+
     private let webViewService: WebViewServiceAPI
-    
+
     private let disposeBag = DisposeBag()
 
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
@@ -37,7 +37,7 @@ final class ReceiveRouter: ReceiveRouterAPI {
             .disposed(by: disposeBag)
         navigationRouter.present(viewController: nav)
     }
-    
+
     func presentKYCScreen() {
         let presenter = ReceiveKYCPresenter()
         let viewController = DetailsScreenViewController(presenter: presenter)

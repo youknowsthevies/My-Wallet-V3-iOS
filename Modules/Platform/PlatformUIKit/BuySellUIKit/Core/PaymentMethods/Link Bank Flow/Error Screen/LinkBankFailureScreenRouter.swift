@@ -8,7 +8,7 @@ protocol LinkBankFailureScreenInteractable: Interactable {
 }
 
 protocol LinkBankFailureScreenViewControllable: ViewControllable {
-    
+
 }
 
 final class LinkBankFailureScreenRouter: ViewableRouter<LinkBankFailureScreenInteractable, LinkBankFailureScreenViewControllable>,

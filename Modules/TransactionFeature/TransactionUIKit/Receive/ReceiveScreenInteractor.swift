@@ -7,7 +7,7 @@ import RxSwift
 import TransactionKit
 
 final class ReceiveScreenInteractor {
-    
+
     struct State {
         let metadata: CryptoAssetQRMetadata
         let memo: String?
@@ -15,7 +15,7 @@ final class ReceiveScreenInteractor {
 
     let account: SingleAccount
     let receiveRouter: ReceiveRouterAPI
-    
+
     var state: Single<State> {
         account.receiveAddress
             .map { address -> State in

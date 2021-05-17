@@ -12,29 +12,29 @@ import ToolKit
 class StellarAccountService: StellarAccountAPI {
 
     // MARK: AccountBalanceFetching
-    
+
     var accountType: SingleAccountType {
         .nonCustodial
     }
-    
+
     var balance: Single<CryptoValue> {
         currentStellarAccount(fromCache: false)
             .map(\.assetAccount.balance)
     }
-    
+
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
             .asObservable()
     }
-    
+
     var pendingBalanceMoney: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .stellar))
     }
-    
+
     var balanceMoney: Single<MoneyValue> {
         balance.moneyValue
     }
-    
+
     var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
     }
@@ -85,7 +85,7 @@ class StellarAccountService: StellarAccountAPI {
     }
 
     // MARK: Public Functions
-    
+
     func clear() {
         self.disposeBag = DisposeBag()
         privateAccountCache
@@ -99,9 +99,9 @@ class StellarAccountService: StellarAccountAPI {
     }
 
     private func accountResponse(for accountID: String) -> Single<AccountResponse> {
-        service.flatMap(weak: self) { (self, service) -> Single<AccountResponse> in
+        service.flatMap(weak: self) { (_, service) -> Single<AccountResponse> in
             Single<AccountResponse>.create { event -> Disposable in
-                service.getAccountDetails(accountId: accountID, response: { response -> (Void) in
+                service.getAccountDetails(accountId: accountID, response: { response -> Void in
                     switch response {
                     case .success(details: let details):
                         event(.success(details))

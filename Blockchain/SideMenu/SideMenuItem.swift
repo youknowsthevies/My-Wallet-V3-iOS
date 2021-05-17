@@ -24,7 +24,7 @@ enum SideMenuItem {
 }
 
 extension SideMenuItem {
-    
+
     var analyticsEvent: AnalyticsEvents.SideMenu {
         switch self {
         case .accountsAndAddresses:
@@ -54,7 +54,7 @@ extension SideMenuItem {
             return .sideNavSecureChannel
         }
     }
-    
+
     var title: String {
         switch self {
         case .accountsAndAddresses:
@@ -116,7 +116,7 @@ extension SideMenuItem {
     var image: UIImage {
         UIImage(named: imageName)!
     }
-    
+
     var isNew: Bool {
         switch self {
         case .accountsAndAddresses,

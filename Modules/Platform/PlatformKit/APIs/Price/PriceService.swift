@@ -26,7 +26,7 @@ public class PriceService: PriceServiceAPI {
     public init(client: PriceClientAPI) {
         self.client = client
     }
-    
+
     public func moneyValuePair(base fiatValue: FiatValue, cryptoCurrency: CryptoCurrency, usesFiatAsBase: Bool) -> Single<MoneyValuePair> {
         price(for: cryptoCurrency, in: fiatValue.currency)
             .map(\.moneyValue)
@@ -36,12 +36,12 @@ public class PriceService: PriceServiceAPI {
                                   cryptoCurrency: cryptoCurrency,
                                   usesFiatAsBase: usesFiatAsBase) }
     }
-    
+
     public func price(for baseCurrency: Currency,
                       in quoteCurrency: Currency) -> Single<PriceQuoteAtTime> {
         self.price(for: baseCurrency, in: quoteCurrency, at: nil)
     }
-    
+
     public func price(for baseCurrency: Currency,
                       in quoteCurrency: Currency,
                       at date: Date? = nil) -> Single<PriceQuoteAtTime> {
@@ -66,7 +66,7 @@ public class PriceService: PriceServiceAPI {
             .price(for: baseCurrency.code, in: quoteCurrency.code, at: timestamp)
             .map { try PriceQuoteAtTime(response: $0, currency: quoteCurrency) }
     }
-    
+
     private func price(for baseCurrency: FiatCurrency,
                        in quoteCurrency: FiatCurrency,
                        at date: Date? = nil) -> Single<PriceQuoteAtTime> {
@@ -79,7 +79,7 @@ public class PriceService: PriceServiceAPI {
             .price(for: conversionCurrency.code, in: baseCurrency.code, at: timestamp)
         let quotePrice = client
             .price(for: conversionCurrency.code, in: quoteCurrency.code, at: timestamp)
-        
+
         return Single
             .zip(basePrice, quotePrice)
             .map { (basePrice, quotePrice) in
@@ -91,7 +91,7 @@ public class PriceService: PriceServiceAPI {
                 )
             }
     }
-    
+
     public func priceSeries(within window: PriceWindow,
                             of baseCurrency: CryptoCurrency,
                             in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {

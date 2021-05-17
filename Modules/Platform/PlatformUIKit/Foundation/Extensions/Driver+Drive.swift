@@ -23,7 +23,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
             }
         )
     }
-    
+
     public func drive<A: AnyObject>(weak object: A,
                                     onNext: ((A, Element) -> Void)? = nil) -> Disposable {
         self.drive(
@@ -33,7 +33,7 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
             }
         )
     }
-    
+
     public func drive<A: AnyObject>(weak object: A,
                                     onNext: ((A) -> Void)? = nil) -> Disposable {
         self.drive(
@@ -44,4 +44,3 @@ extension SharedSequenceConvertibleType where Self.SharingStrategy == RxCocoa.Dr
         )
     }
 }
-

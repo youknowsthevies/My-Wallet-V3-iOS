@@ -6,21 +6,21 @@ import RxSwift
 import ToolKit
 
 public final class FiatCustodialBalanceViewInteractor {
-                
+
     public var currency: Observable<FiatCurrency> {
         guard case CurrencyType.fiat(let currency) = balance.base.currencyType else {
             fatalError("The base currency of `FiatCustodialBalanceViewInteractor` must be a fiat currency type")
         }
         return .just(currency)
     }
-    
+
     public var identifier: String {
         balance.debugDescription
     }
-    
+
     let balanceViewInteractor: FiatBalanceViewInteractor
     let balance: MoneyValueBalancePairs
-    
+
     public init(balance: MoneyValueBalancePairs) {
         self.balance = balance
         balanceViewInteractor = FiatBalanceViewInteractor(balance: balance)

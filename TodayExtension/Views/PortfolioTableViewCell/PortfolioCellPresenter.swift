@@ -4,10 +4,10 @@ import PlatformKit
 import PlatformUIKit
 
 final class PortfolioCellPresenter {
-    
+
     let balanceContent: LabelContent
     let deltaContent: LabelContent
-    
+
     init(interactor: PortfolioCellInteractor) {
         balanceContent = .init(
             text: interactor.balanceFiatValue.displayString,

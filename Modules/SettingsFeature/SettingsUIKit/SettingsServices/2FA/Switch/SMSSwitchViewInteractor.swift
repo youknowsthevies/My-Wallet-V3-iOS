@@ -9,20 +9,20 @@ import RxSwift
 import ToolKit
 
 final class SMSSwitchViewInteractor: SwitchViewInteracting {
-    
+
     typealias InteractionState = LoadingState<SwitchInteractionAsset>
-    
+
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     let switchTriggerRelay = PublishRelay<Bool>()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
 
     init(service: SMSTwoFactorSettingsServiceAPI & SettingsServiceAPI) {
-        
+
         service.valueObservable
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
@@ -30,12 +30,12 @@ final class SMSSwitchViewInteractor: SwitchViewInteracting {
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         switchTriggerRelay
             .map { _ in .loading }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         switchTriggerRelay
             .flatMap {
                 service
@@ -48,7 +48,7 @@ final class SMSSwitchViewInteractor: SwitchViewInteracting {
 }
 
 fileprivate extension LoadingState where Content == (SwitchInteractionAsset) {
-    
+
     /// Initializer that receives the interaction state and
     /// maps it to `self`
     init(with state: ValueCalculationState<WalletSettings>) {
@@ -61,4 +61,3 @@ fileprivate extension LoadingState where Content == (SwitchInteractionAsset) {
         }
     }
 }
-

@@ -10,11 +10,11 @@ public enum CardType: String {
     case discover = "DISCOVER"
     case jcb = "JCB"
     case unknown
-    
+
     public static let all: Set<CardType> = [.visa, .mastercard, .amex, .diners, .discover, .jcb]
-    
+
     public static let maxPossibleLength = 19
-    
+
     public static func determineType(from number: String) -> CardType {
         let type = CardType.all.first(where: { type in
             for prefix in type.prefixes {
@@ -26,7 +26,7 @@ public enum CardType: String {
         })
         return type ?? .unknown
     }
-      
+
     public var isKnown: Bool {
         switch self {
         case .unknown:
@@ -35,7 +35,7 @@ public enum CardType: String {
             return true
         }
     }
-    
+
     public var regex: String {
         switch self {
         case .visa:
@@ -54,7 +54,7 @@ public enum CardType: String {
             return "^.*$"
         }
     }
-    
+
     public var prefixes: Set<String> {
         switch self {
         case .visa:
@@ -73,7 +73,7 @@ public enum CardType: String {
             return []
         }
     }
-    
+
     public var cvvLength: Int {
         switch self {
         case .amex:
@@ -84,7 +84,7 @@ public enum CardType: String {
             return 3
         }
     }
-    
+
     public var name: String {
         typealias LocalizedString = LocalizationConstants.TextField.CardType
         switch self {
@@ -105,4 +105,3 @@ public enum CardType: String {
         }
     }
 }
-

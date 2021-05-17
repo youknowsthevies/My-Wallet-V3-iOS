@@ -1,17 +1,17 @@
 import SwiftUI
 
 public struct FormTextFieldGroup: View {
-    
+
     public let title: String
     public let text: Binding<String>
     public let textPlaceholder: String
-    
+
     public init(title: String, text: Binding<String>, textPlaceholder: String = "") {
         self.title = title
         self.text = text
         self.textPlaceholder = textPlaceholder
     }
-    
+
     public var body: some View {
         VStack(
             alignment: .leading,
@@ -27,7 +27,7 @@ public struct FormTextFieldGroup: View {
 
 #if DEBUG
 struct FormTextFieldGroupDemoView: View {
-    
+
     var body: some View {
         VStack {
             FormTextFieldGroup(

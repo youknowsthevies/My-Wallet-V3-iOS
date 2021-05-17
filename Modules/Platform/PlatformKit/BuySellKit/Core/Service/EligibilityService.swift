@@ -6,20 +6,20 @@ import RxSwift
 import ToolKit
 
 final class EligibilityService: EligibilityServiceAPI {
-    
+
     // MARK: - Properties
-    
+
     public var isEligible: Single<Bool> {
         isEligibileValue.valueSingle
     }
-    
+
     private let isEligibileValue: CachedValue<Bool>
     private let client: EligibilityClientAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: EligibilityClientAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
@@ -33,7 +33,7 @@ final class EligibilityService: EligibilityServiceAPI {
                 fetchNotificationName: .login
             )
         )
-        
+
         isEligibileValue.setFetch(weak: self) { (self) in
             self.reactiveWallet.waitUntilInitializedSingle
                 .flatMap(weak: self) { (self, _) -> Single<Bool> in

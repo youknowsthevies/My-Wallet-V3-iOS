@@ -10,4 +10,3 @@ extension CustodialAccountBalance {
         self = .init(minorValue: balance, currencyType: .crypto(currency))
     }
 }
-

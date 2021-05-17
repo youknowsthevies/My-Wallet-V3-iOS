@@ -10,11 +10,11 @@ extension KYC {
         public var isTier2Approved: Bool {
             latestApprovedTier == .tier2
         }
-        
+
         public var isTier1Approved: Bool {
             latestApprovedTier == .tier1
         }
-        
+
         public init(tiers: [KYC.UserTier]) {
             self.tiers = tiers
         }
@@ -25,7 +25,7 @@ extension KYC {
                 .first(where: { $0.tier == tier })
                 .flatMap { $0.state.accountStatus } ?? .none
         }
-        
+
         /// Returns the latest tier, approved OR in progress (pending || in-review)
         public var latestTier: KYC.Tier {
             guard tierAccountStatus(for: .tier1).isInProgressOrApproved else {
@@ -36,7 +36,7 @@ extension KYC {
             }
             return .tier2
         }
-        
+
         /// Returns the latest approved tier
         public var latestApprovedTier: KYC.Tier {
             guard tierAccountStatus(for: .tier1).isApproved else {

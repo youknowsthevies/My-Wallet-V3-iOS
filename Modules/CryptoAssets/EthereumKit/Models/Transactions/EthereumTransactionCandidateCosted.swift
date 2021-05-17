@@ -6,7 +6,7 @@ import WalletCore
 
 public struct EthereumTransactionCandidateCosted {
     let transaction: EthereumSigningInput
-    
+
     init(transaction: EthereumTransactionCandidate, nonce: BigUInt) throws {
         guard transaction.gasPrice > 0 else {
             throw EthereumKitValidationError.noGasPrice

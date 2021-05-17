@@ -4,13 +4,13 @@ struct OrderQuoteRequest: Encodable {
     let product: Product
     let direction: OrderDirection
     let pair: OrderPair
-    
+
     enum CodingKeys: CodingKey {
         case product
         case direction
         case pair
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(product, forKey: .product)

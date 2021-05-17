@@ -14,7 +14,7 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = .bitcoinCash
     let isDefault: Bool
-    
+
     var pendingBalance: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .bitcoinCash))
     }
@@ -49,7 +49,7 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 }
                 return account
             }
-        
+
         return Single.zip(receiveAddress, account)
             .map { [label, onTxCompleted] (address, account) -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinCashToken>(

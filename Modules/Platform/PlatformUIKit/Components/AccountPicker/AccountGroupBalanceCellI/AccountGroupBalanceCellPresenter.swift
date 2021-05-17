@@ -6,11 +6,11 @@ import RxCocoa
 import RxSwift
 
 final class AccountGroupBalanceCellPresenter {
-    
+
     typealias AccessibilityId = Accessibility.Identifier.Activity.WalletBalance
-    
+
     // MARK: - Properties
-    
+
     /// Returns the `Description`
     var description: Driver<LabelContent> {
         Driver.just(
@@ -23,7 +23,7 @@ final class AccountGroupBalanceCellPresenter {
             )
         )
     }
-    
+
     /// Returns the `Title`
     var title: Driver<LabelContent> {
         Driver.just(
@@ -36,24 +36,24 @@ final class AccountGroupBalanceCellPresenter {
             )
         )
     }
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.cell)
     let badgeImageViewModel: BadgeImageViewModel
     let walletBalanceViewPresenter: WalletBalanceViewPresenter
-    
+
     // MARK: - Private Properties
 
     private let account: AccountGroup
     private let interactor: AccountGroupBalanceCellInteractor
     private let imageViewVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    
+
     init(account: AccountGroup, interactor: AccountGroupBalanceCellInteractor) {
         self.account = account
         self.interactor = interactor
         self.walletBalanceViewPresenter = WalletBalanceViewPresenter(
             interactor: interactor.balanceViewInteractor
         )
-        
+
         self.badgeImageViewModel = .primary(
             with: "icon-card",
             cornerRadius: .round,

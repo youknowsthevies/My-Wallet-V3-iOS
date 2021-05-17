@@ -5,11 +5,11 @@ import PlatformKit
 import RxSwift
 
 public final class KYCPager: KYCPagerAPI {
-    
+
     private let dataRepository: DataRepositoryAPI
     private(set) public var tier: KYC.Tier
     private(set) public var tiersResponse: KYC.UserTiers
-    
+
     public init(
         dataRepository: DataRepositoryAPI = resolve(),
         tier: KYC.Tier,
@@ -19,7 +19,7 @@ public final class KYCPager: KYCPagerAPI {
         self.tier = tier
         self.tiersResponse = tiersResponse
     }
-    
+
     public func nextPage(from page: KYCPageType, payload: KYCPagePayload?) -> Maybe<KYCPageType> {
         // Get country from payload if present
         var kycCountry: CountryData?

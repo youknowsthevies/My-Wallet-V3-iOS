@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class BadgeNumberedItemView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: BadgeNumberedItemViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -12,33 +12,33 @@ public final class BadgeNumberedItemView: UIView {
             descriptionLabel.content = viewModel.descriptionLabelContent
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     fileprivate let badgeView = BadgeView()
     private let stackView = UIStackView()
     private let titleLabel = UILabel()
     private let descriptionLabel = UILabel()
-    
+
     // MARK: - Init
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         addSubview(badgeView)
         addSubview(stackView)
-        
+
         badgeView.layout(size: .init(edge: Sizing.badge))
         badgeView.layoutToSuperview(.leading, .top)
-        
+
         stackView.axis = .vertical
         stackView.spacing = 4.0
         stackView.layout(edge: .leading, to: .trailing, of: badgeView, offset: Spacing.inner)

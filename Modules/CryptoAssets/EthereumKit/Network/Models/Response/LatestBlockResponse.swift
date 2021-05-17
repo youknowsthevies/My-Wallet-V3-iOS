@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct LatestBlockResponse: Decodable {
-    
+
     /// The latest block number
     public let number: Int
 

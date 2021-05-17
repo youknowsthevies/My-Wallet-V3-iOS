@@ -3,9 +3,9 @@
 import ToolKit
 
 public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
-    
+
     // MARK: - Public Properties
-    
+
     public let asset: CryptoCurrency
     public let address: String
     public let amount: CryptoValue
@@ -14,7 +14,7 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
     public var label: String {
         "BitPay\(merchant)"
     }
-    
+
     public var expirationTimeInSeconds: TimeInterval {
         guard let expiryDate = DateFormatter.utcSessionDateFormat.date(from: expires) else {
             fatalError("Expected a date: \(expires)")
@@ -25,13 +25,13 @@ public final class BitPayInvoiceTarget: InvoiceTarget, CryptoReceiveAddress {
         }
         return TimeInterval(seconds)
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let expires: String
-    
+
     // MARK: - Init
-    
+
     public init(asset: CryptoCurrency,
                 amount: CryptoValue,
                 invoiceId: String,

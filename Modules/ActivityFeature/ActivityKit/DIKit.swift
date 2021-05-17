@@ -13,18 +13,18 @@ import StellarKit
 extension DependencyContainer {
 
     public static var activityKit = module {
-        
+
         factory { TransactionDetailService() as TransactionDetailServiceAPI }
-        
+
         factory { ActivityServiceContainer() as ActivityServiceContaining }
-        
+
         // MARK: Public
-        
+
         factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
             let ethereumActivityFetcher: EthereumActivityItemEventDetailsFetcher = DIKit.resolve()
             return AnyActivityItemEventDetailsFetcher(api: ethereumActivityFetcher)
         }
-        
+
         factory { () -> AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> in
             let stellarActivityFetcher: StellarActivityItemEventDetailsFetcher = DIKit.resolve()
             return AnyActivityItemEventDetailsFetcher(api: stellarActivityFetcher)
@@ -34,26 +34,26 @@ extension DependencyContainer {
             let bitcoinActivityFetcher: BitcoinActivityItemEventDetailsFetcher = DIKit.resolve()
             return AnyActivityItemEventDetailsFetcher(api: bitcoinActivityFetcher)
         }
-        
+
         factory { () -> AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> in
             let bitcoinCashActivityFetcher: BitcoinCashActivityItemEventDetailsFetcher = DIKit.resolve()
             return AnyActivityItemEventDetailsFetcher(api: bitcoinCashActivityFetcher)
         }
-        
+
         // MARK: Private
-        
+
         factory { () -> ActivityProviding in
-            
+
             let euroEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.EUR))
             let gbpEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.GBP))
             let usdEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.USD))
-            
+
             let cryptos = CryptoCurrency.allCases
                 .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
                     let component: CryptoItemEventServiceAPI = DIKit.resolve(tag: cryptoCurrency)
                     result[cryptoCurrency] = component
                 }
-            
+
             return ActivityProvider(
                 fiats: [
                     FiatCurrency.EUR: euroEventService,
@@ -63,9 +63,9 @@ extension DependencyContainer {
                 cryptos: cryptos
             )
         }
-        
+
         factory { EmptyTransactionalActivityItemEventService() }
-        
+
         factory { EmptySwapActivityItemEventService() }
 
         factory(tag: CryptoCurrency.aave) { () -> CryptoItemEventServiceAPI in
@@ -79,27 +79,27 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.polkadot) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.polkadot()
         }
-        
+
         factory(tag: CryptoCurrency.bitcoin) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.bitcoin()
         }
-        
+
         factory(tag: CryptoCurrency.bitcoinCash) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.bitcoinCash()
         }
-        
+
         factory(tag: CryptoCurrency.tether) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.erc20(token: TetherToken.self)
         }
-        
+
         factory(tag: CryptoCurrency.pax) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.erc20(token: PaxToken.self)
         }
-        
+
         factory(tag: CryptoCurrency.ethereum) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.ethereum()
         }
-        
+
         factory(tag: CryptoCurrency.stellar) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.stellar()
         }
@@ -118,15 +118,15 @@ extension CryptoEventService {
     fileprivate static func algorand() -> CryptoItemEventServiceAPI {
         custodial(currency: .algorand)
     }
-    
+
     fileprivate static func bitcoin(eventsService: BitcoinTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
         custodialNonCustodial(currency: .bitcoin, eventsService: eventsService)
     }
-    
+
     fileprivate static func bitcoinCash(eventsService: BitcoinCashTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
         custodialNonCustodial(currency: .bitcoinCash, eventsService: eventsService)
     }
-    
+
     fileprivate static func ethereum(eventsService: EthereumTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
         custodialNonCustodial(currency: .ethereum, eventsService: eventsService)
     }

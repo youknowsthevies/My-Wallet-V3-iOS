@@ -13,19 +13,19 @@ extension Reactive where Base: UISegmentedControl {
             segmentedControl.setBackgroundImage(backgroundImage, for: .normal, barMetrics: .default)
         }
     }
-    
+
     public var selectedTextAttributes: Binder<[NSAttributedString.Key: Any]?> {
         Binder(base) { segmentedControl, textAttributes in
             segmentedControl.setTitleTextAttributes(textAttributes, for: .selected)
         }
     }
-    
+
     public var normalTextAttributes: Binder<[NSAttributedString.Key: Any]?> {
         Binder(base) { segmentedControl, textAttributes in
             segmentedControl.setTitleTextAttributes(textAttributes, for: .normal)
         }
     }
-    
+
     public var dividerColor: Binder<UIColor?> {
         Binder(base) { segmentedControl, dividerColor in
             guard let color = dividerColor else { return }

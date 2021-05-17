@@ -14,18 +14,18 @@ final class AirdropStatusScreenInteractor {
     var calculationState: Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
         calculationStateRelay.asObservable()
     }
-    
+
     // MARK: - Injected Properties
-    
+
     private let service: AirdropCenterServiceAPI
-    
+
     // MARK: - Rx Accessors
-    
+
     private let calculationStateRelay = BehaviorRelay<ValueCalculationState<AirdropCampaigns.Campaign>>(value: .calculating)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(service: AirdropCenterServiceAPI = resolve(),
          campaignName: AirdropCampaigns.Campaign.Name) {
         self.service = service

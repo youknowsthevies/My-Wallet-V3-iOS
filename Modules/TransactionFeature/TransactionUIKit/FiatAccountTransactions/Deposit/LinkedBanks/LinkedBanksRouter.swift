@@ -14,7 +14,7 @@ protocol LinkedBanksViewControllable: ViewControllable {
 }
 
 final class LinkedBanksRouter: ViewableRouter<LinkedBanksInteractable, LinkedBanksViewControllable>, LinkedBanksRouting {
-    
+
     override init(interactor: LinkedBanksInteractable, viewController: LinkedBanksViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self

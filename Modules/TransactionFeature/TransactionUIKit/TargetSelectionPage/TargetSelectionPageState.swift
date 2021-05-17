@@ -8,7 +8,7 @@ enum TargetSelectionPageStep: Equatable {
     case complete
     case qrScanner
     case closed
-    
+
     var addToBackStack: Bool {
         switch self {
         case .closed,
@@ -21,9 +21,9 @@ enum TargetSelectionPageStep: Equatable {
 }
 
 struct TargetSelectionPageState: Equatable, StateType {
-    
+
     static let empty = TargetSelectionPageState()
-    
+
     var nextEnabled: Bool = false
     var isGoingBack: Bool = false
     var inputValidated: TargetSelectionInputValidation = .empty
@@ -36,13 +36,13 @@ struct TargetSelectionPageState: Equatable, StateType {
             isGoingBack = false
         }
     }
-    
+
     var inputRequiresAddressValidation: Bool {
         inputValidated.requiresValidation
     }
     // TODO: Handle alternate destination type
     // of an address
-    
+
     static func == (lhs: TargetSelectionPageState, rhs: TargetSelectionPageState) -> Bool {
         lhs.nextEnabled == rhs.nextEnabled &&
         lhs.destination?.label == rhs.destination?.label &&

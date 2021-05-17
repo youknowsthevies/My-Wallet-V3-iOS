@@ -10,19 +10,19 @@ public protocol OrderQuoteServiceAPI: class {
 }
 
 final class OrderQuoteService: OrderQuoteServiceAPI {
-    
+
     // MARK: - Properties
-    
+
     private let client: QuoteClientAPI
 
     // MARK: - Setup
-    
+
     init(client: QuoteClientAPI = resolve()) {
         self.client = client
     }
-    
+
     // MARK: - API
-    
+
     func getQuote(for action: Order.Action,
                   cryptoCurrency: CryptoCurrency,
                   fiatValue: FiatValue) -> Single<Quote> {

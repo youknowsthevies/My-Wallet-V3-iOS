@@ -11,11 +11,11 @@ final class BitcoinWalletAccountRepository {
     var defaultAccount: Single<BitcoinWalletAccount> {
         bridge.defaultWallet
     }
-    
+
     var accounts: Single<[BitcoinWalletAccount]> {
         bridge.wallets
     }
-    
+
     var activeAccounts: Single<[BitcoinWalletAccount]> {
         accounts.map { accounts in
             accounts.filter(\.isActive)

@@ -7,19 +7,19 @@ public protocol SelectionRouterAPI: class {
 }
 
 public final class SelectionRouter: SelectionRouterAPI {
-    
+
     // MARK: - Properties
-    
+
     private let parent: ViewControllerAPI
-    
+
     // MARK: - Setup
-    
+
     public init(parent: ViewControllerAPI) {
         self.parent = parent
     }
-    
+
     // MARK: - API
-    
+
     public func showSelectionScreen(screenTitle: String,
                                     searchBarPlaceholder: String,
                                     using service: SelectionServiceAPI) {

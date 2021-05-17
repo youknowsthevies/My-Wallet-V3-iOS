@@ -8,7 +8,7 @@ public struct HashedUserProperty: UserProperty {
     public let key: UserPropertyKey
     public let value: String
     public let truncatesValueIfNeeded: Bool
-    
+
     public init(key: Key, valueHash: String, truncatesValueIfNeeded: Bool = true) {
         self.key = key
         self.value = valueHash
@@ -20,14 +20,14 @@ extension HashedUserProperty: Hashable {
     public static func == (lhs: HashedUserProperty, rhs: HashedUserProperty) -> Bool {
         lhs.key.rawValue == rhs.key.rawValue
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(key.rawValue)
     }
 }
 
 extension HashedUserProperty {
-    
+
     /// Keys for the hashed user propertes
     public enum Key: String, UserPropertyKey {
         /// The wallet identifier

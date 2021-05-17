@@ -9,7 +9,7 @@ import UIKit
 
 /// The `master` `State` for the Email Verification Flow
 struct EmailVerificationState: Equatable {
-    
+
     enum FlowStep {
         case loadingVerificationState
         case verifyEmailPrompt
@@ -18,16 +18,16 @@ struct EmailVerificationState: Equatable {
         case emailVerifiedPrompt
         case verificationCheckFailed
     }
-    
+
     fileprivate(set) var flowStep: FlowStep
-    
+
     fileprivate(set) var verifyEmail: VerifyEmailState
     fileprivate(set) var emailVerificationHelp: EmailVerificationHelpState
     fileprivate(set) var editEmailAddress: EditEmailState
     fileprivate(set) var emailVerified: EmailVerifiedState
-    
+
     fileprivate(set) var emailVerificationFailedAlert: AlertState<EmailVerificationAction>?
-    
+
     init(emailAddress: String) {
         verifyEmail = VerifyEmailState(emailAddress: emailAddress)
         editEmailAddress = EditEmailState(emailAddress: emailAddress)
@@ -52,16 +52,16 @@ enum EmailVerificationAction: Equatable {
 
 /// The `master` `Environment` for the Email Verification Flow
 struct EmailVerificationEnvironment {
-    
+
     let emailVerificationService: EmailVerificationServiceAPI
     let externalAppOpener: ExternalAppOpener
-    let flowCompletionCallback: (() -> ())?
+    let flowCompletionCallback: (() -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    
+
     init(
         emailVerificationService: EmailVerificationServiceAPI,
         externalAppOpener: ExternalAppOpener,
-        flowCompletionCallback: (() -> ())?,
+        flowCompletionCallback: (() -> Void)?,
         mainQueue: AnySchedulerOf<DispatchQueue>
     ) {
         self.emailVerificationService = emailVerificationService
@@ -111,12 +111,12 @@ let emailVerificationReducer = Reducer.combine(
         switch action {
         case .didEnterForeground:
             return Effect(value: .loadVerificationState)
-            
+
         case .didReceiveEmailVerficationResponse(let response):
             switch response {
             case .success(let status):
                 return Effect(value: .presentStep(status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt))
-                
+
             case .failure(let error):
                 state.emailVerificationFailedAlert = .init(
                     title: TextState(L10n.GenericError.title),
@@ -129,7 +129,7 @@ let emailVerificationReducer = Reducer.combine(
                 )
                 return Effect(value: .presentStep(.verificationCheckFailed))
             }
-            
+
         case .loadVerificationState:
             return .merge(
                 .init(value: .presentStep(.loadingVerificationState)),
@@ -140,50 +140,50 @@ let emailVerificationReducer = Reducer.combine(
                         .didReceiveEmailVerficationResponse(result)
                     }
             )
-            
+
         case .dismissEmailVerificationFailedAlert:
             state.emailVerificationFailedAlert = nil
             return .init(value: .presentStep(.verifyEmailPrompt))
-            
+
         case .presentStep(let flowStep):
             state.flowStep = flowStep
             return .none
-            
+
         case .verifyEmail(let subaction):
             switch subaction {
             case .tapGetEmailNotReceivedHelp:
                 return .init(value: .presentStep(.emailVerificationHelp))
-                
+
             default:
                 return .none
             }
-            
+
         case .emailVerified(let subaction):
             switch subaction {
             case .acknowledgeEmailVerification:
                 environment.flowCompletionCallback?()
                 return .none
             }
-            
+
         case .emailVerificationHelp(let subaction):
             switch subaction {
             case .editEmailAddress:
                 return .init(value: .presentStep(.editEmailAddress))
-                
+
             case .didReceiveEmailSendingResponse(let response):
                 switch response {
                 case .success:
                     return .init(value: .presentStep(.verifyEmailPrompt))
-                    
+
                 default:
                     break
                 }
-                
+
             default:
                 break
             }
             return .none
-            
+
         case .editEmailAddress(let subaction):
             switch subaction {
             case .didReceiveSaveResponse(let response):
@@ -193,11 +193,11 @@ let emailVerificationReducer = Reducer.combine(
                     state.verifyEmail.emailAddress = state.editEmailAddress.emailAddress
                     state.emailVerificationHelp.emailAddress = state.editEmailAddress.emailAddress
                     return .init(value: .presentStep(.verifyEmailPrompt))
-                    
+
                 default:
                     break
                 }
-                
+
             default:
                 break
             }

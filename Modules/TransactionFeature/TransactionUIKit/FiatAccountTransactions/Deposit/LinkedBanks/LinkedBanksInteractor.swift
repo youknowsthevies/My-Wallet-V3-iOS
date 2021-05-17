@@ -13,7 +13,7 @@ protocol LinkedBanksRouting: ViewableRouting { }
 protocol LinkedBanksListener: class {
     /// Routes to the TransactonFlow with a given `FiatAccount`
     func routeToTransactionFlow(sourceAccount: LinkedBankAccount)
-    
+
     /// Routes to `Add a Bank`
     func routeToAddABank()
 }
@@ -24,7 +24,7 @@ final class LinkedBanksInteractor: Interactor, LinkedBanksInteractable {
     weak var listener: LinkedBanksListener?
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         super.init()

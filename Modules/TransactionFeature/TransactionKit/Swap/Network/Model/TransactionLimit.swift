@@ -6,7 +6,7 @@ public struct TransactionLimit {
     public let limit: FiatValue
     public let available: FiatValue
     public let used: FiatValue
-    
+
     init(fiatCurrency: FiatCurrency,
          limit: TransactionLimits.Limit) {
         self.limit = FiatValue.create(
@@ -23,4 +23,3 @@ public struct TransactionLimit {
         ) ?? .zero(currency: fiatCurrency)
     }
 }
-

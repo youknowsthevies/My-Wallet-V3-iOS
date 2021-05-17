@@ -8,20 +8,20 @@ extension Accessibility.Identifier {
             private static let prefix = "Intro."
             static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
         }
-        
+
         enum KYCInvalidScreen {
             private static let prefix = "KYCInvalidScreen."
             static let contactSupportButton = "\(prefix)contactSupportButton"
             static let disclaimerLabel = "\(prefix)disclaimerLabel"
         }
-        
+
         enum IneligibleScreen {
             private static let prefix = "IneligibleScreen."
             static let title = "\(prefix)title"
             static let subtitle = "\(prefix)subtitle"
             static let learnMoreButton = "\(prefix)learnMoreButton"
         }
-        
+
         enum BuyScreen {
             private static let prefix = "Buy."
             static let minimumBuy = "\(prefix)MinimumBuy"
@@ -29,11 +29,11 @@ extension Accessibility.Identifier {
             static let paymentMethodTitle = "\(prefix)paymentMethodTitle"
             static let selectPaymentMethodLabel = "\(prefix)selectPaymentMethodLabel"
         }
-        
+
         enum SellScreen {
             private static let prefix = "Sell."
         }
-        
+
         enum PaymentMethodsScreen {
             private static let prefix = "PaymentMethods."
             static let addCard = "\(prefix)AddCard"
@@ -73,7 +73,7 @@ extension Accessibility.Identifier {
             static let yesButton = "\(prefix)yesButton"
             static let noButton = "\(prefix)noButton"
         }
-        
+
         enum IneligibleCurrency {
             private static let prefix = "IneligibleCurrency."
             static let titleLabel = "\(prefix)titleLabel"
@@ -91,4 +91,3 @@ extension Accessibility.Identifier.SimpleBuy {
         static let goToWalletButton = "goToWalletButton"
     }
 }
-

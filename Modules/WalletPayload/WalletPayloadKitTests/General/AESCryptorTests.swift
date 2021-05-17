@@ -4,50 +4,50 @@
 import XCTest
 
 class AESCryptorTests: XCTestCase {
-    
+
     private var subject: AESCryptor!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        
+
         subject = AESCryptor()
     }
 
     override func tearDownWithError() throws {
         subject = nil
-        
+
         try super.tearDownWithError()
     }
 
     func test_encrypt_decrypt() throws {
-        
+
         struct TestItem {
             let payload: Data
             let key: Data
             let iv: Data
         }
-        
+
         func runTest(for item: TestItem) throws {
-            
+
             func encrypt(payload: Data, key: Data, iv: Data) throws -> Data {
                 let result = try subject.encrypt(data: payload, with: key, iv: iv).get()
                 return Data(result)
             }
-            
+
             func decrypt(payload: Data, key: Data, iv: Data) throws -> Data {
                 let result = try subject.decrypt(data: payload, with: key, iv: iv).get()
                 return Data(result)
             }
-            
+
             let payload = item.payload
             let key = item.key
             let iv = item.iv
-            
+
             let encryptedData = try encrypt(payload: payload, key: key, iv: iv)
             let decryptedData = try decrypt(payload: encryptedData, key: key, iv: iv)
             XCTAssertEqual(decryptedData, payload)
         }
-        
+
         let tests = [
             TestItem(
                 payload: Data(hex: "6bc1bee22e409f96e93d7e117393172a"),
@@ -70,7 +70,7 @@ class AESCryptorTests: XCTestCase {
                 iv: Data(hex: "39F23369A9D9BACFA530E26304231461")
             )
         ]
-        
+
         for item in tests {
             try runTest(for: item)
         }

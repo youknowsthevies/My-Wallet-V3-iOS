@@ -7,9 +7,9 @@ import RxSwift
 public protocol AnnouncementCardViewConforming: UIView {}
 
 public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming {
-    
+
     // MARK: - UI Properties
-    
+
     @IBOutlet private var backgroundImageView: UIImageView!
     @IBOutlet private var thumbImageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
@@ -18,33 +18,33 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
     @IBOutlet private var buttonsStackView: UIStackView!
     @IBOutlet private var buttonPlaceholderSeparatorView: UIView!
     @IBOutlet private var badgeImageView: BadgeImageView!
-    
+
     @IBOutlet private var bottomSeparatorView: UIView!
-    
+
     @IBOutlet private var titleToThumbnailImageView: NSLayoutConstraint!
     @IBOutlet private var titleToBadgeImageView: NSLayoutConstraint!
     @IBOutlet private var imageViewLeadingToSuperviewConstraint: NSLayoutConstraint!
     @IBOutlet private var imageViewCenterInSuperviewConstraint: NSLayoutConstraint!
     @IBOutlet private var stackViewToBottomConstraint: NSLayoutConstraint!
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     private let viewModel: AnnouncementCardViewModel
-    
+
     // MARK: - Setup
-    
+
     public init(using viewModel: AnnouncementCardViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         setup()
     }
-    
+
     public required init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is not implemented")
     }
-    
+
     private func setup() {
         fromNib()
         clipsToBounds = true
@@ -62,7 +62,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         titleLabel.textColor = .titleText
         descriptionLabel.text = viewModel.description
         descriptionLabel.textColor = .descriptionText
-        
+
         switch viewModel.border {
         case .bottomSeparator(let color):
             bottomSeparatorView.isHidden = false
@@ -73,13 +73,13 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         case .none:
             bottomSeparatorView.isHidden = true
         }
-                
+
         setupButtons()
         fixPositions()
         setupAccessibility()
         viewModel.didAppear?()
     }
-    
+
     private func setupAccessibility() {
         typealias Identifier = Accessibility.Identifier.Dashboard.Announcement
         titleLabel.accessibility = .init(id: .value(Identifier.titleLabel))
@@ -87,18 +87,18 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         thumbImageView.accessibility = .init(id: .value(Identifier.imageView))
         dismissButton.accessibility = .init(id: .value(Identifier.dismissButton))
     }
-    
+
     private func setupButtons() {
         dismissButton.isHidden = viewModel.isDismissButtonHidden
         dismissButton.rx.tap
             .bindAndCatch(to: viewModel.dismissalRelay)
             .disposed(by: disposeBag)
-        
+
         for buttonViewModel in viewModel.buttons {
             setupButton(for: buttonViewModel)
         }
     }
-    
+
     private func setupButton(for viewModel: ButtonViewModel) {
         let button = ButtonView()
         button.viewModel = viewModel
@@ -109,29 +109,29 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         button.accessibility = .init(id: .value(Accessibility.Identifier.Dashboard.Announcement.confirmButton))
         buttonsStackView.addArrangedSubview(button)
     }
-    
+
     private func fixPositions() {
         if viewModel.title == nil {
             titleToThumbnailImageView.constant = 0
             titleToBadgeImageView.constant = 0
         }
-        
+
         if !viewModel.image.isVisible {
             thumbImageView.removeFromSuperview()
         }
-        
+
         if !viewModel.badgeImage.isVisible {
             badgeImageView.removeFromSuperview()
         }
-        
+
         if viewModel.buttons.isEmpty {
             stackViewToBottomConstraint.constant = 0
         } else { // Remove placeholder view since there are actual buttons
             buttonPlaceholderSeparatorView.removeFromSuperview()
         }
-        
+
         titleToBadgeImageView.constant = viewModel.badgeImage.verticalPadding
-        
+
         switch viewModel.contentAlignment {
         case .center:
             titleLabel.textAlignment = .center

@@ -5,7 +5,7 @@ import RxSwift
 import TransactionKit
 
 final class ERC20ExternalAssetAddressFactory<Token: ERC20Token>: CryptoReceiveAddressFactory {
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,

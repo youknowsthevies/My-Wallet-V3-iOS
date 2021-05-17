@@ -11,14 +11,14 @@ public enum EthereumTransactionCreationServiceError: Error {
 }
 
 protocol EthereumTransactionSendingServiceAPI {
-    
+
     func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished>
 }
 
 final class EthereumTransactionSendingService: EthereumTransactionSendingServiceAPI {
-    
+
     typealias Bridge = EthereumWalletBridgeAPI
-    
+
     private let bridge: Bridge
     private let client: APIClientAPI
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
@@ -40,7 +40,7 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
         self.transactionSigner = transactionSigner
         self.transactionEncoder = transactionEncoder
     }
-    
+
     func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished> {
         finalise(transaction: transaction, keyPair: keyPair)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
@@ -72,4 +72,3 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
             }
     }
 }
-

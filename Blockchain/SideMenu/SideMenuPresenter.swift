@@ -13,9 +13,9 @@ import ToolKit
 /// will handle the logic as to what side menu items should be
 /// presented in the SideMenuView.
 class SideMenuPresenter {
-    
+
     // MARK: Public Properties
-    
+
     var sideMenuItems: Observable<[SideMenuItem]> {
         reactiveWallet.waitUntilInitialized
             .map(weak: self) { (self, _) in
@@ -42,9 +42,9 @@ class SideMenuPresenter {
     private let introInterator: WalletIntroductionInteractor
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let itemSelectionRelay = PublishRelay<SideMenuItem>()
-    
+
     // MARK: - Services
-    
+
     private let wallet: Wallet
     private let walletService: WalletOptionsAPI
     private let reactiveWallet: ReactiveWalletAPI
@@ -52,7 +52,7 @@ class SideMenuPresenter {
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
-    
+
     init(
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletOptionsAPI = resolve(),
@@ -82,30 +82,30 @@ class SideMenuPresenter {
                 self?.startingWithLocation(location) ?? []
             }
             .catchErrorJustReturn([])
-        
+
         startingLocation
             .subscribe(onSuccess: { [weak self] events in
                 guard let self = self else { return }
                 self.execute(events: events)
-                }, onError: { [weak self] error in
+                }, onError: { [weak self] _ in
                     guard let self = self else { return }
                     self.introductionRelay.accept(.none)
             })
             .disposed(by: disposeBag)
     }
-    
+
     /// The only reason this is here is for handling the pulse that
     /// is displayed on `buyBitcoin`.
     func onItemSelection(_ item: SideMenuItem) {
         itemSelectionRelay.accept(item)
     }
-    
+
     private func startingWithLocation(_ location: WalletIntroductionLocation) -> [WalletIntroductionEvent] {
         let screen = location.screen
         guard screen == .sideMenu else { return [] }
         return []
     }
-    
+
     private func triggerNextStep() {
         guard let next = introductionSequence.next() else {
             introductionRelay.accept(.none)
@@ -118,7 +118,7 @@ class SideMenuPresenter {
         }
         introductionRelay.accept(next.type)
     }
-    
+
     private func execute(events: [WalletIntroductionEvent]) {
         introductionSequence.reset(to: events)
         triggerNextStep()
@@ -126,13 +126,13 @@ class SideMenuPresenter {
 
     private func menuItems() -> [SideMenuItem] {
         var items: [SideMenuItem] = [.accountsAndAddresses]
-        
+
         if wallet.isLockboxEnabled() {
             items.append(.lockbox)
         }
-        
+
         items += [.buy, .sell, .support, .airdrops, .settings, .exchange]
-        
+
         return items
     }
 }

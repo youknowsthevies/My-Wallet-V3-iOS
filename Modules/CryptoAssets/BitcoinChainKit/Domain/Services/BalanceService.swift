@@ -5,17 +5,17 @@ import PlatformKit
 import RxSwift
 
 public protocol BalanceServiceAPI {
-    
+
     func balance(for wallet: XPub) -> Single<CryptoValue>
-    
+
     func balances(for wallets: [XPub]) -> Single<CryptoValue>
 }
 
 final class BalanceService: BalanceServiceAPI {
-    
+
     private let client: APIClientAPI
     private let coin: BitcoinChainCoin
-    
+
     convenience init(coin: BitcoinChainCoin) {
         self.init(client: resolve(tag: coin), coin: coin)
     }
@@ -24,9 +24,9 @@ final class BalanceService: BalanceServiceAPI {
         self.client = client
         self.coin = coin
     }
-    
+
     // MARK: - BalanceServiceAPI
-    
+
     func balance(for wallet: XPub) -> Single<CryptoValue> {
         balances(for: [wallet])
     }

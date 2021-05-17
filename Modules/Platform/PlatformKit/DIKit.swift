@@ -23,27 +23,27 @@ extension DependencyContainer {
         }
 
         // MARK: - Clients
-        
+
         factory { SettingsClient() as SettingsClientAPI }
-        
+
         factory { SwapClient() as SwapClientAPI }
-        
+
         factory { GeneralInformationClient() as GeneralInformationClientAPI }
 
         factory { PriceClient() as PriceClientAPI }
-        
+
         factory { UpdateWalletInformationClient() as UpdateWalletInformationClientAPI }
-        
+
         factory { JWTClient() as JWTClientAPI }
-        
+
         factory { KYCClient() as KYCClientAPI }
 
         factory { UserCreationClient() as UserCreationClientAPI }
-        
+
         factory { NabuAuthenticationClient() as NabuAuthenticationClientAPI }
-        
+
         // MARK: Exchange
-        
+
         factory { ExchangeAccountsClient() as ExchangeAccountsClientAPI }
 
         // MARK: CustodialClient
@@ -55,11 +55,11 @@ extension DependencyContainer {
         factory { CustodialClient() as TradingBalanceClientAPI }
 
         // MARK: - Authentication
-        
+
         single { NabuTokenStore() }
 
         single { NabuAuthenticationExecutor() as NabuAuthenticationExecutorAPI }
-        
+
         // swiftlint:disable opening_brace
         factory { () -> NabuAuthenticationExecutorProvider in
             { () -> NabuAuthenticationExecutorAPI in
@@ -67,55 +67,55 @@ extension DependencyContainer {
             }
         }
         // swiftlint:enable opening_brace
-        
+
         factory { NabuAuthenticator() as AuthenticatorAPI }
-        
+
         factory { JWTService() as JWTServiceAPI }
-        
+
         // MARK: - Wallet
-        
+
         factory { WalletNabuSynchronizerService() as WalletNabuSynchronizerServiceAPI }
-        
+
         factory { () -> WalletRepositoryAPI in
             let walletRepositoryProvider: WalletRepositoryProvider = DIKit.resolve()
             return walletRepositoryProvider.repository as WalletRepositoryAPI
         }
-        
+
         factory { MnemonicComponentsProvider() as MnemonicComponentsProviding }
-        
+
         factory { () -> CredentialsRepositoryAPI in
             let repository: WalletRepositoryAPI = DIKit.resolve()
             return repository as CredentialsRepositoryAPI
         }
-        
+
         factory { () -> NabuOfflineTokenRepositoryAPI in
             let repository: WalletRepositoryAPI = DIKit.resolve()
             return repository as NabuOfflineTokenRepositoryAPI
         }
-        
+
         factory { () -> NabuAuthenticationExecutor.CredentialsRepository in
             let repository: WalletRepositoryAPI = DIKit.resolve()
             return repository as NabuAuthenticationExecutor.CredentialsRepository
         }
-        
+
         // MARK: - Services
 
         single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }
-        
+
         single { KYCTiersService() as KYCTiersServiceAPI }
-        
+
         single { NabuUserService() as NabuUserServiceAPI }
 
         single { GeneralInformationService() as GeneralInformationServiceAPI }
-        
+
         single { EmailVerificationService() as EmailVerificationServiceAPI }
-        
+
         factory { SwapActivityService() as SwapActivityServiceAPI }
-        
+
         single { ExchangeAccountsProvider() as ExchangeAccountsProviderAPI }
-        
+
         factory { ExchangeAccountStatusService() as ExchangeAccountStatusServiceAPI }
-        
+
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
         single { () -> Coincore in
@@ -126,9 +126,9 @@ extension DependencyContainer {
                 })
             )
         }
-        
+
         single { ReactiveWallet() }
-        
+
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
         single { WalletService() as WalletOptionsAPI }
@@ -136,7 +136,7 @@ extension DependencyContainer {
         factory { CustodialPendingDepositService() as CustodialPendingDepositServiceAPI }
 
         factory { CustodialAddressService() as CustodialAddressServiceAPI }
-        
+
         factory { () -> MaintenanceServicing in
             let service: WalletOptionsAPI = DIKit.resolve()
             return service
@@ -149,7 +149,7 @@ extension DependencyContainer {
         factory { TradingBalanceService() as TradingBalanceServiceAPI }
 
         factory { PriceService() as PriceServiceAPI }
-        
+
         factory { CryptoReceiveAddressFactoryService() }
 
         // MARK: - Settings
@@ -165,68 +165,68 @@ extension DependencyContainer {
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }
-        
+
         factory { () -> SMSTwoFactorSettingsServiceAPI in
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }
-        
+
         factory { () -> EmailNotificationSettingsServiceAPI in
             let completeSettings: CompleteSettingsServiceAPI = DIKit.resolve()
             return completeSettings
         }
 
         // MARK: - Activity Services
-        
+
         factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }
-        
+
         factory(tag: FiatCurrency.GBP) { FiatActivityItemEventService(fiatCurrency: .GBP) as FiatActivityItemEventServiceAPI }
-        
+
         factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
-        
+
         // MARK: - KYC
-        
+
         factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
     }
-    
+
     // MARK: - BuySellKit Module
-     
+
     public static var buySellKit = module {
-        
+
         // MARK: - Clients - General
-        
+
         factory { APIClient() as SimpleBuyClientAPI }
-        
+
         factory { () -> SupportedPairsClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as SupportedPairsClientAPI
         }
-        
+
         factory { () -> BeneficiariesClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as BeneficiariesClientAPI
         }
-        
+
         factory { () -> OrderDetailsClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as OrderDetailsClientAPI
         }
-        
+
         factory { () -> OrderCancellationClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as OrderCancellationClientAPI
         }
-        
+
         factory { () -> OrderCreationClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as OrderCreationClientAPI
         }
-        
+
         factory { () -> EligibilityClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as EligibilityClientAPI
         }
-        
+
         factory { () -> PaymentAccountClientAPI in
             let client: SimpleBuyClientAPI = DIKit.resolve()
             return client as PaymentAccountClientAPI
@@ -263,58 +263,58 @@ extension DependencyContainer {
         }
 
         factory { WithdrawalService() as WithdrawalServiceAPI }
-        
+
         // MARK: - Clients - Cards
-        
+
         factory { CardClient() as CardClientAPI }
-        
+
         factory { EveryPayClient() as EveryPayClientAPI }
 
         factory { () -> CardListClientAPI in
             let client: CardClientAPI = DIKit.resolve()
             return client as CardListClientAPI
         }
-        
+
         factory { () -> CardDeletionClientAPI in
             let client: CardClientAPI = DIKit.resolve()
             return client as CardDeletionClientAPI
         }
-        
+
         factory { () -> CardDetailClientAPI in
             let client: CardClientAPI = DIKit.resolve()
             return client as CardDetailClientAPI
         }
 
         // MARK: - Services - General
-        
+
         factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
 
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
-        
+
         factory { EventCache() }
-        
+
         single { OrdersService() as OrdersServiceAPI }
-        
+
         factory { OrdersFiatActivityItemEventService() as FiatActivityItemEventFetcherAPI }
-        
+
         factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
-        
+
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
 
         factory { PendingOrderCompletionService() as PendingOrderCompletionServiceAPI }
-        
+
         factory { OrderCancellationService() as OrderCancellationServiceAPI }
-        
+
         factory { OrderCreationService() as OrderCreationServiceAPI }
 
         factory { PaymentAccountService() as PaymentAccountServiceAPI }
 
         single { SupportedPairsInteractorService() as SupportedPairsInteractorServiceAPI }
-        
+
         factory { SupportedPairsService() as SupportedPairsServiceAPI }
 
         single { EligibilityService() as EligibilityServiceAPI }
-        
+
         factory { SuggestedAmountsService() as SuggestedAmountsServiceAPI }
 
         single { LinkedBanksService() as LinkedBanksServiceAPI }
@@ -336,7 +336,7 @@ extension DependencyContainer {
         factory { CardUpdateService() as CardUpdateServiceAPI }
 
         single { CardListService() as CardListServiceAPI }
-        
+
         factory { CardDeletionService() as PaymentMethodDeletionServiceAPI }
 
         // MARK: - Services - Linked Banks

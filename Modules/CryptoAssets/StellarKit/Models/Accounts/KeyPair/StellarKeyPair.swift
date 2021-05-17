@@ -6,10 +6,10 @@ public struct StellarKeyPair: KeyPair {
     public var secret: String {
         privateKey.secret
     }
-    
+
     public var accountID: String
     public var privateKey: StellarPrivateKey
-    
+
     public init(accountID: String, secret: String) {
         self.accountID = accountID
         self.privateKey = StellarPrivateKey(secret: secret)

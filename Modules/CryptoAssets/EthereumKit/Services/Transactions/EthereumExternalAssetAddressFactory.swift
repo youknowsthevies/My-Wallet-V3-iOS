@@ -5,7 +5,7 @@ import RxSwift
 import TransactionKit
 
 final class EthereumExternalAssetAddressFactory: CryptoReceiveAddressFactory {
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,

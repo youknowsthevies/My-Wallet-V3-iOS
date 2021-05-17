@@ -24,25 +24,25 @@ class EthereumWallet: NSObject {
     }
 
     typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
-    
+
     typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
-    
+
     private let disposeBag = DisposeBag()
-    
+
     var delegate: EthereumJSInteropDelegateAPI {
         dispatcher
     }
 
     weak var reactiveWallet: ReactiveWalletAPI!
-    
+
     @available(*, deprecated, message: "making this  so tests will compile")
     var interopDispatcher: EthereumJSInteropDispatcherAPI {
         dispatcher
     }
-    
+
     @available(*, deprecated, message: "Please don't use this. It's here only to support legacy code")
     @objc var legacyEthBalance: NSDecimalNumber = 0
-    
+
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
     private let walletOptionsService: WalletOptionsAPI
@@ -52,27 +52,27 @@ class EthereumWallet: NSObject {
     /// overflows the function stack with initializers that call one another
     @LazyInject private var assetAccountRepository: EthereumAssetAccountRepository
     @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
-    
+
     /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler
     private let schedulerType: SchedulerType
-    
+
     private static let defaultPAXAccount = ERC20TokenAccount(
         label: LocalizationConstants.Account.myWallet,
         contractAddress: PaxToken.contractAddress.publicKey,
         hasSeen: false,
         transactionNotes: [String: String]()
     )
-    
+
     private let dispatcher: Dispatcher
-    
+
     @objc convenience init(legacyWallet: Wallet) {
         self.init(schedulerType: MainScheduler.instance, wallet: legacyWallet)
     }
-    
+
     convenience init(schedulerType: SchedulerType, legacyWallet: Wallet) {
         self.init(schedulerType: schedulerType, wallet: legacyWallet)
     }
-    
+
     init(schedulerType: SchedulerType = MainScheduler.instance,
          walletOptionsService: WalletOptionsAPI = resolve(),
          secondPasswordPrompter: SecondPasswordPromptable = resolve(),
@@ -85,7 +85,7 @@ class EthereumWallet: NSObject {
         self.dispatcher = dispatcher
         super.init()
     }
-    
+
     @objc func setup(with context: JSContext) {
         context.setJsFunction(named: "objc_on_didGetERC20TokensAsync" as NSString) { [weak self] erc20TokenAccounts in
             self?.delegate.didGetERC20Tokens(erc20TokenAccounts)
@@ -93,14 +93,14 @@ class EthereumWallet: NSObject {
         context.setJsFunction(named: "objc_on_error_gettingERC20TokensAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetERC20Tokens(errorMessage: errorMessage)
         }
-        
-        context.setJsFunction(named: "objc_on_didSetERC20TokensAsync" as NSString) { [weak self] erc20TokenAccounts in
+
+        context.setJsFunction(named: "objc_on_didSetERC20TokensAsync" as NSString) { [weak self] _ in
             self?.delegate.didSaveERC20Tokens()
         }
         context.setJsFunction(named: "objc_on_error_settingERC20TokensAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToSaveERC20Tokens(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_get_ether_address_success" as NSString) { [weak self] address in
             self?.delegate.didGetAddress(address)
         }
@@ -114,7 +114,7 @@ class EthereumWallet: NSObject {
         context.setJsFunction(named: "objc_on_error_gettingEtherAccountsAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetAccounts(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_recordLastTransactionAsync_success" as NSString) { [weak self] in
             self?.delegate.didRecordLastTransaction()
         }
@@ -122,7 +122,7 @@ class EthereumWallet: NSObject {
             self?.delegate.didFailToRecordLastTransaction(errorMessage: errorMessage)
         }
     }
-    
+
     @objc func walletDidLoad() {
         reactiveWallet.waitUntilInitialized
             .flatMap {
@@ -139,7 +139,7 @@ class EthereumWallet: NSObject {
         return saveDefaultPAXAccountIfNeeded()
             .subscribeOn(MainScheduler.asyncInstance)
     }
-    
+
     private func saveDefaultPAXAccountIfNeeded() -> Completable {
         erc20TokenAccounts
             .flatMapCompletable(weak: self) { (self, tokenAccounts) -> Completable in
@@ -149,7 +149,7 @@ class EthereumWallet: NSObject {
                 return self.saveDefaultPAXAccount().asCompletable()
             }
     }
-    
+
     private func saveDefaultPAXAccount() -> Single<ERC20TokenAccount> {
         let paxAccount = EthereumWallet.defaultPAXAccount
         return save(erc20TokenAccounts: [ PaxToken.metadataKey : paxAccount ])
@@ -157,13 +157,13 @@ class EthereumWallet: NSObject {
     }
 }
 
-extension EthereumWallet: ERC20BridgeAPI { 
+extension EthereumWallet: ERC20BridgeAPI {
     func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
         erc20TokenAccounts.map { accounts in
             accounts[key]
         }
     }
-    
+
     func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<Void> in
@@ -173,7 +173,7 @@ extension EthereumWallet: ERC20BridgeAPI {
                 )
             }
     }
-    
+
     var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<[String: ERC20TokenAccount]> in
@@ -187,7 +187,7 @@ extension EthereumWallet: ERC20BridgeAPI {
                 account?.transactionNotes[transactionHash]
             }
     }
-    
+
     func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Single<Void> {
         erc20TokenAccounts
             .map { tokenAccounts -> ([String: ERC20TokenAccount], ERC20TokenAccount) in
@@ -204,7 +204,7 @@ extension EthereumWallet: ERC20BridgeAPI {
                 return self.save(erc20TokenAccounts: tokenAccounts)
             }
     }
-    
+
     private func save(erc20TokenAccounts: [String: ERC20TokenAccount], secondPassword: String?) -> Single<Void> {
         Single.create { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
@@ -232,7 +232,7 @@ extension EthereumWallet: ERC20BridgeAPI {
             return Disposables.create()
         }
     }
-    
+
     private func erc20TokenAccounts(secondPassword: String? = nil) -> Single<[String: ERC20TokenAccount]> {
         Single<[String: [String: Any]]>.create { [weak self] observer -> Disposable in
             guard let wallet = self?.wallet else {
@@ -302,11 +302,11 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     var accountType: SingleAccountType {
         .nonCustodial
     }
-    
+
     var history: Single<Void> {
         fetchHistory(fromCache: false)
     }
-    
+
     var name: Single<String> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
@@ -324,7 +324,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
             .map { EthereumAddress(stringLiteral: $0) }
     }
-    
+
     var account: Single<EthereumAssetAccount> {
         wallets
             .map { wallets in
@@ -338,14 +338,14 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 )
             }
     }
-    
+
     /// Streams the nonce of the address
     var nonce: Single<BigUInt> {
         assetAccountRepository
             .assetAccountDetails
             .map { BigUInt(integerLiteral: $0.nonce) }
     }
-    
+
     /// Streams `true` if there is a prending transaction
     var isWaitingOnTransaction: Single<Bool> {
         historicalTransactionService
@@ -377,7 +377,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     func fetchHistory() -> Single<Void> {
         fetchHistory(fromCache: false)
     }
-    
+
     private func label(secondPassword: String? = nil) -> Single<String> {
         Single<String>
             .create(weak: self) { (self, observer) -> Disposable in
@@ -398,7 +398,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
             .subscribeOn(schedulerType)
     }
-    
+
     private func address(secondPassword: String? = nil) -> Single<String> {
         Single<String>
             .create(weak: self) { (self, observer) -> Disposable in
@@ -472,7 +472,7 @@ extension EthereumWallet: EthereumWalletAccountBridgeAPI {
                 self.ethereumWallets(secondPassword: secondPassword)
             }
     }
-    
+
     private func ethereumWallets(secondPassword: String?) -> Single<[EthereumWalletAccount]> {
         Single<[[String: Any]]>
             .create { [weak self] observer -> Disposable in

@@ -5,7 +5,7 @@ import PlatformKit
 import XCTest
 
 class KYCPageTypeTests: XCTestCase {
-    
+
     /// A `KYC.UserTiers` where the user has been verified for tier1
     /// and their tier2 status is pending.
     private let pendingTier2Response = KYC.UserTiers(
@@ -14,7 +14,7 @@ class KYCPageTypeTests: XCTestCase {
             KYC.UserTier(tier: .tier2, state: .pending)
         ]
     )
-    
+
     /// A `KYC.UserTiers` where the user has not been verified or
     /// applied to either tier1 or tier2.
     private let noTiersResponse = KYC.UserTiers(

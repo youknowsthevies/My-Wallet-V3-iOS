@@ -7,19 +7,19 @@ import NetworkKit
 import PlatformKit
 
 class APIClient: EventSendingAPI {
-    
+
     private enum Path {
         static let transactions = ["events", "publish"]
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
     private let nabuTokenStore: NabuTokenStore
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
          nabuTokenStore: NabuTokenStore = resolve()) {
@@ -27,7 +27,7 @@ class APIClient: EventSendingAPI {
         self.requestBuilder = requestBuilder
         self.nabuTokenStore = nabuTokenStore
     }
-    
+
     func publish(events: EventsWrapper) -> AnyPublisher<Void, NetworkError> {
         let jsonEncoder = JSONEncoder()
         jsonEncoder.dateEncodingStrategy = .iso8601

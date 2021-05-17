@@ -16,19 +16,19 @@ public protocol CustodialBalanceStatesFetcherAPI: AnyObject {
 public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherAPI {
 
     // MARK: - Types
-    
+
     public typealias Fetch = () -> Single<CustodialAccountBalanceStates>
-    
+
     // MARK: - Public Properties
-    
+
     public let custodialAccountType: SingleAccountType.CustodialAccountType
-    
+
     public var balanceStates: Single<CustodialAccountBalanceStates> {
         balanceStatesObservable
             .take(1)
             .asSingle()
     }
-     
+
     public var balanceStatesObservable: Observable<CustodialAccountBalanceStates> {
         _ = setup
         return balanceRelay.asObservable()
@@ -47,7 +47,7 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
     private let balanceRelay: BehaviorRelay<CustodialAccountBalanceStates>
     private let disposeBag = DisposeBag()
     private let fetch: Fetch
-    
+
     private lazy var setup: Void = {
         balanceFetchTriggerRelay
             .throttle(
@@ -63,7 +63,7 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: Init
 
     public init(custodialAccountType: SingleAccountType.CustodialAccountType,
@@ -74,7 +74,7 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
         self.scheduler = scheduler
         self.fetch = fetch
     }
-    
+
     public func setupIfNeeded() {
         _ = setup
     }
@@ -83,7 +83,7 @@ public final class CustodialBalanceStatesFetcher: CustodialBalanceStatesFetcherA
 // MARK: - Initializers
 
 extension CustodialBalanceStatesFetcher {
-    
+
     public convenience init(tradingBalanceService: TradingBalanceServiceAPI,
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(

@@ -7,13 +7,13 @@ import RxSwift
 import ToolKit
 
 final class NetworkAdapter: NetworkAdapterAPI {
-    
+
     private let communicator: NetworkCommunicatorAPI
-    
+
     init(communicator: NetworkCommunicatorAPI = resolve()) {
         self.communicator = communicator
     }
-    
+
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
@@ -21,7 +21,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
     }
-    
+
     func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
@@ -29,14 +29,14 @@ final class NetworkAdapter: NetworkAdapterAPI {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
     }
-    
+
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
     }
-    
+
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, NetworkError> {
@@ -47,7 +47,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
 
 extension AnyPublisher where Output == ServerResponse,
                             Failure == NetworkError {
-    
+
     fileprivate func decodeOptional<ResponseType: Decodable>(
         responseType: ResponseType.Type,
         for request: NetworkRequest,
@@ -55,7 +55,7 @@ extension AnyPublisher where Output == ServerResponse,
     ) -> AnyPublisher<ResponseType?, NetworkError> {
         decodeOptionalSuccess(for: request, responseType: responseType, using: decoder)
     }
-    
+
     fileprivate func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         responseType: ResponseType.Type,
         for request: NetworkRequest,
@@ -64,7 +64,7 @@ extension AnyPublisher where Output == ServerResponse,
         decodeError(for: request, using: decoder)
             .decodeOptionalSuccess(for: request, responseType: responseType, using: decoder)
     }
-    
+
     fileprivate func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
@@ -72,7 +72,7 @@ extension AnyPublisher where Output == ServerResponse,
         decodeError(for: request, using: decoder)
             .decodeSuccess(for: request, using: decoder)
     }
-    
+
     fileprivate func decode<ResponseType: Decodable>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
@@ -83,7 +83,7 @@ extension AnyPublisher where Output == ServerResponse,
 
 extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkError {
-    
+
     fileprivate func decodeError<ErrorResponseType: FromNetworkErrorConvertible>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
@@ -104,7 +104,7 @@ extension AnyPublisher where Output == ServerResponse,
 
 extension AnyPublisher where Output == ServerResponse,
                              Failure: FromNetworkErrorConvertible {
-    
+
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
@@ -114,7 +114,7 @@ extension AnyPublisher where Output == ServerResponse,
         }
         .eraseToAnyPublisher()
     }
-    
+
     fileprivate func decodeOptionalSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
         responseType: ResponseType.Type,
@@ -135,7 +135,7 @@ extension AnyPublisher where Output == ServerResponse,
 
 extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkError {
-    
+
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
         using decoder: NetworkResponseDecoderAPI
@@ -145,7 +145,7 @@ extension AnyPublisher where Output == ServerResponse,
         }
         .eraseToAnyPublisher()
     }
-    
+
     fileprivate func decodeOptionalSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
         responseType: ResponseType.Type,

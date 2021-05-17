@@ -7,4 +7,3 @@ protocol OrdersActivityClientAPI: class {
     /// Fetch order activity response
     func activityResponse(fiatCurrency: FiatCurrency, pendingOnly: Bool) -> Single<OrdersActivityResponse>
 }
-

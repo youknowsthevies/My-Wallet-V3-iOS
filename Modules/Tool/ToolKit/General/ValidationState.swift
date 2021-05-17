@@ -2,10 +2,10 @@
 
 /// The state of a component
 public enum ValidationState {
-    
+
     /// A valid state
     case valid
-    
+
     /// An invalid state
     case invalid
 }

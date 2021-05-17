@@ -14,11 +14,11 @@ protocol CashIdentityVerificationAnnouncementRouting: class {
 
 /// Card announcement for announcing Cash feature + KYC
 final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
-    
+
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.CashIdentityVerification
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationId.learnMore,
@@ -57,28 +57,28 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
             }
         )
     }
-    
+
     var shouldShow: Bool {
         guard shouldShowCashIdentityAnnouncement else {
             return false
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.fiatFundsNoKYC
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
-    
+
     private let disposeBag = DisposeBag()
 
     private let shouldShowCashIdentityAnnouncement: Bool
-    
+
     // MARK: - Setup
-    
+
     init(shouldShowCashIdentityAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
@@ -92,4 +92,3 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
         self.action = action
     }
 }
-

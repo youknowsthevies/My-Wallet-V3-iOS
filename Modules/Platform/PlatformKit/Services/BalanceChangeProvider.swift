@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol BalanceChangeProviding: class {    
+public protocol BalanceChangeProviding: class {
     var change: Observable<MoneyBalancePairsCalculationStates> { get }
 
     subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding { get }
@@ -11,12 +11,12 @@ public protocol BalanceChangeProviding: class {
 
 /// A service that providers a balance change in crypto fiat and percentages
 public final class BalanceChangeProvider: BalanceChangeProviding {
-    
+
     // MARK: - Services
 
     private let currencies: [CurrencyType]
     private let services: [CurrencyType: AssetBalanceChangeProviding]
-    
+
     public var change: Observable<MoneyBalancePairsCalculationStates> {
         let currencies = self.currencies.map { $0.currency }
         return Observable
@@ -29,9 +29,9 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
                 )
             }
     }
-    
+
     // MARK: - Setup
-    
+
     public init(
         currencies: [CryptoCurrency],
         aave: AssetBalanceChangeProviding,
@@ -65,7 +65,7 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     public subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding {
         services[currency.currency]!
     }
-    
+
     public subscript(currency: CurrencyType) -> AssetBalanceChangeProviding {
         services[currency]!
     }

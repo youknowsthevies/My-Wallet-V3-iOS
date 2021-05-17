@@ -13,18 +13,18 @@ protocol PaymentMethodViewControllable: ViewControllable {
 }
 
 final class PaymentMethodRouter: ViewableRouter<PaymentMethodInteractable, PaymentMethodViewControllable>, PaymentMethodRouting {
-    
+
     override init(interactor: PaymentMethodInteractable, viewController: PaymentMethodViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
-    
+
     // MARK: - PaymentMethodRouting
-    
+
     func routeToWireTransfer() {
         unimplemented()
     }
-    
+
     func routeToLinkedBanks() {
         unimplemented()
     }

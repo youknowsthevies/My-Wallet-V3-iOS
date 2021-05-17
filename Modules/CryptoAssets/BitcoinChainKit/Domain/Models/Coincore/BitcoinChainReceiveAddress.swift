@@ -5,16 +5,16 @@ import RxSwift
 import TransactionKit
 
 public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
-    
+
     public var asset: CryptoCurrency {
         Token.coin.cryptoCurrency
     }
-    
+
     public let address: String
     public let label: String
     public let onTxCompleted: TxCompleted
     public let index: Int32
-    
+
     public var metadata: CryptoAssetQRMetadata {
         switch Token.coin {
         case .bitcoin:
@@ -23,7 +23,7 @@ public struct BitcoinChainReceiveAddress<Token: BitcoinChainToken>: CryptoReceiv
             return BitcoinCashURLPayload(address: address, amount: nil, includeScheme: true)
         }
     }
-    
+
     public init(address: String,
                 label: String,
                 onTxCompleted: @escaping TxCompleted,

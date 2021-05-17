@@ -7,7 +7,7 @@ import XCTest
 @testable import PlatformKit
 
 final class TriageCryptoCurrencyTests: XCTestCase {
-    
+
     func testCorrectDisplayOfSTX() {
         let amount = BigInt("\(10000000)")!
         let currency = TriageCryptoCurrency.blockstack

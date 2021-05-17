@@ -6,9 +6,9 @@ import XCTest
 import ToolKit
 
 final class AnalyticsUserPropertyValidationTests: XCTestCase {
-    
+
     private let validator = AnalyticsUserPropertyValidator()
-    
+
     func testNameValidationSuccess() {
         do {
             try validator.validate(name: StandardUserProperty.Key.kycCreationDate.rawValue)
@@ -19,7 +19,7 @@ final class AnalyticsUserPropertyValidationTests: XCTestCase {
             XCTFail("expected success, got: \(error)")
         }
     }
-    
+
     func testMaxLengthNameValidationSuccess() {
         do {
             let maxLengthName = (1...AnalyticsUserPropertyValidator.UserPropertyMaxLength.name)
@@ -30,7 +30,7 @@ final class AnalyticsUserPropertyValidationTests: XCTestCase {
             XCTFail("expected success, got: \(error)")
         }
     }
-    
+
     func testMaxLengthNameValidationFailure() {
         do {
             let maxLengthName = (1...AnalyticsUserPropertyValidator.UserPropertyMaxLength.name + 1)
@@ -40,14 +40,14 @@ final class AnalyticsUserPropertyValidationTests: XCTestCase {
             XCTFail("expected failure. got success instead")
         } catch {}
     }
-    
+
     func testNameFormatFailure() {
         do {
             try validator.validate(name: "1234event")
             XCTFail("expected failure. got success instead")
         } catch {}
     }
-    
+
     func testMaxLengthValueValidationSuccess() {
         do {
             let maxLengthValue = (1...AnalyticsUserPropertyValidator.UserPropertyMaxLength.value)
@@ -58,7 +58,7 @@ final class AnalyticsUserPropertyValidationTests: XCTestCase {
             XCTFail("expected success, got: \(error)")
         }
     }
-    
+
     func testMaxLengthValueValidationFailure() {
         do {
             let maxLengthValue = (1...AnalyticsUserPropertyValidator.UserPropertyMaxLength.value + 1)

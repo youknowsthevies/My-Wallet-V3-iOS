@@ -5,15 +5,15 @@ import Foundation
 import ToolKit
 
 final class MockUserPropertyRecorder: UserPropertyRecording {
-    
+
     private(set) var id = ""
     private(set) var hashed: Set<HashedUserProperty> = []
     private(set) var standard: Set<StandardUserProperty> = []
-    
+
     func record(id: String) {
         self.id = id
     }
-    
+
     func record(_ property: StandardUserProperty) {
         standard.insert(property)
     }

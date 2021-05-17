@@ -10,16 +10,16 @@ import RxSwift
 /// The announcement interactor cross all the preliminary data
 /// that is required to display announcements to the user
 final class AnnouncementInteractor: AnnouncementInteracting {
-    
+
     // MARK: - Services
-    
+
     /// Returns announcement preliminary data, according to which the relevant
     /// announcement will be displayed
     var preliminaryData: Single<AnnouncementPreliminaryData> {
         guard wallet.isInitialized() else {
             return Single.error(AnnouncementError.uninitializedWallet)
         }
-        
+
         let nabuUser = dataRepository.nabuUserSingle
         let tiers = tiersService.tiers
         let countries = infoService.countries
@@ -62,12 +62,12 @@ final class AnnouncementInteractor: AnnouncementInteracting {
                 )
             }
     }
-    
+
     // MARK: - Private properties
-    
+
     /// Dispatch queue
     private let dispatchQueueName = "announcements-interaction-queue"
-    
+
     private let wallet: WalletProtocol
     private let dataRepository: BlockchainDataRepository
     private let tiersService: KYCTiersServiceAPI
@@ -77,9 +77,9 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let beneficiariesService: BeneficiariesServiceAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let simpleBuyEligibilityService: EligibilityServiceAPI
-    
+
     // MARK: - Setup
-    
+
     init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
          wallet: WalletProtocol = WalletManager.shared.wallet,
          dataRepository: BlockchainDataRepository = .shared,

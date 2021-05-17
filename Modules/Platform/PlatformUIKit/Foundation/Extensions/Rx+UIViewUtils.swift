@@ -10,13 +10,13 @@ extension Reactive where Base: UIProgressView {
             view.setProgress(progress, animated: true)
         }
     }
-    
+
     public var trackTintColor: Binder<UIColor> {
         Binder(base) { view, color in
             view.trackTintColor = color
         }
     }
-    
+
     public var fillColor: Binder<UIColor> {
         Binder(base) { view, color in
             view.progressTintColor = color

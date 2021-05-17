@@ -10,10 +10,10 @@ struct WalletRegistrationContent {
 }
 
 protocol RegisterWalletScreenInteracting: AnyObject {
-    
+
     /// Content relay
     var contentStateRelay: BehaviorRelay<WalletRegistrationContent> { get }
-    
+
     /// Reflects errors received from the JS layer
     var error: Observable<String> { get }
 

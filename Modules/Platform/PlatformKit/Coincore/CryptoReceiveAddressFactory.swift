@@ -5,9 +5,9 @@ import RxSwift
 
 /// Resolve this protocol with a CryptoCurrency tag to receive a factory that builds CryptoReceiveAddress.
 public protocol CryptoReceiveAddressFactory {
-    
+
     typealias TxCompleted = (TransactionResult) -> Completable
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,
@@ -16,7 +16,7 @@ public protocol CryptoReceiveAddressFactory {
 }
 
 public final class CryptoReceiveAddressFactoryService {
-    
+
     public func makeExternalAssetAddress(
         asset: CryptoCurrency,
         address: String,

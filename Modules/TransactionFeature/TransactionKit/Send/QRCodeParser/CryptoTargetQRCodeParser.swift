@@ -15,7 +15,7 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
         case scanError(QRScannerError)
         case unableToCreatePayload
     }
-    
+
     public enum Target {
         case metadata(CryptoAssetQRMetadata)
         case bitpay(String)

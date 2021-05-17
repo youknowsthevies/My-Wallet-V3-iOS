@@ -5,7 +5,7 @@ import PlatformKit
 import RxSwift
 
 public final class StellarTransactionalActivityItemEventsService: TransactionalActivityItemEventFetcherAPI {
-    
+
     public typealias PageModel = PageResult<TransactionalActivityItemEvent>
 
     private let transactionService: StellarHistoricalTransactionService
@@ -17,7 +17,7 @@ public final class StellarTransactionalActivityItemEventsService: TransactionalA
     public init(repository: StellarWalletAccountRepositoryAPI = resolve()) {
         self.transactionService = StellarHistoricalTransactionService(repository: repository)
     }
-    
+
     public func fetchTransactionalActivityEvents(token: String?, limit: Int) -> Single<PageModel> {
         transactionService
             .fetchTransactions(token: token, size: limit)
@@ -26,7 +26,7 @@ public final class StellarTransactionalActivityItemEventsService: TransactionalA
                 guard case .noDefaultAccount = accountError else { return Single.error(accountError) }
                 return Single.just(.init(hasNextPage: false, items: []))
             }
-            .map(weak: self) { (self, output) -> PageResult<TransactionalActivityItemEvent> in
+            .map(weak: self) { (_, output) -> PageResult<TransactionalActivityItemEvent> in
                 let items = output.items.map { $0.activityItemEvent }
                 return PageResult(
                     hasNextPage: items.count == limit,

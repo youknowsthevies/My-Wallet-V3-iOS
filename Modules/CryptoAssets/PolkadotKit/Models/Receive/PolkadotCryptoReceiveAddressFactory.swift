@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 
 final class PolkadotCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,

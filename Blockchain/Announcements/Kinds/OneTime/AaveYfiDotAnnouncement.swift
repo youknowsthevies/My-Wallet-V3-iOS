@@ -12,9 +12,9 @@ import ToolKit
 final class AaveYfiDotAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
 
     private typealias LocalizedString = LocalizationConstants.AnnouncementCards.AaveYfiDot
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizedString.ctaButton,
@@ -48,20 +48,20 @@ final class AaveYfiDotAnnouncement: OneTimeAnnouncement & ActionableAnnouncement
             }
         )
     }
-    
+
     var shouldShow: Bool {
         !isDismissed
     }
-    
+
     let type = AnnouncementType.aaveYfiDot
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
 
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
 
     init(cacheSuite: CacheSuite = resolve(),

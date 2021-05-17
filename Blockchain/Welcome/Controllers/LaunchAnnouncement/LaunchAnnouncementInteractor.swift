@@ -7,7 +7,7 @@ import RxSwift
 final class LaunchAnnouncementInteractor {
 
     // MARK: - Exposed Properties
-    
+
     /// Streams an `UpdateType` element
     var updateType: Single<LaunchAnnouncementType> {
         walletOptionsAPI.walletOptions
@@ -22,11 +22,11 @@ final class LaunchAnnouncementInteractor {
                 }
             }
     }
-    
+
     private let walletOptionsAPI: WalletOptionsAPI
-    
+
     // MARK: - Setup
-    
+
     init(walletOptionsAPI: WalletOptionsAPI = resolve()) {
         self.walletOptionsAPI = walletOptionsAPI
     }

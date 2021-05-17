@@ -8,7 +8,7 @@ class KYCPagerTests: XCTestCase {
 
     private var pager: KYCPagerAPI!
     private var dataRepository: DataRepositoryMock!
-    
+
     private let response = KYC.UserTiers(
         tiers: [
             KYC.UserTier(tier: .tier1, state: .verified),

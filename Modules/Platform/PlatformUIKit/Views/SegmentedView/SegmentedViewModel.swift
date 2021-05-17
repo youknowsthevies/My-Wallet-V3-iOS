@@ -9,9 +9,9 @@ import UIKit
 /// Supports accessibility.
 /// - Tag: `SegmentedViewModel`
 public struct SegmentedViewModel {
-    
+
     // MARK: - Types
-    
+
     public struct Theme {
         public let font: UIFont
         public let selectedFont: UIFont
@@ -20,7 +20,7 @@ public struct SegmentedViewModel {
         public let contentColor: UIColor?
         public let selectedContentColor: UIColor?
         public let borderColor: UIColor
-        
+
         public init(font: UIFont,
                     selectedFont: UIFont,
                     backgroundColor: UIColor? = nil,
@@ -38,41 +38,41 @@ public struct SegmentedViewModel {
             self.contentColor = contentColor
         }
     }
-    
+
     public struct Item {
-        
+
         /// `Content` is the styling of the item. It can either have an image
         /// or a title, but not both.
         public enum Content {
             case title(String)
             case imageName(String)
         }
-        
+
         /// The action that will be triggered when the `Item` is tapped.
         public let action: (() -> Void)?
-        
+
         /// The content displayed on the `Item`. It can be a stringValue
         /// or an image, but not both.
         public let content: Content
-        
+
         // MARK: - Init
-        
+
         init(content: Content, action: (() -> Void)? = nil) {
             self.content = content
             self.action = action
         }
-        
+
         public static func image(named image: String, action: (() -> Void)? = nil) -> Item {
             .init(content: .imageName(image), action: action)
         }
-        
+
         public static func text(_ text: String, action: (() -> Void)? = nil) -> Item {
             .init(content: .title(text), action: action)
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// The theme of the view
     public var theme: Theme {
         get {
@@ -93,93 +93,93 @@ public struct SegmentedViewModel {
             contentColorRelay.accept(newValue.contentColor)
         }
     }
-    
+
     /// Accessibility for the button view
     public let accessibility: Accessibility
-    
+
     public let isMomentary: Bool
-    
+
     /// Corner radius
     public let cornerRadius: CGFloat
-    
+
     /// Items for selection
     public let items: [Item]
 
     public let defaultSelectedSegmentIndex: Int
-    
+
     /// Observe the button enabled state
     public let isEnabledRelay = BehaviorRelay<Bool>(value: true)
-    
+
     /// Is the button enabled
     public var isEnabled: Driver<Bool> {
         isEnabledRelay.asDriver()
     }
-    
+
     /// Retruns the opacity of the view
     public var alpha: Driver<CGFloat> {
         isEnabled.asDriver().map { CGFloat($0 ? 1 : 0.65) }
     }
-    
+
     /// The background color relay
     public let backgroundColorRelay = BehaviorRelay<UIColor?>(value: nil)
-    
+
     /// The background color of the button
     public var backgroundColor: Driver<UIColor?> {
         backgroundColorRelay.asDriver()
     }
-    
+
     /// The content color relay
     public let contentColorRelay = BehaviorRelay<UIColor?>(value: nil)
-    
+
     /// The content color of the button, that includes image's and label's
     public var contentColor: Driver<UIColor?> {
         contentColorRelay.asDriver()
     }
-    
+
     public var selectedFontColor: Driver<UIColor?> {
         selectedFontColorRelay.asDriver()
     }
-    
+
     /// The font when the segment is not selected
     public var normalFont: Driver<UIFont> {
         normalFontRelay.asDriver()
     }
-    
+
     /// The font when the segment is selected
     public var selectedFont: Driver<UIFont> {
         selectedFontRelay.asDriver()
     }
-    
+
     /// Border color relay
     public let borderColorRelay = BehaviorRelay<UIColor>(value: .clear)
     public let dividerColorRelay = BehaviorRelay<UIColor?>(value: nil)
     public let selectedFontColorRelay = BehaviorRelay<UIColor?>(value: nil)
     public let normalFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
     public let selectedFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
-    
+
     /// The border color around the button
     public var borderColor: Driver<UIColor> {
         borderColorRelay.asDriver()
     }
-    
+
     /// The color of the divider between segments.
     public var dividerColor: Driver<UIColor?> {
         dividerColorRelay.asDriver()
     }
-    
+
     /// The text relay
     public let textRelay = BehaviorRelay<String>(value: "")
-    
+
     /// Text to be displayed on the button
     public var text: Driver<String> {
         textRelay.asDriver()
     }
-    
+
     private let disposeBag = DisposeBag()
-    
+
     /// Streams events when the component is being tapped
     public let tapRelay = PublishRelay<Int>()
-    
+
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
     public init(isMomentary: Bool,
@@ -192,7 +192,7 @@ public struct SegmentedViewModel {
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
         self.items = items
-        
+
         tapRelay
             .filter { $0 >= 0 }
             .map { items[$0] }
@@ -205,7 +205,7 @@ public struct SegmentedViewModel {
             }
             .disposed(by: disposeBag)
     }
-    
+
     /// Set the theme using a mild fade animation
     public func animate(theme: Theme) {
         UIView.animate(
@@ -222,7 +222,7 @@ public struct SegmentedViewModel {
 }
 
 extension SegmentedViewModel {
-    
+
     /// Returns a primary segmented control
     public static func primary(
         items: [Item],
@@ -249,7 +249,7 @@ extension SegmentedViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a white segmented control
     public static func `plain`(
         items: [Item],
@@ -276,7 +276,7 @@ extension SegmentedViewModel {
         )
         return viewModel
     }
-    
+
     public static func `default`(
         items: [Item],
         isMomentary: Bool,
@@ -300,7 +300,7 @@ extension SegmentedViewModel {
         )
         return viewModel
     }
-    
+
     /// This provides a `SegmentedView` that is styled
     /// with a `UISegmentedControl` pre-iOS 13.
     public static func legacy(
@@ -325,4 +325,3 @@ extension SegmentedViewModel {
         return viewModel
     }
 }
-

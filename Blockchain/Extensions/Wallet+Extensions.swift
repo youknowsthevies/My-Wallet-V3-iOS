@@ -17,7 +17,7 @@ extension Wallet: MnemonicAccessAPI {
             }
             .asMaybe()
     }
-    
+
     public func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
         Single.just(())
             .observeOn(MainScheduler.asyncInstance)

@@ -30,7 +30,7 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
         analyticsRecorder.record(event: AnalyticsEvent.verifyNowClicked)
         router?.routeToKYC()
     }
-    
+
     func userReadyForSwap() {
         router?.routeToSwapLanding()
     }
@@ -48,7 +48,7 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
             }
             .disposeOnDeactivate(interactor: self)
     }
-    
+
     func dismissTransactionFlow() {
         router?.dismissTransactionFlow()
     }
@@ -60,7 +60,7 @@ final class SwapRootInteractor: Interactor, SwapBootstrapListener, SwapRootListe
     private lazy var routeViewDidAppear: Void = {
         router?.routeToSwapBootstrap()
     }()
-    
+
     func viewDidAppear() {
         // if first time, got to variant router
         _ = routeViewDidAppear

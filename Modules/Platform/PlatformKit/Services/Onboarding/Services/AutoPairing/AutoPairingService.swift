@@ -9,15 +9,15 @@ import WalletPayloadKit
 public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
 
     // MARK: - Properties
-    
+
     private let walletCryptoService: WalletCryptoServiceAPI
     private let parsingService = SharedKeyParsingService()
-    
+
     private let walletPairingClient: AutoWalletPairingClientAPI
     private let walletPayloadService: WalletPayloadServiceAPI
-    
+
     // MARK: - Setup
-    
+
     public init(repository: WalletRepositoryAPI,
                 walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
                 walletPairingClient: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
@@ -29,7 +29,7 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
         )
         self.walletCryptoService = walletCryptoService
     }
-    
+
     /// Maps a QR pairing code of a wallet into its password, retrieve and cache the wallet data.
     /// Finally returns the password of the wallet
     /// 1. Receives a pairing code (guid, encrypted shared-key)

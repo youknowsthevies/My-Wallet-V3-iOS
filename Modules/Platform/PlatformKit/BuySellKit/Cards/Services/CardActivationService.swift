@@ -9,7 +9,7 @@ public enum CardActivationState {
     case active(CardData)
     case pending
     case inactive(CardData?)
-    
+
     var isPending: Bool {
         switch self {
         case .pending:
@@ -18,7 +18,7 @@ public enum CardActivationState {
             return false
         }
     }
-    
+
     init(_ cardPayload: CardPayload) {
         guard let cardData = CardData(response: cardPayload) else {
             self = .inactive(nil)
@@ -36,41 +36,41 @@ public enum CardActivationState {
 }
 
 public protocol CardActivationServiceAPI: class {
-    
+
     /// Cancel polling
     var cancel: Completable { get }
-    
+
     /// Poll for activation
     func waitForActivation(of cardId: String) -> Single<PollResult<CardActivationState>>
 }
 
 final class CardActivationService: CardActivationServiceAPI {
-    
+
     // MARK: - Types
-    
+
     private enum Constant {
         /// Duration in seconds
         static let pollingDuration: TimeInterval = 60
     }
-    
+
     // MARK: - Properties
-    
+
     var cancel: Completable {
         pollService.cancel
     }
-    
+
     // MARK: - Injected
-    
+
     private let pollService: PollService<CardActivationState>
     private let client: CardDetailClientAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: CardDetailClientAPI = resolve()) {
         self.client = client
         pollService = .init(matcher: { !$0.isPending })
     }
-    
+
     func waitForActivation(of cardId: String) -> Single<PollResult<CardActivationState>> {
         pollService.setFetch(weak: self) { (self) in
             self.client.getCard(by: cardId)
@@ -81,7 +81,7 @@ final class CardActivationService: CardActivationServiceAPI {
                     return CardActivationState(payload)
                 }
         }
-        
+
         return pollService.poll(timeoutAfter: Constant.pollingDuration)
     }
 }

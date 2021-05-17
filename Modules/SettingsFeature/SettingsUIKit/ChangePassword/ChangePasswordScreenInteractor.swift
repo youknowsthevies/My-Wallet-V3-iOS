@@ -5,7 +5,7 @@ import RxRelay
 import RxSwift
 
 final class ChangePasswordScreenInteractor {
-    
+
     enum State {
         case unknown
         case ready
@@ -14,7 +14,7 @@ final class ChangePasswordScreenInteractor {
         case incorrectPassword
         case complete
         case failed
-        
+
         var isLoading: Bool {
             switch self {
             case .updating:
@@ -23,7 +23,7 @@ final class ChangePasswordScreenInteractor {
                 return false
             }
         }
-        
+
         var isComplete: Bool {
             switch self {
             case .complete:
@@ -33,30 +33,30 @@ final class ChangePasswordScreenInteractor {
             }
         }
     }
-    
+
     struct InteractorInput {
         let currentPassword: String
         let newPassword: String
     }
-    
+
     let triggerRelay = PublishRelay<Void>()
     let contentRelay: BehaviorRelay<InteractorInput> = BehaviorRelay(value: .empty)
     var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Injected
-    
+
     private let stateRelay = BehaviorRelay<State>(value: .unknown)
     private let currentPasswordRelay = BehaviorRelay<String>(value: "")
     private let passwordRepository: PasswordRepositoryAPI
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(passwordAPI: PasswordRepositoryAPI) {
         self.passwordRepository = passwordAPI
-        
+
         passwordRepository.hasPassword
             .observeOn(MainScheduler.instance)
             .map { hasPassword -> State in
@@ -67,19 +67,19 @@ final class ChangePasswordScreenInteractor {
                 self.stateRelay.accept(state)
             })
             .disposed(by: disposeBag)
-            
+
         passwordRepository.password.asObservable()
             .compactMap { $0 }
             .bindAndCatch(to: currentPasswordRelay)
             .disposed(by: disposeBag)
-        
+
         triggerRelay
             .bindAndCatch(weak: self) { (self) in
                 self.changePassword()
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func changePassword() {
         let current = currentPasswordRelay.value
         let input = contentRelay.value
@@ -87,7 +87,7 @@ final class ChangePasswordScreenInteractor {
             stateRelay.accept(.incorrectPassword)
             return
         }
-        
+
         update(state: .updating)
             .andThen(passwordRepository.set(password: input.newPassword))
             .andThen(passwordRepository.sync())
@@ -96,12 +96,12 @@ final class ChangePasswordScreenInteractor {
                 onCompleted: { [weak self] in
                     self?.stateRelay.accept(.complete)
                 },
-                onError: { [weak self] (error) in
+                onError: { [weak self] (_) in
                     self?.stateRelay.accept(.failed)
                 })
             .disposed(by: disposeBag)
     }
-    
+
     private func update(state: State) -> Completable {
         Completable.create { [weak self] (observer) -> Disposable in
             self?.stateRelay.accept(state)

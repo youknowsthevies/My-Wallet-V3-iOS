@@ -16,14 +16,14 @@ struct EmailVerifiedEnvironment: Equatable {
 
 typealias EmailVerifiedReducer = Reducer<EmailVerifiedState, EmailVerifiedAction, EmailVerifiedEnvironment>
 
-let emailVerifiedReducer = EmailVerifiedReducer { state, action, environment in
+let emailVerifiedReducer = EmailVerifiedReducer { _, _, _ in
     .none
 }
 
 struct EmailVerifiedView: View {
-    
+
     let store: Store<EmailVerifiedState, EmailVerifiedAction>
-    
+
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
@@ -58,7 +58,7 @@ struct EmailVerifiedView_Previews: PreviewProvider {
             )
         )
         .preferredColorScheme(.light)
-        
+
         EmailVerifiedView(
             store: .init(
                 initialState: .init(),

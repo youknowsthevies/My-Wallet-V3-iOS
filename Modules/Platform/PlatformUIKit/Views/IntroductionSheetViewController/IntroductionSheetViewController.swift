@@ -5,21 +5,21 @@ import RxCocoa
 import RxSwift
 
 public final class IntroductionSheetViewController: UIViewController {
-    
+
     private typealias AccessibilityIdentifiers = Accessibility.Identifier.IntroductionSheet
-    
+
     // MARK: Private Properties
-    
+
     private let bag: DisposeBag = DisposeBag()
     private var viewModel: IntroductionSheetViewModel!
-    
+
     // MARK: Private IBOutlets
-    
+
     @IBOutlet private var thumbnail: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var subtitleLabel: UILabel!
     @IBOutlet private var button: UIButton!
-    
+
     // TICKET: IOS-2520 - Move Storyboardable Protocol to PlatformUIKit
     public static func make(with viewModel: IntroductionSheetViewModel) -> IntroductionSheetViewController {
         let bundle = Bundle(for: self)
@@ -30,7 +30,7 @@ public final class IntroductionSheetViewController: UIViewController {
         controller.viewModel = viewModel
         return controller
     }
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         button.setTitle(viewModel.buttonTitle, for: .normal)
@@ -44,10 +44,10 @@ public final class IntroductionSheetViewController: UIViewController {
         titleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.description
         thumbnail.image = viewModel.thumbnail
-        
+
         applyAccessibility()
     }
-    
+
     private func applyAccessibility() {
         button.accessibility = .init(id: .value(AccessibilityIdentifiers.doneButton))
         titleLabel.accessibility = .init(id: .value(AccessibilityIdentifiers.titleLabel))

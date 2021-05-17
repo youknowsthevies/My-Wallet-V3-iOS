@@ -11,14 +11,14 @@ final class AirdropStatusTableViewCell: UITableViewCell {
             valueLabel.content = presenter.value
         }
     }
-    
+
     // MARK: - IBOutlet Properties
-    
+
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var valueLabel: UILabel!
-    
+
     // MARK: - Lifecycle
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil

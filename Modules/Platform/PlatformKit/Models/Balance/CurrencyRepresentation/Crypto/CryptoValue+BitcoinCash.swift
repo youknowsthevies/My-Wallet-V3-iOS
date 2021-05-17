@@ -5,7 +5,7 @@ import BigInt
 // MARK: - Bitcoin Cash
 
 extension CryptoValue {
-    
+
     public static var bitcoinCashZero: CryptoValue {
         zero(currency: .bitcoinCash)
     }

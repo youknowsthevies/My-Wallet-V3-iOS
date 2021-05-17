@@ -155,7 +155,7 @@ final class TransactionFlowDescriptor {
     static let networkFee = LocalizedString.networkFee
     static let availableBalanceTitle = LocalizedString.available
     static let maxButtonTitle = LocalizedString.Swap.swapMax
-    
+
     static func maxButtonTitle(action: AssetAction) -> String {
         switch action {
         case .swap:

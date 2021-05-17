@@ -5,7 +5,7 @@ import RxRelay
 import RxSwift
 
 protocol NonCustodialActionStateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<NonCustodialActionState>> { get }
@@ -20,25 +20,25 @@ typealias NonCustodialActionStateServiceAPI = NonCustodialActionStateReceiverSer
                                               NonCustodialActionEmitterAPI
 
 final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
-    
+
     typealias State = NonCustodialActionState
     typealias Action = RoutingAction<State>
-    
+
     // MARK: - Properties
-    
+
     var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     let nextRelay = PublishRelay<Void>()
     let selectionRelay = PublishRelay<Action>()
     private let actionRelay = PublishRelay<Action>()
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init() {
         nextRelay
             .observeOn(MainScheduler.instance)
@@ -46,7 +46,7 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
                 self.apply(action: .next(.actions))
             }
             .disposed(by: disposeBag)
-        
+
         selectionRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, action) in
@@ -54,7 +54,7 @@ final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func apply(action: Action) {
         actionRelay.accept(action)
     }

@@ -11,7 +11,7 @@ public struct Beneficiary {
     public let identifier: String
     public let account: String
     public let limit: FiatValue?
-    
+
     init?(response: BeneficiaryResponse, limit: FiatValue?) {
         self.type = .funds
         self.identifier = response.id

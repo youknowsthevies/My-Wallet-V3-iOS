@@ -5,13 +5,13 @@ public struct NonCustodialAccountBalance: CryptoAccountBalanceType, Equatable {
     public var available: MoneyValue {
         cryptoValue.moneyValue
     }
-    
+
     public var cryptoCurrency: CryptoCurrency {
         cryptoValue.currencyType
     }
-    
+
     public let cryptoValue: CryptoValue
-    
+
     public init(balance: CryptoValue) {
         self.cryptoValue = balance
     }

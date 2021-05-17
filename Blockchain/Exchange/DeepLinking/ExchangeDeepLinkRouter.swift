@@ -5,12 +5,12 @@ import PlatformKit
 import SettingsKit
 
 class ExchangeDeepLinkRouter: DeepLinkRouting {
-    
+
     private let appSettings: BlockchainSettings.App
     init(appSettings: BlockchainSettings.App = resolve()) {
         self.appSettings = appSettings
     }
-    
+
     func routeIfNeeded() -> Bool {
         guard appSettings.didTapOnExchangeDeepLink else {
             return false

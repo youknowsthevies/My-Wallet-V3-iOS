@@ -8,9 +8,9 @@ import RxSwift
 /// for when the user needs to select
 /// fee, etc.
 public final class LineItemView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: LineItemViewViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -18,31 +18,31 @@ public final class LineItemView: UIView {
             subtitleLabel.content = viewModel.subtitle
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let stackView = UIStackView()
     private let titleLabel = UILabel()
     private let subtitleLabel = UILabel()
-    
+
     // MARK: - Setup
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     public convenience init() {
         self.init(frame: .zero)
     }
-    
+
     private func setup() {
         addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)

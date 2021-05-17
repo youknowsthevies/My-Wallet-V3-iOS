@@ -7,7 +7,7 @@ public struct WalletSettings: Equatable {
     public enum Feature: String {
         case segwit
     }
-    
+
     public let countryCode: String
     public let language: String
     public let fiatCurrency: String
@@ -18,11 +18,11 @@ public struct WalletSettings: Equatable {
     public let isEmailVerified: Bool
     public let authenticator: AuthenticatorType
     public let features: [Feature: Bool]
-    
+
     public var currency: FiatCurrency? {
         FiatCurrency(rawValue: fiatCurrency)
     }
-    
+
     init(response: SettingsResponse) {
         countryCode = response.countryCode
         language = response.language

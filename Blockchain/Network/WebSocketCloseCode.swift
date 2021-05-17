@@ -4,7 +4,7 @@ import Foundation
 
 /// WebSocket codes related to closing a WebSocket connection
 @objc enum WebSocketCloseCode: Int {
-    
+
     case backgroundedApp = 4500
     case loggedOut = 4501
     case decryptedWallet = 4502

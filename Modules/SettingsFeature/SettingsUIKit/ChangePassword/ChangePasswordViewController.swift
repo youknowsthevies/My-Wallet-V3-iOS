@@ -3,34 +3,34 @@
 import PlatformUIKit
 
 final class ChangePasswordViewController: BaseScreenViewController {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var currentPasswordTextFieldView: TextFieldView!
     @IBOutlet private var newPasswordTextFieldView: PasswordTextFieldView!
     @IBOutlet private var confirmPasswordTextFieldView: PasswordTextFieldView!
     @IBOutlet private var updatePasswordButtonView: ButtonView!
-    
+
     // MARK: - Injected
-    
+
     private let presenter: ChangePasswordScreenPresenter
-    
+
     // MARK: - Private Properties
-    
+
     private var keyboardInteractionController: KeyboardInteractionController!
-    
+
     // MARK: - Init
-    
+
     init(presenter: ChangePasswordScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: ChangePasswordViewController.objectName, bundle: Bundle(for: Self.self))
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         keyboardInteractionController = KeyboardInteractionController(in: self)
@@ -39,14 +39,14 @@ final class ChangePasswordViewController: BaseScreenViewController {
         setupNavigationBar()
         setupTextFieldViews()
     }
-    
+
     private func setupNavigationBar() {
         set(barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: .none)
         titleViewStyle = presenter.titleView
     }
-    
+
     private func setupTextFieldViews() {
         currentPasswordTextFieldView.setup(
             viewModel: presenter.currentPasswordTextFieldViewModel,
@@ -61,5 +61,5 @@ final class ChangePasswordViewController: BaseScreenViewController {
             keyboardInteractionController: keyboardInteractionController
         )
     }
-    
+
 }

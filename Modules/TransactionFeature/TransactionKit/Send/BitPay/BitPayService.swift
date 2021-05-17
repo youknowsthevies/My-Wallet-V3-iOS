@@ -12,24 +12,24 @@ protocol BitPayServiceAPI {
 }
 
 final class BitPayService: BitPayServiceAPI {
-    
+
     // MARK: - Properties
-    
+
     private let client: BitPayClientAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: BitPayClientAPI = resolve()) {
         self.client = client
     }
-    
+
     // MARK: - BitPayServiceAPI
-    
+
     func getBitPayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
         client
             .bitpayPaymentRequest(invoiceID: invoiceID, currency: currency)
     }
-    
+
     func submitBitPayPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         client
             .postPayment(
@@ -39,7 +39,7 @@ final class BitPayService: BitPayServiceAPI {
                 transactionSize: transactionSize
             )
     }
-    
+
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Completable {
         client
             .verifySignedTransaction(

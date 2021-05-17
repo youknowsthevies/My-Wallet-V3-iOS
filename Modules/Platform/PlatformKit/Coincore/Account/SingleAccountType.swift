@@ -16,7 +16,7 @@ public enum SingleAccountType: Hashable {
         var isSavings: Bool {
             self == .savings
         }
-        
+
         var isExchange: Bool {
             self == .exchange
         }
@@ -30,7 +30,7 @@ public enum SingleAccountType: Hashable {
             return type.isTrading
         }
     }
-    
+
     public var isExchange: Bool {
         switch self {
         case .nonCustodial:

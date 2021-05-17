@@ -18,20 +18,20 @@ public protocol EthereumWalletBridgeAPI {
     var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }
     var nonce: Single<BigUInt> { get }
-    
+
     /// Streams a boolean value indicating whether if there is transaction that should complete
     var isWaitingOnTransaction: Single<Bool> { get }
 
     /// Fetches the previously cached history
     var history: Single<Void> { get }
-    
+
     /// Fetches the history (expected to make a network call to do so).
     /// Always returns the updated history
     func fetchHistory() -> Single<Void>
 
     func memo(for transactionHash: String) -> Single<String?>
     func updateMemo(for transactionHash: String, memo: String?) -> Completable
-    
+
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished>
 
     /// Updates the Ethereum account label at the given index.

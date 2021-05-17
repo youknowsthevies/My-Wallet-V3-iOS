@@ -8,16 +8,16 @@ import RxSwift
 
 /// An Rx driven line-chart view
 public final class AssetLineChartView: UIView {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var assetPriceView: AssetPriceView!
     @IBOutlet private var chartContainer: UIView!
-    
+
     fileprivate var chartShimmeringView: ShimmeringView!
-    
+
     // MARK: - Injected
-    
+
     /// Presenter is injected from external source
     /// because the view should be compatible with queueing
     /// mechanism.
@@ -29,21 +29,21 @@ public final class AssetLineChartView: UIView {
             guard let presenter = presenter else { return }
             assetPriceView.presenter = presenter.priceViewPresenter
             setupLineChartView(presenter.lineChartView)
-            
+
             presenter.lineChartPresenter.state
                 .bindAndCatch(to: rx.chartState)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     fileprivate var chartView: LineChartView!
     private var disposeBag = DisposeBag()
     private var interactor: AssetLineChartUserInteractor!
     private var assetPricePresenter: InstantAssetPriceViewInteractor!
     private var chartContainerShimmeringView: ShimmeringView!
-    
+
     // MARK: - Setup
-    
+
     public override func awakeFromNib() {
         super.awakeFromNib()
         assetPriceView.shimmer(
@@ -52,31 +52,31 @@ public final class AssetLineChartView: UIView {
             estimatedChangeLabelSize: CGSize(width: 75,
                                              height: 24)
         )
-        
+
         chartShimmeringView = ShimmeringView(
             in: self,
             centeredIn: chartContainer,
             size: .init(width: chartContainer.bounds.width, height: 1.0)
         )
-        
+
         assetPriceView.setNeedsLayout()
         assetPriceView.layoutIfNeeded()
     }
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
     }
-    
+
     private func setupLineChartView(_ lineChartView: LineChartView) {
         self.chartView = lineChartView
         chartContainer.addSubview(chartView)
@@ -114,7 +114,7 @@ public extension Reactive where Base: AssetLineChartView {
         Binder(base) { view, payload in
             view.chartView.delegate?.chartValueNothingSelected?(view.chartView)
             view.chartView.marker = nil
-            
+
             let state = payload
             let animation = {
                 view.chartView.data = LineChartData.empty
@@ -122,15 +122,15 @@ public extension Reactive where Base: AssetLineChartView {
                 view.chartView.alpha = state.visibility.defaultAlpha
                 view.chartShimmeringView.start()
             }
-            let completion = { (finished: Bool) in
+            let completion = { (_: Bool) in
                 view.chartView.alpha = state.visibility.defaultAlpha
                 view.chartShimmeringView.stop()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: animation)
-                
+
             case .loaded(next: let value):
                 UIView.animate(withDuration: 0.5, animations: animation) { finished in
                     completion(finished)

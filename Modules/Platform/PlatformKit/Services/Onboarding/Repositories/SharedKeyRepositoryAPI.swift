@@ -6,10 +6,10 @@ import RxSwift
 public protocol SharedKeyRepositoryAPI: class {
     /// Streams `Bool` indicating whether the shared key is currently cached in the repo
     var hasSharedKey: Single<Bool> { get }
-    
+
     /// Streams the cached shared key or `nil` if it is not cached
     var sharedKey: Single<String?> { get }
-    
+
     /// Sets the shared key
     func set(sharedKey: String) -> Completable
 }
@@ -22,7 +22,7 @@ public extension SharedKeyRepositoryAPI {
                 return !sharedKey.isEmpty
             }
     }
-    
+
     var sharedKeyPublisher: AnyPublisher<String?, Never> {
         sharedKey.asPublisher()
             .ignoreFailure()
@@ -31,12 +31,12 @@ public extension SharedKeyRepositoryAPI {
 
 public protocol CredentialsRepositoryAPI: SharedKeyRepositoryAPI, GuidRepositoryAPI {
     var credentials: Single<(guid: String, sharedKey: String)> { get }
-    
+
     func fetchCredentials() -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError>
 }
 
 extension CredentialsRepositoryAPI {
-    
+
     public var credentials: Single<(guid: String, sharedKey: String)> {
         Single
             .zip(guid, sharedKey)
@@ -50,7 +50,7 @@ extension CredentialsRepositoryAPI {
                 return (guid, sharedKey)
             }
     }
-    
+
     public func fetchCredentials() -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError> {
         guidPublisher.zip(sharedKeyPublisher)
             .setFailureType(to: MissingCredentialsError.self)

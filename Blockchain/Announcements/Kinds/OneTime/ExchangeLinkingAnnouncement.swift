@@ -10,9 +10,9 @@ import ToolKit
 
 /// Card announcement for Wallet-Exchange linking
 final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.Exchange.ctaButton,
@@ -28,7 +28,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
                 self.dismiss()
             }
             .disposed(by: self.disposeBag)
-                    
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "exchange-icon-small"),
@@ -47,28 +47,28 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
             }
         )
     }
-    
+
     var shouldShow: Bool {
         guard shouldShowExchangeAnnouncement else {
             return false
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.exchangeLinking
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
-    
+
     private let disposeBag = DisposeBag()
 
     private let shouldShowExchangeAnnouncement: Bool
-    
+
     // MARK: - Setup
-    
+
     init(shouldShowExchangeAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),

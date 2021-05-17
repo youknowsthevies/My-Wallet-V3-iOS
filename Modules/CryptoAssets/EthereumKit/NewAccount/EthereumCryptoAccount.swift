@@ -10,7 +10,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
-    
+
     var actionableBalance: Single<MoneyValue> {
         balance
     }
@@ -24,7 +24,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         balanceFetching
             .pendingBalanceMoney
     }
-    
+
     var actions: Single<AvailableActions> {
         isFunded
             .map { isFunded -> AvailableActions in

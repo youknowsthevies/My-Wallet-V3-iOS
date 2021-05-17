@@ -16,16 +16,16 @@ final class TotalBalanceViewPresenter {
             id: .value(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)
         )
     )
-    
+
     // MARK: - Services
-        
+
     let balancePresenter: AssetPriceViewPresenter
     let pieChartPresenter: AssetPieChartPresenter
-    
+
     private let interactor: TotalBalanceViewInteractor
-    
+
     // MARK: - Setup
-    
+
     init(balanceProvider: BalanceProviding,
          balanceChangeProvider: BalanceChangeProviding,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI) {

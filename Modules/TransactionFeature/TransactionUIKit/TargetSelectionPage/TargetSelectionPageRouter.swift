@@ -17,7 +17,7 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
-    
+
     func presentQRScanner(for currency: CryptoCurrency,
                           sourceAccount: CryptoAccount,
                           model: TargetSelectionPageModel) {
@@ -44,9 +44,9 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
             }
         )
         .with(supportForCameraRoll: true)
-        
+
         guard let viewController = builder.build() else { return }
-        
+
         DispatchQueue.main.async { [weak self] in
             self?.viewController.uiviewController.present(viewController, animated: true, completion: nil)
         }

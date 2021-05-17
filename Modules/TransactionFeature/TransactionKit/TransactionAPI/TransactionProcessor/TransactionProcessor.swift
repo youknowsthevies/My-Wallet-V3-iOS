@@ -6,9 +6,9 @@ import RxSwift
 import ToolKit
 
 public final class TransactionProcessor {
-    
+
     // MARK: - Public properties
-    
+
     public var canTransactFiat: Bool {
         engine.canTransactFiat
     }
@@ -36,13 +36,13 @@ public final class TransactionProcessor {
                 self.pendingTxSubject
             }
     }
-    
+
     // MARK: - Private properties
 
     private let engine: TransactionEngine
     private let pendingTxSubject: BehaviorSubject<PendingTransaction>
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
 
     init(sourceAccount: BlockchainAccount,
@@ -62,7 +62,7 @@ public final class TransactionProcessor {
         )
         engine.assertInputsValid()
     }
-    
+
     // MARK: - Public methods
 
     public func reset() {
@@ -70,7 +70,7 @@ public final class TransactionProcessor {
             engine.stop(pendingTransaction: try pendingTransaction())
         } catch { }
     }
-    
+
     // Set the option to the passed option value. If the option is not supported, it will not be
     // in the original list when the pendingTx is created. And if it is not supported, then trying to
     // update it will cause an error.
@@ -102,7 +102,7 @@ public final class TransactionProcessor {
             return .just(event: .error(error))
         }
     }
-    
+
     public func updateAmount(amount: MoneyValue) -> Completable {
         Logger.shared.debug("!TRANSACTION!> in `updateAmount: \(amount.displayString)`")
         do {
@@ -180,7 +180,7 @@ public final class TransactionProcessor {
             })
             .asCompletable()
     }
-    
+
     /// Check that the fee level is supported,
     /// then call into the engine to set the fee and validate ballances etc
     public func updateFeeLevel(_ feeLevel: FeeLevel, customFeeAmount: MoneyValue?) -> Completable {
@@ -200,7 +200,7 @@ public final class TransactionProcessor {
             })
             .asCompletable()
     }
-    
+
     // MARK: - Private methods
 
     // Called back by the engine if it has received an external signal and the existing confirmation set

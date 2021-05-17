@@ -75,7 +75,7 @@ final class TabControllerManager: NSObject {
     private func loadSwap() {
         guard swapViewController == nil else { return }
         guard swapRouter == nil else { return }
-        
+
         func populateNewSwap() {
             let router = SwapRootBuilder().build()
             swapViewController = router.viewControllable.uiviewController
@@ -111,12 +111,12 @@ final class TabControllerManager: NSObject {
             index: Constants.Navigation.tabSend
         )
     }
-    
+
     func send(from account: BlockchainAccount) {
         loadSend()
         sendRouter.routeToSend(sourceAccount: account as! CryptoAccount)
     }
-    
+
     func send(from account: BlockchainAccount, target: TransactionTarget) {
         loadSend()
         sendRouter.routeToSend(sourceAccount: account as! CryptoAccount, destination: target)

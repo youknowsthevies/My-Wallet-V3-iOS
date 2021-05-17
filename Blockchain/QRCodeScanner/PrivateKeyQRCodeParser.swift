@@ -5,12 +5,12 @@ import PlatformKit
 import PlatformUIKit
 
 final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
-    
+
     enum PrivateKeyQRCodeParserError: Error {
         case scanError(QRScannerError)
         case unknownKeyFormat
         case unsupportedPrivateKey
-        
+
         var privateKeyReaderError: PrivateKeyReaderError {
             switch self {
             case .scanError:
@@ -22,16 +22,16 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
             }
         }
     }
-    
+
     struct PrivateKey {
         let scannedKey: String
         let assetAddress: AssetAddress?
     }
-    
+
     private let walletManager: WalletManager
     private let loadingViewPresenter: LoadingViewPresenting
     private let assetAddress: AssetAddress?
-    
+
     init(walletManager: WalletManager = .shared,
          loadingViewPresenter: LoadingViewPresenting,
          assetAddress: AssetAddress?) {
@@ -39,7 +39,7 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
         self.loadingViewPresenter = loadingViewPresenter
         self.assetAddress = assetAddress
     }
-    
+
     func parse(scanResult: Result<String, QRScannerError>, completion: ((Result<PrivateKey, PrivateKeyQRCodeParserError>) -> Void)?) {
         switch scanResult {
         case .success(let privateKey):
@@ -48,7 +48,7 @@ final class PrivateKeyQRCodeParser: QRCodeScannerParsing {
             completion?(.failure(.scanError(error)))
         }
     }
-    
+
     private func handleSuccess(privateKey stringValue: String, completion: ((Result<PrivateKey, PrivateKeyQRCodeParserError>) -> Void)?) {
         let scheme = "\(AssetConstants.URLSchemes.bitcoin):"
         var scannedKey = stringValue

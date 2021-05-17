@@ -9,17 +9,17 @@ import RxSwift
 final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
 
     // MARK: - Types
-    
+
     typealias InteractionState = LoadingState<SwitchInteractionAsset>
-    
+
     // MARK: - Setup
-    
+
     private lazy var setup: Void = {
         service.isEnabled
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         switchTriggerRelay
             .flatMap(weak: self) { (self, value) -> Observable<Void> in
                 self.service
@@ -29,7 +29,7 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
             .subscribe()
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Public Properties
 
     var state: Observable<InteractionState> {
@@ -37,11 +37,11 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
         return stateRelay
             .asObservable()
     }
-    
+
     // MARK: - SwitchViewInteracting
 
     let switchTriggerRelay = PublishRelay<Bool>()
-    
+
     // MARK: - Private Properties
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)

@@ -44,4 +44,3 @@ struct PaymentAccountUSD: PaymentAccountDescribing, Equatable {
         self.state = response.state
     }
 }
-

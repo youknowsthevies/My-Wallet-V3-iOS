@@ -31,7 +31,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     private let memoNoteTextView: InteractableTextView = InteractableTextView()
     private let copyButton: ButtonView = ButtonView()
     private let shareButton: ButtonView = ButtonView()
-    
+
     private var memoNoteContainerToLabelConstraint: NSLayoutConstraint!
     private var memoNoteContainerHeightConstraint: NSLayoutConstraint!
     private var memoLabelToSeparatorConstraint: NSLayoutConstraint!
@@ -39,7 +39,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
     private var memoHeaderHeightConstraint: NSLayoutConstraint!
     private var copyButtonToMemoNoteConstraint: NSLayoutConstraint!
     private var contentSizeObserver: NSKeyValueObservation?
-    
+
     private var copyButtonTopOffset: CGFloat {
         switch DevicePresenter.type {
         case .superCompact:
@@ -68,14 +68,14 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         setupView()
         setupNavigationBar()
         setupPresenter()
-        
+
         /// Prevent unecessary rendering
         displayMemo(show: false)
     }
 
     private func setupPresenter() {
         addressHeaderLabel.content = presenter.walletAddressLabelContent
-        
+
         memoHeaderLabel.content = presenter.memoLabelContent
 
         presenter.addressLabelContentPresenting
@@ -90,7 +90,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         presenter.memoLabelContentPresenting
             .state
             .observeOn(MainScheduler.asyncInstance)
@@ -104,7 +104,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         presenter.balanceLabelContentPresenting
             .state
             .observeOn(MainScheduler.asyncInstance)
@@ -117,7 +117,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         presenter.nameLabelContentPresenting
             .state
             .observeOn(MainScheduler.asyncInstance)
@@ -130,7 +130,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         presenter.qrCode
             .drive(qrCodeImageView.rx.image)
             .disposed(by: disposeBag)
@@ -142,7 +142,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
             .drive(assetImageView.rx.image)
             .disposed(by: disposeBag)
     }
-    
+
     private func displayMemo(show: Bool) {
         memoNoteContainer.isHidden = !show
         memoLabel.isHidden = !show
@@ -165,14 +165,14 @@ final class ReceiveScreenViewController: BaseScreenViewController {
 
     private func setupView() {
         view.backgroundColor = .white
-        
+
         // MARK: Add Subviews
         view.addSubview(scrollView)
-        
+
         // MARK: Scroll View
         scrollView.layoutToSuperview(.leading, .trailing, .top, .bottom, usesSafeAreaLayoutGuide: true)
         scrollView.addSubview(contentView)
-        
+
         // MARK: Content View
         contentView.layoutToSuperview(.leading, .trailing, .top, .bottom, .width)
         contentView.layoutToSuperview(.height, relation: .greaterThanOrEqual)

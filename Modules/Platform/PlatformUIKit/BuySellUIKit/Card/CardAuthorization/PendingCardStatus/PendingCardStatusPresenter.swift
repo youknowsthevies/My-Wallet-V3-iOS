@@ -7,42 +7,42 @@ import RxCocoa
 import RxSwift
 
 final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresenterAPI {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.PendingCardStatusScreen
-    
+
     // MARK: - Properties
-    
+
     var tap: Observable<URL> {
         viewModelRelay
             .asObservable()
             .compactMap { $0 }
             .flatMap(\.tap)
     }
-    
+
     var viewModel: Driver<PendingStateViewModel> {
         viewModelRelay
             .asDriver()
             .compactMap { $0 }
     }
-     
+
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
     private let interactor: PendingCardStatusInteractor
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(interactor: PendingCardStatusInteractor) {
         self.interactor = interactor
         super.init(interactable: interactor)
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         viewModelRelay.accept(
             PendingStateViewModel(
                 compositeStatusViewType: .loader,
@@ -50,20 +50,20 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
                 subtitle: LocalizedString.LoadingScreen.subtitle
             )
         )
-        
+
         interactor.startPolling()
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onError: { [weak self] error in
+                onError: { [weak self] _ in
                     self?.handle(state: .inactive)
                 }
             )
             .disposed(by: disposeBag)
     }
-        
+
     private func handle(state: PendingCardStatusInteractor.State) {
         switch state {
         case .active(let cardData):

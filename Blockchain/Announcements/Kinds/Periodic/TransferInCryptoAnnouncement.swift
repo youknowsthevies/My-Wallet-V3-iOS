@@ -10,9 +10,9 @@ import ToolKit
 
 /// Transfer in crypto announcement
 final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.TransferInCrypto.ctaButton
@@ -26,7 +26,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "card-icon-transfer"),
@@ -52,22 +52,22 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.transferBitcoin
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
 
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-        
+
     private let disposeBag = DisposeBag()
     private let isKycSupported: Bool
-    
+
     // MARK: - Setup
-    
+
     init(isKycSupported: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
@@ -83,4 +83,3 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
         self.action = action
     }
 }
-

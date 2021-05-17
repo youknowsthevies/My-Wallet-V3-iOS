@@ -9,43 +9,43 @@ import RxSwift
 import ToolKit
 
 public final class LinkedCardCellPresenter {
-    
+
     // MARK: - Private Types
-    
+
     private typealias LocalizationIDs = LocalizationConstants.Settings.Badge
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.LinkedCardCell
 
     // MARK: - Public
-        
+
     let accessibility: Accessibility = .id(AccessibilityIDs.view)
     let linkedCardViewModel: LinkedCardViewModel
     let digitsLabelContent: LabelContent
     let expirationLabelContent: LabelContent
     let acceptsUserInteraction: Bool
-    
+
     let badgeViewModel: BadgeViewModel
-    
+
     var badgeVisibility: Driver<Visibility> {
         badgeVisibilityRelay.asDriver()
     }
-    
+
     let tapRelay = PublishRelay<Void>()
     var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     public let cardData: CardData
-    
+
     private let badgeVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    
+
     public init(acceptsUserInteraction: Bool, cardData: CardData) {
         self.cardData = cardData
-        
+
         linkedCardViewModel = .init(type: cardData.type)
         let currencyCode = cardData.topLimit.currencyCode
         let limitAmount = cardData.topLimitDisplayValue
         let limitDisplayValue = limitAmount + " \(currencyCode) \(LocalizationIDs.limit)"
-        
+
         linkedCardViewModel.content = .init(theme:
             .init(
                 cardName: cardData.label,
@@ -62,9 +62,9 @@ public final class LinkedCardCellPresenter {
             alignment: .right,
             accessibility: .id(AccessibilityIDs.expiration)
         )
-        
+
         let state = cardData.state
-        
+
         let accessibilityId = "\(cardData.type).\(state.rawValue)"
         switch state {
         case .created, .pending:
@@ -88,9 +88,9 @@ public final class LinkedCardCellPresenter {
                 accessibilityId: accessibilityId
             )
         }
-        
+
         badgeVisibilityRelay.accept(cardData.state == .active ? .hidden: .visible)
-        
+
         digitsLabelContent = .init(
             text: cardData.displaySuffix,
             font: .main(.semibold, 16.0),

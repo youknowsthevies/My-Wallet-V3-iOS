@@ -20,7 +20,7 @@ public final class DefaultLineItemCellInteractor: LineItemCellInteracting {
 public final class DefaultLineItemCellPresenter: LineItemCellPresenting {
 
     // MARK: - Properties
-    
+
     public let identifier: String
 
     public var image: Driver<UIImage?> {

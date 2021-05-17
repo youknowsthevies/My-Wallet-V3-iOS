@@ -14,25 +14,25 @@ protocol OrderCreationServiceAPI {
 }
 
 final class OrderCreationService: OrderCreationServiceAPI {
-    
+
     // MARK: - Service Error
-    
+
     enum ServiceError: Error {
         case mappingError
     }
-    
+
     // MARK: - Properties
-    
+
     private let client: OrderCreationClientAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: OrderCreationClientAPI = resolve()) {
         self.client = client
     }
-    
+
     // MARK: - OrderCreationServiceAPI
-    
+
     public func createOrder(direction: OrderDirection,
                             quoteIdentifier: String,
                             volume: MoneyValue,
@@ -69,7 +69,7 @@ final class OrderUpdateService: OrderUpdateServiceAPI {
     }
 
     // MARK: - OrderCreationServiceAPI
-    
+
     public func updateOrder(identifier: String,
                             success: Bool) -> Completable {
         client

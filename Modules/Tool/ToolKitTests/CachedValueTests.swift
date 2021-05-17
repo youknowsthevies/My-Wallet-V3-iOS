@@ -9,7 +9,7 @@ import XCTest
 @testable import ToolKit
 
 final class CachedValueTests: XCTestCase {
-    
+
     private var disposeBag = DisposeBag()
     private var testScheduler: TestScheduler!
 
@@ -17,7 +17,7 @@ final class CachedValueTests: XCTestCase {
         testScheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
-    
+
     func testInitialSubscriptionToValue() {
         let expectedValue = "expected_value"
         let configuration = CachedValueConfiguration(refreshType: .onSubscription)
@@ -73,4 +73,3 @@ final class CachedValueTests: XCTestCase {
         }
     }
 }
-

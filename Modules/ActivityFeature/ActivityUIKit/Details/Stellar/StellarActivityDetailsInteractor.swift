@@ -7,13 +7,13 @@ import RxSwift
 import StellarKit
 
 final class StellarActivityDetailsInteractor {
-    
+
     // MARK: - Private Properties
 
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails>
-    
+
     // MARK: - Init
 
     init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
@@ -23,7 +23,7 @@ final class StellarActivityDetailsInteractor {
         self.priceService = priceService
         self.detailsService = detailsService
     }
-    
+
     // MARK: - Public Functions
 
     func details(identifier: String, createdAt: Date) -> Observable<StellarActivityDetailsViewModel> {
@@ -40,9 +40,9 @@ final class StellarActivityDetailsInteractor {
             )
             .map { StellarActivityDetailsViewModel(with: $0, price: $1?.moneyValue.fiatValue) }
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency

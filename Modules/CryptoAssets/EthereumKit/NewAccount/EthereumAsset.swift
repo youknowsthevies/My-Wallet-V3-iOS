@@ -97,7 +97,7 @@ final class EthereumAsset: CryptoAsset {
     private var custodialGroup: Single<AccountGroup> {
         .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
     }
-    
+
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
         return exchangeAccountProvider
@@ -132,7 +132,7 @@ final class EthereumAsset: CryptoAsset {
             .just(CryptoInterestAccount(asset: asset))
             .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
-    
+
     private var nonCustodialGroup: Single<AccountGroup> {
         let asset = self.asset
         return defaultAccount

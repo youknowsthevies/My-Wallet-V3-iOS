@@ -68,7 +68,7 @@ struct DisplayBundle {
         self.accessibilityIdentifiers  = accessibilityIdentifiers
         self.amountDisplayBundle = amountDisplayBundle
     }
-    
+
     static func bundle(for action: AssetAction, sourceAccount: SingleAccount) -> DisplayBundle {
         switch action {
         case .swap:

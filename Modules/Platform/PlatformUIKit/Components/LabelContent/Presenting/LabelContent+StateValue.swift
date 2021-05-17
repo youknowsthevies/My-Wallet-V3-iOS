@@ -83,7 +83,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             accessibilityId: accessibilityId
         )
     }
-    
+
     public static func lineItemTitle(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .medium,
@@ -92,7 +92,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             accessibilityId: "\(accessibilityIdPrefix).title"
         )
     }
-    
+
     public static func lineItemDescription(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
@@ -101,7 +101,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             accessibilityId: "\(accessibilityIdPrefix).description"
         )
     }
-    
+
     public static func h1(accessibilityIdPrefix: String) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
@@ -109,7 +109,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             accessibilityId: "\(accessibilityIdPrefix).title"
         )
     }
-    
+
     public static func success(fontSize: CGFloat, accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             contentColor: .positivePrice,

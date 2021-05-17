@@ -19,7 +19,7 @@ public final class SettingsBuilder: SettingsBuilding {
         self.cardDeletionService = cardDeletionService
         self.beneficiariesService = beneficiariesService
     }
-    
+
     /// Generate remove card payment method view controller
     /// - Parameter cardData: CC data
     /// - Returns: The view controller
@@ -31,7 +31,7 @@ public final class SettingsBuilder: SettingsBuilding {
             deletionService: cardDeletionService
         )
     }
-    
+
     /// Generate remove bank payment method view controller
     /// - Parameter cardData: Bank data
     /// - Returns: The view controller
@@ -43,7 +43,7 @@ public final class SettingsBuilder: SettingsBuilding {
             deletionService: beneficiariesService
         )
     }
-    
+
     private func removePaymentMethodViewController(buttonLocalizedString: String,
                                                    removalData: PaymentMethodRemovalData,
                                                    deletionService: PaymentMethodDeletionServiceAPI) -> UIViewController {

@@ -50,7 +50,7 @@ final class DeepLinkHandler: DeepLinkHandling {
         kycSettings.didTapOnDocumentResubmissionDeepLink = true
         kycSettings.documentResubmissionLinkReason = params[DeepLinkConstant.documentResubmissionReason]
     }
-    
+
     private func handleExchangeLinking(_ params: [String: String]) {
         appSettings.didTapOnExchangeDeepLink = true
         appSettings.exchangeLinkIdentifier = params[DeepLinkConstant.linkId]

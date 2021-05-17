@@ -16,28 +16,28 @@ public struct DescriptionTitle {
 }
 
 public struct ExplainedActionViewModel {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.ExplainedActionView
-    
+
     // MARK: - Setup
-    
+
     let thumbBadgeImageViewModel: BadgeImageViewModel
     let titleLabelContent: LabelContent
     let descriptionLabelContents: [LabelContent]
     let badgeViewModel: BadgeViewModel?
 
     // MARK: - Accessors
-    
+
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     let tapRelay = PublishRelay<Void>()
-    
+
     // MARK: - Setup
-    
+
     public init(thumbImage: String,
                 title: String,
                 descriptions: [DescriptionTitle],
@@ -65,7 +65,7 @@ public struct ExplainedActionViewModel {
                     accessibility: .id(uniqueAccessibilityIdentifier + AccessibilityId.descriptionLabel + ".\(payload.offset)")
                 )
             }
-        
+
         if let badgeTitle = badgeTitle {
             badgeViewModel = .affirmative(
                 with: badgeTitle,

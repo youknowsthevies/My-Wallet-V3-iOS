@@ -21,14 +21,14 @@ public struct SellActivityItemEvent: Tokenized {
     public var token: String {
         identifier
     }
-    
+
     public var currencyType: CurrencyType {
         outputValue.currencyType
     }
-    
+
     public let status: EventStatus
     public let paymentMethod: PaymentMethod
-    
+
     public let identifier: String
 
     public let creationDate: Date
@@ -36,7 +36,7 @@ public struct SellActivityItemEvent: Tokenized {
     public let inputValue: MoneyValue
     public let outputValue: MoneyValue
     public var fee: MoneyValue
-    
+
     public init(identifier: String,
                 creationDate: Date,
                 status: EventStatus,

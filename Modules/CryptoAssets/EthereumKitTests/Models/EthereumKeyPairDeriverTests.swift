@@ -37,4 +37,3 @@ final class EthereumKeyPairDeriverTests: XCTestCase {
         XCTAssertEqual(result.privateKey.data.hexString, expectedKeyPair.privateKey.data.hexString)
     }
 }
-

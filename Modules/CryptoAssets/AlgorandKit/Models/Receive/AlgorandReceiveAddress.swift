@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 
 struct AlgorandReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
-    
+
     let asset: CryptoCurrency = .algorand
     let address: String
     let label: String
@@ -13,7 +13,7 @@ struct AlgorandReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvid
     var metadata: CryptoAssetQRMetadata {
         AlgorandURLPayload(address: address)
     }
-    
+
     init(address: String, label: String, onTxCompleted: @escaping TxCompleted) {
         self.address = address
         self.label = label

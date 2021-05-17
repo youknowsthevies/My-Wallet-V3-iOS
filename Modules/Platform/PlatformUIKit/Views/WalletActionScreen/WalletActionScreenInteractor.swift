@@ -12,9 +12,9 @@ public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     public let accountType: SingleAccountType
     public let currency: CurrencyType
     public let balanceCellInteractor: CurrentBalanceCellInteracting
-    
+
     // MARK: - Init
-    
+
     public init(accountType: SingleAccountType,
                 currency: CurrencyType,
                 service: AssetBalanceFetching) {

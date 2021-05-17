@@ -7,23 +7,23 @@ import SettingsKit
 import ToolKit
 
 final class CardSettingsSectionInteractor {
-    
+
     typealias State = ValueCalculationState<[CardData]>
-    
+
     var state: Observable<State> {
         _ = setup
         return stateRelay
             .asObservable()
     }
-    
+
     let addPaymentMethodInteractor: AddPaymentMethodInteractor
-    
+
     private lazy var setup: Void = {
         cardsState
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-        
+
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
 
@@ -40,17 +40,17 @@ final class CardSettingsSectionInteractor {
     }
 
     // MARK: - Injected
-    
+
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let tierLimitsProvider: TierLimitsProviding
-    
+
     // MARK: - Setup
-    
+
     init(paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          tierLimitsProvider: TierLimitsProviding) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
-        
+
         addPaymentMethodInteractor = AddPaymentMethodInteractor(
             paymentMethod: .card,
             addNewInteractor: AddCardInteractor(

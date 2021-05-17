@@ -8,22 +8,22 @@ import RxSwift
 import ToolKit
 
 final class ActivityScreenInteractor {
-    
+
     typealias State = ValueCalculationState<[ActivityItemInteractor]>
-    
+
     // MARK: - Public Properties
-    
+
     var fiatCurrency: Observable<FiatCurrency> {
         serviceContainer
             .fiatCurrency
             .fiatCurrencyObservable
     }
-    
+
     var selectedData: Observable<WalletPickerSelection> {
         selectionService
             .selectedData
     }
-    
+
     var activityBalance: Observable<FiatValue> {
         selectionService
             .selectedData
@@ -51,12 +51,12 @@ final class ActivityScreenInteractor {
                 }
         }
     }
-    
+
     var state: Observable<State> {
         stateRelay
             .asObservable()
     }
-    
+
     var isEmpty: Observable<Bool> {
         stateRelay
             .asObservable()
@@ -71,20 +71,20 @@ final class ActivityScreenInteractor {
                 }
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private var selectionService: WalletPickerSelectionServiceAPI {
         serviceContainer.selectionService
     }
-    
+
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let serviceContainer: ActivityServiceContaining
     private let disposeBag = DisposeBag()
-    
+
     init(serviceContainer: ActivityServiceContaining) {
         self.serviceContainer = serviceContainer
-        
+
         serviceContainer
             .activityEventsLoadingState
             .map {
@@ -99,14 +99,14 @@ final class ActivityScreenInteractor {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func refresh() {
         serviceContainer.activityProviding.refresh()
     }
 }
 
 fileprivate extension ActivityScreenInteractor.State {
-    
+
     /// Initializer that receives the loading state and
     /// maps it to `self`
     init(with state: ActivityItemEventsLoadingState,

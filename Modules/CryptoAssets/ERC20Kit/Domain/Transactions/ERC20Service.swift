@@ -207,7 +207,7 @@ public class ERC20Service<Token: ERC20Token>: ERC20API, ERC20TransactionEvaluati
                     )
                 )
             }
-            .flatMap(weak: self) { (self, validatedInputs) -> Single<ERC20TransactionEvaluationResult<Token>> in
+            .flatMap(weak: self) { (_, validatedInputs) -> Single<ERC20TransactionEvaluationResult<Token>> in
                 let (fee, ethereumAccount) = (validatedInputs.fee, validatedInputs.ethereumAccountDetails)
                 let transactionProposal = ERC20TransactionProposal(
                     from: EthereumAddress(stringLiteral: ethereumAccount.account.accountAddress),

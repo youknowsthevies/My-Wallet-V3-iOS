@@ -21,10 +21,10 @@ public enum EthereumWalletServiceError: Error {
 }
 
 public protocol EthereumWalletServiceAPI {
-    
+
     var handlePendingTransaction: Single<Void> { get }
     var fetchHistoryIfNeeded: Single<Void> { get }
-    
+
     func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult>
     func buildTransaction(with value: EthereumValue, to: EthereumAddress, feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate>
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished>
@@ -32,7 +32,7 @@ public protocol EthereumWalletServiceAPI {
 }
 
 final class EthereumWalletService: EthereumWalletServiceAPI {
-    
+
     var fetchHistoryIfNeeded: Single<Void> {
         bridge.history
     }
@@ -46,7 +46,7 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
                 return Single.just(())
             }
     }
-    
+
     private var handlePendingTransactionResult: Single<TransactionValidationResult> {
         handlePendingTransaction
             .map { _ in .ok }
@@ -83,7 +83,7 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
         self.transactionSendingService = transactionSendingService
         self.transactionValidationService = transactionValidationService
     }
-    
+
     func evaluate(amount: EthereumValue) -> Single<TransactionValidationResult> {
         handlePendingTransactionResult.flatMap(weak: self) { (self, result) -> Single<TransactionValidationResult> in
             guard result.isOk else { return .just(result) }
@@ -100,7 +100,7 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
             return self.transactionBuildingService.buildTransaction(with: value, to: to, feeLevel: feeLevel)
         }
     }
-    
+
     func send(transaction: EthereumTransactionCandidate) -> Single<EthereumTransactionPublished> {
         handlePendingTransaction
             .flatMap(weak: self) { (self, _) -> Single<EthereumKeyPair> in
@@ -133,7 +133,7 @@ final class EthereumWalletService: EthereumWalletServiceAPI {
             keyPair: keyPair
         )
     }
-    
+
     private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         bridge.recordLast(transaction: transaction)
             .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in

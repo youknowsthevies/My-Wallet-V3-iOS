@@ -8,90 +8,90 @@ import RxSwift
 /// This class is money agnostic and therefore can scan crypto as well
 /// as fiat.
 public final class MoneyValueInputScanner {
-    
+
     // MARK: - Types
 
     /// Structure describing the maximum amount of digits in a decimal number integral and fractional parts.
     public struct MaxDigits {
         let integral: Int
         let fractional: Int
-        
+
         init(integral: Int, fractional: Int) {
             self.integral = integral
             self.fractional = fractional
         }
     }
-    
+
     /// An action to be performed on the input
     public enum Action {
-        
+
         /// Removes a single character at the last indexed position
         case remove
-        
+
         /// Inserts a given character at the last indexed position
         case insert(Character)
     }
-    
+
     /// Represents an input
     public struct Input: Equatable {
-        
+
         /// A string input
         public let string: String
-        
+
         /// A caret index of the next input
         let caretIndex: Int
-                
+
         /// The amount string (prefix) - this is the first part of the input which
         /// has been already inserted.
         var amount: String {
             guard !string.isEmpty else {
                 return "0"
             }
-            
+
             let amount = String(string[0..<caretIndex])
             return amount
         }
-        
+
         /// Returns true if empty
         var isEmptyOrPlaceholderZero: Bool {
             isPlaceholderZero || isEmpty
         }
-        
+
         /// Returns true if a zero but not empty (not a placeholder)
         var isUserInputZero: Bool {
             self == .userInputZero
         }
-        
+
         /// Returns true if a zero placeholder
         var isPlaceholderZero: Bool {
             self == .placeholderZero
         }
-        
+
         /// Empty input
         var isEmpty: Bool {
             self == .empty
         }
-                
+
         /// Empty input
         static var empty: Input {
             Input(string: "", caretIndex: 0)
         }
-        
+
         /// Zero placeholder input
         static var placeholderZero: Input {
             Input(string: Constant.zero, caretIndex: 0)
         }
-        
+
         /// Zero user input
         static var userInputZero: Input {
             Input(string: Constant.zero, caretIndex: 1)
         }
-                
+
         init(string: String, caretIndex: Int) {
             self.string = string
             self.caretIndex = caretIndex
         }
-        
+
         /// The padding string (suffix) - i.e the last part of the input which
         /// is yet to be inserted. might be empty in which case, the string
         /// is either full. e.g for values of `21.51` or `21`
@@ -105,17 +105,17 @@ public final class MoneyValueInputScanner {
             }
             return String(string[caretIndex..<string.count])
         }
-        
+
         public init(string: String) {
             self.string = string
             self.caretIndex = string.count
         }
-        
+
         public init(decimal: Decimal) {
             self.init(string: "\(decimal)")
         }
     }
-    
+
     public enum Constant {
         public static let decimalSeparator = Locale.current.decimalSeparator ?? "."
         fileprivate static let decimalSeparatorChar = Character(decimalSeparator)
@@ -127,28 +127,28 @@ public final class MoneyValueInputScanner {
             return decimalDigits
         }()
     }
-    
+
     /// A current digit to be added to the input
     public let actionRelay = PublishRelay<Action>()
-    
+
     /// Streams the input
     public var input: Observable<Input> {
         internalInputRelay
             .asObservable()
             .distinctUntilChanged()
     }
-    
+
     /// Can be used by clients to stream in raw String inputs
     /// That input is to be analyzed internally and populate the main
     /// input relay
     public let rawInputRelay = PublishRelay<String>()
-    
+
     // MARK: - Private Properties
-    
+
     public let maxDigitsRelay: BehaviorRelay<MaxDigits>
     let internalInputRelay = BehaviorRelay(value: Input.empty)
     private let disposeBag = DisposeBag()
-    
+
     private lazy var formatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -158,23 +158,23 @@ public final class MoneyValueInputScanner {
     }()
 
     // MARK: - Setup
-    
+
     public init(maxDigits: MaxDigits) {
         maxDigitsRelay = BehaviorRelay(value: maxDigits)
-        
+
         actionRelay
             .map(weak: self) { (self, action) in
                 self.scan(action: action)
             }
             .bindAndCatch(to: internalInputRelay)
             .disposed(by: disposeBag)
-        
+
         maxDigitsRelay
-            .bindAndCatch(weak: self) { (self, digits) in
+            .bindAndCatch(weak: self) { (self, _) in
                 self.reset()
             }
             .disposed(by: disposeBag)
-        
+
         rawInputRelay
             .asSignal()
             .emit(
@@ -189,7 +189,7 @@ public final class MoneyValueInputScanner {
         let amount = moneyValue.displayMajorValue
         reset(to: amount)
     }
-    
+
     /// Resets the input to a single `0` character.
     public func reset(to string: String = "") {
         guard let amount = Decimal(string: string) else { return }
@@ -201,9 +201,9 @@ public final class MoneyValueInputScanner {
         let input = parse(amount: value)
         internalInputRelay.accept(input)
     }
-    
+
     // MARK: - Accessors
-    
+
     private func scan(action: Action) -> Input {
         switch action {
         case .insert(let character):
@@ -212,7 +212,7 @@ public final class MoneyValueInputScanner {
             return removeIndexed()
         }
     }
-    
+
     /// Removes the last indexed character from the cached value
     private func removeIndexed() -> Input {
         let lastInput = internalInputRelay.value
@@ -224,14 +224,14 @@ public final class MoneyValueInputScanner {
             lastInput == .init(string: "0\(Constant.decimalSeparator)", caretIndex: 2) {
             return .placeholderZero
         }
-            
+
         /// input is a single digit -> just return `0`
         guard lastValue.count > 1 else {
             return .placeholderZero
         }
 
         var newValue = lastValue
-        
+
         let range = newValue.range(
             startingAt: lastInput.caretIndex - 1,
             length: newValue.count - lastInput.caretIndex + 1
@@ -240,10 +240,10 @@ public final class MoneyValueInputScanner {
         let caretIndex = lastInput.caretIndex - 1
 
         padRhsIfNeeded(value: &newValue)
-        
+
         return Input(string: newValue, caretIndex: caretIndex)
     }
-    
+
     /// Inserts a new character into the cached value
     /// Steps:
     /// 1. Validates the new character
@@ -252,22 +252,22 @@ public final class MoneyValueInputScanner {
     /// 4. Pads the RHS if needed.
     /// 5. Validate the maximum length of values before and after the separator
     private func insert(character: Character) -> Input {
-        
+
         ////////////////////////////////////////////////
         /// **Character validation**
         /// Validate digit or decimal-separator
 
         var lastInput = internalInputRelay.value
-        
+
         guard Constant.allowedCharacters.contains(character) else {
             return lastInput
         }
-                
+
         ////////////////////////////////////////////////
         /// **Empty Input Validation**
         /// All possible cases of an empty input, where
         /// nothing should actually be changed
-        
+
         var lastValue = lastInput.string
 
         /// Current character is `.` and the string so far already contains `.`
@@ -288,14 +288,14 @@ public final class MoneyValueInputScanner {
         } else if lastInput.isUserInputZero && character == Constant.zeroChar {
             return .userInputZero
         }
-        
+
         ////////////////////////////////////////////////
         /// **String Replacement**
         /// Append or replace a new character `[0-9\.]` depending on
         /// where the caret index points to.
 
         var newValue: String
-        
+
         /// If the caret value is located at the end of the string,
         /// then just append `newCharacter` to `lastValue`
         if lastInput.caretIndex == lastValue.count {
@@ -307,32 +307,32 @@ public final class MoneyValueInputScanner {
             let range = Range(NSRange(location: lastInput.caretIndex, length: 1), in: newValue)!
             newValue.replaceSubrange(range, with: "\(character)")
         }
-        
+
         /// Increment the caret index
         let newCaretIndex = lastInput.caretIndex + 1
-        
+
         /// **RHS Padding (if needed) **
         /// We should pad the RHS component if its length is less than `maxFractionDigits`
-        
+
         /// Separate the compound input into two components if possible: `[LHS, RHS]`
         padRhsIfNeeded(value: &newValue)
-        
+
         ////////////////////////////////////////////////
         /// **Max Length Validation**
         /// If the input so far contains `.`.
         /// That would place the current digit to the right of the floating point.
         /// Therefore we would like to verify that there are no more than `maxFractionDigits` digits
         /// in the RHS number component.
-        
+
         /// Re-separate `newValue` to components is it has possibly changed
         /// by a newly added padding
         let components = newValue.components(separatedBy: Constant.decimalSeparator)
-        
+
         // Reached maximum number of digits before decimal separator [integral part]
         guard components[0].count <= maxDigitsRelay.value.integral else {
             return Input(string: lastValue)
         }
-        
+
         // Reached maximum number of digits after the decimal separator [fractional part]
         if components.count == 2 {
             let rhs = components[1]
@@ -340,16 +340,16 @@ public final class MoneyValueInputScanner {
                 return Input(string: lastValue)
             }
         }
-        
+
         return Input(string: newValue, caretIndex: newCaretIndex)
     }
-    
+
     private func padRhsIfNeeded(value: inout String) {
         let components = value.components(separatedBy: Constant.decimalSeparator)
         guard components.count == 2 else {
             return
         }
-        
+
         let rhs = components[1]
         let padCount = maxDigitsRelay.value.fractional - rhs.count
         guard padCount > 0 else {

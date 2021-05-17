@@ -8,64 +8,64 @@ import RxSwift
 import ToolKit
 
 public final class EthereumHistoricalTransactionService: HistoricalTransactionAPI {
-    
+
     public typealias Bridge = EthereumWalletBridgeAPI
-    
+
     // MARK: - Properties
-    
+
     public var transactions: Single<[EthereumHistoricalTransaction]> {
         cachedTransactions.valueSingle
     }
-    
+
     public var latestTransaction: Single<EthereumHistoricalTransaction?> {
         cachedTransactions.valueSingle.map { $0.first }
     }
-    
+
     /// Streams a boolean indicating whether there are transactions in the account
     public var hasTransactions: Single<Bool> {
         transactions.map { !$0.isEmpty }
     }
-    
+
     // MARK: - Private properties
-    
+
     private var latestBlock: Single<Int> {
         cachedLatestBlock.valueSingle
     }
-    
+
     private var account: Single<EthereumAssetAccount> {
         cachedAccount.valueSingle
     }
-    
+
     private let cachedAccount: CachedValue<EthereumAssetAccount>
     private let cachedTransactions: CachedValue<[EthereumHistoricalTransaction]>
     private let cachedLatestBlock: CachedValue<Int>
-    
+
     private let bridge: Bridge
     private let client: APIClientAPI
 
     // MARK: - Init
-    
+
     init(with bridge: Bridge = resolve(), client: APIClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
         self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
         self.cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodicAndLogin(60))
         self.cachedLatestBlock = CachedValue<Int>(configuration: .periodicAndLogin(5))
-        
+
         cachedAccount.setFetch { [weak self] () -> Single<EthereumAssetAccount> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }
             return self.bridge.account
         }
-        
+
         cachedTransactions.setFetch { [weak self] () -> Single<[EthereumHistoricalTransaction]> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
             }
             return self.fetch()
         }
-        
+
         cachedLatestBlock.setFetch { [weak self] () -> Single<Int> in
             guard let self = self else {
                 return Single.error(ToolKitError.nullReference(Self.self))
@@ -73,20 +73,20 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
             return self.fetchLatestBlock()
         }
     }
-    
+
     // MARK: - HistoricalTransactionAPI
-    
+
     /// Triggers transaction fetch and caches the new transactions
     public func fetchTransactions() -> Single<[EthereumHistoricalTransaction]> {
         cachedTransactions.fetchValue
     }
-    
+
     public func hasTransactionBeenProcessed(transactionHash: String) -> Single<Bool> {
         transactions
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
             .map { $0.contains { $0.transactionHash == transactionHash } }
     }
-    
+
     // MARK: - Privately used accessors
 
     private func fetch() -> Single<[EthereumHistoricalTransaction]> {
@@ -108,7 +108,7 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
                 )
             }
     }
-    
+
     private func fetchLatestBlock() -> Single<Int> {
         client.latestBlock.map { $0.number }
     }

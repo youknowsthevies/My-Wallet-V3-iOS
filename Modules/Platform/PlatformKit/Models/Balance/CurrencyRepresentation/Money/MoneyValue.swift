@@ -10,32 +10,32 @@ public enum MoneyValueError: Error {
 }
 
 public struct MoneyValue: Money, Hashable, Equatable {
-    
+
     private enum Value: Hashable, Equatable {
         case fiat(FiatValue)
         case crypto(CryptoValue)
-        
+
         init(major amount: String, fiat fiatCurrency: FiatCurrency) throws {
             guard let fiatValue = FiatValue.create(major: amount, currency: fiatCurrency) else {
                 throw MoneyValueError.invalidCryptoAmount
             }
             self = .fiat(fiatValue)
         }
-        
+
         init(major amount: String, crypto cryptoCurrency: CryptoCurrency) throws {
             guard let cryptoValue = CryptoValue.create(major: amount, currency: cryptoCurrency) else {
                 throw MoneyValueError.invalidCryptoAmount
             }
             self = .crypto(cryptoValue)
         }
-        
+
         init(minor amount: String, fiat fiatCurrency: FiatCurrency) throws {
             guard let fiatValue = FiatValue.create(minor: amount, currency: fiatCurrency) else {
                 throw MoneyValueError.invalidFiatAmount
             }
             self = .fiat(fiatValue)
         }
-        
+
         init(minor amount: String, crypto cryptoCurrency: CryptoCurrency) throws {
             guard let cryptoValue = CryptoValue.create(minor: amount, currency: cryptoCurrency) else {
                 throw MoneyValueError.invalidCryptoAmount
@@ -43,9 +43,9 @@ public struct MoneyValue: Money, Hashable, Equatable {
             self = .crypto(cryptoValue)
         }
     }
-    
+
     // MARK: - Public properties
-    
+
     public var isCrypto: Bool {
         switch _value {
         case .crypto:
@@ -54,11 +54,11 @@ public struct MoneyValue: Money, Hashable, Equatable {
             return false
         }
     }
-    
+
     public var isFiat: Bool {
         !isCrypto
     }
-    
+
     public var amount: BigInt {
         switch _value {
         case .crypto(let cryptoValue):
@@ -74,14 +74,14 @@ public struct MoneyValue: Money, Hashable, Equatable {
         }
         return value
     }
-    
+
     public var cryptoValue: CryptoValue? {
         guard case Value.crypto(let value) = _value else {
             return nil
         }
         return value
     }
-    
+
     public var currencyType: CurrencyType {
         switch _value {
         case .crypto(let cryptoValue):
@@ -90,25 +90,25 @@ public struct MoneyValue: Money, Hashable, Equatable {
             return fiatValue.currency
         }
     }
-    
+
     public var value: MoneyValue {
         self
     }
-    
+
     // MARK: - Private properties
-    
+
     private let _value: Value
-    
+
     // MARK: - Setup
-    
+
     public init(cryptoValue: CryptoValue) {
         self._value = .crypto(cryptoValue)
     }
-    
+
     public init(fiatValue: FiatValue) {
         self._value = .fiat(fiatValue)
     }
-    
+
     fileprivate init(major amount: String, currencyCode: String, locale: Locale = .current) throws {
         let currency = try CurrencyType(code: currencyCode)
         switch currency {
@@ -118,7 +118,7 @@ public struct MoneyValue: Money, Hashable, Equatable {
             self._value = try Value(major: amount, fiat: fiatCurrency)
         }
     }
-    
+
     fileprivate init(minor amount: String, currencyCode: String) throws {
         let currency = try CurrencyType(code: currencyCode)
         switch currency {
@@ -128,7 +128,7 @@ public struct MoneyValue: Money, Hashable, Equatable {
             self._value = try Value(minor: amount, fiat: fiatCurrency)
         }
     }
-    
+
     public init(amount: BigInt, currency: CurrencyType) {
         switch currency {
         case .crypto(let cryptoCurrency):
@@ -137,9 +137,9 @@ public struct MoneyValue: Money, Hashable, Equatable {
             self._value = .fiat(FiatValue(amount: amount, currency: fiatCurrency))
         }
     }
-    
+
     // MARK: - Public methods
-    
+
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
         switch _value {
         case .crypto(let cryptoValue):
@@ -148,7 +148,7 @@ public struct MoneyValue: Money, Hashable, Equatable {
             return fiatValue.toDisplayString(includeSymbol: includeSymbol, locale: locale)
         }
     }
-    
+
     public func value(before percentageChange: Double) -> MoneyValue {
         switch _value {
         case .fiat(let value):
@@ -157,22 +157,22 @@ public struct MoneyValue: Money, Hashable, Equatable {
             return MoneyValue(cryptoValue: value.value(before: percentageChange))
         }
     }
-    
+
     // MARK: - Public factory methods
-    
+
     public static func zero(currency: CryptoCurrency) -> MoneyValue {
         MoneyValue(cryptoValue: CryptoValue.zero(currency: currency))
     }
-    
+
     public static func zero(currency: FiatCurrency) -> MoneyValue {
         MoneyValue(fiatValue: FiatValue.zero(currency: currency))
     }
-    
+
     public static func one(currency: CryptoCurrency) -> MoneyValue {
         let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
         return MoneyValue(cryptoValue: CryptoValue.create(minor: one, currency: currency))
     }
-    
+
     public static func one(currency: FiatCurrency) -> MoneyValue {
         let one = BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces)
         return MoneyValue(fiatValue: FiatValue.create(minor: one, currency: currency))

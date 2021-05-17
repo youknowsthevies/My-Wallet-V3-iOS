@@ -8,7 +8,7 @@ import RxSwift
 public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
 
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.LabeledButtonCollectionView
     public typealias Element = MoneyValue
 
@@ -58,7 +58,7 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
         backgroundColor = style.backgroundColor
         contentRelay.accept(buttonContent)
     }
-    
+
     private static func buttonContent(from style: LabeledButtonViewStyle,
                                       text: String,
                                       amountString: String,

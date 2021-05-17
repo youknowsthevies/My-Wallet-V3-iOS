@@ -10,7 +10,7 @@ protocol SearchableItem {
 /// Helper map object to be used when displaying a list of items in a list that can
 /// be searched.
 class SearchableMap<Item: SearchableItem> {
-    
+
     private(set) var allItems: [Item]?
     private var backingMap = [String: [Item]]()
 

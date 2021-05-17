@@ -5,7 +5,7 @@ import AnalyticsKit
 enum NetworkErrorEvent: AnalyticsEvent {
     case unknown
     case clientError(ErrorDetails?)
-    
+
     struct ErrorDetails {
         var params: [String: String] {
             var parameters: [String: String] = [
@@ -17,11 +17,11 @@ enum NetworkErrorEvent: AnalyticsEvent {
             }
             return parameters
         }
-        
+
         let host: String
         let path: String
         let message: String?
-        
+
         init?(request: NetworkRequest, message: String? = nil) {
             guard
                 let url = request.URLRequest.url,
@@ -38,11 +38,11 @@ enum NetworkErrorEvent: AnalyticsEvent {
     init?(request: NetworkRequest, error: URLError) {
         self = .clientError(ErrorDetails(request: request, message: error.localizedDescription))
     }
-    
+
     var name: String {
         "network_error"
     }
-    
+
     var params: [String : String]? {
         switch self {
         case .unknown:

@@ -9,7 +9,7 @@ protocol DepositRootInteractable: Interactable,
                                   TransactionFlowListener,
                                   PaymentMethodListener,
                                   LinkedBanksListener {
-    
+
     var router: DepositRootRouting? { get set }
     var listener: DepositRootListener? { get set }
 }
@@ -21,20 +21,20 @@ protocol DepositRootViewControllable: ViewControllable {
 }
 
 final class DepositRootRouter: ViewableRouter<DepositRootInteractable, DepositRootViewControllable>, DepositRootRouting {
-    
+
     // MARK: - Private Properties
-    
+
     private var transactionRouter: ViewableRouting?
-    
+
     // MARK: - Init
-    
+
     override init(interactor: DepositRootInteractable, viewController: DepositRootViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
-    
+
     // MARK: - DepositRootRouting
-    
+
     func routeToDepositLanding() {
         let builder = PaymentMethodBuilder()
         let router = builder.build(withListener: interactor)
@@ -42,7 +42,7 @@ final class DepositRootRouter: ViewableRouter<DepositRootInteractable, DepositRo
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable, animated: false)
     }
-    
+
     func routeToDeposit(sourceAccount: FiatAccount) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
@@ -57,7 +57,7 @@ final class DepositRootRouter: ViewableRouter<DepositRootInteractable, DepositRo
             viewController.present(viewController: viewControllable)
         }
     }
-    
+
     func dismissTransactionFlow() {
         guard let router = transactionRouter else { return }
         detachChild(router)

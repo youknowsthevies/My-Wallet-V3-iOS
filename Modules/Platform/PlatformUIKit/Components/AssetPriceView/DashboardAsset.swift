@@ -4,29 +4,29 @@ import Localization
 import PlatformKit
 
 public struct DashboardAsset {
-    
+
     // MARK: - State Aliases
-    
+
     public struct State {
-        
+
         /// The state of the `AssetPrice` interactor and presenter
         public struct AssetPrice {
             public typealias Interaction = LoadingState<Value.Interaction.AssetPrice>
             public typealias Presentation = LoadingState<Value.Presentation.AssetPrice>
         }
     }
-    
+
     // MARK: - Value Namespace
-    
+
     public struct Value {
-        
+
         // MARK: - Interaction
-        
+
         /// The interaction value of dashboard asset
         public struct Interaction {
-            
+
             public struct AssetPrice {
-                
+
                 /// Time unit. Can be further customized in future
                 /// Each value currently refers to 1 unit
                 public enum Time {
@@ -36,7 +36,7 @@ public struct DashboardAsset {
                     case months(Int)
                     case years(Int)
                     case timestamp(Date)
-                    
+
                     var string: String {
                         switch self {
                         case .hours(let number):
@@ -63,19 +63,19 @@ public struct DashboardAsset {
                         }
                     }
                 }
-                
+
                 /// The `Time` for the given `AssetPrice`
                 let time: Time
-                
+
                 /// The asset price in localized fiat currency
                 let fiatValue: FiatValue
-                
+
                 /// Percentage of change since a certain time
                 let changePercentage: Double
-                
+
                 /// The change in fiat value
                 let fiatChange: FiatValue
-                
+
                 public init(time: Time, fiatValue: FiatValue, changePercentage: Double, fiatChange: FiatValue) {
                     self.time = time
                     self.fiatValue = fiatValue
@@ -83,53 +83,53 @@ public struct DashboardAsset {
                     self.fiatChange = fiatChange
                 }
             }
-            
+
         }
-        
+
         // MARK: - Presentation
-        
+
         public struct Presentation {
-            
+
             /// The presentation model for `AssetPriceView`
             public struct AssetPrice {
-                
+
                 private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
 
                 /// Descriptors that allows customized content and style
                 public struct Descriptors {
-                    
+
                     /// Options to display content
                     struct ContentOptions: OptionSet {
                         let rawValue: Int
                         init(rawValue: Int) {
                             self.rawValue = rawValue
                         }
-                        
+
                         /// Includes fiat price change
                         static let fiat = ContentOptions(rawValue: 1 << 0)
-                        
+
                         /// Includes percentage price change
                         static let percentage = ContentOptions(rawValue: 2 << 0)
                     }
-                    
+
                     let contentOptions: ContentOptions
                     let priceFont: UIFont
                     let changeFont: UIFont
                     let accessibilityIdSuffix: String
                 }
-                
+
                 // MARK: - Properties
-                
+
                 /// The price of the asset
                 let price: LabelContent
-                
+
                 /// The change
                 let change: NSAttributedString
-                
+
                 let changeAccessibility: Accessibility
-                
+
                 // MARK: - Setup
-                
+
                 public init(with value: Interaction.AssetPrice, descriptors: Descriptors) {
                     let fiatPrice = value.fiatValue.toDisplayString(includeSymbol: true)
                     price = LabelContent(
@@ -171,7 +171,7 @@ public struct DashboardAsset {
                     } else {
                         fiatChange = NSAttributedString()
                     }
-                    
+
                     let percentageChange: NSAttributedString
                     if descriptors.contentOptions.contains(.percentage) {
                         let prefix: String
@@ -195,7 +195,7 @@ public struct DashboardAsset {
                     } else {
                         percentageChange = NSAttributedString()
                     }
-                    
+
                     let period = NSAttributedString(
                         LabelContent(
                             text: " \(value.time.string)",
@@ -222,7 +222,7 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
             accessibilityIdSuffix: Accessibility.Identifier.Dashboard.TotalBalanceCell.valueLabelSuffix
         )
     }
-    
+
     /// Returns a descriptor for dashboard asset price
     public static func assetPrice(accessibilityIdSuffix: String,
                                   priceFontSize: CGFloat = 16.0,
@@ -234,7 +234,7 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
             accessibilityIdSuffix: accessibilityIdSuffix
         )
     }
-    
+
     /// Returns a descriptor for widget asset price
     public static func widget(accessibilityIdSuffix: String) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
         .init(

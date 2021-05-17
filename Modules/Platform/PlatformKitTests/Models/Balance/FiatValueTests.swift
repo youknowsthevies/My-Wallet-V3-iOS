@@ -11,18 +11,18 @@ class FiatValueTests: XCTestCase {
             1000,
             FiatValue.create(minor: "1000", currency: .USD).amount
         )
-        
+
         XCTAssertEqual(
             "0.01",
             FiatValue.create(minor: "1", currency: .USD)?.toDisplayString(includeSymbol: false)
         )
-        
+
         XCTAssertEqual(
             8000000,
             FiatValue.create(minor: "8000000", currency: .USD).amount
         )
     }
-    
+
     func testUSDDecimalPlaces() {
         XCTAssertEqual(
             2,
@@ -77,19 +77,19 @@ class FiatValueTests: XCTestCase {
         let result = try value * value
         XCTAssertEqual(expected, result)
     }
-    
+
     func testDivision() throws {
         let expected = FiatValue.create(major: "1.00", currency: .USD)!
         let value = FiatValue.create(major: "3.00", currency: .USD)!
         let result = try value / value
         XCTAssertEqual(expected, result)
     }
-    
+
     func testMinorString() {
         let expected100MillionMajor = "10000000000"
         let value100MillionMajor = FiatValue.create(major: "100000000.00", currency: .USD)!
         XCTAssertEqual(expected100MillionMajor, value100MillionMajor.minorString)
-        
+
         let expected1Minor = "1"
         let value1Minor = FiatValue.create(minor: "1", currency: .USD)!
         XCTAssertEqual(expected1Minor, value1Minor.minorString)
@@ -109,7 +109,7 @@ class FiatValueTests: XCTestCase {
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .bitcoin)
         XCTAssertEqual(expected, result)
     }
-    
+
     func testConvertToCryptoValueZeroExchangeRate() {
         let expected = CryptoValue.zero(currency: .bitcoin)
         let amount = FiatValue.create(major: "4,000.00", currency: .USD)!
@@ -117,7 +117,7 @@ class FiatValueTests: XCTestCase {
         let result = amount.convertToCryptoValue(exchangeRate: exchangeRate, cryptoCurrency: .bitcoin)
         XCTAssertEqual(expected, result)
     }
-    
+
     func testConvertToCryptoValueZeroValue() {
         let expected = CryptoValue.zero(currency: .bitcoin)
         let amount = FiatValue.zero(currency: .USD)
@@ -207,13 +207,13 @@ class FiatValueTests: XCTestCase {
                 .toDisplayString(locale: Locale.US)
         )
     }
-    
+
     func testValueIncrease() {
         let current = FiatValue.create(minor: "1100", currency: .USD)! // $USD 11.00
         let before = current.value(before: 0.1) // before 10% increase
         XCTAssertTrue(before.amount == 1000)
     }
-    
+
     func testValueDecrease() {
         let current = FiatValue.create(minor: "12000", currency: .USD)! // $USD 120.00
         let before = current.value(before: -0.2) // before 20% decrease

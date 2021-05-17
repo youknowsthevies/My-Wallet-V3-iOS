@@ -5,7 +5,7 @@ import DIKit
 import NetworkKit
 
 public protocol NabuAuthenticationClientAPI: AnyObject {
-    
+
     func sessionTokenPublisher(
         for guid: String,
         userToken: String,
@@ -13,7 +13,7 @@ public protocol NabuAuthenticationClientAPI: AnyObject {
         deviceId: String,
         email: String
     ) -> AnyPublisher<NabuSessionTokenResponse, NetworkError>
-    
+
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String
@@ -21,34 +21,34 @@ public protocol NabuAuthenticationClientAPI: AnyObject {
 }
 
 final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
-    
+
     // MARK: - Types
-    
+
     private enum Parameter: String {
         case userId
     }
-    
+
     private enum Path {
         static let auth = [ "auth" ]
-        
+
         static func recover(userId: String) -> [String] {
             [ "users", "recover", userId ]
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     func sessionTokenPublisher(
         for guid: String,
         userToken: String,
@@ -77,7 +77,7 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
         )!
         return networkAdapter.perform(request: request)
     }
-    
+
     func recoverUserPublisher(
         offlineToken: NabuOfflineTokenResponse,
         jwt: String

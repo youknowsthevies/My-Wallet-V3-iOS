@@ -7,23 +7,23 @@ import Zxcvbn
 
 /// Password text validator
 final class NewPasswordTextValidator: NewPasswordValidating {
-    
+
     // MARK: - TextValidating Properties
-    
+
     let valueRelay = BehaviorRelay<String>(value: "")
 
     var validationState: Observable<TextValidationState> {
         validationStateRelay.asObservable()
     }
-    
+
     // MARK: - NewPasswordValidating Properties
-    
+
     var score: Observable<PasswordValidationScore> {
         scoreRelay.asObservable()
     }
-        
+
     // MARK: - Private Properties
-    
+
     private let scoreRelay = BehaviorRelay<PasswordValidationScore>(value: .weak)
     private let validationStateRelay = BehaviorRelay<TextValidationState>(value: .invalid(reason: nil))
     private let validator = DBZxcvbn()
@@ -45,7 +45,7 @@ final class NewPasswordTextValidator: NewPasswordValidating {
             .catchErrorJustReturn(.weak)
             .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
-        
+
         scoreRelay
             .map { $0.isValid }
             .map { $0 ? .valid : .invalid(reason: nil) }

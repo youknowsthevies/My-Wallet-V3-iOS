@@ -222,7 +222,7 @@ private extension Array where Element == PaymentAccountProperty.Field {
                 return nil
             }
         }
-        
+
         return map { TransactionalLineItem.paymentAccountField($0) }
             .map { field in
                 if isCopyable(field: field) {

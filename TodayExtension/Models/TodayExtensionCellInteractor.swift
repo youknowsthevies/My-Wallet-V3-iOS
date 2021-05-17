@@ -3,7 +3,7 @@
 enum TodayExtensionCellInteractor {
     case assetPrice(AssetPriceCellInteractor)
     case portfolio(PortfolioCellInteractor)
-    
+
     var cellType: TodayExtensionSectionType.CellType {
         switch self {
         case .assetPrice(let interactor):

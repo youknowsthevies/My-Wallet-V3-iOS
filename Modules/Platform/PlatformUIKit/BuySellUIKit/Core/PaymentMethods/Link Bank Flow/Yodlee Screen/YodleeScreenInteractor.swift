@@ -114,7 +114,7 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
         // Success message from Yodlee
         let errorMessageAction = yodleeMessageService.effect
             .filter(\.isFailure)
-            .map { [contentReducer] message in
+            .map { [contentReducer] _ in
                 YodleeScreen.Action.failure(content: contentReducer.webviewFailureContent())
             }
             .asDriverCatchError()

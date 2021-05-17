@@ -13,7 +13,7 @@ public extension String {
         )
         return Range(range, in: self)
     }
-    
+
     subscript(bounds: CountableClosedRange<Int>) -> String {
         let start = index(startIndex, offsetBy: bounds.lowerBound)
         let end = index(startIndex, offsetBy: bounds.upperBound)
@@ -76,7 +76,7 @@ public extension String {
         let components = self.components(separatedBy: substring)
         return components.count - 1
     }
-    
+
     /// Removes last char safely
     mutating func removeLastSafely() {
         guard !isEmpty else { return }
@@ -87,7 +87,7 @@ public extension String {
         guard hasPrefix(prefix) else { return self }
         return String(suffix(count - prefix.count))
     }
-    
+
     /// Returns the string with no whitespaces
     var trimmingWhitespaces: String {
         trimmingCharacters(in: .whitespaces)

@@ -9,7 +9,7 @@ public enum ExchangeAccountState: String {
     case pending = "PENDING"
     case active = "ACTIVE"
     case blocked = "BLOCKED"
-    
+
     /// Returns `true` for an active state
     public var isActive: Bool {
         switch self {
@@ -19,9 +19,9 @@ public enum ExchangeAccountState: String {
             return false
         }
     }
-    
+
     // MARK: - Init
-    
+
     init(state: CryptoExchangeAddressResponse.State) {
         switch state {
         case .active:
@@ -39,16 +39,16 @@ public protocol ExchangeAccount: CryptoAccount {
 }
 
 public class CryptoExchangeAccount: ExchangeAccount {
-    
+
     public var requireSecondPassword: Single<Bool> {
         .just(false)
     }
-    
+
     public var balance: Single<MoneyValue> {
         /// Exchange API does not return a balance.
         .just(MoneyValue.zero(currency: asset))
     }
-    
+
     public var receiveAddress: Single<ReceiveAddress> {
         cryptoReceiveAddressFactory
             .makeExternalAssetAddress(
@@ -60,27 +60,27 @@ public class CryptoExchangeAccount: ExchangeAccount {
             .single
             .map { $0 as ReceiveAddress }
     }
-    
+
     public var pendingBalance: Single<MoneyValue> {
         /// Exchange API does not return a balance.
         .just(MoneyValue.zero(currency: asset))
     }
-    
+
     public var actions: Single<AvailableActions> {
         .just([])
     }
-    
+
     public var isFunded: Single<Bool> {
         .just(true)
     }
-    
+
     public lazy var id: String = "CryptoExchangeAccount." + asset.code
     public let accountType: SingleAccountType = .custodial(.exchange)
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
     public let label: String
     public let state: ExchangeAccountState
-    
+
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         /// Exchange API does not return a balance.
         .just(.zero(currency: fiatCurrency))
@@ -89,15 +89,15 @@ public class CryptoExchangeAccount: ExchangeAccount {
     public func can(perform action: AssetAction) -> Single<Bool> {
         actions.map { $0.contains(action) }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let address: String
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
-    
+
     // MARK: - Init
-    
+
     init(response: CryptoExchangeAddressResponse,
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
          cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {

@@ -28,7 +28,7 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
     private let closeButtonRelay = PublishRelay<Void>()
 
     private lazy var dataSource: RxDataSource = {
-        RxDataSource(configureCell: { [weak self] dataSource, tableView, indexPath, item in
+        RxDataSource(configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
@@ -163,7 +163,7 @@ extension AccountPickerViewController: UITableViewDelegate {
         guard section == 0 else { return nil }
         return headerRelay.value?.view(fittingWidth: view.bounds.width, customHeight: nil)
     }
-    
+
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         guard section == 0 else { return 0 }
         return headerRelay.value?.defaultHeight ?? 0

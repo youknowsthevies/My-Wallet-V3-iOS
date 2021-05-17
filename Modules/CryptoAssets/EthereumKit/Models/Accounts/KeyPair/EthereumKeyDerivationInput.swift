@@ -6,7 +6,7 @@ import PlatformKit
 // BIP39 Passphrase is currently not supported.
 public struct EthereumKeyDerivationInput: KeyDerivationInput, Equatable {
     public let mnemonic: String
-    
+
     public init(mnemonic: String) {
         self.mnemonic = mnemonic
     }

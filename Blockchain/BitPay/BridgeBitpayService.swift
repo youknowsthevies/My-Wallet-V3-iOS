@@ -12,15 +12,15 @@ enum BridgeBitpayServiceError: Error {
 /// Bridging layer for Swift-ObjC, since ObjC isn't compatible with RxSwift
 @objc
 class BridgeBitpayService: NSObject {
-    
+
     // MARK: - Properties
-    
+
     private let bitpayService: BitpayServiceProtocol
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(bitpayService: BitpayServiceProtocol = BitpayService()) {
         self.bitpayService = bitpayService
         super.init()
@@ -30,7 +30,7 @@ class BridgeBitpayService: NSObject {
         self.bitpayService = BitpayService()
         super.init()
     }
-    
+
     @objc func bitpayPaymentRequest(invoiceID: String,
                                     assetType: LegacyAssetType,
                                     completion: @escaping (ObjcCompatibleBitpayObject?, String?) -> Void) {
@@ -65,7 +65,7 @@ class BridgeBitpayService: NSObject {
             )
             .disposed(by: disposeBag)
     }
-    
+
     // TICKET: IOS-2498 - Support BCH
     @objc func verifyAndPostSignedTransaction(invoiceID: String,
                                               assetType: LegacyAssetType,
@@ -84,7 +84,7 @@ class BridgeBitpayService: NSObject {
                 transactionHex: transactionHex,
                 transactionSize: size
             )
-            .flatMap(weak: self) { (self, memo) -> Single<BitPayMemo> in
+            .flatMap(weak: self) { (self, _) -> Single<BitPayMemo> in
                 self.bitpayService.postPayment(
                     invoiceID: invoiceID,
                     currency: currency,

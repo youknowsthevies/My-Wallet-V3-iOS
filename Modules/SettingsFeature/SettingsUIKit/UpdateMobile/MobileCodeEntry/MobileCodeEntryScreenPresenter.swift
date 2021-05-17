@@ -8,38 +8,38 @@ import RxRelay
 import RxSwift
 
 final class MobileCodeEntryScreenPresenter {
-    
+
     // MARK: - Private Types
-    
+
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.MobileCodeEntry
     private typealias LocalizationIDs = LocalizationConstants.Settings.MobileCodeEntry
-    
+
     // MARK: - Public Properties
-    
+
     let leadingButton: Screen.Style.LeadingButton = .back
-    
+
     var titleView: Screen.Style.TitleView {
         .text(value: LocalizationIDs.title)
     }
-    
+
     var barStyle: Screen.Style.Bar {
         .darkContent()
     }
-    
+
     let descriptionContent: LabelContent
     let codeEntryTextFieldModel: TextFieldViewModel
     let changeNumberViewModel: ButtonViewModel
     let resendCodeViewModel: ButtonViewModel
     let confirmViewModel: ButtonViewModel
-    
+
     // MARK: - Private Properties
-    
+
     private let interactor: MobileCodeEntryInteractor
     private unowned let stateService: UpdateMobileStateServiceAPI
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(stateService: UpdateMobileStateServiceAPI,
          service: MobileSettingsServiceAPI,
          loadingViewPresenting: LoadingViewPresenting = resolve()) {
@@ -50,7 +50,7 @@ final class MobileCodeEntryScreenPresenter {
             validator: TextValidationFactory.General.notEmpty,
             messageRecorder: resolve()
         )
-        
+
         descriptionContent = .init(
             text: LocalizationIDs.description,
             font: .main(.medium, 14.0),
@@ -58,30 +58,30 @@ final class MobileCodeEntryScreenPresenter {
             alignment: .left,
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
-        
+
         changeNumberViewModel = .secondary(with: LocalizationIDs.changeNumber, accessibilityId: AccessibilityIDs.changeNumberButton)
         resendCodeViewModel = .secondary(with: LocalizationIDs.resendCode, accessibilityId: AccessibilityIDs.resendCodeButton)
         confirmViewModel = .primary(with: LocalizationIDs.confirm, accessibilityId: AccessibilityIDs.confirmButton)
-        
+
         codeEntryTextFieldModel.state
             .compactMap { $0.value }
             .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
-        
+
         changeNumberViewModel.tapRelay
             .bindAndCatch(to: stateService.previousRelay)
             .disposed(by: disposeBag)
-        
+
         resendCodeViewModel.tapRelay
             .map { .resend }
             .bindAndCatch(to: interactor.actionRelay)
             .disposed(by: disposeBag)
-        
+
         confirmViewModel.tapRelay
             .map { .verify }
             .bindAndCatch(to: interactor.actionRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.state
             .bind { interactionState in
                 switch interactionState.isLoading {
@@ -92,7 +92,7 @@ final class MobileCodeEntryScreenPresenter {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         interactor.state
             .map { $0.isReady }
             .bindAndCatch(to:
@@ -100,7 +100,7 @@ final class MobileCodeEntryScreenPresenter {
                 confirmViewModel.isEnabledRelay
             )
             .disposed(by: disposeBag)
-        
+
         interactor.state
             .filter { $0.isComplete }
             .mapToVoid()

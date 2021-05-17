@@ -8,7 +8,7 @@ public struct IntroductionSheetViewModel {
     let thumbnail: UIImage
     let buttonTitle: String
     let onSelection: () -> Void
-    
+
     public init(
         title: String,
         description: String,

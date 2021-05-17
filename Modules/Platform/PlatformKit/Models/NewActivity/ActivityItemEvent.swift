@@ -12,20 +12,20 @@ public enum ActivityItemEvent: Tokenized {
 
     /// The `Status` of an activity item.
     public enum EventStatus {
-        
+
         public struct Confirmations {
             /// How many confirmations have taken place
             public let current: Int
             /// The total number of confirmations required
             public let total: Int
         }
-        
+
         public enum ProductEventStatus {
             case swap(SwapActivityItemEvent.EventStatus)
             case buySell(BuySellActivityItemEvent.EventStatus)
             case fiat(FiatActivityItemEvent.EventStatus)
         }
-        
+
         /// The event is pending confirmation
         case pending(confirmations: Confirmations)
         /// The event has completed
@@ -34,7 +34,7 @@ public enum ActivityItemEvent: Tokenized {
         /// including `Swap`, `Buy`, and `Sell`.
         case product(ProductEventStatus)
     }
-    
+
     public var token: String {
         switch self {
         case .buySell(let event):
@@ -47,7 +47,7 @@ public enum ActivityItemEvent: Tokenized {
             return event.identifier
         }
     }
-    
+
     public var creationDate: Date {
         switch self {
         case .buySell(let event):
@@ -82,7 +82,7 @@ extension ActivityItemEvent: Hashable {
 }
 
 extension ActivityItemEvent {
-    
+
     public var amount: MoneyValue {
         switch self {
         case .buySell(let event):
@@ -95,7 +95,7 @@ extension ActivityItemEvent {
             return .init(fiatValue: event.fiatValue)
         }
     }
-    
+
     public var identifier: String {
         switch self {
         case .buySell(let event):
@@ -108,7 +108,7 @@ extension ActivityItemEvent {
             return event.identifier
         }
     }
-    
+
     public var status: EventStatus {
         switch self {
         case .buySell(let event):

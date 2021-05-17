@@ -24,10 +24,10 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
     weak var router: PendingTransactionPageRouting?
     weak var listener: PendingTransactionPageListener?
-    
+
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
-    
+
     init(transactionModel: TransactionModel,
          presenter: PendingTransactionPagePresentable,
          analyticsHook: TransactionAnalyticsHook = resolve()) {
@@ -38,7 +38,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
     override func didBecomeActive() {
         super.didBecomeActive()
-        
+
         let sent = transactionModel
             .state
             .map { state -> MoneyValue in
@@ -53,7 +53,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                     #endif
                 }
             }
-        
+
         let received = transactionModel
             .state
             .map { state -> MoneyValue in
@@ -68,19 +68,19 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                     #endif
                 }
             }
-        
+
         let action = transactionModel
             .state
             .map(\.action)
-        
+
         let destination = transactionModel
             .state
             .compactMap(\.destination)
-        
+
         let executionStatus = transactionModel
             .state
             .map(\.executionStatus)
-        
+
         let interactorState = Observable
             .combineLatest(sent, received, destination, executionStatus, action)
             .map { (values) -> State in
@@ -110,13 +110,13 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 }
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         let completion = executionStatus
             .map(\.isComplete)
             .filter { $0 == true }
             .delay(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
             .asDriverCatchError()
-        
+
         completion
             .drive(weak: self) { (self, _) in
                 self.requestReview()
@@ -127,9 +127,9 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
             .drive(onNext: handle(effects:))
             .disposeOnDeactivate(interactor: self)
     }
-    
+
     // MARK: - Private methods
-    
+
     private func requestReview() {
         StoreReviewController.requestReview()
     }
@@ -151,9 +151,9 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 extension PendingTransactionPageInteractor {
     typealias SwapLocalizationIds = LocalizationConstants.Transaction.Swap.Completion
     typealias SendLocalizationIds = LocalizationConstants.Transaction.Send.Completion
-    
+
     // TODO: Inject Accessibility
-    
+
     struct State {
         var title: LabelContent
         var subtitle: LabelContent
@@ -163,7 +163,7 @@ extension PendingTransactionPageInteractor {
             buttonViewModel == nil ? .hidden : .visible
         }
         let effects: PendingTransactionPageInteractor.Effects
-        
+
         private init(title: String,
                      subtitle: String,
                      compositeViewType: CompositeStatusViewType,
@@ -176,7 +176,7 @@ extension PendingTransactionPageInteractor {
                 alignment: .center,
                 accessibility: .none
             )
-            
+
             self.subtitle = .init(
                 text: subtitle,
                 font: .main(.medium, 14.0),
@@ -184,12 +184,12 @@ extension PendingTransactionPageInteractor {
                 alignment: .center,
                 accessibility: .none
             )
-            
+
             self.compositeViewType = compositeViewType
             self.buttonViewModel = buttonViewModel
             self.effects = effects
         }
-        
+
         static func complete(amount: MoneyValue,
                              destination: TransactionTarget,
                              action: AssetAction) -> State {
@@ -249,7 +249,7 @@ extension PendingTransactionPageInteractor {
                 fatalError("Copy not supported for AssetAction: \(action)")
             }
         }
-        
+
         static func failed(amount: MoneyValue, action: AssetAction) -> State {
             switch action {
             case .send:
@@ -289,7 +289,7 @@ extension PendingTransactionPageInteractor {
                 fatalError("Copy not supported for AssetAction: \(action)")
             }
         }
-        
+
         static func pending(action: AssetAction,
                             sent: MoneyValue,
                             received: MoneyValue?) -> State {

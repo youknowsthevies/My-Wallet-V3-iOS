@@ -7,9 +7,9 @@ import PlatformKit
 /// In a future release this will be for toggling price alerts. Currently
 /// the button is not visible.
 public final class PriceAlertTableViewCell: UITableViewCell {
-    
+
     private typealias LocalizationId = LocalizationConstants.DashboardDetails
-    
+
     public var currency: CryptoCurrency! {
         didSet {
             let text = "\(LocalizationId.current) \(currency.displayCode) \(LocalizationId.price)"
@@ -22,6 +22,6 @@ public final class PriceAlertTableViewCell: UITableViewCell {
             )
         }
     }
-    
+
     @IBOutlet private var currentPriceLabel: UILabel!
 }

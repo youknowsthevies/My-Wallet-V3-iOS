@@ -1,20 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct SelectionItemViewModel {
-    
+
     public enum Thumb {
         case name(String)
         case emoji(String)
         case none
     }
-    
+
     public var accessibilityId: String { id }
     public let id: String
-    
+
     public let title: String
     public var subtitle: String
     public let thumb: Thumb
-    
+
     public init(id: String, title: String, subtitle: String, thumb: Thumb) {
         self.id = id
         self.title = title

@@ -5,26 +5,26 @@ import RxSwift
 import UIKit
 
 public final class BadgeImageView: UIView {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var containerView: UIView!
-    
+
     @IBOutlet private var leadingOffsetConstraint: NSLayoutConstraint!
     @IBOutlet private var trailingOffsetConstraint: NSLayoutConstraint!
-    
+
     @IBOutlet private var topOffsetConstraint: NSLayoutConstraint!
     @IBOutlet private var bottomOffsetConstraint: NSLayoutConstraint!
 
     private var sizeConstraints: LayoutForm.Constraints!
-    
+
     // MARK: - Rx
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Public Properties
-    
+
     public var viewModel: BadgeImageViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -35,24 +35,24 @@ public final class BadgeImageView: UIView {
                 containerView.backgroundColor = nil
                 return
             }
-            
+
             // Bind corner radius
             viewModel.cornerRadius
-                .drive(onNext: { [weak self] radius in
+                .drive(onNext: { [weak self] _ in
                     self?.setNeedsLayout()
                 })
                 .disposed(by: disposeBag)
-            
+
             // Bind background color
             viewModel.backgroundColor
                 .drive(containerView.rx.backgroundColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind image
             viewModel.imageContent
                 .drive(imageView.rx.content)
                 .disposed(by: disposeBag)
-            
+
             // Bind size if necessary
             viewModel.sizingType
                 .drive(
@@ -71,7 +71,7 @@ public final class BadgeImageView: UIView {
                     }
                 )
                 .disposed(by: disposeBag)
-            
+
             viewModel.marginOffset
                 .drive(onNext: { [weak self] offset in
                     guard let self = self else { return }
@@ -84,26 +84,26 @@ public final class BadgeImageView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         clipsToBounds = true
-        
+
         sizeConstraints = layout(size: .init(edge: 32), priority: .penultimateLow)
     }
-    
+
     override public func layoutSubviews() {
         super.layoutSubviews()
         guard let viewModel = viewModel else { return }
@@ -125,4 +125,3 @@ public extension Reactive where Base: BadgeImageView {
         }
     }
 }
-

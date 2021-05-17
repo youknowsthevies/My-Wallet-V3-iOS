@@ -11,21 +11,21 @@ import RxSwift
 import ToolKit
 
 final class BiometrySwitchViewPresenter: SwitchViewPresenting {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityID = Accessibility.Identifier.Settings.SwitchView
     private typealias AnalyticsEvent = AnalyticsEvents.Settings
-    
+
     // MARK: - Public
-    
+
     let viewModel: SwitchViewModel = .primary(accessibilityId: AccessibilityID.BioSwitchView)
-    
+
     // MARK: - Proviate
-    
+
     private let interactor: BiometrySwitchViewInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(provider: BiometryProviding,
          settingsAuthenticating: AppSettingsAuthenticating,
          authenticationCoordinator: AuthenticationCoordinating,
@@ -33,7 +33,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
         interactor = BiometrySwitchViewInteractor(provider: provider,
                                                   authenticationCoordinator: authenticationCoordinator,
                                                   settingsAuthenticating: settingsAuthenticating)
-        
+
         Observable.combineLatest(viewModel.isSwitchedOnRelay,
                                  Observable.just(interactor.configurationStatus),
                                  Observable.just(interactor.supportedBiometryType))
@@ -42,24 +42,24 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             }
             .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
-        
+
         viewModel
             .isSwitchedOnRelay
             .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
-        
+
         viewModel
             .isSwitchedOnRelay
             .bind { analyticsRecording.record(event: AnalyticsEvent.settingsBiometryAuthSwitch(value: $0)) }
             .disposed(by: disposeBag)
-        
+
         interactor
             .state
             .compactMap { $0.value }
             .map { $0.isEnabled }
             .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         interactor
             .state
             .compactMap { $0.value }
@@ -67,14 +67,14 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func toggleBiometry(_ biometryType: Biometry.BiometryType, biometryStatus: Biometry.Status, isOn: Bool) -> Observable<Bool> {
         Observable.create { observable -> Disposable in
             guard isOn else {
                 observable.onNext(false)
                 return Disposables.create()
             }
-            
+
             if case let .unconfigurable(error) = biometryStatus {
                 let accept = UIAlertAction(
                     title: LocalizationConstants.okString,
@@ -90,7 +90,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                 )
                 return Disposables.create()
             }
-            
+
             let name = biometryType.localizedName ?? ""
             let biometryWarning = String(format: LocalizationConstants.Biometry.biometryWarning, name)
             let cancel = UIAlertAction(

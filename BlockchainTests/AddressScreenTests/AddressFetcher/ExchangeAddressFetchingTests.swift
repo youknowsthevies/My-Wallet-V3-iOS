@@ -6,7 +6,7 @@ import RxSwift
 import XCTest
 
 class ExchangeAddressFetchingTests: XCTestCase {
-    
+
     func testFetchingAddressForAllAssetsForActiveState() {
         for asset in CryptoCurrency.allCases {
             let fetcher = MockExchangeAddressFetcher(expectedResult: .success(.active))
@@ -17,7 +17,7 @@ class ExchangeAddressFetchingTests: XCTestCase {
             }
         }
     }
-    
+
     func testFetchingAddressForAllAssetsForInactiveState() {
         let states: [ExchangeAddressFetcher.AddressResponseBody.State] = [
             .pending,

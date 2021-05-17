@@ -6,18 +6,18 @@ import RxSwift
 
 /// Responsible for networking
 public final class PinClient: PinClientAPI {
-    
+
     // MARK: - Properties
 
     private let networkAdapter: NetworkAdapterAPI
     private let apiURL = URL(string: BlockchainAPI.shared.pinStore)!
-    
+
     // MARK: - Setup
-    
+
     public init(networkAdapter: NetworkAdapterAPI = resolve()) {
         self.networkAdapter = networkAdapter
     }
-    
+
     /// Creates a new pin in the remote pin store
     ///
     /// - Parameter pinPayload: the PinPayload
@@ -38,7 +38,7 @@ public final class PinClient: PinClientAPI {
                 errorResponseType: PinStoreResponse.self
             )
     }
-    
+
     /// Validates if the provided pin payload (i.e. pin code and pin key combination) is correct.
     ///
     /// - Parameter pinPayload: the PinPayload
@@ -64,11 +64,11 @@ public final class PinClient: PinClientAPI {
 // MARK: - StoreRequestData
 
 extension PinClient {
-    
+
     struct StoreRequestData: Encodable {
-        
+
         // MARK: - Types
-        
+
         /// The type of the request. this is a weird legacy -
         /// we send the type of the request as a parameter (!?)
         /// instead of just using `HTTPMethod`
@@ -77,11 +77,11 @@ extension PinClient {
                 case create
                 case validate
             }
-            
+
             case create = "put"
             case validate = "get"
         }
-        
+
         enum CodingKeys: String, CodingKey {
             case format
             case pin
@@ -90,25 +90,25 @@ extension PinClient {
             case apiCode = "api_code"
             case requestType = "method"
         }
-        
+
         // MARK: - Properties
-        
+
         let format = "json"
         let apiCode = BlockchainAPI.Parameters.apiCode
         let pin: String
         let key: String
         let value: String?
         let requestType: RequestType
-        
+
         // MARK: - Setup
-        
+
         init(payload: PinPayload, requestType: RequestType) {
             pin = payload.pinCode
             key = payload.pinKey
             value = payload.pinValue
             self.requestType = requestType
         }
-        
+
         func encode(to encoder: Encoder) throws {
             var container = encoder.container(keyedBy: CodingKeys.self)
             try container.encode(format, forKey: .format)

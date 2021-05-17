@@ -2,7 +2,7 @@
 
 public struct TransactionValidationFailure: Error {
     public let state: TransactionValidationState
-    
+
     public init(state: TransactionValidationState) {
         self.state = state
     }

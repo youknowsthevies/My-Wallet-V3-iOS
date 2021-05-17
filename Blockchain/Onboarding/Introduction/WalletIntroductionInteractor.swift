@@ -5,37 +5,37 @@ import Foundation
 import RxSwift
 
 protocol WalletIntroductionInteracting {
-    
+
     // A `screen` is required as the introduction involves multiple screens. If the screen provided
     // does not have any further events, you will get an error, `WalletIntroductionError.invalidScreenForStep`.
     var screen: WalletIntroductionLocation.Screen { get }
-    
+
     /// The last location that the user left off at during the introduction flow
     var lastLocation: Maybe<WalletIntroductionLocation> { get }
-    
+
     // The location that the user should resume at. This defaults to the start of the introduction
     // should the `lastLocation` be `.empty()`
     var startingLocation: Single<WalletIntroductionLocation> { get }
-    
+
     // Returns a `Bool` indicating whether the introduction has been completed.
     var isIntroductionComplete: Single<Bool> { get }
-    
+
     // Returns the next `WalletIntroductionLocation` in the introduction flow. This will
     // throw an error should there not be a location the follows the `location` provided.
     func next(_ location: WalletIntroductionLocation) -> Single<WalletIntroductionLocation>
 }
 
 class WalletIntroductionInteractor: WalletIntroductionInteracting {
-    
+
     let screen: WalletIntroductionLocation.Screen
     private let onboardingSettings: OnboardingSettings
     private let stepperAPI: WalletIntroductionLocationSequenceAPI = WalletIntroductionLocationSequencer()
-    
+
     init(onboardingSettings: OnboardingSettings = resolve(), screen: WalletIntroductionLocation.Screen) {
         self.onboardingSettings = onboardingSettings
         self.screen = screen
     }
-    
+
     var isIntroductionComplete: Single<Bool> {
         lastLocation.ifEmpty(default: .starter).flatMap(weak: self, { (self, step) -> Single<Bool> in
             self.next(step)
@@ -45,7 +45,7 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
             .catchErrorJustReturn(true)
         })
     }
-    
+
     var startingLocation: Single<WalletIntroductionLocation> {
         guard let step = onboardingSettings.walletIntroLatestLocation else { return defaultStartLocation }
         return next(step).flatMap(weak: self, { (self, location) -> Single<WalletIntroductionLocation> in
@@ -53,16 +53,16 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
             return Single.just(location)
         })
     }
-    
+
     var lastLocation: Maybe<WalletIntroductionLocation> {
         guard let step = onboardingSettings.walletIntroLatestLocation else { return Maybe.empty() }
         return Maybe.just(step)
     }
-    
+
     func next(_ location: WalletIntroductionLocation) -> Single<WalletIntroductionLocation> {
         stepperAPI.nextLocation(from: location)
     }
-    
+
     private var defaultStartLocation: Single<WalletIntroductionLocation> {
         if WalletIntroductionLocation.starter.screen == screen {
             return Single.just(.starter)

@@ -13,7 +13,7 @@ protocol ACHFlowRootBuildable {
 final class ACHFlowRootBuilder: ACHFlowRootBuildable {
 
     private let stateService: StateServiceAPI
-    
+
     init(stateService: StateServiceAPI) {
         self.stateService = stateService
     }

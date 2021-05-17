@@ -12,7 +12,7 @@ class PaymentAccountServiceTests: XCTestCase {
     var client: SimpleBuyPaymentAccountClientAPIMock!
     private var fiatCurrencyService: FiatCurrencySettingsServiceMock!
     private let fiatCurrency = FiatCurrency.GBP
-    
+
     override func setUp() {
         disposeBag = DisposeBag()
         dataRepository = DataRepositoryMock()
@@ -39,7 +39,7 @@ class PaymentAccountServiceTests: XCTestCase {
         let finishes = expectation(description: "finishes")
         sut
             .paymentAccount(for: .GBP)
-            .subscribe(onSuccess: { account in
+            .subscribe(onSuccess: { _ in
                 finishes.fulfill()
             }, onError: { _ in
                 XCTFail("action should not have errored")
@@ -53,9 +53,9 @@ class PaymentAccountServiceTests: XCTestCase {
         let fails = expectation(description: "fails")
         sut
             .paymentAccount(for: .GBP)
-            .subscribe(onSuccess: { account in
+            .subscribe(onSuccess: { _ in
                 XCTFail("action should not have succeeded")
-            }, onError: { error in
+            }, onError: { _ in
                 fails.fulfill()
             })
             .disposed(by: disposeBag)

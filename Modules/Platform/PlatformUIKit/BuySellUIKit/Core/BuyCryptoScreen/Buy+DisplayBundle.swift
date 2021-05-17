@@ -6,13 +6,13 @@ import PlatformKit
 import ToolKit
 
 extension EnterAmountScreenPresenter.DisplayBundle {
-    
+
     static var buy: EnterAmountScreenPresenter.DisplayBundle {
-        
+
         typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.BuyScreen
-        
+
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
                 title: LocalizedString.title,

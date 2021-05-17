@@ -5,20 +5,20 @@ import RxRelay
 import RxSwift
 
 public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteracting {
-    
+
     public typealias InteractionState = AssetBalanceViewModel.State.Interaction
-    
+
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(activityItemBalanceFetching: ActivityItemBalanceFetching) {
         activityItemBalanceFetching
             .calculationState
@@ -39,6 +39,5 @@ public final class ActivityItemBalanceViewInteractor: AssetBalanceViewInteractin
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
-    
-}
 
+}

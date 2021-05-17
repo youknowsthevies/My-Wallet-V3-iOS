@@ -4,9 +4,9 @@ import RxRelay
 import RxSwift
 
 public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
-    
+
     // MARK: - Setup
-    
+
     private lazy var setup: Void = {
         balanceSyncRelay
             .flatMap(weak: self) { (self, _) -> Observable<Bool> in
@@ -22,16 +22,16 @@ public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
             .bindAndCatch(to: container.portfolioRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Private Properties
-    
+
     private let balanceSyncRelay = PublishRelay<Void>()
     private let container: SharedContainerUserDefaults
     private let portfolioProviding: PortfolioProviding
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     public init(sharedContainerUserDefaults: SharedContainerUserDefaults = SharedContainerUserDefaults.default,
                 balanceProviding: BalanceProviding,
                 balanceChangeProviding: BalanceChangeProviding,
@@ -43,20 +43,20 @@ public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
         )
         self.container = sharedContainerUserDefaults
     }
-    
+
     // MARK: - BalanceSharingSettingsServiceAPI
-    
+
     public var isEnabled: Observable<Bool> {
         container
             .portfolioSyncEnabled
             .distinctUntilChanged()
     }
-    
+
     public func sync() {
         _ = setup
         balanceSyncRelay.accept(())
     }
-    
+
     public func balanceSharing(enabled: Bool) -> Completable {
         Completable.create { [weak self] observer -> Disposable in
             guard let self = self else {

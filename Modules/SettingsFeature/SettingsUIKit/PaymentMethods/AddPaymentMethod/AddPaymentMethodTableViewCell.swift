@@ -6,52 +6,52 @@ import RxCocoa
 import RxSwift
 
 final class AddPaymentMethodTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public Properites
-    
+
     var presenter: AddPaymentMethodCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else { return }
-            
+
             presenter.badgeImagePresenter.state
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             presenter.labelContentPresenter.state
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
-            
+
             presenter.addIconImageVisibility
                 .map { $0.defaultAlpha }
                 .drive(iconAddImageView.rx.alpha)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet fileprivate var iconAddImageView: UIImageView!
     @IBOutlet fileprivate var badgeImageView: BadgeImageView!
     @IBOutlet fileprivate var titleLabel: UILabel!
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
     fileprivate var titleShimmeringView: ShimmeringView!
-    
+
     // MARK: - Lifecycle
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         shimmer()
         titleLabel.textColor = .titleText
     }
-    
+
     /// Should be called once when the parent view loads
     private func shimmer() {
         titleShimmeringView = ShimmeringView(
@@ -83,13 +83,13 @@ extension Reactive where Base: AddPaymentMethodTableViewCell {
             }
         }
     }
-    
+
     var content: Binder<LabelContent.State.Presentation> {
         Binder(base) { view, state in
             let loading = {
                 view.titleShimmeringView.start()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)

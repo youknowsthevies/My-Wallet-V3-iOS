@@ -25,34 +25,34 @@ extension SendRootViewControllable {
 final class SendRootViewController: UINavigationController, SendRootViewControllable {
 
     // MARK: - Public
-    
+
     weak var listener: SendRootListener?
-    
+
     // MARK: - Private Properties
-    
+
     private let topMostViewControllerProvider: TopMostViewControllerProviding
-    
+
     // MARK: - Init
 
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         unimplemented()
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         listener?.viewDidAppear()
     }
-    
+
     // MARK: - Public Functions (SendRootViewControllable)
-    
+
     func replaceRoot(viewController: ViewControllable?, animated: Bool) {
         guard let viewController = viewController else {
             return

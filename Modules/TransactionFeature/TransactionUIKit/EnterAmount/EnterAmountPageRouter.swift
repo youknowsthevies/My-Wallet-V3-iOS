@@ -30,7 +30,7 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
     func showError() {
         alertViewPresenter.error(in: viewController.uiviewController, action: nil)
     }
-    
+
     func showFeeSelectionSheet(with transactionModel: TransactionModel) {
         let builder = NetworkFeeSelectionBuilder()
         let router = builder.build(withListener: self, transactionModel: transactionModel)
@@ -40,11 +40,11 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
         attachChild(router)
         self.viewController.uiviewController.present(viewController, animated: true, completion: nil)
     }
-    
+
     func dismissNetworkFeeSelectionScreen() {
         detachCurrentChild()
     }
-    
+
     private func detachCurrentChild() {
         guard let currentRouter = children.last else {
             return
@@ -52,7 +52,7 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
         detachChild(currentRouter)
         self.viewController.uiviewController.dismiss(animated: true, completion: nil)
     }
-    
+
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: true)
     }()

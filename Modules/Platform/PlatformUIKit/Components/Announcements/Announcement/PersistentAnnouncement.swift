@@ -5,7 +5,7 @@
 /// Once the user has completed the action the announcement will not be displayed again.
 public protocol PersistentAnnouncement: Announcement {}
 extension PersistentAnnouncement {
-    
+
     /// Default the category to persistent
     public var category: AnnouncementRecord.Category { .persistent }
 }

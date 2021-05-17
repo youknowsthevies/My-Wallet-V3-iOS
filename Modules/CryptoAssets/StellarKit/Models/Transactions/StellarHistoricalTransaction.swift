@@ -17,7 +17,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return CryptoValue.stellar(minor: fee)
         }
     }
-    
+
     public var memo: String? {
         switch self {
         case .accountCreated(let value):
@@ -26,7 +26,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.memo
         }
     }
-    
+
     public var identifier: String {
         switch self {
         case .accountCreated(let value):
@@ -35,7 +35,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.identifier
         }
     }
-    
+
     public var token: String {
         switch self {
         case .accountCreated(let value):
@@ -44,7 +44,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.identifier
         }
     }
-    
+
     public var fromAddress: Address {
         switch self {
         case .accountCreated(let value):
@@ -53,7 +53,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return StellarAssetAddress(publicKey: value.fromAccount)
         }
     }
-    
+
     public var toAddress: Address {
         switch self {
         case .accountCreated(let value):
@@ -62,7 +62,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return StellarAssetAddress(publicKey: value.toAccount)
         }
     }
-    
+
     public var direction: Direction {
         switch self {
         case .accountCreated(let value):
@@ -84,7 +84,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.amount
         }
     }
-    
+
     public var transactionHash: String {
         switch self {
         case .accountCreated(let value):
@@ -93,7 +93,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.transactionHash
         }
     }
-    
+
     public var createdAt: Date {
         switch self {
         case .accountCreated(let value):
@@ -102,10 +102,10 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
             return value.createdAt
         }
     }
-    
+
     case accountCreated(AccountCreated)
     case payment(Payment)
-    
+
     public struct AccountCreated {
         let identifier: String
         let funder: String
@@ -119,7 +119,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         var fee: Int?
         var memo: String?
     }
-    
+
     public struct Payment {
         let token: String
         let identifier: String

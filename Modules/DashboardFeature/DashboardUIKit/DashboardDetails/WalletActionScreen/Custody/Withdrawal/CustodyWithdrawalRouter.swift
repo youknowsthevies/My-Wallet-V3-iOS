@@ -15,28 +15,28 @@ protocol CustodyWithdrawalRouterAPI: AnyObject {
 }
 
 final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
-    
+
     // MARK: - `Router` Properties
-    
+
     let completionRelay = PublishRelay<Void>()
     let internalSendRelay = PublishRelay<Void>()
-    
+
     private var stateService: CustodyWithdrawalStateService!
     private let dataProviding: DataProviding
     private let navigationRouter: NavigationRouterAPI
     private var currency: CryptoCurrency!
     private let disposeBag = DisposeBag()
-    
+
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          dataProviding: DataProviding = resolve()) {
         self.dataProviding = dataProviding
         self.navigationRouter = navigationRouter
     }
-    
+
     func start(with currency: CryptoCurrency) {
         self.currency = currency
         self.stateService = CustodyWithdrawalStateService()
-        
+
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
@@ -51,7 +51,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
             .disposed(by: disposeBag)
         stateService.nextRelay.accept(())
     }
-    
+
     func next(to state: CustodyWithdrawalStateService.State) {
         switch state {
         case .start:
@@ -65,11 +65,11 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
             })
         }
     }
-    
+
     private func showWithdrawalScreen() {
         internalSendRelay.accept(())
     }
-    
+
     func previous() {
         navigationRouter.dismiss()
     }

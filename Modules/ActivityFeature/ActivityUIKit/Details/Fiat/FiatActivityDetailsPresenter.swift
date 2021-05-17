@@ -84,9 +84,9 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
         case .refunded:
             statusDescription = LocalizedString.refunded
         }
-        
+
         let badgeType: BadgeType
-        
+
         switch event.status {
         case .failed,
              .rejected:
@@ -102,7 +102,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
              .refunded:
            badgeType = .default(accessibilitySuffix: statusDescription)
         }
-        
+
         let badgeItem: BadgeItem = .init(
             type: badgeType,
             description: statusDescription
@@ -129,4 +129,3 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
         ]
     }
 }
-

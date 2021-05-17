@@ -9,7 +9,7 @@ import UIKit
 public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
 
     // MARK: - Properties
-    
+
     public var presenter: CurrencyViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -51,25 +51,25 @@ public final class FiatCustodialBalancesTableViewCell: UITableViewCell {
     private var disposeBag = DisposeBag()
     private let collectionView: FiatBalanceCollectionView
     private let separatorView = UIView()
-    
+
     // MARK: - Lifecycle
-    
+
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         collectionView = FiatBalanceCollectionView()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
         collectionView.fillSuperview()
         collectionView.layout(dimension: .height, to: 112, priority: .penultimateHigh)
-        
+
         contentView.addSubview(separatorView)
         separatorView.backgroundColor = .lightBorder
         separatorView.layoutToSuperview(.leading, .trailing, .bottom)
         separatorView.layout(dimension: .height, to: 1)
     }
-    
+
     @available(*, unavailable)
     public required init?(coder: NSCoder) { nil }
-    
+
     public override func prepareForReuse() {
         presenter = nil
         super.prepareForReuse()

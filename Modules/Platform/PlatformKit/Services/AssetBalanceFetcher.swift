@@ -7,46 +7,46 @@ import RxSwift
 
 @available(*, deprecated, message: "We need to shift to using models returned by Coincore.")
 public protocol AssetBalanceFetching {
-    
+
     /// Service for fetching `BlockchainAccounts`
     var blockchainAccountFetcher: BlockchainAccountFetching { get }
-        
+
     /// Non-Custodial balance service
     var wallet: SingleAccountBalanceFetching { get }
-    
+
     /// Custodial balance service
     var trading: CustodialAccountBalanceFetching { get }
-    
+
     /// Interest balance service
     var savings: CustodialAccountBalanceFetching { get }
-        
+
     /// The calculation state of the asset balance
     /// [TICKET]: IOS-3884
     var calculationState: Observable<MoneyBalancePairsCalculationState> { get }
-    
+
     /// Trigger a refresh on the balance and exchange rate
     func refresh()
 }
 
 public final class AssetBalanceFetcher: AssetBalanceFetching {
-        
+
     // MARK: - Properties
-    
+
     public let blockchainAccountFetcher: BlockchainAccountFetching
     public let wallet: SingleAccountBalanceFetching
     public let trading: CustodialAccountBalanceFetching
     public let savings: CustodialAccountBalanceFetching
-    
+
     /// The balance
     public var calculationState: Observable<MoneyBalancePairsCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
-    
+
     private let calculationStateRelay = BehaviorRelay<MoneyBalancePairsCalculationState>(value: .calculating)
     private let exchange: PairExchangeServiceAPI
     private let disposeBag = DisposeBag()
-    
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
@@ -58,7 +58,7 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
             .map { payload in
                 let (walletBalance, trading, savings, exchangeRate) = payload
                 let fiatPrice = exchangeRate.moneyValue
-                
+
                 let baseCurrencyType = walletBalance.currencyType
                 let quoteCurrencyType = fiatPrice.currencyType
 
@@ -88,9 +88,9 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Setup
-    
+
     public init(blockchainAccountFetcher: BlockchainAccountFetching,
                 wallet: SingleAccountBalanceFetching,
                 trading: CustodialAccountBalanceFetching,
@@ -103,7 +103,7 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
         self.savings = savings
         self.exchange = exchange
     }
-    
+
     public func refresh() {
         wallet.balanceFetchTriggerRelay.accept(())
         trading.balanceFetchTriggerRelay.accept(())

@@ -12,7 +12,7 @@ public struct AlertModel {
     public var actions: [AlertAction]
     public var dismissable: Bool
     public var style: AlertViewStyle
-    
+
     public init(
         headline: String?,
         body: String?,
@@ -39,7 +39,7 @@ public struct AlertModel {
 public struct AlertAction {
     public let style: AlertActionStyle
     public let metadata: ActionMetadata?
-    
+
     public init(style: AlertActionStyle, metadata: ActionMetadata? = nil) {
         self.style = style
         self.metadata = metadata
@@ -47,9 +47,9 @@ public struct AlertAction {
 }
 
 extension AlertAction {
-    
+
     public static let defaultDismissal = AlertAction(style: .dismiss)
-    
+
     public var title: String? {
         switch style {
         case .confirm(let title):
@@ -60,7 +60,7 @@ extension AlertAction {
             return nil
         }
     }
-    
+
 }
 
 public enum AlertActionStyle: Equatable {

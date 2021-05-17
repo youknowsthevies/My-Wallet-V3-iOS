@@ -6,15 +6,15 @@ import RxRelay
 import RxSwift
 
 final class WelcomeScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     /// Abbreviation for localized strings
     private typealias LocalizedString = LocalizationConstants.Onboarding.WelcomeScreen
     private typealias AccessibilityId = Accessibility.Identifier.WelcomeScreen
 
     // MARK: - Properties
-    
+
     let navBarStyle = Screen.Style.Bar.darkContent()
     let title = LabelContent(
         text: LocalizedString.title,
@@ -39,36 +39,36 @@ final class WelcomeScreenPresenter {
         font: .main(.medium, 12),
         color: .mutedText
     )
-    
+
     private(set) var createWalletButtonViewModel: ButtonViewModel
     private(set) var loginButtonViewModel: ButtonViewModel
     private(set) var recoverFundsButtonViewModel: ButtonViewModel
-    
+
     let createTapRelay = PublishRelay<Void>()
     let recoverFundsTapRelay = PublishRelay<Void>()
     let loginTapRelay = PublishRelay<Void>()
-    
+
     // MARK: Injected
 
     private let launchAnnouncementPresenter: LaunchAnnouncementPresenter
     private let alertPresenter: AlertViewPresenter
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(alertPresenter: AlertViewPresenter = .shared,
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter()) {
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
-        
+
         let font = UIFont.main(.semibold, 16)
         let cornerRadius: CGFloat = 8
-        
+
         // Set create wallet button
-        
+
         createWalletButtonViewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
@@ -82,9 +82,9 @@ final class WelcomeScreenPresenter {
         createWalletButtonViewModel.tapRelay
             .bindAndCatch(to: createTapRelay)
             .disposed(by: disposeBag)
-        
+
         // Set login button
-        
+
         loginButtonViewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
@@ -98,9 +98,9 @@ final class WelcomeScreenPresenter {
         loginButtonViewModel.tapRelay
             .bindAndCatch(to: loginTapRelay)
             .disposed(by: disposeBag)
-        
+
         // Set recover funds button
-        
+
         recoverFundsButtonViewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
@@ -116,7 +116,7 @@ final class WelcomeScreenPresenter {
             .bindAndCatch(to: recoverFundsTapRelay)
             .disposed(by: disposeBag)
     }
-    
+
     /// Should get called when the view appears
     func viewWillAppear() {
         launchAnnouncementPresenter.execute()

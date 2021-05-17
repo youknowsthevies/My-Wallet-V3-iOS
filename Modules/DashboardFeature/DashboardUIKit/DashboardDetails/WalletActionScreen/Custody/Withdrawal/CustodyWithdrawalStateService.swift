@@ -38,28 +38,28 @@ enum WithdrawalError: LocalizedError {
 enum CustodyWithdrawalStatus: Equatable {
     /// Default state
     case unknown
-    
+
     /// The withdrawal was successful
     case successful
-    
+
     /// The withdrawal failed
     case failed(WithdrawalError)
 }
 
 protocol CustodyWithdrawalStateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<CustodyWithdrawalStateService.Action> { get }
 }
 
 protocol CustodyWithdrawalStateEmitterServiceAPI: class {
-    
+
     /// A relay for submitting the withdrawal status after submittal.
     /// This allows the `nextRelay` to be free of nested types and
     /// forwarding of withdrawal submission status to the summary screen.
     var completionRelay: BehaviorRelay<CustodyWithdrawalStatus> { get }
-    
+
     /// Move to the next state
     var nextRelay: PublishRelay<Void> { get }
 
@@ -73,20 +73,20 @@ typealias CustodyWithdrawalStateServiceAPI = CustodyWithdrawalStateReceiverServi
 final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
 
     // MARK: - Types
-            
+
     struct States {
-        
+
         /// The actual state of the flow
         let current: State
-        
+
         /// The previous states sorted chronologically
         let previous: [State]
-        
+
         /// The starting state
         static var start: States {
             States(current: .start, previous: [])
         }
-        
+
         /// Maps the instance of `States` into a new instance where the appended
         /// state is the current
         func states(byAppending state: State) -> States {
@@ -105,70 +105,70 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
             )
         }
     }
-    
+
     // MARK: - Types
-    
+
     enum State {
-        
+
         /// The start of the custody-send flow
         case start
-        
+
         /// Custody withdrawal screen
         case withdrawal
-        
+
         /// ~Fin~
         case end
     }
-    
+
     enum Action {
         case next(State)
         case previous
         case dismiss
     }
-    
+
     // MARK: - Properties
-    
+
     var states: Observable<States> {
         statesRelay.asObservable()
     }
-    
+
     var currentState: Observable<CustodyWithdrawalStateService.State> {
         states.map { $0.current }
     }
-    
+
     var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     let nextRelay = PublishRelay<Void>()
     let previousRelay = PublishRelay<Void>()
     let completionRelay = BehaviorRelay<CustodyWithdrawalStatus>(value: .unknown)
-    
+
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init() {
         completionRelay
             .observeOn(MainScheduler.instance)
             .filter { $0 != .unknown }
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
-        
+
         nextRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
-        
+
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
-    
+
     private func next() {
         let action: Action
         var state: State
@@ -187,7 +187,7 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
         let nextStates = states.states(byAppending: state)
         apply(action: action, states: nextStates)
     }
-    
+
     private func previous() {
         let states = statesRelay.value.statesByRemovingLast()
         let action: Action
@@ -199,7 +199,7 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
         }
         apply(action: action, states: states)
     }
-    
+
     private func apply(action: Action, states: States) {
         actionRelay.accept(action)
         statesRelay.accept(states)

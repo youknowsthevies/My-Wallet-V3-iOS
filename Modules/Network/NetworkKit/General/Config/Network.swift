@@ -7,14 +7,14 @@ import ToolKit
 public typealias APICode = String
 
 struct Network {
-    
+
     struct Config {
-                
+
         let apiScheme: String
         let apiHost: String
         let apiCode: String
         let pathComponents: [String]
-        
+
         static let defaultConfig = Config(
             apiScheme: "https",
             apiHost: BlockchainAPI.shared.apiHost,
@@ -53,9 +53,9 @@ struct Network {
 }
 
 public class UserAgentProvider {
-    
+
     @Inject private var deviceInfo: DeviceInfo
-    
+
     var userAgent: String? {
         guard
             let version = Bundle.applicationVersion,
@@ -81,18 +81,18 @@ class DefaultSessionHandler: NetworkSessionDelegateAPI {
 }
 
 class BlockchainNetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
-    
+
     @Inject var certificatePinner: CertificatePinnerAPI
-    
+
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
         guard BlockchainAPI.shared.shouldPinCertificate else {
             completionHandler(.performDefaultHandling, nil)
             return
         }
-        
+
         let host = challenge.protectionSpace.host
         Logger.shared.info("Received challenge from \(host)")
-        
+
         if BlockchainAPI.PartnerHosts.allCases.contains(where: { $0.rawValue == host }) {
             completionHandler(.performDefaultHandling, nil)
         } else {
@@ -107,13 +107,13 @@ protocol SessionDelegateAPI: class, URLSessionDelegate {
 
 class SessionDelegate: NSObject, SessionDelegateAPI {
     weak var delegate: NetworkSessionDelegateAPI?
-    
+
     func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {}
-    
+
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler) {
         delegate?.urlSession(session, didReceive: challenge, completionHandler: completionHandler)
     }
-    
+
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {}
 }
 

@@ -48,7 +48,7 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
     }
 
     static let shared = KeyImportCoordinator()
-    
+
     //: Nil if device input is unavailable
     private var qrCodeScannerViewController: UIViewController?
 
@@ -57,7 +57,7 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
 
     private let walletManager: WalletManager
     private let loadingViewPresenter: LoadingViewPresenting
-    
+
     @objc class func sharedInstance() -> KeyImportCoordinator {
         KeyImportCoordinator.shared
     }
@@ -76,13 +76,13 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
     }
 
     func start() { /* Tasks which do not require scanning should call this */ }
-    
+
     func start(with delegate: PrivateKeyReaderDelegate,
                in viewController: UIViewController,
                assetType: CryptoCurrency = .bitcoin,
                loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey,
                assetAddress: AssetAddress? = nil) {
-        
+
         let privateKeyQRCodeParser = PrivateKeyQRCodeParser(
             walletManager: walletManager,
             loadingViewPresenter: loadingViewPresenter,
@@ -99,18 +99,18 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
             )
             .with(loadingViewPresenter: loadingViewPresenter)
             .build()
-        
+
         guard let qrCodeScannerViewController = qrCodeScannerViewController else { return }
 
         viewController.present(qrCodeScannerViewController, animated: true, completion: nil)
     }
-    
+
     // TODO: remove once LegacyPrivateKeyDelegate is deprecated
     @objc func start(with delegate: LegacyPrivateKeyDelegate,
                      in viewController: UIViewController,
                      assetType: LegacyAssetType = .bitcoin,
                      loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey) {
-        
+
         let privateKeyQRCodeParser = PrivateKeyQRCodeParser(
             walletManager: walletManager,
             loadingViewPresenter: loadingViewPresenter,
@@ -127,12 +127,12 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
             )
             .with(loadingViewPresenter: loadingViewPresenter)
             .build()
-        
+
         guard let qrCodeScannerViewController = qrCodeScannerViewController else { return }
 
         viewController.present(qrCodeScannerViewController, animated: true, completion: nil)
     }
-    
+
     private func handlePrivateKeyScan(result: Result<PrivateKeyQRCodeParser.PrivateKey,
                                                      PrivateKeyQRCodeParser.PrivateKeyQRCodeParserError>,
                                       delegate: PrivateKeyReaderDelegate) {
@@ -145,7 +145,7 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
             delegate.didFinishScanningWithError?(error.privateKeyReaderError)
         }
     }
-    
+
     // TODO: remove once LegacyPrivateKeyDelegate is deprecated
     private func handlePrivateKeyScan(result: Result<PrivateKeyQRCodeParser.PrivateKey,
                                                      PrivateKeyQRCodeParser.PrivateKeyQRCodeParserError>,
@@ -159,12 +159,12 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
             legacyDelegate.didFinishScanningWithError?(error.privateKeyReaderError)
         }
     }
-    
+
     private func handlePrivateKeyScanFinished() {
         loadingViewPresenter.hide()
         qrCodeScannerViewController = nil
     }
-    
+
     private func presentPrivateKeyScan(error: PrivateKeyReaderError) {
         switch error {
         case .badMetadataObject:

@@ -6,13 +6,13 @@ import RxSwift
 import ToolKit
 
 public final class CardCVVTextFieldViewModel: TextFieldViewModel {
-    
+
     // MARK: - Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(validator: TextValidating,
                 cardTypeSource: CardTypeSource,
                 matchValidator: CVVToCreditCardMatchValidator,
@@ -24,7 +24,7 @@ public final class CardCVVTextFieldViewModel: TextFieldViewModel {
             textMatcher: matchValidator,
             messageRecorder: messageRecorder
         )
-        
+
         cardTypeSource.cardType
             .map { type in
                 switch type {

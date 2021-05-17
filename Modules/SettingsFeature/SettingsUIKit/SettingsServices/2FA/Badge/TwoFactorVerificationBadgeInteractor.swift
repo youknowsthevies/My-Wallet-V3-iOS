@@ -8,7 +8,7 @@ import RxSwift
 final class TwoFactorVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
 
     // MARK: - Setup
-    
+
     init(service: SettingsServiceAPI) {
         super.init()
         service

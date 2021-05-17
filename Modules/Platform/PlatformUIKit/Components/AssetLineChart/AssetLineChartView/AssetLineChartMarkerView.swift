@@ -5,27 +5,27 @@ import Charts
 /// A view displayed over the user's selection when dragging
 /// across a `LineChartView` (or any chart view for that matter)
 public class AssetLineChartMarkerView: MarkerView {
-    
+
     public struct Theme {
         /// The color of the circle
         let lineColor: UIColor
-        
+
         /// The fill color of the circle
         let fillColor: UIColor
     }
-    
+
     var theme: Theme = .default
-    
+
     private let strokeWidth: CGFloat = 2
-    
+
     public override var layer: CAShapeLayer {
         super.layer as! CAShapeLayer
     }
-    
+
     public override class var layerClass: AnyClass {
         CAShapeLayer.self
     }
-    
+
     public override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
         super.refreshContent(entry: entry, highlight: highlight)
     }
@@ -51,8 +51,8 @@ public class AssetLineChartMarkerView: MarkerView {
 
 extension AssetLineChartMarkerView.Theme {
     static let `default`: AssetLineChartMarkerView.Theme = .init(lineColor: .primary, fillColor: .white)
-    
+
     static let positive: AssetLineChartMarkerView.Theme = .init(lineColor: .positivePrice, fillColor: .white)
-    
+
     static let negative: AssetLineChartMarkerView.Theme = .init(lineColor: .negativePrice, fillColor: .white)
 }

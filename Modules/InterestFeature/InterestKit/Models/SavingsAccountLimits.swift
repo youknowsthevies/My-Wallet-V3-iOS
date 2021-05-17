@@ -16,7 +16,7 @@ public struct SavingsAccountLimitsResponse: Decodable {
     private init() {
         limits = [:]
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case limits
     }
@@ -34,22 +34,22 @@ public struct SavingsAccountLimitsResponse: Decodable {
 }
 
 public struct SavingsAccountLimits: Decodable {
-    
+
     public let currency: FiatCurrency
     public let lockUpDuration: Double
     public let maxWithdrawalAmount: FiatValue
     public let minDepositAmount: FiatValue
-    
+
     private enum CodingKeys: String, CodingKey {
         case currency
         case lockUpDuration
         case maxWithdrawalAmount
         case minDepositAmount
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         let currencyValue = try values.decode(String.self, forKey: .currency)
         currency = FiatCurrency(code: currencyValue) ?? .USD
         lockUpDuration = try values.decode(Double.self, forKey: .lockUpDuration)

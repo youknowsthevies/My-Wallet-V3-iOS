@@ -4,19 +4,19 @@ import Foundation
 
 /// Interaction level password score
 public enum PasswordValidationScore {
-    
+
     /// No score - the weakest
     case none
-    
+
     /// Weak password
     case weak
-    
+
     /// Normal password
     case normal
-    
+
     /// Strong password
     case strong
-    
+
     /// Returns `true` if the password is valid.
     /// As a rule, `.none` is not valid, any higher score is
     var isValid: Bool {
@@ -27,7 +27,7 @@ public enum PasswordValidationScore {
             return true
         }
     }
-    
+
     init(zxcvbnScore: Int32, password: String) {
         guard !password.isEmpty else {
             self = .none

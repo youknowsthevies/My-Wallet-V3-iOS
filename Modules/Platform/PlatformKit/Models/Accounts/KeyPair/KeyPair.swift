@@ -4,6 +4,6 @@ import Foundation
 
 public protocol KeyPair {
     associatedtype PrivateKey
-    
+
     var privateKey: PrivateKey { get }
 }

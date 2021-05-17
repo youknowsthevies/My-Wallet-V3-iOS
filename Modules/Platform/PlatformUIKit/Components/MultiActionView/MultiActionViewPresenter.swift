@@ -11,22 +11,22 @@ public protocol MultiActionViewPresenting {
 }
 
 public final class PlainActionViewPresenter: MultiActionViewPresenting {
-    
+
     public var segmentedViewModel: SegmentedViewModel
 
     // MARK: - Setup
-    
+
     public init(using items: [SegmentedViewModel.Item]) {
         self.segmentedViewModel = .plain(items: items, isMomentary: true)
     }
 }
 
 public final class DefaultActionViewPresenter: MultiActionViewPresenting {
-    
+
     public var segmentedViewModel: SegmentedViewModel
 
     // MARK: - Setup
-    
+
     public init(using items: [SegmentedViewModel.Item]) {
         segmentedViewModel = .default(items: items, isMomentary: false)
     }

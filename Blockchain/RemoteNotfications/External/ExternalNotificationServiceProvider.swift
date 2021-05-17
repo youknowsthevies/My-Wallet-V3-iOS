@@ -8,9 +8,9 @@ import RxSwift
 
 /// A class that is a gateway to external notification service functionality
 final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
-    
+
     // MARK: - Properties
-    
+
     /// A `Single` that streams the token value if exist and not empty or `nil`.
     /// Throws an error (`RemoteNotificationTokenFetchError`) in case the service has failed or if the token came out empty.
     var token: Single<String> {
@@ -23,20 +23,20 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
             }
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
-    
+
     private let tokenFetcher: RemoteNotificationTokenFetching
     private let messagingService: FCMServiceAPI
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(tokenFetcher: RemoteNotificationTokenFetching = InstanceID.instanceID(),
          messagingService: FCMServiceAPI = Messaging.messaging()) {
         self.tokenFetcher = tokenFetcher
         self.messagingService = messagingService
     }
-    
+
     /// Subscribes to a given topic so the client will be able to receive notifications for it.
     /// - Parameter topic: the topic that the client should subscribe to.
     /// - Returns: A `Single` acknowledges the subscription.
@@ -53,7 +53,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
                 return Disposables.create()
         }
     }
-    
+
     // Let the messaging service know about the new token
     func didReceiveNewApnsToken(token: Data) {
         messagingService.apnsToken = token

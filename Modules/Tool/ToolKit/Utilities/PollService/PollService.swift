@@ -5,14 +5,14 @@ import RxSwift
 
 /// The result of the poll
 public enum PollResult<Value> {
-    
+
     /// Final result - poll has finished and the result is the
     /// associated value
     case final(Value)
-    
+
     /// Timeout result - take the last result before satisfying the match
     case timeout(Value)
-    
+
     /// Cancellation
     case cancel
 }
@@ -20,7 +20,7 @@ public enum PollResult<Value> {
 /// A service that polls using a given matcher (to check generically for value match)
 /// and a fetch method
 public class PollService<Value> {
-    
+
     // MARK: - Types
 
     private enum ServiceError: Error {
@@ -45,7 +45,7 @@ public class PollService<Value> {
                 return Disposables.create()
             }
     }
-    
+
     /// Stop polling if it has been cancelled.
     private var stopPollingIfNecessary: Single<Void> {
         isActiveRelay
@@ -66,17 +66,17 @@ public class PollService<Value> {
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
     }
-    
+
     // MARK: - Setup
-    
+
     public init(matcher: @escaping (Value) -> Bool) {
         self.matcher = matcher
     }
-    
+
     public func setFetch(_ fetch: @escaping () -> Single<Value>) {
         self.fetch = fetch
     }
-    
+
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
         self.fetch = { [weak object] in
             guard let object = object else {

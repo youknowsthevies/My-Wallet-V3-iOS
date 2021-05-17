@@ -31,9 +31,9 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default
 
     let reloadRelay: PublishRelay<Void> = .init()
-    
+
     // MARK: - Private Accessors
-    
+
     private var baseCells: [DetailsScreen.CellType] {
         [
             .label(cryptoAmountLabelPresenter),
@@ -73,7 +73,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     }
 
     // MARK: - Private Properties
-    
+
     private let interactor: StellarActivityDetailsInteractor
     private let router: ActivityRouterAPI
     private let disposeBag: DisposeBag = .init()
@@ -164,7 +164,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         titleViewRelay.accept(.text(value: title))
         bindAll(with: event)
     }
-    
+
     // MARK: - Public Functions
 
     func viewDidLoad() {
@@ -184,7 +184,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
     func bindAll(with event: TransactionalActivityItemEvent) {
         explorerButton
             .tapRelay
-            .bind { [weak self] item in
+            .bind { [weak self] _ in
                 self?.router.showBlockchainExplorer(for: event)
             }
             .disposed(by: disposeBag)

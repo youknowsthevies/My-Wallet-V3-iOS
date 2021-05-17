@@ -52,7 +52,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     func assertInputsValid() {
         // We don't assert anything for On Chain Swap.
     }
-    
+
     private func startOnChainEngine(pricedQuote: PricedQuote) -> Completable {
         let value = receiveAddressFactory.makeExternalAssetAddress(
             asset: sourceAsset,
@@ -80,7 +80,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
             askForRefreshConfirmation: { _ in .empty() }
         )
     }
-    
+
     private func defaultFeeLevel(pendingTransaction: PendingTransaction) -> FeeLevel {
         if pendingTransaction.feeSelection.availableLevels.contains(.priority) {
             return .priority
@@ -116,7 +116,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                     )
                     .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                         let (fiatCurrency, pendingTransaction) = payload
-                        
+
                         let fallback = PendingTransaction(
                             amount: CryptoValue.zero(currency: self.sourceAsset).moneyValue,
                             available: CryptoValue.zero(currency: self.targetAsset).moneyValue,
@@ -189,7 +189,7 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                     }
             }
     }
-    
+
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
                           level: FeeLevel,
                           customFeeAmount: MoneyValue) -> Single<PendingTransaction> {

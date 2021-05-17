@@ -96,7 +96,7 @@ extension LocationSuggestionCoordinator: SearchControllerDelegate {
             self?.interface?.primaryButtonActivityIndicator(.hidden)
             self?.interface?.primaryButtonEnabled(true)
         }
-        
+
         let onError = { [weak self] error in
             self?.interface?.didReceiveError(error)
         }

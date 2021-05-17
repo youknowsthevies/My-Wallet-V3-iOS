@@ -17,9 +17,9 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
-    
+
     // MARK: - Types
-    
+
     fileprivate enum Parameter {
         static let minor = "minor"
         static let networkFee = "networkFee"
@@ -31,7 +31,7 @@ final class APIClient: TransactionKitClientAPI {
         static let swap = "SWAP"
         static let `default` = "DEFAULT"
     }
-        
+
     private enum Path {
         static let quote = ["custodial", "quote"]
         static let createOrder = ["custodial", "trades"]
@@ -44,30 +44,30 @@ final class APIClient: TransactionKitClientAPI {
             createOrder + [transactionID]
         }
     }
-    
+
     private enum BitPay {
         static let url: String = "https://bitpay.com/"
-        
+
         enum Paramter {
             static let invoice: String = "i/"
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     // MARK: - AvailablePairsClientAPI
-    
+
     var availableOrderPairs: Single<AvailableTradingPairsResponse> {
         let request = requestBuilder.get(
             path: Path.availablePairs,
@@ -79,9 +79,9 @@ final class APIClient: TransactionKitClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CustodialQuoteAPI
-    
+
     func fetchQuoteResponse(with request: OrderQuoteRequest) -> Single<OrderQuoteResponse> {
         let request = requestBuilder.post(
             path: Path.quote,
@@ -94,7 +94,7 @@ final class APIClient: TransactionKitClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - OrderCreationClientAPI
 
     func create(with orderRequest: OrderCreationRequest) -> Single<SwapActivityItemEvent> {
@@ -126,7 +126,7 @@ final class APIClient: TransactionKitClientAPI {
     }
 
     // MARK: - OrderFetchingClientAPI
-    
+
     func fetchTransaction(with transactionId: String) -> Single<SwapActivityItemEvent> {
         let request = requestBuilder.get(
             path: Path.fetchOrder + [transactionId],
@@ -138,9 +138,9 @@ final class APIClient: TransactionKitClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CustodialTransferClientAPI
-    
+
     func send(transferRequest: CustodialTransferRequest) -> Single<CustodialTransferResponse> {
         let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
         let request = requestBuilder.post(
@@ -174,9 +174,9 @@ final class APIClient: TransactionKitClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - BitPayClientAPI
-    
+
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
         let payload = ["chain": currency.rawValue]
         let headers = [
@@ -197,7 +197,7 @@ final class APIClient: TransactionKitClientAPI {
                 request: request
             )
     }
-    
+
     /// TODO: Probably can be a `Completable`.
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Completable {
         let transaction = BitPayPayment.Transaction(
@@ -226,7 +226,7 @@ final class APIClient: TransactionKitClientAPI {
                 request: request
             )
     }
-    
+
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = BitPayPayment.Transaction(
             tx: transactionHex,

@@ -6,7 +6,7 @@ import RxSwift
 public protocol ActivityItemEventServiceAPI {
     var activityEvents: Single<[ActivityItemEvent]> { get }
     var activityLoadingStateObservable: Observable<ActivityItemEventsLoadingState> { get }
-    
+
     func refresh()
 }
 

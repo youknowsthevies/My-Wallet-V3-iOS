@@ -7,10 +7,10 @@ import ToolKit
 
 /// Service to poll for KYC Tiers updates
 public protocol KYCTierUpdatePollingServiceAPI {
-    
+
     /// Cancel polling
     var cancel: Completable { get }
-    
+
     /// Start polling until the user reaches a given status on a given tier, or an
     /// given amout of time passes.
     ///
@@ -24,7 +24,7 @@ public protocol KYCTierUpdatePollingServiceAPI {
 
 /// Service to poll for KYC Tiers updates
 final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
-    
+
     // MARK: - Types
 
     private enum ServiceError: Error {

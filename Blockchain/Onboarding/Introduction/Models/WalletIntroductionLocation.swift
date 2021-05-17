@@ -7,22 +7,22 @@ import Foundation
 /// as the user completes introduction events so that we know where the user
 /// left off.
 struct WalletIntroductionLocation: Codable, Comparable {
-    
+
     enum Screen: Int, Codable, Comparable {
         case dashboard
         case sideMenu
     }
-    
+
     enum Position: Int, Codable, Comparable {
         case home
         case send
         case receive
         case swap
     }
-    
+
     let screen: Screen
     let position: Position
-    
+
     init(screen: Screen, position: Position) {
         self.screen = screen
         self.position = position
@@ -37,7 +37,7 @@ extension WalletIntroductionLocation {
             return lhs.screen < rhs.screen
         }
     }
-    
+
     static func > (lhs: WalletIntroductionLocation, rhs: WalletIntroductionLocation) -> Bool {
         if lhs.screen == rhs.screen {
             return lhs.position > rhs.position
@@ -51,7 +51,7 @@ extension WalletIntroductionLocation.Screen {
     static func < (lhs: WalletIntroductionLocation.Screen, rhs: WalletIntroductionLocation.Screen) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
-    
+
     static func > (lhs: WalletIntroductionLocation.Screen, rhs: WalletIntroductionLocation.Screen) -> Bool {
         lhs.rawValue > rhs.rawValue
     }
@@ -61,7 +61,7 @@ extension WalletIntroductionLocation.Position {
     static func < (lhs: WalletIntroductionLocation.Position, rhs: WalletIntroductionLocation.Position) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
-    
+
     static func > (lhs: WalletIntroductionLocation.Position, rhs: WalletIntroductionLocation.Position) -> Bool {
         lhs.rawValue > rhs.rawValue
     }

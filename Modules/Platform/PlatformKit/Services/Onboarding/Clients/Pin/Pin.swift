@@ -3,7 +3,7 @@
 /// Model for a user's 4-digit pin
 public struct Pin {
     static let invalid = Pin(code: 0000)
-    
+
     /// Checks if this pin is a valid
     public var isValid: Bool {
         self != Pin.invalid
@@ -13,7 +13,7 @@ public struct Pin {
     public var toString: String {
         pinCode.pinToString
     }
-    
+
     private(set) var pinCode: UInt
 
     // MARK: - Initializers
@@ -21,7 +21,7 @@ public struct Pin {
     public init(code: UInt) {
         self.pinCode = code
     }
-    
+
     public init?(string: String) {
         guard let code = UInt(string) else { return nil }
         self.init(code: code)

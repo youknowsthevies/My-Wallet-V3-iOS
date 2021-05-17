@@ -8,7 +8,7 @@ import PlatformKit
 import PlatformUIKit
 
 final class ActivityMessageViewModel {
-    
+
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
     let cryptoAmountLabelContent: LabelContent
@@ -16,7 +16,7 @@ final class ActivityMessageViewModel {
     let image: UIImage?
     let logoImage: ImageViewContent
     let badgeImageViewModel: BadgeImageViewModel
-    
+
     init?(event: ActivityItemEvent,
           transactionDetailService: TransactionDetailServiceAPI = resolve()) {
         guard case let .transactional(transaction) = event else { return nil }
@@ -31,14 +31,14 @@ final class ActivityMessageViewModel {
             title = "\(LocalizationConstants.Activity.MainScreen.Item.receive) \(currency.name)"
             imageName = "receive-icon"
         }
-        
+
         sharedWithLabelContent = .init(
             text: LocalizationConstants.Activity.MainScreen.MessageView.sharedWithBlockchain,
             font: .main(.semibold, 8.0),
             color: .descriptionText,
             accessibility: .none
         )
-        
+
         badgeImageViewModel = .template(
             with: imageName,
             templateColor: currency.brandColor,
@@ -46,7 +46,7 @@ final class ActivityMessageViewModel {
             accessibilityIdSuffix: ""
         )
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
-        
+
         titleLabelContent = .init(
             text: title,
             font: .main(.semibold, 16.0),
@@ -54,7 +54,7 @@ final class ActivityMessageViewModel {
             alignment: .left,
             accessibility: .none
         )
-        
+
         descriptionLabelContent = .init(
             text: DateFormatter.medium.string(from: event.creationDate),
             font: .main(.medium, 14.0),

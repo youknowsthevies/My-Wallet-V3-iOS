@@ -7,16 +7,16 @@ import RxRelay
 import RxSwift
 
 final class BiometryLabelContentInteractor: LabelContentInteracting {
-    
+
     typealias InteractionState = LabelContent.State.Interaction
-    
+
     let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     init(biometryProviding: BiometryProviding) {
         var title = LocalizationConstants.Settings.enableTouchID
         switch biometryProviding.supportedBiometricsType {

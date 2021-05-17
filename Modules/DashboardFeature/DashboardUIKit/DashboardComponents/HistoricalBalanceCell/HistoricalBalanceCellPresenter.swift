@@ -7,9 +7,9 @@ import RxRelay
 import RxSwift
 
 final class HistoricalBalanceCellPresenter {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
-    
+
     var thumbnail: Driver<ImageViewContent> {
         .just(
             .init(
@@ -19,7 +19,7 @@ final class HistoricalBalanceCellPresenter {
             )
         )
     }
-    
+
     var name: Driver<LabelContent> {
         .just(
             .init(
@@ -30,17 +30,17 @@ final class HistoricalBalanceCellPresenter {
             )
         )
     }
-    
+
     let pricePresenter: AssetPriceViewPresenter
     let sparklinePresenter: AssetSparklinePresenter
     let balancePresenter: AssetBalanceViewPresenter
-    
+
     var cryptoCurrency: CryptoCurrency {
         interactor.cryptoCurrency
     }
-    
+
     private let interactor: HistoricalBalanceCellInteractor
-    
+
     init(interactor: HistoricalBalanceCellInteractor) {
         self.interactor = interactor
         sparklinePresenter = AssetSparklinePresenter(

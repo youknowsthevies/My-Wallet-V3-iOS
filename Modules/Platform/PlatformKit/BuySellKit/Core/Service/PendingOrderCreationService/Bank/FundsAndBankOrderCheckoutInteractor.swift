@@ -4,14 +4,14 @@ import DIKit
 import RxSwift
 
 public final class FundsAndBankOrderCheckoutInteractor {
-    
+
     typealias InteractionData = Single<(interactionData: CheckoutInteractionData, checkoutData: CheckoutData)>
-    
+
     private enum InteractionError: Error {
         case missingOrderFee
         case orderIsNotPendingDepositBankTransfer
         case unsupportedQuoteParameters
-        
+
         var localizedDescription: String {
             switch self {
             case .missingOrderFee:
@@ -23,12 +23,12 @@ public final class FundsAndBankOrderCheckoutInteractor {
             }
         }
     }
-        
+
     private let paymentAccountService: PaymentAccountServiceAPI
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
     private let linkedBanksService: LinkedBanksServiceAPI
-    
+
     public init(paymentAccountService: PaymentAccountServiceAPI = resolve(),
                 orderQuoteService: OrderQuoteServiceAPI = resolve(),
                 orderCreationService: OrderCreationServiceAPI = resolve(),
@@ -38,7 +38,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
         self.orderCreationService = orderCreationService
         self.linkedBanksService = linkedBanksService
     }
-    
+
     /// 1. Fetch the payment account matching the order currency and append it to the checkout data
     /// 2. Fetch the quote and append it to the result.
     /// The order must be created beforehand and present in the checkout data.
@@ -73,7 +73,7 @@ public final class FundsAndBankOrderCheckoutInteractor {
         } else {
             finalCheckoutData = Single.just(checkoutData)
         }
-        
+
         return Single
             .zip(
                 quote,
@@ -93,12 +93,12 @@ public final class FundsAndBankOrderCheckoutInteractor {
                 return (interactionData, payload.checkoutData)
             }
     }
-    
+
     func prepare(using order: OrderDetails) -> Single<CheckoutInteractionData> {
         guard order.paymentMethod.isFunds || order.isPendingDepositBankWire else {
             fatalError(InteractionError.orderIsNotPendingDepositBankTransfer.localizedDescription)
         }
-        
+
         // order was confirmed - just fetch the details
         guard let fee = order.fee else {
             fatalError(InteractionError.missingOrderFee.localizedDescription)

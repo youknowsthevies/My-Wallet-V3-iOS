@@ -4,13 +4,13 @@ import SwiftUI
 
 /// A `ButtonStyle` for primary Call-to-Action buttons.
 public struct PrimaryButtonStyle: ButtonStyle {
-    
+
     let isEnabled: Bool
-    
+
     public init(isEnabled: Bool = true) {
         self.isEnabled = isEnabled
     }
-    
+
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Font(weight: .semibold, size: 16))
@@ -34,18 +34,18 @@ public struct PrimaryButtonStyle: ButtonStyle {
  ```
 */
 public struct PrimaryButton: View {
-    
+
     let title: String
-    let action: () -> ()
+    let action: () -> Void
     @Binding var loading: Bool
     @Environment(\.isEnabled) var isEnabled
-    
-    public init(title: String, action: @escaping () -> (), loading: Binding<Bool> = .constant(false)) {
+
+    public init(title: String, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
         self._loading = loading
         self.action = action
     }
-    
+
     public var body: some View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(PrimaryButtonStyle(isEnabled: isEnabled))

@@ -8,7 +8,7 @@ import ToolKit
 import XCTest
 
 class NabuAuthenticationExecutorTests: XCTestCase {
-    
+
     private var cancellables: Set<AnyCancellable>!
     private var userCreationClient: UserCreationClientMock!
     private var authenticationClient: NabuAuthenticationClientMock!
@@ -22,7 +22,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        
+
         cancellables = Set<AnyCancellable>([])
         userCreationClient = UserCreationClientMock()
         authenticationClient = NabuAuthenticationClientMock()
@@ -59,12 +59,12 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         walletRepository = nil
         deviceInfo = nil
         subject = nil
-        
+
         try super.tearDownWithError()
     }
-    
+
     func testSuccessfulAuthenticationWhenUserIsAlreadyCreated() throws {
-        
+
         // Arrange
         let expectedSessionTokenValue = "session-token"
 
@@ -109,7 +109,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 }
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         authenticationClient.expectedSessionTokenResult = .success(
             NabuSessionTokenResponse(
                 identifier: "identifier",
@@ -136,7 +136,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 }
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         let sharedKeySetExpectation = self.expectation(
             description: "The Shared Key was set successfully"
         )
@@ -153,7 +153,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 }
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         wait(
             for: [
                 offlineTokenResponseSetExpectation,
@@ -163,14 +163,14 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             timeout: 20,
             enforceOrder: false
         )
-        
+
         let receivedValidTokenExpectation = self.expectation(
             description: "Received Valid token"
         )
         let authenticationSuccessfulExpectation = self.expectation(
             description: "The user was created and sucessfully authenticated"
         )
-       
+
         // Act
         subject
             .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
@@ -201,7 +201,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 receivedValidTokenExpectation.fulfill()
             })
             .store(in: &cancellables)
-        
+
         // Assert
         wait(
             for: [
@@ -212,19 +212,19 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             enforceOrder: false
         )
     }
-    
+
     func testSuccessfulAuthenticationWhenUserIsNotCreated() throws {
-        
+
         // Arrange
         let expectedSessionTokenValue = "session-token"
-        
+
         let offlineTokenResponse = NabuOfflineTokenResponse(userId: "user-id", token: "offline-token")
-        
+
         // Offline token is missing - user creation will be attempted
         walletRepository.expectedOfflineTokenResponse = .failure(.offlineToken)
         jwtService.expectedResult = .success("jwt-token")
         userCreationClient.expectedResult = .success(offlineTokenResponse)
-        
+
         settingsService.expectedResult = .success(
             .init(
                 response: .init(
@@ -242,7 +242,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 )
             )
         )
-        
+
         authenticationClient.expectedSessionTokenResult = .success(
             NabuSessionTokenResponse(
                 identifier: "identifier",
@@ -252,7 +252,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 expiresAt: .distantFuture
             )
         )
-        
+
         let guidSetExpectation = self.expectation(
             description: "The GUID was set successfully"
         )
@@ -268,7 +268,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 guidSetExpectation.fulfill()
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         let sharedKeySetExpectation = self.expectation(
             description: "The Shared Key was set successfully"
         )
@@ -284,16 +284,16 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 sharedKeySetExpectation.fulfill()
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         wait(for: [ guidSetExpectation, sharedKeySetExpectation ], timeout: 5, enforceOrder: false)
-        
+
         let receivedValidTokenExpectation = self.expectation(
             description: "Received Valid token"
         )
         let authenticationSuccessfulExpectation = self.expectation(
             description: "The user was created and sucessfully authenticated"
         )
-        
+
         // Act
         subject
             .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
@@ -329,7 +329,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 receivedValidTokenExpectation.fulfill()
             })
             .store(in: &cancellables)
-        
+
         // Assert
         wait(
             for: [ receivedValidTokenExpectation, authenticationSuccessfulExpectation ],
@@ -337,9 +337,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             enforceOrder: true
         )
     }
-    
+
     func testExpiredTokenAndSecondSuccessfulAuthentication() throws {
-        
+
         // Arrange
         let offlineTokenResponse = NabuOfflineTokenResponse(
             userId: "user-id",
@@ -361,7 +361,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             isActive: true,
             expiresAt: Date.distantFuture
         )
-        
+
         let expiredAuthTokenStoredExpectation = self.expectation(
             description: "The expired auth token was successfully stored"
         )
@@ -377,7 +377,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 receiveValue: { _ in }
             )
             .store(in: &cancellables)
-        
+
         jwtService.expectedResult = .success("jwt-token")
         settingsService.expectedResult = .success(
             .init(
@@ -398,9 +398,9 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         )
 
         authenticationClient.expectedSessionTokenResult = .success(newSessionTokenResponse)
-        
+
         wait(for: [ expiredAuthTokenStoredExpectation ], timeout: 5, enforceOrder: true)
-        
+
         let offlineTokenResponseSetExpectation = self.expectation(
             description: "The offline token was set successfully"
         )
@@ -416,7 +416,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 offlineTokenResponseSetExpectation.fulfill()
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         let guidSetExpectation = self.expectation(
             description: "The GUID was set successfully"
         )
@@ -432,7 +432,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 guidSetExpectation.fulfill()
             }, receiveValue: { _ in })
             .store(in: &cancellables)
-        
+
         let sharedKeySetExpectation = self.expectation(
             description: "The Shared Key was set successfully"
         )
@@ -458,7 +458,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
             timeout: 20,
             enforceOrder: true
         )
-        
+
         // Act
         let receivedValidTokenExpectation = self.expectation(
             description: "Received Valid token"
@@ -466,7 +466,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
         let authenticationSuccessfulExpectation = self.expectation(
             description: "The user was created and sucessfully authenticated"
         )
-        
+
         // Act
         subject
             .authenticate { token -> AnyPublisher<ServerResponse, NetworkError> in
@@ -520,7 +520,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 receivedValidTokenExpectation.fulfill()
             })
             .store(in: &cancellables)
-        
+
         // Assert
         wait(
             for: [

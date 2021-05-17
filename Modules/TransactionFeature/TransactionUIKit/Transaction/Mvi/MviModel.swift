@@ -16,7 +16,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
     let actions: ReplaySubject<Action> = ReplaySubject.create(bufferSize: 1)
 
     private var disposeBag = DisposeBag()
-    
+
     private let stateRelay: BehaviorRelay<State>
     private let performAction: (State, Action) -> Disposable?
 
@@ -41,7 +41,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
     func process(action: Action) {
         actions.on(.next(action))
     }
-    
+
     func destroy() {
         disposeBag = DisposeBag()
     }

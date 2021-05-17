@@ -6,9 +6,9 @@ import RxRelay
 import RxSwift
 
 final class TodayViewPresenter {
-    
+
     // MARK: - Public Properties
-    
+
     var sectionObservable: Observable<[TodayExtensionSectionViewModel]> {
         _ = setup
         return Observable
@@ -25,13 +25,13 @@ final class TodayViewPresenter {
                 return result
             }
     }
-    
+
     var numberOfSections: Int {
         interactor.isBalanceSyncingEnabled ? 2 : 1
     }
-    
+
     // MARK: - Setup
-    
+
     private lazy var setup: Void = {
         interactor
             .assetInteractors
@@ -39,7 +39,7 @@ final class TodayViewPresenter {
             .map { cellTypes in cellTypes.map { TodayExtensionCellViewModel(cellType: $0) } }
             .bindAndCatch(to: assetCellsRelay)
             .disposed(by: disposeBag)
-        
+
         interactor
             .portfolioInteractor
             .compactMap { $0 }
@@ -48,34 +48,34 @@ final class TodayViewPresenter {
             .bindAndCatch(to: portfolioCellRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Private Properties
-    
+
     private var portfolioCell: Observable<TodayExtensionCellViewModel?> {
         portfolioCellRelay.asObservable()
     }
-    
+
     private var assetCells: Observable<[TodayExtensionCellViewModel]> {
         assetCellsRelay.asObservable()
     }
-    
+
     private let assetCellsRelay = BehaviorRelay<[TodayExtensionCellViewModel]>(value: [])
     private let portfolioCellRelay = BehaviorRelay<TodayExtensionCellViewModel?>(value: nil)
     private let interactor: TodayViewInteractor
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(interactor: TodayViewInteractor = TodayViewInteractor()) {
         self.interactor = interactor
     }
-    
+
     /// Should be called each time the dashboard view shows
     /// to trigger dashboard re-render
     func refresh() {
         interactor.refresh()
     }
-    
+
     func viewModel(for section: Int) -> TodayExtensionSectionHeaderViewModel {
         switch section {
         case 0:
@@ -86,5 +86,5 @@ final class TodayViewPresenter {
             fatalError("Unexpected section")
         }
     }
-    
+
 }

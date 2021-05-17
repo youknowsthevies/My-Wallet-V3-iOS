@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 extension Coincore {
-    
+
     public func createTransactionProcessor(
         with account: BlockchainAccount,
         target: TransactionTarget,
@@ -72,7 +72,7 @@ extension Coincore {
                 }
         case (is CryptoReceiveAddress, .send):
             let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
-            
+
             /// `Target` must be a `CryptoReceiveAddress`
             guard let receiveAddress = target as? CryptoReceiveAddress else {
                 fatalError("Expected a receiveAddress: \(target)")
@@ -86,10 +86,10 @@ extension Coincore {
                         engine: factory.build(requiresSecondPassword: requiresSecondPassword)
                     )
                 }
-            
+
         case (is CryptoAccount, .send):
             let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
-            
+
             /// `Target` must be a `CryptoReceiveAddress`
             guard let destination = target as? SingleAccount else {
                 fatalError("Expected a SingleAccount: \(target)")
@@ -124,7 +124,7 @@ extension Coincore {
             unimplemented()
         }
     }
-    
+
     private func createFiatWithdrawalProcessor(with account: FiatAccount,
                                                target: TransactionTarget) -> Single<TransactionProcessor> {
         Single.just(
@@ -136,7 +136,7 @@ extension Coincore {
         )
 
     }
-    
+
     private func createFiatDepositProcessor(with account: LinkedBankAccount,
                                             target: TransactionTarget) -> Single<TransactionProcessor> {
         Single.just(

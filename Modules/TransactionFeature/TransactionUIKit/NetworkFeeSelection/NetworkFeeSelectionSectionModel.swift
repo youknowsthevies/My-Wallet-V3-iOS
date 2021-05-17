@@ -8,7 +8,7 @@ enum NetworkFeeSelectionSectionItem: Equatable, IdentifiableType {
     case radio(RadioLineItemCellPresenter)
     case button(ButtonViewModel)
     case separator(Int)
-    
+
     var identity: AnyHashable {
         switch self {
         case .label(let content):
@@ -21,7 +21,7 @@ enum NetworkFeeSelectionSectionItem: Equatable, IdentifiableType {
             return "\(index)"
         }
     }
-    
+
     static func ==(lhs: NetworkFeeSelectionSectionItem, rhs: NetworkFeeSelectionSectionItem) -> Bool {
         switch (lhs, rhs) {
         case (.radio(let left), .radio(let right)):
@@ -40,13 +40,13 @@ enum NetworkFeeSelectionSectionItem: Equatable, IdentifiableType {
 
 struct NetworkFeeSelectionSectionModel: SectionModelType {
     typealias Item = NetworkFeeSelectionSectionItem
-    
+
     var items: [NetworkFeeSelectionSectionItem]
-    
+
     init(items: [NetworkFeeSelectionSectionItem]) {
         self.items = items
     }
-    
+
     init(original: NetworkFeeSelectionSectionModel, items: [Item]) {
         self = original
         self.items = items

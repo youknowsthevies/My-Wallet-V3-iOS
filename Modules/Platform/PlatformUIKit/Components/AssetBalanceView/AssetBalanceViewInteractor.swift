@@ -5,18 +5,18 @@ import RxRelay
 import RxSwift
 
 public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
-    
+
     public typealias InteractionState = AssetBalanceViewModel.State.Interaction
-    
+
     // MARK: - Exposed Properties
-    
+
     public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private lazy var setup: Void = {
         assetBalanceFetching.calculationState
             .map { state -> InteractionState in
@@ -36,35 +36,35 @@ public final class AssetBalanceViewInteractor: AssetBalanceViewInteracting {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     private let assetBalanceFetching: AssetBalanceFetching
-    
+
     // MARK: - Setup
-    
+
     public init(assetBalanceFetching: AssetBalanceFetching) {
         self.assetBalanceFetching = assetBalanceFetching
     }
 }
 
 public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracting {
-    
+
     public typealias InteractionState = AssetBalanceViewModel.State.Interaction
     private typealias Model = AssetBalanceViewModel.Value.Interaction
-    
+
     // MARK: - Exposed Properties
-    
+
     public let accountType: SingleAccountType
-    
+
     public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private lazy var setup: Void = {
         Observable.combineLatest(
                 assetBalanceFetching.calculationState,
@@ -88,7 +88,7 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
                 case .nonCustodial:
                     pending = wallet
                 }
-                
+
                 switch state {
                 case .calculating, .invalid:
                     return .loading
@@ -105,14 +105,14 @@ public final class AssetBalanceTypeViewInteractor: AssetBalanceTypeViewInteracti
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     private let assetBalanceFetching: AssetBalanceFetching
-    
+
     // MARK: - Setup
-    
+
     public init(assetBalanceFetching: AssetBalanceFetching, accountType: SingleAccountType) {
         self.accountType = accountType
         self.assetBalanceFetching = assetBalanceFetching

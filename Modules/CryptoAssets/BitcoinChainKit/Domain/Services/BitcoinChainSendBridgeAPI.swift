@@ -11,11 +11,11 @@ public struct BitcoinChainTransactionProposal<Token: BitcoinChainToken> {
     public let fees: MoneyValue
     public let walletIndex: Int32
     public let source: CryptoAccount
-    
+
     public var coin: BitcoinChainCoin {
         Token.coin
     }
-    
+
     public init(destination: BitcoinChainReceiveAddress<Token>,
                 amount: MoneyValue,
                 fees: MoneyValue,
@@ -36,7 +36,7 @@ public struct BitcoinChainTransactionCandidate<Token: BitcoinChainToken> {
     public let source: CryptoAccount
     public let sweepFee: MoneyValue
     public let sweepAmount: MoneyValue
-    
+
     public init(proposal: BitcoinChainTransactionProposal<Token>, fees: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue) {
         self.destination = proposal.destination
         self.amount = proposal.amount
@@ -52,7 +52,7 @@ public enum BitcoinChainTransactionError: Error {
     case noUnspentOutputs(finalFee: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue)
     case feeTooLow(finalFee: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue)
     case unknown(finalFee: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue)
-    
+
     public init(stringValue: String, finalFee: MoneyValue, sweepAmount: MoneyValue, sweepFee: MoneyValue) {
         switch stringValue {
         case let x where x.contains("BELOW_DUST_THRESHOLD"):
@@ -77,10 +77,10 @@ public protocol BitcoinChainSendBridgeAPI {
         fees: MoneyValue,
         source: CryptoAccount
     ) -> Single<BitcoinChainTransactionProposal<Token>>
-    
+
     func buildCandidate<Token: BitcoinChainToken>(
         with proposal: BitcoinChainTransactionProposal<Token>
     ) -> Single<BitcoinChainTransactionCandidate<Token>>
-    
+
     func send(coin: BitcoinChainCoin, with secondPassword: String?) -> Single<String>
 }

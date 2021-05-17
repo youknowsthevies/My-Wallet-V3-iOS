@@ -16,17 +16,17 @@ public enum BlockchainAccountProvidingError: Error {
 
 final class BlockchainAccountProvider: BlockchainAccountProviding {
     private let coincore: Coincore
-    
+
     init(coincore: Coincore = resolve()) {
         self.coincore = coincore
     }
-    
+
     func accounts(for currency: CurrencyType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
             .map { $0.accounts.filter { $0.currencyType == currency } }
     }
-    
+
     func accounts(accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
@@ -49,7 +49,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 }
             }
     }
-    
+
     func accounts(for currency: CurrencyType, accountType: SingleAccountType) -> Single<[BlockchainAccount]> {
         coincore
             .allAccounts
@@ -72,7 +72,7 @@ final class BlockchainAccountProvider: BlockchainAccountProviding {
                 }
             }
     }
-    
+
     func account(for currency: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount> {
         coincore
             .allAccounts

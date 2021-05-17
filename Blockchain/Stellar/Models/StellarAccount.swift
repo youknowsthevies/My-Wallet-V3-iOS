@@ -9,12 +9,12 @@ struct StellarAccount {
 
     /// The asset account
     let assetAccount: AssetAccount
-    
+
     // Sequence is used when submitting a transaction
     // from the user's account.
     // [Read more here:](https://www.stellar.org/developers/guides/concepts/fees.html#minimum-account-balance " Minimum Account Balance")
     let sequence: Int64
-    
+
     let subentryCount: UInt
 }
 

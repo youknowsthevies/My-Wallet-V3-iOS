@@ -14,41 +14,41 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
     static var defaultCaptureQueue: DispatchQueue {
         DispatchQueue(label: "com.blockchain.Blockchain.qrCodeScanner.captureQueue")
     }
-    
+
     weak var delegate: QRCodeScannerDelegate?
-    
+
     let videoPreviewLayer: CALayer
-    
+
     var captureVideoPreviewLayer: AVCaptureVideoPreviewLayer {
         videoPreviewLayer as! AVCaptureVideoPreviewLayer
     }
-    
+
     private let captureSession: CaptureSessionProtocol
     private let captureMetadataOutput: AVCaptureMetadataOutput = .init()
     private let sessionQueue: DispatchQueue
-    
+
     init?(
         deviceInput: CaptureInputProtocol? = QRCodeScanner.runDeviceInputChecks(),
         captureSession: CaptureSessionProtocol = AVCaptureSession(),
         sessionQueue: DispatchQueue = QRCodeScanner.defaultSessionQueue
     ) {
         guard let deviceInput = deviceInput else { return nil }
-        
+
         captureSession.sessionPreset = .high
         self.captureSession = captureSession
         self.sessionQueue = sessionQueue
-        
+
         let videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession.current!)
         videoPreviewLayer.videoGravity = .resizeAspectFill
         self.videoPreviewLayer = videoPreviewLayer
-        
+
         super.init()
-        
+
         self.sessionQueue.async { [weak self] in
             self?.configure(with: deviceInput)
         }
     }
-    
+
     func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
         let frame = scannableArea.area
         sessionQueue.async { [weak self] in
@@ -61,7 +61,7 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             }
         }
     }
-    
+
     func stopReadingQRCode(complete: (() -> Void)? = nil) {
         sessionQueue.async { [weak self] in
             self?.captureSession.stopRunning()
@@ -72,7 +72,7 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             }
         }
     }
-    
+
     func handleSelectedQRImage(_ image: UIImage) {
         guard let cgImage = image.cgImage else {
             handleQRImageSelectionError()
@@ -91,24 +91,24 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             self?.delegate?.scanComplete(with: .success(value))
         }
     }
-    
+
     // MARK: - Private methods
-    
+
     private func handleQRImageSelectionError() {
         delegate?.scanComplete(with: .failure(.unknown))
     }
-    
+
     private func configure(with deviceInput: CaptureInputProtocol) {
         captureSession.add(input: deviceInput)
         captureSession.add(output: captureMetadataOutput)
-        
+
         let captureQueue = QRCodeScanner.defaultCaptureQueue
         captureMetadataOutput.setMetadataObjectsDelegate(self, queue: captureQueue)
         captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
     }
-    
+
     // MARK: - Private static methods
-    
+
     /// Check if the device input is accessible for scanning QR codes
     private static func runDeviceInputChecks(alertViewPresenter: AlertViewPresenter = resolve()) -> AVCaptureDeviceInput? {
         switch QRCodeScanner.deviceInput() {
@@ -126,7 +126,7 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
             return nil
         }
     }
-    
+
     private static func deviceInput() -> Result<AVCaptureDeviceInput, QRScannerError> {
         do {
             let input = try AVCaptureDeviceInput.deviceInputForQRScanner()

@@ -10,9 +10,9 @@ public protocol NabuUserServiceAPI: AnyObject {
 }
 
 final class NabuUserService: NabuUserServiceAPI {
-    
+
     // MARK: - Exposed Properties
-    
+
     var user: Single<NabuUser> {
         _ = setup
         return Single.create(weak: self) { (self, observer) -> Disposable in
@@ -36,15 +36,15 @@ final class NabuUserService: NabuUserServiceAPI {
         }
         .subscribeOn(scheduler)
     }
-    
+
     private let cachedUser = CachedValue<NabuUser>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-    
+
     private let client: KYCClientAPI
     private let siftService: SiftServiceAPI
 
-    private lazy var setup: Void = {        
+    private lazy var setup: Void = {
         cachedUser.setFetch(weak: self) { (self) in
             self.client.user()
                 .do(onSuccess: { nabuUser in
@@ -52,15 +52,15 @@ final class NabuUserService: NabuUserServiceAPI {
                 })
         }
     }()
-        
+
     // MARK: - Setup
-    
+
     init(client: KYCClientAPI = resolve(),
          siftService: SiftServiceAPI = resolve()) {
         self.client = client
         self.siftService = siftService
     }
-    
+
     func fetchUser() -> Single<NabuUser> {
         _  = setup
         return cachedUser.fetchValue

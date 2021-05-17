@@ -8,4 +8,3 @@ protocol OrderTransactionLimitsClientAPI {
                                 networkFee: CurrencyType,
                                 product: TransactionLimitsProduct) -> Single<TransactionLimits>
 }
-

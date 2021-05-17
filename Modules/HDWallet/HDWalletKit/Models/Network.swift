@@ -22,7 +22,7 @@ public struct Blockstack: CoinType {
 public enum Network {
     case main(CoinType.Type)
     case test
-    
+
     var libWallyNetwork: LibWally.Network {
         switch self {
         case .main:

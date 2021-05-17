@@ -27,7 +27,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     func setEthereumMemo(for transaction: String, memo: String?, error: @escaping (String) -> Void) {
         error("Not implemented")
     }
-    
+
     // MARK: - LegacyWalletAPI
 
     func createOrderPayment(
@@ -44,7 +44,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     ) {
         completion(.success(""))
     }
-        
+
     var receiveAddress: String = "ReceiveAddress"
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
         receiveAddress
@@ -52,32 +52,32 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
 
     func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
     }
-    
+
     // MARK: - LegacyEthereumWalletProtocol
-    
+
     enum MockLegacyEthereumWalletError: Error {
         case notInitialized
         case unknown
     }
-                        
+
     var password: String? = "password"
-    
+
     var checkIfEthereumAccountExistsValue = true
     func checkIfEthereumAccountExists() -> Bool {
         checkIfEthereumAccountExistsValue
     }
-    
+
     func recordLastEthereumTransaction(transactionHash: String,
                                        success: @escaping () -> Void,
                                        error: @escaping (String) -> Void) {
         success()
     }
-    
+
     var needsSecondPasswordValue = false
     func needsSecondPassword() -> Bool {
         needsSecondPasswordValue
     }
-    
+
     static let legacyAccount = LegacyEthereumWalletAccount(
         addr: MockEthereumWalletTestData.account,
         label: "My ETH Wallet"
@@ -99,7 +99,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     static let labelForAccount: String = "My ETH Wallet"
     var getLabelForEthereumAccountCompletion: Result<String, MockLegacyEthereumWalletError> = .success(labelForAccount)
     func getLabelForEthereumAccount(with secondPassword: String?,
@@ -112,7 +112,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     var getEtherAddressCompletion: Result<String, MockLegacyEthereumWalletError> = .success("address")
     func getEthereumAddress(with secondPassword: String?,
                             success: @escaping (String) -> Void,
@@ -124,7 +124,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     static let ethBalanceValue: String = "1337"
     var fetchEthereumBalanceCalled: Bool = false
     var fetchEthereumBalancecCompletion: Result<String, MockLegacyEthereumWalletError> = .success(ethBalanceValue)
@@ -136,7 +136,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     var fetchHistoryCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
     func fetchHistory(with secondPassword: String?, success: @escaping () -> Void, error: @escaping (String) -> Void) {
         switch fetchHistoryCompletion {
@@ -146,7 +146,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     static let isWaitingOnTransactionValue: Bool = false
     var isWaitingOnTransactionCompletion: Result<Bool, MockLegacyEthereumWalletError> = .success(isWaitingOnTransactionValue)
     func isWaitingOnEthereumTransaction(with secondPassword: String?, success: @escaping (Bool) -> Void, error: @escaping (String) -> Void) {
@@ -157,7 +157,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     var lastRecordedEtherTransactionHashAsync: String?
     var recordLastEthereumTransactionCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
     func recordLastEthereumTransaction(with secondPassword: String?,
@@ -172,7 +172,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     var getEtherTransactionNonceCompletion: Result<String, MockLegacyEthereumWalletError> = .success("1")
     func getEthereumTransactionNonce(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
         switch getEtherTransactionNonceCompletion {
@@ -182,7 +182,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     static let tokenAccounts: [String: [String: Any]] = [
         "pax": [
             "label": "My PAX Wallet",
@@ -204,7 +204,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     var lastSavedTokensJSONString: String?
     var saveERC20TokensCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
     func saveERC20Tokens(with secondPassword: String?,
@@ -219,9 +219,9 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
             error("\(e.localizedDescription)")
         }
     }
-    
+
     // MARK: - MnemonicAccessAPI
-    
+
     var mnemonicMaybe = Maybe.just("")
     var mnemonic: Maybe<String> {
         mnemonicMaybe

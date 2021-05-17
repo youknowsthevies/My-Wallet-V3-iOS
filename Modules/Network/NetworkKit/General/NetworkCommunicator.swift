@@ -5,7 +5,7 @@ import Combine
 import DIKit
 
 protocol NetworkCommunicatorAPI {
-    
+
     /// Performs network requests
     /// - Parameter request: the request object describes the network request to be performed
     func dataTaskPublisher(
@@ -14,16 +14,16 @@ protocol NetworkCommunicatorAPI {
 }
 
 final class NetworkCommunicator: NetworkCommunicatorAPI {
-    
+
     // MARK: - Private properties
-    
+
     private let session: NetworkSession
     private let queue: DispatchQueue
     private let authenticator: AuthenticatorAPI?
     private let eventRecorder: AnalyticsEventRecording?
-    
+
     // MARK: - Setup
-    
+
     init(session: NetworkSession = resolve(),
          sessionDelegate: SessionDelegateAPI = resolve(),
          sessionHandler: NetworkSessionDelegateAPI = resolve(),
@@ -34,12 +34,12 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
         self.queue = queue
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
-        
+
         sessionDelegate.delegate = sessionHandler
     }
-    
+
     // MARK: - Internal methods
-    
+
     func dataTaskPublisher(
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
@@ -55,9 +55,9 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 execute(request.adding(authenticationToken: token))
             }
     }
-    
+
     // MARK: - Private methods
-    
+
     private func execute(
         request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
@@ -79,14 +79,14 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
 }
 
 protocol NetworkSession {
-    
+
     func erasedDataTaskPublisher(
         for request: URLRequest
     ) -> AnyPublisher<(data: Data, response: URLResponse), URLError>
 }
 
 extension URLSession: NetworkSession {
-    
+
     func erasedDataTaskPublisher(
         for request: URLRequest
     ) -> AnyPublisher<(data: Data, response: URLResponse), URLError> {
@@ -97,7 +97,7 @@ extension URLSession: NetworkSession {
 
 extension AnyPublisher where Output == ServerResponse,
                              Failure == NetworkError {
-    
+
     fileprivate func recordErrors(
         on recorder: AnalyticsEventRecording?,
         request: NetworkRequest,

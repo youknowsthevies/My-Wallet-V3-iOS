@@ -20,29 +20,29 @@ public protocol SendRootRouting: ViewableRouting {
 public protocol SendRootListener: ViewListener { }
 
 final class SendRootInteractor: Interactor, SendRootInteractable, SendRootListener {
-    
+
     weak var router: SendRootRouting?
     weak var listener: SendRootListener?
-    
+
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         super.init()
     }
-    
+
     func presentKYCTiersScreen() {
         // TODO:
     }
-    
+
     func dismissTransactionFlow() {
         router?.dismissTransactionFlow()
     }
-    
+
     private lazy var routeViewDidAppear: Void = {
         router?.routeToSendLanding()
     }()
-    
+
     func viewDidAppear() {
         // if first time, got to variant router
         _ = routeViewDidAppear

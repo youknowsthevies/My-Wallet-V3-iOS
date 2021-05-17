@@ -7,11 +7,11 @@ import RxSwift
 
 final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
     let expectedResult: Result<Void, RemoteNotificationNetworkService.PushNotificationError>
-    
+
     init(expectedResult: Result<Void, RemoteNotificationNetworkService.PushNotificationError>) {
         self.expectedResult = expectedResult
     }
-    
+
     func register(with token: String,
                   using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void> {
         expectedResult.single

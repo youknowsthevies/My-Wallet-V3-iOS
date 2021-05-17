@@ -7,7 +7,7 @@ import PlatformKit
 import PlatformUIKit
 
 class WithdrawalRouter: WithdrawalRouting {
-    
+
     func withdrawalBuilder(for currency: FiatCurrency) -> WithdrawBuildable {
         WithdrawBuilder(currency: currency)
     }

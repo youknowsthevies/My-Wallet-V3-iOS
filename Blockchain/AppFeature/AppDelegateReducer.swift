@@ -60,7 +60,7 @@ let appDelegateReducer = Reducer<
                 .fireAndForget(),
 
             clearCacheSuiteOnDebug(cacheSuite: environment.cacheSuite),
-            
+
             applyGlobalNavigationAppearance(using: .lightContent()),
 
             applyCertificatePinning(using: environment.certificatePinner),
@@ -73,7 +73,7 @@ let appDelegateReducer = Reducer<
             ),
 
             checkForNewInstall(onboardingSettings: environment.onboardingSettings)
-            
+
         )
     case .willResignActive:
         return applyBlurFilter(

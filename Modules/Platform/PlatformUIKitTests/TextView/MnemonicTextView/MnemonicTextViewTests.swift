@@ -80,4 +80,3 @@ private enum WordList {
         .components(separatedBy: " ")
     }
 }
-

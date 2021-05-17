@@ -6,9 +6,9 @@ import RxCocoa
 import RxSwift
 
 final class SwitchTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public Properites
-    
+
     var presenter: SwitchCellPresenting! {
         didSet {
             disposeBag = DisposeBag()
@@ -18,22 +18,22 @@ final class SwitchTableViewCell: UITableViewCell {
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
-            
+
             accessibility = presenter.accessibility
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet fileprivate var switchView: SwitchView!
     @IBOutlet fileprivate var titleLabel: UILabel!
-    
+
     // MARK: - Lifecycle
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         titleLabel.textColor = .titleText
@@ -43,7 +43,7 @@ final class SwitchTableViewCell: UITableViewCell {
 // MARK: - Rx
 
 extension Reactive where Base: SwitchTableViewCell {
-    
+
     var content: Binder<LabelContent.State.Presentation> {
         Binder(base) { view, state in
             switch state {
@@ -55,4 +55,3 @@ extension Reactive where Base: SwitchTableViewCell {
         }
     }
 }
-

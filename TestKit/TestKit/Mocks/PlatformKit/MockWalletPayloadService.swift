@@ -5,13 +5,13 @@ import Foundation
 import RxSwift
 
 final class MockWalletPayloadClient: WalletPayloadClientAPI {
-    
+
     private let result: Result<WalletPayloadClient.Response, WalletPayloadClient.ErrorResponse>
-    
+
     init(result: Result<WalletPayloadClient.Response, WalletPayloadClient.ErrorResponse>) {
         self.result = result
     }
-    
+
     func payload(guid: String,
                  identifier: WalletPayloadClient.Identifier) -> Single<WalletPayloadClient.ClientResponse> {
         switch result {

@@ -8,38 +8,38 @@ import ToolKit
 
 /// PIN creation / changing / authentication. Responsible for routing screens during flow.
 final class PinRouter: NSObject {
-    
+
     // MARK: - Properties
-    
+
     /// The origin of the pin flow
     let flow: PinRouting.Flow
-    
+
     /// Returns `true` in case login authentication is currently being displayed
     var isDisplayingLoginAuthentication: Bool {
         isBeingDisplayed && flow.isLoginAuthentication
     }
-    
+
     /// Is being displayed right now
     private(set) var isBeingDisplayed = false
-    
+
     /// Wrap up the current flow and move to the next
     private let completion: PinRouting.RoutingType.Forward?
-    
+
     /// Weakly references the pin navigation controller as we don't want to keep it while it's not currently presented
     private weak var navigationController: UINavigationController!
-    
+
     /// A recorder for errors
     private let recorder: Recording
-    
+
     /// Swipe to receive configuration
     private let swipeToReceiveConfig: SwipeToReceiveConfiguring
-    
+
     private let enabledCryptoCurrencies: [CryptoCurrency]
 
     private let webViewService: WebViewServiceAPI
-    
+
     // MARK: - Setup
-    
+
     init(flow: PinRouting.Flow,
          swipeToReceiveConfig: SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -56,11 +56,11 @@ final class PinRouter: NSObject {
     }
 
     // MARK: - API
-    
+
     /// Executes the pin flow according to the `flow` value provided during initialization
     func execute() {
         guard !self.isBeingDisplayed else { return }
-        
+
         self.isBeingDisplayed = true
         switch self.flow {
         case .create:
@@ -73,7 +73,7 @@ final class PinRouter: NSObject {
             self.authenticate(from: self.flow.origin)
         }
     }
-    
+
     /// Cleanup immediately any currently running pin flow
     func cleanup() {
         DispatchQueue.main.async { [weak self] in
@@ -92,9 +92,9 @@ final class PinRouter: NSObject {
 // MARK: - Private Logic
 
 extension PinRouter {
-    
+
     // MARK: - Entry points of pin flow
-    
+
     /// Invokes authentication using pin code
     private func authenticate(from origin: PinRouting.Flow.Origin) {
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] input in
@@ -109,13 +109,13 @@ extension PinRouter {
         default: // Shouldn't arrive here
             return
         }
-        
+
         // Add cleanup to logout
         let flow = PinRouting.Flow.authenticate(from: origin) { [weak self] in
             self?.cleanup()
             self?.flow.logoutRouting?()
         }
-        
+
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            forwardRouting: forwardRouting,
@@ -127,7 +127,7 @@ extension PinRouter {
             present(viewController: pinViewController)
         }
     }
-    
+
     /// Leads to authentication flow on logic.
     /// - parameter pinViewController: Pin view controller to be the first screen
     private func authenticateOnLogin(using pinViewController: UIViewController) {
@@ -150,7 +150,7 @@ extension PinRouter {
         let containerViewController = LoginContainerViewController(using: [pinInput] + addressInputs)
         present(viewController: containerViewController)
     }
-    
+
     /// Invokes a PIN change flow in which a user has to verify the old PIN -> select a new PIN -> create a new PIN
     private func change() {
         let backwardRouting: PinRouting.RoutingType.Backward = { [weak self] in
@@ -159,13 +159,13 @@ extension PinRouter {
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] input in
             self?.select(previousPin: input.pin)
         }
-        
+
         // Add cleanup to logout
         let flow = PinRouting.Flow.change(parent: UnretainedContentBox(self.flow.parent)) { [weak self] in
             self?.cleanup()
             self?.flow.logoutRouting?()
         }
-        
+
         let presenter = PinScreenPresenter(useCase: .authenticateBeforeChanging,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
@@ -174,12 +174,12 @@ extension PinRouter {
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
-    
+
     /// Invokes a PIN creation flow in which a user has to select a new PIN -> create a new PIN
     private func create() {
         select()
     }
-    
+
     /// Selection - Once a new pin needs to be created (change / creation), the user is required to select it.
     private func select(previousPin: Pin? = nil) {
         let useCase = PinScreenUseCase.select(previousPin: previousPin)
@@ -197,14 +197,14 @@ extension PinRouter {
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
-    
+
     /// Creation - after the user has selected a new PIN, he is required to repeat it.
     private func create(pin: Pin) {
         let useCase = PinScreenUseCase.create(firstPin: pin)
         let backwardRouting: PinRouting.RoutingType.Backward = { [weak self] in
             self?.navigationController.popViewController(animated: true)
         }
-        let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] pin in
+        let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] _ in
             self?.finish()
         }
         let presenter = PinScreenPresenter(useCase: useCase,
@@ -215,7 +215,7 @@ extension PinRouter {
         let viewController = PinScreenViewController(using: presenter)
         present(viewController: viewController)
     }
-    
+
     /// Handle the display of a new view controller
     private func present(viewController: UIViewController) {
         if let navigationController = navigationController {
@@ -238,12 +238,12 @@ extension PinRouter {
             self.navigationController = navigationController
         }
     }
-    
+
     /// Cleanup the flow and calls completion handler
     private func finish(animated: Bool = true,
                         performsCompletionAfterDismissal: Bool = true,
                         completedSuccessfully: Bool = true,
-                        completionInput: PinRouting.RoutingType.Input = .none) {        
+                        completionInput: PinRouting.RoutingType.Input = .none) {
         // Concentrate any cleanup logic here
         let cleanup = { [weak self] in
             guard let self = self else { return }

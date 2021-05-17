@@ -80,4 +80,3 @@ public final class BackgroundTaskTimer {
         RunLoop.current.add(timer, forMode: .default)
     }
 }
-

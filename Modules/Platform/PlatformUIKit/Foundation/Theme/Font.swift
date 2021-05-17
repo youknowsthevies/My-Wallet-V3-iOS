@@ -4,25 +4,25 @@ import Foundation
 
 @available(*, deprecated, message: "Supplanted by UIFont.main.* for verbosity reasons. Please do not use.")
 public struct Font {
-    
+
     // MARK: Private
-    
+
     private let type: FontType
     private let size: FontSize
-    
+
     // MARK: Init
-    
+
     public init(_ type: FontType, size: FontSize) {
         self.type = type
         self.size = size
     }
-    
+
     public enum FontType {
         case branded(FontName)
         case custom(String)
         case system
     }
-    
+
     public enum FontSize {
         case standard(StandardSize)
         case custom(Double)
@@ -35,7 +35,7 @@ public struct Font {
             }
         }
     }
-    
+
     public enum FontName: String {
         case montserratRegular = "Montserrat-Regular"
         case montserratSemiBold = "Montserrat-SemiBold"
@@ -47,13 +47,13 @@ public struct Font {
         case interSemiBold = "Inter-SemiBold"
         case interBold = "Inter-Bold"
     }
-    
+
     public enum StandardSize {
         case small(Level)
         case medium(Level)
         case large(Level)
         case custom(Double)
-        
+
         /// `Level` goes from high to low in terms of
         /// font sizes. In other words `h1` should be a larger
         /// font size than `h2`.
@@ -65,7 +65,7 @@ public struct Font {
             case h5
         }
     }
-    
+
 }
 
 extension Font.StandardSize {

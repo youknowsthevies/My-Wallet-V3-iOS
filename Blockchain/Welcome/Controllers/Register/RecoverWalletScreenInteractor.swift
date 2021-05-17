@@ -8,9 +8,9 @@ import RxSwift
 import ToolKit
 
 final class RecoverWalletScreenInteractor {
-    
+
     // MARK: - Exposed Properties
-    
+
     let contentStateRelay = BehaviorRelay(value: WalletRegistrationContent())
     var content: Observable<WalletRegistrationContent> {
         contentStateRelay.asObservable()
@@ -20,23 +20,23 @@ final class RecoverWalletScreenInteractor {
     var error: Observable<String> {
         errorRelay.asObservable()
     }
-    
+
     // MARK: - Injected
-    
+
     private let reachability: InternetReachabilityAPI
     private let analyticsRecorder: AnalyticsEventRecording
     private let wallet: Wallet
     private let walletManager: WalletManager
-    
+
     /// A passphrase for recovery
     private let passphrase: String
-    
+
     // MARK: - Accessors
-    
+
     private let errorRelay = PublishRelay<String>()
-    
+
     // MARK: - Setup
-    
+
     init(authenticationCoordinator: AuthenticationCoordinator = .shared,
          passphrase: String,
          analyticsRecorder: AnalyticsEventRecording = resolve(),

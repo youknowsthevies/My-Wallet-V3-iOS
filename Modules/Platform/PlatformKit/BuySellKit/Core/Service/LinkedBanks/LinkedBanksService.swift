@@ -79,4 +79,3 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
         client.deleteLinkedBank(for: id)
     }
 }
-

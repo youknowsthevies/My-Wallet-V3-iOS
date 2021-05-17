@@ -5,7 +5,7 @@ extension UILayoutPriority {
     /// Owns `999` as value, one prior to the highest (`1000`) that can still be changed w/o crashing
     public static let penultimateHigh = UILayoutPriority(rawValue: 999)
     public static let penultimateLow = UILayoutPriority(rawValue: 1)
-    
+
     public static func +=(lhs: inout UILayoutPriority, value: Float) throws {
         lhs = UILayoutPriority(rawValue: lhs.rawValue + value)
     }
@@ -16,48 +16,48 @@ extension UILayoutPriority {
 }
 
 extension UIView {
-    
+
     // MARK: - Types
-    
+
     public typealias Priority = UILayoutPriority
     public typealias Attribute = NSLayoutConstraint.Attribute
     public typealias Relation = NSLayoutConstraint.Relation
     public typealias Constraints = [Attribute: NSLayoutConstraint]
-    
+
     /// A frame that comprise a center and size
     public struct Frame {
         public let center: LayoutForm.Constraints
         public let size: LayoutForm.Constraints
     }
-    
+
     /// A layout from
     public enum LayoutForm {
-        
+
         /// Center layout form
         case center
-        
+
         /// Size layout form
         case size
-        
+
         public struct Constraints {
             public let horizontal: NSLayoutConstraint
             public let vertical: NSLayoutConstraint
-            
+
             public func setConstant(horizontal: CGFloat, vertical: CGFloat) {
                 self.horizontal.constant = horizontal
                 self.vertical.constant = vertical
             }
-            
+
             public func set(priority: UILayoutPriority) {
                 self.horizontal.priority = priority
                 self.vertical.priority = priority
             }
         }
-        
+
         fileprivate var attributes: (horizontal: Attribute, vertical: Attribute) {
             let horizontal: Attribute
             let vertical: Attribute
-            
+
             switch self {
             case .size:
                 horizontal = .width
@@ -69,26 +69,26 @@ extension UIView {
             return (horizontal: horizontal, vertical: vertical)
         }
     }
-    
+
     /// Describes an axis
     public enum Axis {
         case horizontal
         case vertical
-        
+
         public struct Constraints {
             public let leading: NSLayoutConstraint
             public let trailing: NSLayoutConstraint
-            
+
             public func set(offset: CGFloat) {
                 leading.constant = offset
                 trailing.constant = -offset
             }
         }
-        
+
         fileprivate var attributes: (leading: Attribute, trailing: Attribute) {
             let leading: Attribute
             let trailing: Attribute
-            
+
             switch self {
             case .horizontal:
                 leading = .leading
@@ -116,7 +116,7 @@ extension UIView {
     }
 
     // MARK: - Content Hugging Priority
-    
+
     public var horizontalContentHuggingPriority: Priority {
         get {
             contentHuggingPriority(for: .horizontal)
@@ -125,7 +125,7 @@ extension UIView {
             setContentHuggingPriority(newValue, for: .horizontal)
         }
     }
-    
+
     public var verticalContentHuggingPriority: Priority {
         get {
             contentHuggingPriority(for: .vertical)
@@ -144,9 +144,9 @@ extension UIView {
             verticalContentHuggingPriority = newValue.vertical
         }
     }
-    
+
     // MARK: - Content Compression Resistance Priority
-    
+
     public var verticalContentCompressionResistancePriority: Priority {
         get {
             contentCompressionResistancePriority(for: .vertical)
@@ -155,7 +155,7 @@ extension UIView {
             setContentCompressionResistancePriority(newValue, for: .vertical)
         }
     }
-    
+
     public var horizontalContentCompressionResistancePriority: Priority {
         get {
             contentCompressionResistancePriority(for: .horizontal)
@@ -164,7 +164,7 @@ extension UIView {
             setContentCompressionResistancePriority(newValue, for: .horizontal)
         }
     }
-    
+
     public var contentCompressionResistancePriority: (horizontal: Priority, vertical: Priority) {
         get {
             (horizontalContentCompressionResistancePriority, verticalContentCompressionResistancePriority)
@@ -174,7 +174,7 @@ extension UIView {
             verticalContentCompressionResistancePriority = newValue.vertical
         }
     }
-    
+
     public func maximizeResistanceAndHuggingPriorities() {
         contentCompressionResistancePriority = (horizontal: .required, vertical: .required)
         contentHuggingPriority = (horizontal: .required, vertical: .required)
@@ -213,7 +213,7 @@ extension UIView {
         constraint.isActive = activate
         return constraint
     }
-    
+
     @discardableResult
     public func layout(edge: Attribute? = nil,
                        to otherEdge: Attribute,
@@ -227,7 +227,7 @@ extension UIView {
             assertionFailure("\(String(describing: self)) Error in func: \(#function)")
             return nil
         }
-        
+
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: edge ?? otherEdge,
@@ -241,7 +241,7 @@ extension UIView {
         constraint.isActive = activate
         return constraint
     }
-    
+
     @discardableResult
     public func layout(edges: Attribute...,
                        to view: UIView,
@@ -279,7 +279,7 @@ extension UIView {
         }
         return constraints
     }
-    
+
     @discardableResult
     public func layoutToSuperview(_ edge: Attribute,
                                   relation: Relation = .equal,
@@ -292,14 +292,14 @@ extension UIView {
             return nil
         }
         let superview = self.superview!
-        
+
         let secondItem: Any
         if usesSafeAreaLayoutGuide {
             secondItem = superview.safeAreaLayoutGuide
         } else {
             secondItem = superview
         }
-        
+
         let constraint = NSLayoutConstraint(
             item: self,
             attribute: edge,
@@ -313,7 +313,7 @@ extension UIView {
         constraint.isActive = true
         return constraint
     }
-    
+
     @discardableResult
     public func layoutToSuperview(_ edges: Attribute...,
                                   relation: Relation = .equal,
@@ -326,14 +326,14 @@ extension UIView {
             return constraints
         }
         let superview = self.superview!
-        
+
         let secondItem: Any
         if usesSafeAreaLayoutGuide {
             secondItem = superview.safeAreaLayoutGuide
         } else {
             secondItem = superview
         }
-        
+
         let uniqueEdges = Set(edges)
         for edge in uniqueEdges {
             let constraint = NSLayoutConstraint(
@@ -351,7 +351,7 @@ extension UIView {
         }
         return constraints
     }
-    
+
     @discardableResult
     public func layoutToSuperview(axis: Axis,
                                   usesSafeAreaLayoutGuide: Bool = false,
@@ -372,7 +372,7 @@ extension UIView {
         }
         return .init(leading: leading, trailing: trailing)
     }
-    
+
     @discardableResult
     public func layoutToSuperviewCenter(priority: Priority = .required) -> LayoutForm.Constraints? {
         guard let centerX = layoutToSuperview(.centerX, priority: priority) else {
@@ -383,7 +383,7 @@ extension UIView {
         }
         return .init(horizontal: centerX, vertical: centerY)
     }
-    
+
     @discardableResult
     public func layoutToSuperviewSize(usesSafeAreaLayoutGuide: Bool = false,
                                       ratio: CGFloat = 1,
@@ -405,16 +405,16 @@ extension UIView {
         }
         return .init(horizontal: width, vertical: height)
     }
-    
+
     @discardableResult
     public func fillSuperview(usesSafeAreaLayoutGuide: Bool = false) -> Frame? {
         guard let center = layoutToSuperviewCenter() else { return nil }
         guard let size = layoutToSuperviewSize(usesSafeAreaLayoutGuide: usesSafeAreaLayoutGuide) else { return nil }
         return .init(center: center, size: size)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func prepareForAutoLayout() -> Bool {
         guard superview != nil else {
             assertionFailure("\(String(describing: self)):\(#function) - superview is unexpectedly nullified")

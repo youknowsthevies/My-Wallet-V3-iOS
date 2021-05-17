@@ -9,7 +9,7 @@ public enum NetworkError: Error {
     case rawServerError(ServerErrorResponse)
     case payloadError(HTTPRequestPayloadError)
     case authentication(Error)
-    
+
     func analyticsEvent(
         for request: NetworkRequest,
         decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
@@ -40,7 +40,7 @@ public enum HTTPRequestPayloadError: Error {
 
 /// A simple implementation of `Equatable` for now. I might make sense to improve this, eventually.
 extension NetworkError: Equatable {
-    
+
     public static func == (lhs: NetworkError, rhs: NetworkError) -> Bool {
         String(describing: lhs) == String(describing: rhs)
     }

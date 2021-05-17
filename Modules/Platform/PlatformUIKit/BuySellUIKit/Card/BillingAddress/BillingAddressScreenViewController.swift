@@ -8,32 +8,32 @@ import RxSwift
 final class BillingAddressScreenViewController: BaseTableViewController {
 
     // MARK: - Injected
-    
+
     private let presenter: BillingAddressScreenPresenter
     private let alertViewPresenter: AlertViewPresenterAPI
-    
+
     // MARK: - Accessors
-    
+
     private let keyboardObserver = KeyboardObserver()
     private var keyboardInteractionController: KeyboardInteractionController!
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: BillingAddressScreenPresenter,
          alertViewPresenter: AlertViewPresenterAPI = resolve()) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
         super.init()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter.viewDidLoad()
@@ -45,7 +45,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         )
         setupTableView()
         setupKeyboardObserver()
-        
+
         presenter.errorTrigger
             .emit(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -53,34 +53,34 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         keyboardObserver.setup()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         keyboardObserver.remove()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
-    
+
     private func setupNavigationBar() {
         set(barStyle: .darkContent(),
             leadingButtonStyle: .back
         )
         titleViewStyle = .text(value: presenter.title)
     }
-    
+
     private func setupKeyboardObserver() {
         keyboardObserver.state
             .bindAndCatch(weak: self) { (self, state) in
@@ -94,7 +94,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func setupTableView() {
         tableView.selfSizingBehaviour = .fill
         tableView.tableFooterView = UIView()
@@ -108,14 +108,14 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
-                
+
         presenter.refresh
             .emit(weak: tableView) { $0.reloadData() }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Navigation
-    
+
     override func navigationBarLeadingButtonPressed() {
         presenter.previous()
     }
@@ -124,11 +124,11 @@ final class BillingAddressScreenViewController: BaseTableViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDataSource {
-            
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter.presentationDataRelay.value.cellCount
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let presentationData = presenter.presentationDataRelay.value
         let cellType = presentationData.cellType(for: indexPath.row)
@@ -148,9 +148,9 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
             return selectionButtonTableViewCell(for: indexPath.row)
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     private func textFieldCell(for row: Int, type: TextFieldType) -> UITableViewCell {
         let cell = tableView.dequeue(
             TextFieldTableViewCell.self,
@@ -168,7 +168,7 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
         }
         return cell
     }
-    
+
     private func doubleTextFieldCell(for row: Int,
                                      leadingType: TextFieldType,
                                      trailingType: TextFieldType) -> UITableViewCell {
@@ -191,7 +191,7 @@ extension BillingAddressScreenViewController: UITableViewDelegate, UITableViewDa
         }
         return cell
     }
-    
+
     private func selectionButtonTableViewCell(for row: Int) -> UITableViewCell {
         let cell = tableView.dequeue(
             SelectionButtonTableViewCell.self,

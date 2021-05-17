@@ -9,26 +9,26 @@ public protocol WalletRecoveryVerifing {
 }
 
 final class MnemonicVerificationService: MnemonicVerificationAPI {
-    
+
     enum ServiceError: Error {
         case mnemonicVerificationError
     }
-    
+
     let walletRecoveryVerifier: WalletRecoveryVerifing
     private let jsScheduler = MainScheduler.instance
-    
+
     init(walletRecoveryVerifier: WalletRecoveryVerifing) {
         self.walletRecoveryVerifier = walletRecoveryVerifier
     }
-    
+
     // MARK: - MnemonicVerificationAPI
-    
+
     var isVerified: Single<Bool> {
         Single
             .just(walletRecoveryVerifier.isRecoveryPhraseVerified())
             .subscribeOn(jsScheduler)
     }
-    
+
     func verifyMnemonicAndSync() -> Completable {
         Completable
             .create { [weak self] observer -> Disposable in

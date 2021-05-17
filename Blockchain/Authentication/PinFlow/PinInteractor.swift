@@ -11,7 +11,7 @@ import WalletPayloadKit
 final class PinInteractor: PinInteracting {
 
     // MARK: - Properties
-    
+
     private let pinClient: PinClientAPI
     private let maintenanceService: MaintenanceServicing
     private let credentialsProvider: WalletCredentialsProviding
@@ -22,13 +22,13 @@ final class PinInteractor: PinInteracting {
     private let walletCryptoService: WalletCryptoServiceAPI
 
     private let disposeBag = DisposeBag()
-    
+
     /// In case the user attempted to logout while the pin was being sent to the server
     /// the app needs to disragard any future response
     var hasLogoutAttempted = false
-    
+
     // MARK: - Setup
-    
+
     init(credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository,
          pinClient: PinClientAPI = PinClient(),
          maintenanceService: MaintenanceServicing = resolve(),
@@ -54,7 +54,7 @@ final class PinInteractor: PinInteracting {
         self.recorder = recorder
         self.walletCryptoService = walletCryptoService
     }
-    
+
     // MARK: - API
 
     // TODO: Re-enable this once we have isolated the source of the crash
@@ -85,7 +85,7 @@ final class PinInteractor: PinInteracting {
             }
             .observeOn(MainScheduler.instance)
     }
-    
+
     /// Validates if the provided pin payload (i.e. pin code and pin key combination) is correct.
     /// Calling this method will also fetch the WalletOptions to see if the server is under maintenance,
     /// then, handle updating the local pin store (i.e. the keychain),
@@ -110,19 +110,19 @@ final class PinInteractor: PinInteracting {
             }
             .observeOn(MainScheduler.instance)
     }
-    
+
     func password(from pinDecryptionKey: String) -> Single<String> {
         loginService.password(from: pinDecryptionKey)
             .observeOn(MainScheduler.instance)
     }
-    
+
     /// Keep the PIN value on the local pin store (i.e the keychain), for biometrics auth.
     /// - Parameter pin: the pin value
     func persist(pin: Pin) {
         pin.save(using: appSettings)
         appSettings.biometryEnabled = true
     }
-    
+
     // MARK: - Accessors
 
     private func handleCreatePinResponse(response: PinStoreResponse, payload: PinPayload) -> Completable {
@@ -189,7 +189,7 @@ final class PinInteractor: PinInteracting {
         guard !hasLogoutAttempted else {
             throw PinError.receivedResponseWhileLoggedOut
         }
-        
+
         guard let responseCode = response.statusCode else { return }
         switch responseCode {
         case .success where pinPayload.persistsLocally:
@@ -203,17 +203,17 @@ final class PinInteractor: PinInteracting {
             break
         }
     }
-    
+
     // Returns the pin decryption key, or throws error if cannot
     private func pinValidationStatus(from response: PinStoreResponse) throws -> String {
-        
+
         // First verify that the status code was received
         guard let statusCode = response.statusCode else {
             let error = PinError.serverError(LocalizationConstants.Errors.genericError)
             recorder.error(error)
             throw error
         }
-        
+
         switch statusCode {
         case .deleted:
             throw PinError.tooManyAttempts

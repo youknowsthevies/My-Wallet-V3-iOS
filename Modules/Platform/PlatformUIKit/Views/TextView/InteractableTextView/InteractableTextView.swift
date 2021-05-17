@@ -9,9 +9,9 @@ import RxSwift
 /// without any of the `UITextView` interaction side effects.
 /// Only the embedded links are interactable while other content is ignored.
 public final class InteractableTextView: UITextView {
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: InteractableTextViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -51,25 +51,25 @@ public final class InteractableTextView: UITextView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     private var heightConstraint: NSLayoutConstraint!
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         delegate = self
         showsHorizontalScrollIndicator = false
@@ -80,7 +80,7 @@ public final class InteractableTextView: UITextView {
         isEditable = false
         dataDetectorTypes = .link
     }
-    
+
     /// Setups the height according to the width
     public func setupHeight() {
         guard let attributedText = attributedText else {
@@ -97,7 +97,7 @@ public final class InteractableTextView: UITextView {
     }
 
     // MARK: - Behavior Modifiers
-    
+
     /// Cannot become first responder its since content is predetermined by `viewModel`
     override public func becomeFirstResponder() -> Bool {
         false
@@ -116,7 +116,7 @@ public final class InteractableTextView: UITextView {
         let startIndex = offset(from: beginningOfDocument, to: range.start)
         return attributedText.attribute(.link, at: startIndex, effectiveRange: nil) != nil
     }
-    
+
     /// Accepts only tap gestures
     public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         gestureRecognizer is UITapGestureRecognizer
@@ -126,7 +126,7 @@ public final class InteractableTextView: UITextView {
 // MARK: - UITextViewDelegate
 
 extension InteractableTextView: UITextViewDelegate {
-        
+
     // Makes sure only links are handled
     public func textView(_ textView: UITextView,
                          shouldInteractWith URL: URL,

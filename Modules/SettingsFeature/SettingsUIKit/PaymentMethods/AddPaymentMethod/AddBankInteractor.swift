@@ -4,10 +4,10 @@ import PlatformKit
 import RxSwift
 
 final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
-    
+
     private let beneficiariesService: BeneficiariesServiceAPI
     private let fiatCurrency: FiatCurrency
-    
+
     var isAbleToAddNew: Observable<Bool> {
         let fiatCurrency = self.fiatCurrency
         return beneficiariesService.availableCurrenciesForBankLinkage
@@ -17,7 +17,7 @@ final class AddBankInteractor: AddSpecificPaymentMethodInteractorAPI {
             .catchErrorJustReturn(false)
             .share(replay: 1)
     }
-    
+
     init(beneficiariesService: BeneficiariesServiceAPI,
          fiatCurrency: FiatCurrency) {
         self.fiatCurrency = fiatCurrency

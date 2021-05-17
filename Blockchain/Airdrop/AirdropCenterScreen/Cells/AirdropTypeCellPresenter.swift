@@ -5,28 +5,28 @@ import PlatformUIKit
 import ToolKit
 
 struct AirdropTypeCellPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.Airdrop.CenterScreen.Cell
     private typealias AccessibilityId = Accessibility.Identifier.AirdropCenterScreen.Cell
 
     // MARK: - Properties
-    
+
     let title: LabelContent
     let description: LabelContent
     let image: ImageViewContent
-        
+
     var campaignIdentifier: String {
         interactor.campaignIdentifier
     }
-    
+
     // MARK: - Injected
-    
+
     private let interactor: AirdropTypeCellInteractor
-    
+
     // MARK: - Setup
-    
+
     init(interactor: AirdropTypeCellInteractor) {
         self.interactor = interactor
         image = ImageViewContent(

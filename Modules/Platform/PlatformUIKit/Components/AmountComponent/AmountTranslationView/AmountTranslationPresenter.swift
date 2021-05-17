@@ -18,40 +18,40 @@ extension Accessibility.Identifier {
 }
 
 public final class AmountTranslationPresenter {
-    
+
     // MARK: - Types
-    
+
     public struct DisplayBundle {
         public struct Events {
             public let minTappedAnalyticsEvent: AnalyticsEvent
             public let maxTappedAnalyticsEvent: AnalyticsEvent
-            
+
             public init(min: AnalyticsEvent, max: AnalyticsEvent) {
                 self.minTappedAnalyticsEvent = min
                 self.maxTappedAnalyticsEvent = max
             }
         }
-        
+
         public struct Strings {
             public let useMin: String
             public let useMax: String
-            
+
             public init(useMin: String, useMax: String) {
                 self.useMin = useMin
                 self.useMax = useMax
             }
         }
-        
+
         public struct AccessibilityIdentifiers {
             public init() {
-                
+
             }
         }
-        
+
         public let strings: Strings
         public let events: Events
         public let accessibilityIdentifiers: AccessibilityIdentifiers
-        
+
         public init(events: Events,
                     strings: Strings,
                     accessibilityIdentifiers: AccessibilityIdentifiers) {
@@ -60,57 +60,57 @@ public final class AmountTranslationPresenter {
             self.accessibilityIdentifiers = accessibilityIdentifiers
         }
     }
-    
+
     public enum Input {
         case input(Character)
         case delete
     }
-    
+
     public enum State {
         case empty
         case warning(ButtonViewModel)
         case showSecondaryAmountLabel
     }
-    
+
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen.LimitView
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
     // MARK: - Public Properties
-    
+
     public let swapButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
-    
+
     // MARK: - Internal Properties
-    
+
     var activeAmountInput: Driver<ActiveAmountInput> {
         interactor.activeInputRelay.asDriver()
     }
-    
+
     var state: Driver<State> {
         stateRelay.asDriver()
     }
-    
+
     var swapButtonVisibility: Driver<Visibility> {
         swapButtonVisibilityRelay.asDriver()
     }
-    
+
     let swapButtonTapRelay = PublishRelay<Void>()
-    
+
     // MARK: - Injected
-    
+
     let interactor: AmountTranslationInteractor
     let fiatPresenter: InputAmountLabelPresenter
     let cryptoPresenter: InputAmountLabelPresenter
     let displayBundle: DisplayBundle
-    
+
     private let analyticsRecorder: AnalyticsEventRecording
-    
+
     // MARK: - Accessors
-            
+
     private let stateRelay = BehaviorRelay<State>(value: .showSecondaryAmountLabel)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(interactor: AmountTranslationInteractor,
                 analyticsRecorder: AnalyticsEventRecording,
                 displayBundle: DisplayBundle,
@@ -121,13 +121,13 @@ public final class AmountTranslationPresenter {
         self.fiatPresenter = .init(interactor: interactor.fiatInteractor, currencyCodeSide: .leading)
         self.cryptoPresenter = .init(interactor: interactor.cryptoInteractor, currencyCodeSide: .trailing)
         self.analyticsRecorder = analyticsRecorder
-        
+
         swapButtonTapRelay
             .withLatestFrom(interactor.activeInput)
             .map { $0.inverted }
             .bindAndCatch(to: interactor.activeInputRelay)
             .disposed(by: disposeBag)
-        
+
         Observable
             .combineLatest(
                 interactor.state,
@@ -139,12 +139,12 @@ public final class AmountTranslationPresenter {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
-    
+
     public func connect(input: Driver<AmountTranslationPresenter.Input>) -> Driver<State> {
         interactor.connect(input: input.map(\.toInteractorInput))
             .map { [weak self] state -> State in
                 guard let self = self else { return .empty }
-                
+
                 return self.setupButton(by: state, activeInput: self.interactor.activeInputRelay.value)
             }
     }
@@ -230,4 +230,3 @@ extension AmountTranslationPresenter.Input {
         }
     }
 }
-

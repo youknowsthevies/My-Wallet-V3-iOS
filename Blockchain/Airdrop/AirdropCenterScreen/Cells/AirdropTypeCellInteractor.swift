@@ -3,21 +3,21 @@
 import PlatformKit
 
 struct AirdropTypeCellInteractor {
-    
+
     // MARK: - Properties
-    
+
     let campaignIdentifier: String
     let fiatValue: FiatValue?
     let cryptoCurrency: TriageCryptoCurrency
     let dropDate: Date?
     let isAvailable: Bool
-    
+
     // MARK: - Injected
-    
+
     private let campaign: AirdropCampaigns.Campaign
-    
+
     // MARK: - Setup
-    
+
     init(campaign: AirdropCampaigns.Campaign) {
         self.campaign = campaign
         campaignIdentifier = campaign.name

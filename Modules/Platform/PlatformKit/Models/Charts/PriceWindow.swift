@@ -10,7 +10,7 @@ public enum PriceWindow: Equatable {
         case oneDay
         case fiveDays
     }
-    
+
     case day(TimelineInterval?)
     case week(TimelineInterval?)
     case month(TimelineInterval?)

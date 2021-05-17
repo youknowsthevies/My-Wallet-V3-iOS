@@ -6,28 +6,28 @@ import PlatformKit
 import ToolKit
 
 public protocol CardComponentBuilderAPI: AnyObject {
-    
+
     /// Builds a card details screen
     func cardDetails() -> UIViewController
-    
+
     /// Builds a billing address screen
     func billingAddress(for cardData: CardData, navigationControllerAPI: NavigationControllerAPI) -> UIViewController
-    
+
     /// Builds a pending card status screen (hangs until card is approved)
     func pendingCardStatus(cardId: String) -> UIViewController
-    
+
     /// Builds a card authorization screen
     func cardAuthorization(for data: PartnerAuthorizationData) -> UIViewController
-    
+
 }
 
 public final class CardComponentBuilder: CardComponentBuilderAPI {
-    
+
     private let routingInteractor: CardRouterInteractor
     private let analyticsRecorder: AnalyticsEventRecording
     private let messageRecorder: MessageRecording
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
-    
+
     public init(routingInteractor: CardRouterInteractor,
                 paymentMethodTypesService: PaymentMethodTypesServiceAPI,
                 analyticsRecorder: AnalyticsEventRecording = resolve(),
@@ -37,7 +37,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         self.analyticsRecorder = analyticsRecorder
         self.messageRecorder = messageRecorder
     }
-    
+
     public func cardDetails() -> UIViewController {
         let interactor = CardDetailsScreenInteractor(
             routingInteractor: routingInteractor
@@ -50,7 +50,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         let viewController = CardDetailsScreenViewController(presenter: presenter)
         return viewController
     }
-    
+
     public func pendingCardStatus(cardId: String) -> UIViewController {
         let interactor = PendingCardStatusInteractor(
             cardId: cardId,
@@ -63,7 +63,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         )
         return viewController
     }
-    
+
     public func cardAuthorization(for data: PartnerAuthorizationData) -> UIViewController {
         let interactor = CardAuthorizationScreenInteractor(routingInteractor: routingInteractor)
         let presenter = CardAuthorizationScreenPresenter(
@@ -76,7 +76,7 @@ public final class CardComponentBuilder: CardComponentBuilderAPI {
         )
         return viewController
     }
-    
+
     public func billingAddress(for cardData: CardData, navigationControllerAPI: NavigationControllerAPI) -> UIViewController {
         /// TODO: Move `SelectionRouter` to RIBs
         let selectionRouter = SelectionRouter(parent: navigationControllerAPI)

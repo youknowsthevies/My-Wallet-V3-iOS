@@ -6,36 +6,36 @@ import RxSwift
 /// This view controller is responsible for pairing wallets manually using
 /// Wallet identifier and password
 final class ManualPairingViewController: BaseScreenViewController {
-    
+
     // MARK: - IBOutlets
-    
+
     @IBOutlet private var walletIdTextFieldView: TextFieldView!
     @IBOutlet private var passwordTextFieldView: TextFieldView!
     @IBOutlet private var buttonView: ButtonView!
 
     // MARK: - Injected
-    
+
     private let presenter: ManualPairingScreenPresenter
 
     // MARK: - Accessors
-    
+
     private var keyboardInteractionController: KeyboardInteractionController!
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: ManualPairingScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: ManualPairingViewController.objectName, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
@@ -56,7 +56,7 @@ final class ManualPairingViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
         presenter.viewDidLoad()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()

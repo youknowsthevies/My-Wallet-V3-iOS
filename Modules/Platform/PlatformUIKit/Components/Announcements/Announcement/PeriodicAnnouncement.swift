@@ -3,14 +3,14 @@
 /// Rules for periodic announcement. this is useful to prevent starvation of other
 /// announcements while only one displays constantly.
 public struct PeriodicAnnouncementAppearanceRules {
-    
+
     /// The time **in seconds** that the announcement remains hidden. after that
     /// time passes, the announcement should resurface again.
     let recessDurationBetweenDismissals: TimeInterval
-    
+
     /// Max amount of dismissals before the announcement shuts down permanently
     let maxDismissalCount: Int
-    
+
     /// Initialize the appearance rules for a periodic announcement
     ///
     /// - Parameter recessDurationBetweenDismissals: this is the time **in seconds** that the announcement remains hidden.
@@ -27,7 +27,7 @@ public struct PeriodicAnnouncementAppearanceRules {
 /// Once the announcement is dismissed by the user, it will resurface once
 /// `PeriodicAnnouncementAppearanceRules` allows it again.
 public protocol PeriodicAnnouncement: DismissibleAnnouncement {
-    
+
     /// The rules for displaying a periodic announcement
     var appearanceRules: PeriodicAnnouncementAppearanceRules { get }
 
@@ -38,10 +38,10 @@ public protocol PeriodicAnnouncement: DismissibleAnnouncement {
 // MARK: - Default implementation of `PeriodicAnnouncement`
 
 extension PeriodicAnnouncement {
-    
+
     /// Default the category to periodic
     public var category: AnnouncementRecord.Category { .periodic }
-    
+
     /// Returns a boolean indicating whether the announcement
     /// is in a `dismissed` state.
     public var isDismissed: Bool {
@@ -55,7 +55,7 @@ extension PeriodicAnnouncement {
             return false
         }
     }
-    
+
     /// Default implementation for announcement dismissal.
     /// The announcement is being marked as dismissed by the recorder.
     /// That means it can appear again if the appearance rules allow it.

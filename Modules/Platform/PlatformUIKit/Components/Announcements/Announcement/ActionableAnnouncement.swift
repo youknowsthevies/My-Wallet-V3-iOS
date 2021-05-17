@@ -10,10 +10,10 @@ public typealias CardAnnouncementAction = () -> Void
 /// An announcement that requires the user to take a certain action.
 /// Such announcements typically contain a CTA button.
 public protocol ActionableAnnouncement: Announcement {
-    
+
     /// An action for announcement (driven by CTA button)
     var action: CardAnnouncementAction { get }
-    
+
     /// An analytics event for action
     var actionAnalyticsEvent: AnalyticsEvents.Announcement { get }
 }

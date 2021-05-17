@@ -7,7 +7,7 @@ import ToolKit
 open class BaseTableViewController: BaseScreenViewController {
 
     // MARK: - Public UI Elements
-    
+
     public let tableView = SelfSizingTableView()
     public let scrollView = UIScrollView()
 
@@ -19,9 +19,9 @@ open class BaseTableViewController: BaseScreenViewController {
     private let buttonStackView = UIStackView()
 
     // MARK: - Public UI Constraints
-    
+
     private(set) public var contentBottomConstraint: NSLayoutConstraint!
-    
+
     public init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -29,7 +29,7 @@ open class BaseTableViewController: BaseScreenViewController {
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     open override func loadView() {
         // Setup view
 

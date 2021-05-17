@@ -3,13 +3,13 @@
 import RxDataSources
 
 public enum WalletActionCellType: IdentifiableType, Equatable {
-    
+
     public typealias Identity = String
-    
+
     /// A cell that shows the wallets balance
     case balance(CurrentBalanceCellPresenter)
     case `default`(DefaultWalletActionCellPresenter)
-    
+
     public var identity: String {
         switch self {
         case .balance(let presenter):

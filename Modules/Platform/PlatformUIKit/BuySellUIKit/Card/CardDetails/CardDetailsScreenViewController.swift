@@ -8,28 +8,28 @@ import ToolKit
 final class CardDetailsScreenViewController: BaseTableViewController {
 
     // MARK: - Injected
-    
+
     private let keyboardObserver = KeyboardObserver()
     private let presenter: CardDetailsScreenPresenter
     private let alertPresenter: AlertViewPresenterAPI
-    
+
     private var keyboardInteractionController: KeyboardInteractionController!
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: CardDetailsScreenPresenter,
          alertPresenter: AlertViewPresenterAPI = resolve()) {
         self.presenter = presenter
         self.alertPresenter = alertPresenter
         super.init()
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter.viewDidLoad()
@@ -41,7 +41,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         )
         setupTableView()
         setupKeyboardObserver()
-        
+
         presenter.error
             .emit(weak: self) { (self, error) in
                 switch error {
@@ -60,32 +60,32 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         keyboardObserver.setup()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         keyboardObserver.remove()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
-    
+
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
         setStandardDarkContentStyle()
     }
-    
+
     private func setupKeyboardObserver() {
         keyboardObserver.state
             .bindAndCatch(weak: self) { (self, state) in
@@ -99,7 +99,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func setupTableView() {
         tableView.selfSizingBehaviour = .fill
         tableView.tableFooterView = UIView()
@@ -112,9 +112,9 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.delegate = self
         tableView.dataSource = self
     }
-    
+
     // MARK: - Navigation
-    
+
     override func navigationBarTrailingButtonPressed() {
         presenter.previous()
     }
@@ -123,7 +123,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataSource {
-    
+
     private func textFieldCell(for row: Int, type: TextFieldType) -> UITableViewCell {
         let cell = tableView.dequeue(
             TextFieldTableViewCell.self,
@@ -136,7 +136,7 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         )
         return cell
     }
-    
+
     private func doubleTextFieldCell(for row: Int,
                                      leadingType: TextFieldType,
                                      trailingType: TextFieldType) -> UITableViewCell {
@@ -154,7 +154,7 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         )
         return cell
     }
-    
+
     private func privacyNoticeCell(for type: CardDetailsScreenPresenter.CellType) -> UITableViewCell {
         let cell = tableView.dequeue(
             NoticeTableViewCell.self,
@@ -165,11 +165,11 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         cell.bottomOffset = 48
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter.rowCount
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellType = CardDetailsScreenPresenter.CellType(indexPath.row)
         switch cellType {

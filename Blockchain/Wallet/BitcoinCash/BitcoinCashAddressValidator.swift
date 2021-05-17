@@ -11,13 +11,13 @@ enum BitcoinCashWalletError: Error {
 }
 
 final class BitcoinCashAddressValidator: BitcoinCashAddressValidatorAPI {
-    
+
     private let wallet: LegacyBitcoinCashWalletProtocol
-    
+
     init(walletManager: WalletManager = resolve()) {
         self.wallet = walletManager.wallet
     }
-    
+
     func validate(address: String) -> Completable {
         Completable.fromCallable { [weak self] in
             guard let self = self else {

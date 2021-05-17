@@ -18,16 +18,16 @@ import WalletPayloadKit
 /// as late as possible and also would be deallocated when is no longer in use
 /// TICKET: https://blockchain.atlassian.net/browse/IOS-2619
 @objc class AppCoordinator: NSObject, Coordinator, MainFlowProviding {
-    
+
     // MARK: - Properties
 
     @Inject @objc static var shared: AppCoordinator
 
     // MARK: - Services
-    
+
     /// Onboarding router
     @Inject var onboardingRouter: OnboardingRouter
-    
+
     weak var window: UIWindow!
 
     @Inject private var authenticationCoordinator: AuthenticationCoordinator
@@ -47,9 +47,9 @@ import WalletPayloadKit
     private var buyRouter: PlatformUIKit.RouterAPI!
     private var sellRouter: PlatformUIKit.SellRouter!
     private var backupRouter: DashboardUIKit.BackupRouterAPI?
-    
+
     // MARK: - UIViewController Properties
-    
+
     @objc var slidingViewController: ECSlidingViewController!
     @objc var tabControllerManager: TabControllerManager?
     private(set) var sideMenuViewController: SideMenuViewController!
@@ -114,7 +114,7 @@ import WalletPayloadKit
             }
         }
     }
-    
+
     @objc func start() {
         appFeatureConfigurator.initialize()
 
@@ -139,7 +139,7 @@ import WalletPayloadKit
             .flatMap(weak: self) { (self, _) in
                 self.secondPasswordPrompter.secondPasswordIfNeeded(type: .login)
             }
-            .flatMap(weak: self) { (self, secondPassword) -> Single<Bool> in
+            .flatMap(weak: self) { (self, _) -> Single<Bool> in
                 self.walletUpgradeService.needsWalletUpgrade
                     .catchErrorJustReturn(false)
             }
@@ -176,7 +176,7 @@ import WalletPayloadKit
     @objc func reload() {
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
-        
+
         NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
 
         // Legacy code for generating new addresses
@@ -185,7 +185,7 @@ import WalletPayloadKit
 
     /// Method to "cleanup" state when the app is backgrounded.
     func cleanupOnAppBackgrounded() {
-        
+
         /// Keep going only if the user is logged in
         guard slidingViewController != nil else {
             return
@@ -334,7 +334,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     private func handleSettings() {
         showSettingsView()
     }
-    
+
     private func handleExchange() {
         guard let tabViewController = tabControllerManager?.tabViewController else { return }
         ExchangeCoordinator.shared.start(from: tabViewController)
@@ -389,7 +389,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             animated: true
         )
     }
-    
+
     func clearOnLogout() {
         tabControllerManager = nil
         slidingViewController = nil
@@ -404,7 +404,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         buyRouter = PlatformUIKit.Router(builder: builder, currency: currency)
         buyRouter.start()
     }
-    
+
     /// Starts Sell Crypto flow
     @objc func handleSellCrypto() {
         let accountSelectionService = AccountSelectionService()
@@ -418,27 +418,27 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         sellRouter = PlatformUIKit.SellRouter(builder: builder)
         sellRouter.load()
     }
-    
+
     func startSimpleBuyAtLogin() {
         let stateService = PlatformUIKit.StateService()
         guard !stateService.cache[.hasShownIntroScreen] else {
             return
         }
-        
+
         let builder = PlatformUIKit.Builder(
             stateService: stateService
         )
-        
+
         buyRouter = PlatformUIKit.Router(builder: builder)
         buyRouter.start()
     }
-    
+
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
         let stateService = PlatformUIKit.StateService()
         let builder = PlatformUIKit.Builder(
             stateService: stateService
         )
-        
+
         buyRouter = PlatformUIKit.Router(builder: builder)
         buyRouter.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
@@ -498,23 +498,23 @@ extension AppCoordinator: WalletHistoryDelegate {
 // MARK: - TabSwapping
 
 extension AppCoordinator: TabSwapping {
-    
+
     func send(from account: BlockchainAccount) {
         tabControllerManager?.send(from: account)
     }
-    
+
     func switchToSend() {
         tabControllerManager?.showSend()
     }
-    
+
     func switchTabToSwap() {
         tabControllerManager?.showSwap()
     }
-    
+
     func switchTabToReceive() {
         tabControllerManager?.showReceive()
     }
-    
+
     func switchToActivity(currency: CryptoCurrency) {
         tabControllerManager?.showTransactions()
     }
@@ -524,7 +524,7 @@ extension AppCoordinator: CurrencyRouting {
     func toSend(_ currency: CryptoCurrency) {
         tabControllerManager?.showSend(cryptoCurrency: currency)
     }
-    
+
     func toReceive(_ currency: CryptoCurrency) {
         tabControllerManager?.showReceive()
     }

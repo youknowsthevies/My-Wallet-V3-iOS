@@ -8,9 +8,9 @@ import RxSwift
 
 /// An Rx driven pie-chart view
 public final class AssetPieChartView: UIView {
-    
+
     // MARK: - Injected
-    
+
     /// Presenter is injected from external source
     /// because the view should be compatible with queueing
     /// mechanism.
@@ -24,9 +24,9 @@ public final class AssetPieChartView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Properties
-    
+
     fileprivate lazy var chartView: PieChartView = {
         let chartView = PieChartView(frame: bounds)
         chartView.drawCenterTextEnabled = false
@@ -44,21 +44,21 @@ public final class AssetPieChartView: UIView {
         chartView.highlightPerTapEnabled = false
         return chartView
     }()
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         addSubview(chartView)
         chartView.fillSuperview()

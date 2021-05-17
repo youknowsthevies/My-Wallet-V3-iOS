@@ -5,20 +5,20 @@ import RxSwift
 
 /// A sequence of WalletIntroductionEvent models
 struct WalletIntroductionSequence: Sequence, IteratorProtocol {
-    
+
     // MARK: - Properties
-    
+
     private var index = 0
     private var announcements: [WalletIntroductionEvent]
-    
+
     // MARK: - Setup
-    
+
     init(announcements: [WalletIntroductionEvent] = []) {
         self.announcements = announcements
     }
-    
+
     // MARK: - Sequence
-    
+
     /// Computes the next introduction event
     mutating func next() -> WalletIntroductionEvent? {
         let index = announcements.firstIndex { $0.shouldShow }
@@ -28,9 +28,9 @@ struct WalletIntroductionSequence: Sequence, IteratorProtocol {
         }
         return nil
     }
-    
+
     // MARK: - Accessors
-    
+
     /// Resets the sequence to a given `WalletIntroductionEvent` array
     mutating func reset(to announcements: [WalletIntroductionEvent]) {
         self.index = 0
@@ -49,7 +49,7 @@ enum WalletIntroductionError: Error {
 }
 
 class WalletIntroductionLocationSequencer: WalletIntroductionLocationSequenceAPI {
-    
+
     func nextLocation(from location: WalletIntroductionLocation) -> Single<WalletIntroductionLocation> {
         switch location.screen {
         case .sideMenu:

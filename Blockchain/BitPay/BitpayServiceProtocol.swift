@@ -5,10 +5,10 @@ import RxRelay
 import RxSwift
 
 protocol BitpayServiceProtocol {
-    
+
     /// BitPayURL content
     var contentRelay: BehaviorRelay<URL?> { get }
-    
+
     /// 1. First we build the BitPay model using the `payment-request` endpoint, passing up an invoice identifier
     /// and a currency type.
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<ObjcCompatibleBitpayObject>

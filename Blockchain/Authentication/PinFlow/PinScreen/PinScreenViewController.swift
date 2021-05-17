@@ -6,9 +6,9 @@ import RxCocoa
 import RxSwift
 
 final class PinScreenViewController: BaseScreenViewController {
-    
+
     // MARK: - Properties
-    
+
     @IBOutlet private var swipeInstructionView: SwipeInstructionView!
 
     @IBOutlet private var digitPadView: DigitPadView!
@@ -24,22 +24,22 @@ final class PinScreenViewController: BaseScreenViewController {
     private var serverStatusContainerView: UIStackView!
     private let serverStatusTitleLabel = UILabel()
     private let serverStatusSubtitleLabel = InteractableTextView()
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Lifecycle
-    
+
     init(using presenter: PinScreenPresenter,
          alertViewPresenter: AlertViewPresenter = .shared) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
         super.init(nibName: String(describing: PinScreenViewController.self), bundle: nil)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
@@ -72,7 +72,7 @@ final class PinScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         serverStatusContainerView.isHidden = true
-        
+
         // TODO: Re-enable this once we have isolated the source of the crash
 //        presenter.serverStatus
 //            .drive(onNext: { [weak self] serverStatus in
@@ -81,7 +81,7 @@ final class PinScreenViewController: BaseScreenViewController {
 //                self?.showOutage(status: serverStatus)
 //            })
 //            .disposed(by: disposeBag)
-        
+
         NotificationCenter.when(UIApplication.willEnterForegroundNotification) { [weak self] _ in
             self?.prepareForAppearance()
         }
@@ -91,7 +91,7 @@ final class PinScreenViewController: BaseScreenViewController {
         super.viewWillAppear(animated)
         prepareForAppearance()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presenter.authenticateUsingBiometricsIfNeeded()
@@ -100,7 +100,7 @@ final class PinScreenViewController: BaseScreenViewController {
         becomeFirstResponder()
         #endif
     }
-    
+
     // MARK: - Setup
 
     private func showOutage(status: ServerStatusViewModel) {
@@ -137,20 +137,20 @@ final class PinScreenViewController: BaseScreenViewController {
         serverStatusContainerView.layoutToSuperview(.trailing, relation: .equal, usesSafeAreaLayoutGuide: true, offset: -10)
         securePinView.layout(edge: .top, to: .bottom, of: serverStatusContainerView, relation: .equal, offset:  18, priority: .required)
     }
-    
+
     private func prepareForAppearance() {
         presenter.reset()
         swipeInstructionView.setup(text: LocalizationConstants.Pin.swipeToReceiveLabel,
                                    font: Font(.branded(.montserratMedium), size: .custom(14)).result)
     }
-    
+
     private func setupNavigationBar() {
         parent?.view.backgroundColor = presenter.backgroundColor
         set(barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton)
         titleViewStyle = presenter.titleView
-        
+
         // Subscribe to `isProcessing` indicates whether something is processing in the background 
         presenter.isProcessing
             .bind { [weak self] isProcessing in
@@ -160,15 +160,15 @@ final class PinScreenViewController: BaseScreenViewController {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func setupErrorLabel() {
         errorLabel.accessibility = Accessibility(id: .value(AccessibilityIdentifiers.PinScreen.errorLabel))
         errorLabel.font = Font(.branded(.montserratLight), size: .standard(.small(.h2))).result
         errorLabel.textColor = presenter.contentColor
     }
-    
+
     // MARK: - Navigation
-    
+
     override func navigationBarLeadingButtonPressed() {
         if presenter.useCase.isAuthenticateOnLogin {
             displayLogoutWarningAlert()
@@ -176,7 +176,7 @@ final class PinScreenViewController: BaseScreenViewController {
             presenter.backwardRouting()
         }
     }
-    
+
     override func navigationBarTrailingButtonPressed() {
         presenter.trailingButtonPressed()
     }
@@ -185,7 +185,7 @@ final class PinScreenViewController: BaseScreenViewController {
 // MARK: - Presenter Interaction & Feedback
 
 extension PinScreenViewController {
-    
+
     /// Accepts a valid pin value
     private func respondToPinChange() {
         errorLabel.alpha = 0
@@ -200,7 +200,7 @@ extension PinScreenViewController {
             authenticatePin()
         }
     }
-    
+
     /// Handle any kind of error returned by the presenter
     private func handle(error: Error) {
         view.isUserInteractionEnabled = false
@@ -209,9 +209,9 @@ extension PinScreenViewController {
             self.view.isUserInteractionEnabled = true
             self.presenter.reset()
         }
-    
+
         var optionalRecovery: (() -> Void)?
-        
+
         let error = PinError.map(from: error)
         switch error {
         case .pinMismatch(recovery: let recovery):
@@ -255,12 +255,12 @@ extension PinScreenViewController {
         }
         animator.startAnimation()
     }
-    
+
     private func showInlineError(with text: String) {
         errorLabel.text = text
         errorLabel.alpha = 1
     }
-    
+
     /// Displays a logout warning alert when the user taps the `Log out` button
     private func displayLogoutWarningAlert() {
         let actions = [
@@ -276,7 +276,7 @@ extension PinScreenViewController {
             in: self
         )
     }
-    
+
     /// Displays alert telling the user he has exhausted the max allowed number of PIN retries.
     private func displayLogoutAlert() {
         let alertView = AlertView.make(with: presenter.logoutAlertModel) { [weak self] _ in
@@ -284,13 +284,13 @@ extension PinScreenViewController {
         }
         alertView.show()
     }
-    
+
     private func displaySetPinSuccessAlertIfNeeded() {
         let success = { [weak presenter] in
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             presenter?.didSetPinSuccessfully()
         }
-        
+
         guard let model = presenter.setPinSuccessAlertModel else {
             success()
             return
@@ -300,7 +300,7 @@ extension PinScreenViewController {
         }
         alertView.show()
     }
-    
+
     private func displayEnableBiometricsAlertIfNeeded(completion: @escaping () -> Void) {
         guard let model = presenter.biometricsAlertModel else {
             completion()
@@ -317,14 +317,14 @@ extension PinScreenViewController {
         }
         alertView.show()
     }
-    
+
     /// Called after setting the pin successfully on both create & change flows
     private func setPinSuccess() {
         displayEnableBiometricsAlertIfNeeded { [weak self] in
             self?.displaySetPinSuccessAlertIfNeeded()
         }
     }
-    
+
     // Invoked upon first selection of PIN (creation / change flow)
     private func selectPin() {
         presenter.validateFirstEntry()
@@ -333,7 +333,7 @@ extension PinScreenViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     // Invoked upon creation of a new PIN (creation / change flow)
     private func createPin() {
         presenter.validateSecondEntry()
@@ -344,7 +344,7 @@ extension PinScreenViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     // Standard login authentication / before configuring biometrics
     private func authenticatePin() {
         presenter.authenticatePin()
@@ -355,7 +355,7 @@ extension PinScreenViewController {
             })
             .disposed(by: disposeBag)
     }
-    
+
     // Authentication before choosing another pin
     private func authenticatePinBeforeChanging() {
         presenter.verifyPinBeforeChanging()
@@ -381,7 +381,7 @@ extension PinScreenViewController: NavigationTransitionAnimating {
         }
         securePinView.alpha = 0
     }
-    
+
     func appearancePropertyAnimator(for transition: ScreenTransitioningAnimator.TransitionType) -> UIViewPropertyAnimator {
         let animator = UIViewPropertyAnimator(duration: transition.duration * 0.5, curve: .easeOut)
         animator.addAnimations {
@@ -390,7 +390,7 @@ extension PinScreenViewController: NavigationTransitionAnimating {
         }
         return animator
     }
-    
+
     func disappearancePropertyAnimator(for transition: ScreenTransitioningAnimator.TransitionType) -> UIViewPropertyAnimator {
         let duration: TimeInterval = transition.duration * 0.5
         let animator = UIViewPropertyAnimator(duration: duration, curve: .easeOut)

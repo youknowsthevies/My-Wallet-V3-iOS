@@ -14,17 +14,17 @@ public struct StellarLedger: Equatable {
     let baseFeeInStroops: Int?
     /// Base reserve is the absolute minimum balance an account may have, field in minor value (stroops).
     let baseReserveInStroops: Int?
-    
+
     public var baseFeeInXlm: CryptoValue? {
         guard let baseFeeInStroops = baseFeeInStroops else { return nil }
         return CryptoValue.stellar(minor: baseFeeInStroops)
     }
-    
+
     public var baseReserveInXlm: CryptoValue? {
         guard let baseReserveInStroops = baseReserveInStroops else { return nil }
         return CryptoValue.stellar(minor: baseReserveInStroops)
     }
-    
+
     func apply(baseFeeInStroops: Int) -> StellarLedger {
         StellarLedger(
             identifier: identifier,

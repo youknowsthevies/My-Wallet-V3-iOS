@@ -6,11 +6,11 @@ import RxSwift
 import stellarsdk
 
 final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionAPI {
-    
+
     typealias PageModel = PageResult<StellarHistoricalTransaction>
-    
+
     // MARK: - Private Properties
-    
+
     private var operationService: Single<stellarsdk.OperationsService> {
         sdk.map { $0.operations }
     }
@@ -20,19 +20,19 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
             .configuration
             .map { $0.sdk }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let configurationService: StellarConfigurationAPI
     private let repository: StellarWalletAccountRepositoryAPI
     private let disposeBag = DisposeBag()
-    
+
     init(configurationService: StellarConfigurationAPI = resolve(),
          repository: StellarWalletAccountRepositoryAPI) {
         self.configurationService = configurationService
         self.repository = repository
     }
-    
+
     func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         guard let accountID = repository.defaultAccount?.publicKey else {
             return Single.error(StellarAccountError.noDefaultAccount)
@@ -63,7 +63,7 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
             .map { $0.buildOperation(accountID: accountId) }
             .onNil(error: stellarsdk.HorizonRequestError.parsingResponseFailed(message: ""))
     }
-    
+
     private func fetchTransactions(accountId: String, size: Int, token: String?) -> Single<PageModel> {
         operationService
             .flatMap(weak: self) { (self, operationsService) -> Single<PageModel> in
@@ -75,7 +75,7 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
                 )
             }
     }
-    
+
     private func fetchTransactions(accountId: String,
                                    operationService: stellarsdk.OperationsService,
                                    size: Int,

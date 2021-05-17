@@ -5,19 +5,19 @@ import RxRelay
 import RxSwift
 
 public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
-    
+
     public typealias InteractionState = DashboardAsset.State.AssetPrice.Interaction
-    
+
     // MARK: - Exposed Properties
-    
+
     public var state: Observable<InteractionState> {
         _ = setup
         return stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private lazy var setup: Void = {
         historicalPriceProvider.calculationState
             .map { state -> InteractionState in
@@ -47,14 +47,14 @@ public final class AssetPriceViewInteractor: AssetPriceViewInteracting {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     private let historicalPriceProvider: HistoricalFiatPriceServiceAPI
-    
+
     // MARK: - Setup
-    
+
     public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI) {
         self.historicalPriceProvider = historicalPriceProvider
     }

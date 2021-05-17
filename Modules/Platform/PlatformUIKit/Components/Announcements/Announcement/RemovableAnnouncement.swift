@@ -6,7 +6,7 @@ public protocol RemovableAnnouncement: DismissibleAnnouncement {
 }
 
 extension RemovableAnnouncement {
-    
+
     /// Marks the announcement as removed, so that it will never appear again.
     public func markRemoved() {
         recorder[key].markRemoved(category: category)

@@ -7,9 +7,9 @@ import RxSwift
 public final class PendingStateViewController: BaseScreenViewController {
 
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.PendingStateScreen
-    
+
     // MARK: - Private IBOutlets
 
     private lazy var actionButton = ButtonView()
@@ -45,17 +45,17 @@ public final class PendingStateViewController: BaseScreenViewController {
             .drive(rx.viewModel)
             .disposed(by: disposeBag)
     }
-    
+
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
     }
-    
+
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
-    
+
     // MARK: - Setup
 
     private func setupAccessibility() {

@@ -9,28 +9,28 @@ extension Accessibility {
 // MARK: - Public
 
 public extension Accessibility.Identifier {
-    
+
     enum ContentLabelView {
         static let title = "ContentLabelView.title"
         static let description = "ContentLabelView.description"
     }
-    
+
     /// General accessibility
     struct General {
-        
+
         /// Main CTA button
         public static let mainCTAButton = "mainCTAButton"
         public static let secondaryCTAButton = "secondaryCTAButton"
         public static let destructiveCTAButton = "desctructiveCTAButton"
         public static let cancelCTAButton = "cancelCTAButton"
-        
+
         public static let destructiveBadgeView = "desctructiveBadgeView"
         public static let affirmativeBadgeView = "affirmativeBadgeView"
         public static let defaultBadgeView = "defaultBadgeView"
-        
+
         // Segmented Button
         public static let primarySegmentedControl = "primarySegmentedControl"
-        
+
         // Switch
         public static let defaultSwitchView = "defaultSwitchView"
     }

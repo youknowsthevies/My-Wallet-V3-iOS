@@ -13,11 +13,11 @@ extension UIView {
         mask.path = path.cgPath
         layer.mask = mask
     }
-    
+
     public func removeSubviews() {
         subviews.forEach { $0.removeFromSuperview() }
     }
-    
+
     public var imageRepresentation: UIImage? {
         setNeedsLayout()
         layoutIfNeeded()

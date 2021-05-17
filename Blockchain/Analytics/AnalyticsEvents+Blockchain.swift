@@ -12,19 +12,19 @@ import PlatformKit
 /// 4. Copy the geenrated scripts here
 /// 5. Implement the event using `AnalyticsEventRecording`
 extension AnalyticsEvents {
-    
+
     private struct Parameter {
         static let asset = "asset"
         static let currency = "currency"
     }
-    
+
     // MARK: - Exchange
-    
+
     enum Exchange: AnalyticsEvent {
         case exchangeConnectNowTapped
         case exchangeLearnMoreTapped
         case exchangeAnnouncementTapped
-        
+
         var name: String {
             switch self {
             // User taps on "Connect Now" in the Exchange splash screen
@@ -39,9 +39,9 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - Login / Signup
-    
+
     enum Onboarding: AnalyticsEvent {
         case walletCreation
         case walletCreationError
@@ -50,7 +50,7 @@ extension AnalyticsEvents {
         case walletAutoPairing
         case walletDashboard
         case loginSecondPasswordViewed
-        
+
         var name: String {
             switch self {
             // User creates Wallet
@@ -77,9 +77,9 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - SideMenu
-    
+
     enum SideMenu: AnalyticsEvent {
         case sideNavAccountsAndAddresses
         case sideNavBackup
@@ -92,7 +92,7 @@ extension AnalyticsEvents {
         case sideNavAirdropCenter
         case sideNavLockbox
         case sideNavExchange
-        
+
         var name: String {
             switch self {
             // Menu - accounts and addresses clicked
@@ -130,9 +130,9 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - Wallet Intro Flow
-    
+
     enum WalletIntro: AnalyticsEvent {
         case walletIntroOffered
         case walletIntroPortfolioViewed
@@ -140,7 +140,7 @@ extension AnalyticsEvents {
         case walletIntroRequestViewed
         case walletIntroSwapViewed
         case walletIntroBuysellViewed
-        
+
         var name: String {
             switch self {
             // Intro - User shown card to begin Wallet Intro
@@ -163,14 +163,14 @@ extension AnalyticsEvents {
                 return "wallet_intro_buysell_viewed"
             }
         }
-        
+
         var params: [String : String]? {
             nil
         }
     }
-    
+
     // MARK: - Bitpay
-    
+
     enum Bitpay: AnalyticsEvent {
         case bitpayPaymentSuccess
         case bitpayPaymentFailure(error: Error?)
@@ -178,7 +178,7 @@ extension AnalyticsEvents {
         case bitpayUrlScanned(asset: CryptoCurrency)
         case bitpayUrlPasted(asset: CryptoCurrency)
         case bitpayUrlDeeplink(asset: CryptoCurrency)
-        
+
         var name: String {
             switch self {
             // User successfully pays a Bitpay payment request
@@ -201,7 +201,7 @@ extension AnalyticsEvents {
                 return "bitpay_url_deeplink"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
             case .bitpayUrlDeeplink(asset: let asset),
@@ -217,9 +217,9 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - Send flow
-    
+
     enum Send: AnalyticsEvent {
         case sendTabItemClick
         case sendFormConfirmClick(asset: CryptoCurrency)
@@ -236,7 +236,7 @@ extension AnalyticsEvents {
         case sendSummaryConfirmFailure(asset: CryptoCurrency)
         case sendBitpayPaymentFailure(asset: CryptoCurrency)
         case sendBitpayPaymentSuccess(asset: CryptoCurrency)
-        
+
         var name: String {
             switch self {
             // Send - tab item click
@@ -286,7 +286,7 @@ extension AnalyticsEvents {
                 return "send_bitpay_payment_success"
             }
         }
-        
+
         var params: [String : String]? {
             let assetParamName = Parameter.asset
             switch self {
@@ -323,12 +323,12 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - Swap flow
-    
+
     enum Swap: AnalyticsEvent {
         case swapTabItemClick
-        
+
         var name: String {
             switch self {
             // Swap - tab item click
@@ -336,20 +336,20 @@ extension AnalyticsEvents {
                 return "swap_tab_item_click"
             }
         }
-        
+
         var params: [String : String]? {
             nil
         }
     }
-    
+
     // MARK: - Transactions flow
-    
+
     enum Transactions: AnalyticsEvent {
         case transactionsTabItemClick
         case transactionsListItemClick(asset: CryptoCurrency)
         case transactionsItemShareClick(asset: CryptoCurrency)
         case transactionsItemWebViewClick(asset: CryptoCurrency)
-        
+
         var name: String {
             switch self {
             // Transactions - tab item click
@@ -366,7 +366,7 @@ extension AnalyticsEvents {
                 return "transactions_item_web_view_click"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
             // Transactions - transaction item clicked
@@ -383,9 +383,9 @@ extension AnalyticsEvents {
             }
         }
     }
-    
+
     // MARK: - KYC flow
-    
+
     enum KYC: AnalyticsEvent {
         case kycVerifyEmailButtonClick
         case kycCountrySelected
@@ -397,7 +397,7 @@ extension AnalyticsEvents {
         case kycUnlockGoldClick
         case kycPhoneUpdateButtonClick
         case kycEmailUpdateButtonClick
-        
+
         var name: String {
             switch self {
             // KYC - send verification email button click
@@ -432,18 +432,18 @@ extension AnalyticsEvents {
                 return "kyc_email_update_button_click"
             }
         }
-        
+
         var params: [String : String]? {
             nil
         }
     }
-    
+
     // MARK: - Asset Selector
-    
+
     enum AssetSelection: AnalyticsEvent {
         case assetSelectorOpen(asset: CryptoCurrency)
         case assetSelectorClose(asset: CryptoCurrency)
-        
+
         var name: String {
             switch self {
             // Asset Selector - asset selector opened
@@ -454,7 +454,7 @@ extension AnalyticsEvents {
                 return "asset_selector_close"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
             case .assetSelectorOpen(asset: let asset):

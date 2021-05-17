@@ -13,4 +13,3 @@ extension CustodialBalanceStatesFetcher {
         )
     }
 }
-

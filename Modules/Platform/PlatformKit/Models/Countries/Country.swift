@@ -797,25 +797,25 @@ extension Country: CaseIterable {
 }
 
 extension Country {
-    
+
     /// The current country (from the current locale)
     public static var current: Country? {
         let locale = NSLocale.current as NSLocale
         return Country(code: locale.countryCode ?? "")
     }
-    
+
     /// The name of the country
     public var name: String {
         let locale = NSLocale.current as NSLocale
         let rawCode = Self.rawCode(from: self.code)
         return locale.displayName(forKey: NSLocale.Key.identifier, value: rawCode) ?? ""
     }
-    
+
     /// The code of the country
     public var code: String {
         rawValue
     }
-    
+
     /// Initializer with country code
     public init?(code: String) {
         guard let country = Country(rawValue: code) else {
@@ -823,7 +823,7 @@ extension Country {
         }
         self = country
     }
-    
+
     private static func rawCode(from code: String) -> String {
         "_\(code)"
     }

@@ -10,18 +10,18 @@ public protocol CardUpdateServiceAPI: class {
 }
 
 public final class CardUpdateService: CardUpdateServiceAPI {
-    
+
     // MARK: - Types
-    
+
     public enum ServiceError: Error {
         case unknownPartner
     }
-    
+
     private enum CardUpdateEvent: AnalyticsEvent {
         case sbAddCardFailure
         case sbCardActivationFailure
         case sbCardEverypayFailure(data: String)
-        
+
         var name: String {
             switch self {
             case .sbAddCardFailure:
@@ -32,7 +32,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 return "sb_card_everypay_failure"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
             case .sbCardEverypayFailure(data: let data):
@@ -42,17 +42,17 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
         }
     }
-    
+
     // MARK: - Injected
-    
+
     private let cardClient: CardClientAPI
     private let everyPayClient: EveryPayClientAPI
     private let dataRepository: DataRepositoryAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecording
-    
+
     // MARK: - Setup
-    
+
     init(dataRepository: DataRepositoryAPI = resolve(),
          cardClient: CardClientAPI = resolve(),
          everyPayClient: EveryPayClientAPI = resolve(),
@@ -64,13 +64,13 @@ public final class CardUpdateService: CardUpdateServiceAPI {
         self.analyticsRecorder = analyticsRecorder
         self.fiatCurrencyService = fiatCurrencyService
     }
-    
+
     public func add(card: CardData) -> Single<PartnerAuthorizationData> {
-        
+
         // Get the user email
         let email = dataRepository.userSingle
             .map { $0.email.address }
-        
+
         return Single.zip(
                 fiatCurrencyService.fiatCurrency,
                 email
@@ -84,7 +84,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                         email: payload.email,
                         billingAddress: card.billingAddress.requestPayload
                     )
-                    .do(onError: { error in
+                    .do(onError: { _ in
                         self.analyticsRecorder.record(event: CardUpdateEvent.sbAddCardFailure)
                     })
             }
@@ -104,7 +104,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                 .map {
                     (cardId: payload.identifier, partner: $0)
                 }
-                .do(onError: { error in
+                .do(onError: { _ in
                     self.analyticsRecorder.record(event: CardUpdateEvent.sbCardActivationFailure)
                 })
             }
@@ -123,9 +123,9 @@ public final class CardUpdateService: CardUpdateServiceAPI {
                     }
             }
     }
-    
+
     // MARK: - Partner Integration
-    
+
     private func add(card: CardData,
                      via partner: ActivateCardResponse.Partner) -> Single<PartnerAuthorizationData.State> {
         switch partner {
@@ -135,7 +135,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             return .error(ServiceError.unknownPartner)
         }
     }
-    
+
     /// Add via every pay
     private func add(card: CardData,
                      with everyPayData: ActivateCardResponse.Partner.EveryPayData) -> Single<PartnerAuthorizationData.State> {

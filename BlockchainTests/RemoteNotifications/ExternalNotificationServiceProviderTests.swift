@@ -25,7 +25,7 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
             XCTFail("expected successful token fetch. got \(error) instead")
         }
     }
-    
+
     func testEmptyTokenFetchingFailure() {
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .failure(.tokenIsEmpty))
         let messagingService = MockMessagingService()
@@ -42,7 +42,7 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
             XCTFail("expected \(RemoteNotification.TokenFetchError.tokenIsEmpty). got \(error) instead")
         }
     }
-    
+
     func testTopicSubscriptionSuccess() {
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(""))
         let messagingService = MockMessagingService(shouldSubscribeToTopicsSuccessfully: true)
@@ -58,7 +58,7 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
             XCTFail("expected successful topic subscription. got \(error) instead")
         }
     }
-    
+
     func testTopicSubscriptionFailure() {
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .failure(.tokenIsEmpty))
         let messagingService = MockMessagingService(shouldSubscribeToTopicsSuccessfully: false)
@@ -75,7 +75,7 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
         } catch {
             XCTFail("expected \(MockMessagingService.FakeError.subscriptionFailure) topic subscription. got \(error) instead")
         }
-        
+
         XCTAssertFalse(messagingService.topics.contains(topic))
     }
 }

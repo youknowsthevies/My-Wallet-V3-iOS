@@ -3,13 +3,13 @@
 import Foundation
 
 extension TimeInterval {
-    
+
     /// Represents a day in second units
     public static let day: TimeInterval = 60 * 60 * 24
-    
+
     /// Represents a week in second units
     public static let week: TimeInterval = day * 7
-    
+
     /// Represents a year in second units
     public static let year: TimeInterval = 365.0 * day
 }

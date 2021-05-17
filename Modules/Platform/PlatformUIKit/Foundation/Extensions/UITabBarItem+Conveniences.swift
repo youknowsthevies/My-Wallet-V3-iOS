@@ -7,7 +7,7 @@ public struct TabItemContent {
     let image: String
     let selectedImage: String
     let accessibility: Accessibility
-    
+
     public init(title: String,
                 image: String,
                 selectedImage: String,

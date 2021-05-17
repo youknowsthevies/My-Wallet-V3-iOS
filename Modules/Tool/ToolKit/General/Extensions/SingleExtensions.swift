@@ -75,7 +75,7 @@ extension PrimitiveSequence where Trait == CompletableTrait {
             return .error(error)
         }
     }
-    
+
     /// Convert from `Completable` into `Single`
     public func flatMapSingle<A: AnyObject, R>(weak object: A, _ selector: @escaping (A) throws -> Single<R>) -> Single<R> {
         do {
@@ -84,7 +84,7 @@ extension PrimitiveSequence where Trait == CompletableTrait {
             return .error(error)
         }
     }
-    
+
     /// Convert from `Completable` into `Single`
     public func flatMapSingle<R>(_ selector: @escaping () throws -> Single<R>) -> Single<R> {
         do {
@@ -104,7 +104,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
             }
             .asCompletable()
     }
-    
+
     public static func create<A: AnyObject>(weak object: A, subscribe: @escaping (A, @escaping SingleObserver) -> Disposable) -> Single<Element> {
         Single<Element>.create { [weak object] observer -> Disposable in
             guard let object = object else {
@@ -122,7 +122,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
             recorder?.error(error)
         })
     }
-    
+
     public func recordErrors(on recorder: ErrorRecording?, enabled: Bool) -> Single<Element> {
         guard enabled else { return self }
         return recordErrors(on: recorder)
@@ -141,13 +141,13 @@ extension PrimitiveSequence where Trait == SingleTrait {
 // MARK: - Result<Element, Error> mapping
 
 extension PrimitiveSequence where Trait == SingleTrait {
-    
+
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> PrimitiveSequence<SingleTrait, Result<Element, Error>> {
         self.map { .success($0) }
             .catchError { .just(.failure($0)) }
     }
-    
+
     /// Map with success and failure mappers.
     /// This is useful in case we would like to have a custom error type.
     public func mapToResult<ResultElement, OutputError: Error>(
@@ -166,7 +166,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 }
 
 extension PrimitiveSequence where Trait == SingleTrait {
-    
+
     public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Single<Element> {
         self.do(onError: { error in
             fatalError(error.localizedDescription)

@@ -18,7 +18,7 @@ public enum TransactionValidationResult {
     case ok
     /// The amount you would like to send is invalid
     case invalid(TransactionValidationError)
-    
+
     /// Returns the error in case of `.invalid`
     public var error: TransactionValidationError? {
         switch self {
@@ -28,7 +28,7 @@ public enum TransactionValidationResult {
             return nil
         }
     }
-    
+
     /// Returns `true` in case of `.ok`
     public var isOk: Bool {
         switch self {

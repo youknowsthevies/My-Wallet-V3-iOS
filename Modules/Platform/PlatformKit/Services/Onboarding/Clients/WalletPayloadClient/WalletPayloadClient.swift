@@ -8,25 +8,25 @@ import WalletPayloadKit
 
 /// TODO: fetch using a `sharedKey`
 public final class WalletPayloadClient: WalletPayloadClientAPI {
-    
+
     // MARK: - Types
-    
+
     /// Errors thrown from the client layer
     public struct ClientResponse {
-        
+
         // MARK: - Types
-                
+
         let guid: String
         let authType: Int
         let language: String
         let shouldSyncPubkeys: Bool
         let time: Date
-        
+
         /// Payload should be nullified if 2FA s required.
         /// Then `authType` should have a none 0 value.
         /// `AuthenticatorType` is an enum representation of the possible values.
         let payload: WalletPayloadWrapper?
-                
+
         init(response: Response) throws {
             guard let guid = response.guid else {
                 throw ClientError.missingGuid
@@ -39,32 +39,32 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             self.time = Date(timeIntervalSince1970: response.serverTime / 1000)
         }
     }
-    
+
     /// Errors thrown from the client layer
     public enum ClientError: Error {
-        
+
         private struct RawErrorSubstring {
             static let accountLocked = "locked"
         }
-        
+
         /// Payload is missing
         case missingPayload
-        
+
         /// Server returned response `nil` GUID
         case missingGuid
-        
+
         /// Email authorization required
         case emailAuthorizationRequired
-        
+
         /// Account is locked
         case accountLocked
-        
+
         /// Server returned an unfamiliar user readable error
         case message(String)
-        
+
         /// Another error
         case unknown
-        
+
         init(response: ErrorResponse) {
             if response.isEmailAuthorizationRequired {
                 self = .emailAuthorizationRequired
@@ -80,24 +80,24 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             }
         }
     }
-    
+
     /// Error returned from the server
     struct ErrorResponse: FromNetworkErrorConvertible {
-        
+
         static func from(_ communicatorError: NetworkError) -> WalletPayloadClient.ErrorResponse {
             ErrorResponse(
                 isEmailAuthorizationRequired: true,
                 errorMessage: communicatorError.localizedDescription
             )
         }
-        
+
         enum CodingKeys: String, CodingKey {
             case isEmailAuthorizationRequired = "authorization_required"
             case errorMessage = "initial_error"
         }
         let isEmailAuthorizationRequired: Bool
         let errorMessage: String?
-        
+
         init(from decoder: Decoder) throws {
             let container = try decoder.container(keyedBy: CodingKeys.self)
             isEmailAuthorizationRequired = try container.decodeIfPresent(
@@ -106,14 +106,14 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             ) ?? false
             errorMessage = try container.decode(String.self, forKey: .errorMessage)
         }
-        
+
         private init(isEmailAuthorizationRequired: Bool,
                      errorMessage: String?) {
             self.isEmailAuthorizationRequired = isEmailAuthorizationRequired
             self.errorMessage = errorMessage
         }
     }
-    
+
     /// Response returned from the server
     struct Response {
         let guid: String?
@@ -123,19 +123,19 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         let payload: String?
         let shouldSyncPubkeys: Bool
     }
-    
+
     /// The identifier through which the wallet payload is fetched
     public enum Identifier {
-        
+
         /// Session token (e.g pairing)
         case sessionToken(String)
-        
+
         /// Shared key (e.g PIN auth)
         case sharedKey(String)
     }
-    
+
     // MARK: - Properties
-    
+
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: WalletPayloadRequestBuilder
 
@@ -146,7 +146,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         self.networkAdapter = networkAdapter
         self.requestBuilder = WalletPayloadRequestBuilder(requestBuilder: requestBuilder)
     }
-    
+
     // MARK: - API
 
     public func payload(guid: String, identifier: Identifier) -> Single<ClientResponse> {
@@ -171,36 +171,36 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 }
 
 extension WalletPayloadClient {
-    
+
     private struct WalletPayloadRequestBuilder {
-        
+
         private let pathComponents = [ "wallet" ]
-        
+
         private enum HeaderKey: String {
             case cookie
         }
-        
+
         private enum Query: String {
             case sharedKey
             case format
             case time = "ct"
         }
-        
+
         // MARK: - Builder
-        
+
         private let requestBuilder: RequestBuilder
 
         init(requestBuilder: RequestBuilder) {
             self.requestBuilder = requestBuilder
         }
-        
+
         // MARK: - API
-        
+
         func build(identifier: Identifier, guid: String) -> NetworkRequest {
             let pathComponents = self.pathComponents + [guid]
             var headers: HTTPHeaders = [:]
             var parameters: [URLQueryItem] = []
-            
+
             switch identifier {
             case .sessionToken(let token):
                 headers = [HeaderKey.cookie.rawValue: "SID=\(token)"]
@@ -222,7 +222,7 @@ extension WalletPayloadClient {
                     value: String(Int(Date().timeIntervalSince1970 * 1000.0))
                 )
             ]
-            
+
             return requestBuilder.get(
                 path: pathComponents,
                 parameters: parameters,
@@ -233,7 +233,7 @@ extension WalletPayloadClient {
 }
 
 extension WalletPayloadClient.Response: Decodable {
-    
+
     enum CodingKeys: String, CodingKey {
         case guid
         case payload
@@ -242,7 +242,7 @@ extension WalletPayloadClient.Response: Decodable {
         case language
         case serverTime
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         guid = try container.decode(String.self, forKey: .guid)

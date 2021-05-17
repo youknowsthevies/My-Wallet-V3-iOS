@@ -49,7 +49,7 @@ extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
 }
 
 public extension LocalizationConstants.Transaction.Receive.KYC {
-    
+
     static let title = NSLocalizedString(
         "Verify to use the Trading Account",
         comment: ""
@@ -86,7 +86,7 @@ public extension LocalizationConstants.Transaction.Receive.KYC {
         "Verify Now",
         comment: ""
     )
-    
+
 }
 
 public extension LocalizationConstants.Transaction.Swap.KYC {

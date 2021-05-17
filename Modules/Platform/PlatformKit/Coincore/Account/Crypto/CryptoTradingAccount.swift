@@ -102,7 +102,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 return base
             }
     }
-    
+
     private let balanceFetching: CustodialAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let custodialAddressService: CustodialAddressServiceAPI
@@ -112,7 +112,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
-    
+
     public init(asset: CryptoCurrency,
                 balanceProviding: BalanceProviding = resolve(),
                 custodialAddressService: CustodialAddressServiceAPI = resolve(),

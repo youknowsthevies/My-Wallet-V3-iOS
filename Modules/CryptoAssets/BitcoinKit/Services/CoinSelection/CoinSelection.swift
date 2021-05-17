@@ -25,19 +25,19 @@ protocol CoinSelector {
 }
 
 class CoinSelection: CoinSelector {
-    
+
     struct Constants {
         static let costBase: BigUInt = BigUInt(10)
         static let costPerInput: BigUInt = BigUInt(149)
         static let costPerOutput: BigUInt = BigUInt(34)
     }
-    
+
     private let calculator: TransactionSizeCalculating
-    
+
     init(calculator: TransactionSizeCalculating = TransactionSizeCalculator()) {
         self.calculator = calculator
     }
-    
+
     func select(inputs: CoinSelectionInputs) -> Result<SpendableUnspentOutputs, CoinSelectionError> {
         let outputAmount = inputs.value.amount.magnitude
         let fee = inputs.fee
@@ -47,38 +47,38 @@ class CoinSelection: CoinSelector {
         let effectiveCoins = sortingStrategy
             .sort(coins: unspentOutputs)
             .effective(for: fee)
-        
+
         guard !effectiveCoins.isEmpty else {
             return .failure(.noEffectiveCoins)
         }
-        
+
         var selected = [UnspentOutput]()
         var accumulatedValue = BigUInt.zero
         var accumulatedFee = BigUInt.zero
-        
+
         for coin in effectiveCoins {
             if !coin.isForceInclude && accumulatedValue >= outputAmount + accumulatedFee {
                 continue
             }
-            
+
             selected += [ coin ]
             accumulatedValue = selected.sum()
             accumulatedFee = calculator.transactionBytes(inputs: selected.count, outputs: 1) * feePerByte
         }
-        
+
         let dust = calculator.dustThreshold(for: fee)
-        
+
         let remainingValueSigned = BigInt(accumulatedValue) - BigInt(outputAmount + accumulatedFee)
         let isReplayProtected = selected.replayProtected
-        
+
         // Either there were no effective coins or we were not able to meet the target value
         if selected.isEmpty || remainingValueSigned < BigUInt.zero {
             let outputs = SpendableUnspentOutputs(isReplayProtected: isReplayProtected)
             return .success(outputs)
         }
-        
+
         let remainingValue = remainingValueSigned.magnitude
-        
+
         // Remaining value is worth keeping, add change output
         if remainingValue >= dust {
             accumulatedFee = calculator.transactionBytes(inputs: selected.count, outputs: 2) * feePerByte
@@ -89,7 +89,7 @@ class CoinSelection: CoinSelector {
             )
             return .success(outputs)
         }
-        
+
         // Remaining value is not worth keeping, consume it as part of the fee
         let outputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
@@ -99,7 +99,7 @@ class CoinSelection: CoinSelector {
         )
         return .success(outputs)
     }
-    
+
     func select(all coins: [UnspentOutput],
                 fee: Fee,
                 sortingStrategy: CoinSortingStrategy? = nil) -> Result<SpendableUnspentOutputs, CoinSelectionError> {

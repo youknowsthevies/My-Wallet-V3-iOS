@@ -23,13 +23,13 @@ public protocol WalletOperationsRouting {
 }
 
 public final class CustodyActionRouter: CustodyActionRouterAPI {
-    
+
     // MARK: - `Router` Properties
-    
+
     public let completionRelay = PublishRelay<Void>()
     public let analyticsService: SimpleBuyAnalayticsServicing
     public let walletOperationsRouter: WalletOperationsRouting
-    
+
     private var stateService: CustodyActionStateServiceAPI!
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
@@ -49,7 +49,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     /// - note: This is needed in order for the reference to be kept in memory,
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
-    
+
     public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
             backupRouterAPI: backupRouterAPI,
@@ -57,7 +57,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             custodyWithdrawalRouter: CustodyWithdrawalRouter()
         )
     }
-    
+
     init(
         backupRouterAPI: BackupRouterAPI,
         tabSwapping: TabSwapping,
@@ -76,24 +76,24 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         self.walletOperationsRouter = walletOperationsRouter
         self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
-        
+
         self.analyticsService = analyticsService
 
         self.tabSwapping = tabSwapping
         self.internalFeatureFlagService = internalFeatureFlagService
-        
+
         backupRouterAPI
             .completionRelay
             .bindAndCatch(weak: self, onNext: { (self, _) in
                 self.stateService.nextRelay.accept(())
             })
             .disposed(by: disposeBag)
-        
+
         custodyWithdrawalRouter
             .completionRelay
             .bindAndCatch(to: completionRelay)
             .disposed(by: disposeBag)
-        
+
         custodyWithdrawalRouter
             .internalSendRelay
             .bindAndCatch(weak: self) { (self, _) in
@@ -101,13 +101,13 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             }
             .disposed(by: disposeBag)
     }
-    
+
     public func start(with currency: CurrencyType) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.currency = currency
         self.stateService = CustodyActionStateService(recoveryStatusProviding: resolve())
-        
+
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
@@ -122,7 +122,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             .disposed(by: disposeBag)
         stateService.nextRelay.accept(())
     }
-    
+
     public func next(to state: CustodyActionStateService.State) {
         switch state {
         case .start:
@@ -182,7 +182,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             dismissTopMost()
         }
     }
-    
+
     private func showSend() {
         dismissTopMost { [unowned self] in
             self.navigationRouter
@@ -198,7 +198,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     private func showSendCustody() {
         if case let .crypto(cryptoCurrency) = currency {
             analyticsService.recordTradingWalletClicked(for: cryptoCurrency)
@@ -226,14 +226,14 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             self.tabSwapping.switchToActivity(currency: currency)
         }
     }
-    
+
     private func showCashIdentityViewController() {
         guard case .fiat = currency else { return }
         dismissTopMost { [weak self] in
             self?.walletOperationsRouter.showCashIdentityVerificationScreen()
         }
     }
-    
+
     private func showPaymentMethods() {
         guard case let .fiat(fiatCurrency) = currency else { return }
         switch internalFeatureFlagService.isEnabled(.withdrawAndDepositACH) {
@@ -253,7 +253,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             }
         }
     }
-    
+
     private func showSwap() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -262,7 +262,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             })
         }
     }
-    
+
     private func showBuy() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -272,7 +272,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             })
         }
     }
-    
+
     private func showSell() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -303,15 +303,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
         }
     }
-    
+
     public func previous() {
         navigationRouter.dismiss()
     }
-    
+
     private func dismissTopMost(completion: (() -> Void)? = nil) {
         navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
     }
-    
+
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: false)
     }()

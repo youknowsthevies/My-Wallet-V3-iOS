@@ -3,28 +3,28 @@
 import PlatformUIKit
 
 final class SettingsSkeletonTableViewCell: UITableViewCell {
-    
+
     // MARK: - Properties
-    
+
     private let titleContainerView = UIView()
     private let badgeContainerView = UIView()
-    
+
     // MARK: - Private Properties (ShimmeringView)
-    
+
     private var badgeContainerShimmeringView: ShimmeringView!
     private var titleContainerShimmeringView: ShimmeringView!
-    
+
     // MARK: - Setup
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setup() {
         contentView.addSubview(titleContainerView)
         contentView.addSubview(badgeContainerView)
@@ -48,5 +48,5 @@ final class SettingsSkeletonTableViewCell: UITableViewCell {
             cornerRadius: 8.0
         )
     }
-    
+
 }

@@ -10,17 +10,17 @@ import RxSwift
 import StellarKit
 
 class AssetAddressRepositoryMock: AssetAddressFetching {
-    
+
     let isReusable: Bool
     var alreadyUsedAddress: String?
     var addresses: [String]
-    
+
     init(isReusable: Bool, addresses: [String], alreadyUsedAddress: String? = nil) {
         self.isReusable = isReusable
         self.addresses = addresses
         self.alreadyUsedAddress = alreadyUsedAddress
     }
-    
+
     /// Checks usability of an asset address
     func checkUsability(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
         if isReusable {
@@ -31,7 +31,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
             return .just(.unused(address: address))
         }
     }
-    
+
     /// Return the candidate addresses by type and asset
     func addresses(by type: AssetAddressType, asset: CryptoCurrency) -> [AssetAddress] {
         var result: [AssetAddress] = []
@@ -61,7 +61,7 @@ class AssetAddressRepositoryMock: AssetAddressFetching {
         }
         return result
     }
-    
+
     /// Removes a given asset address according to type
     func remove(address: String, for assetType: CryptoCurrency, addressType: AssetAddressType) {
         guard let index = addresses.firstIndex(where: { $0 == address }) else {

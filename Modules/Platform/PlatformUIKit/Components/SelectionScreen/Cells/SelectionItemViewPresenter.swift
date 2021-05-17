@@ -6,40 +6,40 @@ import RxSwift
 import ToolKit
 
 final class SelectionItemViewPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.SelectionScreen
-    
+
     // MARK: - Exposed Properties
-    
+
     let thumb: ViewContent
     let title: LabelContent
     let description: LabelContent
 
     let accessibility: Accessibility
-    
+
     var selectionImage: Observable<ImageViewContent> {
         selectionImageRelay.asObservable()
     }
-        
+
     var data: SelectionItemViewModel {
         interactor.item
     }
-    
+
     let tapRelay = PublishRelay<Void>()
-    
+
     var isSelected: Observable<Bool> {
         interactor.isSelectedRelay.distinctUntilChanged()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let selectionImageRelay = BehaviorRelay(value: ImageViewContent.empty)
     private let isSelectedRelay = BehaviorRelay(value: false)
     private let interactor: SelectionItemViewInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(interactor: SelectionItemViewInteractor) {
         self.interactor = interactor
         let item = interactor.item
@@ -77,11 +77,11 @@ final class SelectionItemViewPresenter {
             color: .titleText,
             accessibility: .id("\(AccessibilityId.descriptionLabelPrefix)\(item.accessibilityId)")
         )
-        
+
         isSelectedRelay
             .bindAndCatch(to: interactor.isSelectedRelay)
             .disposed(by: disposeBag)
-        
+
         isSelected
             .map(weak: self) { (self, isSelected) -> ImageViewContent in
                 guard isSelected else { return .empty }
@@ -93,7 +93,7 @@ final class SelectionItemViewPresenter {
             }
             .bindAndCatch(to: selectionImageRelay)
             .disposed(by: disposeBag)
-        
+
         tapRelay
             .withLatestFrom(isSelectedRelay)
             .filter { !$0 }
@@ -101,7 +101,7 @@ final class SelectionItemViewPresenter {
             .bindAndCatch(to: isSelectedRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func setup(selectionEvent: @escaping () -> Void) {
         isSelected
             .filter { $0 }
@@ -114,11 +114,11 @@ final class SelectionItemViewPresenter {
     func contains(text: String) -> Bool {
         title.text.lowercased().contains(text) || description.text.lowercased().contains(text)
     }
-    
+
     func deselect() {
         isSelectedRelay.accept(false)
     }
-    
+
     func select() {
         isSelectedRelay.accept(true)
     }
@@ -130,7 +130,7 @@ extension SelectionItemViewPresenter: Equatable, Hashable {
     public static func == (lhs: SelectionItemViewPresenter, rhs: SelectionItemViewPresenter) -> Bool {
         lhs.interactor == rhs.interactor
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(interactor)
     }

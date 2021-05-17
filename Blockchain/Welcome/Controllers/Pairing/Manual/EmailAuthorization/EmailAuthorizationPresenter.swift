@@ -5,19 +5,19 @@ import PlatformUIKit
 import RxSwift
 
 final class EmailAuthorizationPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.Onboarding.ManualPairingScreen.EmailAuthorizationAlert
-        
+
     // MARK: - Services
-    
+
     private let emailAuthorizationService: EmailAuthorizationService
     private let alertPresenter: AlertViewPresenter
     private unowned let routerStateProvider: OnboardingRouterStateProviding
-            
+
     // MARK: - Setup
-    
+
     init(routerStateProvider: OnboardingRouterStateProviding = AppCoordinator.shared.onboardingRouter,
          emailAuthorizationService: EmailAuthorizationService,
          alertPresenter: AlertViewPresenter = .shared) {
@@ -25,9 +25,9 @@ final class EmailAuthorizationPresenter {
         self.alertPresenter = alertPresenter
         self.routerStateProvider = routerStateProvider
     }
-    
+
     // MARK: - API
-    
+
     /// Starts email authorization. This method is designed to fail silently
     /// As the only option to fail here is `cancellation` by calling `cancel()`
     /// but clients of `EmailAuthorizationPresenter` may subscribe and utilize
@@ -40,14 +40,14 @@ final class EmailAuthorizationPresenter {
                 self?.routerStateProvider.state = .standard
             })
     }
-    
+
     /// Cancels polling and waiting for authorization
     func cancel() {
         emailAuthorizationService.cancel()
     }
-    
+
     // MARK: - Accessors
-    
+
     private func showAlert() {
         alertPresenter.standardNotify(
             title: LocalizedString.title,

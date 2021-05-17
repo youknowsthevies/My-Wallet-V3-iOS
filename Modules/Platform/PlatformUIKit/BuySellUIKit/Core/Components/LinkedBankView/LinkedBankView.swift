@@ -31,11 +31,11 @@ final class LinkedBankView: UIView {
                     .map { _ in UIColor.white }
                     .bindAndCatch(to: self.rx.backgroundColor)
                     .disposed(by: disposeBag)
-                    
+
             }
         }
     }
-    
+
     // MARK: - Private
     private var disposeBag = DisposeBag()
 
@@ -48,23 +48,23 @@ final class LinkedBankView: UIView {
     private let button = UIButton()
 
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-                
+
         stackView.alignment = .leading
         stackView.distribution = .fill
         stackView.axis = .vertical
         stackView.spacing = Spacing.interItem
-        
+
         stackView.addArrangedSubview(nameLabel)
         stackView.addArrangedSubview(limitsLabel)
-        
+
         addSubview(stackView)
         addSubview(badgeImageView)
         addSubview(accountLabel)
         addSubview(button)
-        
+
         badgeImageView.layoutToSuperview(.centerY)
         badgeImageView.layout(size: CGSize(width: 32, height: 32))
         badgeImageView.layoutToSuperview(.leading, offset: Spacing.outer)
@@ -74,7 +74,7 @@ final class LinkedBankView: UIView {
         accountLabel.layoutToSuperview(.trailing, offset: -Spacing.outer)
         accountLabel.horizontalContentHuggingPriority = .required
         accountLabel.horizontalContentCompressionResistancePriority = .required
-        
+
         stackView.layout(edge: .leading, to: .trailing, of: badgeImageView, offset: Spacing.inner)
         stackView.layoutToSuperview(.centerY)
         stackView.layoutToSuperview(axis: .vertical, offset: 16, priority: .defaultHigh)
@@ -82,8 +82,7 @@ final class LinkedBankView: UIView {
         button.layoutToSuperview(axis: .vertical)
         button.layoutToSuperview(axis: .horizontal)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 }
-

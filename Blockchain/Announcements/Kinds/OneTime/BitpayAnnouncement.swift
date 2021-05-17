@@ -8,9 +8,9 @@ import ToolKit
 
 /// This announcement introduces Bitpay
 final class BitpayAnnouncement: OneTimeAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         AnnouncementCardViewModel(
             type: type,
@@ -31,19 +31,19 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
             }
         )
     }
-    
+
     var shouldShow: Bool {
         !isDismissed
     }
-    
+
     let type = AnnouncementType.bitpay
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     // MARK: - Setup
-    
+
     init(cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),

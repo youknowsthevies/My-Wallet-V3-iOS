@@ -5,17 +5,17 @@ import RxSwift
 import ToolKit
 
 public protocol TransactionEngine: AnyObject {
-    
+
     typealias AskForRefreshConfirmation = (_ revalidate: Bool) -> Completable
-    
+
     /// Does this engine accept fiat input amounts
     var canTransactFiat: Bool { get }
     /// askForRefreshConfirmation: Must be set by TransactionProcessor
     var askForRefreshConfirmation: (AskForRefreshConfirmation)! { get set }
-    
+
     /// The account the user is transacting from
     var sourceAccount: BlockchainAccount! { get set }
-    
+
     var transactionTarget: TransactionTarget! { get set }
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> { get }
     var requireSecondPassword: Bool { get }
@@ -64,7 +64,7 @@ public protocol TransactionEngine: AnyObject {
 
     /// Action to be executed when confirmations have been built and we want to start checking for updates on them
     func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction>
-    
+
     /// Update the selected fee level of this Tx.
     /// This should check & update balances etc.
     /// This is only called when the user is applying a custom fee. 
@@ -78,14 +78,14 @@ public extension TransactionEngine {
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
-    
+
     var sourceAsset: CurrencyType {
         guard let account = sourceAccount as? SingleAccount else {
             fatalError("Expected a SingleAccount: \(String(describing: sourceAccount))")
         }
         return account.currencyType
     }
-    
+
     var sourceCryptoCurrency: CryptoCurrency {
         guard let crypto = sourceAsset.cryptoCurrency else {
             fatalError("Expected a CryptoCurrency type: \(sourceAsset.currency)")

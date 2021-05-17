@@ -1,64 +1,64 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct CardData {
-        
+
     /// The identifier of the card
     public let identifier: String
-    
+
     /// The state of the card
     public let state: CardPayload.State
-    
+
     /// The partner for the card
     public let partner: CardPayload.Partner
-    
+
     /// The type of the card (provider)
     public let type: CardType
-    
+
     /// The currency of the card
     public let currency: FiatCurrency!
-    
+
     /// The label of the card
     public let label: String
-    
+
     /// The owner name
     public let ownerName: String
-    
+
     /// The number on the card
     public let number: String
-        
+
     /// The month on which the card becomes expired
     public let month: String
-    
+
     /// The year on which the card becomes expired
     public let year: String
-    
+
     /// The card verification value
     public let cvv: String
-    
+
     /// The card's limit
     public var topLimit: FiatValue
-    
+
     /// The billing address associated with the card
     private(set) var billingAddress: BillingAddress!
-    
+
     public func data(byAppending billingAddress: BillingAddress) -> CardData {
         var data = self
         data.billingAddress = billingAddress
         return data
     }
-    
+
     public var topLimitDisplayValue: String {
         topLimit.displayString
     }
-    
+
     public var suffix: String {
         "\(number.suffix(4))"
     }
-    
+
     public var displayExpirationDate: String {
         "\(month)/\(year.suffix(2))"
     }
-    
+
     public var displaySuffix: String {
         "•••• \(suffix)"
     }
@@ -67,14 +67,14 @@ public struct CardData {
 // MARK: - Response Setup
 
 extension CardData {
-    
+
     public init?(response: CardPayload?) {
         guard let response = response else { return nil }
         guard let currency = FiatCurrency(code: response.currency) else { return nil }
         guard let billingAddress = response.address else { return nil }
         guard response.partner.isKnown else { return nil }
         guard let type = CardType(rawValue: response.card?.type ?? "") else { return nil }
-        
+
         self.type = type
         self.identifier = response.identifier
         self.ownerName = ""
@@ -87,7 +87,7 @@ extension CardData {
         self.month = response.card?.month ?? ""
         self.year = response.card?.year ?? ""
         self.cvv = ""
-        
+
         self.topLimit = .zero(currency: currency)
         self.state = response.state
         self.currency = currency
@@ -108,7 +108,7 @@ extension CardData: Equatable {
 // MARK: - Input Setup
 
 extension CardData {
-    
+
     /// Initializer that setup the `CardData` from user input
     /// - Parameters:
     ///   - ownerName: The name on the card
@@ -125,20 +125,20 @@ extension CardData {
               let cvv = cvv else {
             return nil
         }
-    
+
         let dateComponents = expirationDate.split(separator: "/")
         guard dateComponents.count == 2 else { return nil }
-                
+
         self.ownerName = ownerName
-        
+
         number.removeAll { CharacterSet.whitespaces.contains($0) }
         self.number = number
-        
+
         self.month = String(dateComponents[0])
-        
+
         self.year = "20\(dateComponents[1])"
         self.cvv = cvv
-        
+
         type = CardType.determineType(from: number)
 
         self.state = .none
@@ -165,7 +165,7 @@ extension CardData {
 }
 
 extension CardData {
-    
+
     var everyPayCardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails {
         .init(
             cardNumber: number,

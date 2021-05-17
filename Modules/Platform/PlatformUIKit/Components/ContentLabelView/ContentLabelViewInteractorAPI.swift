@@ -11,7 +11,7 @@ public protocol ContentLabelViewInteractorAPI {
 
 @available(*, deprecated, message: "Use `AvailableBalanceContentInteractor` instead which uses the Coincore API")
 public final class AvailableBalanceContentViewInteractor: ContentLabelViewInteractorAPI {
-    
+
     public var contentCalculationState: Observable<ValueCalculationState<String>> {
         balanceProvider[currencyType].calculationState
             .distinctUntilChanged()
@@ -19,10 +19,10 @@ public final class AvailableBalanceContentViewInteractor: ContentLabelViewIntera
                 balance[.custodial(.trading)].quote.toDisplayString(includeSymbol: true)
             }
     }
-    
+
     private let balanceProvider: BalanceProviding
     private let currencyType: CurrencyType
-    
+
     public init(balanceProvider: BalanceProviding,
                 currencyType: CurrencyType) {
         self.balanceProvider = balanceProvider

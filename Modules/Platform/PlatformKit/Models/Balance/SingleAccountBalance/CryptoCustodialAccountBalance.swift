@@ -11,7 +11,7 @@ public struct CryptoCustodialAccountBalance: CustodialAccountBalanceType, Crypto
     }
     public let withdrawable: MoneyValue
     public let pending: MoneyValue
-    
+
     public init(available: CryptoValue,
                 withdrawable: CryptoValue,
                 pending: CryptoValue) {

@@ -22,14 +22,14 @@ final class BitcoinWallet: NSObject {
         case v3PayloadDecodingFailed
         case v4PayloadDecodingFailed
     }
-    
+
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
     typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
-    
+
     @objc public var delegate: BitcoinJSInteropDelegateAPI {
         dispatcher
     }
-    
+
     var interopDispatcher: BitcoinJSInteropDispatcherAPI {
         dispatcher
     }
@@ -40,48 +40,48 @@ final class BitcoinWallet: NSObject {
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
-    
+
     @objc convenience public init(legacyWallet: Wallet) {
         self.init(wallet: legacyWallet)
     }
-    
+
     init(wallet: WalletAPI,
          dispatcher: Dispatcher = BitcoinJSInteropDispatcher.shared) {
         self.wallet = wallet
         self.dispatcher = dispatcher
     }
-    
+
     @objc public func setup(with context: JSContext) {
-        
+
         context.setJsFunction(named: "objc_on_didGetDefaultBitcoinWalletIndexAsync" as NSString) { [weak self] defaultWalletIndex in
             self?.delegate.didGetDefaultWalletIndex(defaultWalletIndex)
         }
         context.setJsFunction(named: "objc_on_error_gettingDefaultBitcoinWalletIndexAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetDefaultWalletIndex(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_didGetBitcoinWalletIndexAsync" as NSString) { [weak self] defaultWalletIndex in
             self?.delegate.didGetWalletIndex(defaultWalletIndex)
         }
         context.setJsFunction(named: "objc_on_error_gettingBitcoinWalletIndexAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetDefaultWalletIndex(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_btc_tx_signed" as NSString) { [weak self] signedPayment in
             self?.delegate.didGetSignedPayment(signedPayment)
         }
-        
+
         context.setJsFunction(named: "objc_on_btc_tx_signed_error" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToSignPayment(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_didGetBitcoinWalletsAsync" as NSString) { [weak self] accounts in
             self?.delegate.didGetAccounts(accounts)
         }
         context.setJsFunction(named: "objc_on_error_gettingBitcoinWalletsAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetAccounts(errorMessage: errorMessage)
         }
-        
+
         context.setJsFunction(named: "objc_on_didGetHDWalletAsync" as NSString) { [weak self] wallet in
             self?.delegate.didGetHDWallet(wallet)
         }
@@ -92,7 +92,7 @@ final class BitcoinWallet: NSObject {
 }
 
 extension BitcoinWallet: BitcoinChainSendBridgeAPI {
-    
+
     func sign(with secondPassword: String?) -> Single<EngineTransaction> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             self.wallet?.getSignedBitcoinPayment(
@@ -107,7 +107,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             return Disposables.create()
         }
     }
-    
+
     func buildProposal<Token>(with destination: BitcoinChainReceiveAddress<Token>,
                               amount: MoneyValue,
                               fees: MoneyValue,
@@ -124,7 +124,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
                       source: source)
             }
     }
-    
+
     func buildCandidate<Token>(with proposal: BitcoinChainTransactionProposal<Token>) -> Single<BitcoinChainTransactionCandidate<Token>> {
         func buildCandidate(
             with legacyOrderCandidate: OrderTransactionLegacy
@@ -211,7 +211,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             sweepFee: sweepFee.moneyValue
         )
     }
-    
+
     func send(coin: BitcoinChainCoin, with secondPassword: String?) -> Single<String> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             self.wallet?.sendOrderTransaction(
@@ -246,20 +246,20 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             return wallet.updateAccountLabel(.bitcoin, index: accountIndex, label: label)
         }
     }
-    
+
     func walletIndex(for receiveAddress: String) -> Single<Int32> {
         Single<Int32>.create(weak: self) { (self, observer) -> Disposable in
             guard let wallet = self.wallet else {
                 observer(.error(WalletError.notInitialized))
                 return Disposables.create()
             }
-            
+
             wallet.bitcoinWalletIndex(
                 receiveAddress: receiveAddress,
                 success: { walletIndex in
                     observer(.success(walletIndex))
                 },
-                error: { errorMessage in
+                error: { _ in
                     observer(.error(WalletError.unknown))
                 }
             )
@@ -318,7 +318,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .waitUntilInitializedSingle
             .flatMap { memo }
     }
-    
+
     func validateBitcoin(address: String) -> Bool {
         guard let wallet = wallet else { return false }
         return wallet.validateBitcoin(address: address)
@@ -356,7 +356,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
-    
+
     private func bitcoinWallets(secondPassword: String?) -> Single<[BitcoinWalletAccount]> {
         metadataWallets(secondPassword: secondPassword)
             .flatMap(weak: self) { (self, legacyWallets) -> Single<[BitcoinWalletAccount]> in
@@ -402,7 +402,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             wallet.bitcoinWallets(
                 with: secondPassword,
                 success: { accounts in observer(.success(accounts)) },
-                error: { errorMessage in observer(.error(WalletError.unknown)) }
+                error: { _ in observer(.error(WalletError.unknown)) }
             )
             return Disposables.create()
         }
@@ -419,7 +419,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 success: { defaultWalletIndex in
                     observer(.success(defaultWalletIndex))
                 },
-                error: { errorMessage in
+                error: { _ in
                     observer(.error(WalletError.unknown))
                 }
             )

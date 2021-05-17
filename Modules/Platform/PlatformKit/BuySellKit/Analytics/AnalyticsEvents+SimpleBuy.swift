@@ -4,15 +4,15 @@ import AnalyticsKit
 import ToolKit
 
 extension AnalyticsEvents {
-    
+
     public enum SimpleBuy: AnalyticsEvent {
-        
+
         public enum PaymentMethod: String {
             case card
             case bank
             case funds
             case newCard
-            
+
             public var string: String {
                 switch self {
                 case .card:
@@ -31,19 +31,19 @@ extension AnalyticsEvents {
             case ach = "ACH"
             case ob = "OB"
         }
-        
+
         public enum CheckoutStatus: String {
             case success = "SUCCESS"
             case failure = "FAILURE"
             case timeout = "TIMEOUT"
         }
-        
+
         public enum ParameterName {
             public static let paymentMethod = "paymentMethod"
             static let currency = "currency"
             static let amount = "amount"
         }
-        
+
         case sbWantToBuyScreenShown
         case sbWantToBuyButtonClicked
         case sbWantToBuyButtonSkip
@@ -121,7 +121,7 @@ extension AnalyticsEvents {
         case sbAlreadyLinkedError(partner: LinkedBankPartner)
         case sbBankLinkGenericError(partner: LinkedBankPartner)
         case sbAccountMismatchedError(partner: LinkedBankPartner)
-            
+
         public var name: String {
             switch self {
             // Simple buy - I want to buy crypto screen shown (4.0)
@@ -346,7 +346,7 @@ extension AnalyticsEvents {
         }
 
         public var params: [String : String]? {
-            
+
             switch self {
             case .sbCheckoutCompleted(status: let status):
                 return ["status": status.rawValue]
@@ -369,7 +369,7 @@ extension AnalyticsEvents {
                     ParameterName.currency : currencyCode,
                     ParameterName.amount : amount
                 ]
-                return parameters + additionalParameters 
+                return parameters + additionalParameters
             case .sbCheckoutShown(paymentMethod: let method):
                 return [ ParameterName.paymentMethod : method.string ]
             case .sbCheckoutCancelConfirmed(paymentMethod: let method):

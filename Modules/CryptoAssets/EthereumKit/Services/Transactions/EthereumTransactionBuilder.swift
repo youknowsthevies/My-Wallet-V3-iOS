@@ -6,12 +6,12 @@ import RxSwift
 import ToolKit
 
 protocol EthereumTransactionBuilderAPI {
-    
+
     func build(transaction: EthereumTransactionCandidate, nonce: BigUInt) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError>
 }
 
 final class EthereumTransactionBuilder: EthereumTransactionBuilderAPI {
-    
+
     func build(transaction: EthereumTransactionCandidate, nonce: BigUInt) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError> {
         do {
             let candidate = try EthereumTransactionCandidateCosted(transaction: transaction, nonce: nonce)

@@ -66,7 +66,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
             .disposed(by: disposeBag)
 
         contentAction
-            .drive(weak: self) { (self, content) in
+            .drive(weak: self) { (self, _) in
                 self.toggle(visibility: true, of: self.pendingView)
                 self.toggle(visibility: false, of: self.webview)
             }
@@ -130,7 +130,7 @@ final class YodleeScreenViewController: BaseScreenViewController,
             animations: {
                 view.alpha = alpha
             },
-            completion: { completed in
+            completion: { _ in
                 view.isHidden = hidden
             }
         )

@@ -6,26 +6,26 @@ import RxSwift
 /// An `AccountGroup` containing only Non Custodial accounts.
 public class CryptoAccountNonCustodialGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
-    
+
     private let asset: CryptoCurrency
-    
+
     private(set) public lazy var id: String = "CryptoAccountNonCustodialGroup" + asset.code
-    
+
     public let label: String
-    
+
     public let accounts: [SingleAccount]
-    
+
     public var requireSecondPassword: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
         }
-        
+
         return Single.zip(accounts.map(\.requireSecondPassword))
             .map { values -> Bool in
                 !values.contains(false)
             }
     }
-    
+
     public var actionableBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
@@ -36,11 +36,11 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
                         try values.reduce(MoneyValue.zero(currency: asset), +)
                 }
     }
-    
+
     public var receiveAddress: Single<ReceiveAddress> {
         .error(AccountGroupError.noReceiveAddress)
     }
-    
+
     public var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
@@ -50,7 +50,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
                         !values.contains(false)
                     }
     }
-    
+
     public var pendingBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))

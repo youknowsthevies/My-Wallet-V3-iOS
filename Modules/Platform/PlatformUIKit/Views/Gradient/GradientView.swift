@@ -5,7 +5,7 @@ import Foundation
 public struct Gradient {
     let startColor: UIColor
     let endColor: UIColor
-    
+
     init(start: UIColor, end: UIColor) {
         self.startColor = start
         self.endColor = end
@@ -27,7 +27,7 @@ public enum Radius: Int {
 /// This is just a view that shows a gradient. Use this wherever you want to show a gradient
 /// and set its properties in Interface Builder. 
 public class GradientView: UIView {
-    
+
     enum Direction: Int {
         case up
         case down
@@ -36,19 +36,19 @@ public class GradientView: UIView {
         case bottomRight
         case bottomLeft
     }
-    
+
     @IBInspectable var startColor: UIColor = UIColor(white: 0.0, alpha: 0.9) {
         didSet {
             updateGradientLayer()
         }
     }
-    
+
     @IBInspectable var endColor: UIColor = .clear {
         didSet {
             updateGradientLayer()
         }
     }
-    
+
     private var _radius = Radius.none
     @IBInspectable var cornerRadius: Int = Radius.none.rawValue {
         didSet {
@@ -56,7 +56,7 @@ public class GradientView: UIView {
             updateGradientLayer()
         }
     }
-    
+
     private var _direction = Direction.up
     @IBInspectable var direction: Int = Direction.up.rawValue {
         didSet {
@@ -64,45 +64,45 @@ public class GradientView: UIView {
             updateGradientLayer()
         }
     }
-    
+
     var gradientLayer = CAGradientLayer()
-    
+
     override public var bounds: CGRect {
         didSet {
             gradientLayer.frame = layer.bounds
         }
     }
-    
+
     // MARK: Initializers
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         updateGradientLayer()
     }
-    
+
     init() {
         super.init(frame: CGRect.zero)
         updateGradientLayer()
     }
-    
+
     override convenience init(frame: CGRect) {
         self.init()
     }
-    
+
     // MARK: Superclass
-    
+
     override public func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         updateGradientLayer()
     }
-    
+
     override public func layoutSubviews() {
         super.layoutSubviews()
         updateGradientLayer()
     }
-    
+
     // MARK: Private
-    
+
     private func updateGradientLayer() {
         backgroundColor = .clear
         let points = pointsForGradient()
@@ -110,15 +110,15 @@ public class GradientView: UIView {
         gradientLayer.endPoint = points.endPoint
         gradientLayer.colors = [startColor.cgColor, endColor.cgColor]
         gradientLayer.shouldRasterize = true
-        
+
         if gradientLayer.superlayer == nil {
             layer.insertSublayer(gradientLayer, at: 0)
             gradientLayer.frame = layer.bounds
         }
-        
+
         applyRadius()
     }
-    
+
     private func applyRadius() {
         layer.masksToBounds = true
         switch _radius {
@@ -148,7 +148,7 @@ public class GradientView: UIView {
             layer.cornerRadius = bounds.width / 2
         }
     }
-    
+
     private func pointsForGradient() -> (startPoint: CGPoint, endPoint: CGPoint) {
         switch _direction {
         case .up:

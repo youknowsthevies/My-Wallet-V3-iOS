@@ -9,7 +9,7 @@ extension AnalyticsEvents {
         case cardShown(type: AnnouncementType)
         case cardActioned(type: AnnouncementType)
         case cardDismissed(type: AnnouncementType)
-        
+
         public var name: String {
             switch self {
             // User is shown a particular onboarding card
@@ -23,11 +23,11 @@ extension AnalyticsEvents {
                 return "card_dismissed"
             }
         }
-        
+
         public var params: [String : String]? {
             ["card_title": type.rawValue]
         }
-        
+
         private var type: AnnouncementType {
             switch self {
             case .cardShown(type: let type):

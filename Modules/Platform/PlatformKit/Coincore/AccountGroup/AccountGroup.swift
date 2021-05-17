@@ -18,7 +18,7 @@ extension AccountGroup {
         }
         return type
     }
-    
+
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         let balances: [Single<MoneyValue>] = accounts
             .map { account in

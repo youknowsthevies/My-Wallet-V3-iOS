@@ -11,19 +11,19 @@ import RxSwift
 import ToolKit
 
 final class CardDetailsScreenPresenter: RibBridgePresenter {
-    
+
     // MARK: - Types
-    
+
     enum PresentationError: Error {
         case generic
         case cardAlreadySaved
     }
-    
+
     enum CellType {
         case textField(TextFieldType)
         case doubleTextField(TextFieldType, TextFieldType)
         case privacyNotice
-                
+
         var row: Int {
             switch self {
             case .textField(.cardholderName):
@@ -38,7 +38,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
                 fatalError("No such cell type for cell type \(self)")
             }
         }
-        
+
         init(_ row: Int) {
             switch row {
             case 0:
@@ -54,29 +54,29 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             }
         }
     }
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.CardDetailsScreen
     private typealias AccessibilityId = Accessibility.Identifier.CardDetailsScreen
 
     // MARK: - Exposed Properties
-    
+
     var isValid: Driver<Bool> {
         isValidRelay.asDriver()
     }
-    
+
     var error: Signal<PresentationError> {
         errorRelay.asSignal()
     }
-    
+
     let title = LocalizedString.title
-    
+
     let rowCount = 4
     let textFieldViewModelByType: [TextFieldType: TextFieldViewModel]
     let textFieldViewModels: [TextFieldViewModel]
     let noticeViewModel: NoticeViewModel
     let buttonViewModel: ButtonViewModel
-    
+
     private let errorRelay = PublishRelay<PresentationError>()
     private let dataRelay = BehaviorRelay<CardData?>(value: nil)
     private let isValidRelay = BehaviorRelay(value: false)
@@ -89,7 +89,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     private let loadingViewPresenter: LoadingViewPresenting
 
     // MARK: - Setup
-    
+
     init(interactor: CardDetailsScreenInteractor,
          eventRecorder: AnalyticsEventRecording = resolve(),
          messageRecorder: MessageRecording = resolve(),
@@ -97,12 +97,12 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
         self.interactor = interactor
         self.eventRecorder = eventRecorder
         self.loadingViewPresenter = loadingViewPresenter
-        
+
         // Setup of the stored properties
-        
+
         let cardCVVValidator = TextValidationFactory.Card.cvv
         cardNumberValidator = TextValidationFactory.Card.number
-        
+
         let cvvToCardNumberMatcher = CVVToCreditCardMatchValidator(
             cvvTextSource: cardCVVValidator,
             cardTypeSource: cardNumberValidator,
@@ -128,7 +128,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             validator: TextValidationFactory.Card.name,
             messageRecorder: messageRecorder
         )
-        
+
         cardholderNameTextFieldViewModel.set(next: cardNumberTextFieldViewModel)
         cardNumberTextFieldViewModel.set(next: cardExpiryTextFieldViewModel)
         cardExpiryTextFieldViewModel.set(next: cardCVVTextFieldViewModel)
@@ -139,16 +139,16 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .cardNumber: cardNumberTextFieldViewModel,
             .cardCVV: cardCVVTextFieldViewModel
         ]
-        
+
         textFieldViewModels = [
             textFieldViewModelByType[.cardholderName]!,
             textFieldViewModelByType[.cardNumber]!,
             textFieldViewModelByType[.expirationDate]!,
             textFieldViewModelByType[.cardCVV]!
         ]
-        
+
         buttonViewModel = .primary(with: LocalizedString.button)
-        
+
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
                 imageName: "lock-icon",
@@ -163,15 +163,15 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             ),
             verticalAlignment: .center
         )
-        
+
         super.init(interactable: interactor)
     }
-        
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Bind the stored properties
-        
+
         let latestStatesObservable = Observable
             .combineLatest(
                 textFieldViewModelByType[.cardholderName]!.state,
@@ -181,7 +181,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             )
             .map { (name: $0.0, number: $0.1, expiry: $0.2, cvv: $0.3) }
             .share(replay: 1)
-    
+
         latestStatesObservable
             .map(weak: stateReducer) { (reducer, states) in
                 try reducer.reduce(
@@ -191,7 +191,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .map { $0.isValid }
             .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
-        
+
         latestStatesObservable
             .compactMap {
                 CardData(
@@ -203,11 +203,11 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             }
             .bindAndCatch(to: dataRelay)
             .disposed(by: disposeBag)
-        
+
         isValid
             .drive(buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         let buttonTapped = buttonViewModel.tapRelay
             .withLatestFrom(dataRelay)
             .compactMap { $0 }
@@ -225,14 +225,14 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             .mapToResult()
             .hide(loader: loadingViewPresenter)
             .share(replay: 1)
-        
+
         buttonTapped
             .filter { $0.isFailure }
             .mapToVoid()
             .map { .generic }
             .bindAndCatch(to: errorRelay)
             .disposed(by: disposeBag)
-        
+
         buttonTapped
             .compactMap { $0.successData }
             .observeOn(MainScheduler.instance)
@@ -245,7 +245,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         interactor.supportedCardTypes
             .subscribe(
                 onSuccess: { [weak cardNumberValidator] cardTypes in
@@ -257,14 +257,14 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             )
             .disposed(by: disposeBag)
     }
-    
+
     override func viewWillAppear() {
         super.viewWillAppear()
         eventRecorder.record(event: AnalyticsEvent.sbAddCardScreenShown)
     }
-    
+
     // MARK: - Navigation
-    
+
     func previous() {
         interactor.cancel()
     }

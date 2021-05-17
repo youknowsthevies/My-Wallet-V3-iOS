@@ -5,9 +5,9 @@ import XCTest
 @testable import CommonCryptoKit
 
 class JSCryptoTests: XCTestCase {
-    
+
     func test_derivePBKDF2SHA1() throws {
-        
+
         struct TestItem {
             let password: String
             let salt: [UInt8]
@@ -15,24 +15,24 @@ class JSCryptoTests: XCTestCase {
             let keySizeBytes: UInt
             let expectedHex: String
         }
-        
+
         func runTest(for item: TestItem) throws {
             let salt = Data(item.salt)
             let pw = item.password
             let iterations = item.iterations
             let expectedHex = item.expectedHex
             let keySizeBytes = item.keySizeBytes
-            
+
             let result = JSCrypto.derivePBKDF2SHA1(
                 password: pw,
                 saltData: salt,
                 iterations: iterations,
                 keySizeBytes: keySizeBytes
             )!
-            
+
             XCTAssertEqual(result.hexValue, expectedHex)
         }
-        
+
         let tests = [
             TestItem(
                 password: "87082ca6c1ba65c00cc16bafab694af22311c10b8d2c2f5949ba3cd6cdb64534",
@@ -83,14 +83,14 @@ class JSCryptoTests: XCTestCase {
                 expectedHex: "78f7a3a3ec20d99b3ecc224e5c723c9b646962a1cec7b118006ac0822f5c5abf"
             )
         ]
-        
+
         for item in tests {
             try runTest(for: item)
         }
     }
-    
+
     func test_derivePBKDF2SHA512() throws {
-        
+
         struct TestItem {
             let password: String
             let salt: [UInt8]
@@ -98,24 +98,24 @@ class JSCryptoTests: XCTestCase {
             let keySizeBytes: UInt
             let expectedHex: String
         }
-        
+
         func runTest(for item: TestItem) throws {
             let salt = Data(item.salt)
             let pw = item.password
             let iterations = item.iterations
             let expectedHex = item.expectedHex
             let keySizeBytes = item.keySizeBytes
-            
+
             let result = JSCrypto.derivePBKDF2SHA512(
                 password: pw,
                 saltData: salt,
                 iterations: iterations,
                 keySizeBytes: keySizeBytes
             )!
-            
+
             XCTAssertEqual(result.hexValue, expectedHex)
         }
-        
+
         let tests = [
             TestItem(
                 password: MockWalletTestData.Bip39.mnemonic,
@@ -135,7 +135,7 @@ class JSCryptoTests: XCTestCase {
                 expectedHex: "da91295d22b9fa6afe23d9567db5607d96d7df2c57eb2c13454de81f4eba1cab65dc07cd98a50a8e1e4195ed2679a287ee54878477fff5e8c17e1323cd68f6a1"
             )
         ]
-        
+
         for item in tests {
             try runTest(for: item)
         }

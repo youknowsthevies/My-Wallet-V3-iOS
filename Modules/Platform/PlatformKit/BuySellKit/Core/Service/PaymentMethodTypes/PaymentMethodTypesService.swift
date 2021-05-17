@@ -10,16 +10,16 @@ public enum PaymentMethodType: Equatable {
 
     /// A card payment method (from the user's buy data)
     case card(CardData)
-    
+
     /// An account for an asset. Currency supports fiat
     case account(FundData)
 
     /// A linked account bank
     case linkedBank(LinkedBankData)
-    
+
     /// Suggested payment methods (e.g bank-wire / card)
     case suggested(PaymentMethod)
-    
+
     public var method: PaymentMethod.MethodType {
         switch self {
         case .card(let data):
@@ -43,7 +43,7 @@ public enum PaymentMethodType: Equatable {
             return true
         }
     }
-    
+
     var methodId: String? {
         switch self {
         case .card(let card):
@@ -108,7 +108,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var linkedBanks: Observable<[LinkedBankData]> {
         methodTypes.map { $0.linkedBanks }
     }
-    
+
     /// Preferred payment method
     let preferredPaymentMethodTypeRelay = BehaviorRelay<PaymentMethodType?>(value: nil)
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
@@ -139,7 +139,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 }
             }
     }
-    
+
     // MARK: - Injected
 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
@@ -152,7 +152,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let kycTiersService: KYCTiersServiceAPI
 
     // MARK: - Setup
-    
+
     init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -170,7 +170,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
         self.kycTiersService = kycTiersService
     }
-        
+
     func fetchCards(andPrefer cardId: String) -> Completable {
         Single
             .zip(
@@ -285,7 +285,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             }
             .sorted()
             .map { PaymentMethodType.suggested($0) }
-            
+
         let fundsCurrencies = Set(
             paymentMethods
                 .compactMap { method -> CurrencyType? in
@@ -297,11 +297,11 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     }
                 }
         )
-        
+
         let fundsMaxAmounts = paymentMethods
             .filter { $0.type.isFunds }
             .map { $0.max }
-        
+
         let balances = balances.all
             .compactMap { $0.value }
             .filter { !$0.isAbsent }
@@ -344,7 +344,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 }
 
 extension Array where Element == PaymentMethodType {
-    
+
     var suggestedFunds: Set<FiatCurrency> {
         let array = compactMap { paymentMethod -> FiatCurrency? in
             guard case .suggested(let method) = paymentMethod else {
@@ -364,7 +364,7 @@ extension Array where Element == PaymentMethodType {
         }
         return Set(array)
     }
-    
+
     fileprivate var cards: [CardData] {
         compactMap { paymentMethod in
             switch paymentMethod {

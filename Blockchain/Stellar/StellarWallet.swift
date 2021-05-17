@@ -10,7 +10,7 @@ import ToolKit
 final class StellarWallet: StellarWalletBridgeAPI {
 
     private let wallet: Wallet
-    
+
     init(walletManager: WalletManager = resolve()) {
         self.wallet = walletManager.wallet
     }

@@ -8,18 +8,18 @@ import RxSwift
 final class ExchangeAddressViewModel: NSObject {
 
     // MARK: - Properties
-    
+
     let cryptoCurrency: CryptoCurrency
     @objc var isExchangeLinked = false
     @objc var isTwoFactorEnabled = false
     @objc var address: String?
-    
+
     // MARK: - Setup
 
     init(cryptoCurrency: CryptoCurrency) {
         self.cryptoCurrency = cryptoCurrency
     }
-    
+
     @objc var legacyAssetType: LegacyAssetType {
         cryptoCurrency.legacy
     }

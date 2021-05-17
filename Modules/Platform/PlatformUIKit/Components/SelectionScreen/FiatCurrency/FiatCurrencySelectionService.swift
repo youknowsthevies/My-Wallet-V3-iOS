@@ -9,20 +9,20 @@ extension Notification.Name {
 }
 
 public final class FiatCurrencySelectionService: SelectionServiceAPI {
-    
+
     public var dataSource: Observable<[SelectionItemViewModel]> {
         provider.currencies
             .map { $0.map { $0.selectionItem }.sorted() }
     }
-    
+
     public let selectedDataRelay: BehaviorRelay<SelectionItemViewModel>
-    
+
     public var selectedData: Observable<SelectionItemViewModel> {
         selectedDataRelay.distinctUntilChanged()
     }
 
     private let provider: FiatCurrencySelectionProviderAPI
-    
+
     public init(defaultSelectedData: FiatCurrency = .locale,
                 provider: FiatCurrencySelectionProviderAPI = DefaultFiatCurrencySelectionProvider()) {
         self.provider = provider

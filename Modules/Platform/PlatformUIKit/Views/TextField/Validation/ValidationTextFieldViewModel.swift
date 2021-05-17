@@ -8,21 +8,21 @@ import ToolKit
 
 /// A view model that represents a password text field
 public final class ValidationTextFieldViewModel: TextFieldViewModel {
-    
+
     // MARK: - Properties
-    
+
     /// Visibility of the accessoryView
     var accessoryVisibility: Driver<Visibility> {
         visibilityRelay
             .asDriver()
             .distinctUntilChanged()
     }
-        
+
     private let visibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(with type: TextFieldType,
                 validator: TextValidating,
                 accessibilitySuffix: String? = nil,
@@ -37,7 +37,7 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
             textMatcher: textMatcher,
             messageRecorder: messageRecorder
         )
-        
+
         Observable
             .combineLatest(
                 validator.isValid,
@@ -52,4 +52,3 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
             .disposed(by: disposeBag)
     }
 }
-
