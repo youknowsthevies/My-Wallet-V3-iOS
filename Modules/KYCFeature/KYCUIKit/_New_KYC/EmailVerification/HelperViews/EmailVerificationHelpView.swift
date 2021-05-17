@@ -9,8 +9,8 @@ import UIComponentsKit
 
 struct EmailVerificationHelpState: Equatable {
     var emailAddress: String
-    fileprivate var sendingVerificationEmail: Bool = false
-    fileprivate var sentFailedAlert: AlertState<EmailVerificationHelpAction>?
+    var sendingVerificationEmail: Bool = false
+    var sentFailedAlert: AlertState<EmailVerificationHelpAction>?
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
@@ -78,35 +78,41 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
 struct EmailVerificationHelpView: View {
 
     let store: Store<EmailVerificationHelpState, EmailVerificationHelpAction>
+    let viewStore: ViewStore<EmailVerificationHelpState, EmailVerificationHelpAction>
+
+    init(store: Store<EmailVerificationHelpState, EmailVerificationHelpAction>) {
+        self.store = store
+        self.viewStore = ViewStore(store)
+    }
 
     var body: some View {
-        WithViewStore(store) { viewStore in
-            ActionableView(
-                image: {
-                    Image("email_verification_help", bundle: .kycUIKit)
-                },
-                title: L10n.EmailVerificationHelp.title,
-                message: L10n.EmailVerificationHelp.message,
-                buttons: [
-                    .init(
-                        title: L10n.EmailVerificationHelp.sendEmailAgainButtonTitle,
-                        action: {
-                            viewStore.send(.sendVerificationEmail)
-                        },
-                        loading: viewStore.sendingVerificationEmail
-                    ),
-                    .init(
-                        title: L10n.EmailVerificationHelp.editEmailAddressButtonTitle,
-                        action: {
-                            viewStore.send(.editEmailAddress)
-                        }
-                    )
-                ],
-                imageSpacing: 0
-            )
-            .alert(store.scope(state: \.sentFailedAlert), dismiss: .dismissEmailSendingFailureAlert)
-        }
+        ActionableView(
+            image: {
+                Image("email_verification_help", bundle: .kycUIKit)
+                    .accessibility(identifier: "KYC.EmailVerification.help.prompt.image")
+            },
+            title: L10n.EmailVerificationHelp.title,
+            message: L10n.EmailVerificationHelp.message,
+            buttons: [
+                .init(
+                    title: L10n.EmailVerificationHelp.sendEmailAgainButtonTitle,
+                    action: {
+                        viewStore.send(.sendVerificationEmail)
+                    },
+                    loading: viewStore.sendingVerificationEmail
+                ),
+                .init(
+                    title: L10n.EmailVerificationHelp.editEmailAddressButtonTitle,
+                    action: {
+                        viewStore.send(.editEmailAddress)
+                    }
+                )
+            ],
+            imageSpacing: 0
+        )
+        .alert(store.scope(state: \.sentFailedAlert), dismiss: .dismissEmailSendingFailureAlert)
         .background(Color.viewPrimaryBackground)
+        .accessibility(identifier: "KYC.EmailVerification.help.container")
     }
 }
 

@@ -1,21 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import KYCKit
 import PlatformUIKit
 import SharedPackagesKit
 import UIKit
 
-// TODO: Write Unit Tests
-// TODO: Add accessibility ids to the buttons and labels
-
 /// A class that encapsulates routing logic for the KYC flow. Use this to present the app user with any part of the KYC flow.
 public class Router {
 
     public let emailVerificationService: EmailVerificationServiceAPI
+    public let externalAppOpener: ExternalAppOpener
 
-    public init(emailVerificationService: EmailVerificationServiceAPI = resolve()) {
+    public init(emailVerificationService: EmailVerificationServiceAPI, externalAppOpener: ExternalAppOpener) {
         self.emailVerificationService = emailVerificationService
+        self.externalAppOpener = externalAppOpener
     }
 
     /// Uses the passed-in `ViewController`to modally present another `ViewController` wrapping the entire Email Verification Flow.
@@ -30,15 +28,28 @@ public class Router {
                 store: .init(
                     initialState: .init(emailAddress: emailAddress),
                     reducer: emailVerificationReducer,
-                    environment: EmailVerificationEnvironment(
-                        emailVerificationService: emailVerificationService,
-                        externalAppOpener: resolve(),
-                        flowCompletionCallback: flowCompletion,
-                        mainQueue: .main
+                    environment: buildEmailVerificationEnvironment(
+                        emailAddress: emailAddress,
+                        flowCompletion: flowCompletion
                     )
                 )
             ),
             inNavigationController: false
+        )
+    }
+
+    func buildEmailVerificationEnvironment(emailAddress: String, flowCompletion: @escaping () -> Void) -> EmailVerificationEnvironment {
+        EmailVerificationEnvironment(
+            emailVerificationService: emailVerificationService,
+            flowCompletionCallback: flowCompletion,
+            mainQueue: .main,
+            openMailApp: { [externalAppOpener] in
+                .future { callback in
+                    externalAppOpener.openMailApp { result in
+                        callback(.success(result))
+                    }
+                }
+            }
         )
     }
 }

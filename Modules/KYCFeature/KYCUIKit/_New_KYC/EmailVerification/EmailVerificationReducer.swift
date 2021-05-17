@@ -19,14 +19,14 @@ struct EmailVerificationState: Equatable {
         case verificationCheckFailed
     }
 
-    fileprivate(set) var flowStep: FlowStep
+    var flowStep: FlowStep
 
-    fileprivate(set) var verifyEmail: VerifyEmailState
-    fileprivate(set) var emailVerificationHelp: EmailVerificationHelpState
-    fileprivate(set) var editEmailAddress: EditEmailState
-    fileprivate(set) var emailVerified: EmailVerifiedState
+    var verifyEmail: VerifyEmailState
+    var emailVerificationHelp: EmailVerificationHelpState
+    var editEmailAddress: EditEmailState
+    var emailVerified: EmailVerifiedState
 
-    fileprivate(set) var emailVerificationFailedAlert: AlertState<EmailVerificationAction>?
+    var emailVerificationFailedAlert: AlertState<EmailVerificationAction>?
 
     init(emailAddress: String) {
         verifyEmail = VerifyEmailState(emailAddress: emailAddress)
@@ -54,20 +54,20 @@ enum EmailVerificationAction: Equatable {
 struct EmailVerificationEnvironment {
 
     let emailVerificationService: EmailVerificationServiceAPI
-    let externalAppOpener: ExternalAppOpener
     let flowCompletionCallback: (() -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let openMailApp: () -> Effect<Bool, Never>
 
     init(
         emailVerificationService: EmailVerificationServiceAPI,
-        externalAppOpener: ExternalAppOpener,
         flowCompletionCallback: (() -> Void)?,
-        mainQueue: AnySchedulerOf<DispatchQueue>
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        openMailApp: @escaping () -> Effect<Bool, Never>
     ) {
         self.emailVerificationService = emailVerificationService
-        self.externalAppOpener = externalAppOpener
         self.flowCompletionCallback = flowCompletionCallback
         self.mainQueue = mainQueue
+        self.openMailApp = openMailApp
     }
 }
 
@@ -78,14 +78,16 @@ let emailVerificationReducer = Reducer.combine(
         action: /EmailVerificationAction.verifyEmail,
         environment: {
             VerifyEmailEnvironment(
-                externalAppOpener: $0.externalAppOpener
+                openMailApp: $0.openMailApp
             )
         }
     ),
     emailVerifiedReducer.pullback(
         state: \EmailVerificationState.emailVerified,
         action: /EmailVerificationAction.emailVerified,
-        environment: { _ in EmailVerifiedEnvironment() }
+        environment: { _ in
+            EmailVerifiedEnvironment()
+        }
     ),
     emailVerificationHelpReducer.pullback(
         state: \EmailVerificationState.emailVerificationHelp,

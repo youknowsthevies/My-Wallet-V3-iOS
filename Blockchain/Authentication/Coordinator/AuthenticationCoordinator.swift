@@ -318,7 +318,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
                 guard let self = self, let viewController = viewController else {
                     fatalError("Check you're retaining this instances!")
                 }
-                let router = KYCUIKit.Router()
+                let router = KYCUIKit.Router(
+                    emailVerificationService: resolve(),
+                    externalAppOpener: resolve()
+                )
                 router.routeToEmailVerification(
                     from: viewController,
                     emailAddress: emailAddress,

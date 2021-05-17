@@ -8,7 +8,7 @@ import UIComponentsKit
 struct VerifyEmailState: Equatable {
 
     var emailAddress: String
-    fileprivate var cannotOpenMailAppAlert: AlertState<VerifyEmailAction>?
+    var cannotOpenMailAppAlert: AlertState<VerifyEmailAction>?
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
@@ -23,20 +23,16 @@ enum VerifyEmailAction: Equatable {
 }
 
 struct VerifyEmailEnvironment {
-    var externalAppOpener: ExternalAppOpener
+    var openMailApp: () -> Effect<Bool, Never>
 }
 
 let verifyEmailReducer = Reducer<VerifyEmailState, VerifyEmailAction, VerifyEmailEnvironment> { state, action, environment in
     switch action {
     case .tapCheckInbox:
-        return .future { (callback) in
-            environment.externalAppOpener.openMailApp { (success) in
-                guard success else {
-                    callback(.success(.presentCannotOpenMailAppAlert))
-                    return
-                }
+        return environment.openMailApp()
+            .map { didSucceed in
+                didSucceed ? .dismissCannotOpenMailAppAlert : .presentCannotOpenMailAppAlert
             }
-        }
 
     case .tapGetEmailNotReceivedHelp:
         return .none
@@ -61,6 +57,7 @@ struct VerifyEmailView: View {
             ActionableView(
                 image: {
                     Image("email_verification", bundle: .kycUIKit)
+                        .accessibility(identifier: "KYC.EmailVerification.verify.prompt.image")
                 },
                 title: L10n.VerifyEmail.title,
                 message: L10n.VerifyEmail.message(with: "**\(viewStore.emailAddress)**"),
@@ -84,6 +81,7 @@ struct VerifyEmailView: View {
             .alert(store.scope(state: \.cannotOpenMailAppAlert), dismiss: .dismissCannotOpenMailAppAlert)
         }
         .background(Color.viewPrimaryBackground)
+        .accessibility(identifier: "KYC.EmailVerification.verify.container")
     }
 }
 
@@ -98,7 +96,7 @@ struct VerifyEmailView_Previews: PreviewProvider {
                     ),
                     reducer: verifyEmailReducer,
                     environment: VerifyEmailEnvironment(
-                        externalAppOpener: UIApplication.shared
+                        openMailApp: { Effect(value: true) }
                     )
                 )
             )
@@ -111,7 +109,7 @@ struct VerifyEmailView_Previews: PreviewProvider {
                     ),
                     reducer: verifyEmailReducer,
                     environment: VerifyEmailEnvironment(
-                        externalAppOpener: UIApplication.shared
+                        openMailApp: { Effect(value: true) }
                     )
                 )
             )

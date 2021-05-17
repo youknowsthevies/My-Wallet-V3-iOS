@@ -8,52 +8,60 @@ import UIComponentsKit
 struct EmailVerificationView: View {
 
     let store: Store<EmailVerificationState, EmailVerificationAction>
+    let viewStore: ViewStore<EmailVerificationState, EmailVerificationAction>
+
+    init(store: Store<EmailVerificationState, EmailVerificationAction>) {
+        self.store = store
+        self.viewStore = ViewStore(store)
+    }
 
     var body: some View {
         NavigationView {
-            WithViewStore(store) { viewStore in
-                VStack {
-                    // Programmatic Navigation Stack
-                    // `EmptyView`s are set as source to hide the links since individual EV subviews don't know about destinations
-                    NavigationLink(
-                        destination: EmailVerificationHelpRoutingView(
-                            canShowEditAddressView: viewStore.flowStep == .editEmailAddress,
-                            store: store
-                        ),
-                        isActive: .constant(viewStore.flowStep == .emailVerificationHelp || viewStore.flowStep == .editEmailAddress),
-                        label: EmptyView.init
-                    )
+            VStack {
+                // Programmatic Navigation Stack
+                // `EmptyView`s are set as source to hide the links since individual EV subviews don't know about destinations
+                NavigationLink(
+                    destination: EmailVerificationHelpRoutingView(
+                        canShowEditAddressView: viewStore.flowStep == .editEmailAddress,
+                        store: store
+                    ),
+                    isActive: .constant(viewStore.flowStep == .emailVerificationHelp || viewStore.flowStep == .editEmailAddress),
+                    label: EmptyView.init
+                )
 
-                    // Root View when loading Email Verification Status
-                    if viewStore.flowStep == .loadingVerificationState || viewStore.flowStep == .verificationCheckFailed {
-                        ActivityIndicatorView()
-                            .alert(
-                                store.scope(state: \.emailVerificationFailedAlert),
-                                dismiss: .dismissEmailVerificationFailedAlert
-                            )
-                    } else if viewStore.flowStep == .emailVerifiedPrompt {
-                        // Final step of the flow
-                        EmailVerifiedView(
-                            store: store.scope(
-                                state: \.emailVerified,
-                                action: EmailVerificationAction.emailVerified
-                            )
+                // Root View when loading Email Verification Status
+                if viewStore.flowStep == .loadingVerificationState || viewStore.flowStep == .verificationCheckFailed {
+                    ActivityIndicatorView()
+                        .accessibility(identifier: "KYC.EmailVerification.loading.spinner")
+                        .alert(
+                            store.scope(state: \.emailVerificationFailedAlert),
+                            dismiss: .dismissEmailVerificationFailedAlert
                         )
-                    } else {
-                        // Default Root View
-                        VerifyEmailView(
-                            store: store.scope(
-                                state: \.verifyEmail,
-                                action: EmailVerificationAction.verifyEmail
-                            )
+                } else if viewStore.flowStep == .emailVerifiedPrompt {
+                    // Final step of the flow
+                    EmailVerifiedView(
+                        store: store.scope(
+                            state: \.emailVerified,
+                            action: EmailVerificationAction.emailVerified
                         )
-                        .navigationBarHidden(true)
-                    }
-                }
-                .onAppEnteredForeground {
-                    viewStore.send(.didEnterForeground)
+                    )
+                    .navigationBarHidden(true)
+                } else {
+                    // Default Root View
+                    VerifyEmailView(
+                        store: store.scope(
+                            state: \.verifyEmail,
+                            action: EmailVerificationAction.verifyEmail
+                        )
+                    )
+                    .navigationBarHidden(true)
                 }
             }
+            .onAppEnteredForeground {
+                viewStore.send(.didEnterForeground)
+            }
+            .background(Color.viewPrimaryBackground)
+            .accessibility(identifier: "KYC.EmailVerification.container")
         }
     }
 }
@@ -98,9 +106,9 @@ struct EmailVerificationView_Previews: PreviewProvider {
                 reducer: emailVerificationReducer,
                 environment: EmailVerificationEnvironment(
                     emailVerificationService: NoOpEmailVerificationService(),
-                    externalAppOpener: UIApplication.shared,
                     flowCompletionCallback: nil,
-                    mainQueue: .main
+                    mainQueue: .main,
+                    openMailApp: { Effect(value: true) }
                 )
             )
         )

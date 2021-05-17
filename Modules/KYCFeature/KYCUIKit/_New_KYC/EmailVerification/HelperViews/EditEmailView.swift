@@ -9,12 +9,13 @@ import UIComponentsKit
 
 struct EditEmailState: Equatable {
     var emailAddress: String
-    fileprivate var isEmailValid: Bool = false
-    fileprivate var savingEmailAddress: Bool = false
-    fileprivate var saveEmailFailureAlert: AlertState<EditEmailAction>?
+    var isEmailValid: Bool
+    var savingEmailAddress: Bool = false
+    var saveEmailFailureAlert: AlertState<EditEmailAction>?
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
+        self.isEmailValid = emailAddress.isEmail
     }
 }
 
@@ -44,6 +45,9 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
         return .none
 
     case .save:
+        guard state.isEmailValid else {
+            return .none
+        }
         state.savingEmailAddress = true
         return environment.emailVerificationService.updateEmailAddress(to: state.emailAddress)
             .receive(on: environment.mainQueue)
@@ -85,59 +89,67 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
 struct EditEmailView: View {
 
     let store: Store<EditEmailState, EditEmailAction>
+    let viewStore: ViewStore<EditEmailState, EditEmailAction>
+
+    init(store: Store<EditEmailState, EditEmailAction>) {
+        self.store = store
+        self.viewStore = ViewStore(store)
+    }
 
     var body: some View {
-        WithViewStore(store) { viewStore in
-            ActionableView(
-                content: {
-                    VStack {
-                        VStack(alignment: .leading) {
-                            Text(L10n.EditEmail.title)
-                                .textStyle(.title)
-                            Text(L10n.EditEmail.message)
-                                .textStyle(.body)
-                        }
-                        .frame(maxWidth: .infinity)
-
-                        Spacer()
-
-                        VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
-                            FormTextFieldGroup(
-                                title: L10n.EditEmail.editEmailFieldLabel,
-                                text: viewStore.binding(
-                                    get: { $0.emailAddress },
-                                    send: { .didChangeEmailAddress($0) }
-                                )
-                            )
-                            if !viewStore.isEmailValid {
-                                BadgeView(
-                                    title: L10n.EditEmail.invalidEmailInputMessage,
-                                    style: .error
-                                )
-                            }
-                        }
-
-                        Spacer()
+        ActionableView(
+            content: {
+                VStack {
+                    VStack(alignment: .leading) {
+                        Text(L10n.EditEmail.title)
+                            .textStyle(.title)
+                        Text(L10n.EditEmail.message)
+                            .textStyle(.body)
                     }
-                    .multilineTextAlignment(.leading)
-                },
-                buttons: [
-                    .init(
-                        title: L10n.EditEmail.saveButtonTitle,
-                        action: {
-                            viewStore.send(.save)
-                        },
-                        loading: viewStore.savingEmailAddress,
-                        enabled: viewStore.isEmailValid
-                    )
-                ]
-            )
-            .alert(store.scope(state: \.saveEmailFailureAlert), dismiss: .dismissSaveEmailFailureAlert)
-            .onAppear {
-                viewStore.send(.didAppear)
-            }
+                    .frame(maxWidth: .infinity)
+
+                    Spacer()
+
+                    VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
+                        FormTextFieldGroup(
+                            title: L10n.EditEmail.editEmailFieldLabel,
+                            text: viewStore.binding(
+                                get: { $0.emailAddress },
+                                send: { .didChangeEmailAddress($0) }
+                            )
+                        )
+                        .accessibility(identifier: "KYC.EmailVerification.edit.email.group")
+
+                        if !viewStore.isEmailValid {
+                            BadgeView(
+                                title: L10n.EditEmail.invalidEmailInputMessage,
+                                style: .error
+                            )
+                            .accessibility(identifier: "KYC.EmailVerification.edit.email.invalidEmail")
+                        }
+                    }
+
+                    Spacer()
+                }
+                .multilineTextAlignment(.leading)
+            },
+            buttons: [
+                .init(
+                    title: L10n.EditEmail.saveButtonTitle,
+                    action: {
+                        viewStore.send(.save)
+                    },
+                    loading: viewStore.savingEmailAddress,
+                    enabled: viewStore.isEmailValid
+                )
+            ]
+        )
+        .alert(store.scope(state: \.saveEmailFailureAlert), dismiss: .dismissSaveEmailFailureAlert)
+        .onAppear {
+            viewStore.send(.didAppear)
         }
         .background(Color.viewPrimaryBackground)
+        .accessibility(identifier: "KYC.EmailVerification.edit.container")
     }
 }
 

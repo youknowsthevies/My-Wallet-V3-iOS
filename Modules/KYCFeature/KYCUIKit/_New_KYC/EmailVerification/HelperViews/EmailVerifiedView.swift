@@ -29,6 +29,7 @@ struct EmailVerifiedView: View {
             ActionableView(
                 image: {
                     Image("email_verification_success", bundle: .kycUIKit)
+                        .accessibility(identifier: "KYC.EmailVerification.verified.prompt.image")
                 },
                 title: L10n.EmailVerified.title,
                 message: L10n.EmailVerified.message,
@@ -44,6 +45,7 @@ struct EmailVerifiedView: View {
             )
         }
         .background(Color.viewPrimaryBackground)
+        .accessibility(identifier: "KYC.EmailVerification.verified.container")
     }
 }
 

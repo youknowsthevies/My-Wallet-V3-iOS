@@ -194,6 +194,8 @@ targetTemplates:
     platform: iOS
     sources:
     - createIntermediateGroups: true
+      excludes:
+      - "**/__Snapshots__"
       path: Modules/${featureName}/${target_name}
     - createIntermediateGroups: true
       path: TestKit/TestKit/Utilities
@@ -205,6 +207,9 @@ packages:
   CombineExt:
     url: https://github.com/CombineCommunity/CombineExt.git
     version: 1.3.0
+  SnapshotTesting:
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    version: 1.9.0
 targets:
   ActivityKit:
     dependencies:
@@ -232,8 +237,6 @@ targets:
     sources:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
@@ -636,6 +639,8 @@ targets:
     sources:
     - path: BlockchainTests
     - createIntermediateGroups: true
+      excludes:
+      - Helpers/SnapshotTesting
       path: TestKit/TestKit
     type: bundle.unit-test
   DashboardKit:
@@ -903,8 +908,16 @@ targets:
     - Module
   KYCUIKitTests:
     dependencies:
+    - package: SnapshotTesting
     - target: KYCUIKit
+    - target: SnapshotTestsHostApp # required for snapshot tests
+    settings:
+      TEST_HOST: "$(BUILT_PRODUCTS_DIR)/SnapshotTestsHostApp.app/SnapshotTestsHostApp" # required for snapshot tests
     sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Helpers/SnapshotTesting
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/KYCKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
@@ -1082,8 +1095,6 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: CryptoAssets
@@ -1139,6 +1150,11 @@ targets:
       - ModuleTests
     templateAttributes:
       featureName: SettingsFeature
+  SnapshotTestsHostApp: # A target only used to host (unit) snapshot tests as they require a hosting app
+    platform: iOS
+    sources:
+    - path: SnapshotTestsHostApp
+    type: application
   StellarKit:
     dependencies:
     - target: PlatformKit
@@ -1254,8 +1270,6 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: TransactionFeature
@@ -1287,8 +1301,6 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformUIKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
@@ -1297,6 +1309,8 @@ targets:
     templates:
     - ModuleTests
   UIComponentsKit:
+    sources:
+    - Blockchain/Resources/Fonts/Inter # required to properly render snapshot tests
     templateAttributes:
       featureName: UIComponents
     templates:

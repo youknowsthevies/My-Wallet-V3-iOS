@@ -130,13 +130,17 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             BlockchainSettings.App.shared.clear()
         }
 
+        // set the window before checking if running unit tests to support test targets that require a host application
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.makeKeyAndVisible()
+        
         if isDebug, ProcessInfo.processInfo.isUnitTesting {
             // If isDebug build, and we are running unit test, skip rest of AppDelegate.
+            // but avoid crashing the app for Unit Tests that need to run in a target requiring a host app
+            window?.rootViewController = UIViewController() // to avoid crashing unit tests that require, but don't set, a root VC
             return true
         }
 
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.makeKeyAndVisible()
         window?.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
         // Trigger routing hierarchy

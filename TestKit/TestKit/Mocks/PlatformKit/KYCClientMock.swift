@@ -9,7 +9,7 @@ final class KYCClientMock: KYCClientAPI {
 
     struct StubbedResults {
         var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = {
-            Fail(error:  NabuNetworkError.communicatorError(.urlError(URLError(.badURL))))
+            Fail(error: NabuNetworkError.mockError)
                 .eraseToAnyPublisher()
         }()
     }
