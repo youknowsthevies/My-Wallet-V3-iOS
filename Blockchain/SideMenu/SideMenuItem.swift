@@ -24,34 +24,39 @@ enum SideMenuItem {
 }
 
 extension SideMenuItem {
-
-    var analyticsEvent: AnalyticsEvents.SideMenu {
+    
+    var analyticsEvents: [AnalyticsEvent] {
         switch self {
         case .accountsAndAddresses:
-            return .sideNavAccountsAndAddresses
+            return [AnalyticsEvents.SideMenu.sideNavAccountsAndAddresses]
         case .backup:
-            return .sideNavBackup
+            return [AnalyticsEvents.SideMenu.sideNavBackup]
         case .buy:
-            return .sideNavSimpleBuy
+            return [
+                AnalyticsEvents.SideMenu.sideNavSimpleBuy,
+                AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .navigation)
+            ]
         case .sell:
-            // TODO: Analytics Event
-            return .sideNavSimpleBuy
+            return [
+                AnalyticsEvents.SideMenu.sideNavSimpleBuy,
+                AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .sell, origin: .navigation)
+            ]
         case .logout:
-            return .sideNavLogout
+            return [AnalyticsEvents.SideMenu.sideNavLogout]
         case .settings:
-            return .sideNavSettings
+            return [AnalyticsEvents.SideMenu.sideNavSettings]
         case .airdrops:
-            return .sideNavAirdropCenter
+            return [AnalyticsEvents.SideMenu.sideNavAirdropCenter]
         case .support:
-            return .sideNavSupport
+            return [AnalyticsEvents.SideMenu.sideNavSupport]
         case .webLogin:
-            return .sideNavWebLogin
+            return [AnalyticsEvents.SideMenu.sideNavWebLogin]
         case .lockbox:
-            return .sideNavLockbox
+            return [AnalyticsEvents.SideMenu.sideNavLockbox]
         case .exchange:
-            return .sideNavExchange
+            return [AnalyticsEvents.SideMenu.sideNavExchange]
         case .secureChannel:
-            return .sideNavSecureChannel
+            return [AnalyticsEvents.SideMenu.sideNavSecureChannel]
         }
     }
 

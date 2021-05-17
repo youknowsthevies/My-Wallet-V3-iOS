@@ -128,12 +128,10 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
             )
             presenter.tap
                 .do(onNext: { [weak self] _ in
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: .card)
-                    )
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .paymentCard)
-                    )
+                    self?.eventRecorder.record(events: [
+                        AnalyticsEvent.sbPaymentMethodSelected(selection: .card),
+                        AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .paymentCard)
+                    ])
                 })
                 .map { _ in paymentMethodType }
                 .emit(to: selectionRelay)
@@ -148,12 +146,10 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
             )
             presenter.tap
                 .do(onNext: { [weak self] _ in
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: .funds)
-                    )
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .funds)
-                    )
+                    self?.eventRecorder.record(events: [
+                        AnalyticsEvent.sbPaymentMethodSelected(selection: .funds),
+                        AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .funds)
+                    ])
                 })
                 .map { _ in paymentMethodType }
                 .emit(to: selectionRelay)
@@ -163,12 +159,10 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
             let viewModel = LinkedBankViewModel(data: data)
             viewModel.tap
                 .do(onNext: { [weak self] _ in
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: .funds)
-                    )
-                    self?.eventRecorder.record(
-                        event: AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .funds)
-                    )
+                    self?.eventRecorder.record(events: [
+                        AnalyticsEvent.sbPaymentMethodSelected(selection: .funds),
+                        AnalyticsEvents.New.SimpleBuy.buyPaymentMethodSelected(paymentType: .funds)
+                    ])
                 })
                 .map { _ in paymentMethodType }
                 .emit(to: selectionRelay)

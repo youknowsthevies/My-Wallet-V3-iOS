@@ -213,9 +213,10 @@ extension TabControllerManager: TabViewControllerDelegate {
     }
 
     func swapClicked() {
-        analyticsEventRecorder.record(
-            event: AnalyticsEvents.Swap.swapTabItemClick
-        )
+        analyticsEventRecorder.record(events: [
+            AnalyticsEvents.Swap.swapTabItemClick,
+            AnalyticsEvents.New.SimpleBuy.swapClicked
+        ])
         showSwap()
     }
 }

@@ -14,7 +14,10 @@ extension AnalyticsEvents {
             
             case buyAmountEntered(inputAmount: Double, inputCurrency: String, outputAmount: Double, outputCurrency: String)
             case buyPaymentMethodSelected(paymentType: PaymentType)
+            case buySellClicked(type: BuySellType, origin: BuySellOrigin)
             case buySellViewed(type: BuySellType)
+            case swapClicked
+            case swapViewed
             
             public var name: String {
                 switch self {
@@ -22,8 +25,14 @@ extension AnalyticsEvents {
                     return "Buy Amount Entered"
                 case .buyPaymentMethodSelected:
                     return "Buy Payment Method Selected"
+                case .buySellClicked:
+                    return "Buy Sell Clicked"
                 case .buySellViewed:
                     return "Buy Sell Viewed"
+                case .swapClicked:
+                    return "Swap Clicked"
+                case .swapViewed:
+                    return "Swap Viewed"
                 }
             }
             
@@ -42,9 +51,25 @@ extension AnalyticsEvents {
                         "payment_type": "\(paymentType.rawValue)",
                         "platform": "WALLET"
                     ]
+                case let .buySellClicked(type, origin):
+                    return [
+                        "type": type.rawValue,
+                        "origin": origin.rawValue,
+                        "platform": "WALLET"
+                    ]
                 case let .buySellViewed(type):
                     return [
-                        "type": type.rawValue
+                        "type": type.rawValue,
+                        "platform": "WALLET"
+                    ]
+                case .swapClicked:
+                    return [
+                        "origin": "NAVIGATION",
+                        "platform": "WALLET"
+                    ]
+                default:
+                    return [
+                        "platform": "WALLET"
                     ]
                 }
             }
@@ -73,6 +98,18 @@ extension AnalyticsEvents {
         public enum BuySellType: String {
             case buy = "BUY"
             case sell = "SELL"
+        }
+        
+        public enum BuySellOrigin: String {
+            case buyWidget = "BUY_WIDGET"
+            case dashboardPromo = "DASHBOARD_PROMO"
+            case navigation = "NAVIGATION"
+            case pendingOrder = "PENDING_ORDER"
+            case priceChart = "PRICE_CHART"
+            case saving = "SAVINGS"
+            case send = "SEND"
+            case transationDetails = "TRANSACTION_DETAILS"
+            case welcome = "WELCOME"
         }
     }
 }
