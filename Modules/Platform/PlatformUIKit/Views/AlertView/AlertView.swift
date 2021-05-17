@@ -352,22 +352,23 @@ public class AlertView: UIView {
                     guard let self = self else { return }
                     self.alpha = 0.0
                     self.dimmingView.alpha = 0.0
+                },
+                completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    guard let observer = self.observer else {
+                        return
+                    }
+                    observer.invalidate()
+                    if let dismiss = self.model.actions.filter({ $0.style == .dismiss }).first {
+                        self.completion?(dismiss)
+                    } else {
+                        self.completion?(.defaultDismissal)
+                    }
+                    self.dimmingView.removeFromSuperview()
+                    self.removeFromSuperview()
+                    self.observer = nil
                 }
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                guard let observer = self.observer else {
-                    return
-                }
-                observer.invalidate()
-                if let dismiss = self.model.actions.filter({ $0.style == .dismiss }).first {
-                    self.completion?(dismiss)
-                } else {
-                    self.completion?(.defaultDismissal)
-                }
-                self.dimmingView.removeFromSuperview()
-                self.removeFromSuperview()
-                self.observer = nil
-            }
+            )
         }
     }
     
