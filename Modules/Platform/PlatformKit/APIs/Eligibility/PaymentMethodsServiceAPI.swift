@@ -2,9 +2,15 @@
 
 import RxSwift
 
-/// Fetches the available payment methods
+/// Types adopting the `PaymentMethodsServiceAPI` protocol should provide a way to fetch the eligible payment methods for the current user.
 public protocol PaymentMethodsServiceAPI: class {
+    /// Streams the available eligible payment methods for the user
     var paymentMethods: Observable<[PaymentMethod]> { get }
+    /// Returns the available eligible payment methods for the user
     var paymentMethodsSingle: Single<[PaymentMethod]> { get }
+    /// Returns the available card types that the user can add
     var supportedCardTypes: Single<Set<CardType>> { get }
+
+    /// Refreshes the stream of `paymentMethods`
+    func refresh()
 }

@@ -17,7 +17,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 
     // MARK: - Private properties
 
-    private let paymentMethodsRelay = BehaviorRelay<[PaymentMethod]?>(value: nil)
+    private let refreshAction = PublishRelay<Void>()
 
     private let eligibleMethodsClient: PaymentEligibleMethodsClientAPI
     private let tiersService: KYCTiersServiceAPI
@@ -35,9 +35,6 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         self.tiersService = tiersService
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledCurrenciesService = enabledCurrenciesService
-        NotificationCenter.when(.logout) { [weak paymentMethodsRelay] _ in
-            paymentMethodsRelay?.accept(nil)
-        }
 
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
@@ -78,7 +75,12 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
             .distinctUntilChanged()
             .share(replay: 1, scope: .whileConnected)
 
-        paymentMethods = fetch
+        paymentMethods = refreshAction
+            .startWith(())
+            .asObservable()
+            .flatMapLatest { _ -> Observable<[PaymentMethod]> in
+                fetch
+            }
 
         paymentMethodsSingle = fetch
             .take(1)
@@ -98,5 +100,11 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     return []
                 }
             }
+    }
+
+    func refresh() {
+        DispatchQueue.main.async { [weak self] in
+            self?.refreshAction.accept(())
+        }
     }
 }
