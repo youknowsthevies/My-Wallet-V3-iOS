@@ -27,7 +27,15 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
-    
+
+    private lazy var crashOnError: Bool = {
+        #if INTERNAL_BUILD
+        return true
+        #else
+        return false
+        #endif
+    }()
+
     init(transactionModel: TransactionModel,
          presenter: PendingTransactionPagePresentable,
          analyticsHook: TransactionAnalyticsHook = resolve()) {
@@ -41,31 +49,44 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         
         let sent = transactionModel
             .state
-            .map { state -> MoneyValue in
+            .map { [crashOnError] state -> MoneyValue in
                 switch state.moneyValueFromSource() {
                 case .success(let value):
                     return value
                 case .failure(let error):
-                    #if INTERNAL_BUILD
-                    fatalError(error.localizedDescription)
-                    #else
-                    return .zero(currency: state.source!.currencyType)
-                    #endif
+                    guard let source = state.source else {
+                        fatalError("No state.source")
+                    }
+                    if crashOnError {
+                        fatalError(error.localizedDescription)
+                    }
+                    return .zero(currency: source.currencyType)
                 }
             }
         
         let received = transactionModel
             .state
-            .map { state -> MoneyValue in
+            .map { [crashOnError] state -> MoneyValue? in
                 switch state.moneyValueFromDestination() {
                 case .success(let value):
                     return value
                 case .failure(let error):
-                    #if INTERNAL_BUILD
-                    fatalError(error.localizedDescription)
-                    #else
-                    return .zero(currency: (state.destination as! CryptoTarget).asset.currency)
-                    #endif
+                    guard let destination = state.destination else {
+                        fatalError("No state.destination")
+                    }
+                    let currencyType: CurrencyType
+                    switch destination {
+                    case let account as SingleAccount:
+                        currencyType = account.currencyType
+                    case let cryptoTarget as CryptoTarget:
+                        currencyType = cryptoTarget.asset.currency
+                    default:
+                        fatalError("Unsupported state.destination: \(String(reflecting: destination))")
+                    }
+                    if crashOnError {
+                        fatalError(error.localizedDescription)
+                    }
+                    return .zero(currency: currencyType)
                 }
             }
         
@@ -99,14 +120,14 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         executionStatus
             .asObservable()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .subscribe(onNext: { [weak self] (executionStatus, transcationState) in
+            .subscribe(onNext: { [weak self] (executionStatus, transactionState) in
                 switch executionStatus {
                 case .inProgress, .notStarted:
                     break
                 case .error:
-                    self?.analyticsHook.onTransactionFailure(with: transcationState)
+                    self?.analyticsHook.onTransactionFailure(with: transactionState)
                 case .completed:
-                    self?.analyticsHook.onTransactionSuccess(with: transcationState)
+                    self?.analyticsHook.onTransactionSuccess(with: transactionState)
                 }
             })
             .disposeOnDeactivate(interactor: self)
