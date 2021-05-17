@@ -58,7 +58,6 @@ enum TransactionAction: MviAction {
                 action: action,
                 destination: target,
                 errorState: .none,
-                nextEnabled: passwordRequired,
                 passwordRequired: passwordRequired,
                 source: sourceAccount,
                 step: step
@@ -68,7 +67,6 @@ enum TransactionAction: MviAction {
                 action: action,
                 destination: target,
                 errorState: .none,
-                nextEnabled: true,
                 passwordRequired: passwordRequired,
                 source: sourceAccount,
                 step: .enterAmount
@@ -84,7 +82,6 @@ enum TransactionAction: MviAction {
             return TransactionState(
                 action: action,
                 errorState: .none,
-                nextEnabled: passwordRequired,
                 passwordRequired: passwordRequired,
                 source: sourceAccount
             )

@@ -170,7 +170,7 @@ public final class SellRouterInteractor: Interactor {
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 eligibilityService: EligibilityServiceAPI = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
-                balanceProvider: BalanceProviding,
+                balanceProvider: BalanceProviding = resolve(),
                 loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve()) {
         self.eligibilityService = eligibilityService

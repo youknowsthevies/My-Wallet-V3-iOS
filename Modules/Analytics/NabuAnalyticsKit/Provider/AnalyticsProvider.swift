@@ -17,9 +17,8 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
     
     public func trackEvent(title: String, parameters: [String: Any]?) {
         let event = Event(title: title, properties: parameters)
-        let context = contextProvider.context
         // TODO: IOS-4556 - batching
-        let eventsWrapper = EventsWrapper(context: context, events: [event])
+        let eventsWrapper = EventsWrapper(contextProvider: contextProvider, events: [event])
         nabuAnalyticsClient.publish(events: eventsWrapper)
             .retry(Constant.retryCount)
             .sink() { (error) in

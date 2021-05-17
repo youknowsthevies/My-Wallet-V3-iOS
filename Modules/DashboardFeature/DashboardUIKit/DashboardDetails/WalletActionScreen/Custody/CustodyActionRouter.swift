@@ -6,26 +6,20 @@ import PlatformKit
 import PlatformUIKit
 import RxRelay
 import RxSwift
-import SettingsKit
 import ToolKit
 import TransactionUIKit
 
 public protocol BackupRouterAPI {
-    
     var completionRelay: PublishRelay<Void> { get }
-    
     func start()
-    
 }
 
 public protocol WalletOperationsRouting {
-    
     func handleSellCrypto()
     func handleBuyCrypto(currency: CryptoCurrency)
     func showCashIdentityVerificationScreen()
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
     func switchTabToSwap()
-    
 }
 
 public final class CustodyActionRouter: CustodyActionRouterAPI {

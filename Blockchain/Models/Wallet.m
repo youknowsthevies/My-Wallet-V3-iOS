@@ -1227,7 +1227,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 - (void)getSwipeAddresses:(NSInteger)numberOfAddresses assetType:(LegacyAssetType)assetType
 {
-
     NSString *script;
     if (assetType == LegacyAssetTypeBitcoin) {
         script = [NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%ld)", (long)numberOfAddresses];

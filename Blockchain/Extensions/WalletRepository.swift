@@ -140,7 +140,15 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                     promise(.success(nil))
                     return
                 }
-                promise(.success(jsValue.toString()))
+                guard let string = jsValue.toString() else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !string.isEmpty else {
+                    promise(.success(nil))
+                    return
+                }
+                promise(.success(string))
             }
         }
         .subscribe(on: combineJSScheduler)
@@ -158,8 +166,16 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             guard let jsValue = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.offlineToken) else {
                 return Single.just(nil)
             }
-            guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
-            return Single.just(jsValue.toString())
+            guard !jsValue.isNull, !jsValue.isUndefined else {
+                return .just(nil)
+            }
+            guard let string = jsValue.toString() else {
+                return .just(nil)
+            }
+            guard !string.isEmpty else {
+                return .just(nil)
+            }
+            return Single.just(string)
         }
         .subscribeOn(jsScheduler)
     }
@@ -180,7 +196,19 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                     promise(.success(nil))
                     return
                 }
-                promise(.success(jsValue.toString()))
+                guard !jsValue.isNull, !jsValue.isUndefined else {
+                    promise(.success(nil))
+                    return
+                }
+                guard let string = jsValue.toString() else {
+                    promise(.success(nil))
+                    return
+                }
+                guard !string.isEmpty else {
+                    promise(.success(nil))
+                    return
+                }
+                promise(.success(string))
             }
         }
         .subscribe(on: combineJSScheduler)
@@ -198,7 +226,15 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             guard let jsValue = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(JSSetter.userId) else {
                 return Single.just(nil)
             }
-            guard !jsValue.isNull, !jsValue.isUndefined else { return .just(nil) }
+            guard !jsValue.isNull, !jsValue.isUndefined else {
+                return .just(nil)
+            }
+            guard let string = jsValue.toString() else {
+                return .just(nil)
+            }
+            guard !string.isEmpty else {
+                return .just(nil)
+            }
             return Single.just(jsValue.toString())
         }
         .subscribeOn(jsScheduler)

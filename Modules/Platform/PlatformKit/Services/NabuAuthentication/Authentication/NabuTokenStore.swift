@@ -3,17 +3,17 @@
 import Combine
 import ToolKit
 
-final class NabuTokenStore {
+public final class NabuTokenStore {
     
-    private let sessionTokenData = Atomic<NabuSessionTokenResponse?>(nil)
+    public var sessionTokenDataPublisher: AnyPublisher<NabuSessionTokenResponse?, Never> {
+        .just(sessionTokenData.value)
+    }
     
     var requiresRefresh: AnyPublisher<Bool, Never> {
         .just(sessionTokenData.value == nil)
     }
     
-    var sessionTokenDataPublisher: AnyPublisher<NabuSessionTokenResponse?, Never> {
-        .just(sessionTokenData.value)
-    }
+    private let sessionTokenData = Atomic<NabuSessionTokenResponse?>(nil)
     
     init() {
         NotificationCenter.when(.logout) { [weak self] _ in

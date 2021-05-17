@@ -3,13 +3,13 @@
 import Foundation
 
 struct EventsWrapper: Encodable {
-    let id: String
+    let id: String?
     let context: Context
     let events: [Event]
     
-    init(context: Context, events: [Event]) {
-        self.id = UUID().uuidString
-        self.context = context
+    init(contextProvider: ContextProviding, events: [Event]) {
+        self.id = contextProvider.anonymousId
+        self.context = contextProvider.context
         self.events = events
     }
 }

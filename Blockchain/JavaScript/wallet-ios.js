@@ -1725,16 +1725,14 @@ MyWalletPhone.tradeExecution = {
             const isV4 = MyWallet.wallet.hdwallet.accounts[0].derivations
             if (isV4) {
                 let btcAccount = MyWallet.wallet.btc.accounts[from];
-                currentPayment = btcAccount.createPayment();
-                currentPayment.to(to)
+                currentPayment = btcAccount.createPayment().to(to).amount(amount).feePerByte(feePerByte).build()
 
-                btcAccount.getAvailableBalance(feePerByte)
-                    .then(function (balance) {
-                        currentPayment.amount(amount)
-                        currentPayment.feePerByte(feePerByte);
-                        currentPayment.build();
+                Promise.all([currentPayment._payment, btcAccount.getAvailableBalance(feePerByte)])
+                    .then(function (values) {
+                        let payment = values[0]
+                        let balance = values[1]
                         var paymentData = {
-                            "finalFee": balance.sweepFee,
+                            "finalFee": payment.selection.fee,
                             "sweepFee": balance.sweepFee,
                             "sweepAmount": balance.amount
                         };
@@ -1791,15 +1789,16 @@ MyWalletPhone.tradeExecution = {
         createPayment: function (from, to, amount, feePerByte) {
             // Currently cannot send from BCH addresses
             let bchAccount = MyWallet.wallet.bch.accounts[from];
-            currentBitcoinCashPayment = bchAccount.createPayment();
+            currentBitcoinCashPayment = bchAccount.createPayment()
             MyWalletPhone.bch.changePaymentToAddress(to);
-            bchAccount.getAvailableBalance(feePerByte)
-                .then(function (balance) {
-                    currentBitcoinCashPayment.amount(amount)
-                    currentBitcoinCashPayment.feePerByte(feePerByte);
-                    currentBitcoinCashPayment.build();
+            currentBitcoinCashPayment.amount(amount).feePerByte(feePerByte).build()
+
+            Promise.all([currentBitcoinCashPayment._payment, bchAccount.getAvailableBalance(feePerByte)])
+                .then(function (values) {
+                    let payment = values[0]
+                    let balance = values[1]
                     var paymentData = {
-                        "finalFee": balance.sweepFee,
+                        "finalFee": payment.selection.fee,
                         "sweepFee": balance.sweepFee,
                         "sweepAmount": balance.amount
                     };

@@ -10,7 +10,7 @@ public protocol NetworkResponseHandlerAPI {
     ///   - elements: the `data` and `response` to handle
     ///   - request: the request corresponding to this response
     func handle(
-        elements: (data: Data?, response: URLResponse?),
+        elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError>
 }
@@ -18,7 +18,7 @@ public protocol NetworkResponseHandlerAPI {
 final class NetworkResponseHandler: NetworkResponseHandlerAPI {
     
     func handle(
-        elements: (data: Data?, response: URLResponse?),
+        elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         handler(elements: elements, for: request).publisher
@@ -27,10 +27,10 @@ final class NetworkResponseHandler: NetworkResponseHandlerAPI {
     // MARK: - Private methods
     
     private func handler(
-        elements: (data: Data?, response: URLResponse?),
+        elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> Result<ServerResponse, NetworkError> {
-        Result<(data: Data?, response: URLResponse?), NetworkError>.success(elements)
+        Result<(data: Data, response: URLResponse), NetworkError>.success(elements)
             .flatMap { elements -> Result<ServerResponse, NetworkError> in
                 guard let response = elements.response as? HTTPURLResponse else {
                     return .failure(.serverError(.badResponse))
@@ -44,10 +44,8 @@ final class NetworkResponseHandler: NetworkResponseHandlerAPI {
                 default:
                     let requestPath = request.URLRequest.url?.path ?? ""
                     #if INTERNAL_BUILD
-                    if let data = payload {
-                        if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
-                            Logger.shared.error("\(json)")
-                        }
+                    if let json = try? JSONSerialization.jsonObject(with: payload, options: .allowFragments) {
+                        Logger.shared.error("\(json)")
                     }
                     #endif
                     Logger.shared.error("\(requestPath) failed with status code: \(response.statusCode)")

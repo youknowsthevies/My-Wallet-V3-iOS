@@ -14,7 +14,7 @@ public enum PresentationType {
     /// Navigates from a given view controller
     case navigation(from: ViewControllerAPI)
     
-    /// Navigates from the current view controller
+    /// Navigates from the current view controller, pushes the controller on the stack
     case navigationFromCurrent
     
     public var leadingButton: Screen.Style.LeadingButton {

@@ -15,7 +15,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool = false
-    let tradeLimitsService: TradeLimitsAPI
+    let tradeLimitsService: TransactionLimitsServiceAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -23,7 +23,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     init(quotesEngine: SwapQuotesEngine,
          orderQuoteService: OrderQuoteServiceAPI = resolve(),
          orderCreationService: OrderCreationServiceAPI = resolve(),
-         tradeLimitsService: TradeLimitsAPI = resolve(),
+         tradeLimitsService: TransactionLimitsServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve()) {

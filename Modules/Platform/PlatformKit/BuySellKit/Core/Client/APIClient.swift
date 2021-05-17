@@ -36,7 +36,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let checkEligibility = "checkEligibility"
         static let states = "states"
         static let benefiary = "beneficiary"
-        static let onlyEligible = "onlyEligible"
+        static let eligibleOnly = "eligibleOnly"
     }
         
     private enum Path {
@@ -366,15 +366,15 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - PaymentEligibleMethodsClientAPI
 
-    func eligiblePaymentMethods(for currency: String, onlyEligible: Bool) -> Single<[PaymentMethodsResponse.Method]> {
+    func eligiblePaymentMethods(for currency: String, eligibleOnly: Bool) -> Single<[PaymentMethodsResponse.Method]> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
                 value: currency
             ),
             URLQueryItem(
-                name: Parameter.onlyEligible,
-                value: "\(onlyEligible)"
+                name: Parameter.eligibleOnly,
+                value: "\(eligibleOnly)"
             )
         ]
         let request = requestBuilder.get(

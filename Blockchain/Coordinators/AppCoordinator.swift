@@ -46,7 +46,7 @@ import WalletPayloadKit
     private var settingsRouterAPI: SettingsRouterAPI?
     private var buyRouter: PlatformUIKit.RouterAPI!
     private var sellRouter: PlatformUIKit.SellRouter!
-    private var backupRouter: SettingsUIKit.BackupRouterAPI?
+    private var backupRouter: DashboardUIKit.BackupRouterAPI?
     
     // MARK: - UIViewController Properties
     
@@ -157,21 +157,9 @@ import WalletPayloadKit
     }
 
     func showSettingsView() {
-        settingsRouterAPI = SettingsRouter(
-            appCoordinator: self,
-            wallet: walletManager.wallet,
-            guidRepositoryAPI: walletManager.repository,
-            authenticationCoordinator: authenticationCoordinator,
-            exchangeCoordinator: ExchangeCoordinator.shared,
-            appStoreOpener: UIApplication.shared,
-            currencyRouter: self,
-            tabSwapping: self,
-            passwordRepository: walletManager.repository,
-            repository: BlockchainDataRepository.shared,
-            balanceProviding: DataProvider.default.balance,
-            balanceChangeProviding: DataProvider.default.balanceChange
-        )
-        settingsRouterAPI?.presentSettings()
+        let router: SettingsRouterAPI = resolve()
+        settingsRouterAPI = router
+        router.presentSettings()
     }
 
     @objc func closeSideMenu() {
@@ -320,8 +308,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     func startBackupFlow() {
-        backupRouter = BackupFundsCustodialRouter()
-        backupRouter?.start()
+        let router: DashboardUIKit.BackupRouterAPI = resolve()
+        backupRouter = router
+        router.start()
     }
 
     private func createAccountsAndAddressesViewController() -> UIViewController {
@@ -420,14 +409,11 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     @objc func handleSellCrypto() {
         let accountSelectionService = AccountSelectionService()
         let interactor = SellRouterInteractor(
-            accountSelectionService: accountSelectionService,
-            balanceProvider: DataProvider.default.balance
+            accountSelectionService: accountSelectionService
         )
         let builder = PlatformUIKit.SellBuilder(
             accountSelectionService: accountSelectionService,
-            routerInteractor: interactor,
-            analyticsRecorder: resolve(),
-            balanceProvider: DataProvider.default.balance
+            routerInteractor: interactor
         )
         sellRouter = PlatformUIKit.SellRouter(builder: builder)
         sellRouter.load()

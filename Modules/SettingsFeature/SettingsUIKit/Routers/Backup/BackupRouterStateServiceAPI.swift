@@ -24,9 +24,7 @@ typealias BackupRouterStateServiceAPI = BackupRouterStateReceiverServiceAPI &
                                         BackupRouterStateEmitterServiceAPI
 
 /// `Entry` denotes from where the state is being started.
-/// The entry may mean controllers are presented with a different
-/// `PresentationType`.
-/// TODO: Might put this on `BackupRouterStateEmitterServiceAPI`.
+/// The entry may mean controllers are presented with a different `PresentationType`.
 public enum BackupRouterEntry {
     
     // Entering from the `Send` custody flow

@@ -27,9 +27,8 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     
     // MARK: - Private Properties
     
-    private var feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> {
-        resolve(tag: Token.coin)
-    }
+    private let feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>>
+    private let feeCache: CachedValue<BitcoinChainTransactionFee<Token>>
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
     private let bridge: BitcoinChainSendBridgeAPI
@@ -54,11 +53,21 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     init(requireSecondPassword: Bool,
          priceService: PriceServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         bridge: BitcoinChainSendBridgeAPI = resolve()) {
+         bridge: BitcoinChainSendBridgeAPI = resolve(),
+         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)) {
         self.requireSecondPassword = requireSecondPassword
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.bridge = bridge
+        self.feeService = feeService
+        self.feeCache = CachedValue<BitcoinChainTransactionFee<Token>>(
+            configuration: CachedValueConfiguration(
+                refreshType: .periodic(seconds: 90)
+            )
+        )
+        feeCache.setFetch(weak: self) { (self) in
+            self.feeService.fees
+        }
     }
     
     // MARK: - OnChainTransactionEngine
@@ -237,12 +246,12 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
     func doPrepareTransaction(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<EngineTransaction> {
         bridge.sign(with: secondPassword)
     }
-    
+
     func doOnTransactionSuccess(pendingTransaction: PendingTransaction) {
         // TODO: This matches Androids API
         // though may not be necessary for iOS
     }
-    
+
     func doOnTransactionFailed(pendingTransaction: PendingTransaction, error: Error) {
         // TODO: This matches Androids API
         // though may not be necessary for iOS
@@ -320,21 +329,21 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         }
         .map { (amount: $0.0, fees: $0.1) }
     }
-    
+
     private var priorityFees: Single<MoneyValue> {
-        feeService
-            .fees
+        feeCache
+            .valueSingle
             .map(\.priority)
             .map(\.moneyValue)
     }
-    
+
     private var regularFees: Single<MoneyValue> {
-        feeService
-            .fees
+        feeCache
+            .valueSingle
             .map(\.regular)
             .map(\.moneyValue)
     }
-    
+
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency

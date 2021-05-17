@@ -286,22 +286,24 @@ final class PinScreenPresenter {
     }
 
     func viewDidLoad() {
-        interactor.serverStatus()
-            .map { incident -> ServerStatusViewModel in
-                ServerStatusViewModel(
-                    title: nil,
-                    textViewModel: .init(
-                        inputs: [
-                            .text(string: LocalizationConstants.ServerStatus.majorOutageSubtitle),
-                            .url(string: LocalizationConstants.ServerStatus.learnMore, url: incident.page.url)
-                        ],
-                        textStyle: .init(color: .white, font: UIFont.main(.medium, 16)),
-                        linkStyle: .init(color: .white, font: UIFont.main(.bold, 16))
-                    )
-                )
-            }
-            .bind(to: serverStatusRelay)
-            .disposed(by: disposeBag)
+        
+        // TODO: Re-enable this once we have isolated the source of the crash
+//        interactor.serverStatus()
+//            .map { incident -> ServerStatusViewModel in
+//                ServerStatusViewModel(
+//                    title: nil,
+//                    textViewModel: .init(
+//                        inputs: [
+//                            .text(string: LocalizationConstants.ServerStatus.majorOutageSubtitle),
+//                            .url(string: LocalizationConstants.ServerStatus.learnMore, url: incident.page.url)
+//                        ],
+//                        textStyle: .init(color: .white, font: UIFont.main(.medium, 16)),
+//                        linkStyle: .init(color: .white, font: UIFont.main(.bold, 16))
+//                    )
+//                )
+//            }
+//            .bind(to: serverStatusRelay)
+//            .disposed(by: disposeBag)
     }
 }
 

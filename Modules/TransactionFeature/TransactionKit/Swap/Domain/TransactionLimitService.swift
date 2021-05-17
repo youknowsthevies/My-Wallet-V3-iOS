@@ -5,55 +5,39 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-public protocol TransactionLimitsServiceAPI {
-    var transactionLimits: Single<TransactionLimits> { get }
-    func fetchTransactionLimits() -> Single<TransactionLimits>
+enum TransactionLimitsProduct {
+    // TICKET: IOS-4657: Add a Simple Buy case 'case simpleBuy(BUY|SELL)'
+    case swap(OrderDirection)
+}
+
+protocol TransactionLimitsServiceAPI {
+    func fetchTransactionLimits(currency: CurrencyType,
+                                networkFee: CurrencyType,
+                                product: TransactionLimitsProduct) -> Single<TransactionLimits>
 }
 
 final class TransactionLimitsService: TransactionLimitsServiceAPI {
-    
-    // MARK: - Public Properties
-    
-    var transactionLimits: Single<TransactionLimits> {
-        transactionLimitsCachedValue.valueSingle
-    }
-    
+
     // MARK: - Properties
-    
-    private let transactionLimitsCachedValue = CachedValue<TransactionLimits>(
-        configuration: .init(
-            refreshType: .onSubscription,
-            flushNotificationName: .logout
-        )
-    )
-    
+
     private let client: OrderTransactionLimitsClientAPI
-    private let fiatCurrencyService: FiatCurrencyServiceAPI
-    
+
     // MARK: - Setup
-    
-    init(client: OrderTransactionLimitsClientAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+
+    init(client: OrderTransactionLimitsClientAPI = resolve()) {
         self.client = client
-        self.fiatCurrencyService = fiatCurrencyService
-        
-        transactionLimitsCachedValue.setFetch(weak: self) { (self) in
-            self.fiatCurrencyService
-                .fiatCurrency
-                .flatMap(weak: self) { (self, fiatCurrency) -> Single<TransactionLimits> in
-                    self.client
-                        .fetchTransactionLimits(
-                            for: fiatCurrency,
-                            networkFee: fiatCurrency,
-                            minorValues: true
-                        )
-                }
-        }
     }
-    
+
     // MARK: - TransactionLimitServiceAPI
-    
-    func fetchTransactionLimits() -> Single<TransactionLimits> {
-        transactionLimitsCachedValue.fetchValue
+
+    func fetchTransactionLimits(currency: CurrencyType,
+                                networkFee: CurrencyType,
+                                product: TransactionLimitsProduct) -> Single<TransactionLimits> {
+        self.client
+            .fetchTransactionLimits(
+                currency: currency,
+                networkFee: networkFee,
+                product: product
+            )
     }
 }

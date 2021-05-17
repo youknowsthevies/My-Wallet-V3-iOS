@@ -31,12 +31,12 @@ public protocol AppStoreOpening: class {
     func openAppStore()
 }
 
-public final class SettingsRouter: SettingsRouterAPI {
+final class SettingsRouter: SettingsRouterAPI {
     
     typealias AnalyticsEvent = AnalyticsEvents.Settings
     
-    public let actionRelay = PublishRelay<SettingsScreenAction>()
-    public let previousRelay = PublishRelay<Void>()
+    let actionRelay = PublishRelay<SettingsScreenAction>()
+    let previousRelay = PublishRelay<Void>()
     
     // MARK: - Routers
     
@@ -44,8 +44,8 @@ public final class SettingsRouter: SettingsRouterAPI {
         UpdateMobileRouter(navigationRouter: navigationRouter)
     }()
     
-    private lazy var backupRouterAPI: BackupRouterAPI = {
-        BackupFundsSettingsRouter(navigationRouter: navigationRouter)
+    private lazy var backupRouterAPI: BackupFundsRouterAPI = {
+        BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
     }()
     
     // MARK: - Private
@@ -78,25 +78,27 @@ public final class SettingsRouter: SettingsRouterAPI {
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
     
-    public init(appCoordinator: AppCoordinating,
-                builder: SettingsBuilding = SettingsBuilder(),
-                wallet: WalletRecoveryVerifing,
-                guidRepositoryAPI: GuidRepositoryAPI,
-                authenticationCoordinator: AuthenticationCoordinating,
-                exchangeCoordinator: ExchangeCoordinating,
-                appStoreOpener: AppStoreOpening,
-                navigationRouter: NavigationRouterAPI = resolve(),
-                analyticsRecording: AnalyticsEventRecording = resolve(),
-                alertPresenter: AlertViewPresenter = resolve(),
-                cardListService: CardListServiceAPI = resolve(),
-                paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-                pitConnectionAPI: PITConnectionStatusProviding = resolve(),
-                currencyRouter: CurrencyRouting,
-                tabSwapping: TabSwapping,
-                passwordRepository: PasswordRepositoryAPI,
-                repository: DataRepositoryAPI,
-                balanceProviding: BalanceProviding,
-                balanceChangeProviding: BalanceChangeProviding) {
+    init(
+        appCoordinator: AppCoordinating = resolve(),
+        builder: SettingsBuilding = SettingsBuilder(),
+        wallet: WalletRecoveryVerifing = resolve(),
+        guidRepositoryAPI: GuidRepositoryAPI = resolve(),
+        authenticationCoordinator: AuthenticationCoordinating = resolve(),
+        exchangeCoordinator: ExchangeCoordinating = resolve(),
+        appStoreOpener: AppStoreOpening = resolve(),
+        navigationRouter: NavigationRouterAPI = resolve(),
+        analyticsRecording: AnalyticsEventRecording = resolve(),
+        alertPresenter: AlertViewPresenter = resolve(),
+        cardListService: CardListServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+        pitConnectionAPI: PITConnectionStatusProviding = resolve(),
+        currencyRouter: CurrencyRouting = resolve(),
+        tabSwapping: TabSwapping = resolve(),
+        passwordRepository: PasswordRepositoryAPI = resolve(),
+        repository: DataRepositoryAPI = resolve(),
+        balanceProviding: BalanceProviding = resolve(),
+        balanceChangeProviding: BalanceChangeProviding = resolve()
+    ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
         self.builder = builder
@@ -139,7 +141,7 @@ public final class SettingsRouter: SettingsRouterAPI {
             
     }
     
-    public func presentSettings() {
+    func presentSettings() {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
@@ -153,7 +155,7 @@ public final class SettingsRouter: SettingsRouterAPI {
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
     
-    public func dismiss() {
+    func dismiss() {
         guard let navController = navigationRouter.navigationControllerAPI else { return }
         if navController.viewControllersCount > 1 {
             navController.popViewController(animated: true)

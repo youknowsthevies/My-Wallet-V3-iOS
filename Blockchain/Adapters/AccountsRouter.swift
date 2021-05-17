@@ -22,8 +22,8 @@ final class AccountsRouter: AccountsRouting {
     
     init(
         routing: CurrencyRouting & TabSwapping,
-        balanceProvider: BalanceProviding,
-        backupRouter: DashboardUIKit.BackupRouterAPI
+        balanceProvider: BalanceProviding = resolve(),
+        backupRouter: DashboardUIKit.BackupRouterAPI = resolve()
     ) {
         self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: balanceProvider, routing: routing)
         self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)

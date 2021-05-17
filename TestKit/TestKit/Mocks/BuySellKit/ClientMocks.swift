@@ -31,13 +31,15 @@ extension APIClient {
                     type: "BANK_TRANSFER",
                     limits: .init(min: "5000", max: "200000"),
                     subTypes: [],
-                    currency: "GBP"
+                    currency: "GBP",
+                    eligible: true
                 ),
                 .init(
                     type: "CARD",
                     limits: .init(min: "5000", max: "500000"),
                     subTypes: [],
-                    currency: "GBP"
+                    currency: "GBP",
+                    eligible: true
                 )
             ]
         )

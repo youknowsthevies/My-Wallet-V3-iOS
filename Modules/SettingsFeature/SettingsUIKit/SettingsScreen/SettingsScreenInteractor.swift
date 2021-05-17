@@ -43,21 +43,23 @@ final class SettingsScreenInteractor {
     
     private let disposeBag = DisposeBag()
     
-    init(credentialsStore: CredentialsStoreAPI = resolve(),
-         featureConfigurator: FeatureFetchingConfiguring = resolve(),
-         settingsService: SettingsServiceAPI = resolve(),
-         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
-         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
-         appSettings: BlockchainSettings.App = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         pitConnectionAPI: PITConnectionStatusProviding,
-         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
-         tiersProviding: TierLimitsProviding = resolve(),
-         wallet: WalletRecoveryVerifing,
-         balanceProviding: BalanceProviding,
-         balanceChangeProviding: BalanceChangeProviding,
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         authenticationCoordinator: AuthenticationCoordinating) {
+    init(
+        credentialsStore: CredentialsStoreAPI = resolve(),
+        featureConfigurator: FeatureFetchingConfiguring = resolve(),
+        settingsService: SettingsServiceAPI = resolve(),
+        smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
+        emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
+        appSettings: BlockchainSettings.App = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
+        pitConnectionAPI: PITConnectionStatusProviding,
+        settingsAuthenticating: AppSettingsAuthenticating = resolve(),
+        tiersProviding: TierLimitsProviding = resolve(),
+        wallet: WalletRecoveryVerifing,
+        balanceProviding: BalanceProviding,
+        balanceChangeProviding: BalanceChangeProviding,
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        authenticationCoordinator: AuthenticationCoordinating
+    ) {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService

@@ -12,7 +12,6 @@ struct Event: Encodable {
         self.originalTimestamp = Date()
         self.name = title
         self.type = .event
-        
         self.properties = properties?.compactMapValues { value -> JSONValue? in
             switch value {
             case let value as String:

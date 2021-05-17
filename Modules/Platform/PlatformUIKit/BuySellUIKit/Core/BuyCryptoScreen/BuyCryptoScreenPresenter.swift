@@ -42,6 +42,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         super.viewDidLoad()
         
         interactor.effect
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] effect in
                 switch effect {
                 case .failure:
@@ -65,6 +66,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.preferredPaymentMethodType,
                 interactor.paymentMethodTypes.map { $0.count }
             )
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
@@ -113,6 +115,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                         }
                     }
             }
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
@@ -180,6 +183,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
+            .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] _ in
                 self?.router.showFailureAlert()
             })
@@ -253,7 +257,11 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         }
         
         let trailingImageViewContent: ImageViewContent
-        if methodCount > 1 {
+        // in case there's no preferredPaymentMethodType
+        // but the payment methods count is greater than zero
+        // we still need to allow the user to tap in order to show
+        // the payment selection modal
+        if methodCount > 0 {
             trailingImageViewContent = ImageViewContent(
                 imageName: "icon-disclosure-small"
             )

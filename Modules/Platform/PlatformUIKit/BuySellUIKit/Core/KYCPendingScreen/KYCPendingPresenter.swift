@@ -33,15 +33,18 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     private unowned let stateService: RoutingStateEmitterAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private var modelRelay: BehaviorRelay<PendingStateViewModel>!
+    private var dismissControllerOnSuccess: () -> Void
 
     // MARK: - Setup
     
     init(stateService: RoutingStateEmitterAPI,
          interactor: KYCPendingInteractor,
+         dismissControllerOnSuccess: @escaping () -> Void,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.interactor = interactor
+        self.dismissControllerOnSuccess = dismissControllerOnSuccess
         super.init(interactable: interactor)
         modelRelay = BehaviorRelay(value: model(verificationState: .loading))
     }
@@ -66,6 +69,9 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
             .verificationState
             .filter { $0 == .completed }
             .mapToVoid()
+            // in case the user gets approved we need to dismiss/pop the view controller
+            .observeOn(MainScheduler.asyncInstance)
+            .do(onNext: { [weak self] in self?.dismissControllerOnSuccess() })
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
 

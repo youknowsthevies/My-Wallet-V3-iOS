@@ -11,6 +11,9 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
     /// The image corresponding to `imageName`
     public let image: Driver<UIImage?>
     
+    /// The visibility of the separator
+    public let isSeparatorHidden: Driver<Bool>
+    
     // MARK: - RxDataSources
     
     public let identity: AnyHashable
@@ -30,7 +33,8 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
     
     public init(title: String,
                 subtitle: String,
-                selected: Bool = false) {
+                selected: Bool = false,
+                hideSeparator: Bool = true) {
         let model: LineItemViewViewModel = .init(
             title: title,
             subtitle: subtitle
@@ -47,6 +51,7 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
                 }
                 return nil
             }
+        isSeparatorHidden = .just(hideSeparator)
     }
 }
 

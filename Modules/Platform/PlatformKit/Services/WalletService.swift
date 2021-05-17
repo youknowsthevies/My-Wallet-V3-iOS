@@ -50,10 +50,11 @@ class WalletService: WalletOptionsAPI {
         .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
-    // TODO: Dimitris - Move this to its own service
-    var serverStatus: Single<ServerIncidents> {
-        let url = URL(string: "https://www.blockchain-status.com/api/v2/incidents.json")!
-        let request = NetworkRequest(endpoint: url, method: .get, authenticated: false)
-        return networkAdapter.perform(request: request)
-    }
+    // TODO: Re-enable this once we have isolated the source of the crash
+//    // TODO: Dimitris - Move this to its own service
+//    var serverStatus: Single<ServerIncidents> {
+//        let url = URL(string: "https://www.blockchain-status.com/api/v2/incidents.json")!
+//        let request = NetworkRequest(endpoint: url, method: .get, authenticated: false)
+//        return networkAdapter.perform(request: request)
+//    }
 }

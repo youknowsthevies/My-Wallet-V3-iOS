@@ -22,6 +22,9 @@ struct PaymentMethodsResponse: Decodable {
         
         /// The currency limiter of the method
         let currency: String?
+
+        /// The eligible state of the payment
+        let eligible: Bool
     }
     
     /// The currency for the payment method (e.g: `USD`)

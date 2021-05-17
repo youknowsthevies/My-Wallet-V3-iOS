@@ -7,7 +7,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class BackupRouterStateService: BackupRouterStateServiceAPI {
+final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
     // MARK: - Types
             

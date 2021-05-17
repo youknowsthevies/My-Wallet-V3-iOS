@@ -115,16 +115,23 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         Observable
             .combineLatest(
                 preferredPaymentMethodTypeRelay,
-                fiatCurrencyService.fiatCurrencyObservable
+                fiatCurrencyService.fiatCurrencyObservable,
+                kycTiersService.tiers.map(\.isTier2Approved).asObservable()
             )
             .flatMap(weak: self) { (self, payload) in
-                let (preferredMethod, fiatCurrecy) = payload
+                let (preferredMethod, fiatCurrecy, isTier2Approved) = payload
                 if let preferredMethod = preferredMethod {
                     return .just(preferredMethod)
                 } else {
+                    // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
+                    // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
                     return self.methodTypes.take(1)
                         .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
-                            types.filterValidForBuy(currentWalletCurrency: fiatCurrecy)
+                            // we filter valid methods for buy
+                            types.filterValidForBuy(
+                                currentWalletCurrency: fiatCurrecy,
+                                accountForEligibility: isTier2Approved
+                            )
                         }
                         .map { $0.first }
                         .asObservable()
@@ -142,6 +149,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let balanceProvider: BalanceProviding
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
+    private let kycTiersService: KYCTiersServiceAPI
+
     // MARK: - Setup
     
     init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -150,7 +159,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
          cardListService: CardListServiceAPI = resolve(),
          balanceProvider: BalanceProviding = resolve(),
          linkedBankService: LinkedBanksServiceAPI = resolve(),
-         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
+         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
+         kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
@@ -158,6 +168,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.balanceProvider = balanceProvider
         self.linkedBankService = linkedBankService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
+        self.kycTiersService = kycTiersService
     }
         
     func fetchCards(andPrefer cardId: String) -> Completable {
@@ -225,7 +236,21 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     // MARK: - Private
-    
+
+    /// Merges the given payment types and order them in accordance to business rules
+    /// - Parameters:
+    ///   - paymentMethods: An array of `PaymentMethod` that defines the suggested methods
+    ///   - cards: An array of `CardData` the defines the available cards
+    ///   - balances: An instance of `MoneyBalancePairsCalculationStates` that provides access to balance pairs
+    ///   - linkedBanks: A array of `LinkedBankData` that defines any link bank (specifically ACH or OpenBanking)
+    /// - Returns: An sorted array of `PaymentMethodType`
+    /// ~~~
+    /// Ordering:
+    /// - Balances
+    /// - Cards
+    /// - Linked Banks
+    /// - Suggested Methods
+    /// ~~~
     private func merge(paymentMethods: [PaymentMethod],
                        cards: [CardData],
                        balances: MoneyBalancePairsCalculationStates,
@@ -298,7 +323,9 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 return bank
             }
             .map { PaymentMethodType.linkedBank($0) }
-        
+
+        // Dear future developer,
+        // Please note that order matters, if needed to change the order, remember to also update the method's comment!
         return balances + cardTypes + activeBanks + suggestedMethods
     }
 
@@ -370,9 +397,14 @@ extension Array where Element == PaymentMethodType {
             }
         }
     }
-    
+
     /// Returns the payment methods valid for buy usage
-    public func filterValidForBuy(currentWalletCurrency: FiatCurrency) -> [PaymentMethodType] {
+    /// - Parameters:
+    ///   - currentWalletCurrency: The current currency selected in settings
+    ///   - accountForEligibility: Pass `true` if the eligibily flag of a suggested paymentMethod should be taken in consideration,
+    ///                            otherwise `false`
+    /// - Returns: An array of `PaymentMethodType` objects that are valid for buy
+    public func filterValidForBuy(currentWalletCurrency: FiatCurrency, accountForEligibility: Bool) -> [PaymentMethodType] {
         filter { method in
             switch method {
             case .account(let data):
@@ -380,13 +412,16 @@ extension Array where Element == PaymentMethodType {
             case .suggested(let paymentMethod):
                 switch paymentMethod.type {
                 case .bankAccount:
-                    return false
+                    return false // this method is not supported
                 case .bankTransfer:
-                    return true
+                    return accountForEligibility ? paymentMethod.isEligible : true
                 case .funds(let currency):
-                    return currency == currentWalletCurrency.currency
+                    guard accountForEligibility else {
+                        return currency == currentWalletCurrency.currency
+                    }
+                    return currency == currentWalletCurrency.currency && paymentMethod.isEligible
                 case .card:
-                    return true
+                    return accountForEligibility ? paymentMethod.isEligible : true
                 }
             case .card(let data):
                 return data.state == .active

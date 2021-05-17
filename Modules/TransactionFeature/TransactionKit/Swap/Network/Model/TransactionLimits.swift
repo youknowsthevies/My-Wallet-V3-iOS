@@ -7,12 +7,12 @@ public struct TransactionLimits: Decodable {
     public let minOrder: FiatValue
     public let maxOrder: FiatValue
     public let maxPossibleOrder: FiatValue
-    public let daily: TransactionLimit
-    public let weekly: TransactionLimit
-    public let annual: TransactionLimit
+    public let daily: TransactionLimit?
+    public let weekly: TransactionLimit?
+    public let annual: TransactionLimit?
 
     public var maxTradableToday: FiatValue {
-        daily.available
+        daily?.available ?? maxPossibleOrder
     }
 
     enum CodingKeys: String, CodingKey {
@@ -49,12 +49,20 @@ public struct TransactionLimits: Decodable {
             currency: currency
         ) ?? zero
         
-        let daily = try values.decode(Limit.self, forKey: .daily)
-        let weekly = try values.decode(Limit.self, forKey: .weekly)
-        let annual = try values.decode(Limit.self, forKey: .annual)
-        
-        self.daily = .init(fiatCurrency: currency, limit: daily)
-        self.weekly = .init(fiatCurrency: currency, limit: weekly)
-        self.annual = .init(fiatCurrency: currency, limit: annual)
+        if let daily = try values.decodeIfPresent(Limit.self, forKey: .daily) {
+            self.daily = .init(fiatCurrency: currency, limit: daily)
+        } else {
+            self.daily = nil
+        }
+        if let weekly = try values.decodeIfPresent(Limit.self, forKey: .weekly) {
+            self.weekly = .init(fiatCurrency: currency, limit: weekly)
+        } else {
+            self.weekly = nil
+        }
+        if let annual = try values.decodeIfPresent(Limit.self, forKey: .annual) {
+            self.annual = .init(fiatCurrency: currency, limit: annual)
+        } else {
+            self.annual = nil
+        }
     }
 }

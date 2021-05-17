@@ -315,8 +315,10 @@ targets:
     - Module
   NabuAnalyticsKit:
     dependencies:
+    - target: PlatformKit
     - target: NetworkKit
     - target: AnalyticsKit
+    - target: SettingsKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -439,7 +441,6 @@ targets:
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
-    - sdk: AdSupport.framework
     - carthage: BigInt
     - carthage: Charts
     - carthage: DIKit
@@ -659,7 +660,6 @@ targets:
     - target: DashboardKit
     - target: PlatformUIKit
     - target: TransactionUIKit
-    - target: SettingsKit
     scheme:
       testTargets:
       - DashboardUIKitTests
