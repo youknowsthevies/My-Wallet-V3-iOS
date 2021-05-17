@@ -13,20 +13,20 @@ class MockAnalyticsService: AnalyticsServiceProviding {
 }
 
 struct MockOneTimeAnnouncement: OneTimeAnnouncement {
-    
+
     var viewModel: AnnouncementCardViewModel {
         fatalError("\(#function) was not implemented")
     }
-    
+
     var shouldShow: Bool {
         !isDismissed
     }
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let type: AnnouncementType
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     init(type: AnnouncementType,
          cacheSuite: CacheSuite,
          analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()]),

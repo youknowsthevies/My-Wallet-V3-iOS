@@ -5,32 +5,32 @@ import RxDataSources
 import RxSwift
 
 public final class RadioLineItemCellPresenter: IdentifiableType {
-    
+
     // MARK: - Public Properties
-    
+
     /// The image corresponding to `imageName`
     public let image: Driver<UIImage?>
-    
+
     /// The visibility of the separator
     public let isSeparatorHidden: Driver<Bool>
-    
+
     // MARK: - RxDataSources
-    
+
     public let identity: AnyHashable
-    
+
     /// Selection relay
     public let selectedRelay = BehaviorRelay<Bool>(value: false)
-    
+
     // MARK: - Internal
-    
+
     /// The `viewModel` for the `LineItemView`
     let viewModel: Driver<LineItemViewViewModel>
-    
+
     /// Name for radio image
     let imageName = BehaviorRelay<String?>(value: nil)
-    
+
     // MARK: - Init
-    
+
     public init(title: String,
                 subtitle: String,
                 selected: Bool = false,

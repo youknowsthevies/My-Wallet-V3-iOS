@@ -10,12 +10,12 @@ public enum JWTServiceError: Error {
 }
 
 public protocol JWTServiceAPI: AnyObject {
-    
+
     var token: AnyPublisher<String, JWTServiceError> { get }
 }
 
 final class JWTService: JWTServiceAPI {
-    
+
     var token: AnyPublisher<String, JWTServiceError> {
         let client = self.client
         return credentialsRepository.credentials
@@ -29,10 +29,10 @@ final class JWTService: JWTServiceAPI {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private let client: JWTClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
-    
+
     init(client: JWTClientAPI = resolve(),
          credentialsRepository: CredentialsRepositoryAPI = resolve()) {
         self.client = client

@@ -10,13 +10,13 @@ final class OrderQuoteServiceMock: TransactionKit.OrderQuoteServiceAPI {
         let response = try! JSONDecoder().decode(OrderQuoteResponse.self, from: btc_eth_quote_response)
         return .just(response)
     }
-    
+
     func fetchQuote(direction: OrderDirection,
                     sourceCurrencyType: CurrencyType,
                     destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
         latestQuote
     }
-    
+
     private let btc_eth_quote_response = Data("""
     {
       "id": "039267ab-de16-4093-8cdf-a7ea1c732dbd",

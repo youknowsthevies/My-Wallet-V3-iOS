@@ -6,11 +6,11 @@ import RxSwift
 import PlatformKit
 
 class AddressInteractorMock: AddressInteracting {
-    
+
     let asset: CryptoCurrency
     let address: Single<WalletAddressContent>
     let receivedPayment: Observable<ReceivedPaymentDetails>
-    
+
     init(asset: CryptoCurrency,
          address: WalletAddressContent,
          receivedPayment: ReceivedPaymentDetails) {

@@ -6,23 +6,23 @@ import RxRelay
 import RxSwift
 
 class BiometryLabelContentPresenter: LabelContentPresenting {
-    
+
     // MARK: - Types
-    
+
     typealias PresentationState = LabelContent.State.Presentation
-    
+
     // MARK: - Properties
-    
+
     let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
-    
+
     init(provider: BiometryProviding,
          descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
         interactor = BiometryLabelContentInteractor(biometryProviding: provider)

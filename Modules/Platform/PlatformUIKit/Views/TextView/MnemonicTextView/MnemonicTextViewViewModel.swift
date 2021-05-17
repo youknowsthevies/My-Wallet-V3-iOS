@@ -7,17 +7,17 @@ import RxSwift
 
 /// A view model for `MnemonicTextViewViewModel`
 public struct MnemonicTextViewViewModel {
-    
+
     public enum State: Equatable {
-        
+
         case complete(value: NSAttributedString)
-        
+
         case valid(value: NSAttributedString)
-        
+
         case empty
-        
+
         case invalid(value: NSAttributedString)
-        
+
         init(
             input: String,
             score: MnemonicValidationScore,
@@ -56,87 +56,87 @@ public struct MnemonicTextViewViewModel {
                 self = .empty
             }
         }
-        
+
     }
-    
+
     /// A style for text
     public struct Style {
         public let color: UIColor
         public let font: UIFont
-        
+
         public init(color: UIColor, font: UIFont) {
             self.color = color
             self.font = font
         }
     }
-    
+
     // MARK: Properties
 
     /// The state of the text field
     public var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     var borderColor: Driver<UIColor> {
         borderColorRelay.asDriver()
     }
-    
+
     let accessibility: Accessibility = .init(id: .value(Accessibility.Identifier.MnemonicTextView.recoveryPhrase))
-    
+
     let attributedPlaceholder = NSAttributedString(
         string: LocalizationConstants.TextField.Title.recoveryPhrase,
         attributes: [.font: UIFont.main(.medium, 16.0)]
     )
-    
+
     let attributedTextRelay = BehaviorRelay<NSAttributedString>(value: .init(string: ""))
     var attributedText: Driver<NSAttributedString> {
         attributedTextRelay
         .asDriver()
     }
-    
+
     /// The content of the text field
     let textRelay = BehaviorRelay<String>(value: "")
     var text: Observable<String> {
         textRelay.asObservable()
     }
-    
+
     /// Each input is formatted according to its nature
     public enum Input {
         /// A regular string
         case text(string: String)
     }
-    
+
     let lineSpacing: CGFloat
-    
+
     private let borderColorRelay = BehaviorRelay<UIColor>(value: .black)
     private let stateRelay = BehaviorRelay<State>(value: .empty)
     private let validator: MnemonicValidating
     private let disposeBag = DisposeBag()
-    
+
     public init(
         validator: MnemonicValidating,
         lineSpacing: CGFloat = 0
     ) {
         self.lineSpacing = lineSpacing
         self.validator = validator
-        
+
         text
             .bindAndCatch(to: validator.valueRelay)
             .disposed(by: disposeBag)
-        
+
         Observable.zip(validator.valueRelay, validator.score)
             .map { (value, score) -> State in
                 State(input: value, score: score)
         }
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
-        
+
         validator.score.map {
             $0.tintColor
         }
         .bindAndCatch(to: borderColorRelay)
         .disposed(by: disposeBag)
-        
+
         stateRelay.map { state -> NSAttributedString in
             switch state {
             case .empty:
@@ -152,7 +152,7 @@ public struct MnemonicTextViewViewModel {
         .bindAndCatch(to: attributedTextRelay)
         .disposed(by: disposeBag)
     }
-    
+
     /// Should be called upon editing the text field
     func textViewEdited(with value: String) {
         textRelay.accept(value)
@@ -164,7 +164,7 @@ extension MnemonicTextViewViewModel.Style {
         color: .black,
         font: UIFont.main(.medium, 16.0)
     )
-    
+
     static let desctructive: MnemonicTextViewViewModel.Style = .init(
         color: .destructive,
         font: UIFont.main(.medium, 16.0)

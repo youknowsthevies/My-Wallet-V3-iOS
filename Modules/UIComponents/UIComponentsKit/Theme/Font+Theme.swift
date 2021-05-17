@@ -10,7 +10,7 @@ public enum FontWeight {
 }
 
 extension UIFont {
-    
+
     private enum InterType: String {
         case regular = "Inter-Regular"
         case medium = "Inter-Medium"
@@ -37,7 +37,7 @@ extension UIFont {
 }
 
 extension Font {
-    
+
     init(weight: FontWeight, size: CGFloat) {
         self.init(UIFont.main(weight, size))
     }

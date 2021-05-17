@@ -25,14 +25,14 @@ final class AlgorandAsset: CryptoAsset {
             return nonCustodialGroup
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    
+
     // MARK: - Init
-    
+
     init(exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve()) {
         self.exchangeAccountProvider = exchangeAccountProvider
@@ -69,7 +69,7 @@ final class AlgorandAsset: CryptoAsset {
     private var interestGroup: Single<AccountGroup> {
         .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
     }
-    
+
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
         return exchangeAccountProvider

@@ -7,7 +7,7 @@ import RxSwift
 import XCTest
 
 class AddressPresenterTests: XCTestCase {
-    
+
     func testAddressPresenterStatus() {
         let asset = CryptoCurrency.ethereum
         let addressString = "eth-address"
@@ -19,12 +19,12 @@ class AddressPresenterTests: XCTestCase {
         let pasteboard = MockPasteboard()
         let presenter = AddressPresenter(interactor: interactor,
                                          pasteboard: pasteboard)
-        
+
         let statusBlocking = presenter.status.toBlocking()
-        
+
         XCTAssertEqual(try statusBlocking.first(), .awaitingFetch)
-        
+
         presenter.fetchAddress()
-        XCTAssertEqual(try statusBlocking.first(), .readyForDisplay(content: address))        
+        XCTAssertEqual(try statusBlocking.first(), .readyForDisplay(content: address))
     }
 }

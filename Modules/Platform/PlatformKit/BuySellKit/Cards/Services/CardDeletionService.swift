@@ -10,15 +10,15 @@ public protocol PaymentMethodDeletionServiceAPI: AnyObject {
 }
 
 final class CardDeletionService: PaymentMethodDeletionServiceAPI {
-    
+
     // MARK: - Private Properties
-    
+
     private let client: CardDeletionClientAPI
     private let cardListService: CardListServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
 
     // MARK: - Setup
-    
+
     init(client: CardDeletionClientAPI = resolve(),
          cardListService: CardListServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve()) {
@@ -26,7 +26,7 @@ final class CardDeletionService: PaymentMethodDeletionServiceAPI {
         self.cardListService = cardListService
         self.paymentMethodTypesService = paymentMethodTypesService
     }
-    
+
     func delete(by data: PaymentMethodRemovalData) -> Completable {
         client
             .deleteCard(by: data.id)

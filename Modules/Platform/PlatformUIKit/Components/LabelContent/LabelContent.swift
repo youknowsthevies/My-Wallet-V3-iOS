@@ -4,7 +4,7 @@ import RxCocoa
 import RxSwift
 
 public struct LabelContent: Equatable {
-    
+
     public static let empty: LabelContent = .init()
 
     public var isEmpty: Bool {
@@ -12,7 +12,7 @@ public struct LabelContent: Equatable {
     }
 
     public var text: String
-    
+
     let font: UIFont
     let color: Color
     let alignment: NSTextAlignment

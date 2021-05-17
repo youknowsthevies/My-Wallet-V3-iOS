@@ -3,7 +3,7 @@
 import RxSwift
 
 public class CardTableViewCell: UITableViewCell {
-    
+
     public var viewModel: CardViewViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -11,7 +11,7 @@ public class CardTableViewCell: UITableViewCell {
             descriptionLabel.content = viewModel.descriptionContent
         }
     }
-    
+
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()
@@ -41,18 +41,18 @@ public class CardTableViewCell: UITableViewCell {
         containerView.layoutToSuperview(.top, offset: 16.0)
         containerView.layoutToSuperview(.bottom, offset: -16.0)
         containerView.layoutToSuperview(.trailing, offset: -24.0)
-        
+
         [titleLabel, descriptionLabel].forEach { [stackView] label in
             stackView.addArrangedSubview(label)
         }
-        
+
         titleLabel.numberOfLines = 0
         descriptionLabel.numberOfLines = 0
-        
+
         stackView.axis = .vertical
         stackView.spacing = 4.0
         stackView.distribution = .fill
-        
+
         containerView.layer.borderWidth = 1.0
         containerView.layer.cornerRadius = 4.0
         containerView.layer.borderColor = UIColor.lightBorder.cgColor

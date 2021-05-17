@@ -7,7 +7,7 @@ import UIKit
 public final class WithdrawBuilder: WithdrawBuildable {
 
     private let currency: FiatCurrency
-    
+
     public init(currency: FiatCurrency) {
         self.currency = currency
     }

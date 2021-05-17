@@ -6,7 +6,7 @@ import RxSwift
 /// An API for fetching account `AssetAccountDetails`
 public protocol AssetAccountDetailsAPI {
     associatedtype AccountDetails: AssetAccountDetails
-    
+
     /// This will fetch the `AssetAccount` given an `accountID`.
     /// - Parameters:
     /// - accountID: Can be the user's public key or asset specific accountID.

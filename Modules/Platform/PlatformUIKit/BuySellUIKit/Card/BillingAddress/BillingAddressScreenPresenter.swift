@@ -10,7 +10,7 @@ import RxSwift
 import ToolKit
 
 final class BillingAddressScreenPresenter: RibBridgePresenter {
-        
+
     // MARK: - Types
 
     enum CellType: Equatable {
@@ -18,14 +18,14 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         case textField(TextFieldType)
         case doubleTextField(TextFieldType, TextFieldType)
     }
-    
+
     struct PresentationData {
         let cellTypes: [CellType]
-        
+
         var cellCount: Int {
             cellTypes.count
         }
-        
+
         init(country: Country) {
             var cellTypes: [CellType] = [
                 .selectionView,
@@ -46,32 +46,32 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             }
             self.cellTypes = cellTypes
         }
-        
+
         func row(for cellType: CellType) -> Int {
             cellTypes.enumerated().first { $0.element == cellType }!.offset
         }
-        
+
         func cellType(for row: Int) -> CellType {
             cellTypes[row]
         }
     }
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.BillingAddressScreen
-    
+
     // MARK: - Properties
-    
+
     let title = LocalizedString.title
     let buttonViewModel: ButtonViewModel
-    
+
     let presentationDataRelay = BehaviorRelay(value: PresentationData(country: .US))
 
     let selectionButtonViewModel: SelectionButtonViewModel
-    
+
     var refresh: Signal<Void> {
         refreshRelay.asSignal()
     }
-    
+
     var isValid: Driver<Bool> {
         isValidRelay.asDriver()
     }
@@ -79,20 +79,20 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
     var textFieldViewModelsMap: [TextFieldType: TextFieldViewModel] {
         textFieldViewModelsMapRelay.value
     }
-    
+
     var errorTrigger: Signal<Void> {
         errorTriggerRelay.asSignal()
     }
-    
+
     let textFieldViewModelsMapRelay = BehaviorRelay<[TextFieldType: TextFieldViewModel]>(value: [:])
-        
+
     private let errorTriggerRelay = PublishRelay<Void>()
     private let isValidRelay = BehaviorRelay(value: false)
     private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
 
     // MARK: - Injected
-    
+
     private let interactor: BillingAddressScreenInteractor
     private let countrySelectionRouter: SelectionRouterAPI
     private let loadingViewPresenter: LoadingViewPresenting
@@ -109,23 +109,23 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder
         self.messageRecorder = messageRecorder
-        
+
         selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
-        
+
         buttonViewModel = .primary(with: LocalizedString.button)
-        
+
         super.init(interactable: interactor)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // 1. Country is selected
         // 2. `PresentationData` is regenerated
         // 3. Data is mapped into text field view models
         // 4. A layout refresh is triggered
-        
+
         interactor.selectedCountry
             .map { .text($0.flag) }
             .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
@@ -140,24 +140,24 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .map { $0.code }
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.selectedCountry
             .map { .init(id: $0.code, label: $0.name) }
             .bindAndCatch(to: selectionButtonViewModel.accessibilityContentRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.selectedCountry
             .map { PresentationData(country: $0) }
             .bindAndCatch(to: presentationDataRelay)
             .disposed(by: disposeBag)
-        
+
         presentationDataRelay
             .map(weak: self) { (self, data) in
                 self.transformPresentationDataIntoViewModels(data)
             }
             .bindAndCatch(to: textFieldViewModelsMapRelay)
             .disposed(by: disposeBag)
-        
+
         textFieldViewModelsMapRelay
             .mapToVoid()
             .bindAndCatch(to: refreshRelay)
@@ -170,13 +170,13 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                 )
             )
         )
-        
+
         selectionButtonViewModel.tap
             .emit(onNext: { [unowned self] in
                 self.showCountrySelectionScreen()
             })
             .disposed(by: disposeBag)
-    
+
         let viewModelsObservable = textFieldViewModelsMapRelay
             .map { textFieldMap -> [TextFieldViewModel?] in
                 [
@@ -191,13 +191,13 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .map { viewModels in
                 viewModels.compactMap { $0 }
             }
-        
+
         let stateArrayObservable = viewModelsObservable
             .map { viewModels in
                 viewModels.map { $0.state }
             }
             .flatMap { Observable.combineLatest($0) }
-        
+
         let statesTuple = stateArrayObservable
             .map { states in
                 (
@@ -209,7 +209,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                     state: states[safe: 5]
                 )
             }
-        
+
         let billingAddress = Observable
             .combineLatest(
                 statesTuple,
@@ -229,21 +229,21 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                 )
             }
             .share(replay: 1)
-                    
+
         billingAddress
             .compactMap { $0 }
             .bindAndCatch(to: interactor.billingAddressRelay)
             .disposed(by: disposeBag)
-        
+
         billingAddress
             .map { $0 != nil }
             .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
-        
+
         isValid
             .drive(buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         buttonViewModel.tapRelay
             .withLatestFrom(interactor.billingAddress)
             .bindAndCatch(weak: self) { (self, billingAddress) in
@@ -268,9 +268,9 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             )
             .disposed(by: disposeBag)
     }
-    
+
     private func transformPresentationDataIntoViewModels(_ data: PresentationData) -> [TextFieldType: TextFieldViewModel] {
-                
+
         func viewModel(by type: TextFieldType, returnKeyType: UIReturnKeyType) -> TextFieldViewModel {
             TextFieldViewModel(
                 with: type,
@@ -279,7 +279,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
                 messageRecorder: messageRecorder
             )
         }
-        
+
         var viewModelByType: [TextFieldType: TextFieldViewModel] = [:]
         var previousTextFieldViewModel: TextFieldViewModel?
         for (index, cell) in data.cellTypes.enumerated() {
@@ -287,24 +287,24 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             case .doubleTextField(let leadingType, let trailingType):
                 let leading = viewModel(by: leadingType, returnKeyType: .next)
                 let trailing = viewModel(by: trailingType, returnKeyType: .done)
-                
+
                 viewModelByType[leadingType] = leading
                 viewModelByType[trailingType] = trailing
-                
+
                 previousTextFieldViewModel?.set(next: leading)
                 leading.set(next: trailing)
-                
+
                 previousTextFieldViewModel = trailing
             case .textField(let type):
                 let textFieldViewModel = viewModel(
                     by: type,
                     returnKeyType: index == data.cellTypes.count - 1 ? .done : .next
                 )
-                
+
                 viewModelByType[type] = textFieldViewModel
-                
+
                 previousTextFieldViewModel?.set(next: textFieldViewModel)
-                
+
                 previousTextFieldViewModel = textFieldViewModel
             case .selectionView:
                 break
@@ -312,7 +312,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         }
         return viewModelByType
     }
-    
+
     private func showCountrySelectionScreen() {
         countrySelectionRouter.showSelectionScreen(
             screenTitle: LocalizationConstants.CountrySelectionScreen.title,
@@ -320,9 +320,9 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             using: interactor.countrySelectionService
         )
     }
-    
+
     // MARK: - Navigation
-    
+
     func previous() {
         interactor.previous()
     }

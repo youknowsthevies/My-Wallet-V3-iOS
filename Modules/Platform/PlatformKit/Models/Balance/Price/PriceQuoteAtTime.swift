@@ -1,19 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct PriceQuoteAtTime: Equatable {
-    
+
     /// The time stamp of the quote
     public let timestamp: Date
-    
+
     /// The volume over 24 hours
     public let volume24h: Decimal?
-    
+
     /// The quote value
     public let moneyValue: MoneyValue
 }
 
 extension PriceQuoteAtTime {
-    
+
     /// Initialize the quote with the network response
     /// - Parameters:
     ///   - response: The quote response

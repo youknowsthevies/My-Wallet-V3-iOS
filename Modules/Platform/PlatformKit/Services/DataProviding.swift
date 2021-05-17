@@ -3,10 +3,10 @@
 import Foundation
 
 public protocol DataProviding: class {
-    
+
     /// Returns all the exchange providers
     var exchange: ExchangeProviding { get }
-    
+
     /// Returns all the asset balance providers
     var balance: BalanceProviding { get }
 
@@ -14,12 +14,12 @@ public protocol DataProviding: class {
     /// Typically used to receive a change in balance over a certain time
     /// period
     var balanceChange: BalanceChangeProviding { get }
-    
+
     /// Returns all the historical asset price providers
     /// This service is wallet agnostic and provides the
     /// market prices over a given duration
     var historicalPrices: HistoricalFiatPriceProviding { get }
-    
+
     /// The syncing service used for syncing the user's balance to the file system
     /// should they opt into balance syncing. 
     var syncing: PortfolioSyncingService { get }

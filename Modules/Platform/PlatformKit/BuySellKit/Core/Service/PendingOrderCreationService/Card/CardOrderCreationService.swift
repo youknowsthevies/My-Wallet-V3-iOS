@@ -4,16 +4,16 @@ import DIKit
 import RxSwift
 
 final class CardOrderCreationService: PendingOrderCreationServiceAPI {
-    
+
     private let orderQuoteService: OrderQuoteServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
-    
+
     init(orderQuoteService: OrderQuoteServiceAPI = resolve(),
          orderCreationService: OrderCreationServiceAPI = resolve()) {
         self.orderQuoteService = orderQuoteService
         self.orderCreationService = orderCreationService
     }
-    
+
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData> {
         let quote = orderQuoteService.getQuote(
             for: .buy,

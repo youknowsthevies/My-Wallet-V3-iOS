@@ -7,15 +7,15 @@ import RxSwift
 import ToolKit
 
 public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
-    
+
     private lazy var setup: Void = {
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: disposeBag)
-        
+
         actionRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, action) in
@@ -23,22 +23,22 @@ public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
             }
             .disposed(by: disposeBag)
     }()
-    
+
     public let actionRelay = PublishRelay<CheckoutDataAction>()
     public let previousRelay = PublishRelay<Void>()
-    
+
     public let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     private unowned let interactor: SellRouterInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          interactor: SellRouterInteractor) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         _ = setup
     }
-    
+
     private func handle(action: CheckoutDataAction) {
         switch action {
         case .bankTransferDetails:
@@ -55,7 +55,7 @@ public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
             handle(analyticsEvent: AnalyticsEvent.sbCheckoutConfirm(paymentMethod: data.order.paymentMethod.analyticsParameter))
         }
     }
-    
+
     private func handle(analyticsEvent: AnalyticsEvent) {
         analyticsRecorder.record(event: analyticsEvent)
     }

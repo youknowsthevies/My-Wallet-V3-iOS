@@ -7,20 +7,20 @@ import RxSwift
 import ToolKit
 
 final class BitPayTransactionEngine: TransactionEngine {
-    
+
     var sourceAccount: BlockchainAccount!
     var askForRefreshConfirmation: (AskForRefreshConfirmation)!
     var transactionTarget: TransactionTarget!
-    
+
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         onChainEngine
             .fiatExchangeRatePairs
     }
-    
+
     var requireSecondPassword: Bool {
         onChainEngine.requireSecondPassword
     }
-    
+
     // MARK: - Private Properties
 
     /// This is due to the fact that the validation of the timeout occurs on completion of
@@ -42,7 +42,7 @@ final class BitPayTransactionEngine: TransactionEngine {
             .expirationTimeInSeconds
     }
     private let stopCountdown = PublishSubject<Void>()
-    
+
     init(onChainEngine: OnChainTransactionEngine,
          bitpayService: BitPayServiceAPI = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
@@ -50,7 +50,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         self.bitpayService = bitpayService
         self.analyticsRecorder = analyticsRecorder
     }
-    
+
     func start(sourceAccount: BlockchainAccount,
                transactionTarget: TransactionTarget,
                askForRefreshConfirmation: @escaping (Bool) -> Completable) {
@@ -59,7 +59,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         self.askForRefreshConfirmation = askForRefreshConfirmation
         onChainEngine.start(sourceAccount: sourceAccount, transactionTarget: transactionTarget, askForRefreshConfirmation: askForRefreshConfirmation)
     }
-    
+
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
         precondition(sourceCryptoCurrency == .bitcoin)
@@ -67,7 +67,7 @@ final class BitPayTransactionEngine: TransactionEngine {
         precondition(onChainEngine is BitPayClientEngine)
         onChainEngine.assertInputsValid()
     }
-    
+
     func initializeTransaction() -> Single<PendingTransaction> {
         onChainEngine
             .initializeTransaction()
@@ -78,7 +78,7 @@ final class BitPayTransactionEngine: TransactionEngine {
                     .update(amount: self.bitpayInvoice.amount.moneyValue)
             }
     }
-    
+
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine
             .update(
@@ -102,7 +102,7 @@ final class BitPayTransactionEngine: TransactionEngine {
                     )
             }
     }
-    
+
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(
             pendingTransaction
@@ -114,18 +114,18 @@ final class BitPayTransactionEngine: TransactionEngine {
                 )
         )
     }
-    
+
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         /// Don't set the amount here.
         /// It is fixed so we can do it in the confirmation building step
         .just(pendingTransaction)
     }
-    
+
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         onChainEngine
             .validateAmount(pendingTransaction: pendingTransaction)
     }
-    
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         doValidateTimeout(pendingTransaction: pendingTransaction)
             .flatMap(weak: self) { (self, pendingTx) -> Single<PendingTransaction> in
@@ -133,7 +133,7 @@ final class BitPayTransactionEngine: TransactionEngine {
             }
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
-    
+
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         bitpayClientEngine
             .doPrepareTransaction(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
@@ -158,18 +158,18 @@ final class BitPayTransactionEngine: TransactionEngine {
             })
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
-    
+
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         transactionTarget.onTxCompleted(transactionResult)
     }
-    
+
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func doExecuteTransaction(invoiceId: String, transaction: EngineTransaction) -> Single<String> {
         bitpayService
             .verifySignedTransaction(
@@ -190,7 +190,7 @@ final class BitPayTransactionEngine: TransactionEngine {
             )
             .map(\.memo)
     }
-    
+
     private func doValidateTimeout(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single.just(pendingTransaction)
             .map(weak: self) { (self, pendingTx) in
@@ -200,7 +200,7 @@ final class BitPayTransactionEngine: TransactionEngine {
                 return pendingTx
             }
     }
-    
+
     private func startTimeIfNotStarted(_ pendingTransaction: PendingTransaction) -> PendingTransaction {
         guard pendingTransaction.bitpayTimer == nil else { return pendingTransaction }
         var transaction = pendingTransaction

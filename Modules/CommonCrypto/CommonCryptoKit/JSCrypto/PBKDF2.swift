@@ -7,11 +7,11 @@ public enum PBKDF2Error: Error {
 }
 
 public class PBKDF2 {
-    
+
     public enum PBKDFAlgorithm {
         case sha1
         case sha512
-        
+
         fileprivate var commonCryptoAlgorithm: CCPBKDFAlgorithm {
             switch self {
             case .sha1:
@@ -21,7 +21,7 @@ public class PBKDF2 {
             }
         }
     }
-    
+
     public class func deriveSHA1Result(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt) -> Result<Data, PBKDF2Error> {
         deriveResult(
             password: password,
@@ -31,7 +31,7 @@ public class PBKDF2 {
             algorithm: .sha1
         )
     }
-    
+
     public class func derive(password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt, algorithm: PBKDFAlgorithm) -> Data? {
         let derivation = PBKDF2.deriveResult(
             password: password,
@@ -45,7 +45,7 @@ public class PBKDF2 {
         }
         return key
     }
-    
+
     private class func deriveResult(
         password: String,
         salt: Data,
@@ -53,7 +53,7 @@ public class PBKDF2 {
         keySizeBytes: UInt,
         algorithm: PBKDFAlgorithm
     ) -> Result<Data, PBKDF2Error> {
-        
+
         func derive(with password: String, salt: Data, iterations: UInt32, keySizeBytes: UInt, algorithm: CCPBKDFAlgorithm) throws -> Data {
             var derivedKeyData = Data(repeating: 0, count: Int(keySizeBytes))
             let derivedKeyDataCount = derivedKeyData.count
@@ -75,7 +75,7 @@ public class PBKDF2 {
             }
             return derivedKeyData
         }
-        
+
         return Result {
                 try derive(
                     with: password,
@@ -87,5 +87,5 @@ public class PBKDF2 {
             }
             .mapError { _ in PBKDF2Error.keyDerivationError }
     }
-    
+
 }

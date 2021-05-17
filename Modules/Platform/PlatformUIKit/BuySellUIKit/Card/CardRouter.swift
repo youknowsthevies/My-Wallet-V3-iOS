@@ -7,18 +7,18 @@ import RxSwift
 import ToolKit
 
 public final class CardRouter: RIBs.Router<CardRouterInteractor> {
-    
+
     // MARK: - Types
 
     // MARK: - Private Properties
 
     private let routingType: RoutingType
     private let navigationRouter: NavigationRouterAPI
-    
+
     private let disposeBag = DisposeBag()
     private let internalInteractor: CardRouterInteractor
     private let builder: CardComponentBuilderAPI
-    
+
     public init(interactor: CardRouterInteractor,
                 builder: CardComponentBuilderAPI,
                 routingType: RoutingType = .modal,
@@ -29,18 +29,18 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
         self.routingType = routingType
         super.init(interactor: interactor)
     }
-    
+
     // MARK: - Lifecycle
-    
+
     public override func didLoad() {
         super.didLoad()
-        
+
         // Embed the entire flow in another navigation controller
         // instead of generating one of its own
         if case .embed(inside: let navigationController) = routingType {
             navigationRouter.navigationControllerAPI = navigationController
         }
-        
+
         // Action is a steam of events derived from a pblish relay
         interactor.action
             .observeOn(MainScheduler.instance)
@@ -53,11 +53,11 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         /// TODO: Remove once BuySell moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
-        
+
         // Once the interator becomes inactive dismiss the flow
         interactor.isActiveStream
             .filter { !$0 }
@@ -69,9 +69,9 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - State Routing
-    
+
     private func previous(from state: CardRouterInteractor.State) {
         switch state {
         case .cardDetails:
@@ -80,7 +80,7 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             navigationRouter.pop(animated: true)
         }
     }
-        
+
     private func next(to state: CardRouterInteractor.State) {
         switch state {
         case .cardDetails:
@@ -95,25 +95,25 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             interactor.deactivate()
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     private func showPendingCardStateScreen(for cardId: String) {
         let viewController = builder.pendingCardStatus(cardId: cardId)
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func showAuthorizationScreen(for data: PartnerAuthorizationData) {
         let viewController = builder.cardAuthorization(for: data)
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func showCardDetailsScreen() {
         let viewController = builder.cardDetails()
         viewController.isModalInPresentation = true
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func showBillingAddressScreen(for cardData: CardData) {
         let viewController = builder.billingAddress(for: cardData, navigationControllerAPI: navigationRouter.navigationControllerAPI!)
         navigationRouter.present(viewController: viewController)

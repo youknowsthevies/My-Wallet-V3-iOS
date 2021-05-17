@@ -6,12 +6,12 @@ import RxSwift
 import ToolKit
 
 final class TradingToOnChainTransactionEngine: TransactionEngine {
-    
+
     /// This might need to be `1:1` as there isn't a transaction pair.
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         .empty()
     }
-    
+
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         sourceExchangeRatePair
             .map { pair -> TransactionMoneyValuePairs in
@@ -22,7 +22,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
             }
             .asObservable()
     }
-    
+
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let priceService: PriceServiceAPI
     let requireSecondPassword: Bool = false
@@ -34,17 +34,17 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     var sourceTradingAccount: CryptoTradingAccount! {
         sourceAccount as? CryptoTradingAccount
     }
-    
+
     var target: CryptoReceiveAddress {
         transactionTarget as! CryptoReceiveAddress
     }
     var targetAsset: CryptoCurrency { target.asset }
-    
+
     // MARK: - Private Properties
 
     private let feeCache: CachedValue<CustodialTransferFee>
     private let transferService: CustodialTransferServiceAPI
-    
+
     // MARK: - Init
 
     init(isNoteSupported: Bool = false,
@@ -83,7 +83,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 )
             }
     }
-    
+
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         guard sourceTradingAccount != nil else {
             return .just(pendingTransaction)
@@ -104,7 +104,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 return pendingTransaction
             }
     }
-    
+
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         fiatAmountAndFees(from: pendingTransaction)
             .map(weak: self) { (self, fiatAmountAndFees) -> [TransactionConfirmation] in
@@ -125,7 +125,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 pendingTransaction.update(confirmations: confirmations)
             }
     }
-    
+
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmounts(pendingTransaction: pendingTransaction)
             .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
@@ -146,11 +146,11 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
             }
     }
-    
+
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         target.onTxCompleted(transactionResult)
     }
-    
+
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
                           level: FeeLevel,
                           customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
@@ -159,9 +159,9 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         /// `FeeLevel` of `.none`
         return .just(pendingTransaction)
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.deferred { () -> Completable in
             guard pendingTransaction.amount.isPositive else {
@@ -194,7 +194,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         }
         .map { (amount: $0.0, fees: $0.1) }
     }
-    
+
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency

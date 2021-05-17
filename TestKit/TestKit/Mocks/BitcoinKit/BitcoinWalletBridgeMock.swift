@@ -13,7 +13,7 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
     func update(accountIndex: Int, label: String) -> Completable {
         .empty()
     }
-    
+
     func walletIndex(for receiveAddress: String) -> Single<Int32> {
         .never()
     }
@@ -31,7 +31,7 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         .empty()
     }
-    
+
     func validateBitcoin(address: String) -> Bool {
         true
     }

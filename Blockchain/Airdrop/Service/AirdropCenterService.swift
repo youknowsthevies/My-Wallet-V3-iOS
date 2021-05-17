@@ -7,41 +7,41 @@ import RxSwift
 import ToolKit
 
 protocol AirdropCenterServiceAPI: class {
-    
+
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> { get }
-    
+
     /// An `Observable` that streams the airdrop campaigns
     func fetchCampaignsCalculationState(useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns>>
-    
+
     /// An `Observable` that streams an airdrop campaign by name
     func fetchCampaignCalculationState(campaignName: AirdropCampaigns.Campaign.Name,
                                        useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>>
-    
+
     /// Triggers a refresh on the service
     func refresh()
 }
 
 /// TODO: Move into `PlatformKit` when https://blockchain.atlassian.net/browse/IOS-2724 is merged
 final class AirdropCenterService: AirdropCenterServiceAPI {
-            
+
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> {
         campaignsCalculationStateRelay.asObservable()
     }
-    
+
     private let campaignsCalculationStateRelay = BehaviorRelay<ValueCalculationState<AirdropCampaigns>>(value: .invalid(.empty))
     private let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected (Privately used)
-    
+
     private let client: AirdropCenterClientAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: AirdropCenterClientAPI = resolve()) {
         self.client = client
-        
+
         fetchTriggerRelay
             .throttle(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
             .flatMapLatest(weak: self) { (self, campaigns) -> Observable<AirdropCampaigns> in
@@ -52,12 +52,12 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
             .bindAndCatch(to: campaignsCalculationStateRelay)
             .disposed(by: disposeBag)
     }
-    
+
     /// Refreshes the campaigns
     func refresh() {
         fetchTriggerRelay.accept(())
     }
-    
+
     func fetchCampaignsCalculationState(useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns>> {
         campaignsCalculationState
             .do(onSubscribed: { [weak self] in
@@ -67,7 +67,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
                 }
             })
     }
-    
+
     func fetchCampaignCalculationState(campaignName: AirdropCampaigns.Campaign.Name,
                                        useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
         fetchCampaignsCalculationState(useCache: useCache)

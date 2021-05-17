@@ -11,24 +11,24 @@ protocol SendRootInteractable: Interactable, TransactionFlowListener {
 }
 
 final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewControllable>, SendRootRouting {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedSend = LocalizationConstants.Send
-    
+
     // MARK: - Private Properties
-    
+
     private var transactionRouter: ViewableRouting?
-    
+
     // MARK: - Init
-    
+
     override init(interactor: SendRootInteractable, viewController: SendRootViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
-    
+
     // MARK: - SwapRootRouting
-    
+
     func routeToSendLanding() {
         let header = AccountPickerHeaderModel(
             title: LocalizedSend.Header.sendCryptoNow,
@@ -67,7 +67,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             animated: false
         )
     }
-    
+
     func routeToSend(sourceAccount: CryptoAccount) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
@@ -82,7 +82,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             viewController.present(viewController: viewControllable)
         }
     }
-    
+
     func routeToSend(sourceAccount: CryptoAccount, destination: TransactionTarget) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
@@ -97,7 +97,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             viewController.present(viewController: viewControllable)
         }
     }
-    
+
     func dismissTransactionFlow() {
         guard let router = transactionRouter else { return }
         detachChild(router)

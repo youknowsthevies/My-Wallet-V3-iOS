@@ -4,7 +4,7 @@ import RxCocoa
 import RxSwift
 
 extension Reactive where Base: UIView {
-    
+
     /// Bindable sink for `Accessibility`
     public var accessibility: Binder<Accessibility> {
         Binder(self.base) { view, accessibility in

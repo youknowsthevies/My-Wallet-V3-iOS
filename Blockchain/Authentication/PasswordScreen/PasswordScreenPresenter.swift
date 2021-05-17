@@ -8,17 +8,17 @@ import RxSwift
 import ToolKit
 
 final class PasswordScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     /// Confirmation route method
     typealias ConfirmHandler = (String) -> Void
-    
+
     /// Dismissal route method
     typealias DismissHandler = () -> Void
-    
+
     // MARK: - Exposed Properties
-    
+
     let navBarStyle = Screen.Style.Bar.lightContent(
         background: .primary
     )
@@ -33,9 +33,9 @@ final class PasswordScreenPresenter {
         with: LocalizationConstants.continueString
     )
     let leadingButton: Screen.Style.LeadingButton
-    
+
     // MARK: - Injected
-    
+
     // TODO: Remove dependency
     private let authenticationCoordinator: AuthenticationCoordinator
     private let interactor: PasswordScreenInteracting
@@ -43,15 +43,15 @@ final class PasswordScreenPresenter {
     private let alertPresenter: AlertViewPresenter
     private let confirmHandler: ConfirmHandler
     private let dismissHandler: DismissHandler
-    
+
     // MARK: - Private Accessors
-    
+
     private let stateReducer = FormPresentationStateReducer()
     private let stateRelay = BehaviorRelay<FormPresentationState>(value: .invalid(.emptyTextField))
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(authenticationCoordinator: AuthenticationCoordinator = .shared,
          alertPresenter: AlertViewPresenter = .shared,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
@@ -64,7 +64,7 @@ final class PasswordScreenPresenter {
         self.interactor = interactor
         self.confirmHandler = confirmHandler
         self.dismissHandler = dismissHandler
-        
+
         let title: String
         switch interactor.type {
         case .login:
@@ -84,9 +84,9 @@ final class PasswordScreenPresenter {
             description = LocalizationConstants.Authentication.EtherPasswordScreen.description
             leadingButton = .close
         }
-        
+
         titleStyle = Screen.Style.TitleView.text(value: title)
-        
+
         let stateObservable = textFieldViewModel.state
             .map(weak: self) { (self, payload) -> FormPresentationState in
                 try self.stateReducer.reduce(states: [payload])
@@ -94,21 +94,21 @@ final class PasswordScreenPresenter {
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))
             .share(replay: 1)
-            
+
         stateObservable
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         stateObservable
             .map { $0.isValid }
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         textFieldViewModel.state
             .compactMap { $0.value }
             .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
-        
+
         buttonViewModel.tapRelay
             .bind { [unowned self] in
                 if self.interactor.isValid {
@@ -121,15 +121,15 @@ final class PasswordScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     func navigationBarLeadingButtonPressed() {
         dismissHandler()
     }
-    
+
     func viewDidDisappear() {
         authenticationCoordinator.isShowingSecondPasswordScreen = false
     }
-    
+
     func viewWillAppear() {
         analyticsRecorder.record(event: AnalyticsEvents.Onboarding.loginSecondPasswordViewed)
         authenticationCoordinator.isShowingSecondPasswordScreen = true

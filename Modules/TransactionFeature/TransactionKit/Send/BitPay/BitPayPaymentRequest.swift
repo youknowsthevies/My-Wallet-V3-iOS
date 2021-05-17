@@ -3,18 +3,18 @@
 import Foundation
 
 struct BitpayPaymentRequest: Decodable {
-    
+
     var outputs: [Output] {
         instructions
             .map { $0.outputs }
             .flatMap { $0 }
     }
-    
+
     let memo: String
     let expires: String
     let paymentUrl: String
     let paymentId: String
-    
+
     private let instructions: [BitpayInstructions]
 }
 

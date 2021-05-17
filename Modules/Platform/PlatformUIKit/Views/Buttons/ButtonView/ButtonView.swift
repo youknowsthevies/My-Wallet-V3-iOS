@@ -8,13 +8,13 @@ import UIKit
 /// Typically located at the bottom of a context, used as primary / secondary CTA buttons.
 /// - see also: [ButtonViewModel](x-source-tag://ButtonViewModel).
 public final class ButtonView: UIView {
-    
+
     // MARK: - UI Properties
-    
+
     private let button = UIButton(type: .system)
     private let imageView = UIImageView(image: nil)
     private let label = UILabel(frame: .zero)
-    
+
     // Constraints for scenario with title only, and no image
     private var labelToImageViewLeadingConstraint: NSLayoutConstraint!
     private var labelToSuperviewLeadingConstraint: NSLayoutConstraint!
@@ -23,11 +23,11 @@ public final class ButtonView: UIView {
     private var labelToSuperviewTrailingConstraint: NSLayoutConstraint!
 
     // MARK: - Rx
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Dependencies
-    
+
     public var viewModel: ButtonViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -51,27 +51,27 @@ public final class ButtonView: UIView {
             viewModel.backgroundColor
                 .drive(rx.backgroundColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind border color
             viewModel.borderColor
                 .drive(layer.rx.borderColor)
                 .disposed(by: disposeBag)
-            
+
             // bind label color
             viewModel.contentColor
                 .drive(label.rx.textColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind label text color
             viewModel.text
                 .drive(label.rx.text)
                 .disposed(by: disposeBag)
-            
+
             // Bind image view tint color
             viewModel.contentColor
                 .drive(imageView.rx.tintColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind image view's image
             viewModel.image
                 .drive(imageView.rx.image)
@@ -81,12 +81,12 @@ public final class ButtonView: UIView {
             viewModel.isEnabled
                 .drive(button.rx.isEnabled)
                 .disposed(by: disposeBag)
-            
+
             // Bind opacity
             viewModel.alpha
                 .drive(rx.alpha)
                 .disposed(by: disposeBag)
-            
+
             // bind contains image
             viewModel.containsImage
                 .bind { [weak self] containsImage in
@@ -103,7 +103,7 @@ public final class ButtonView: UIView {
                     self.layoutIfNeeded()
                 }
                 .disposed(by: disposeBag)
-            
+
             // Bind button taps
             button.rx.tap
                 .throttle(
@@ -130,19 +130,19 @@ public final class ButtonView: UIView {
         labelToSuperviewTrailingConstraint.constant = -contentInset.right
         layoutIfNeeded()
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         clipsToBounds = true
         layer.borderWidth = 1
@@ -170,13 +170,13 @@ public final class ButtonView: UIView {
         labelToSuperviewBottomConstraint = label.layoutToSuperview(.bottom)
         labelToImageViewLeadingConstraint = label.layout(edge: .leading, to: .trailing, of: imageView, priority: .penultimateLow)
     }
-    
+
     // MARK: - User Interactions
-    
+
     @objc private func touchUp() {
         alpha = 1
     }
-    
+
     @objc private func touchDown() {
         alpha = 0.85
     }

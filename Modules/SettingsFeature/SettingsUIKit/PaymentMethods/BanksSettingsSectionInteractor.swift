@@ -8,17 +8,17 @@ import SettingsKit
 import ToolKit
 
 final class BanksSettingsSectionInteractor {
-    
+
     typealias State = ValueCalculationState<[Beneficiary]>
-    
+
     var state: Observable<State> {
         _ = setup
         return stateRelay
             .asObservable()
     }
-    
+
     let addPaymentMethodInteractors: [AddPaymentMethodInteractor]
-    
+
     private lazy var setup: Void = {
         beneficiaries
             .map { .value($0) }
@@ -26,22 +26,22 @@ final class BanksSettingsSectionInteractor {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
-    
+
     private var beneficiaries: Observable<[Beneficiary]> {
         beneficiariesService.beneficiaries
             .asObservable()
             .catchErrorJustReturn([])
     }
-        
+
     private let beneficiariesService: BeneficiariesServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let tierLimitsProvider: TierLimitsProviding
 
     // MARK: - Setup
-    
+
     init(beneficiariesService: BeneficiariesServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -49,7 +49,7 @@ final class BanksSettingsSectionInteractor {
         self.beneficiariesService = beneficiariesService
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider
-        
+
         addPaymentMethodInteractors = enabledCurrenciesService.allEnabledFiatCurrencies
             .map {
                 AddPaymentMethodInteractor(

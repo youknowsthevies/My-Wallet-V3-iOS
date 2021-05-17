@@ -50,9 +50,9 @@ extension AlertViewPresenter {
             title: LocalizationConstants.Errors.unsafeDeviceWarningMessage, message: LocalizationConstants.Errors.warning
         )
     }
-    
+
     // MARK: - 2FA alert
-            
+
     /// Displays 2FA alert according to type
     func notify2FA(type: AuthenticatorType,
                    title: String,
@@ -97,23 +97,23 @@ extension AlertViewPresenter {
                 .map { !$0.isEmpty }
                 .bindAndCatch(to: verifyAction.rx.isEnabled)
                 .disposed(by: self.disposeBag)
-            
+
             let cancelAction = UIAlertAction(title: LocalizationConstants.cancel, style: .cancel) { _ in
                 cancel()
             }
             alert.addAction(cancelAction)
-            
+
             self.standardNotify(alert: alert, in: viewController)
         }
     }
-    
+
     @objc func showWaitingForEtherPaymentAlert() {
         standardNotify(
             title: LocalizationConstants.SendEther.waitingForPaymentToFinishTitle,
             message: LocalizationConstants.SendEther.waitingForPaymentToFinishMessage
         )
     }
-    
+
     /// Shows the site maintenance error message from `walletOptions` if any.
     ///
     /// - Parameter walletOptions: the WalletOptions
@@ -125,7 +125,7 @@ extension AlertViewPresenter {
         let message = walletOptions.mobileInfo?.message ?? LocalizationConstants.Errors.siteMaintenanceError
         AlertViewPresenter.shared.standardError(message: message)
     }
-    
+
     /// Displays an alert to the user if the wallet object contains a value from `Wallet.getMobileMessage`.
     /// Otherwise, if there is no value, no such alert will be presented.
     @objc func showMobileNoticeIfNeeded() {

@@ -5,13 +5,13 @@ import RxRelay
 import RxSwift
 
 public final class DefaultLabelContentInteractor: LabelContentInteracting {
-    
+
     // MARK: - Types
-    
+
     public typealias InteractionState = LabelContent.State.Interaction
-    
+
     // MARK: - LabelContentInteracting
-    
+
     public let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
@@ -20,6 +20,6 @@ public final class DefaultLabelContentInteractor: LabelContentInteracting {
     public init(knownValue: String) {
         stateRelay.accept(.loaded(next: .init(text: knownValue)))
     }
-    
+
     public init() {}
 }

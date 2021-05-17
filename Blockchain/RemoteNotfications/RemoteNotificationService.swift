@@ -10,26 +10,26 @@ import ToolKit
 final class RemoteNotificationService: RemoteNotificationServicing {
 
     // MARK: - ServiceError
-    
+
     private enum ServiceError: Error {
         case unauthorizedRemoteNotificationsPermission
     }
-    
+
     // MARK: - RemoteNotificationServicing (services)
-    
+
     let relay: RemoteNotificationEmitting
     let authorizer: RemoteNotificationAuthorizing
-    
+
     // MARK: - Privately used services
-    
+
     private let externalService: ExternalNotificationProviding
     private let networkService: RemoteNotificationNetworkServicing
     private let walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(authorizer: RemoteNotificationAuthorizing = RemoteNotificationAuthorizer(),
          relay: RemoteNotificationEmitting = RemoteNotificationRelay(),
          externalService: ExternalNotificationProviding = ExternalNotificationServiceProvider(),
@@ -46,7 +46,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 // MARK: - RemoteNotificationTokenSending
 
 extension RemoteNotificationService: RemoteNotificationTokenSending {
-    
+
     /// Sends the token. Only if remote notification permission was pre-authorized.
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
@@ -73,13 +73,13 @@ extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
     func appDidFailToRegisterForRemoteNotifications(with error: Error) {
         Logger.shared.info("remote notification registration failed with error: \(error)")
     }
-    
+
     func appDidRegisterForRemoteNotifications(with deviceToken: Data) {
         Logger.shared.info("remote notification registration failed")
-        
+
         // FCM service must be informed about the new token
         externalService.didReceiveNewApnsToken(token: deviceToken)
-        
+
         // Send the token
         sendTokenIfNeeded()
             .subscribe(

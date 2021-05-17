@@ -3,10 +3,9 @@
 import RxSwift
 
 protocol CardOrderConfirmationClientAPI: class {
-    
+
     /// Confirm an order
     func confirmOrder(with identifier: String,
                       partner: OrderPayload.ConfirmOrder.Partner,
                       paymentMethodId: String?) -> Single<OrderPayload.Response>
 }
-

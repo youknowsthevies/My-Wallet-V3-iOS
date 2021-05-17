@@ -6,15 +6,15 @@ import RxRelay
 import RxSwift
 
 final class UpdateMobileScreenSetupInteractor {
-    
+
     typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
-    
+
     struct InteractionModel {
         let badgeItem: BadgeItem
         let isSMSVerified: Bool
         let is2FAEnabled: Bool
         let mobileNumber: String?
-        
+
         init(badgeItem: BadgeItem, is2FAEnabled: Bool, isSMSVerified: Bool, mobileNumber: String? = nil) {
             self.badgeItem = badgeItem
             self.is2FAEnabled = is2FAEnabled
@@ -22,21 +22,21 @@ final class UpdateMobileScreenSetupInteractor {
             self.mobileNumber = mobileNumber
         }
     }
-    
+
     typealias InteractionState = LoadingState<InteractionModel>
-    
+
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     let setupTrigger = PublishRelay<Void>()
-    
+
     // MARK: - Private Accessors
-    
+
     private let serviceAPI: SettingsServiceAPI
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     init(service: SettingsServiceAPI) {
         self.serviceAPI = service
         setupTrigger
@@ -46,7 +46,7 @@ final class UpdateMobileScreenSetupInteractor {
             .disposed(by: disposeBag)
         setupTrigger.accept(())
     }
-    
+
     private func setup() {
         serviceAPI
             .valueObservable
@@ -65,4 +65,3 @@ final class UpdateMobileScreenSetupInteractor {
             .disposed(by: disposeBag)
     }
 }
-

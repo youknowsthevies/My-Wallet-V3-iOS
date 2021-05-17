@@ -5,9 +5,9 @@ import RxCocoa
 import RxSwift
 
 final class RecoveryPhraseView: UIView {
-    
+
     // MARK: - Public Properties
-    
+
     var viewModel: RecoveryPhraseViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -16,13 +16,13 @@ final class RecoveryPhraseView: UIView {
             viewModel.words
                 .bindAndCatch(to: rx.mnemonicContent)
                 .disposed(by: disposeBag)
-            
+
             clipboardButtonView.viewModel = viewModel.copyButtonViewModel
         }
     }
-    
+
     // MARK: Private IBOutlets (UILabel)
-    
+
     @IBOutlet private var firstLabel: UILabel!
     @IBOutlet private var secondLabel: UILabel!
     @IBOutlet private var thirdLabel: UILabel!
@@ -35,14 +35,14 @@ final class RecoveryPhraseView: UIView {
     @IBOutlet private var tenthLabel: UILabel!
     @IBOutlet private var eleventhLabel: UILabel!
     @IBOutlet private var twelfthLabel: UILabel!
-    
+
     // MARK: - Private IBOutlets (Other)
-    
+
     @IBOutlet private var numberedLabels: [UILabel]!
     @IBOutlet private var clipboardButtonView: ButtonView!
-    
+
     // MARK: - Private Properties
-    
+
     fileprivate var labels: [UILabel] {
         [
             firstLabel,
@@ -59,21 +59,21 @@ final class RecoveryPhraseView: UIView {
             twelfthLabel
         ]
     }
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         clipsToBounds = true

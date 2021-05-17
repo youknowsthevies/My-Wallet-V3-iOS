@@ -7,27 +7,27 @@ import RxSwift
 
 /// Remote notification network service
 final class RemoteNotificationNetworkService {
-    
+
     // MARK: - Types
-    
+
     enum PushNotificationError: Error {
         case registrationFailure
         case missingCredentials
         case emptyCredentials
         case couldNotBuildRequestBody
     }
-    
+
     private struct RegistrationResponseData: Decodable {
         let success: Bool
     }
 
     // MARK: - Properties
-    
+
     private let url = BlockchainAPI.shared.pushNotificationsUrl
     private let networkAdapter: NetworkAdapterAPI
-    
+
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve()) {
         self.networkAdapter = networkAdapter
     }

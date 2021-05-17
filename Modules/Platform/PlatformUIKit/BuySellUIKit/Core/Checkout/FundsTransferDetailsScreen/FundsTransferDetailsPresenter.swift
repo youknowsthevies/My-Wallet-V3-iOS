@@ -41,9 +41,9 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
 
     private let isOriginDeposit: Bool
@@ -51,7 +51,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
     private let webViewRouter: WebViewRouterAPI
     private let stateService: StateServiceAPI
     private let interactor: FundsTransferDetailsInteractorAPI
-    
+
     // MARK: - Setup
 
     init(webViewRouter: WebViewRouterAPI,
@@ -64,17 +64,17 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
         self.interactor = interactor
         self.stateService = stateService
         self.isOriginDeposit = isOriginDeposit
-        
+
         navigationBarTrailingButtonAction = .custom {
             stateService.previousRelay.accept(())
         }
     }
-    
+
     func viewDidLoad() {
         analyticsRecorder.record(
             event: AnalyticsEvents.SimpleBuy.sbLinkBankScreenShown(currencyCode: interactor.fiatCurrency.code)
         )
-        
+
         interactor.state
             .bindAndCatch(weak: self) { (self, state) in
                 switch state {
@@ -92,7 +92,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func setup(account: PaymentAccountDescribing) {
         let contentReducer = ContentReducer(
             account: account,
@@ -129,7 +129,7 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
                 .disposed(by: disposeBag)
             cells.append(.interactableTextCell(termsTextViewModel))
         }
-        
+
         reloadRelay.accept(())
     }
 }
@@ -148,19 +148,19 @@ extension FundsTransferDetailScreenPresenter {
         init(account: PaymentAccountDescribing,
              isOriginDeposit: Bool,
              analyticsRecorder: AnalyticsEventRecorderAPI) {
-        
+
             typealias FundsString = LocalizedString.Funds
-            
+
             if isOriginDeposit {
                 title = "\(FundsString.Title.depositPrefix) \(account.currency)"
             } else {
                 title = "\(FundsString.Title.addBankPrefix) \(account.currency) \(FundsString.Title.addBankSuffix) "
             }
-            
+
             lineItems = account.fields.transferDetailsCellsPresenting(analyticsRecorder: analyticsRecorder)
 
             let font = UIFont.main(.medium, 12)
-            
+
             let processingTimeNoticeDescription: String
 
             switch account.currency {
@@ -186,7 +186,7 @@ extension FundsTransferDetailScreenPresenter {
                 processingTimeNoticeDescription = ""
                 termsTextViewModel = nil
             }
-            
+
             noticeViewModels = [
                     (
                         title: FundsString.Notice.BankTransferOnly.title,
@@ -250,7 +250,7 @@ private extension Array where Element == PaymentAccountProperty.Field {
                 return nil
             }
         }
-        
+
         return map { TransactionalLineItem.paymentAccountField($0) }
             .map { field in
                 if isCopyable(field: field) {

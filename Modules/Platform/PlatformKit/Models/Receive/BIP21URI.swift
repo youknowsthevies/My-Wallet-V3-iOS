@@ -8,16 +8,16 @@ public protocol BIP21URI: CryptoAssetQRMetadata {
 }
 
 extension BIP21URI {
-    
+
     public init?(url: URL) {
         guard let urlScheme = url.scheme else {
             return nil
         }
-        
+
         guard urlScheme == Self.scheme else {
             return nil
         }
-        
+
         let address: String?
         let amount: String?
         let paymentRequestUrl: String?
@@ -26,10 +26,10 @@ extension BIP21URI {
         let colon = ":"
         let bitpayPaymentLink = "https://bitpay.com/"
         let hasBitpayPaymentUrl = urlString.contains(bitpayPaymentLink)
-        
+
         if urlString.contains(doubleSlash) && !hasBitpayPaymentUrl {
             let queryArgs = url.queryArgs
-            
+
             address = url.host ?? queryArgs["address"]
             amount = queryArgs["amount"]
             paymentRequestUrl = nil
@@ -61,11 +61,11 @@ extension BIP21URI {
             amount = nil
             paymentRequestUrl = nil
         }
-        
+
         guard address != nil else {
             return nil
         }
-        
+
         self.init(address: address!, amount: amount, paymentRequestUrl: paymentRequestUrl)
     }
 }

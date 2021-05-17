@@ -23,11 +23,11 @@ final class StellarConfigurationService: StellarConfigurationAPI {
             return Single.just(cachedValue)
         }
     }
-    
+
     // MARK: Private Properties
-    
+
     private var cachedConfiguration = BehaviorRelay<StellarConfiguration?>(value: nil)
-    
+
     private var fetchConfiguration: Single<StellarConfiguration> {
         bridgeAPI.stellarConfigurationDomain
             .map { domain -> StellarConfiguration in
@@ -44,16 +44,16 @@ final class StellarConfigurationService: StellarConfigurationAPI {
                 self?.cachedConfiguration.accept(configuration)
             })
     }
-    
+
     private var shouldRefresh: Bool {
         let lastRefreshInterval = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
         return lastRefresh.compare(lastRefreshInterval) == .orderedAscending
     }
-    
+
     private var lastRefresh: Date = Date(timeIntervalSinceNow: -StellarConfigurationService.refreshInterval)
-    
+
     private let bridgeAPI: StellarWalletOptionsBridgeAPI
-    
+
     init(bridge: StellarWalletOptionsBridgeAPI = resolve()) {
         self.bridgeAPI = bridge
     }

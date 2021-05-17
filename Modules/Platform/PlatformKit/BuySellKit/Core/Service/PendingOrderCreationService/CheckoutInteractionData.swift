@@ -9,7 +9,7 @@ public struct CheckoutInteractionData {
     public let bankTransferData: LinkedBankData?
     public let orderId: String
     public let paymentMethod: PaymentMethod.MethodType
-    
+
     public init(time: Date?,
                 fee: MoneyValue,
                 amount: MoneyValue,

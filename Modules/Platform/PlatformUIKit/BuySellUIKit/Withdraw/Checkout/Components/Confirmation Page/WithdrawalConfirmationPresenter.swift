@@ -88,4 +88,3 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
         button: buttonModel)
     }
 }
-

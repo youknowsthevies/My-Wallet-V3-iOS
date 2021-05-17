@@ -14,15 +14,15 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
-    
+
     var pendingBalance: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .bitcoin))
     }
-    
+
     var actionableBalance: Single<MoneyValue> {
         balance
     }
-    
+
     var balance: Single<MoneyValue> {
         balanceService
             .balances(for: walletAccount.publicKeys.xpubs)
@@ -76,7 +76,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         self.bridge = bridge
         self.walletAccount = walletAccount
     }
-    
+
     func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
         case .receive,

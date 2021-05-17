@@ -3,7 +3,7 @@
 import PlatformKit
 
 enum TargetSelectionAction: MviAction {
-    
+
     case sourceAccountSelected(BlockchainAccount, AssetAction)
     case availableTargets([BlockchainAccount])
     case destinationDeselected
@@ -17,7 +17,7 @@ enum TargetSelectionAction: MviAction {
     case returnToPreviousStep
     case qrScannerButtonTapped
     case resetFlow
-    
+
     func reduce(oldState: TargetSelectionPageState) -> TargetSelectionPageState {
         switch self {
         case .validateBitPayPayload:

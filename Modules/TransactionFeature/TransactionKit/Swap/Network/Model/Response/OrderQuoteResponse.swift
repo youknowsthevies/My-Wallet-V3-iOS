@@ -7,7 +7,7 @@ struct OrderQuoteResponse: Decodable {
     let product: Product
     let pair: OrderPair
     let quote: OrderQuote
-    
+
     /// `MoneyValue` in the `pair.destinationCurrencyType`
     let networkFee: MoneyValue
     let staticFee: MoneyValue
@@ -15,7 +15,7 @@ struct OrderQuoteResponse: Decodable {
     let expiresAt: Date
     let createdAt: Date
     let updatedAt: Date
-    
+
     enum CodingKeys: String, CodingKey {
         case identifier = "id"
         case pair
@@ -28,7 +28,7 @@ struct OrderQuoteResponse: Decodable {
         case staticFee
         case quote
     }
-    
+
     init(identifier: String,
          product: Product = .brokerage,
          pair: OrderPair,
@@ -50,13 +50,13 @@ struct OrderQuoteResponse: Decodable {
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let createdAt = try values.decode(String.self, forKey: .createdAt)
         let expiresAt = try values.decode(String.self, forKey: .expiresAt)
         let updatedAt = try values.decode(String.self, forKey: .updatedAt)
-        
+
         identifier = try values.decode(String.self, forKey: .identifier)
         pair = try OrderPair(string: try values.decode(String.self, forKey: .pair))
         product = try values.decode(Product.self, forKey: .product)

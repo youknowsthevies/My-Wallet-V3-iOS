@@ -18,16 +18,16 @@ enum AssetAddressRepositoryError: Error {
 
 /// Address usage status
 enum AddressUsageStatus {
-    
+
     /// Used address - indicates the address had been used by another transaction
     case used(address: String)
-    
+
     /// Unused address - indicates the address has not been used yet
     case unused(address: String)
-    
+
     /// Unknown usage status - indicates the address usage couldn't be deducted
     case unknown(address: String)
-    
+
     /// Returns `true` if the status is `unused`
     var isUnused: Bool {
         switch self {
@@ -37,7 +37,7 @@ enum AddressUsageStatus {
             return false
         }
     }
-    
+
     /// Returns the address associated with the usage status
     var address: String {
         switch self {
@@ -69,9 +69,9 @@ enum AssetAddressType {
     private let paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken>
     private let tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken>
     private let urlSession: URLSession
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(walletManager: WalletManager = WalletManager.shared,
          stellarWalletRepository: StellarWalletAccountRepository = resolve(),
          paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
@@ -120,7 +120,7 @@ enum AssetAddressType {
 
         // Only one address for Stellar.
         appSettings.swipeAddressForStellar = self.stellarWalletAccountRepository.defaultAccount?.publicKey
-        
+
         // Retrieve swipe addresses for bitcoin and bitcoin cash
         [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash].forEach {
             let swipeAddresses = self.swipeAddresses(for: $0)
@@ -143,7 +143,7 @@ enum AssetAddressType {
             fatalError("TODO")
         }
     }
-    
+
     /// Gets the swipe addresses for the provided asset type
     /// - Parameter asset: the asset type
     /// - Returns: the asset address
@@ -203,7 +203,7 @@ enum AssetAddressType {
     func removeFirstSwipeAddress(for assetType: CryptoCurrency) {
         KeychainItemWrapper.removeFirstSwipeAddress(for: assetType.legacy)
     }
-    
+
     /// Removes a specific address for assetType.
     ///
     /// - Parameter address: the address
@@ -229,7 +229,7 @@ enum AssetAddressType {
     func removeAllSwipeAddresses(for cryptoCurrency: CryptoCurrency) {
         removeAllSwipeAddresses(forAsset: cryptoCurrency.legacy)
     }
-    
+
     /// removes all swipe addresses for the provided LegacyAssetType
     ///
     /// - Parameter type: the LegacyAssetType
@@ -247,7 +247,7 @@ extension AssetAddressRepository: WalletSwipeAddressDelegate {
 }
 
 extension AssetAddressRepository {
-    
+
     /// Checks whether an address has been used (has ever had a transaction)
     ///
     /// - Parameters:
@@ -267,7 +267,7 @@ extension AssetAddressRepository {
                 return self.fetchAddressUsage(of: address, asset: asset)
             }
     }
-    
+
     private func fetchAddressUsage(of address: String, asset: CryptoCurrency) -> Single<AddressUsageStatus> {
         let assetAddress: AssetAddress = AssetAddressFactory.create(fromAddressString: address, assetType: asset)
 

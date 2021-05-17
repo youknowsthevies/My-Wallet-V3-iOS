@@ -19,14 +19,14 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     func memo(for transactionHash: String) -> Single<String?> {
         .just(nil)
     }
-    
+
     var pendingBalanceMoney: Single<MoneyValue> = Single.just(CryptoValue.pax(major: "1.0")!.moneyValue)
-    
+
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
             .asObservable()
     }
-    
+
     var balanceMoney: Single<MoneyValue> {
         balance
             .moneyValue
@@ -40,12 +40,12 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var isWaitingOnTransaction: Single<Bool> {
         isWaitingOnTransactionValue
     }
-    
+
     var historyValue = Single.just(())
     var history: Single<Void> {
         historyValue
     }
-    
+
     func fetchHistory() -> Single<Void> {
         history
     }
@@ -54,17 +54,17 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var balance: Single<CryptoValue> {
         balanceValue
     }
-    
+
     var balanceObservable: Observable<CryptoValue> {
         balance.asObservable()
     }
-    
+
     var balanceMoneyObservable: Observable<MoneyValue> {
         balanceObservable.map { MoneyValue(cryptoValue: $0) }
     }
-    
+
     let balanceFetchTriggerRelay = PublishRelay<Void>()
-        
+
     var nameValue: Single<String> = Single.just("")
     var name: Single<String> {
         nameValue
@@ -79,18 +79,18 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var transactions: Single<[EthereumHistoricalTransaction]> {
         transactionsValue
     }
-    
+
     static let assetAccount = EthereumAssetAccount(walletIndex: 0, accountAddress: "", name: "")
     var accountValue: Single<EthereumAssetAccount> = Single.just(assetAccount)
     var account: Single<EthereumAssetAccount> {
         accountValue
     }
-    
+
     var nonceValue = Single.just(BigUInt(1))
     var nonce: Single<BigUInt> {
         nonceValue
     }
-    
+
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         .just(transaction)
     }

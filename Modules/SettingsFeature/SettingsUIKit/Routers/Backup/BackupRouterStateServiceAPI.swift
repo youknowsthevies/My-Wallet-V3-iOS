@@ -4,17 +4,17 @@ import RxRelay
 import RxSwift
 
 protocol BackupRouterStateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<BackupRouterStateService.Action> { get }
 }
 
 protocol BackupRouterStateEmitterServiceAPI: class {
-    
+
     /// Move to the next state
     var nextRelay: PublishRelay<Void> { get }
-    
+
     /// Move to the previous state
     var previousRelay: PublishRelay<Void> { get }
 }
@@ -26,10 +26,10 @@ typealias BackupRouterStateServiceAPI = BackupRouterStateReceiverServiceAPI &
 /// `Entry` denotes from where the state is being started.
 /// The entry may mean controllers are presented with a different `PresentationType`.
 public enum BackupRouterEntry {
-    
+
     // Entering from the `Send` custody flow
     case custody
-    
+
     // Entering from `Settings` which has a `NavigationController`
     case settings
 }

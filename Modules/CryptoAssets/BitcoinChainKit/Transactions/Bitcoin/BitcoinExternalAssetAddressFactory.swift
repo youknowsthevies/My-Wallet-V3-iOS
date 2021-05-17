@@ -5,7 +5,7 @@ import RxSwift
 import TransactionKit
 
 final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: CryptoReceiveAddressFactory {
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,

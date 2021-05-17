@@ -14,9 +14,9 @@ public protocol ERC20Token {
     static var zeroValue: ERC20TokenValue<Self> { get }
     /// Indicates which non custodial transaction actions using this Token are supported.
     static var nonCustodialTransactionSupport: AvailableActions { get }
-    
+
     static func cryptoValueFrom(majorValue: String) -> ERC20TokenValue<Self>?
-    
+
     static func cryptoValueFrom(minorValue: String) -> ERC20TokenValue<Self>?
     static func cryptoValueFrom(minorValue: BigInt) -> ERC20TokenValue<Self>?
 }
@@ -26,11 +26,11 @@ extension ERC20Token {
     public static var name: String {
         assetType.name
     }
-    
+
     public static var metadataKey: String {
         assetType.rawValue.lowercased()
     }
-    
+
     public static var zeroValue: ERC20TokenValue<Self> {
         // swiftlint:disable:next force_try
         return try! ERC20TokenValue<Self>(crypto: CryptoValue.zero(currency: assetType))

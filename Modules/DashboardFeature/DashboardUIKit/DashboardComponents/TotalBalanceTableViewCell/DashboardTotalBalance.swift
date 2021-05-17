@@ -9,9 +9,9 @@ struct DashboardTotalBalance {
         typealias Interaction = LoadingState<Value.Interaction>
         typealias Presentation = LoadingState<Value.Presentation>
     }
-    
+
     struct Value {
-        
+
         /// The interaction value of dashboard asset
         struct Interaction {
 
@@ -21,14 +21,14 @@ struct DashboardTotalBalance {
             /// The asset / account price data
             let price: DashboardAsset.Value.Interaction.AssetPrice
         }
-        
+
         /// The presentation value of a dashboard asset
         struct Presentation {
-            
+
             /// The chart data
             let chart: PieChartData
             let price: DashboardAsset.Value.Presentation.AssetPrice
-            
+
             init(with value: Interaction) {
                 chart = PieChartData(with: value.chart)
                 price = .init(with: value.price, descriptors: .balance)

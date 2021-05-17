@@ -6,13 +6,13 @@ import RxSwift
 
 /// A presenter for pairing intro screen
 struct PairingIntroScreenPresenter {
-        
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.Onboarding.PairingIntroScreen
-    
+
     // MARK: - Properties
-    
+
     let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let instructionViewModels: [InstructionCellViewModel] = {
@@ -34,19 +34,19 @@ struct PairingIntroScreenPresenter {
     let secondaryButtonViewModel = ButtonViewModel.secondary(
         with: LocalizedString.secondaryButton
     )
-    
+
     /// Should connect to manual pairing flow
     let manualPairingNavigationRelay = PublishRelay<Void>()
-    
+
     /// Should connect to auto pairing flow
     let autoPairingNavigationRelay = PublishRelay<Void>()
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init() {
         primaryButtonViewModel.tapRelay
             .bindAndCatch(to: autoPairingNavigationRelay)
@@ -56,4 +56,3 @@ struct PairingIntroScreenPresenter {
             .disposed(by: disposeBag)
     }
 }
-

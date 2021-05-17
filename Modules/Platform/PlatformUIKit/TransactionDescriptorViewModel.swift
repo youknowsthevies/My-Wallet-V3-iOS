@@ -48,7 +48,7 @@ public struct TransactionDescriptorViewModel {
                 )
             }
     }
-    
+
     public var fromAccountBadgeImageViewModel: Driver<BadgeImageViewModel> {
         fromAccountRelay
             .compactMap(\.account)
@@ -78,7 +78,7 @@ public struct TransactionDescriptorViewModel {
                 return model
             }
     }
-    
+
     public var toAccountBadgeImageViewModel: Driver<BadgeImageViewModel> {
         toAccountRelay
             .compactMap(\.account)
@@ -133,7 +133,7 @@ public struct TransactionDescriptorViewModel {
             }
         }
     }
-    
+
     /// The `SingleAccount` that the transaction is originating from
     public let fromAccountRelay = BehaviorRelay<TransactionAccountValue>(value: .empty)
 

@@ -27,7 +27,7 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
     let navigationBarTrailingButtonAction: DetailsScreen.BarButtonAction = .default
     let reloadRelay: PublishRelay<Void> = .init()
     let buttons: [ButtonViewModel]
-    
+
     // MARK: Private Properties
 
     private let headers: [Int: HeaderBuilder]
@@ -74,13 +74,13 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
         ]
         verifyNowButton
             .tap
-            .emit { (self) in
+            .emit { (_) in
                 let kycRouter: KYCRouterAPI = resolve()
                 kycRouter.start()
             }
             .disposed(by: disposeBag)
     }
-    
+
     func header(for section: Int) -> HeaderBuilder? {
         headers[section]
     }

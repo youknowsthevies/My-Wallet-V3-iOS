@@ -11,15 +11,15 @@ public protocol ExchangeAccountStatusServiceAPI {
 }
 
 public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI {
-    
+
     // MARK: - ExchangeLinkStatusServiceAPI
-    
+
     public var hasLinkedExchangeAccount: Single<Bool> {
         nabuUserService
             .user
             .map(\.hasLinkedExchangeAccount)
     }
-    
+
     public var hasEnabled2FA: Single<Bool> {
         /// It does not matter what asset we fetch.
         client.exchangeAddress(with: .bitcoin)
@@ -42,14 +42,14 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
                 return .just(false)
             }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let nabuUserService: NabuUserServiceAPI
     private let client: ExchangeAccountsProviderClientAPI
-    
+
     // MARK: - Init
-    
+
     init(nabuUserService: NabuUserServiceAPI = resolve(),
          client: ExchangeAccountsClientAPI = resolve()) {
         self.nabuUserService = nabuUserService

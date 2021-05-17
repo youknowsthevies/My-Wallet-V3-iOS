@@ -14,7 +14,7 @@ struct TransactionSizeCalculator: TransactionSizeCalculating {
             + CoinSelection.Constants.costPerInput.multiplied(by: BigUInt(inputs))
             + CoinSelection.Constants.costPerOutput.multiplied(by: BigUInt(outputs))
     }
-    
+
     func dustThreshold(for fee: Fee) -> BigUInt {
         (CoinSelection.Constants.costPerInput + CoinSelection.Constants.costPerOutput) * fee.feePerByte
     }

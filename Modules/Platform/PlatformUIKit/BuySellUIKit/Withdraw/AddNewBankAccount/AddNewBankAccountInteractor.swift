@@ -57,7 +57,7 @@ final class AddNewBankAccountInteractor: PresentableInteractor<AddNewBankAccount
             .startWith(.calculating)
             .asDriver(onErrorJustReturn: .invalid(.valueCouldNotBeCalculated))
             .map(AddNewBankAccountAction.details)
-            
+
         presenter.connect(action: detailsAction)
             .drive(onNext: handle(effect:))
             .disposeOnDeactivate(interactor: self)

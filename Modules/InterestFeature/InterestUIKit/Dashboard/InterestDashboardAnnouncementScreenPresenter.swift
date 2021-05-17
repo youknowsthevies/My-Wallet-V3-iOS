@@ -9,26 +9,26 @@ import RxCocoa
 import RxSwift
 
 public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboardAnnouncementPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Interest.Dashboard.Announcement
     private typealias LocalizationId = LocalizationConstants.Interest.Screen.Announcement
-    
+
     /// Returns the total count of cells
     public var cellCount: Int {
         cellArrangement.count
     }
-    
+
     public let cellArrangement: [InterestAnnouncementCellType]
-    
+
     let announcement: AnnouncementCardViewModel
     let visitButtonViewModel: ButtonViewModel
     let rateLineCellPresenter: LineItemCellPresenting
     let paymentIntervalCellPresenter: LineItemCellPresenting
     let footerCellPresenter: FooterTableViewCellPresenter
-    
+
     private let router: InterestDashboardAnnouncementRouting
     private let disposeBag = DisposeBag()
-    
+
     public init(router: InterestDashboardAnnouncementRouting,
                 service: SavingAccountServiceAPI = resolve()) {
         self.router = router
@@ -46,7 +46,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
             description: LocalizationId.description,
             dismissState: .undismissible
         )
-        
+
         let rates = DefaultLineItemCellInteractor(
             title: DefaultLabelContentInteractor(knownValue: LocalizationId.Cells.LineItem.Rate.title),
             description: InterestAccountDetailsDescriptionLabelInteractor.Rates.init(
@@ -70,7 +70,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
             accessibility: .id(AccessibilityId.footerCell)
         )
         visitButtonViewModel = .secondary(with: LocalizationId.Cells.Button.title)
-        
+
         cellArrangement = [
             .announcement(announcement),
             .item(rateLineCellPresenter),
@@ -78,7 +78,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
             .buttons([visitButtonViewModel]),
             .footer(footerCellPresenter)
         ]
-        
+
         visitButtonViewModel
             .tapRelay
             .bindAndCatch(weak: self) { (self) in

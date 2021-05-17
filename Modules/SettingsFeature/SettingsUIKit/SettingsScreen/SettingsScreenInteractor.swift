@@ -7,9 +7,9 @@ import RxSwift
 import SettingsKit
 
 final class SettingsScreenInteractor {
-    
+
     // MARK: - Interactors
-    
+
     let emailVerificationBadgeInteractor: EmailVerificationBadgeInteractor
     let mobileVerificationBadgeInteractor: MobileVerificationBadgeInteractor
     let twoFactorVerificationBadgeInteractor: TwoFactorVerificationBadgeInteractor
@@ -22,11 +22,11 @@ final class SettingsScreenInteractor {
     /// TODO: All interactors should be created inside this class,
     /// and services should be injected into them through the main class.
     /// The presenter should not contain any interaction logic
-    
+
     let settingsService: SettingsServiceAPI
     let smsTwoFactorService: SMSTwoFactorSettingsServiceAPI
     let emailNotificationsService: EmailNotificationSettingsServiceAPI
-    
+
     let pitConnnectionProviding: PITConnectionStatusProviding
     let balanceSharingService: BalanceSharingSettingsServiceAPI
     let tiersProviding: TierLimitsProviding
@@ -40,9 +40,9 @@ final class SettingsScreenInteractor {
     let authenticationCoordinator: AuthenticationCoordinating
 
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(
         credentialsStore: CredentialsStoreAPI = resolve(),
         featureConfigurator: FeatureFetchingConfiguring = resolve(),
@@ -66,7 +66,7 @@ final class SettingsScreenInteractor {
         self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
-        
+
         self.balanceSharingService = PortfolioSyncingService(
             balanceProviding: balanceProviding,
             balanceChangeProviding: balanceChangeProviding,
@@ -77,12 +77,12 @@ final class SettingsScreenInteractor {
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
-        
+
         bankSectionInteractor = BanksSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,
             tierLimitsProvider: tiersProviding
         )
-        
+
         emailVerificationBadgeInteractor = EmailVerificationBadgeInteractor(
             service: settingsService
         )
@@ -96,7 +96,7 @@ final class SettingsScreenInteractor {
             settingsService: settingsService,
             fiatCurrencyService: fiatCurrencyService
         )
-        
+
         swipeToReceiveConfiguration = featureConfigurator.configuration(for: .swipeToReceive)
         self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
@@ -105,7 +105,7 @@ final class SettingsScreenInteractor {
         self.credentialsStore = credentialsStore
         self.authenticationCoordinator = authenticationCoordinator
     }
-    
+
     func refresh() {
         recoveryPhraseStatusProviding.fetchTriggerRelay.accept(())
         pitConnnectionProviding.fetchTriggerRelay.accept(())

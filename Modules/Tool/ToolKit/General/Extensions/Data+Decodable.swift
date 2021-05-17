@@ -3,7 +3,7 @@
 import Foundation
 
 public extension Data {
-    
+
     /// Data -> `Decodable` using the type `T: Decodable`
     func decode<T: Decodable>(to type: T.Type) throws -> T {
         let decoded: T

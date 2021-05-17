@@ -8,7 +8,7 @@ import SettingsKit
 
 final class SecuritySectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .security
-    
+
     var state: Observable<SettingsSectionLoadingState> {
         .just(
             .loaded(next:
@@ -30,14 +30,14 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
             )
         )
     }
-    
+
     private let recoveryCellPresenter: RecoveryStatusCellPresenter
     private let bioAuthenticationCellPresenter: BioAuthenticationSwitchCellPresenter
     private let smsTwoFactorSwitchCellPresenter: SMSTwoFactorSwitchCellPresenter
     private let balanceSyncingCellPresenter: BalanceSharingSwitchCellPresenter
     private let cloudBackupSwitchCellPresenter: CloudBackupSwitchCellPresenter
     private let swipeToReceiveCellPresenter: SwipeReceiveSwitchCellPresenter
-    
+
     init(smsTwoFactorService: SMSTwoFactorSettingsServiceAPI,
          credentialsStore: CredentialsStoreAPI,
          biometryProvider: BiometryProviding,

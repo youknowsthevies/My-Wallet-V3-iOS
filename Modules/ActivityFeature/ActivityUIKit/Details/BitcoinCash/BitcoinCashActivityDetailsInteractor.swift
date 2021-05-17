@@ -8,11 +8,11 @@ import RxSwift
 final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Private Properties
-    
+
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
     private let priceService: PriceServiceAPI
     private let detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails>
-    
+
     // MARK: - Init
 
     init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
@@ -22,9 +22,9 @@ final class BitcoinCashActivityDetailsInteractor {
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService
     }
-    
+
     // MARK: - Public Functions
-    
+
     func details(identifier: String, createdAt: Date) -> Observable<BitcoinCashActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
@@ -40,7 +40,7 @@ final class BitcoinCashActivityDetailsInteractor {
             )
             .map { BitcoinCashActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
     }
-    
+
     // MARK: - Private Functions
 
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {

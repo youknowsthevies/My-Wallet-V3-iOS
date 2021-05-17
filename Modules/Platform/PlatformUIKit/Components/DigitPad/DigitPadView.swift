@@ -6,13 +6,13 @@ import RxSwift
 public final class DigitPadView: UIView {
 
     // MARK: - UI Properties
-    
+
     @IBOutlet private var digitButtonViewArray: [DigitPadButtonView]!
     @IBOutlet private var backspaceButtonView: DigitPadButtonView!
     @IBOutlet private var customButtonView: DigitPadButtonView!
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: DigitPadViewModel! {
         didSet {
             // Inject corresponding view model to each button view
@@ -23,14 +23,14 @@ public final class DigitPadView: UIView {
             backspaceButtonView.viewModel = viewModel.backspaceButtonViewModel
         }
     }
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         fromNib()
     }
-    
+
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         fromNib()

@@ -12,50 +12,50 @@ protocol OnboardingRouterStateProviding: class {
 
 /// Router for the onboarding flow.
 final class OnboardingRouter: OnboardingRouterStateProviding {
-              
+
     enum State {
         /// Pending 2FA and therefore should not reset the stack
         case pending2FA
-        
+
         /// Not any unique state
         case standard
     }
-    
+
     // MARK: - State
-    
+
     /// The state
     var state = State.standard
-    
+
     // MARK: - Navigation
-    
+
     /// Onboarding navigation controller.
     /// Should be retained weakly and nullified after `navigationController`
     /// is replaced by the next root
     private weak var navigationController: UINavigationController!
-    
+
     // MARK: - Injected
-    
+
     private let webViewServiceAPI: WebViewServiceAPI
-    
+
     // MARK: - Accessors
-    
+
     private let bag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(webViewServiceAPI: WebViewServiceAPI = resolve()) {
         self.webViewServiceAPI = webViewServiceAPI
     }
-    
+
     // MARK: API
 
     /// A single entry point to the beginning of the onboarding
     func start(in window: UIWindow = UIApplication.shared.keyWindow!) {
         showWelcomeScreen(in: window)
     }
-    
+
     // MARK: - Welcome
-    
+
     private func showWelcomeScreen(in window: UIWindow) {
         let presenter = WelcomeScreenPresenter()
         presenter.createTapRelay
@@ -74,16 +74,16 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
             }
             .disposed(by: bag)
         let viewController = WelcomeViewController(presenter: presenter)
-        
+
         /// Mount the navigation controller as the `rootViewController` of the window
         let navigationController = NavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window
         window.rootViewController = navigationController
         self.navigationController = navigationController
     }
-    
+
     // MARK: - Create Wallet
-    
+
     private func navigateToCreateWalletScreen() {
         let interactor = CreateWalletScreenInteractor()
         let presenter = RegisterWalletScreenPresenter(interactor: interactor)
@@ -96,9 +96,9 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         let viewController = RegisterWalletViewController(presenter: presenter)
         navigate(to: viewController)
     }
-    
+
     // MARK: - Recover Funds
-    
+
     private func navigateToRecoverFundsScreen() {
         let presenter = RecoverFundsScreenPresenter()
         presenter.continueTappedRelay
@@ -107,10 +107,10 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         }
         .disposed(by: bag)
         let controller = RecoverFundsViewController(presenter: presenter)
-        
+
         navigate(to: controller)
     }
-    
+
     private func navigateToCreateRecoveryWalletScreen(_ mnemonic: String) {
         let interactor = RecoverWalletScreenInteractor(passphrase: mnemonic)
         let presenter = RegisterWalletScreenPresenter(interactor: interactor, type: .recovery)
@@ -123,9 +123,9 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         let viewController = RegisterWalletViewController(presenter: presenter)
         navigate(to: viewController)
     }
-    
+
     // MARK: - Pairing
-    
+
     private func navigateToPairingIntroScreen() {
         let presenter = PairingIntroScreenPresenter()
         presenter.autoPairingNavigationRelay
@@ -144,21 +144,21 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         /// See further documentation in `PairingIntroViewController`
         viewController.view.frame = UIScreen.main.bounds
     }
-    
+
     private func navigateToAutoPairingScreen() {
         let presenter = AutoPairingScreenPresenter()
         let viewController = AutoPairingViewController(presenter: presenter)
         navigate(to: viewController)
     }
-    
+
     func navigateToManualPairingScreen() {
         let presenter = ManualPairingScreenPresenter()
         let viewController = ManualPairingViewController(presenter: presenter)
         navigate(to: viewController)
     }
-    
+
     // MARK: - Additional Accessories
-    
+
     private func navigate(to viewController: UIViewController) {
         navigationController.pushViewController(viewController, animated: true)
     }
@@ -173,4 +173,3 @@ extension OnboardingRouter: WalletRecoveryDelegate {
 //        createWallet?.showPassphraseTextField()
     }
 }
-

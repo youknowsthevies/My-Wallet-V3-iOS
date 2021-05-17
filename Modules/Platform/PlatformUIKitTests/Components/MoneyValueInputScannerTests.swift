@@ -12,7 +12,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         let currency = FiatCurrency.GBP
         let decimalAccurancy = 10
         let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
-        
+
         // When
         let inputs = [0, 100, 123_21, 1_123_01, 11_642_12, 11_642_07, 100_123_02, 10_000_000_23]
         let ouputs = ["0", "1", "123.21", "1123.01", "11642.12", "11642.07", "100123.02", "10000000.23"]

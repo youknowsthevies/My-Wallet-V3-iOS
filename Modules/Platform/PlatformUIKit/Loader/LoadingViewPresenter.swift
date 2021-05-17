@@ -10,26 +10,26 @@ import UIKit
 @objc public final class LoadingViewPresenter: NSObject, LoadingViewPresenting {
 
     // MARK: - Types
-    
+
     /// The style of the loading view
     public enum LoadingViewStyle {
-        
+
         /// Activity indicator style (legacy design)
         case activityIndicator
-        
+
         /// Circle style (new design)
         case circle
     }
-    
+
     /// Describes the state of the loader
     enum State {
-        
+
         /// Animating state with associated `String?` as textual display
         case animating(String?)
-        
+
         /// Hidden state
         case hidden
-        
+
         /// Returns `true` if the loader is currently animating
         var isAnimating: Bool {
             switch self {
@@ -40,9 +40,9 @@ import UIKit
             }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// The shared instance of the loading view
     @available(*, deprecated, message: "Don't use this, resolve using DIKit instead.")
     @LazyInject @objc public static var shared: LoadingViewPresenter
@@ -51,7 +51,7 @@ import UIKit
     @objc public var isVisible: Bool {
         state.isAnimating
     }
-        
+
     /// Controls the availability of the loader from outside.
     /// In case `isEnabled` is `false`, the loader does not show.
     /// `isEnabled` is thread-safe.
@@ -67,16 +67,16 @@ import UIKit
             self._isEnabled = newValue
         }
     }
-    
+
     // Privately used by exposed `isEnabled` only.
     private var _isEnabled = true
-    
+
     // The container of the loader. Allocated on demand, when done spinning it should be deallocated.
     private var view: LoadingViewProtocol!
-    
+
     // Recursive lock for shared resources held by that class
     private let lock = NSRecursiveLock()
-    
+
     /// The state of the loader
     private var state = State.hidden {
         didSet {
@@ -92,7 +92,7 @@ import UIKit
             }
         }
     }
-    
+
     // MARK: - API
 
     /// Hides the loader
@@ -104,7 +104,7 @@ import UIKit
             self.view = nil
         }
     }
-    
+
     /// Shows the circular loader
     /// - Parameter superview: An optional `UIView` to show the loader in.
     /// if `nil` the loader is shown in one of the windows.
@@ -116,7 +116,7 @@ import UIKit
             self.state = .animating(text)
         }
     }
-    
+
     /// Shows the legacy loader
     /// - Parameter superview: An optional `UIView` to show the loader in.
     /// if `nil` the loader is shown in one of the windows.
@@ -128,24 +128,24 @@ import UIKit
             self.state = .animating(text)
         }
     }
-    
+
     /// Shows the circular loader (attached to a window)
     /// - Parameter text: an optional String to be displayed
     @objc public func showCircular(with text: String? = nil) {
         showCircular(in: nil, with: text)
     }
-    
+
     /// Shows the circular loader (attached to a window)
     @objc public func showCircular() {
         showCircular(with: nil)
     }
-    
+
     /// Shows the legacy loader (attached to a window)
     /// - Parameter text: an optional String to be displayed
     @objc public func show(with text: String? = nil) {
         show(in: nil, with: text)
     }
-    
+
     /// Shows thr loader
     /// - Parameter style: The loader style
     /// - Parameter text: an optional String to be displayed
@@ -157,9 +157,9 @@ import UIKit
             show(with: text)
         }
     }
-    
+
     // MARK: - Accessors
-    
+
     private func setupViewIfNeeded(in superview: UIView? = nil, style: LoadingViewPresenter.LoadingViewStyle) {
         guard view == nil else { return }
         switch style {
@@ -174,7 +174,7 @@ import UIKit
             attachToTopWindow()
         }
     }
-    
+
     /// Add the view to a superview
     private func attach(to superview: UIView) {
         superview.addSubview(view.viewRepresentation)
@@ -197,7 +197,7 @@ import UIKit
             .first { window -> Bool in
                 let onMainScreen = window.screen == .main
                 let isVisible = !window.isHidden && window.alpha > 0
-                
+
                 let isLevelNormalOrStatusBar = window.windowLevel == .normal || window.windowLevel == .statusBar
                 return onMainScreen && isVisible && isLevelNormalOrStatusBar
         }!

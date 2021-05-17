@@ -3,11 +3,11 @@
 import SwiftUI
 
 extension LayoutConstants {
-    
+
     fileprivate struct Badge {
         static let contentInsets = EdgeInsets(top: 6, leading: 8, bottom: 6, trailing: 8)
         static let cornerRadious = CGFloat(8)
-        
+
         private init() {
             // to avoid initializing the struct by accident
         }
@@ -15,22 +15,22 @@ extension LayoutConstants {
 }
 
 public struct BadgeView: View {
-    
+
     public enum Style {
         case info
         case error
         case warning
         case success
     }
-    
+
     public let title: String
     public let style: Style
-    
+
     public init(title: String, style: Style) {
         self.title = title
         self.style = style
     }
-    
+
     public var body: some View {
         ZStack {
             Text(title)

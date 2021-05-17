@@ -9,29 +9,29 @@ public protocol BlockchainAccountFetching {
 }
 
 public final class BlockchainAccountFetchingFactory {
-    
+
     public static func make(for currencyType: CurrencyType) -> BlockchainAccountFetching {
         BlockchainAccountFetcher(currencyType: currencyType)
     }
 }
 
 final class BlockchainAccountFetcher: BlockchainAccountFetching {
-    
+
     private let blockchainAccountProvider: BlockchainAccountProviding
     private let currencyType: CurrencyType
-    
+
     init(currencyType: CurrencyType,
          blockchainAccountProvider: BlockchainAccountProviding = resolve()) {
         self.currencyType = currencyType
         self.blockchainAccountProvider = blockchainAccountProvider
     }
-    
+
     // MARK: - BlockchainAccountFetching
-    
+
     var accounts: Single<[BlockchainAccount]> {
         blockchainAccountProvider.accounts(for: currencyType)
     }
-    
+
     func account(accountType: SingleAccountType) -> Single<BlockchainAccount> {
         blockchainAccountProvider
             .account(

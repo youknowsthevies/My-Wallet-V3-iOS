@@ -4,18 +4,18 @@ import BigInt
 import ToolKit
 
 public struct CryptoValue: CryptoMoney, Hashable {
-    
+
     /// The amount in the smallest unit of the currency (i.e. satoshi for BTC, wei for ETH, etc.)
     /// a.k.a. the minor value of the currency
     public let amount: BigInt
-    
+
     /// The crypto currency
     public let currencyType: CryptoCurrency
-    
+
     public var value: CryptoValue {
         self
     }
-    
+
     public init(amount: BigInt, currency: CryptoCurrency) {
         self.amount = amount
         self.currencyType = currency

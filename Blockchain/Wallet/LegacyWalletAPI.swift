@@ -58,9 +58,9 @@ protocol LegacyWalletAPI: AnyObject {
         secondPassword: String?,
         completion: @escaping (Result<String, Wallet.SendOrderError>) -> Void
     )
-    
+
     func needsSecondPassword() -> Bool
-    
+
     func getReceiveAddress(forAccount account: Int32,
                            assetType: LegacyAssetType) -> String!
 }
@@ -169,4 +169,3 @@ extension Wallet: LegacyWalletAPI {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }
-

@@ -8,7 +8,7 @@ final class AccountPickerHeaderView: UIView {
     private let selectWalletLabel: UILabel = UILabel()
     private let separator: UIView = UIView()
     private let fadeMask = CAGradientLayer()
-    
+
     var model: AccountPickerHeaderModel! {
         didSet {
             guard let model = model else {
@@ -25,12 +25,12 @@ final class AccountPickerHeaderView: UIView {
             separator.isHidden = model.tableTitleLabel == nil
         }
     }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
@@ -50,7 +50,7 @@ final class AccountPickerHeaderView: UIView {
         patternImageView.layoutToSuperview(.leading, .trailing, .top, .bottom)
         patternImageView.image = UIImage(named: "link-pattern", in: .platformUIKit, compatibleWith: nil)
         patternImageView.contentMode = .scaleAspectFill
-        
+
         // MARK: Asset Image View
 
         assetImageView.layout(size: .edge(32))
@@ -98,7 +98,7 @@ final class AccountPickerHeaderView: UIView {
         clipsToBounds = true
         model = nil
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         fadeMask.frame = patternImageView.bounds

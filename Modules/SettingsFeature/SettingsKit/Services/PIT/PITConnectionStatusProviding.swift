@@ -14,19 +14,19 @@ public protocol PITConnectionStatusProviding {
 }
 
 final public class PITConnectionStatusProvider: PITConnectionStatusProviding {
-    
+
     // MARK: - PITConnectionStatusProviding
-    
+
     public let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private let dataRepository: DataRepositoryAPI
-    
+
     public init(blockchainRepository: DataRepositoryAPI = resolve()) {
         self.dataRepository = blockchainRepository
     }
-    
+
     public var hasLinkedPITAccount: Observable<Bool> {
         Observable.combineLatest(dataRepository.fetchNabuUser().asObservable(), fetchTriggerRelay)
             .flatMap {

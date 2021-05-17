@@ -22,9 +22,9 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             static let topSelectionViewHeight: CGFloat = 78
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private let topSelectionButtonView = SelectionButtonView()
     private var amountTranslationView: AmountTranslationView!
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
@@ -39,28 +39,28 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
     private var digitPadSeparatorTopConstraint: NSLayoutConstraint!
 
     // MARK: - Injected
-    
+
     private let presenter: EnterAmountScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Lifecycle
-    
+
     public init(presenter: EnterAmountScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
-    
+
     public override func loadView() {
         view = UIView()
         view.backgroundColor = .white
-                
+
         let digitPadTopSeparatorView = UIView()
 
         amountTranslationView = AmountTranslationView(presenter: presenter.amountTranslationPresenter)
-        
+
         view.addSubview(topSelectionButtonView)
         view.addSubview(amountTranslationView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
@@ -68,11 +68,11 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         view.addSubview(continueButtonView)
         view.addSubview(digitPadTopSeparatorView)
         view.addSubview(digitPadView)
-        
+
         topSelectionButtonView.layoutToSuperview(.top, usesSafeAreaLayoutGuide: true)
         topSelectionButtonView.layoutToSuperview(axis: .horizontal)
         topSelectionViewHeightConstraint = topSelectionButtonView.layout(dimension: .height, to: 78)
-        
+
         amountTranslationView.layoutToSuperview(axis: .horizontal)
         amountTranslationView.layout(edge: .top, to: .bottom, of: topSelectionButtonView)
 
@@ -91,7 +91,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             dimension: .height,
             to: 1
         )
-        
+
         continueButtonView.layoutToSuperview(axis: .horizontal, offset: 24, priority: .penultimateHigh)
         continueButtonTopConstraint = continueButtonView.layout(
             edge: .top,
@@ -109,15 +109,15 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             offset: 24
         )
         digitPadTopSeparatorView.layout(dimension: .height, to: 1)
-        
+
         digitPadView.layoutToSuperview(axis: .horizontal, priority: .penultimateHigh)
         digitPadView.layout(edge: .top, to: .bottom, of: digitPadTopSeparatorView)
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
-                
+
         digitPadTopSeparatorView.backgroundColor = presenter.displayBundle.colors.digitPadTopSeparator
     }
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
@@ -147,18 +147,18 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             .drive()
             .disposed(by: disposeBag)
     }
-    
+
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
         setupNavigationBar()
     }
-    
+
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
-    
+
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         /// NOTE: This must be in `viewWillLayoutSubviews`
@@ -174,14 +174,14 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             }
         }
     }
-    
+
     // MARK: - Setup
-    
+
     private func setupNavigationBar() {
         titleViewStyle = .text(value: presenter.title)
         setStandardDarkContentStyle()
     }
-        
+
     private func setupBottomAuxiliaryView() {
         presenter.bottomAuxiliaryViewModelState
             .drive(
@@ -191,7 +191,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
            )
            .disposed(by: disposeBag)
     }
-    
+
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountScreenPresenter.BottomAuxiliaryViewModelState) {
         let height: CGFloat
         let visibility: Visibility
@@ -238,13 +238,13 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             }
         )
     }
-    
+
     // MARK: - Navigation
-    
+
     public override func navigationBarLeadingButtonPressed() {
         presenter.previous()
     }
-    
+
     public override func navigationBarTrailingButtonPressed() {
         presenter.previous()
     }

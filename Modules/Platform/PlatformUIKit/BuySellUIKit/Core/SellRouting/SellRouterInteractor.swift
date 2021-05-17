@@ -10,28 +10,28 @@ import ToolKit
 
 /// Interactors that controls logics related to data-driven transitions between screens within the Sell flow
 public final class SellRouterInteractor: Interactor {
-    
+
     // MARK: - Types
-                
+
     /// Comprise all the states so far in the current routing session
     struct States {
-    
+
         /// The actual state of the flow
         let current: State
-        
+
         /// The previous states sorted chronologically
         let previous: [State]
-        
+
         /// All states, ordered
         var all: [State] {
             previous + [current]
         }
-        
+
         /// A computed inactive state
         static var inactive: States {
             States(current: .inactive, previous: [])
         }
-        
+
         /// Maps the instance of `States` into a new instance where the appended
         /// state is the current
         func states(byAppending state: State) -> States {
@@ -51,70 +51,70 @@ public final class SellRouterInteractor: Interactor {
             )
         }
     }
-    
+
     /// Marks a past or present state in the state-machine
     enum State {
-        
+
         /// Inactive state - pre flow
         case inactive
-        
+
         /// The user is ineligible for `Sell`
         case ineligible
-        
+
         /// The user has been KYC rejected
         case verificationFailed
-        
+
         /// The SFScreenViewController showing the region availability URL
         /// for an ineligible user
         case ineligibilityURL
-        
+
         /// The SFScreenViewController showing the form to contact support
         case contactSupportURL
-        
+
         /// An introduction screen that should show if the user
         /// has not completed KYC
         case introduction
-        
+
         /// The user has not completed KYC
         case kyc
-        
+
         /// Account Selection Screen
         case accountSelector
-        
+
         /// Fiat Account Selection Screen
         case fiatAccountSelector
-        
+
         /// Enter amount
         case enterAmount(SellCryptoInteractionData)
-        
+
         /// The user is checking-out
         case checkout(CheckoutData)
-        
+
         /// Sell completed
         case pendingOrderCompleted(orderDetails: OrderDetails)
-                        
+
         /// Completed state
         case completed
-        
+
         /// Cancelled Transaction State
         case cancel(CheckoutData)
     }
-    
+
     enum Action {
         case next(to: State)
         case previous(from: State)
         case dismiss
     }
-    
+
     // MARK: - Properties
-    
+
     var action: Signal<Action> {
         actionRelay.asSignal()
     }
-        
+
     public let previousRelay = PublishRelay<Void>()
     private let currencySelectionRelay = BehaviorRelay<CryptoCurrency?>(value: nil)
-    
+
     private lazy var setup: Void = {
         accountSelectionService
             .selectedData
@@ -127,7 +127,7 @@ public final class SellRouterInteractor: Interactor {
                 self.apply(action: .next(to: states.current), states: states)
             }
             .disposed(by: disposeBag)
-        
+
         accountSelectionService
             .selectedData
             .flatMap(\.balance)
@@ -153,20 +153,20 @@ public final class SellRouterInteractor: Interactor {
             }
             .disposed(by: disposeBag)
     }()
-    
+
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let accountSelectionService: AccountSelectionServiceAPI
     private let balanceProvider: BalanceProviding
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
-    
+
     private let statesRelay = BehaviorRelay<States>(value: .inactive)
     private let actionRelay = PublishRelay<Action>()
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 eligibilityService: EligibilityServiceAPI = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
@@ -182,14 +182,14 @@ public final class SellRouterInteractor: Interactor {
         super.init()
         _ = setup
     }
-        
+
     // MARK: - Lifecycle
-    
+
     public override func didBecomeActive() {
         super.didBecomeActive()
-        
+
         balanceProvider.refresh()
-        
+
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
@@ -236,27 +236,27 @@ public final class SellRouterInteractor: Interactor {
             })
             .disposed(by: disposeBag)
     }
-    
+
     public override func willResignActive() {
         super.willResignActive()
         disposeBag = DisposeBag()
     }
-    
+
     public func nextFromVerificationFailed() {
         let states = States(current: .contactSupportURL, previous: [.inactive])
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     public func nextFromIneligible() {
         let states = States(current: .ineligibilityURL, previous: [.inactive])
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     public func nextFromIntroduction() {
         let states = States(current: .kyc, previous: [.inactive])
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     public func nextFromKYC() {
         kycTiersService.fetchTiers()
             .handleLoaderForLifecycle(
@@ -274,24 +274,24 @@ public final class SellRouterInteractor: Interactor {
             })
             .disposed(by: disposeBag)
     }
-    
+
     public func nextFromSellCrypto(checkoutData: CheckoutData) {
         let state: State = .checkout(checkoutData)
         let current = statesRelay.value
         let states = States(current: state, previous: [current.current])
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     public func cancelSell(with checkoutData: CheckoutData) {
         let states = self.states(byAppending: .cancel(checkoutData))
         apply(action: .next(to: states.current), states: states)
     }
-    
+
     public func orderCompleted() {
         let states = self.states(byAppending: .completed)
         apply(action: .dismiss, states: states)
     }
-    
+
     public func orderPending(with orderDetails: OrderDetails) {
         let checkoutData = CheckoutData(order: orderDetails)
         let state = State.checkout(checkoutData)
@@ -300,7 +300,7 @@ public final class SellRouterInteractor: Interactor {
             states: self.states(byAppending: state)
         )
     }
-    
+
     public func confirmCheckout(with checkoutData: CheckoutData, isOrderNew: Bool) {
         let state: State
         let data = (checkoutData.order.paymentMethod, isOrderNew)
@@ -314,13 +314,13 @@ public final class SellRouterInteractor: Interactor {
         default:
             fatalError("This should not happen.")
         }
-        
+
         let states = self.states(byAppending: state)
         apply(action: .next(to: state), states: states)
     }
-    
+
     // MARK: - Accessors
-    
+
     private func previous() {
         let last = statesRelay.value.current
         let states = statesRelay.value.statesByRemovingLast()
@@ -335,16 +335,16 @@ public final class SellRouterInteractor: Interactor {
         }
         apply(action: action, states: states)
     }
-        
+
     private func apply(action: Action, states: States) {
         actionRelay.accept(action)
         statesRelay.accept(states)
     }
-    
+
     private func statesByRemovingLast() -> States {
         statesRelay.value.statesByRemovingLast()
     }
-    
+
     private func states(byAppending state: State) -> States {
         statesRelay.value.states(byAppending: state)
     }

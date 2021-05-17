@@ -6,7 +6,7 @@ import NetworkKit
 import RxSwift
 
 final class SettingsClient: SettingsClientAPI {
-    
+
     /// Enumerates the API methods supported by the wallet settings endpoint.
     enum Method: String {
         case getInfo = "get-info"
@@ -23,20 +23,20 @@ final class SettingsClient: SettingsClientAPI {
         case updateBlockTorIps = "update-block-tor-ips"
         case updateLastTxTime = "update-last-tx-time"
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let apiCode: String
     private let networkAdapter: NetworkAdapterAPI
-    
+
     // MARK: - Setup
-    
+
     init(apiCode: String = BlockchainAPI.Parameters.apiCode,
          networkAdapter: NetworkAdapterAPI = resolve()) {
         self.apiCode = apiCode
         self.networkAdapter = networkAdapter
     }
-    
+
     /// Fetches the wallet settings from the backend.
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
@@ -58,7 +58,7 @@ final class SettingsClient: SettingsClientAPI {
         )
         return networkAdapter.perform(request: request)
     }
-    
+
     /// Updates the last tx time.
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
@@ -72,7 +72,7 @@ final class SettingsClient: SettingsClientAPI {
             payload: currentTime
         )
     }
-    
+
     func update(currency: String,
                 context: FlowContext,
                 guid: String,
@@ -85,7 +85,7 @@ final class SettingsClient: SettingsClientAPI {
             context: context
         )
     }
-    
+
     /// Updates the user's email.
     /// - Parameter email: The email value.
     /// - Parameter context: The context in which the update is happening.
@@ -104,7 +104,7 @@ final class SettingsClient: SettingsClientAPI {
             context: context
         )
     }
-    
+
     /// Updates the sms number
     /// - Parameter smsNumber: The mobile number value.
     /// - Parameter context: The context in which the update is happening.
@@ -123,7 +123,7 @@ final class SettingsClient: SettingsClientAPI {
             context: context
         )
     }
-    
+
     func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
@@ -139,7 +139,7 @@ final class SettingsClient: SettingsClientAPI {
             )
         )
     }
-    
+
     func verifySMS(code: String, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
@@ -148,7 +148,7 @@ final class SettingsClient: SettingsClientAPI {
             payload: code
         )
     }
-    
+
     func smsTwoFactorAuthentication(enabled: Bool, guid: String, sharedKey: String) -> Completable {
         update(
             guid: guid,
@@ -157,7 +157,7 @@ final class SettingsClient: SettingsClientAPI {
             payload: enabled ? "5" : "0"
         )
     }
-    
+
     /// A generic update method that is able to update email, mobile number, etc.
     /// - Parameter guid: The wallet identifier that must be valid.
     /// - Parameter sharedKey: A shared key that must be valid.
@@ -180,7 +180,7 @@ final class SettingsClient: SettingsClientAPI {
             )
         )
     }
-    
+
     public func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
         networkAdapter.perform(
             request: request(
@@ -194,7 +194,7 @@ final class SettingsClient: SettingsClientAPI {
 }
 
 extension SettingsClient {
-    
+
     fileprivate func request(
         guid: String,
         sharedKey: String,
@@ -221,5 +221,5 @@ extension SettingsClient {
             contentType: .formUrlEncoded
         )
     }
-    
+
 }

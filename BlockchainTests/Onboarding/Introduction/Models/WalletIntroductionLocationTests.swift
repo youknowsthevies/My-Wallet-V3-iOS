@@ -7,7 +7,7 @@ class WalletIntroductionLocationTests: XCTestCase {
 
     let dashboardSend = WalletIntroductionLocation(screen: .dashboard, position: .send)
     let dashboardSwap = WalletIntroductionLocation(screen: .dashboard, position: .swap)
-    
+
     func testComparableLocations() {
         XCTAssertLessThan(dashboardSend, dashboardSwap)
     }

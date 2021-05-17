@@ -10,7 +10,7 @@ public protocol SwapActivityClientAPI {
                        fiatCurrency: String,
                        cryptoCurrency: CryptoCurrency,
                        limit: Int) -> Single<[SwapActivityItemEvent]>
-    
+
     func fetchActivity(from date: Date,
                        fiatCurrency: String) -> Single<[SwapActivityItemEvent]>
 }
@@ -18,33 +18,33 @@ public protocol SwapActivityClientAPI {
 public typealias SwapClientAPI = SwapActivityClientAPI
 
 final class SwapClient: SwapClientAPI {
-    
+
     private enum Parameter {
         static let before = "before"
         static let fiatCurrency = "userFiatCurrency"
         static let cryptoCurrency = "currency"
         static let limit = "limit"
     }
-    
+
     private enum Path {
         static let activity = ["trades", "unified"]
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
-    
+
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     // MARK: - SwapActivityClientAPI
-    
+
     func fetchActivity(from date: Date,
                        fiatCurrency: String,
                        cryptoCurrency: CryptoCurrency,
@@ -80,7 +80,7 @@ final class SwapClient: SwapClientAPI {
             )
 
     }
-    
+
     func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
         let parameters = [
             URLQueryItem(
@@ -105,5 +105,5 @@ final class SwapClient: SwapClientAPI {
             )
 
     }
-    
+
 }

@@ -9,7 +9,7 @@ enum CommunicatorMockError: Error {
 }
 
 final class NetworkCommunicatorMock: NetworkCommunicatorAPI {
-    
+
     func dataTaskPublisher(for request: NetworkRequest) -> AnyPublisher<ServerResponse, NetworkError> {
         unimplemented()
     }

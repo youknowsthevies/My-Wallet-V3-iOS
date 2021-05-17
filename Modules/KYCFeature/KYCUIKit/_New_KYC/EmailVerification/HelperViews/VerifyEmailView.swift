@@ -6,10 +6,10 @@ import SwiftUI
 import UIComponentsKit
 
 struct VerifyEmailState: Equatable {
-    
+
     var emailAddress: String
     fileprivate var cannotOpenMailAppAlert: AlertState<VerifyEmailAction>?
-    
+
     init(emailAddress: String) {
         self.emailAddress = emailAddress
     }
@@ -37,15 +37,15 @@ let verifyEmailReducer = Reducer<VerifyEmailState, VerifyEmailAction, VerifyEmai
                 }
             }
         }
-        
+
     case .tapGetEmailNotReceivedHelp:
         return .none
-        
+
     case .presentCannotOpenMailAppAlert:
         // NOTE: this should happen only on Simulators
         state.cannotOpenMailAppAlert = AlertState(title: .init("Cannot Open Mail App"))
         return .none
-        
+
     case .dismissCannotOpenMailAppAlert:
         state.cannotOpenMailAppAlert = nil
         return .none
@@ -53,9 +53,9 @@ let verifyEmailReducer = Reducer<VerifyEmailState, VerifyEmailAction, VerifyEmai
 }
 
 struct VerifyEmailView: View {
-    
+
     let store: Store<VerifyEmailState, VerifyEmailAction>
-    
+
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
@@ -103,7 +103,7 @@ struct VerifyEmailView_Previews: PreviewProvider {
                 )
             )
             .preferredColorScheme(.light)
-            
+
             VerifyEmailView(
                 store: .init(
                     initialState: .init(

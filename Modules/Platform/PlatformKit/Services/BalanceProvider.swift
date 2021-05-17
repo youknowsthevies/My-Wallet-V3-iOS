@@ -6,21 +6,21 @@ import ToolKit
 
 /// Provider of balance services and total balance in `FiatValue`
 public protocol BalanceProviding: class {
-    
+
     subscript(currency: CurrencyType) -> AssetBalanceFetching { get }
-    
+
     /// Streams the total fiat balance in the wallet
     var fiatBalance: Observable<FiatValueCalculationState> { get }
-    
+
     /// Streams the fiat balances
     var fiatBalances: Observable<MoneyBalancePairsCalculationStates> { get }
-    
+
     /// Streams the balances of the fiat based currencies
     var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> { get }
 
     /// Single wrapper for `fiatFundsBalances` the balances of the fiat based currencies
     var fiatFundsBalancesSingle: Single<MoneyBalancePairsCalculationStates> { get }
-    
+
     /// Triggers a refresh on the balances
     func refresh()
 }
@@ -29,7 +29,7 @@ public protocol BalanceProviding: class {
 public final class BalanceProvider: BalanceProviding {
 
     // MARK: - Balance
-    
+
     /// Reduce cross asset fiat balance values into a single fiat value
     public var fiatBalance: Observable<FiatValueCalculationState> {
         fiatBalances
@@ -65,7 +65,7 @@ public final class BalanceProvider: BalanceProviding {
             }
             .share()
     }
-    
+
     public var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> {
         fiatBalances.map { $0.fiatBaseStates }
     }
@@ -77,17 +77,17 @@ public final class BalanceProvider: BalanceProviding {
     public subscript(currency: Currency) -> AssetBalanceFetching {
         services[currency.currency]!
     }
-    
+
     public subscript(currencyType: CurrencyType) -> AssetBalanceFetching {
         services[currencyType]!
     }
-    
+
     // MARK: - Services
-    
+
     private var services: [CurrencyType: AssetBalanceFetching] = [:]
-    
+
     // MARK: - Setup
-    
+
     public init(fiats: [FiatCurrency: AssetBalanceFetching],
                 cryptos: [CryptoCurrency: AssetBalanceFetching]) {
         for (currency, service) in fiats {
@@ -97,7 +97,7 @@ public final class BalanceProvider: BalanceProviding {
             services[currency.currency] = service
         }
     }
-    
+
     public func refresh() {
         services.values.forEach { $0.refresh() }
     }

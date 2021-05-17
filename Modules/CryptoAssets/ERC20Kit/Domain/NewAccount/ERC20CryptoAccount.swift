@@ -11,7 +11,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = Token.assetType
     let isDefault: Bool = true
-    
+
     var actionableBalance: Single<MoneyValue> {
         balance
     }
@@ -20,7 +20,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
         balanceFetching
             .balanceMoney
     }
-    
+
     var pendingBalance: Single<MoneyValue> {
         balanceFetching
             .pendingBalanceMoney
@@ -44,7 +44,7 @@ final class ERC20CryptoAccount<Token: ERC20Token>: CryptoNonCustodialAccount {
     private let balanceFetching: SingleAccountBalanceFetching
     private let exchangeService: PairExchangeServiceAPI
     private let featureFetcher: FeatureFetching
-    
+
     init(id: String,
          balanceProviding: BalanceProviding = resolve(),
          exchangeProviding: ExchangeProviding = resolve(),

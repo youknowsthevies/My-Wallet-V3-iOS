@@ -35,7 +35,7 @@ public final class WithdrawRootInteractor: Interactor,
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
     }
-    
+
     public override func didBecomeActive() {
         super.didBecomeActive()
         startFlow()

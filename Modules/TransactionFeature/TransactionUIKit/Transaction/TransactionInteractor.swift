@@ -67,7 +67,7 @@ final class TransactionInteractor {
         }
         return transactionProcessor.updateAmount(amount: amount)
     }
-    
+
     func updateTransactionFees(with level: FeeLevel, amount: MoneyValue?) -> Completable {
         guard let transactionProcessor = transactionProcessor else {
             fatalError("Tx Processor is nil")
@@ -164,9 +164,9 @@ final class TransactionInteractor {
         }
         return transactionProcessor.validateAll()
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func sendTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
         coincore
             .getTransactionTargets(
@@ -174,7 +174,7 @@ final class TransactionInteractor {
                 action: .send
             )
     }
-    
+
     private func swapTargets(sourceAccount: CryptoAccount) -> Single<[SingleAccount]> {
         let transactionTargets = coincore
             .getTransactionTargets(

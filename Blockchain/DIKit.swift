@@ -46,49 +46,49 @@ extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
-    
+
     static var blockchain = module {
-        
+
         factory { NavigationRouter() as NavigationRouterAPI }
-        
+
         single { OnboardingSettings() }
 
         single { OnboardingRouter() }
-        
+
         factory { PaymentPresenter() }
 
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }
-        
+
         factory { AirdropCenterClient() as AirdropCenterClientAPI }
-        
+
         factory { AirdropCenterService() as AirdropCenterServiceAPI }
 
         factory { DeepLinkHandler() as DeepLinkHandling }
 
         factory { DeepLinkRouter() as DeepLinkRouting }
-        
+
         factory { UIDevice.current as DeviceInfo }
 
         single { [FirebaseAnalyticsService(), AnalyticsProvider()] as [AnalyticsServiceProviding] }
-        
+
         factory { CrashlyticsRecorder() as MessageRecording }
-        
+
         factory { CrashlyticsRecorder() as ErrorRecording }
-        
+
         factory(tag: "CrashlyticsRecorder") { CrashlyticsRecorder() as Recording }
 
         factory { ExchangeClient() as ExchangeClientAPI }
-        
+
         factory { LockboxRepository() as LockboxRepositoryAPI }
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
         factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
-        
+
         factory { DataProvider.default.balanceChange as BalanceChangeProviding }
-        
+
         single { TradeLimitsService() as TradeLimitsAPI }
 
         factory { SiftService() as SiftServiceAPI }
@@ -134,21 +134,21 @@ extension DependencyContainer {
         factory {
             BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as DashboardUIKit.BackupRouterAPI
         }
-        
+
         factory { AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting }
-        
+
         factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
-        
+
         factory { AnnouncementPresenter() as DashboardUIKit.AnnouncementPresenting }
-        
+
         factory { FiatBalanceCellProvider() as FiatBalanceCellProviding }
-        
+
         factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
-        
+
         factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
-        
+
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
-        
+
         factory { WithdrawalRouter() as WithdrawalRouting }
 
         // MARK: - AppCoordinator
@@ -198,11 +198,11 @@ extension DependencyContainer {
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.repository as PasswordRepositoryAPI
         }
-        
+
         // MARK: - BlockchainSettings.App
-        
+
         single { KeychainItemSwiftWrapper() as KeychainItemWrapping }
-        
+
         factory { LegacyPasswordProvider() as LegacyPasswordProviding }
 
         single { BlockchainSettings.App() }
@@ -221,9 +221,9 @@ extension DependencyContainer {
             let app: BlockchainSettings.App = DIKit.resolve()
             return app
         }
-        
+
         // MARK: - Settings
-        
+
         factory { () -> RecoveryPhraseVerifyingServiceAPI in
             let manager: WalletManager = DIKit.resolve()
             return RecoveryPhraseVerifyingService(wallet: manager.wallet) as RecoveryPhraseVerifyingServiceAPI
@@ -242,7 +242,7 @@ extension DependencyContainer {
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
         }
-        
+
         factory { () -> FeatureFetchingConfiguring in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
@@ -282,7 +282,7 @@ extension DependencyContainer {
         // MARK: - BlockchainDataRepository
 
         factory { BlockchainDataRepository.shared as DataRepositoryAPI }
-        
+
         // MARK: - Ethereum Wallet
 
         factory { () -> EthereumWallet in
@@ -323,20 +323,20 @@ extension DependencyContainer {
         // MARK: - Stellar Wallet
 
         factory { StellarWallet() as StellarWalletBridgeAPI }
-        
+
         // MARK: - BitcoinCash Wallet
-        
+
         factory { BitcoinCashAddressValidator() as BitcoinCashAddressValidatorAPI }
 
         // MARK: - Bitcoin Wallet
-        
+
         factory { BitcoinAddressValidator() as BitcoinAddressValidatorAPI }
 
         factory { () -> BitcoinWalletBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin
         }
-        
+
         factory { () -> BitcoinChainSendBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet.bitcoin
@@ -347,9 +347,9 @@ extension DependencyContainer {
         // MARK: Wallet Upgrade
 
         factory { WalletUpgrading() as WalletUpgradingAPI }
-        
+
         // MARK: Helpers
-        
+
         factory { UIApplication.shared as ExternalAppOpener }
     }
 }

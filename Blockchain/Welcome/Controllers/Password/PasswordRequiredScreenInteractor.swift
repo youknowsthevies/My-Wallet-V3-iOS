@@ -7,14 +7,14 @@ import RxSwift
 import SettingsKit
 
 final class PasswordRequiredScreenInteractor {
-    
+
     // MARK: - Properties
-    
+
     /// Streams potential parsing errors
     var error: Observable<Error> {
         errorRelay.asObservable()
     }
-    
+
     /// Relay that accepts and streams the payload content
     let passwordRelay = BehaviorRelay<String>(value: "")
 
@@ -23,15 +23,15 @@ final class PasswordRequiredScreenInteractor {
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
     private let credentialsStore: CredentialsStoreAPI
-    
+
     /// TODO: Consider the various of error types from the service layer,
     /// translate them into a interaction layer errors
     private let errorRelay = PublishRelay<Error>()
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(walletPayloadService: WalletPayloadServiceAPI = WalletPayloadService(repository: resolve()),
          walletManager: WalletManager = resolve(),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
@@ -43,7 +43,7 @@ final class PasswordRequiredScreenInteractor {
         self.appSettings = appSettings
         self.credentialsStore = credentialsStore
     }
-    
+
     /// Authenticates the wallet
     func authenticate() {
         walletPayloadService.requestUsingSharedKey()
@@ -56,7 +56,7 @@ final class PasswordRequiredScreenInteractor {
             )
             .disposed(by: disposeBag)
     }
-    
+
     /// Forgets the wallet
     func forget() {
         walletManager.forgetWallet()

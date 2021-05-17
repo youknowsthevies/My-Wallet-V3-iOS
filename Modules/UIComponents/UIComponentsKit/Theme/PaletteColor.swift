@@ -2,7 +2,7 @@
 
 // Reference: https://www.figma.com/file/MWCxP6khQHkDZSLEew6mLqcQ/iOS-Visual-consistency-update?node-id=68%3A0
 enum PaletteColor: String {
-    
+
     // MARK: Blue
     case blue000
     case blue100
@@ -14,7 +14,7 @@ enum PaletteColor: String {
     case blue700
     case blue800
     case blue900
-    
+
     // MARK: Green
     case green000
     case green100
@@ -26,7 +26,7 @@ enum PaletteColor: String {
     case green700
     case green800
     case green900
-    
+
     // MARK: Grey
     case grey000
     case grey050
@@ -39,13 +39,13 @@ enum PaletteColor: String {
     case grey700
     case grey800
     case grey900
-    
+
     // MARK: GreyFade
     case greyFade100
     case greyFade400
     case greyFade600
     case greyFade800
-    
+
     // MARK: Orange
     case orange000
     case orange100
@@ -57,7 +57,7 @@ enum PaletteColor: String {
     case orange700
     case orange800
     case orange900
-    
+
     // MARK: Purple
     case purple000
     case purple100
@@ -69,7 +69,7 @@ enum PaletteColor: String {
     case purple700
     case purple800
     case purple900
-    
+
     // MARK: Red
     case red000
     case red100
@@ -81,7 +81,7 @@ enum PaletteColor: String {
     case red700
     case red800
     case red900
-    
+
     // MARK: Teal
     case teal000
     case teal100
@@ -93,21 +93,21 @@ enum PaletteColor: String {
     case teal700
     case teal800
     case teal900
-    
+
     // MARK: White
     case white
-    
+
     // MARK: WhiteFade
     case whiteFade100
     case whiteFade400
     case whiteFade600
     case whiteFade800
-    
+
     // MARK: KYC Verification Tiers
     case tiersSilver
     case tiersGold
     case tiersDiamond
-    
+
     // MARK: Cryptocurrencies
     case aave = "Aave"
     case algo = "Algorand"

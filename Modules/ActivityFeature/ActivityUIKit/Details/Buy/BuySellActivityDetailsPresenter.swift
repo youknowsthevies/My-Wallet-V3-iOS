@@ -127,7 +127,7 @@ final class BuySellActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .map { .loaded(next: .init(text: $0)) }
             .bindAndCatch(to: paymentMethodPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
-        
+
         switch event.isBuy {
         case true:
             cells = [

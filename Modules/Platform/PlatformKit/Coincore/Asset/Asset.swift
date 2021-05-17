@@ -11,7 +11,7 @@ public protocol Asset: AnyObject {
     func initialize() -> Completable
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup>
-    
+
     func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]>
 
     /// Validates the given address

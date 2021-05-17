@@ -7,15 +7,15 @@ import ToolKit
 final class LinkedBanksViewController: UIViewController, LinkedBanksViewControllable {
 
     // MARK: - Public Properties
-    
+
     weak var listener: LinkedBanksListener?
-    
+
     // MARK: - Init
 
     init() {
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         unimplemented()

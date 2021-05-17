@@ -13,14 +13,14 @@ extension Dictionary {
 
     /// Merges the given dictionary into this dictionary. In case of duplicate keys, uses the value from the given dictionary.
     public mutating func merge(_ other: Dictionary<Key, Value>) {
-        merge(other) { lhs, rhs in
+        merge(other) { _, rhs in
             rhs
         }
     }
 
     /// Creates a dictionary by merging the given dictionary into this dictionary. In case of duplicate keys, uses the value from the given dictionary.
     public func merging(_ other: Dictionary<Key, Value>) -> Dictionary<Key, Value> {
-        merging(other) { lhs, rhs in
+        merging(other) { _, rhs in
             rhs
         }
     }
@@ -50,17 +50,17 @@ extension Dictionary where Key == String, Value == [String: Any] {
                 Logger.shared.warning("Failed to serialize dictionary.")
                 return nil
             }
-            
+
             do {
                 return try jsonDecoder.decode(type.self, from: data)
             } catch {
                 Logger.shared.error("Failed to decode \(error)")
             }
-            
+
             return nil
         }
     }
-    
+
     public func decodeJSONValues<T: Codable>(type: T.Type) -> [T] {
         decodeJSONObjects(type: type)
             .compactMap { (tuple) -> T? in
@@ -69,4 +69,3 @@ extension Dictionary where Key == String, Value == [String: Any] {
             }
     }
 }
-

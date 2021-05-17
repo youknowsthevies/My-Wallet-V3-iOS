@@ -12,34 +12,34 @@ typealias CardClientAPI = CardListClientAPI &
                           CardAdditionClientAPI
 
 final class CardClient: CardClientAPI {
-    
+
     // MARK: - Types
-    
+
     private enum Parameter {
         static let currency = "currency"
     }
-        
+
     private enum Path {
         static let card = [ "payments", "cards" ]
-        
-        static func activateCard(with id: String) -> [String] { Path.card + [ id, "activate" ] } 
+
+        static func activateCard(with id: String) -> [String] { Path.card + [ id, "activate" ] }
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     // MARK: - CardListClientAPI
-    
+
     /// Streams a list of available cards
     /// - Returns: A Single with `CardPayload` array
     var cardList: Single<[CardPayload]> {
@@ -54,9 +54,9 @@ final class CardClient: CardClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CardDetailClientAPI
-        
+
     func getCard(by id: String) -> Single<CardPayload> {
         let path = Path.card + [id]
         let request = requestBuilder.get(
@@ -69,7 +69,7 @@ final class CardClient: CardClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CardDeletionClientAPI
 
     func deleteCard(by id: String) -> Completable {
@@ -84,9 +84,9 @@ final class CardClient: CardClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CardChargeClientAPI
-    
+
     func chargeCard(by id: String) -> Completable {
         let path = Path.card + [id, "charge"]
         let request = requestBuilder.post(
@@ -99,9 +99,9 @@ final class CardClient: CardClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CardAdditionClientAPI
-    
+
     func add(for currency: String,
              email: String,
              billingAddress: CardPayload.BillingAddress) -> Single<CardPayload> {
@@ -110,13 +110,13 @@ final class CardClient: CardClientAPI {
             let email: String
             let address: CardPayload.BillingAddress
         }
-        
+
         let payload = RequestPayload(
             currency: currency,
             email: email,
             address: billingAddress
         )
-        
+
         let path = Path.card
         let request = requestBuilder.post(
             path: path,
@@ -129,9 +129,9 @@ final class CardClient: CardClientAPI {
                 errorResponseType: NabuNetworkError.self
             )
     }
-    
+
     // MARK: - CardActivationClientAPI
-    
+
     /// EveryPay Only (Other provider would need different methods)
     /// Attempt to register the card method with the partner.
     /// Successful response should have card object and status should move to ACTIVE.
@@ -141,20 +141,20 @@ final class CardClient: CardClientAPI {
     ///   - token: Session token
     /// - Returns: The card details
     func activateCard(by id: String, url: String) -> Single<ActivateCardResponse.Partner> {
-        
+
         struct Attributes: Encodable {
             struct EveryPay: Encodable {
                 let customerUrl: String
             }
             private let everypay: EveryPay?
-            
+
             init(everypay: EveryPay) {
                 self.everypay = everypay
             }
         }
         let path = Path.activateCard(with: id)
         let payload = Attributes(everypay: .init(customerUrl: url))
-        
+
         let request = requestBuilder.post(
             path: path,
             body: try? payload.encode(),

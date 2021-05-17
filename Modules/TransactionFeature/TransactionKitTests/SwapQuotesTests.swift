@@ -16,7 +16,7 @@ final class SwapQuotesEngineMock {
     init(service: OrderQuoteServiceAPI = OrderQuoteServiceMock()) {
         self.service = service
     }
-    
+
     func getRate(direction: OrderDirection = .internal, pair: OrderPair) -> Observable<BigInt> {
         Observable.combineLatest(
             service
@@ -26,14 +26,14 @@ final class SwapQuotesEngineMock {
         )
         .map { PricesInterpolator(prices: $0.0.quote.priceTiers).rate(amount: $0.1) }
     }
-    
+
     func updateAmount(_ amount: BigInt) {
         self.amount.onNext(amount)
     }
 }
 
 final class ExchangeRateTests: XCTestCase {
-    
+
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
     var subject: SwapQuotesEngineMock!
@@ -45,14 +45,14 @@ final class ExchangeRateTests: XCTestCase {
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }
-    
+
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
 
         super.tearDown()
     }
-    
+
     func test_btc_bch_rate() throws {
         let expectedRate = BigInt("34936063248847697954")
         subject.updateAmount(BigInt(12345))

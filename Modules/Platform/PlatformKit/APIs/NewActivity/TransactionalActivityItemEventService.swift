@@ -5,9 +5,9 @@ import RxSwift
 import ToolKit
 
 public final class TransactionalActivityItemEventService: TransactionalActivityItemEventServiceAPI {
-    
+
     // MARK: - Public Properties
-    
+
     public var transactionActivityEvents: Single<[TransactionalActivityItemEvent]> {
         _ = setup
         return fetcher
@@ -18,24 +18,24 @@ public final class TransactionalActivityItemEventService: TransactionalActivityI
             .map { $0.items }
             .catchErrorJustReturn([])
     }
-    
+
     public var transactionActivityObservable: Observable<[TransactionalActivityItemEvent]> {
         _ = setup
         return transactionActivityEvents
             .asObservable()
     }
-    
+
     public var state: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return stateRelay
             .catchErrorJustReturn(.loaded(next: []))
             .asObservable()
     }
-    
+
     public let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private lazy var setup: Void = {
         fetchTriggerRelay
             .throttle(
@@ -52,13 +52,13 @@ public final class TransactionalActivityItemEventService: TransactionalActivityI
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let fetcher: TransactionalActivityItemEventFetcherAPI
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     public init(fetcher: TransactionalActivityItemEventFetcherAPI) {
         self.fetcher = fetcher
     }

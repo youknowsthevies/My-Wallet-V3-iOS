@@ -57,4 +57,3 @@ public struct Quote {
         self.rate = FiatValue.create(minor: response.rate, currency: amount.currencyType)!
     }
 }
-

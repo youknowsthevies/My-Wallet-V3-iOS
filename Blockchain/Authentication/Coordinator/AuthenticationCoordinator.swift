@@ -33,23 +33,23 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 @objc class AuthenticationCoordinator: NSObject, VersionUpdateAlertDisplaying {
 
     // MARK: - Types
-    
+
     typealias WalletAuthHandler = (_ authenticated: Bool, _
                                    twoFactorType: AuthenticatorType?, _
                                    error: AuthenticationError?) -> Void
 
     @Inject @objc static var shared: AuthenticationCoordinator
-    
+
     var postAuthenticationRoute: PostAuthenticationRoute?
-    
+
     private var pinRouter: PinRouter!
-    
+
     private let appSettings: BlockchainSettings.App
     private let onboardingSettings: OnboardingSettings
     private let wallet: Wallet
     private let remoteNotificationTokenSender: RemoteNotificationTokenSending
     private let remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
-        
+
     private let alertPresenter: AlertViewPresenter
     private let loadingViewPresenter: LoadingViewPresenting
     private let dataRepository: BlockchainDataRepository
@@ -59,10 +59,10 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
 
     private let deepLinkRouter: DeepLinkRouting
-    
+
     private let settingsAPIClient: SettingsServiceAPI
     private let featureFlagsService: InternalFeatureFlagServiceAPI
-    
+
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
@@ -72,16 +72,16 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
     var temporaryAuthHandler: WalletAuthHandler!
-    
+
     /// TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
     var isShowingSecondPasswordScreen = false
-    
+
     var isCreatingWallet = false
-    
+
     private let bag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
-        
+
    // MARK: - Initializer
 
     init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
@@ -115,7 +115,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         self.walletManager.secondPasswordDelegate = self
         self.walletManager.authDelegate = self
     }
-    
+
     /// Authentication handler - this should not be in AuthenticationCoordinator
     /// but the current way wallet creation is designed, we need to share this handler
     /// with that flow. Eventually, wallet creation should be moved with AuthenticationCoordinator
@@ -141,7 +141,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             }
             return
         }
-        
+
         alertPresenter.dismissIfNeeded()
 
         // Make user set up a pin if none is set. They can also optionally enable touch ID and link their email.
@@ -213,24 +213,24 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             showPasswordRequiredViewController()
         }
     }
-    
+
     /// Unauthenticates the user
     @objc func logout() {
-        
+
         // In case the user has created the wallet during this session
         // TODO: Refactor this once the wallet creation becomes native
         isCreatingWallet = false
-        
+
         WalletManager.shared.close()
 
         NotificationCenter.default.post(name: .logout, object: nil)
-        
+
         let sift: SiftServiceAPI = resolve()
         sift.removeUserId()
         sharedContainter.reset()
         appSettings.reset()
         onboardingSettings.reset()
-                        
+
         showPasswordRequiredViewController()
         AppCoordinator.shared.clearOnLogout()
     }
@@ -255,7 +255,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         // Sets view controller as rootViewController of the window
         window.rootViewController = navigationController
     }
-    
+
     ///   - type: The type of the screen
     ///   - confirmHandler: Confirmation handler, receives the password
     ///   - dismissHandler: Dismiss handler (optional - defaults to `nil`)
@@ -267,21 +267,21 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             return
         }
         isShowingSecondPasswordScreen = true
-        
+
         let navigationController = UINavigationController()
-        
+
         let confirm: PasswordScreenPresenter.ConfirmHandler = { [weak navigationController] password in
             navigationController?.dismiss(animated: true) {
                 confirmHandler(password)
             }
         }
-        
+
         let dismiss: PasswordScreenPresenter.DismissHandler = { [weak navigationController] in
             navigationController?.dismiss(animated: true) {
                 dismissHandler?()
             }
         }
-        
+
         loadingViewPresenter.hide()
         let interactor = PasswordScreenInteractor(type: type)
         let presenter = PasswordScreenPresenter(
@@ -303,9 +303,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             dismissHandler: dismissHandler
         )
     }
-    
+
     // MARK: Email Verification
-    
+
     private func presentEmailVerificationFlow() {
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else {
             fatalError("🔴 Could not present Email Verification Flow: topMostViewController is nil!")
@@ -331,9 +331,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             }
             .store(in: &cancellables)
     }
-    
+
     // MARK: Simple Buy
-    
+
     private func presentSimpleBuyFlow() {
         fiatCurrencySettingsService.update(currency: .locale, context: .walletCreation)
             .asPublisher()
@@ -365,13 +365,13 @@ extension AuthenticationCoordinator: WalletSecondPasswordDelegate {
                 onSuccess: { secondPassword in
                     success.success(string: secondPassword!)
                 },
-                onError: { error in
+                onError: { _ in
                     dismiss?.dismiss()
                 }
             )
             .disposed(by: bag)
     }
-    
+
     func getPrivateKeyPassword(success: WalletSuccessCallback) {
         showPasswordScreen(
             type: .importPrivateKey,
@@ -447,7 +447,7 @@ extension AuthenticationCoordinator {
     @objc var isDisplayingLoginAuthenticationFlow: Bool {
         pinRouter?.isDisplayingLoginAuthentication ?? false
     }
-    
+
     /// Change existing pin code. Used from settings mostly.
     func changePin() {
         let logout = { [weak self] () -> Void in
@@ -459,7 +459,7 @@ extension AuthenticationCoordinator {
         pinRouter = PinRouter(flow: flow)
         pinRouter.execute()
     }
-    
+
     /// Create a new pin code. Used during onboarding, when the user is required to define a pin code before entering his wallet.
     func createPin() {
         let parentViewController = UIApplication.shared.topMostViewController!
@@ -497,7 +497,7 @@ extension AuthenticationCoordinator {
         }
         pinRouter.execute()
     }
-    
+
     /// Validates pin for any in-app flow, for example: enabling touch-id/face-id auth.
     func enableBiometrics() {
         let logout = { [weak self] () -> Void in
@@ -512,7 +512,7 @@ extension AuthenticationCoordinator {
         }
         pinRouter.execute()
     }
-    
+
     // TODO: Dump this in favor of using one of the new gateways to PIN flow.
     /// Shows the pin entry view.
     func showPinEntryView() {

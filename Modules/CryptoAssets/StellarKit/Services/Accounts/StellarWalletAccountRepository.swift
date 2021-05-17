@@ -18,24 +18,24 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
     private let bridge: StellarWalletBridgeAPI
     private let mnemonicAccessAPI: MnemonicAccessAPI
     private let deriver: StellarKeyPairDeriver = StellarKeyPairDeriver()
-    
+
     init(bridge: StellarWalletBridgeAPI = resolve(),
          mnemonicAccessAPI: MnemonicAccessAPI = resolve()) {
         self.bridge = bridge
         self.mnemonicAccessAPI = mnemonicAccessAPI
     }
-    
+
     public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
         loadDefaultAccount().ifEmpty(
             switchTo: createAndSaveStellarAccount()
         )
     }
-    
+
     /// The default `StellarWallet`, will be nil if it has not yet been initialized
     public var defaultAccount: StellarWalletAccount? {
         accounts().first
     }
-    
+
     func accounts() -> [WalletAccount] {
         bridge.stellarWallets()
     }
@@ -50,7 +50,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
                 self.derive(input: input)
             }
     }
-    
+
     public func loadKeyPair() -> Maybe<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
@@ -61,7 +61,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
                 self.derive(input: input).asMaybe()
             }
     }
-    
+
     // MARK: Private
 
     private func derive(input: StellarKeyDerivationInput) -> Single<StellarKeyPair> {
@@ -77,14 +77,14 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
             }
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
     }
-    
+
     private func loadDefaultAccount() -> Maybe<WalletAccount> {
         guard let defaultAccount = defaultAccount else {
             return Maybe.empty()
         }
         return Maybe.just(defaultAccount)
     }
-    
+
     private func createAndSaveStellarAccount() -> Maybe<WalletAccount> {
         loadKeyPair()
             .flatMap(weak: self) { (self, keyPair) -> Maybe<StellarKeyPair> in

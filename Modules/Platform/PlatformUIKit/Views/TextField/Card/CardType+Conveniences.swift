@@ -4,7 +4,7 @@ import Localization
 import PlatformKit
 
 extension CardType {
-    
+
     public var thumbnail: String? {
         switch self {
         case .visa:
@@ -23,7 +23,7 @@ extension CardType {
             return nil
         }
     }
-    
+
     var parts: [Int] {
         switch self {
         case .visa, .mastercard, .jcb, .discover:

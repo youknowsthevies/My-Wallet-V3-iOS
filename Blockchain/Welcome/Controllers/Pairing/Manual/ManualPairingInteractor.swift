@@ -10,76 +10,76 @@ import ToolKit
 
 /// Interaction object for manual pairing flow
 final class ManualPairingInteractor {
-                
+
     enum AuthenticationType {
-        
+
         /// Standard auth using guid (wallet identifier) and password
         case standard
-        
+
         /// Special auth using guid (wallet identifier), password and one time 2FA string
         case twoFA(String)
     }
-    
+
     /// Any action related to authentication should go here
     enum AuthenticationAction {
 
         /// Authorize login by approving a message sent by email
         case authorizeLoginWithEmail
-        
+
         /// Authorize login by inserting an OTP code
         case authorizeLoginWith2FA(AuthenticatorType)
 
         /// Wrong OTP code
         case wrongOtpCode(type: AuthenticatorType, attemptsLeft: Int)
-        
+
         /// Account is locked
         case lockedAccount
-        
+
         /// Some error that should be reflected to the user
         case message(String)
-        
+
         case error(Error)
     }
-    
+
     /// The state of the interaction layer
     struct Content {
         var walletIdentifier = ""
         var password = ""
     }
-    
+
     // MARK: - Properties
-    
+
     let contentStateRelay = BehaviorRelay<Content>(value: Content())
     var content: Observable<Content> {
         contentStateRelay.asObservable()
     }
-    
+
     var authenticationAction: Observable<AuthenticationAction> {
         authenticationActionRelay.asObservable()
     }
-        
+
     // MARK: - Properties
-    
+
     let dependencies: Dependencies
-        
+
     private let authenticationActionRelay = PublishRelay<AuthenticationAction>()
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
-    
+
     init(dependencies: Dependencies = Dependencies()) {
         self.dependencies = dependencies
     }
-    
+
     // MARK: - API
-    
+
     func pair(using action: AuthenticationType = .standard) throws {
         dependencies.analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletManualLogin)
-        
+
         /// We have to call `loadJS` before starting the pairing process
         /// `true` is being sent because we only need to load the JS.
         dependencies.wallet.loadJSIfNeeded()
-        
+
         let walletIdentifier = contentStateRelay.value.walletIdentifier
         dependencies.sessionTokenService.setupSessionToken()
             .subscribe(
@@ -97,14 +97,14 @@ final class ManualPairingInteractor {
             )
             .disposed(by: disposeBag)
     }
-    
+
     /// Requests OTP via SMS
     func requestOTPMessage() -> Completable {
         dependencies.smsService.request()
     }
-    
+
     // MARK: - Accessors
-    
+
     /// Invokes the login service
     private func authenticate(walletIdentifier: String, action: AuthenticationType) {
         let login: Completable
@@ -136,7 +136,7 @@ final class ManualPairingInteractor {
             )
             .disposed(by: disposeBag)
     }
-        
+
     /// Handles any authentication error by streaming it to the relay
     private func handleAuthentication(error: Error) {
         switch error {
@@ -162,25 +162,25 @@ final class ManualPairingInteractor {
 // MARK: - Dependencies
 
 extension ManualPairingInteractor {
-    
+
     struct Dependencies {
-        
+
         // MARK: - Pairing dependencies
-        
+
         let emailAuthorizationService: EmailAuthorizationService
         fileprivate let sessionTokenService: SessionTokenServiceAPI
         fileprivate let smsService: SMSServiceAPI
         fileprivate let loginService: LoginServiceAPI
         fileprivate let walletFetcher: PairingWalletFetching
-        
+
         /// TODO: Remove from dependencies
         fileprivate let wallet: Wallet
-        
+
         // MARK: - General dependencies
-        
+
         fileprivate let analyticsRecorder: AnalyticsEventRecording
         fileprivate let errorRecorder: ErrorRecording
-        
+
         init(analyticsRecorder: AnalyticsEventRecording = resolve(),
              errorRecorder: ErrorRecording = CrashlyticsRecorder(),
              walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
@@ -208,12 +208,12 @@ extension ManualPairingInteractor {
                 client: guidClient
             )
             emailAuthorizationService = EmailAuthorizationService(guidService: guidService)
-            
+
             let payloadService = WalletPayloadService(
                 client: walletPayloadClient,
                 repository: walletRepository
             )
-            
+
             let twoFAPayloadService = TwoFAWalletService(
                 client: twoFAWalletClient,
                 repository: walletRepository

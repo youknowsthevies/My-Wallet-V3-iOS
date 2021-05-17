@@ -30,12 +30,12 @@ class SideMenuViewController: UIViewController {
     @IBOutlet private var tableViewBackgroundView: UIView!
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var footerView: SideMenuFooterView!
-    
+
     private var tapToCloseGestureRecognizerVC: UITapGestureRecognizer!
     private var tapToCloseGestureRecognizerTabBar: UITapGestureRecognizer!
 
     private let disposeBag = DisposeBag()
-    
+
     private lazy var presenter: SideMenuPresenter = {
         SideMenuPresenter()
     }()
@@ -45,7 +45,7 @@ class SideMenuViewController: UIViewController {
             tableView.reloadData()
         }
     }
-    
+
     private let recorder: ErrorRecording = CrashlyticsRecorder()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
 
@@ -67,7 +67,7 @@ class SideMenuViewController: UIViewController {
         registerCells()
         initializeTableView()
         addShadow()
-        
+
         presenter.sideMenuItems
             .subscribe(onNext: { [weak self] items in
                 guard let self = self else { return }
@@ -86,7 +86,7 @@ class SideMenuViewController: UIViewController {
                 self.didTapItem(item)
             }
             .disposed(by: disposeBag)
-        
+
         presenter.itemSelection
             .emit(weak: self) { (self, item) in
                 self.didTapItem(item)
@@ -118,7 +118,7 @@ class SideMenuViewController: UIViewController {
         analyticsRecorder.record(event: item.analyticsEvent)
         delegate?.sideMenuViewController(self, didTapOn: item)
     }
-    
+
     private func registerCells() {
         tableView.registerNibCell(SideMenuCell.self)
     }
@@ -144,12 +144,12 @@ class SideMenuViewController: UIViewController {
         } else { // Record an error but continue - suspected crash
             recorder.error(SideMenuError.menuSwipeRecognizerViewNil)
         }
-        
+
         // Enable Pan gesture and tap gesture to close sideMenu
         guard let slidingViewController = AppCoordinator.shared.slidingViewController else {
             return
         }
-        
+
         if let activeViewController = tabViewController.activeViewController {
             // Disable all interactions on main view
             activeViewController.view.subviews.forEach {
@@ -191,7 +191,7 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         SideMenuCell.defaultHeight
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let sideMenuCell = tableView.dequeueReusableCell(withIdentifier: SideMenuCell.identifier) as? SideMenuCell else {
             Logger.shared.debug("Could not get SideMenuCell")

@@ -5,7 +5,7 @@ import XCTest
 @testable import Blockchain
 
 final class MockRemoteNotificationsRegistry: UIApplicationRemoteNotificationsAPI {
-    
+
     private(set) var isRegistered = false
 
     func registerForRemoteNotifications() {

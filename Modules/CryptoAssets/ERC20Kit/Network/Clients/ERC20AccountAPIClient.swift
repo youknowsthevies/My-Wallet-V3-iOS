@@ -24,15 +24,15 @@ final class ERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAPI {
         static func transactions(for address: String) -> [String] {
             account + [ address, "token", Token.contractAddress.ethereumAddress.publicKey, "transfers" ]
         }
-        
+
         static func isContract(with address: String) -> [String] {
             account(for: address) + [ "isContract" ]
         }
     }
-    
+
     private let networkAdapter: NetworkAdapterAPI
     private let requestBuilder: RequestBuilder
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve()) {
         self.networkAdapter = networkAdapter
@@ -45,7 +45,7 @@ final class ERC20AccountAPIClient<Token: ERC20Token>: ERC20AccountAPIClientAPI {
         let request = requestBuilder.get(path: path, parameters: parameters)!
         return networkAdapter.perform(request: request)
     }
-    
+
     func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
         let path = EndpointV2.isContract(with: address)
         let request = requestBuilder.get(path: path)!

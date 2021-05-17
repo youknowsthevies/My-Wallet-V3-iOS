@@ -7,7 +7,7 @@ public enum BottomAlertType {
     case image(UIImage)
     case loading
 }
- 
+
 public protocol BottomAlertModel {
     var title: String { get }
     var subtitle: String { get }
@@ -22,7 +22,7 @@ public struct LoadingBottomAlert: BottomAlertModel {
     public var dismissable: Bool {
         false
     }
-    
+
     public init(title: String, subtitle: String, gradient: Gradient) {
         self.title = title
         self.subtitle = subtitle
@@ -36,7 +36,7 @@ public struct ThumbnailBottomAlert: BottomAlertModel {
     public var gradient: Gradient
     public var dismissable: Bool
     public let thumbnail: UIImage
-    
+
     public init(title: String, subtitle: String, gradient: Gradient, dismissable: Bool = true, thumbnail: UIImage) {
         self.title = title
         self.subtitle = subtitle
@@ -47,9 +47,9 @@ public struct ThumbnailBottomAlert: BottomAlertModel {
 }
 
 public class BottomAlertSheet: UIView {
-    
+
     public typealias Model = BottomAlertModel
-    
+
     private static let sheetBottomPadding: CGFloat = 16.0
     private static let horizontalOffset: CGFloat = 32.0
     private static let horizontalPadding: CGFloat = 40.0
@@ -58,13 +58,13 @@ public class BottomAlertSheet: UIView {
     private static let bottomPadding: CGFloat = 72.0
     private static let topPadding: CGFloat = 72.0
     private static let containerHeight: CGFloat = 54.0
-    
+
     @IBOutlet private var gradientView: GradientView!
     @IBOutlet private var thumbnail: UIImageView!
     @IBOutlet private var loadingContainer: UIView!
     @IBOutlet var title: UILabel!
     @IBOutlet var subtitle: UILabel!
-    
+
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
     private var model: Model!
     private var observer: NSKeyValueObservation?
@@ -72,7 +72,7 @@ public class BottomAlertSheet: UIView {
     private var pushBehavior: UIPushBehavior!
     private var snapBehavior: UISnapBehavior!
     private var gravityBehavior: UIGravityBehavior!
-    
+
     public class func make(with model: Model) -> BottomAlertSheet {
         let bundle = Bundle(for: BottomAlertSheet.self)
         let nib = UINib(nibName: String(describing: BottomAlertSheet.self), bundle: bundle)
@@ -80,21 +80,21 @@ public class BottomAlertSheet: UIView {
         view.model = model
         return view
     }
-    
+
     public override func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
     }
-    
+
     private func apply(model: Model) {
         if model is LoadingBottomAlert {
             loadingViewPresenter.showCircular(in: loadingContainer, with: nil)
         }
-        
+
         if let thumbnailModel = model as? ThumbnailBottomAlert {
             thumbnail.image = thumbnailModel.thumbnail
         }
-        
+
         gradientView.startColor = model.gradient.startColor
         gradientView.endColor = model.gradient.endColor
         title.text = model.title
@@ -103,24 +103,24 @@ public class BottomAlertSheet: UIView {
             setupDynamicBehavior()
         }
     }
-    
+
     public class func estimatedHeight(for width: CGFloat, model: Model) -> CGFloat {
         let adjustedWidth = width - horizontalPadding
-        
+
         let titleHeight = NSAttributedString(
             string: model.title,
             attributes: [
                 .font: titleFont()
             ]
             ).heightForWidth(width: adjustedWidth)
-        
+
         let subtitleHeight = NSAttributedString(
             string: model.subtitle,
             attributes: [
                 .font: subtitleFont()
             ]
             ).heightForWidth(width: adjustedWidth)
-        
+
         return topPadding +
             bottomPadding +
             titleHeight +
@@ -129,19 +129,19 @@ public class BottomAlertSheet: UIView {
             interItemPadding +
             thumbnailToTitlePadding
     }
-    
+
     public func show() {
         presentSheetView()
         registerForNotifications()
     }
-    
+
     public func registerForNotifications() {
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak self] _ in
             guard let self = self else { return }
             self.hide()
         }
     }
-    
+
     public func hide() {
         UIView.animateKeyframes(
             withDuration: 0.3,
@@ -165,17 +165,17 @@ public class BottomAlertSheet: UIView {
             }
         )
     }
-    
+
     public class func titleFont() -> UIFont {
         let font = Font(.branded(.montserratMedium), size: .custom(24.0))
         return font.result
     }
-    
+
     public class func subtitleFont() -> UIFont {
         let font = Font(.branded(.montserratMedium), size: .custom(16.0))
         return font.result
     }
-    
+
     private func startAnimators(with velocity: CGPoint, offset: UIOffset) {
         guard animator.behaviors.contains(pushBehavior) == false else { return }
         pushBehavior.pushDirection = velocity.vector
@@ -186,11 +186,11 @@ public class BottomAlertSheet: UIView {
         animator.addBehavior(pushBehavior)
         isUserInteractionEnabled = false
     }
-    
+
     private func setupDynamicBehavior() {
         guard animator == nil else { return }
         guard let window = UIApplication.shared.keyWindow else { return }
-        
+
         animator = UIDynamicAnimator(referenceView: window)
         snapBehavior = UISnapBehavior(
             item: self,
@@ -200,12 +200,12 @@ public class BottomAlertSheet: UIView {
         gravityBehavior.magnitude = 10
         pushBehavior = UIPushBehavior(items: [self], mode: .instantaneous)
         animator.addBehavior(snapBehavior)
-        
+
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(pannedView(panGestureRecognizer:)))
         isUserInteractionEnabled = true
         addGestureRecognizer(panGesture)
     }
-    
+
     private func presentSheetView() {
         guard let window = UIApplication.shared.keyWindow else { return }
         alpha = 0.0
@@ -227,9 +227,9 @@ public class BottomAlertSheet: UIView {
         )
         window.addSubview(dimmingView)
         window.addSubview(self)
-        
+
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-        
+
         UIView.animateKeyframes(
             withDuration: 0.4,
             delay: 0.0,
@@ -250,7 +250,7 @@ public class BottomAlertSheet: UIView {
             completion: nil
         )
     }
-    
+
     public override func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil {
@@ -259,13 +259,13 @@ public class BottomAlertSheet: UIView {
             observer?.invalidate()
         }
     }
-    
+
     private func observeCenter() {
         guard observer == nil else {
             return
         }
         observer?.invalidate()
-        observer = observe(\.center, options: [.new]) { [weak self] (object, change) in
+        observer = observe(\.center, options: [.new]) { [weak self] (_, change) in
             guard let self = self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
@@ -291,7 +291,7 @@ public class BottomAlertSheet: UIView {
             )
         }
     }
-    
+
     @objc func pannedView(panGestureRecognizer: UIPanGestureRecognizer) {
         switch panGestureRecognizer.state {
         case .began:
@@ -313,12 +313,12 @@ public class BottomAlertSheet: UIView {
             break
         }
     }
-    
+
     @objc func dismiss() {
         guard model.dismissable == true else { return }
         hide()
     }
-    
+
     private lazy var dimmingView: UIView = {
         let dimming = UIView(frame: UIScreen.main.bounds)
         dimming.backgroundColor = .black
@@ -333,10 +333,10 @@ public class BottomAlertSheet: UIView {
         dimming.addGestureRecognizer(dismissTapGesture)
         return dimming
     }()
-    
+
     private lazy var dismissTapGesture: UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         return tap
     }()
-    
+
 }

@@ -5,34 +5,34 @@ import RxCocoa
 import RxSwift
 
 final class UpdateMobileScreenViewController: BaseScreenViewController {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var updateButtonView: ButtonView!
     @IBOutlet private var continueButtonView: ButtonView!
     @IBOutlet private var disable2FALabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet fileprivate var badgeView: BadgeView!
     @IBOutlet private var mobileNumberTextFieldView: TextFieldView!
-    
+
     // MARK: - Private Properties
-    
+
     fileprivate var badgeShimmeringView: ShimmeringView!
     private var keyboardInteractionController: KeyboardInteractionController!
     private let presenter: UpdateMobileScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(presenter: UpdateMobileScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: UpdateMobileScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         shimmer()
@@ -49,27 +49,27 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
         continueButtonView.viewModel = presenter.continueButtonViewModel
         updateButtonView.viewModel = presenter.updateButtonViewModel
         disable2FALabel.content = presenter.disable2FALabel
-        
+
         presenter.disable2FASMSVisibility
             .map { $0.isHidden }
             .drive(disable2FALabel.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         presenter.continueVisibility
             .map { $0.isHidden }
             .drive(continueButtonView.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         presenter.updateVisibility
             .map { $0.isHidden }
             .drive(updateButtonView.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         presenter.badgeState
             .bindAndCatch(to: rx.badgeViewModel)
             .disposed(by: disposeBag)
     }
-    
+
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
@@ -88,7 +88,7 @@ extension Reactive where Base: UpdateMobileScreenViewController {
             let loading = {
                 view.badgeShimmeringView.start()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
@@ -107,4 +107,3 @@ extension Reactive where Base: UpdateMobileScreenViewController {
         }
     }
 }
-

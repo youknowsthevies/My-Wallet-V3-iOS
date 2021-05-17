@@ -14,7 +14,7 @@ final class KYCPendingInteractor: Interactor {
     var verificationState: Observable<KYCPendingVerificationState> {
         verificationStateRelay.asObservable()
     }
-    
+
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTierUpdatePollingServiceAPI
     private let disposeBag = DisposeBag()
@@ -22,13 +22,13 @@ final class KYCPendingInteractor: Interactor {
     private let verificationStateRelay = BehaviorRelay<KYCPendingVerificationState>(value: .loading)
 
     // MARK: - Setup
-    
+
     init(kycTiersService: KYCTierUpdatePollingServiceAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService
     }
-    
+
     func startPollingForGoldTier() {
         kycTiersService
             .poll(untilTier: .tier2, is: .approved, timeoutAfter: 30)

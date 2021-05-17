@@ -5,11 +5,11 @@ import Foundation
 struct SettingsRequest: Codable {
 
     // MARK: - Types
-    
+
     struct Formats {
         static let plain = "plain"
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case method
         case guid
@@ -20,7 +20,7 @@ struct SettingsRequest: Codable {
         case format
         case context
     }
-    
+
     // MARK: - Properties
 
     let method: String
@@ -33,7 +33,7 @@ struct SettingsRequest: Codable {
     let context: String?
 
     // MARK: - Setup
-    
+
     init(
         method: String,
         guid: String,

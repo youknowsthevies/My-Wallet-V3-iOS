@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct NabuUser: Decodable {
-    
+
     // MARK: - Types
 
     public enum UserState: String, Codable {
@@ -13,13 +13,13 @@ public struct NabuUser: Decodable {
 
     /// Products used by the user
     public struct ProductsUsed: Decodable {
-        
+
         private enum CodingKeys: String, CodingKey {
             case exchange
         }
-        
+
         let exchange: Bool
-        
+
         public init(exchange: Bool) {
             self.exchange = exchange
         }
@@ -29,7 +29,7 @@ public struct NabuUser: Decodable {
             exchange = try values.decodeIfPresent(Bool.self, forKey: .exchange) ?? false
         }
     }
-    
+
     // MARK: - Properties
 
     public let identifier: String
@@ -46,7 +46,7 @@ public struct NabuUser: Decodable {
     public let depositAddresses: [DepositAddress]
     private let productsUsed: ProductsUsed?
     private let settings: NabuUserSettings?
-    
+
     /// ISO-8601 Timestamp w/millis, eg 2018-08-15T17:00:45.129Z
     public let kycCreationDate: String?
 
@@ -201,19 +201,19 @@ public struct Mobile: Decodable {
 }
 
 public struct Tags: Decodable {
-    
+
     private enum CodingKeys: String, CodingKey {
         case sunriver = "SUNRIVER"
         case blockstack = "BLOCKSTACK"
         case powerPax = "POWER_PAX"
         case simpleBuy = "SIMPLE_BUY"
     }
-    
+
     public let sunriver: Sunriver?
     public let blockstack: Blockstack?
     public let powerPax: PowerPax?
     public let simpleBuy: SimpleBuy?
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         sunriver = try values.decodeIfPresent(Sunriver.self, forKey: .sunriver)
@@ -239,7 +239,7 @@ public struct Tags: Decodable {
             case campaignAddress = "x-campaign-address"
         }
     }
-    
+
     public struct SimpleBuy: Decodable {}
 
     public struct Blockstack: Decodable {
@@ -257,7 +257,7 @@ public struct Tags: Decodable {
             case campaignAddress = "x-campaign-address"
         }
     }
-    
+
     public var containsSimpleBuy: Bool {
         simpleBuy != nil
     }

@@ -11,22 +11,22 @@ public protocol ExchangeAccountsProviderAPI {
 }
 
 final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
-    
+
     // MARK: - Public (ExchangeAccountsProviderAPI)
-    
+
     var accounts: Single<[CryptoExchangeAccount]> {
         exchangeAccountsCachedValue.valueSingle
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let exchangeAccountsCachedValue: CachedValue<[CryptoExchangeAccount]>
     private let statusService: ExchangeAccountStatusServiceAPI
     private let client: ExchangeAccountsProviderClientAPI
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(client: ExchangeAccountsClientAPI = resolve(),
          statusService: ExchangeAccountStatusServiceAPI = resolve()) {
         self.statusService = statusService
@@ -56,16 +56,16 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
                                 CryptoExchangeAccount(response: response)
                             }
                     }
-                    
+
                     return Single.zip(elements)
                 }
         }
-        
+
         setup()
     }
-    
+
     // MARK: - ExchangeAccountsProviderAPI
-    
+
     func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount?> {
         exchangeAccountsCachedValue
             .valueSingle
@@ -77,9 +77,9 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
                 return value
             }
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func setup() {
         /// Fetch the users accounts upon initialization.
         /// Subsequent calls should be pulled from cache.

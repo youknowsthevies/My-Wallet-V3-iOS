@@ -7,16 +7,16 @@ import RxRelay
 import RxSwift
 
 final class HistoricalBalanceCellInteractor {
-    
+
     // MARK: - Properties
-    
+
     let sparklineInteractor: SparklineInteracting
     let priceInteractor: AssetPriceViewInteracting
     let balanceInteractor: AssetBalanceViewInteracting
     let cryptoCurrency: CryptoCurrency
-    
+
     // MARK: - Setup
-    
+
     init(cryptoCurrency: CryptoCurrency,
          historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
          assetBalanceFetcher: AssetBalanceFetching) {

@@ -15,6 +15,6 @@ extension FiatCurrency {
             fatalError("Currency \(self.code) does not have a logo image")
         }
     }
-    
+
     public var brandColor: UIColor { .fiat }
 }

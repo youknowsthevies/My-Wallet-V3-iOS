@@ -14,11 +14,11 @@ protocol InterestIdentityVerificationAnnouncementRouting: class {
 
 /// Interest announcement for announcing Interest Account feature + KYC
 final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
-    
+
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.InterestIdentityVerification
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationId.learnMore,
@@ -57,25 +57,25 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
             }
         )
     }
-    
+
     var shouldShow: Bool {
         !isDismissed
     }
-    
+
     let type = AnnouncementType.interestFunds
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
-    
+
     private let disposeBag = DisposeBag()
 
     private let isKYCVerified: Bool
-    
+
     // MARK: - Setup
-    
+
     init(isKYCVerified: Bool,
          cacheSuite: CacheSuite = UserDefaults.standard,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
@@ -89,4 +89,3 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
         self.action = action
     }
 }
-

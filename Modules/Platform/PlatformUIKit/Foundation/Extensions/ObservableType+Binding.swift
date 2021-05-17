@@ -32,7 +32,7 @@ extension ObservableType {
         onNext: @escaping (A) -> Void
     ) -> Disposable {
         _bind(
-            onNext: { [weak object] element in
+            onNext: { [weak object] _ in
                 guard let object = object else { return }
                 onNext(object)
             },

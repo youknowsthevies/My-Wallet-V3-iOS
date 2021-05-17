@@ -3,21 +3,21 @@
 import PlatformUIKit
 
 final class ActivitySkeletonTableViewCell: UITableViewCell {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var badgeContainerView: UIView!
     @IBOutlet private var titleContainerView: UIView!
     @IBOutlet private var subtitleContainerView: UIView!
-    
+
     // MARK: - Private Properties (ShimmeringView)
-    
+
     private var badgeContainerShimmeringView: ShimmeringView!
     private var titleContainerShimmeringView: ShimmeringView!
     private var subtitleContainerShimmeringView: ShimmeringView!
-    
+
     // MARK: - Setup
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         badgeContainerShimmeringView = ShimmeringView(

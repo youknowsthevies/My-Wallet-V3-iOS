@@ -4,16 +4,16 @@ import BigInt
 import ToolKit
 
 public protocol MoneyOperating: MoneyImplementing {
-    
+
     static func max(_ x: Self, _ y: Self) throws -> Self
-    
+
     static func min(_ x: Self, _ y: Self) throws -> Self
 }
 
 public struct MoneyValueComparisonError: Error {
     let currencyType1: CurrencyType
     let currencyType2: CurrencyType
-    
+
     public init(currencyType1: CurrencyType, currencyType2: CurrencyType) {
         self.currencyType1 = currencyType1
         self.currencyType2 = currencyType2
@@ -93,7 +93,7 @@ extension MoneyOperating {
     public func percentage(of rhs: Self) throws -> Decimal {
         try Self.percentage(lhs: self, rhs: rhs)
     }
-    
+
     private static func percentage(lhs: Self, rhs: Self) throws -> Decimal {
         try ensureComparable(value: lhs, other: rhs)
         let lhsDecimal = lhs.displayMajorValue
@@ -130,7 +130,7 @@ extension MoneyOperating {
     public static func /= (lhs: inout Self, rhs: Self) throws {
         lhs = try lhs / rhs
     }
-    
+
     /// Rounds the current amount to the currency's `maxDisplayableDecimalPlaces` using the provided rounding mode.
     ///
     /// - Warning:
@@ -145,7 +145,7 @@ extension MoneyOperating {
             roundingMode: roundingMode
         )
     }
-    
+
     /// Rounds the current amount to the given precision (decimalPlaces) using the provided rounding mode.
     ///
     /// - Warning:
@@ -166,7 +166,7 @@ extension MoneyOperating {
             currency: currencyType
         )
     }
-    
+
     private static func ensureComparable(value: Self, other: Self) throws {
         if value.currency != other.currency {
             throw MoneyValueComparisonError(currencyType1: value.currency, currencyType2: other.currency)

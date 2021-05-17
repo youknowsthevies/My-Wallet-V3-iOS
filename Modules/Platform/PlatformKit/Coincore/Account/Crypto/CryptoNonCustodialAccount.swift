@@ -16,7 +16,7 @@ extension CryptoNonCustodialAccount {
     public var accountType: SingleAccountType {
         .nonCustodial
     }
-    
+
     public var isFunded: Single<Bool> {
         balance
             .map { $0.isPositive }

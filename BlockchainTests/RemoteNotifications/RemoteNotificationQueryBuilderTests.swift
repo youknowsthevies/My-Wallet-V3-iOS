@@ -37,7 +37,7 @@ final class RemoteNotificationQueryBuilderTests: XCTestCase {
             XCTFail("expected builder to throw \(RemoteNotificationTokenQueryParametersBuilder.BuildError.tokenIsEmpty). got a success instead")
         } catch {}
     }
-    
+
     func testBuildingWithValidParameters() {
         var data: Data?
         do {

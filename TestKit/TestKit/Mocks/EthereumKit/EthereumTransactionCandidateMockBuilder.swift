@@ -5,7 +5,7 @@ import BigInt
 import Foundation
 
 class EthereumTransactionPublishedBuilder {
-    
+
     var finalised: EthereumTransactionFinalised?
     var candidate: EthereumTransactionCandidate? {
         didSet {

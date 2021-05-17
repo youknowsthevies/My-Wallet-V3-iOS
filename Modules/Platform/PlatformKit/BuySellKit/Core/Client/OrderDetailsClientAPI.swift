@@ -6,7 +6,7 @@ protocol OrderDetailsClientAPI: class {
 
     /// Fetch all Buy/Sell orders
     func orderDetails(pendingOnly: Bool) -> Single<[OrderPayload.Response]>
-    
+
     /// Fetch a single Buy/Sell order
     func orderDetails(with identifier: String) -> Single<OrderPayload.Response>
 }

@@ -12,17 +12,17 @@ public final class AnnouncementRecorder {
     // MARK: - Types
 
     // MARK: - Properties
-    
+
     private var cache: CacheSuite
     private let errorRecorder: ErrorRecording
-    
+
     /// Key subscript for an entry
     public subscript(key: AnnouncementRecord.Key) -> Entry {
         Entry(errorRecorder: errorRecorder, recorder: self, key: key)
     }
-    
+
     // MARK: - Setup
-    
+
     public init(cache: CacheSuite = resolve(),
                 errorRecorder: ErrorRecording) {
         self.errorRecorder = errorRecorder
@@ -33,14 +33,14 @@ public final class AnnouncementRecorder {
 // MARK: - Legacy
 
 extension AnnouncementRecorder {
-    
+
     /// Perform one time migration of announcement keys
     public static func migrate(errorRecorder: ErrorRecording, cache: CacheSuite = resolve()) {
         struct KeyCategoryPair {
             let legacyKey: AnnouncementRecord.LegacyKey
             let category: AnnouncementRecord.Category
         }
-        
+
         [KeyCategoryPair(legacyKey: .shouldHidePITLinkingCard, category: .oneTime)]
             .filter { cache.bool(forKey: $0.legacyKey.rawValue) }
             .filter { $0.legacyKey.key != nil }
@@ -49,7 +49,7 @@ extension AnnouncementRecorder {
                 recorder[$0.legacyKey.key!].markDismissed(category: $0.category)
             }
     }
-    
+
     /// Resets the announcements entirely by clearing any announcements from user defaults
     public static func reset() {
         let cacheSuite: CacheSuite = resolve()
@@ -62,26 +62,26 @@ extension AnnouncementRecorder {
 // MARK: - Entry
 
 extension AnnouncementRecorder {
-    
+
     /// Cached entry for which announcement dismissal is recorded
     public final class Entry: Hashable, Equatable {
-        
+
         // MARK: - Properties
-        
+
         /// Returns the display state as per announcement
         /// If the record was not kept in cache - it's safe to assume it's a new record
         var displayState: AnnouncementRecord.DisplayState {
             value(for: key)?.displayState ?? .show
         }
-        
+
         private let errorRecorder: ErrorRecording
         private unowned let recorder: AnnouncementRecorder
-        
+
         /// The key to the cache suite
         private let key: AnnouncementRecord.Key
-        
+
         // MARK: - Setup
-        
+
         init(errorRecorder: ErrorRecording,
              recorder: AnnouncementRecorder,
              key: AnnouncementRecord.Key) {
@@ -89,7 +89,7 @@ extension AnnouncementRecorder {
             self.recorder = recorder
             self.key = key
         }
-        
+
         /// Marks the announcement as removed by keeping it in cache
         /// along with its category, dismissal date, and number of dismissals so far.
         /// - parameter category: the category of the announcement
@@ -97,12 +97,12 @@ extension AnnouncementRecorder {
             let record = AnnouncementRecord(state: .removed, category: category)
             save(record: record)
         }
-        
+
         /// Marks the announcement as dismissed by keeping it in cache
         /// along with its category, dismissal date, and number of dismissals so far.
         /// - parameter category: the category of the announcement
         func markDismissed(category: AnnouncementRecord.Category) {
-            
+
             // Calculate number of dismissals
             let dismissalCount: Int
             switch value(for: key)?.state {
@@ -111,7 +111,7 @@ extension AnnouncementRecorder {
             default:
                 dismissalCount = 1
             }
-            
+
             // Prepare a record with the current time as dismissal date and count of dismissals
             let record = AnnouncementRecord(
                 state: .dismissed(on: Date(), count: dismissalCount),
@@ -119,9 +119,9 @@ extension AnnouncementRecorder {
             )
             save(record: record)
         }
-        
+
         // MARK: - Accessors
-        
+
         private func save(record: AnnouncementRecord) {
             do {
                 let data = try record.encode()
@@ -130,7 +130,7 @@ extension AnnouncementRecorder {
                 errorRecorder.error(error)
             }
         }
-        
+
         private func value(for key: AnnouncementRecord.Key) -> AnnouncementRecord? {
             guard let data = recorder.cache.data(forKey: key.rawValue) else {
                 return nil
@@ -139,13 +139,13 @@ extension AnnouncementRecorder {
         }
 
         // MARK: Hashable
-        
+
         public func hash(into hasher: inout Hasher) {
             hasher.combine(key)
         }
-        
+
         // MARK: - Equatable
-        
+
         public static func == (lhs: AnnouncementRecorder.Entry, rhs: AnnouncementRecorder.Entry) -> Bool {
             lhs.key == rhs.key
         }

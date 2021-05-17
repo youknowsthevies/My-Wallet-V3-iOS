@@ -172,7 +172,7 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
             presenter.tapRelay.accept(())
         }
     }
-    
+
     public func tableView(_ tableView: UITableView,
                           numberOfRowsInSection section: Int) -> Int {
         assert(section == 0)
@@ -270,4 +270,3 @@ extension DetailsScreenViewController: UITableViewDelegate, UITableViewDataSourc
         return cell
     }
 }
-

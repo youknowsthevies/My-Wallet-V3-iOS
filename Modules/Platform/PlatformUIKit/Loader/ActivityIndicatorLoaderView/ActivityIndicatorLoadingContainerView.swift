@@ -2,14 +2,14 @@
 
 /// This view is responsible to show the app's loading screen (a remake of the old loader)
 final class ActivityIndicatorLoadingContainerView: UIView {
-    
+
     // MARK: - Properties
-    
+
     @IBOutlet private var containerView: UIView!
     @IBOutlet private var messageLabel: UILabel!
-    
+
     // MARK: - Setup
-    
+
     init() {
         super.init(frame: UIScreen.main.bounds)
         fromNib()
@@ -18,7 +18,7 @@ final class ActivityIndicatorLoadingContainerView: UIView {
                                                    traits: .value(.updatesFrequently))
         containerView.layer.cornerRadius = 5
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -49,7 +49,7 @@ extension ActivityIndicatorLoadingContainerView: LoadingViewProtocol {
             )
         }
     }
-    
+
     func fadeOut() {
         UIView.animate(
             withDuration: 0.3,

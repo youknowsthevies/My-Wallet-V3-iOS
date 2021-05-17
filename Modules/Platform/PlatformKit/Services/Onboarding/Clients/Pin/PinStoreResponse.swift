@@ -3,13 +3,13 @@
 import NetworkKit
 
 public struct PinStoreResponse: Decodable & Error {
-    
+
     public enum StatusCode: Int, Decodable {
         case success = 0 // Pin retry succeeded
         case deleted = 1 // Pin retry failed and data was deleted from store
         case incorrect = 2 // Incorrect pin
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case code = "code"
         case error = "error"
@@ -35,12 +35,12 @@ public struct PinStoreResponse: Decodable & Error {
 }
 
 extension PinStoreResponse {
-    
+
     /// Is the response successful
     public var isSuccessful: Bool {
         statusCode == .success && error == nil
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         statusCode = try values.decode(StatusCode.self, forKey: .code)
@@ -52,7 +52,7 @@ extension PinStoreResponse {
 }
 
 extension PinStoreResponse: FromNetworkErrorConvertible {
-    
+
     public static func from(
         _ communicatorError: NetworkError
     ) -> PinStoreResponse {

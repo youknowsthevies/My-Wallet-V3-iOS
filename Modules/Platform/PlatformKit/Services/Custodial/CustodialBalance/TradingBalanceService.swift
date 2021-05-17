@@ -13,19 +13,19 @@ public protocol TradingBalanceServiceAPI: AnyObject {
 class TradingBalanceService: TradingBalanceServiceAPI {
 
     // MARK: - Properties
-    
+
     var balances: Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.valueSingle
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let client: TradingBalanceClientAPI
     private let cachedValue: CachedValue<CustodialAccountBalanceStates>
-    
+
     private let lock = NSLock()
-    
+
     private lazy var setup: Void = {
         lock.lock()
         defer { lock.unlock() }
@@ -39,12 +39,12 @@ class TradingBalanceService: TradingBalanceServiceAPI {
                 }
         }
     }()
-    
+
     // MARK: - Setup
 
     init(client: TradingBalanceClientAPI = resolve()) {
         self.client = client
-        cachedValue = CachedValue(configuration: .onSubscription())        
+        cachedValue = CachedValue(configuration: .onSubscription())
     }
 
     // MARK: - Methods
@@ -61,7 +61,7 @@ class TradingBalanceService: TradingBalanceServiceAPI {
             }
             .catchErrorJustReturn(.absent)
     }
-    
+
     func fetchBalances() -> Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.fetchValue

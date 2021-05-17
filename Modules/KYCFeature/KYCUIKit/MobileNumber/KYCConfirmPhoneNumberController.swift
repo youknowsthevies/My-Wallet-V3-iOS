@@ -57,7 +57,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
         super.viewDidLoad()
         validationTextFieldConfirmationCode.autocapitalizationType = .allCharacters
         validationTextFieldConfirmationCode.contentType = .oneTimeCode
-        
+
         labelPhoneNumber.text = phoneNumber
         originalBottomButtonConstraint = layoutConstraintBottomButton.constant
         validationTextFieldConfirmationCode.becomeFocused()

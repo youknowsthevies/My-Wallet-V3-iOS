@@ -73,7 +73,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             }
         )
     }
-    
+
     public func getEthereumAddress(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
         self.ethereumAccounts(
             with: secondPassword,
@@ -92,7 +92,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             }
         )
     }
-    
+
     public func erc20Tokens(with secondPassword: String?, success: @escaping ([String: [String: Any]]) -> Void, error: @escaping (String) -> Void) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
@@ -115,7 +115,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         }
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
-    
+
     public func saveERC20Tokens(with secondPassword: String?,
                                 tokensJSONString: String,
                                 success: @escaping () -> Void,
@@ -142,7 +142,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         }
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
-    
+
     @objc public func checkIfEthereumAccountExists() -> Bool {
         guard isInitialized() else { return false }
         return context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.ethereumAccountExists()").toBool()

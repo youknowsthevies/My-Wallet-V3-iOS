@@ -7,40 +7,40 @@ import RxCocoa
 import RxSwift
 
 public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableViewCellPresenting {
-    
+
     // MARK: - AssetLineChartTableViewCellPresenting
-    
+
     var priceWindowPresenter: MultiActionViewPresenting {
         DefaultActionViewPresenter(using: priceWindowItems)
     }
-    
+
     let presenterContainer: AssetLineChartPresenterContainer
-    
+
     let lineChartView: LineChartView
-    
+
     var window: Signal<PriceWindow> {
         windowRelay.asSignal()
     }
-    
+
     public var isScrollEnabled: Driver<Bool> {
         scrollingEnabledRelay.asDriver()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let scrollingEnabledRelay = BehaviorRelay(value: false)
     private let interactor: AssetLineChartTableViewCellInteracting
     private let cryptoCurrency: CryptoCurrency
     private let windowRelay = PublishRelay<PriceWindow>()
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     public init(cryptoCurrency: CryptoCurrency,
                 fiatCurrency: FiatCurrency,
                 historicalFiatPriceService: HistoricalFiatPriceServiceAPI) {
         self.cryptoCurrency = cryptoCurrency
-        
+
         /// Setup `lineChartView`
         self.lineChartView = LineChartView()
         lineChartView.chartDescription?.enabled = false
@@ -55,14 +55,14 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
         lineChartView.doubleTapToZoomEnabled = false
         lineChartView.pinchZoomEnabled = false
         lineChartView.data = LineChartData.empty
-        
+
         self.interactor = AssetLineChartTableViewCellInteractor(
             cryptoCurrency: cryptoCurrency,
             fiatCurrency: fiatCurrency,
             historicalFiatPriceService: historicalFiatPriceService,
             lineChartView: lineChartView
         )
-        
+
         self.presenterContainer = .init(
             priceViewPresenter: AssetPriceViewPresenter(
                 interactor: interactor.assetPriceViewInteractor,
@@ -76,17 +76,17 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
             lineChartPresenter: .init(edge: 0.0, interactor: interactor.lineChartInteractor),
             lineChartView: lineChartView
         )
-        
+
         interactor
             .isDeselected
             .drive(scrollingEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         windowRelay
             .bindAndCatch(to: interactor.window)
             .disposed(by: disposeBag)
     }
-    
+
     private func setup() {
         window
             .emit(onNext: { [weak self] priceWindow in
@@ -95,7 +95,7 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
             })
             .disposed(by: disposeBag)
     }
-    
+
     private lazy var priceWindowItems: [SegmentedViewModel.Item] = {
         [
             .text(LocalizationConstants.DashboardDetails.day,

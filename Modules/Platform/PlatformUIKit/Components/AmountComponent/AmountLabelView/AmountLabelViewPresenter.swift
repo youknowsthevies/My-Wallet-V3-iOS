@@ -11,21 +11,21 @@ import ToolKit
 public final class AmountLabelViewPresenter {
 
     // MARK: - Types
-    
+
     public enum CurrencyCodeSide {
         case leading
         case trailing
     }
-    
+
     public struct Output {
-        
+
         fileprivate static var empty: Output {
             Output(
                 amountLabelContent: .empty,
                 currencyCodeSide: .leading
             )
         }
-        
+
         public var string: NSAttributedString {
             let string = NSMutableAttributedString()
             switch currencyCodeSide {
@@ -40,24 +40,24 @@ public final class AmountLabelViewPresenter {
                 string.append(NSAttributedString(amountLabelContent.currencyCode))
                 return string
             }
-            
+
         }
-        
+
         public var accessibility: Accessibility {
             amountLabelContent.accessibility
         }
-        
+
         let amountLabelContent: AmountLabelContent
         let currencyCodeSide: CurrencyCodeSide
     }
-    
+
     // MARK: - Properties
-    
+
     /// Streams the amount label content
     var output: Driver<Output> {
         outputRelay.asDriver()
     }
-    
+
     public let outputRelay = BehaviorRelay<Output>(value: .empty)
 
     /// The state of the component
@@ -69,9 +69,9 @@ public final class AmountLabelViewPresenter {
 
     private let currencyCodeSide: CurrencyCodeSide
     private let interactor: AmountLabelViewInteractor
-    
+
     private let disposeBag = DisposeBag()
-    
+
     public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide) {
         self.interactor = interactor
         self.currencyCodeSide = currencyCodeSide
@@ -108,34 +108,34 @@ extension AmountLabelViewPresenter {
     // MARK: - Types
 
     private typealias AccessibilityId = Accessibility.Identifier.AmountLabelView
-    
+
     struct AmountLabelContent {
-        
+
         // MARK: - Properties
-        
+
         fileprivate static var empty: AmountLabelContent {
             .init(input: .empty, currencyCode: "", currencySymbol: "", hasFocus: false)
         }
-        
+
         /// Returns the attributed string
         var string: NSAttributedString {
             let string = NSMutableAttributedString()
             string.append(.init(amount))
-            
+
             if let placeholder = placeholder {
                 string.append(.init(placeholder))
             }
-            
+
             return string
         }
-        
+
         let accessibility: Accessibility
         let amount: LabelContent
         let currencyCode: LabelContent
         let placeholder: LabelContent?
 
         // MARK: - Setup
-        
+
         init(
             input: MoneyValueInputScanner.Input,
             currencyCode: String,
@@ -148,14 +148,14 @@ extension AmountLabelViewPresenter {
                 currencyCode: currencyCode,
                 maxFractionDigits: 0
             )
-            
+
             let decimalSeparator = MoneyValueInputScanner.Constant.decimalSeparator
             let amountComponents = input.amount.components(separatedBy: decimalSeparator)
-            
+
             if let firstComponent = amountComponents.first, let decimal = Decimal(string: firstComponent) {
                 amount += formatter.format(amount: decimal, includeSymbol: false)
             }
-            
+
             if amountComponents.count == 2 {
                 amount += "\(decimalSeparator)\(amountComponents[1])"
             }
@@ -173,17 +173,17 @@ extension AmountLabelViewPresenter {
                 font: font,
                 color: .titleText
             )
-            
+
             accessibility = .init(
                 id: .value(AccessibilityId.amountLabel),
                 label: .value(amount)
             )
-            
+
             guard let padding = input.padding else {
                 placeholder = nil
                 return
             }
-            
+
             placeholder = LabelContent(
                 text: padding,
                 font: font,

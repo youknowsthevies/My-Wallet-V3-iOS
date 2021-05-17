@@ -10,9 +10,9 @@ import ToolKit
 
 /// Wallet Intro announcement is a periodic announcement that can also be entirely removed
 final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let ctaButton = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.Welcome.ctaButton
@@ -24,9 +24,9 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
                 self.markRemoved()
                 self.action()
                 self.dismiss()
-            } 
+            }
             .disposed(by: disposeBag)
-        
+
         let skipButton = ButtonViewModel.secondary(
             with: LocalizationConstants.AnnouncementCards.Welcome.skipButton
         )
@@ -53,24 +53,24 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
             }
         )
     }
-    
+
     var shouldShow: Bool {
         !isDismissed
     }
-    
+
     let type = AnnouncementType.walletIntro
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
-    
+
     let action: CardAnnouncementAction
-    
+
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
          analyticsRecorder: AnalyticsEventRecording = resolve(),

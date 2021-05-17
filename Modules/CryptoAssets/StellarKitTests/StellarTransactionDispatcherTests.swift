@@ -8,13 +8,13 @@ import stellarsdk
 import XCTest
 
 class StellarTransactionDispatcherTests: XCTestCase {
-    
+
     var sut: StellarTransactionDispatcher!
-    
+
     var accountRepository: StellarWalletAccountRepositoryMock!
     var walletOptions: WalletServiceMock!
     var horizonProxy: HorizonProxyMock!
-    
+
     override func setUp() {
         super.setUp()
         accountRepository = StellarWalletAccountRepositoryMock()
@@ -26,21 +26,21 @@ class StellarTransactionDispatcherTests: XCTestCase {
             horizonProxy: horizonProxy
         )
     }
-    
+
     func testDryRunValidTransaction() throws {
         let sendDetails = SendDetails.valid()
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "1")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.toAddress] = toJSON
-        
+
         do {
             _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
         } catch {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     private func dryRunInvalidTransaction(_ sendDetails: SendDetails, with expectedError: SendFailureReason) {
         do {
             _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
@@ -51,26 +51,26 @@ class StellarTransactionDispatcherTests: XCTestCase {
             }
         }
     }
-    
+
     func testDryRunTransaction_InsufficientFunds() throws {
         let sendDetails = SendDetails.valid()
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "51")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "1")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.toAddress] = toJSON
-        
+
         dryRunInvalidTransaction(sendDetails, with: .insufficientFunds)
     }
-    
+
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
         let sendDetails = SendDetails.valid(value: .stellar(minor: 10_000_000))
         horizonProxy.underlyingMinimumBalance = .stellar(major: 5)
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
-        
+
         dryRunInvalidTransaction(sendDetails, with: .belowMinimumSendNewAccount)
     }
-    
+
     func testDryRunTransaction_BelowMinimumSend() throws {
         let sendDetails = SendDetails.valid(value: .stellar(minor: 1))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
@@ -84,12 +84,12 @@ class StellarTransactionDispatcherTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-    
+
     func testDryRunTransaction_BadDestinationAccountID() throws {
         let sendDetails = SendDetails.valid(toAddress: "HDKDDBJNREDV4ITL65Z3PNKAGWYJQL7FZJSV4P2UWGLRXI6AWT36UED")
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
-        
+
         dryRunInvalidTransaction(sendDetails, with: .badDestinationAccountID)
     }
 }

@@ -3,9 +3,9 @@
 import RxSwift
 
 public final class MultiActionView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var presenter: MultiActionViewPresenting! {
         didSet {
             disposeBag = DisposeBag()
@@ -15,27 +15,27 @@ public final class MultiActionView: UIView {
             segmentedView.viewModel = presenter.segmentedViewModel
         }
     }
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var segmentedView: SegmentedView!
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
     }

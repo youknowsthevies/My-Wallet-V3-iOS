@@ -18,11 +18,11 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
-    
+
     var depositEnabledFiatCurrencies: [FiatCurrency] {
         featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
     }
-    
+
     var withdrawEnabledFiatCurrencies: [FiatCurrency] {
         featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
     }
@@ -30,15 +30,15 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
         [.USD]
     }
-    
+
     var allEnabledCurrencyTypes: [CurrencyType] {
         let crypto = allEnabledCryptoCurrencies.map { $0.currency }
         let fiat = allEnabledFiatCurrencies.map { $0.currency }
         return crypto + fiat
     }
-    
+
     private let featureFlagService: InternalFeatureFlagServiceAPI
-    
+
     init(featureFlagService: InternalFeatureFlagServiceAPI = resolve()) {
         self.featureFlagService = featureFlagService
     }

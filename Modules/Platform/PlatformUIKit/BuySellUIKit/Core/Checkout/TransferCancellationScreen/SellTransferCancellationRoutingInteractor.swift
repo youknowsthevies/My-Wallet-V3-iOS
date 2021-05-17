@@ -7,9 +7,9 @@ import RxSwift
 import ToolKit
 
 public final class SellTransferCancellationRoutingInteractor: TransferOrderRoutingInteracting {
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
-    
+
     private lazy var setup: Void = {
         nextRelay
             .observeOn(MainScheduler.instance)
@@ -17,7 +17,7 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
                 self.routingInteractor.orderCompleted()
             }
             .disposed(by: disposeBag)
-        
+
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
@@ -26,14 +26,14 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
             }
             .disposed(by: disposeBag)
     }()
-    
+
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
     public let analyticsRecorder: AnalyticsEventRecording
-    
+
     private let disposeBag = DisposeBag()
     private unowned let routingInteractor: SellRouterInteractor
-    
+
     public init(routingInteractor: SellRouterInteractor,
                 analyticsRecording: AnalyticsEventRecording = resolve()) {
         self.analyticsRecorder = analyticsRecording

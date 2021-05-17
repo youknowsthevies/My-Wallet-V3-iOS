@@ -13,7 +13,7 @@ class MockBlockchainDataRepository: BlockchainDataRepository {
     init() {
         super.init()
     }
-    
+
     override var nabuUserSingle: Single<NabuUser> {
         if let mock = mockNabuUser {
             return .just(mock)

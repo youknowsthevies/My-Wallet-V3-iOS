@@ -3,8 +3,8 @@
 import DIKit
 
 extension DependencyContainer {
-    
+
     public static var activityUIKit = module {
-        
+
     }
 }

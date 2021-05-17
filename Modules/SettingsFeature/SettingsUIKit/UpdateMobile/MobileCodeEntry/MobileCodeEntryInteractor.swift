@@ -6,37 +6,37 @@ import RxSwift
 import ToolKit
 
 final class MobileCodeEntryInteractor {
-    
+
     // MARK: - Public
-    
+
     enum InteractionState {
-        
+
         enum ErrorType {
             /// An error occured resending the code
             case resending
-            
+
             /// An error occured verifying the code
             case verifying
         }
-        
+
         /// Code entry is ready
         case ready
-        
+
         /// The code is being resent
         case resending
-        
+
         /// The user is submitting a code entry
         case submitting
-        
+
         /// The code was successfully submitted and verified
         case verified
-        
+
         /// There was an error verifying or resending the code
         case error(ErrorType)
-        
+
         /// An unknown state
         case unknown
-        
+
         var isComplete: Bool {
            switch self {
            case .verified:
@@ -45,7 +45,7 @@ final class MobileCodeEntryInteractor {
                 return false
             }
         }
-        
+
         var isReady: Bool {
             switch self {
             case .ready,
@@ -57,7 +57,7 @@ final class MobileCodeEntryInteractor {
                 return false
             }
         }
-        
+
         var isLoading: Bool {
             switch self {
             case .resending,
@@ -68,32 +68,32 @@ final class MobileCodeEntryInteractor {
             }
         }
     }
-    
+
     enum Action {
         /// Resend the 4-Digit code
         case resend
-        
+
         /// Verify the 4-Digit code
         case verify
     }
-    
+
     var actionRelay = PublishRelay<Action>()
     var contentRelay = BehaviorRelay<String>(value: "")
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     private let verificationInteractor: VerifyCodeEntryInteractor
     private let updateMobileInteractor: UpdateMobileScreenInteractor
     private let stateRelay = BehaviorRelay<InteractionState>(value: .ready)
     private let disposeBag = DisposeBag()
-    
+
     init(service: MobileSettingsServiceAPI) {
         verificationInteractor = VerifyCodeEntryInteractor(service: service)
         updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
-        
+
         Observable.combineLatest(verificationInteractor.interactionState,
                                  updateMobileInteractor.interactionState)
             .map { payload -> InteractionState in
@@ -121,7 +121,7 @@ final class MobileCodeEntryInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         actionRelay
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
@@ -132,21 +132,21 @@ final class MobileCodeEntryInteractor {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         contentRelay
             .bindAndCatch(to: verificationInteractor.contentRelay)
             .disposed(by: disposeBag)
-        
+
         service.valueObservable
             .compactMap { $0.smsNumber }
             .bindAndCatch(to: updateMobileInteractor.contentRelay)
             .disposed(by: disposeBag)
     }
-    
+
     private func resend() {
         updateMobileInteractor.triggerRelay.accept(())
     }
-    
+
     private func verify() {
         verificationInteractor.triggerRelay.accept(())
     }

@@ -8,11 +8,11 @@ class DataRepositoryMock: DataRepositoryAPI {
     func fetchTiers() -> Single<KYC.UserTiers> {
         Single.just(underlyingTiers)
     }
-    
+
     var userSingle: Single<User> {
         user.take(1).asSingle()
     }
-    
+
     var underlyingUser = UserMock()
     var user: Observable<User> {
         Observable.just(underlyingUser)

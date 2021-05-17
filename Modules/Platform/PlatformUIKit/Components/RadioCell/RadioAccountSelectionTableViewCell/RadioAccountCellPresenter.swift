@@ -4,9 +4,9 @@ import RxDataSources
 import RxSwift
 
 public final class RadioAccountCellPresenter: IdentifiableType {
-    
+
     // MARK: - Public Properties
-    
+
     /// Streams the image content 
     public let imageContent: Driver<ImageViewContent>
 
@@ -15,10 +15,10 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     public let identity: AnyHashable
 
     // MARK: - Internal
-    
+
     /// The `viewModel` for the `WalletView`
     let viewModel: Driver<WalletViewViewModel>
-    
+
     // MARK: - Init
     public init(interactor: RadioAccountCellInteractor, accessibilityPrefix: String = "") {
         let model = WalletViewViewModel(

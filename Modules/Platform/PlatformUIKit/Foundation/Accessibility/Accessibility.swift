@@ -4,16 +4,16 @@ import UIKit
 
 /// Accessibility construct that to support multiple accessibility assignments at once
 public struct Accessibility {
-    
+
     /// A generic value
     public enum Value<T: Equatable>: Equatable, CustomStringConvertible {
-        
+
         /// Contains a value of type `T`
         case value(T)
-        
+
         /// Doesn't contain any value
         case none
-        
+
         var rawValue: T? {
             switch self {
             case .value(let rawValue):
@@ -32,27 +32,27 @@ public struct Accessibility {
             }
         }
     }
-    
+
     /// `.none` represents an inaccessible element
     public static var none: Accessibility {
         Accessibility(isAccessible: false)
     }
-    
+
     /// The accessibility identifier
     public let id: Value<String>
-    
+
     /// The accessibility label
     public let label: Value<String>
-    
+
     /// The accessibility hint
     public let hint: Value<String>
-    
+
     /// The accessibility traits of the view
     public let traits: Value<UIAccessibilityTraits>
-    
+
     /// Is accessibility element
     public let isAccessible: Bool
-    
+
     /// Initializes inner properties by defaulting all parameters to `.none`.
     public init(id: Value<String> = .none,
                 label: Value<String> = .none,

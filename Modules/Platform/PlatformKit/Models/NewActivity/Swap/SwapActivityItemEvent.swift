@@ -3,7 +3,7 @@
 import Localization
 
 public struct SwapActivityItemEvent: Decodable, Tokenized {
-    
+
     public let identifier: String
     public let status: EventStatus
     public let date: Date
@@ -11,39 +11,39 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
     public let kind: SwapKind
     private let priceFunnel: PriceFunnel
     public let amounts: Amounts
-    
+
     public var withdrawalTxHash: String? {
         kind.withdrawalTxHash
     }
-    
+
     public var depositTxHash: String? {
         kind.depositTxHash
     }
-    
+
     public var isCustodial: Bool {
         !isNonCustodial
     }
-    
+
     public var isNonCustodial: Bool {
         kind.direction == .onChain
     }
-    
+
     public var token: String {
         identifier
     }
-    
+
     public struct Pair {
         public let inputCurrencyType: CurrencyType
         public let outputCurrencyType: CurrencyType
-        
+
         init(inputCurrencyType: CurrencyType,
              outputCurrencyType: CurrencyType) {
             self.inputCurrencyType = inputCurrencyType
             self.outputCurrencyType = outputCurrencyType
         }
-        
+
         init(string: String, values: KeyedDecodingContainer<CodingKeys>) throws {
-            
+
             var components: [String] = []
             for value in ["-", "_"] {
                 if string.contains(value) {
@@ -51,13 +51,13 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
                     break
                 }
             }
-            
+
             let error = DecodingError.dataCorruptedError(
                 forKey: .pair,
                 in: values,
                 debugDescription: "Expected a valid pair"
             )
-            
+
             guard let input = components.first else { throw error }
             guard let output = components.last else { throw error }
             do {
@@ -70,13 +70,13 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
             }
         }
     }
-    
+
     public struct Amounts {
         public let deposit: MoneyValue
         public let withdrawal: MoneyValue
         public let withdrawalFee: MoneyValue
         public let fiatValue: FiatValue
-        
+
         init(deposit: MoneyValue,
              withdrawal: MoneyValue,
              withdrawalFee: MoneyValue,
@@ -87,7 +87,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
             self.fiatValue = fiatValue
         }
     }
-    
+
     public enum EventStatus {
         case inProgress(ProgressStatus)
         case pendingRefund
@@ -97,14 +97,14 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         case delayed
         case complete
         case none
-        
+
         public enum ProgressStatus: String {
             case pendingExecution = "PENDING_EXECUTION"
             case pendingDeposit = "PENDING_DEPOSIT"
             case finishedDeposit = "FINISHED_DEPOSIT"
             case pendingWithdrawal = "PENDING_WITHDRAWAL"
         }
-        
+
         public var localizedDescription: String {
             switch self {
             case .complete:
@@ -124,7 +124,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
                 return LocalizationConstants.Swap.inProgress
             }
         }
-        
+
         public init(value: String) {
             switch value {
             case "NONE":
@@ -166,7 +166,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         case priceFunnel
         case kind
     }
-    
+
     private struct PriceFunnel: Decodable {
         let inputMoney: String
         let price: String
@@ -174,13 +174,13 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
         let staticFee: String
         let outputMoney: String
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let createdAt = try values.decode(String.self, forKey: .createdAt)
         let formatter = DateFormatter.sessionDateFormat
         let legacyFormatter = DateFormatter.iso8601Format
-        
+
         /// Some trades don't have a consistant date format. Some
         /// use the same format as what we use for establishing a
         /// secure session, some use ISO8601.
@@ -195,16 +195,16 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
                 debugDescription: "Date string does not match format expected by formatter."
             )
         }
-        
+
         identifier = try values.decode(String.self, forKey: .identifier)
         let pairValue = try values.decode(String.self, forKey: .pair)
-        
+
         let statusValue = try values.decode(String.self, forKey: .status)
         status = EventStatus(value: statusValue)
         pair = try Pair(string: pairValue, values: values)
         kind = try values.decode(SwapKind.self, forKey: .kind)
         priceFunnel = try values.decode(PriceFunnel.self, forKey: .priceFunnel)
-        
+
         let fiatAmount = try values.decode(String.self, forKey: .fiatValue)
         let fiatCurrency = try values.decode(FiatCurrency.self, forKey: .fiatCurrency)
         guard let fiatValue = FiatValue.create(minor: fiatAmount, currency: fiatCurrency) else {
@@ -228,7 +228,7 @@ public struct SwapActivityItemEvent: Decodable, Tokenized {
                 debugDescription: "Expected a valid input money amount"
             )
         }
-        
+
         guard let fee = MoneyValue.create(minor: priceFunnel.networkFee, currency: pair.inputCurrencyType) else {
             throw DecodingError.dataCorruptedError(
                 forKey: .priceFunnel,

@@ -10,31 +10,31 @@ public final class LoadingAnimatingView: LoadingCircleView {
     private static let transformRotationKeyPath: String = "transform.rotation"
 
     // MARK: - Types
-    
+
     private struct Descriptor {
-        
+
         /// Describes the start time in relation to the previous start time.
         let startTime: CFTimeInterval
-        
+
         /// Describes the start angle ratio to a full circle
         let startAngle: CGFloat
-        
+
         /// Describes the length of the circumference
         let length: CGFloat
-        
+
         init(startTime: CFTimeInterval, startAngle: CGFloat, length: CGFloat) {
             self.startTime = startTime
             self.startAngle = startAngle
             self.length = length
         }
     }
-    
+
     private struct Summary {
         var times: [CFTimeInterval] = []
         var angles: [CGFloat] = []
         var lengths: [CGFloat] = []
     }
-    
+
     // MARK: - Properties
 
     /// Represents the changes in times, start & end positions of stroke
@@ -50,9 +50,9 @@ public final class LoadingAnimatingView: LoadingCircleView {
         Descriptor(startTime: 0.1, startAngle: 0.95, length: 0.05),
         Descriptor(startTime: 0, startAngle: 1, length: 0)
     ]
-    
+
     // MARK: - Setup
-    
+
     override public init(diameter: CGFloat, strokeColor: UIColor, strokeBackgroundColor: UIColor, fillColor: UIColor, strokeWidth: CGFloat = 8) {
         super.init(
             diameter: diameter,
@@ -63,21 +63,21 @@ public final class LoadingAnimatingView: LoadingCircleView {
         )
         accessibility = Accessibility(id: .value(Accessibility.Identifier.LoadingView.loadingView))
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     /// Starts the animation
     public func animate() {
-        
+
         // Calculate the total time of the animation
         let totalTime = descriptors
             .map { $0.startTime }
             .reduce(0, +)
-        
+
         let fullAngle: CGFloat = 2 * .pi
-        
+
         var time: CFTimeInterval = 0
         var summary = descriptors
             .reduce(into: Summary()) { (result, current) in
@@ -86,17 +86,17 @@ public final class LoadingAnimatingView: LoadingCircleView {
                 result.angles.append(current.startAngle * fullAngle)
                 result.lengths.append(current.length)
         }
-        
+
         summary.times.append(summary.times[0])
         summary.angles.append(summary.angles[0])
         summary.lengths.append(summary.lengths[0])
-        
+
         // Animate length
         animateKeyPath(keyPath: LoadingAnimatingView.strokeEndKeyPath,
                        duration: totalTime,
                        times: summary.times,
                        values: summary.lengths)
-        
+
         // Animate rotation
         animateKeyPath(keyPath: LoadingAnimatingView.transformRotationKeyPath,
                        duration: totalTime,
@@ -108,7 +108,7 @@ public final class LoadingAnimatingView: LoadingCircleView {
         layer.removeAnimation(forKey: LoadingAnimatingView.strokeEndKeyPath)
         layer.removeAnimation(forKey: LoadingAnimatingView.transformRotationKeyPath)
     }
-    
+
     private func animateKeyPath(keyPath: String,
                                 duration: CFTimeInterval,
                                 times: [CFTimeInterval],

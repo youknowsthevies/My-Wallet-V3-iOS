@@ -18,7 +18,7 @@ public final class BitcoinHistoricalTransactionService: TokenizedHistoricalTrans
         self.client = client
         self.repository = repository
     }
-    
+
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         repository.activeAccounts
             .map { accounts in

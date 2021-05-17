@@ -44,7 +44,7 @@ struct BitcoinActivityDetailsViewModel: Equatable {
         from = details.from.publicKey
         to = details.to.publicKey
         self.memo = memo ?? ""
-        
+
         cryptoAmount = details.amount.toDisplayString(includeSymbol: true)
         if let price = price {
             amount = "\(cryptoAmount) at \(price.displayString)"

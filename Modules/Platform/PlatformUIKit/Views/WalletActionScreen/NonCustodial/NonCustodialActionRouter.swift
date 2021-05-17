@@ -11,16 +11,16 @@ public protocol NonCustodialActionRouterAPI: class {
 }
 
 public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
-    
+
     // MARK: - `Router` Properties
-    
+
     private var stateService: NonCustodialActionStateService!
     private let balanceProviding: BalanceProviding
     private let navigationRouter: NavigationRouterAPI
     private let routing: CurrencyRouting & TabSwapping
     private let disposeBag = DisposeBag()
     private var currency: CryptoCurrency!
-        
+
     public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
                 balanceProvider: BalanceProviding,
                 routing: CurrencyRouting & TabSwapping) {
@@ -28,13 +28,13 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         self.navigationRouter = navigationRouter
         self.routing = routing
     }
-    
+
     public func start(with currency: CryptoCurrency) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.currency = currency
         self.stateService = NonCustodialActionStateService()
-        
+
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
                 switch action {
@@ -47,7 +47,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             .disposed(by: disposeBag)
         stateService.nextRelay.accept(())
     }
-    
+
     public func next(to state: NonCustodialActionState) {
         /// Dismiss the `WalletScreenActionViewController`
         switch state {
@@ -63,7 +63,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             showReceiveScreen()
         }
     }
-    
+
     private func showNonCustodialActionScreen() {
         let interactor = WalletActionScreenInteractor(
             accountType: .nonCustodial,
@@ -76,7 +76,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         controller.modalPresentationStyle = .custom
         navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
-    
+
     private func showSwapScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -84,7 +84,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             self.routing.switchTabToSwap()
         }
     }
-    
+
     private func showActivityScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -92,7 +92,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             self.routing.switchToActivity(currency: self.currency)
         }
     }
-    
+
     private func showReceiveScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -100,7 +100,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             self.routing.toReceive(self.currency)
         }
     }
-    
+
     private func showSendScreen() {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
@@ -108,13 +108,12 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             self.routing.toSend(self.currency)
         }
     }
-    
+
     private func dismissTopMost(completion: (() -> Void)? = nil) {
         navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
     }
-    
+
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: false)
     }()
 }
-

@@ -18,7 +18,7 @@ public protocol Currency {
     var maxDisplayableDecimalPlaces: Int { get }
     var isFiatCurrency: Bool { get }
     var isCryptoCurrency: Bool { get }
-    var currency: CurrencyType { get }    
+    var currency: CurrencyType { get }
 }
 
 extension Currency {
@@ -34,7 +34,7 @@ extension Currency {
 public enum CurrencyType: Equatable, Hashable {
     case fiat(FiatCurrency)
     case crypto(CryptoCurrency)
-    
+
     /// Instantiate a Currency type from a currency code (e.g. `EUR`, `BTC`)
     /// - Parameter code: a currency code, in the case of fiat any ISO 4217 code, for crypto any supported crypto
     /// - Throws: if the value is not a know fiat or crypto
@@ -65,7 +65,7 @@ extension CurrencyType: Currency {
             return fiatCurrency.name
         }
     }
-    
+
     public var code: String {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -74,7 +74,7 @@ extension CurrencyType: Currency {
             return fiatCurrency.code
         }
     }
-    
+
     public var symbol: String {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -92,7 +92,7 @@ extension CurrencyType: Currency {
             return fiatCurrency.displaySymbol
         }
     }
-    
+
     public var displayCode: String {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -101,7 +101,7 @@ extension CurrencyType: Currency {
             return fiatCurrency.displayCode
         }
     }
-    
+
     public var maxDecimalPlaces: Int {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -110,7 +110,7 @@ extension CurrencyType: Currency {
             return fiatCurrency.maxDecimalPlaces
         }
     }
-    
+
     public var maxDisplayableDecimalPlaces: Int {
         switch self {
         case .crypto(let cryptoCurrency):
@@ -119,9 +119,9 @@ extension CurrencyType: Currency {
             return fiatCurrency.maxDisplayableDecimalPlaces
         }
     }
-    
+
     public var currency: CurrencyType { self }
-    
+
     public var isFiatCurrency: Bool {
         guard case .fiat = self else {
             return false
@@ -133,13 +133,13 @@ extension CurrencyType: Currency {
         guard case .crypto = self else {
             return false
         }
-        return true        
+        return true
     }
-    
+
     public var cryptoCurrency: CryptoCurrency? {
         CryptoCurrency(code: code)
     }
-    
+
     public var fiatCurrency: FiatCurrency? {
         FiatCurrency(code: code)
     }

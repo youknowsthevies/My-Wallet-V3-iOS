@@ -6,7 +6,7 @@ import RxSwift
 
 final class CardsSectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .cards
-    
+
     var state: Observable<SettingsSectionLoadingState> {
         interactor.state
             .map(weak: self) { (self, state) -> SettingsSectionLoadingState in
@@ -29,17 +29,17 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
                         sectionType: self.sectionType,
                         items: cells
                     )
-                    
+
                     return .loaded(next: .some(viewModel))
                 }
             }
     }
-    
+
     // MARK: - Private Properties
 
     private let addPaymentMethodCellPresenter: AddPaymentMethodCellPresenter
     private let interactor: CardSettingsSectionInteractor
-    
+
     init(interactor: CardSettingsSectionInteractor) {
         self.interactor = interactor
         addPaymentMethodCellPresenter = AddPaymentMethodCellPresenter(
@@ -49,13 +49,13 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
 }
 
 private extension Array where Element == LinkedCardCellPresenter {
-        
+
     var viewModels: [SettingsCellViewModel] {
         map {
             SettingsCellViewModel(cellType: .cards(.linked($0)))
         }
     }
-    
+
     init(_ cards: [CardData]) {
         self = cards.map { LinkedCardCellPresenter(acceptsUserInteraction: false, cardData: $0) }
     }

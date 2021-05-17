@@ -85,7 +85,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 )
                 return [section]
             }
-        
+
         let button = interactorState
             .map(\.actionButtonEnabled)
             .map { canContinue -> ButtonViewModel in
@@ -94,7 +94,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 return viewModel
             }
             .asDriver()
-        
+
         let sections = Driver
             .combineLatest(sourceSection, inputFieldSection, destinationSections)
             .map { [$0] + $1 + $2 }

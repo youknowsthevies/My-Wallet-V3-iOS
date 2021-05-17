@@ -7,14 +7,14 @@ import Foundation
 
 public class AnalyticsProvider: AnalyticsServiceProviding {
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
-    
+
     @LazyInject private var nabuAnalyticsClient: EventSendingAPI
     @LazyInject private var contextProvider: ContextProviding
-    
+
     private var cancellables = Set<AnyCancellable>()
-    
+
     public init() { }
-    
+
     public func trackEvent(title: String, parameters: [String: Any]?) {
         let event = Event(title: title, properties: parameters)
         // TODO: IOS-4556 - batching
@@ -26,7 +26,7 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
             } receiveValue: { _ in }
             .store(in: &cancellables)
     }
-    
+
     private enum Constant {
         static let retryCount = 3
     }

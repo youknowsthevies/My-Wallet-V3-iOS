@@ -5,22 +5,22 @@ import RxSwift
 
 /// An `AccountGroup` containing only Custodial accounts.
 public class CryptoAccountCustodialGroup: AccountGroup {
-    
+
     public let label: String
 
     public let accounts: [SingleAccount]
-    
+
     public var requireSecondPassword: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
         }
-        
+
         return Single.zip(accounts.map(\.requireSecondPassword))
             .map { values -> Bool in
                 !values.contains(false)
             }
     }
-    
+
     public var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
@@ -30,7 +30,7 @@ public class CryptoAccountCustodialGroup: AccountGroup {
                         !values.contains(false)
                     }
     }
-    
+
     public var pendingBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
@@ -41,7 +41,7 @@ public class CryptoAccountCustodialGroup: AccountGroup {
                 try values.reduce(MoneyValue.zero(currency: asset), +)
             }
     }
-    
+
     public var actionableBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
@@ -52,7 +52,7 @@ public class CryptoAccountCustodialGroup: AccountGroup {
                 try values.reduce(MoneyValue.zero(currency: asset), +)
             }
     }
-    
+
     public var receiveAddress: Single<ReceiveAddress> {
         account.receiveAddress
     }
@@ -67,11 +67,11 @@ public class CryptoAccountCustodialGroup: AccountGroup {
                         try values.reduce(MoneyValue.zero(currency: asset), +)
             }
     }
-    
+
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
     private let asset: CryptoCurrency
-    
+
     private var account: CryptoAccount {
         guard let account = accounts.first as? CryptoAccount else {
             fatalError("Expected a `CryptoAccount`: \(accounts)")

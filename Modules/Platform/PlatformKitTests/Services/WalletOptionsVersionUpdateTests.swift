@@ -4,7 +4,7 @@
 import XCTest
 
 class WalletOptionsVersionUpdateTests: XCTestCase {
-    
+
     func testNoUpdate() {
         let expectedRawValue = WalletOptions.UpdateType.RawValue.none
         let updateType = generateUpdateType(from: expectedRawValue, version: "")
@@ -13,7 +13,7 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
             return
         }
     }
-    
+
     func testMissingUpdateTypeFailure() {
         let updateType = generateUpdateType(from: "", version: "")
         guard case .none = updateType else {
@@ -21,7 +21,7 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
             return
         }
     }
-    
+
     func testUpdateTypeRecommendedWhileLatestVersionMissing() {
         let updateType = generateUpdateType(from: WalletOptions.UpdateType.RawValue.recommended, version: "")
         guard case .none = updateType else {
@@ -29,7 +29,7 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
             return
         }
     }
-    
+
     func testUpdateTypeForcedWhileLatestVersionMissing() {
         let updateType = generateUpdateType(from: WalletOptions.UpdateType.RawValue.forced, version: "")
         guard case .none = updateType else {
@@ -37,14 +37,14 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
             return
         }
     }
-    
+
     func testUpdateTypeRecommendedWithLatestVersion() {
         let expectedUpdateType = WalletOptions.UpdateType.RawValue.recommended
         let expectedAppVersionRawValue = "1.2.3"
         let expectedAppVersion = AppVersion(string: expectedAppVersionRawValue)!
-        
+
         let updateType = generateUpdateType(from: expectedUpdateType, version: expectedAppVersionRawValue)
-        
+
         switch updateType {
         case .recommended(latestVersion: let version) where version == expectedAppVersion:
             break
@@ -52,9 +52,9 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
             XCTFail("Expected \(expectedUpdateType) with version \(expectedAppVersion), got \(updateType)")
         }
     }
-    
+
     // MARK: - Private
-    
+
     private func generateUpdateType(from updateTypeRawValue: String, version: String) -> WalletOptions.UpdateType {
         let json = [
             WalletOptions.Keys.ios: [

@@ -3,9 +3,9 @@
 import PlatformUIKit
 
 final class SideMenuCell: UITableViewCell {
-    
+
     fileprivate static let newContainerViewTrailingPadding: CGFloat = 16.0
-    
+
     /// You must take into accoun the `peekAmount` of `ECSlidingViewController`
     /// otherwise the `newContainer` will not be visible.
     lazy var peekPadding: CGFloat = {
@@ -21,7 +21,7 @@ final class SideMenuCell: UITableViewCell {
     @IBOutlet fileprivate var newContainerView: UIView!
     @IBOutlet fileprivate var newLabel: UILabel!
     @IBOutlet fileprivate var newContainerTrailingConstraint: NSLayoutConstraint!
-    
+
     var item: SideMenuItem? {
         didSet {
             title.text = item?.title

@@ -23,25 +23,25 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .selectedData
             .compactMap { $0.currencyType }
     }
-    
+
     public var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return eventsRelay.asObservable()
     }
-    
+
     public var activity: Observable<ActivityItemEventServiceAPI> {
         asset.map { currency -> ActivityItemEventServiceAPI in
             self.activityProviding[currency]
         }
     }
-    
+
     public let activityProviding: ActivityProviding
     public let balanceProviding: BalanceProviding
     public let fiatCurrency: FiatCurrencySettingsServiceAPI
     public let selectionService: WalletPickerSelectionServiceAPI
     public let accountSelectionService: AccountSelectionServiceAPI
     public let exchangeProviding: ExchangeProviding
-    
+
     private let eventsRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
     private lazy var setup: Void = {
@@ -109,7 +109,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .bindAndCatch(to: eventsRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     public init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
                 balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve(),

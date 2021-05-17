@@ -5,11 +5,11 @@ import RxSwift
 import SettingsKit
 
 final class ConnectSectionPresenter: SettingsSectionPresenting {
-    
+
     typealias State = SettingsSectionLoadingState
-    
+
     let sectionType: SettingsSectionType = .connect
-    
+
     var state: Observable<State> {
         let presenter: PITConnectionCellPresenter = .init(
             pitConnectionProvider: exchangeConnectionStatusProvider
@@ -22,7 +22,7 @@ final class ConnectSectionPresenter: SettingsSectionPresenting {
                 )
             )
         )
-        
+
         return .just(state)
     }
 

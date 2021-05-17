@@ -60,15 +60,15 @@ extension NavigationCTAType {
 }
 
 protocol NavigatableView: class {
-    
+
     var rightCTATintColor: UIColor { get }
     var leftCTATintColor: UIColor { get }
-    
+
     var barStyle: Screen.Style.Bar { get }
-    
+
     var rightNavControllerCTAType: NavigationCTAType { get }
     var leftNavControllerCTAType: NavigationCTAType { get }
-    
+
     func navControllerRightBarButtonTapped(_ navController: UINavigationController)
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController)
 }
@@ -77,15 +77,15 @@ extension NavigatableView where Self: UIViewController {
     var leftCTATintColor: UIColor {
         .white
     }
-    
+
     var rightCTATintColor: UIColor {
         .white
     }
-    
+
     var leftNavControllerCTAType: NavigationCTAType {
         .menu
     }
-    
+
     var rightNavControllerCTAType: NavigationCTAType {
         .qrCode
     }
@@ -97,7 +97,7 @@ extension NavigatableView where Self: UIViewController {
     func navControllerRightBarButtonTapped(_ navController: UINavigationController) {
         // no-op
     }
-    
+
     func navControllerLeftBarButtonTapped(_ navController: UINavigationController) {
         navigationController?.popViewController(animated: true)
     }
@@ -108,27 +108,27 @@ extension NavigatableView where Self: UIViewController {
 /// not conform to `NavigatableView`. This is because the behaviors across all our different
 /// screens are pretty different. 
 @objc class BaseNavigationController: UINavigationController {
-    
+
     private var leftBarButtonItem: UIBarButtonItem!
     private var rightBarButtonItem: UIBarButtonItem!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-    
+
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
+
         // TODO: This is not efficient as `viewWillLayoutSubviews` can get called unexpectedly on on view changes
         setupNavigationController()
     }
-    
+
     fileprivate func setupNavigationController() {
         guard let controller = viewControllers.last else { return }
         guard let navigatableView = controller as? NavigatableView else {
             return
         }
-        
+
         if navigatableView.rightNavControllerCTAType == .activityIndicator {
             let activityIndicator = UIActivityIndicatorView(style: .white)
             activityIndicator.startAnimating()
@@ -142,7 +142,7 @@ extension NavigatableView where Self: UIViewController {
             )
         }
         controller.navigationItem.rightBarButtonItem?.accessibilityIdentifier = navigatableView.rightNavControllerCTAType.accessibilityIdentifier
-        
+
         if navigatableView.leftNavControllerCTAType == .activityIndicator {
             assertionFailure("You should put the activity indicator in the right CTA.")
         } else {
@@ -154,18 +154,18 @@ extension NavigatableView where Self: UIViewController {
             )
             controller.navigationItem.leftBarButtonItem?.accessibilityIdentifier = navigatableView.leftNavControllerCTAType.accessibilityIdentifier
         }
-        
+
         controller.navigationItem.rightBarButtonItem?.tintColor = navigatableView.rightCTATintColor
         controller.navigationItem.leftBarButtonItem?.tintColor = navigatableView.leftCTATintColor
 //        navigationBar.backgroundColor = navigatableView.barStyle.backgroundColor
         navigationBar.barTintColor = navigatableView.barStyle.backgroundColor
         navigationBar.titleTextAttributes = navigatableView.barStyle.titleTextAttributes
     }
-    
+
     @objc func update() {
         setupNavigationController()
     }
-    
+
     @objc fileprivate func rightBarButtonTapped() {
         guard let navigatableView = visibleViewController as? NavigatableView else {
             return
@@ -173,7 +173,7 @@ extension NavigatableView where Self: UIViewController {
         guard navigatableView.rightNavControllerCTAType != .activityIndicator else { return }
         navigatableView.navControllerRightBarButtonTapped(self)
     }
-    
+
     @objc fileprivate func leftBarButtonTapped() {
         guard let navigatableView = visibleViewController as? NavigatableView else {
             return

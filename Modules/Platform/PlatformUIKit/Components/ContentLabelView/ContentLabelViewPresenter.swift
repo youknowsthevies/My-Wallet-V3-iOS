@@ -8,9 +8,9 @@ import ToolKit
 
 /// Presenter for `ContentLabelView`.
 final class ContentLabelViewPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.ContentLabelView
 
     // MARK: - Title LabelContent
@@ -30,21 +30,21 @@ final class ContentLabelViewPresenter {
             .map { $0.isValue }
             .asDriver(onErrorJustReturn: false)
     }
-    
+
     // MARK: - Tap Interaction
-    
+
     var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     let tapRelay = PublishRelay<Void>()
-    
+
     // MARK: - Interactor
 
     private let interactor: ContentLabelViewInteractorAPI
-    
+
     // MARK: - Init
-    
+
     init(title: String,
          alignment: NSTextAlignment,
          interactor: ContentLabelViewInteractorAPI,

@@ -7,13 +7,13 @@ import RxSwift
 import ToolKit
 
 public final class FiatBalanceCollectionViewInteractor {
-    
+
     // MARK: - Types
-    
+
     public typealias State = ValueCalculationState<[FiatCustodialBalanceViewInteractor]>
-    
+
     // MARK: - Exposed Properties
-        
+
     /// Streams the interactors
     public var interactorsState: Observable<State> {
         _ = setup
@@ -25,7 +25,7 @@ public final class FiatBalanceCollectionViewInteractor {
             .compactMap { $0.value }
             .startWith([])
     }
-    
+
     // MARK: - Injected Properties
 
     private let tiersService: KYCTiersServiceAPI
@@ -34,16 +34,16 @@ public final class FiatBalanceCollectionViewInteractor {
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let refreshRelay = PublishRelay<Void>()
-    
+
     // MARK: - Accessors
-    
+
     let interactorsStateRelay = BehaviorRelay<State>(value: .invalid(.empty))
     private let disposeBag = DisposeBag()
-    
+
     private lazy var setup: Void = {
-        
+
         let preferredFiatCurrency = fiatCurrencyService.currencyObservable
-        
+
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let balances = Observable
             .combineLatest(
@@ -54,7 +54,7 @@ public final class FiatBalanceCollectionViewInteractor {
             .filter { $0.tiers.isTier2Approved }
             .map { $0.balances }
             .filter { $0.isValue } // All balances must contain value to load
-        
+
         Observable.combineLatest(balances, preferredFiatCurrency)
             .map { (balances, preferredFiatCurrency) in
                 Array.init(
@@ -69,7 +69,7 @@ public final class FiatBalanceCollectionViewInteractor {
             .bindAndCatch(to: interactorsStateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     public init(tiersService: KYCTiersServiceAPI = resolve(),
                 balanceProvider: BalanceProviding = resolve(),
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
@@ -81,7 +81,7 @@ public final class FiatBalanceCollectionViewInteractor {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService
     }
-    
+
     public func refresh() {
         refreshRelay.accept(())
     }
@@ -101,7 +101,7 @@ extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
             .map { $0.count > 0 }
             .catchErrorJustReturn(false)
     }
-    
+
     public func reloadBalances() {
         refresh()
     }

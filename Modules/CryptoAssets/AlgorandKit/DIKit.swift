@@ -8,7 +8,7 @@ extension DependencyContainer {
     public static var algorandKit = module {
 
         factory(tag: CryptoCurrency.algorand) { AlgorandAsset() as CryptoAsset }
-        
+
         factory(tag: CryptoCurrency.algorand) { AlgorandCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
     }
 }

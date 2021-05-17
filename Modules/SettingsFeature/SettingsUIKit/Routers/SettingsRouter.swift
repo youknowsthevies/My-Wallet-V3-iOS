@@ -32,24 +32,24 @@ public protocol AppStoreOpening: class {
 }
 
 final class SettingsRouter: SettingsRouterAPI {
-    
+
     typealias AnalyticsEvent = AnalyticsEvents.Settings
-    
+
     let actionRelay = PublishRelay<SettingsScreenAction>()
     let previousRelay = PublishRelay<Void>()
-    
+
     // MARK: - Routers
-    
+
     private lazy var updateMobileRouter: UpdateMobileRouter = {
         UpdateMobileRouter(navigationRouter: navigationRouter)
     }()
-    
+
     private lazy var backupRouterAPI: BackupFundsRouterAPI = {
         BackupFundsRouter(entry: .settings, navigationRouter: navigationRouter)
     }()
-    
+
     // MARK: - Private
-    
+
     private let guidRepositoryAPI: GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecording
     private let alertPresenter: AlertViewPresenter
@@ -74,10 +74,10 @@ final class SettingsRouter: SettingsRouterAPI {
 
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
-    
+
     private let addCardCompletionRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
-    
+
     init(
         appCoordinator: AppCoordinating = resolve(),
         builder: SettingsBuilding = SettingsBuilder(),
@@ -117,19 +117,19 @@ final class SettingsRouter: SettingsRouterAPI {
         self.repository = repository
         self.balanceProviding = balanceProviding
         self.balanceChangeProviding = balanceChangeProviding
-        
+
         previousRelay
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-        
+
         actionRelay
             .bindAndCatch(weak: self) { (self, action) in
                 self.handle(action: action)
             }
             .disposed(by: disposeBag)
-        
+
         addCardCompletionRelay
             .bindAndCatch(weak: self) { (self) in
                 cardListService
@@ -138,9 +138,9 @@ final class SettingsRouter: SettingsRouterAPI {
                     .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
-            
+
     }
-    
+
     func presentSettings() {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
@@ -154,7 +154,7 @@ final class SettingsRouter: SettingsRouterAPI {
         let controller = SettingsViewController(presenter: presenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
-    
+
     func dismiss() {
         guard let navController = navigationRouter.navigationControllerAPI else { return }
         if navController.viewControllersCount > 1 {
@@ -164,7 +164,7 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.navigationControllerAPI = nil
         }
     }
-    
+
     private func handle(action: SettingsScreenAction) {
         switch action {
         case .showURL(let url):
@@ -230,7 +230,7 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.present(viewController: viewController)
         case .promptGuidCopy:
             guidRepositoryAPI.guid
-                .map(weak: self) { (self, value) -> String in
+                .map(weak: self) { (_, value) -> String in
                     value ?? ""
                 }
                 .observeOn(MainScheduler.instance)
@@ -255,7 +255,7 @@ final class SettingsRouter: SettingsRouterAPI {
                     navController.present(alert, animated: true)
                 })
                 .disposed(by: disposeBag)
-            
+
         case .launchKYC:
             guard let navController = navigationRouter.navigationControllerAPI as? UINavigationController else { return }
             KYCTiersViewController
@@ -334,7 +334,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .disposed(by: disposeBag)
 
     }
-    
+
     private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {
         let selectionService = FiatCurrencySelectionService(defaultSelectedData: selectedCurrency)
         let interactor = SelectionScreenInteractor(service: selectionService)
@@ -346,7 +346,7 @@ final class SettingsRouter: SettingsRouterAPI {
         let viewController = SelectionScreenViewController(presenter: presenter)
         viewController.isModalInPresentation = true
         navigationRouter.present(viewController: viewController)
-        
+
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
             .flatMap { currency -> Single<FiatCurrency> in
@@ -378,7 +378,7 @@ final class SettingsRouter: SettingsRouterAPI {
             )
             .disposed(by: disposeBag)
     }
-        
+
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting()
     }()

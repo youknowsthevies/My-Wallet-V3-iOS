@@ -4,38 +4,38 @@ import PlatformKit
 import UIKit
 
 public struct FiatBalanceViewAsset {
-    
+
     public struct State {
         public typealias Interaction = LoadingState<Value.Interaction>
         public typealias Presentation = LoadingState<Value.Presentation>
     }
-    
+
     // MARK: - Value Namespace
-    
+
     public struct Value {
-        
+
         // MARK: - Interaction
-        
+
         public struct Interaction {
             /// The balance
             public let base: FiatValue
-            
+
             /// The converted value if the
             /// balance currency type does not
             /// match the user's preferred currency
             public let quote: FiatValue
         }
-        
+
         public struct Presentation {
-            
+
             public enum QuoteFiatContent {
                 case visible(LabelContent)
                 case hidden
-                
+
                 public var isHidden: Bool {
                     quoteVisibility.isHidden
                 }
-                
+
                 public var quoteVisibility: Visibility {
                     switch self {
                     case .visible:
@@ -45,22 +45,22 @@ public struct FiatBalanceViewAsset {
                     }
                 }
             }
-            
+
             // MARK: - Properties
-        
+
             let baseBalanceLabelContent: LabelContent
             let quoteBalanceLabelContent: QuoteFiatContent
-            
+
             /// Descriptors that allows customized content and style
             public struct Descriptors {
                 let baseFiatFont: UIFont
                 let baseFiatTextColor: UIColor
                 let baseFiatAccessibility: Accessibility
-                
+
                 let quoteFiatFont: UIFont
                 let quoteFiatTextColor: UIColor
                 let quoteFiatAccessibility: Accessibility
-                
+
                 public init(baseFiatFont: UIFont,
                             baseFiatTextColor: UIColor,
                             baseFiatAccessibility: Accessibility,
@@ -75,9 +75,9 @@ public struct FiatBalanceViewAsset {
                     self.quoteFiatAccessibility = quoteFiatAccessibility
                 }
             }
-            
+
             // MARK: - Setup
-            
+
             public init(with value: Interaction, descriptors: Descriptors) {
                 let showsQuoteValue = value.quote.currencyType != value.base.currencyType
                 let baseFont: UIFont
@@ -101,7 +101,7 @@ public struct FiatBalanceViewAsset {
                     baseFont = descriptors.quoteFiatFont
                     baseColor = descriptors.quoteFiatTextColor
                 }
-                
+
                 baseBalanceLabelContent = LabelContent(
                     text: value.base.toDisplayString(includeSymbol: true),
                     font: baseFont,
@@ -113,13 +113,13 @@ public struct FiatBalanceViewAsset {
                 )
             }
         }
-        
+
     }
 }
 
 public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
     typealias Descriptors = FiatBalanceViewAsset.Value.Presentation.Descriptors
-    
+
     static func `default`(
         fiatAccessiblitySuffix: String,
         baseFiatAccessibilitySuffix: String? = nil
@@ -143,7 +143,7 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
 
 public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
     typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
-    
+
     static func dashboard(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
@@ -154,7 +154,7 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
             quoteFiatAccessibility: .init(id: .value("\(DashboardAccessibility.quoteFiatBalance).\(quoteAccessibilitySuffix)"))
         )
     }
-    
+
     static func paymentMethods(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),

@@ -6,4 +6,3 @@ import RxRelay
 public protocol WebViewRouterAPI: class {
     var launchRelay: PublishRelay<TitledLink> { get }
 }
-

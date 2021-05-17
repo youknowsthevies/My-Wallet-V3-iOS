@@ -5,14 +5,14 @@ import PlatformKit
 import Sift
 
 final class SiftService: SiftServiceAPI {
-    
+
     private enum Constants {
         static let siftAccountId = "siftAccountId"
         static let siftKey = "siftKey"
     }
-    
+
     // MARK: - Private properties
-    
+
     private var sift: Sift? {
         guard featureConfigurator.configuration(for: .siftScienceEnabled).isEnabled else {
             return nil
@@ -46,7 +46,7 @@ final class SiftService: SiftServiceAPI {
     init(featureConfigurator: FeatureConfiguring = DIKit.resolve()) {
         self.featureConfigurator = featureConfigurator
     }
-    
+
     // MARK: - SiftServiceAPI
 
     /// Enables the services

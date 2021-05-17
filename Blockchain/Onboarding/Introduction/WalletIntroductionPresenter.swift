@@ -66,7 +66,7 @@ final class WalletIntroductionPresenter: NSObject {
             .subscribe(onSuccess: { [weak self] events in
                 guard let self = self else { return }
                 self.execute(events: events)
-            }, onError: { [weak self] error in
+            }, onError: { [weak self] _ in
                 guard let self = self else { return }
                 self.introductionRelay.accept(.none)
             })

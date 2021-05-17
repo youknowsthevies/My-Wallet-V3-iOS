@@ -5,10 +5,10 @@ import PlatformKit
 
 public enum AssetLineChartInteractionState: Equatable {
     public typealias Index = Int
-    
+
     /// The `LineChartView` is no longer selected
     case deselected
-    
+
     /// A `selected` index in a `LineChartView`
     case selected(Index)
 }

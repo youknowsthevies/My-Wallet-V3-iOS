@@ -10,7 +10,7 @@ public struct PaymentAccount {
             let name: String?
             let recipient: String?
             let routingNumber: String?
-            
+
             init(account: String?,
                  address: String?,
                  code: String?,
@@ -32,7 +32,7 @@ public struct PaymentAccount {
         let agent: Agent
         let currency: CurrencyType
         let state: PaymentAccountProperty.State
-        
+
         enum CodingKeys: String, CodingKey {
             case currency
             case id
@@ -40,7 +40,7 @@ public struct PaymentAccount {
             case state
             case address
         }
-        
+
         public init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
             let value = try values.decode(String.self, forKey: .currency)
@@ -50,7 +50,7 @@ public struct PaymentAccount {
             agent = try values.decode(Agent.self, forKey: .agent)
             state = try values.decode(PaymentAccountProperty.State.self, forKey: .state)
         }
-        
+
         init(id: String,
              address: String,
              agent: Agent,
@@ -62,12 +62,12 @@ public struct PaymentAccount {
             self.currency = currency
             self.state = state
         }
-        
+
         public var account: PaymentAccount {
             .init(response: self)
         }
     }
-    
+
     public struct Agent {
         public let account: String?
         public let address: String?
@@ -76,7 +76,7 @@ public struct PaymentAccount {
         public let name: String?
         public let recipient: String?
         public let routingNumber: String?
-        
+
         init(agent: Response.Agent) {
             self.account = agent.account
             self.address = agent.address
@@ -87,13 +87,13 @@ public struct PaymentAccount {
             self.routingNumber = agent.routingNumber
         }
     }
-    
+
     public let id: String
     public let address: String
     public let agent: Agent
     public let currency: CurrencyType
     public let state: PaymentAccountProperty.State
-    
+
     init(response: Response) {
         self.id = response.id
         self.address = response.address
@@ -102,4 +102,3 @@ public struct PaymentAccount {
         self.state = response.state
     }
 }
-

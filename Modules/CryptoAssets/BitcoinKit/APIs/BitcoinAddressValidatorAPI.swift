@@ -5,4 +5,3 @@ import RxSwift
 public protocol BitcoinAddressValidatorAPI {
     func validate(address: String) -> Completable
 }
-

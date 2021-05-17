@@ -7,7 +7,7 @@ import RxSwift
 
 /// A `BadgeCellPresenting` class for showing the user's mobile verification status
 final class MobileVerificationCellPresenter: BadgeCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
 
     // MARK: - Properties
@@ -25,7 +25,7 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
-    
+
     init(interactor: MobileVerificationBadgeInteractor) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.Badge.mobileNumber,

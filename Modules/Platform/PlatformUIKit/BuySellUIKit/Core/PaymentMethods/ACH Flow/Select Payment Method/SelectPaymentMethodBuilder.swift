@@ -9,7 +9,7 @@ protocol SelectPaymentMethodBuildable {
 }
 
 final class SelectPaymentMethodBuilder: SelectPaymentMethodBuildable {
-    
+
     private let paymentMethodService: SelectPaymentMethodService
 
     init(paymentMethodService: SelectPaymentMethodService) {

@@ -9,13 +9,13 @@ public extension Encodable {
         }
         return (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [String: Any] ?? [:]
     }
-    
+
     func encode() throws -> Data {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         return try encoder.encode(self)
     }
-    
+
     func encodeToString(encoding: String.Encoding) throws -> String {
         let encodedData = try self.encode()
         guard let string = String(data: encodedData, encoding: encoding) else {
@@ -29,7 +29,7 @@ public extension Encodable {
         }
         return string
     }
-    
+
     func toDictionary() throws -> [String: Any] {
         guard let data = try? self.encode(), let dictionary = try JSONSerialization.jsonObject(
             with: data,
@@ -39,7 +39,7 @@ public extension Encodable {
         }
         return dictionary
     }
-    
+
     func tryToEncode(
         encoding: String.Encoding,
         onSuccess: (String) -> Void,

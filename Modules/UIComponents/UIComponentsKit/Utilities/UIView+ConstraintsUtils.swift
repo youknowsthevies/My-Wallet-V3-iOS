@@ -3,7 +3,7 @@
 import UIKit
 
 public extension UIView {
-    
+
     @discardableResult
     func constraint(edgesTo other: UIView, insets: UIEdgeInsets = .zero) -> [NSLayoutConstraint] {
         let constraints = [
@@ -15,7 +15,7 @@ public extension UIView {
         activate(constraints)
         return constraints
     }
-    
+
     private func activate(_ constraints: [NSLayoutConstraint]) {
         translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate(constraints)

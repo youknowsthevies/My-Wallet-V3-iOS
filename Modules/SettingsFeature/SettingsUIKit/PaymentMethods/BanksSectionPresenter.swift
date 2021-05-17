@@ -6,16 +6,16 @@ import RxSwift
 
 final class BanksSectionPresenter: SettingsSectionPresenting {
     let sectionType: SettingsSectionType = .banks
-    
+
     let state: Observable<SettingsSectionLoadingState>
-    
+
     // MARK: - Private Properties
 
     private let addPaymentMethodCellPresenters: [AddPaymentMethodCellPresenter]
     private let interactor: BanksSettingsSectionInteractor
-    
+
     // MARK: - Setup
-    
+
     init(interactor: BanksSettingsSectionInteractor) {
         self.interactor = interactor
         let addPaymentMethodCellPresenters = interactor.addPaymentMethodInteractors
@@ -67,14 +67,14 @@ private extension Array where Element == SettingsCellViewModel {
         self = presenters
             .map { SettingsCellViewModel(cellType: .banks(.add($0))) }
     }
-    
+
     init(_ viewModels: [BeneficiaryLinkedBankViewModel]) {
         self = viewModels
             .map {
                 SettingsCellViewModel(cellType: .banks(.linked($0)))
             }
     }
-    
+
     init(_ beneficiaries: [Beneficiary]) {
         self = beneficiaries
             .map {

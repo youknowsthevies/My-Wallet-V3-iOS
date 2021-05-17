@@ -5,7 +5,7 @@ import stellarsdk
 
 public struct StellarAssetAccountDetails: AssetAccountDetails {
     public typealias Account = StellarAssetAccount
-    
+
     public var account: StellarAssetAccount
     public var balance: CryptoValue
 }
@@ -21,7 +21,7 @@ public extension StellarAssetAccountDetails {
             sequence: 0,
             subentryCount: 0
         )
-        
+
         return StellarAssetAccountDetails(
             account: account,
             balance: CryptoValue.stellar(major: 0)

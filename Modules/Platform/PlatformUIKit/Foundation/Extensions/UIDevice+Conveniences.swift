@@ -26,7 +26,7 @@ extension UIDevice {
         case x = 812
         case max = 896
     }
-    
+
     fileprivate var type: DevicePresenter.DeviceType {
         guard userInterfaceIdiom == .phone
             else { return .regular }

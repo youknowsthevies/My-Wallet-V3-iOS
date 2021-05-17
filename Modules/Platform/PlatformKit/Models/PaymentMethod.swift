@@ -11,7 +11,7 @@ public enum PaymentMethodPayloadType: String, CaseIterable, Encodable {
 
 /// The available payment methods
 public struct PaymentMethod: Equatable, Comparable {
-        
+
     public enum MethodType: Equatable, Comparable {
         /// Card payment method
         case card(Set<CardType>)
@@ -24,7 +24,7 @@ public struct PaymentMethod: Equatable, Comparable {
 
         /// Funds payment method
         case funds(CurrencyType)
-        
+
         public var isCard: Bool {
             switch self {
             case .card:
@@ -33,7 +33,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 return false
             }
         }
-        
+
         public var isFunds: Bool {
             switch self {
             case .funds:
@@ -42,7 +42,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 return false
             }
         }
-        
+
         public var isBankAccount: Bool {
             switch self {
             case .bankAccount:
@@ -60,7 +60,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 return false
             }
         }
-        
+
         public var rawType: PaymentMethodPayloadType {
             switch self {
             case .card:
@@ -115,7 +115,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 self = .funds(currency.currency)
             }
         }
-        
+
         public init(type: PaymentMethodPayloadType, currency: CurrencyType) {
             switch type {
             case .card:
@@ -128,7 +128,7 @@ public struct PaymentMethod: Equatable, Comparable {
                 self = .funds(currency)
             }
         }
-        
+
         public static func == (lhs: Self, rhs: Self) -> Bool {
             lhs.rawType == rhs.rawType
         }
@@ -161,13 +161,13 @@ public struct PaymentMethod: Equatable, Comparable {
 
     /// `True` if the user is eligible to use the payment method, otherwise false
     public let isEligible: Bool
-    
+
     /// The maximum value of payment using that method
     public let max: FiatValue
-    
+
     /// The maximum value of payment using that method
     public let min: FiatValue
-    
+
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type == rhs.type
     }

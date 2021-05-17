@@ -44,7 +44,7 @@ extension APIClient {
             ]
         )
     }
-    
+
     private static var cardList: [CardPayload] {
         [
             CardPayload(
@@ -71,7 +71,7 @@ extension APIClient {
             )
         ]
     }
-    
+
     static func mockQuote(for action: Order.Action,
                           to cryptoCurrency: CryptoCurrency,
                           amount: FiatValue) -> QuoteResponse {

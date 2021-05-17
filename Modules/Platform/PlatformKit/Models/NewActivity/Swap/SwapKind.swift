@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct SwapKind: Decodable, Equatable {
-    
+
     public let direction: SwapActivityItemEventDirection
     public let depositAddress: String?
     public let depositTxHash: String?
     public let withdrawalAddress: String?
     public let withdrawalTxHash: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case direction
         case depositAddress
@@ -15,7 +15,7 @@ public struct SwapKind: Decodable, Equatable {
         case withdrawalAddress
         case withdrawalTxHash
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         direction = try values.decode(SwapActivityItemEventDirection.self, forKey: .direction)

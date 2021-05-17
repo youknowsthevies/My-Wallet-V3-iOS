@@ -82,7 +82,7 @@ final class APIClient: APIClientAPI {
     private let apiCode: String
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
          apiCode: APICode = resolve()) {

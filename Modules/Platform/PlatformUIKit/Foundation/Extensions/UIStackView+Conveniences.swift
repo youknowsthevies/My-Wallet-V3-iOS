@@ -12,7 +12,7 @@ extension UIStackView {
         subview.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         insertSubview(subview, at: 0)
     }
-    
+
     public func insertArrangedSubview(_ view: UIView, belowArrangedSubview subview: UIView) {
         arrangedSubviews.enumerated().forEach {
             if $0.1 == subview {
@@ -20,7 +20,7 @@ extension UIStackView {
             }
         }
     }
-    
+
     public func insertArrangedSubview(_ view: UIView, aboveArrangedSubview subview: UIView) {
         arrangedSubviews.enumerated().forEach {
             if $0.1 == subview {

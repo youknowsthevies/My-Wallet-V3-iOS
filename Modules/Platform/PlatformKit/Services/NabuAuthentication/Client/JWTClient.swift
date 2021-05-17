@@ -6,47 +6,47 @@ import NetworkKit
 import RxSwift
 
 protocol JWTClientAPI: AnyObject {
-    
+
     func requestJWT(guid: String, sharedKey: String) -> AnyPublisher<String, JWTClient.ClientError>
 }
 
 final class JWTClient: JWTClientAPI {
 
     // MARK: - Types
-    
+
     enum ClientError: Error {
         case jwt(String)
     }
-    
+
     private struct JWTResponse: Decodable {
         let success: Bool
         let token: String?
         let error: String?
     }
-    
+
     private enum Path {
         static let token = [ "wallet", "signed-retail-token" ]
     }
-    
+
     private enum Parameter {
         static let guid = "guid"
         static let sharedKey = "sharedKey"
         static let apiCode = "api_code"
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
          requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
-    
+
     func requestJWT(guid: String, sharedKey: String) -> AnyPublisher<String, JWTClient.ClientError> {
         let queryParameters = [
             URLQueryItem(

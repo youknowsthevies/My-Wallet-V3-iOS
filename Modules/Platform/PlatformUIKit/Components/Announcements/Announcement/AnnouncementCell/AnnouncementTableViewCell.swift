@@ -9,12 +9,12 @@ public final class AnnouncementTableViewCell: UITableViewCell {
         get { -bottomSpacingConstraint.constant }
         set { bottomSpacingConstraint.constant = -newValue }
     }
-    
+
     private var bottomSpacingConstraint: NSLayoutConstraint!
-    
+
     /// A view that represents the announcement
     private var cardView: AnnouncementCardViewConforming!
-    
+
     public var viewModel: AnnouncementCardViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -29,9 +29,9 @@ public final class AnnouncementTableViewCell: UITableViewCell {
             bottomSpacingConstraint = cardView.layoutToSuperview(.bottom)
         }
     }
-        
+
     // MARK: - Lifecycle
-    
+
     public override func prepareForReuse() {
         super.prepareForReuse()
         cardView.removeFromSuperview()

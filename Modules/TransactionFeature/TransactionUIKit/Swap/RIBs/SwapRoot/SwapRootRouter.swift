@@ -17,7 +17,7 @@ protocol SwapRootRouting: ViewableRouting {
     /// Bootstrap determines if the user
     /// should see KYC or Swap.
     func routeToSwapBootstrap()
-    
+
     /// Landing shows trending pairs
     func routeToSwapLanding()
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool)
@@ -27,7 +27,7 @@ protocol SwapRootRouting: ViewableRouting {
 }
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
-    
+
     private var transactionFlowRouting: TransactionFlowRouting? {
         children
             .first(where: { $0 is TransactionFlowRouting })
@@ -72,7 +72,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         let vc = DetailsScreenViewController(presenter: presenter)
         viewController.replaceRoot(viewController: vc, animated: false)
     }
-    
+
     func routeToSwap(with pair: SwapTrendingPair?) {
         dismissTransactionFlow()
         precondition(transactionFlowRouting == nil, "There should be no TransactionFlowRouting child here.")
@@ -87,7 +87,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         attachChild(router)
         viewController.present(viewController: viewControllable)
     }
-    
+
     func dismissTransactionFlow() {
         if let transationFlowRouting = transactionFlowRouting {
             detachChild(transationFlowRouting)

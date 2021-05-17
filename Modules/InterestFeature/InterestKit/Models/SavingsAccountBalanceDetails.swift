@@ -3,13 +3,13 @@
 import PlatformKit
 
 public struct SavingsAccountBalanceDetails: Decodable {
-    
+
     public let balance: String?
     public let pendingInterest: String?
     public let totalInterest: String?
     public let pendingWithdrawal: String?
     public let pendingDeposit: String?
-    
+
     private enum CodingKeys: String, CodingKey {
         case balance
         case pendingInterest
@@ -17,10 +17,10 @@ public struct SavingsAccountBalanceDetails: Decodable {
         case pendingWithdrawal
         case pendingDeposit
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         balance = try values.decodeIfPresent(String.self, forKey: .balance)
         pendingDeposit = try values.decodeIfPresent(String.self, forKey: .pendingDeposit)
         pendingInterest = try values.decodeIfPresent(String.self, forKey: .pendingInterest)

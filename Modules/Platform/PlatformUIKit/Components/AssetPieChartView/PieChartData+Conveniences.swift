@@ -14,7 +14,7 @@ extension PieChartData {
         set.colors = values.map { $0.color }
         self.init(dataSet: set)
     }
-    
+
     /// Returns an `empty` grayish pie chart data
     public static var empty: PieChartData {
         let set = PieChartDataSet(entries: [PieChartDataEntry(value: 100)], label: nil)

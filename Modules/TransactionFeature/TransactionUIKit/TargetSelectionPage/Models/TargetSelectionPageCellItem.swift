@@ -21,7 +21,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
         case singleAccountAvailableTarget(RadioAccountCellInteractor)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
         case walletInputField(SingleAccount, TextFieldViewModel)
-        
+
         var account: SingleAccount {
             switch self {
             case .singleAccountAvailableTarget(let interactor):
@@ -78,7 +78,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
 
     let account: BlockchainAccount?
     let presenter: Presenter
-    
+
     init(cardView: CardViewViewModel) {
         account = nil
         presenter = .cardView(cardView)

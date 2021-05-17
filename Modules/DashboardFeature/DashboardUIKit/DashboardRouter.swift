@@ -15,7 +15,7 @@ final class DashboardRouter {
     private let balanceProviding: BalanceProviding
     private let exchangeProviding: ExchangeProviding
     private let settingsService: FiatCurrencySettingsServiceAPI
-    
+
     init(
         navigationRouter: NavigationRouterAPI = NavigationRouter(),
         balanceProviding: BalanceProviding = resolve(),
@@ -29,11 +29,11 @@ final class DashboardRouter {
         self.exchangeProviding = exchangeProviding
         self.settingsService = settingsService
     }
-    
+
     func showWalletActionScreen(for currencyType: CurrencyType) {
         accountsRouter.routeToCustodialAccount(for: currencyType)
     }
-    
+
     func showDetailsScreen(for currency: CryptoCurrency) {
         // TODO: Move away from the routing layer - phase II of saving
         let balanceFetcher = balanceProviding[.crypto(currency)]
@@ -52,18 +52,18 @@ final class DashboardRouter {
             fiatCurrency: fiatCurrency,
             router: self
         )
-        
+
         detailsPresenter.action
             .emit(onNext: { [weak self] action in
                 guard let self = self else { return }
                 self.handle(action: action)
             })
             .disposed(by: disposeBag)
-        
+
         let controller = DashboardDetailsViewController(using: detailsPresenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
-    
+
     private func handle(action: DashboadDetailsAction) {
         switch action {
         case .nonCustodial(let currency):
@@ -74,5 +74,5 @@ final class DashboardRouter {
             accountsRouter.routeToInterestAccount(for: currency)
         }
     }
-    
+
 }

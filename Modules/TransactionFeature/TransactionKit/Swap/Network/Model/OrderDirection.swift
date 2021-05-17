@@ -9,7 +9,7 @@ public enum OrderDirection: String, Codable {
     case toUserKey = "TO_USERKEY"
     /// From custodial to custodial
     case `internal` = "INTERNAL"
-    
+
     public var requiresDestinationAddress: Bool {
         switch self {
         case .onChain,
@@ -20,7 +20,7 @@ public enum OrderDirection: String, Codable {
             return false
         }
     }
-    
+
     public var requiresRefundAddress: Bool {
         switch self {
         case .onChain,

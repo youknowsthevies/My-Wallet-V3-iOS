@@ -7,7 +7,7 @@ public struct ERC20WalletAccount: WalletAccount, Codable {
     public let publicKey: String
     public var label: String?
     public var archived: Bool
-    
+
     public init(index: Int,
                 publicKey: String,
                 label: String?,

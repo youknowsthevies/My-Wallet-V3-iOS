@@ -3,12 +3,12 @@
 import PlatformKit
 
 public class EthereumURLPayload: EIP67URI {
-    
+
     private enum QueryItemKeys: String {
         case value
         case gas
     }
-    
+
     public static var scheme: String {
         AssetConstants.URLSchemes.ethereum
     }
@@ -19,7 +19,7 @@ public class EthereumURLPayload: EIP67URI {
     public private(set) var gas: String?
     public private(set) var paymentRequestUrl: String?
     public let includeScheme: Bool = false
-    
+
     public var absoluteString: String {
         var components = self.components
         if !includeScheme {
@@ -27,9 +27,9 @@ public class EthereumURLPayload: EIP67URI {
         }
         return components.url!.absoluteString
     }
-    
+
     private let components: URLComponents
-    
+
     required public init?(address: String, amount: String? = nil, gas: String? = nil) {
         let components = EthereumURLPayload.urlComponents(from: address, amount: amount, gas: gas)
         guard EthereumURLPayload.valid(components: components) else {
@@ -40,11 +40,11 @@ public class EthereumURLPayload: EIP67URI {
         self.amount = amount
         self.gas = gas
     }
-    
+
     required convenience public init?(url: URL) {
         self.init(rawValue: url.absoluteString)
     }
-    
+
     required public init?(rawValue: String) {
         guard let components: URLComponents = URLComponents(string: rawValue) else {
             return nil
@@ -70,16 +70,16 @@ public class EthereumURLPayload: EIP67URI {
             }
         }
     }
-    
+
     private static func valid(components: URLComponents) -> Bool {
         components.scheme == EthereumURLPayload.scheme && components.path.count == 42
     }
-    
+
     private static func urlComponents(from address: String, amount: String?, gas: String?) -> URLComponents {
         var components = URLComponents()
         components.scheme = EthereumURLPayload.scheme
         components.path = address
-        
+
         var queryItems: [URLQueryItem] = []
         if let amount = amount {
             queryItems.append(URLQueryItem(name: QueryItemKeys.value.rawValue, value: amount))
@@ -90,7 +90,7 @@ public class EthereumURLPayload: EIP67URI {
         if !queryItems.isEmpty {
             components.queryItems = queryItems
         }
-        
+
         return components
     }
 }

@@ -4,7 +4,7 @@ import RxSwift
 import ToolKit
 
 extension CachedValueConfiguration {
-    
+
     public static func onSubscription(
         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
     ) -> CachedValueConfiguration {
@@ -14,7 +14,7 @@ extension CachedValueConfiguration {
             flushNotificationName: .logout
         )
     }
-    
+
     public static func periodicAndLogin(
         _ time: TimeInterval,
         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
@@ -27,4 +27,3 @@ extension CachedValueConfiguration {
         )
     }
 }
-

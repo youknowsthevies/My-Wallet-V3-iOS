@@ -10,9 +10,9 @@ public protocol SendAuxiliaryViewInteractorAPI: AnyObject {
     var resetToMaxAmount: Observable<Void> { get }
 
     var availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI { get }
-    
+
     var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI { get }
-    
+
     var networkFeeTappedRelay: PublishRelay<Void> { get }
 
     var availableBalanceTappedRelay: PublishRelay<Void> { get }
@@ -28,7 +28,7 @@ public extension SendAuxiliaryViewInteractorAPI {
         resetToMaxAmountRelay
             .asObservable()
     }
-    
+
     /// Streams network fee tap events
     var networkFeeTapped: Observable<Void> {
         networkFeeTappedRelay

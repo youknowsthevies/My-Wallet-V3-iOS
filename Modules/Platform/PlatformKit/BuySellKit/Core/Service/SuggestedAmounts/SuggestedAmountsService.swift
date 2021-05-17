@@ -11,38 +11,38 @@ public typealias SuggestedAmountsCalculationState = ValueCalculationState<[FiatV
 
 /// A simple buy suggested amounts API
 public protocol SuggestedAmountsServiceAPI: class {
-    
+
     /// Streams the suggested amounts
     var calculationState: Observable<SuggestedAmountsCalculationState> { get }
-    
+
     /// Refresh, triggering a re-fetch of `SuggestedAmountsCalculationState`.
     /// Makes `calculationState` to stream an updated value
     func refresh()
 }
 
 final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
-    
+
     // MARK: - Exposed
-    
+
     var calculationState: Observable<SuggestedAmountsCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
-        
+
     // MARK: - Injected
-    
+
     private let client: SuggestedAmountsClientAPI
-    
+
     // MARK: - Accessors
-    
+
     private var calculationStateRelay = BehaviorRelay<SuggestedAmountsCalculationState>(value: .invalid(.empty))
     private let fetchTriggerRelay: PublishRelay<Void>
     private let reactiveWallet: ReactiveWalletAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     private lazy var setup: Void = {
         Observable
             .combineLatest(
@@ -59,9 +59,9 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
             .bindAndCatch(to: calculationStateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Setup
-    
+
     init(client: SuggestedAmountsClientAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
@@ -70,12 +70,12 @@ final class SuggestedAmountsService: SuggestedAmountsServiceAPI {
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.fetchTriggerRelay = PublishRelay<Void>()
     }
-    
+
     /// Refreshes the cached data set
     func refresh() {
         fetchTriggerRelay.accept(())
     }
-    
+
     private func fetchSuggestedAmounts(for currency: FiatCurrency) -> Single<[FiatValue]> {
         client.suggestedAmounts(for: currency)
             .map { SuggestedAmounts(response: $0) }

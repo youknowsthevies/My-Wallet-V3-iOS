@@ -8,9 +8,9 @@ public enum TransactionResult {
 }
 
 public protocol TransactionTarget {
-    
+
     typealias TxCompleted = (TransactionResult) -> Completable
-    
+
     var label: String { get }
     /// onTxCompleted should be used by CryptoInterestAccount and CustodialTradingAccount,
     /// it should POST to "payments/deposits/pending", check Android

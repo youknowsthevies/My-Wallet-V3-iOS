@@ -7,19 +7,19 @@ import RxRelay
 import RxSwift
 
 public class SparklineImagePresenter {
-    
+
     // MARK: - Public Properties
-    
+
     public var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     public var image: Driver<UIImage?> {
         imageRelay.asDriver()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let calculator: SparklineCalculator
     private let fillColor: UIColor
     private let scale: CGFloat
@@ -27,12 +27,12 @@ public class SparklineImagePresenter {
     private let fillColorRelay = BehaviorRelay<UIColor>(value: .gray4)
     private let stateRelay = BehaviorRelay<State>(value: .empty)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     let interactor: SparklineInteracting
     let accessibility: Accessibility
-    
+
     public init(with interactor: SparklineInteracting,
                 calculator: SparklineCalculator,
                 fillColor: UIColor,
@@ -42,7 +42,7 @@ public class SparklineImagePresenter {
         self.calculator = calculator
         self.interactor = interactor
         self.accessibility = Accessibility(id: .value(Accessibility.Identifier.SparklineView.prefix))
-        
+
         self.interactor.calculationState.map(weak: self, { (self, calculationState) -> State in
             switch calculationState {
             case .calculating:
@@ -57,7 +57,7 @@ public class SparklineImagePresenter {
         })
         .bindAndCatch(to: stateRelay)
         .disposed(by: disposeBag)
-        
+
         stateRelay.compactMap { [weak self] state -> UIImage? in
             guard self != nil else { return nil }
             guard case let .valid(image) = state else { return nil }
@@ -66,7 +66,7 @@ public class SparklineImagePresenter {
         .bindAndCatch(to: imageRelay)
         .disposed(by: disposeBag)
     }
-    
+
     private func imageFromPath(_ path: UIBezierPath) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(calculator.size, false, scale)
         UIGraphicsBeginImageContext(calculator.size)
@@ -79,20 +79,20 @@ public class SparklineImagePresenter {
 }
 
 extension SparklineImagePresenter {
-    
+
     public enum State {
         /// There is no data to display
         case empty
-        
+
         /// The data is being fetched
         case loading
-        
+
         /// Valid state - data has been received
         case valid(image: UIImage)
-        
+
         /// Invalid state - An error was thrown
         case invalid
-        
+
         /// Returns the text value if there is a valid value
         public var value: UIImage? {
             switch self {

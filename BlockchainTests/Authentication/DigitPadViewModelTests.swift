@@ -7,14 +7,14 @@ import XCTest
 
 /// Testing `DigitPadViewModel`'s functionality
 class DigitPadViewModelTests: XCTestCase {
-    
+
     // Legal inputs to go through in testing.
     private var legalLengthTestInputs: [String] {
         ["1", "31", "40", "123", "9999", "443", "001"]
     }
-    
+
     private let bag = DisposeBag()
-    
+
     // Tests reseting the digit code value to a given digit sequence
     func testReset() {
         let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
@@ -22,7 +22,7 @@ class DigitPadViewModelTests: XCTestCase {
         viewModel.reset(to: expectedValue)
         XCTAssertEqual(viewModel.value, expectedValue)
     }
-    
+
     // Testing of observing input length
     func testValueLengthObserving() throws {
         for input in legalLengthTestInputs {
@@ -57,7 +57,7 @@ class DigitPadViewModelTests: XCTestCase {
         let input = "1234"
         let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4))
         viewModel.reset(to: input)
-        
+
         var expected = input
         for _ in 0..<(input.count + 1) {
             viewModel.backspaceButtonViewModel.tap()
@@ -65,18 +65,18 @@ class DigitPadViewModelTests: XCTestCase {
             XCTAssertEqual(viewModel.value, expected)
         }
     }
-    
+
     /// Tests tapping on custom button
     func testCustomButtonTap() throws {
         let customButtonViewModel = DigitPadButtonViewModel.empty
         let viewModel = DigitPadViewModel(padType: .pin(maxCount: 4), customButtonViewModel: customButtonViewModel)
         var isTapped = false
-        
+
         viewModel.customButtonTapObservable.bind {
             isTapped = true
         }
         .disposed(by: bag)
-        
+
         customButtonViewModel.tap()
         XCTAssert(isTapped)
     }

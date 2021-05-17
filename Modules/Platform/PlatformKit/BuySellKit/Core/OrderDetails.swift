@@ -8,16 +8,16 @@ import Localization
 /// `Buy`, `Sell`, etc. It has an internal `value` of type `OrderDetailsValue`.
 /// There is a `buy` and `sell` type.
 public struct OrderDetails {
-    
+
     public typealias State = OrderDetailsState
-    
+
     private enum OrderDetailsValue {
         /// A `Buy` order
         case buy(BuyOrderDetails)
-        
+
         /// A `Sell` order
         case sell(SellOrderDetails)
-        
+
         var isBuy: Bool {
             switch self {
             case .buy:
@@ -26,7 +26,7 @@ public struct OrderDetails {
                 return false
             }
         }
-        
+
         var paymentMethodId: String? {
             switch self {
             case .buy(let buy):
@@ -35,7 +35,7 @@ public struct OrderDetails {
                 return nil
             }
         }
-        
+
         mutating func set(paymentId: String?) {
             switch self {
             case .buy(var buy):
@@ -46,17 +46,17 @@ public struct OrderDetails {
             }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     public var isBuy: Bool {
         _value.isBuy
     }
-    
+
     public var isSell: Bool {
         !isBuy
     }
-    
+
     public var paymentMethod: PaymentMethod.MethodType {
         switch _value {
         case .buy(let buy):
@@ -74,7 +74,7 @@ public struct OrderDetails {
             return sell.creationDate
         }
     }
-    
+
     /// The `MoneyValue` that you are submitting to the order
     public var inputValue: MoneyValue {
         switch _value {
@@ -94,7 +94,7 @@ public struct OrderDetails {
             return sell.fiatValue.moneyValue
         }
     }
-    
+
     public var price: MoneyValue? {
         switch _value {
         case .buy(let buy):
@@ -103,7 +103,7 @@ public struct OrderDetails {
             return sell.price?.moneyValue
         }
     }
-    
+
     public var fee: MoneyValue? {
         switch _value {
         case .buy(let buy):
@@ -112,7 +112,7 @@ public struct OrderDetails {
             return nil
         }
     }
-    
+
     public var identifier: String {
         switch _value {
         case .buy(let buy):
@@ -121,7 +121,7 @@ public struct OrderDetails {
             return sell.identifier
         }
     }
-    
+
     public var paymentMethodId: String? {
         get {
             _value.paymentMethodId
@@ -130,7 +130,7 @@ public struct OrderDetails {
             _value.set(paymentId: newValue)
         }
     }
-    
+
     public var authorizationData: PartnerAuthorizationData? {
         switch _value {
         case .buy(let buy):
@@ -139,7 +139,7 @@ public struct OrderDetails {
             return nil
         }
     }
-    
+
     public var state: State {
         switch _value {
         case .buy(let buy):
@@ -148,11 +148,11 @@ public struct OrderDetails {
             return sell.state
         }
     }
-    
+
     public var isAwaitingAction: Bool {
         isPendingDepositBankWire || isPendingConfirmation || isPending3DSCardOrder
     }
-    
+
     public var isBankWire: Bool {
         paymentMethodId == nil
     }
@@ -160,11 +160,11 @@ public struct OrderDetails {
     public var isCancellable: Bool {
         isPendingDepositBankWire || isPendingConfirmation
     }
-    
+
     public var isPendingConfirmation: Bool {
         state == .pendingConfirmation
     }
-    
+
     public var isPendingDepositBankWire: Bool {
         isPendingDeposit && isBankWire
     }
@@ -172,17 +172,17 @@ public struct OrderDetails {
     public var isPendingDeposit: Bool {
         state == .pendingDeposit
     }
-    
+
     public var isPending3DSCardOrder: Bool {
         guard let state = authorizationData?.state else { return false }
         return paymentMethodId != nil && state.isRequired
     }
-    
+
     public var is3DSConfirmedCardOrder: Bool {
         guard let state = authorizationData?.state else { return false }
         return paymentMethodId != nil && state.isConfirmed
     }
-    
+
     public var isFinal: Bool {
         switch state {
         case .cancelled, .failed, .expired, .finished:
@@ -191,13 +191,13 @@ public struct OrderDetails {
             return false
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private var _value: OrderDetailsValue
-    
+
     // MARK: - Setup
-    
+
     init?(recorder: AnalyticsEventRecording, response: OrderPayload.Response) {
         switch response.side {
         case .buy:
@@ -226,7 +226,7 @@ extension AnalyticsEvents {
                 return "updated_at_parsing_error"
             }
         }
-        
+
         var params: [String : String]? {
             switch self {
             case .updatedAtParsingError(date: let date):

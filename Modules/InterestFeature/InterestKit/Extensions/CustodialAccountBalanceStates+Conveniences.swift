@@ -3,7 +3,7 @@
 import PlatformKit
 
 extension CustodialAccountBalanceStates {
-    
+
     // MARK: - Init
 
     init(response: SavingsAccountBalanceResponse) {

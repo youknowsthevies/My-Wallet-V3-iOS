@@ -12,9 +12,9 @@ protocol PendingTransactionPageBuildable: Buildable {
 }
 
 final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
-    
+
     private let pollingService: PendingSwapCompletionServiceAPI
-    
+
     public init(pollingService: PendingSwapCompletionServiceAPI = resolve()) {
         self.pollingService = pollingService
     }
@@ -26,7 +26,7 @@ final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
             presenter: viewController
         )
         interactor.listener = listener
-        
+
         return PendingTransactionPageRouter(interactor: interactor, viewController: viewController)
     }
 }

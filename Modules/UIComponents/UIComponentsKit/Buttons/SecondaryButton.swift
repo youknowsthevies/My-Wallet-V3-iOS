@@ -4,13 +4,13 @@ import SwiftUI
 
 /// A `ButtonStyle` for secondary Call-to-Action buttons
 public struct SecondaryButtonStyle: ButtonStyle {
-    
+
     let isEnabled: Bool
-    
+
     public init(isEnabled: Bool = true) {
         self.isEnabled = isEnabled
     }
-    
+
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(Font(weight: .semibold, size: 16))
@@ -40,18 +40,18 @@ public struct SecondaryButtonStyle: ButtonStyle {
  ```
 */
 public struct SecondaryButton: View {
-    
+
     let title: String
-    let action: () -> ()
+    let action: () -> Void
     @Binding var loading: Bool
     @Environment(\.isEnabled) var isEnabled
-    
-    public init(title: String, action: @escaping () -> (), loading: Binding<Bool> = .constant(false)) {
+
+    public init(title: String, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
         self._loading = loading
         self.action = action
     }
-    
+
     public var body: some View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(SecondaryButtonStyle(isEnabled: isEnabled))

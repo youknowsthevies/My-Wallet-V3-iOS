@@ -45,9 +45,9 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         self.accountProvider = accountProvider
         self.action = action
     }
-    
+
     // MARK: - Public Methods
-    
+
     public func build(listener: AccountPickerListenerBridge,
                       navigationModel: ScreenNavigationModel,
                       headerModel: AccountPickerHeaderType) -> AccountPickerRouting {

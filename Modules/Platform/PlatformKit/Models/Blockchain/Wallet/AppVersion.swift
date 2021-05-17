@@ -68,4 +68,3 @@ fileprivate extension Array {
         return self[index]
     }
 }
-

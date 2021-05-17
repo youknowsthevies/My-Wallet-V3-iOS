@@ -6,31 +6,31 @@ import RxRelay
 import RxSwift
 
 public final class WebViewRouter: WebViewRouterAPI {
-    
+
     // MARK: - Exposed
-    
+
     public let launchRelay = PublishRelay<TitledLink>()
-    
+
     // MARK: - Private
 
     private var launch: Signal<TitledLink> {
         launchRelay.asSignal()
     }
-    
+
     private let disposeBag = DisposeBag()
 
     // MARK: - Injected
-    
+
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let webViewServiceAPI: WebViewServiceAPI
-    
+
     // MARK: - Setup
-    
+
     public init(topMostViewControllerProvider: TopMostViewControllerProviding,
                 webViewServiceAPI: WebViewServiceAPI = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.webViewServiceAPI = webViewServiceAPI
-        
+
         launch
             .map { $0.url }
             .emit(onNext: { [weak self] url in

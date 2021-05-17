@@ -6,7 +6,7 @@ import Foundation
 // MARK: - Algorand
 
 extension CryptoValue {
-    
+
     public static var algorandZero: CryptoValue {
         zero(currency: .algorand)
     }

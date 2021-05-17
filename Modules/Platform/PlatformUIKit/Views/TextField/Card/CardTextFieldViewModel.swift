@@ -9,9 +9,9 @@ public protocol CardTypeSource: class {
 }
 
 public final class CardTextFieldViewModel: TextFieldViewModel {
-    
+
     // MARK: - Properties
-    
+
     /// Streams the card thumbnail image view content. determined by the card type
     var cardThumbnailBadgeImageViewModel: Observable<BadgeImageViewModel?> {
         cardNumberValidator.cardType
@@ -35,12 +35,12 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
                 return viewModel
             }
     }
-    
+
     private let cardNumberValidator: CardNumberValidator
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(validator: CardNumberValidator,
                 messageRecorder: MessageRecording) {
         cardNumberValidator = validator
@@ -51,7 +51,7 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
             formatter: TextFormatterFactory.cardNumber,
             messageRecorder: messageRecorder
         )
-        
+
         cardThumbnailBadgeImageViewModel
             .map { viewModel in
                 if let viewModel = viewModel {

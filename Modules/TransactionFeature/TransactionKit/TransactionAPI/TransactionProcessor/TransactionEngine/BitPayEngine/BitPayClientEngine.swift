@@ -12,7 +12,7 @@ public struct BitPayEngineTransaction: EngineTransaction {
     public let encodedMsg: String
     public let msgSize: Int
     public let txHash: String
-    
+
     public init(msgSize: Int, txHash: String, encodedMsg: String = "") {
         self.msgSize = msgSize
         self.txHash = txHash

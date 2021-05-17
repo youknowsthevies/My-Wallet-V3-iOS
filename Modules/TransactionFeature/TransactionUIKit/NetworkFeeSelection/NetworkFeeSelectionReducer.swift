@@ -10,12 +10,12 @@ protocol NetworkFeeSelectionReducerAPI {
 }
 
 final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
-    
+
     private typealias LocalizationId = LocalizationConstants.Transaction.Send
     private typealias PresenterState = NetworkFeeSelectionPresenter.State
-    
+
     func presentableState(for interactorState: Driver<NetworkFeeSelectionInteractor.State>) -> Driver<NetworkFeeSelectionPresenter.State> {
-        
+
         let title: LabelContent = .init(
             text: LocalizationId.networkFee,
             font: .main(.semibold, 16),
@@ -46,7 +46,7 @@ final class NetworkFeeSelectionReducer: NetworkFeeSelectionReducerAPI {
                     hideSeparator: true
                 )
             }
-        
+
         return Driver.zip(regular, priority)
             .map { (regular, priority) in
                 PresenterState(

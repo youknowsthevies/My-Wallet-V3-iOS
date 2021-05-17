@@ -22,4 +22,3 @@ class TradingAccountBalanceTests: XCTestCase {
         XCTAssertEqual(ethereum.available.amount, 100, "CryptoCurrency.ethereum available should be 100")
     }
 }
-

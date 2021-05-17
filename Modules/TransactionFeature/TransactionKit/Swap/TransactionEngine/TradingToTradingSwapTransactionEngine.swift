@@ -74,7 +74,7 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
                 TransactionResult.unHashed(amount: pendingTransaction.amount)
             }
     }
-    
+
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
                           level: FeeLevel,
                           customFeeAmount: MoneyValue) -> Single<PendingTransaction> {

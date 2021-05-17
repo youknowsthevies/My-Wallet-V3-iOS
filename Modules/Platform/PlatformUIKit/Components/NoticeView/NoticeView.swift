@@ -5,16 +5,16 @@ import UIKit
 public final class NoticeView: UIView {
 
     // MARK: - IBOutlet Properties
-    
+
     private let imageView = UIImageView()
     private let stackView = UIStackView()
-    
+
     private var topAlignmentConstraint: NSLayoutConstraint!
     private var centerAlignmentConstraint: NSLayoutConstraint!
     private var sizeConstraints: LayoutForm.Constraints!
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: NoticeViewModel! {
         didSet {
             guard let viewModel = viewModel else { return }
@@ -24,7 +24,7 @@ public final class NoticeView: UIView {
                 vertical: viewModel.imageViewSize.height
             )
             stackView.removeSubviews()
-            
+
             viewModel.labelContents
                 .map {
                     let label = UILabel()
@@ -35,7 +35,7 @@ public final class NoticeView: UIView {
                 .forEach {
                     stackView.addArrangedSubview($0)
                 }
-            
+
             switch viewModel.verticalAlignment {
             case .center:
                 topAlignmentConstraint.priority = .defaultLow
@@ -47,33 +47,33 @@ public final class NoticeView: UIView {
             layoutIfNeeded()
         }
     }
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-        
+
     private func setup() {
         stackView.axis = .vertical
         stackView.distribution = .fill
         stackView.alignment = .leading
         stackView.spacing = 4
-        
+
         imageView.contentMode = .scaleAspectFit
-        
+
         addSubview(imageView)
         addSubview(stackView)
-        
+
         imageView.layoutToSuperview(.leading)
         sizeConstraints = imageView.layout(size: .init(edge: 20))
-        
+
         topAlignmentConstraint = imageView.layout(to: .top, of: stackView, priority: .penultimateHigh)
         centerAlignmentConstraint = imageView.layout(to: .centerY, of: stackView, priority: .defaultLow)
 

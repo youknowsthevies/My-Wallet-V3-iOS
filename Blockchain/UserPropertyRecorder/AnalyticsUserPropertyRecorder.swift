@@ -8,22 +8,22 @@ import ToolKit
 
 /// Records user properties using external analytics client
 final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
-        
+
     // MARK: - Types
-    
+
     struct UserPropertyErrorEvent: AnalyticsEvent {
         let name = "user_property_format_error"
         let params: [String : String]?
     }
-    
+
     // MARK: - Properties
-    
+
     private let logger: Logger
     private let validator: AnalyticsUserPropertyValidator
     private let analyticsRecorder: AnalyticsEventRecording
-    
+
     // MARK: - Setup
-    
+
     init(validator: AnalyticsUserPropertyValidator = AnalyticsUserPropertyValidator(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          logger: Logger = .shared) {
@@ -31,13 +31,13 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
         self.analyticsRecorder = analyticsRecorder
         self.logger = logger
     }
-    
+
     // MARK: - API
-    
+
     func record(id: String) {
         Analytics.setUserID(id.sha256)
     }
-    
+
     /// Records a standard user property
     func record(_ property: StandardUserProperty) {
         record(property: property)
@@ -47,9 +47,9 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
     func record(_ property: HashedUserProperty) {
         record(property: property)
     }
-    
+
     // MARK: - Accessors
-    
+
     private func record(property: UserProperty) {
         let name = property.key.rawValue
         let value: String

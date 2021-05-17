@@ -4,7 +4,7 @@ import Foundation
 
 public protocol DataRepresentable: Hashable {
     var data: Data { get }
-    
+
     init(data: Data) throws
 }
 

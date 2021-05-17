@@ -12,9 +12,9 @@ enum SettingsSectionType: Int, Equatable {
     case banks = 5
     case cards = 6
     case about = 7
-    
+
     enum CellType: Equatable, IdentifiableType {
-        
+
         var identity: AnyHashable {
             switch self {
             case .badge(let type, _):
@@ -31,7 +31,7 @@ enum SettingsSectionType: Int, Equatable {
                 return type.rawValue
             }
         }
-        
+
         static func == (lhs: SettingsSectionType.CellType, rhs: SettingsSectionType.CellType) -> Bool {
             switch (lhs, rhs) {
             case (.badge(let left, _), .badge(let right, _)):
@@ -50,14 +50,14 @@ enum SettingsSectionType: Int, Equatable {
                 return false
             }
         }
-        
+
         case badge(BadgeCellType, BadgeCellPresenting)
         case `switch`(SwitchCellType, SwitchCellPresenting)
         case clipboard(ClipboardCellType)
         case cards(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, LinkedCardCellPresenter>)
         case banks(LinkedPaymentMethodCellType<AddPaymentMethodCellPresenter, BeneficiaryLinkedBankViewModel>)
         case plain(PlainCellType)
-        
+
         enum BadgeCellType: String {
             case limits
             case emailVerification
@@ -66,7 +66,7 @@ enum SettingsSectionType: Int, Equatable {
             case pitConnection
             case recoveryPhrase
         }
-        
+
         enum SwitchCellType: String {
             case cloudBackup
             case sms2FA
@@ -75,7 +75,7 @@ enum SettingsSectionType: Int, Equatable {
             case bioAuthentication
             case swipeToReceive
         }
-        
+
         enum ClipboardCellType: String {
             case walletID
         }
@@ -93,11 +93,11 @@ enum SettingsSectionType: Int, Equatable {
                     return presenter.identity
                 }
             }
-            
+
             case skeleton(Int)
             case linked(LinkedCellPresenter)
             case add(AddNewCellPresenter)
-            
+
             static func == (lhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>,
                             rhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>) -> Bool {
                 switch (lhs, rhs) {
@@ -112,7 +112,7 @@ enum SettingsSectionType: Int, Equatable {
                 }
             }
         }
-        
+
         enum PlainCellType: String {
             case loginToWebWallet
             case changePassword

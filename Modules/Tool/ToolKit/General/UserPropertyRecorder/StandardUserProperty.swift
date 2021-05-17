@@ -3,11 +3,11 @@
 import Foundation
 
 /// Can be used to keep any key-value that doesn't require obfuscation
-public struct StandardUserProperty: UserProperty {    
+public struct StandardUserProperty: UserProperty {
     public let key: UserPropertyKey
     public let value: String
     public let truncatesValueIfNeeded: Bool
-    
+
     public init(key: Key, value: String, truncatesValueIfNeeded: Bool = false) {
         self.key = key
         self.value = value
@@ -19,14 +19,14 @@ extension StandardUserProperty: Hashable {
     public static func == (lhs: StandardUserProperty, rhs: StandardUserProperty) -> Bool {
         lhs.key.rawValue == rhs.key.rawValue
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(key.rawValue)
     }
 }
 
 extension StandardUserProperty {
-    
+
     /// A key for which a hashed user property is being recorded
     public enum Key: String, UserPropertyKey {
         case walletCreationDate = "creation_date"

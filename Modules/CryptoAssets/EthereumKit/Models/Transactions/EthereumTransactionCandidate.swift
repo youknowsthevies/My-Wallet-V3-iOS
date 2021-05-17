@@ -13,7 +13,7 @@ public struct EthereumTransactionCandidate: Equatable {
     public let value: BigUInt
     public let data: Data?
     public let transferType: TransferType
-    
+
     public init(to: EthereumAddress,
                 gasPrice: BigUInt,
                 gasLimit: BigUInt,

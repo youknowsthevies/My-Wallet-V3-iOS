@@ -14,16 +14,16 @@ public protocol SavingAccountServiceAPI: AnyObject, SavingsOverviewAPI {
 }
 
 class SavingAccountService: SavingAccountServiceAPI {
-    
+
     // MARK: - Properties
-    
+
     var balances: Single<CustodialAccountBalanceStates> {
         _ = setup
         return cachedValue.valueSingle
     }
 
     // MARK: - Private Properties
-    
+
     private let client: SavingsAccountClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
@@ -35,7 +35,7 @@ class SavingAccountService: SavingAccountServiceAPI {
                 .map { CustodialAccountBalanceStates(response: $0) }
         }
     }()
-    
+
     // MARK: - Setup
 
     init(client: SavingsAccountClientAPI = resolve(),
@@ -48,7 +48,7 @@ class SavingAccountService: SavingAccountServiceAPI {
     }
 
     // MARK: - Methods
-    
+
     func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?> {
         fiatCurrencyService
             .fiatCurrency
@@ -57,7 +57,7 @@ class SavingAccountService: SavingAccountServiceAPI {
             }
             .map { $0[currency] }
     }
-    
+
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>> {
         fetchBalancesResponse()
             .map { (response) -> ValueCalculationState<SavingsAccountBalanceDetails> in
@@ -94,7 +94,7 @@ class SavingAccountService: SavingAccountServiceAPI {
         _ = setup
         return cachedValue.fetchValue
     }
-    
+
     func rate(for currency: CryptoCurrency) -> Single<Double> {
         client.rate(for: currency.rawValue)
             .map { $0.rate }

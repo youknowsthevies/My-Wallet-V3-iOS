@@ -10,9 +10,9 @@ import ToolKit
 
 /// Kyc airdrop announcement is a periodic announcement that introduces the user to airdrop verification
 final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.KycAirdrop.ctaButton
@@ -45,7 +45,7 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
             }
         )
     }
-    
+
     var shouldShow: Bool {
         guard isKycSupported else {
             return false
@@ -55,23 +55,23 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.kycAirdrop
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
-    
+
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
     private let canCompleteTier2: Bool
     private let isKycSupported: Bool
 
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(canCompleteTier2: Bool,
          isKycSupported: Bool,
          cacheSuite: CacheSuite = resolve(),

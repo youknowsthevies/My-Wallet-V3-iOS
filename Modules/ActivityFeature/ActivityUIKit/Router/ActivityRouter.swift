@@ -10,13 +10,13 @@ import RxSwift
 import SafariServices
 
 final class ActivityRouter: ActivityRouterAPI {
-    
+
     private let serviceContainer: ActivityServiceContaining
     private let transactionDetailService: TransactionDetailServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private var router: AccountPickerRouting!
-    
+
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          container: ActivityServiceContaining = resolve(),
@@ -58,7 +58,7 @@ final class ActivityRouter: ActivityRouterAPI {
         )
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
     }
-    
+
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent) {
         guard
             let urlString = transactionDetailService.transactionDetailURL(for: event.identifier, cryptoCurrency: event.currency),
@@ -72,7 +72,7 @@ final class ActivityRouter: ActivityRouterAPI {
             completion: nil
         )
     }
-    
+
     func showActivityShareSheet(_ event: ActivityItemEvent) {
         let viewModel = ActivityMessageViewModel(
             event: event
@@ -88,14 +88,14 @@ final class ActivityRouter: ActivityRouterAPI {
             )
         )
         view.viewModel = model
-        
+
         guard let image = view.imageRepresentation else { return }
         guard let root = navigationRouter.topMostViewControllerProvider.topMostViewController else { return }
         let controller = UIActivityViewController(
             activityItems: [ImageActivityItemSource(image: image)],
             applicationActivities: nil
         )
-        
+
         root.present(controller, animated: true, completion: nil)
     }
 }

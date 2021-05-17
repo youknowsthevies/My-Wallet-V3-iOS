@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 protocol OrderQuoteServiceAPI: AnyObject {
-    
+
     // TODO: Domain Model
     var latestQuote: Single<OrderQuoteResponse> { get }
 
@@ -16,25 +16,25 @@ protocol OrderQuoteServiceAPI: AnyObject {
 }
 
 final class OrderQuoteService: OrderQuoteServiceAPI {
-    
+
     // MARK: - Public Properties
-    
+
     var latestQuote: Single<OrderQuoteResponse> {
         unimplemented()
     }
-    
+
     // MARK: - Properties
-    
+
     private let client: CustodialQuoteAPI
-    
+
     // MARK: - Setup
-    
+
     init(client: CustodialQuoteAPI = resolve()) {
         self.client = client
     }
-    
+
     // MARK: - OrderQuoteServiceAPI
-    
+
     func fetchQuote(direction: OrderDirection,
                     sourceCurrencyType: CurrencyType,
                     destinationCurrencyType: CurrencyType) -> Single<OrderQuoteResponse> {
@@ -48,5 +48,5 @@ final class OrderQuoteService: OrderQuoteServiceAPI {
         )
         return client.fetchQuoteResponse(with: request)
     }
-    
+
 }

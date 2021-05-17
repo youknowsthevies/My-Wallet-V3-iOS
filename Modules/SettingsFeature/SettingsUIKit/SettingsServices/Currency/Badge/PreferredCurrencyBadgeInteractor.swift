@@ -8,7 +8,7 @@ import RxSwift
 final class PreferredCurrencyBadgeInteractor: DefaultBadgeAssetInteractor {
 
     // MARK: - Setup
-    
+
     init(settingsService: SettingsServiceAPI,
          fiatCurrencyService: FiatCurrencySettingsServiceAPI) {
         super.init()

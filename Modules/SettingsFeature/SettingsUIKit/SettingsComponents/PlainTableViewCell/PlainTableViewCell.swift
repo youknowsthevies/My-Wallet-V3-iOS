@@ -6,7 +6,7 @@ struct PlainCellViewModel {
     let title: String
     let accessibilityID: String
     let titleAccessibilityID: String
-    
+
     init(title: String,
          accessibilityID: String,
          titleAccessibilityID: String) {
@@ -17,11 +17,11 @@ struct PlainCellViewModel {
 }
 
 final class PlainTableViewCell: UITableViewCell {
-    
+
     // MARK: - Model
-    
+
     typealias ViewModel = PlainCellViewModel
-    
+
     var viewModel: ViewModel! {
         didSet {
             titleLabel.text = viewModel.title
@@ -29,13 +29,13 @@ final class PlainTableViewCell: UITableViewCell {
             accessibility = .id(viewModel.accessibilityID)
         }
     }
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var titleLabel: UILabel!
-    
+
     // MARK: - Lifecycle
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         titleLabel.textColor = .titleText

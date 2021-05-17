@@ -22,17 +22,17 @@ final class TierLimitsBadgeInteractor: DefaultBadgeAssetInteractor {
 }
 
 fileprivate extension KYC.UserTiers {
-    
+
     var interactionModel: BadgeAsset.State.BadgeItem.Interaction {
         // TODO: Update with correct copy + Localization
         let locked: BadgeAsset.State.BadgeItem.Interaction = .loaded(next: .locked)
-        
+
         guard tiers.count > 0 else { return locked }
         guard let tier1 = tiers.filter({ $0.tier == .tier1 }).first else { return locked }
         guard let tier2 = tiers.filter({ $0.tier == .tier2 }).first else { return locked }
-        
+
         let currentTier = tier2.state != .none ? tier2 : tier1
-        
+
         switch currentTier.state {
         case .none:
             return .loaded(

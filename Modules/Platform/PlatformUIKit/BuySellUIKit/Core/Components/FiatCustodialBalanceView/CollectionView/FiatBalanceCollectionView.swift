@@ -8,7 +8,7 @@ import UIKit
 final class FiatBalanceCollectionView: UICollectionView {
 
     // MARK: - Injected
-   
+
     public var presenter: FiatBalanceCollectionViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -42,11 +42,11 @@ final class FiatBalanceCollectionView: UICollectionView {
         flow.sectionInset = .zero
         return flow
     }()
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
-   
+
     // MARK: - Lifecycle
 
     public init() {
@@ -57,7 +57,7 @@ final class FiatBalanceCollectionView: UICollectionView {
         contentInsetAdjustmentBehavior = .never
         register(FiatCustodialBalanceCollectionViewCell.self)
     }
-    
+
     @available(*, unavailable)
     public required init?(coder: NSCoder) { nil }
 }

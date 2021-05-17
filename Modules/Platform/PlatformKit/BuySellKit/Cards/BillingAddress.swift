@@ -8,7 +8,7 @@ public struct BillingAddress {
     public let city: String
     public let state: String
     public let postCode: String
-    
+
     public init?(country: Country,
                  fullName: String?,
                  addressLine1: String?,
@@ -22,7 +22,7 @@ public struct BillingAddress {
               let postCode = postCode else {
             return nil
         }
-                
+
         /// Countries that have state subdomain require `state` to be initialized
         if country.hasStatesSubdomain {
             guard let state = state else { return nil }
@@ -30,7 +30,7 @@ public struct BillingAddress {
         } else {
             self.state = ""
         }
-        
+
         self.country = country
         self.fullName = fullName
         self.addressLine1 = addressLine1
@@ -43,7 +43,7 @@ public struct BillingAddress {
 // MARK: - Network Bridge
 
 extension BillingAddress {
-    
+
     init?(response: CardPayload.BillingAddress?) {
         guard let response = response else { return nil }
         guard let country = Country(code: response.country) else {
@@ -57,7 +57,7 @@ extension BillingAddress {
         addressLine2 = response.line2 ?? ""
         fullName = ""
     }
-    
+
     var requestPayload: CardPayload.BillingAddress {
         CardPayload.BillingAddress(
             line1: addressLine1,

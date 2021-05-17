@@ -7,7 +7,7 @@ public struct EthereumWalletAccount: WalletAccount, Codable {
     public let publicKey: String
     public var label: String?
     public var archived: Bool
-    
+
     public init(index: Int,
                 publicKey: String,
                 label: String?,
@@ -22,7 +22,7 @@ public struct EthereumWalletAccount: WalletAccount, Codable {
 public struct LegacyEthereumWalletAccount: Codable {
     public let addr: String
     public let label: String
-    
+
     public init(addr: String, label: String) {
         self.addr = addr
         self.label = label

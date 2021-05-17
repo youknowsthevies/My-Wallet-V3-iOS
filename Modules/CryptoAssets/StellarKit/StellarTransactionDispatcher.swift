@@ -150,7 +150,7 @@ final class StellarTransactionDispatcher {
 
     private func submitTransaction(transaction: StellarTransaction,
                                    with configuration: StellarConfiguration) -> Single<TransactionPostResponseEnum> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
+        Single.create(weak: self) { (_, observer) -> Disposable in
             do {
                 try configuration.sdk.transactions
                     .submitTransaction(transaction: transaction) { response in

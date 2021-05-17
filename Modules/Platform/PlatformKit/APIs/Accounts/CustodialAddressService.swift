@@ -8,15 +8,15 @@ public protocol CustodialAddressServiceAPI {
 }
 
 final class CustodialAddressService: CustodialAddressServiceAPI {
-    
+
     private let client: CustodialPaymentAccountClientAPI
-    
+
     // MARK: - Setup
 
     init(client: CustodialPaymentAccountClientAPI = resolve()) {
         self.client = client
     }
-    
+
     func receiveAddress(for cryptoCurrency: CryptoCurrency) -> Single<String> {
         client.custodialPaymentAccount(for: cryptoCurrency)
             .map(\.account)

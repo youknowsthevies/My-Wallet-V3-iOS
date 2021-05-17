@@ -11,7 +11,7 @@ public extension DependencyContainer {
         factory { PITConnectionStatusProvider() as PITConnectionStatusProviding }
 
         factory { TierLimitsProvider() as TierLimitsProviding }
-        
+
     }
 
 }

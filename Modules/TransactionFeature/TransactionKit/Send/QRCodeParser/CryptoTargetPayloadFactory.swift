@@ -5,25 +5,25 @@ import PlatformKit
 import RxSwift
 
 final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
-    
+
     // MARK: - Enums
-    
+
     private enum CryptoTargetPayloadError: Error {
         case invalidStringData
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let assetPayloadFactory: AssetURLPayloadFactoryAPI
-    
+
     // MARK: - Init
-    
+
     init(assetPayloadFactory: AssetURLPayloadFactoryAPI = resolve()) {
         self.assetPayloadFactory = assetPayloadFactory
     }
-    
+
     // MARK: - CryptoTargetPayloadFactoryAPI
-    
+
     func create(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
         guard let data = string else { return .error(CryptoTargetPayloadError.invalidStringData) }
         let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
@@ -51,12 +51,12 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
                 case .invalidBitPayURL:
                     return metadata
                 }
-                
+
             }
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func makeCryptoQRMetaData(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             guard let metadata = self.assetPayloadFactory.create(fromString: string, asset: asset) else {

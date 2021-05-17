@@ -13,11 +13,11 @@ public protocol SwapRootViewControllable: ViewControllable {
 }
 
 extension SwapRootViewControllable {
-    
+
     func replaceRoot(viewController: ViewControllable?) {
         replaceRoot(viewController: viewController, animated: true)
     }
-    
+
     func present(viewController: ViewControllable?) {
         present(viewController: viewController, animated: true)
     }

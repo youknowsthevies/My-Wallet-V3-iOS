@@ -6,9 +6,9 @@ import UIComponentsKit
 
 /// Entry point to the Email Verification flow
 struct EmailVerificationView: View {
-    
+
     let store: Store<EmailVerificationState, EmailVerificationAction>
-    
+
     var body: some View {
         NavigationView {
             WithViewStore(store) { viewStore in
@@ -23,7 +23,7 @@ struct EmailVerificationView: View {
                         isActive: .constant(viewStore.flowStep == .emailVerificationHelp || viewStore.flowStep == .editEmailAddress),
                         label: EmptyView.init
                     )
-                    
+
                     // Root View when loading Email Verification Status
                     if viewStore.flowStep == .loadingVerificationState || viewStore.flowStep == .verificationCheckFailed {
                         ActivityIndicatorView()
@@ -59,10 +59,10 @@ struct EmailVerificationView: View {
 }
 
 struct EmailVerificationHelpRoutingView: View {
-    
+
     let canShowEditAddressView: Bool
     let store: Store<EmailVerificationState, EmailVerificationAction>
-    
+
     var body: some View {
         VStack {
             NavigationLink(

@@ -178,7 +178,7 @@ extension CryptoCurrency {
     public var displaySymbol: String { displayCode }
 
     public var code: String { rawValue }
-        
+
     public var displayCode: String {
         switch self {
         case .aave,
@@ -239,7 +239,7 @@ extension CryptoCurrency {
             return 10
         }
     }
-    
+
     /// Returns `true` for any ERC20 asset
     public var isERC20: Bool {
         switch self {

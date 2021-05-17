@@ -4,7 +4,7 @@ import Charts
 import PlatformKit
 
 extension LoadingState where Content == PieChartData {
-    
+
     /// Initializer that receives the interaction state and
     /// maps it to `self`
     init(with state: LoadingState<[AssetPieChart.Value.Interaction]>) {

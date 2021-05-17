@@ -9,7 +9,7 @@ public struct FeeSelection: Equatable {
     public var customLevelRates: FeeLevelRates?
     public var feeState: FeeState?
     public var asset: CurrencyType?
-    
+
     public init(selectedLevel: FeeLevel,
                 availableLevels: Set<FeeLevel>,
                 asset: CurrencyType? = nil) {
@@ -17,7 +17,7 @@ public struct FeeSelection: Equatable {
         self.availableLevels = availableLevels
         self.asset = asset
     }
-    
+
     public func update(customAmount: MoneyValue?, selectedLevel: FeeLevel) -> FeeSelection {
         precondition(availableLevels.contains(selectedLevel))
         var copy = self
@@ -32,7 +32,7 @@ public struct FeeSelection: Equatable {
         copy.selectedLevel = selectedLevel
         return copy
     }
-    
+
     public func update(availableFeeLevels: Set<FeeLevel>) -> FeeSelection {
         var copy = self
         copy.availableLevels = availableFeeLevels

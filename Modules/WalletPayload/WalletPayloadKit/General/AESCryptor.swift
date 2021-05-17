@@ -3,11 +3,11 @@
 import CryptoSwift
 
 struct AESOptions {
-    
+
     enum BlockMode {
         case CBC
         case OFB
-        
+
         fileprivate func cryptoSwiftBlockMode(iv: [UInt8]) -> CryptoSwift.BlockMode {
             switch self {
             case .CBC:
@@ -17,12 +17,12 @@ struct AESOptions {
             }
         }
     }
-    
+
     enum Padding {
         case iso10126
         case iso78164
         case noPadding
-        
+
         fileprivate var cryptoSwiftPadding: CryptoSwift.Padding {
             switch self {
             case .iso10126:
@@ -34,12 +34,12 @@ struct AESOptions {
             }
         }
     }
-    
+
     static let `default` = AESOptions(
         blockMode: .CBC,
         padding: .iso10126
     )
-    
+
     let blockMode: BlockMode
     let padding: Padding
 }
@@ -51,21 +51,21 @@ enum AESCryptorError: Error {
 }
 
 protocol AESCryptorAPI {
-    
+
     func decryptUTF8String(
         data payloadData: Data,
         with keyData: Data,
         iv ivData: Data,
         options: AESOptions
     ) -> Result<String, AESCryptorError>
-    
+
     func decrypt(
         data payloadData: Data,
         with keyData: Data,
         iv ivData: Data,
         options: AESOptions
     ) -> Result<[UInt8], AESCryptorError>
-    
+
     func encrypt(
         data payloadData: Data,
         with keyData: Data,
@@ -75,7 +75,7 @@ protocol AESCryptorAPI {
 }
 
 extension AESCryptorAPI {
-    
+
     func decryptUTF8String(
         data payloadData: Data,
         with keyData: Data,
@@ -88,7 +88,7 @@ extension AESCryptorAPI {
             options: .default
         )
     }
-    
+
     func decrypt(
         data payloadData: Data,
         with keyData: Data,
@@ -101,7 +101,7 @@ extension AESCryptorAPI {
             options: .default
         )
     }
-    
+
     func encrypt(
         data payloadData: Data,
         with keyData: Data,
@@ -117,7 +117,7 @@ extension AESCryptorAPI {
 }
 
 final class AESCryptor: AESCryptorAPI {
-    
+
     func decryptUTF8String(
         data payloadData: Data,
         with keyData: Data,
@@ -133,7 +133,7 @@ final class AESCryptor: AESCryptorAPI {
                 return .success(decryptedString)
             }
     }
-    
+
     func decrypt(
         data payloadData: Data,
         with keyData: Data,
@@ -152,7 +152,7 @@ final class AESCryptor: AESCryptorAPI {
                     .mapError(AESCryptorError.decryption)
             }
     }
-    
+
     func encrypt(
         data payloadData: Data,
         with keyData: Data,

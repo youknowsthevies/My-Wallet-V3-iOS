@@ -13,11 +13,11 @@ public extension AnalyticsEvent {
     var type: AnalyticsEventType {
         .old
     }
-    
+
     var timestamp: Date? {
         nil
     }
-    
+
     var params: [String: String]? {
         nil
     }

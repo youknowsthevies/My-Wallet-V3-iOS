@@ -32,10 +32,10 @@ final class WalletNabuSynchronizerService: WalletNabuSynchronizerServiceAPI {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private let jwtService: JWTServiceAPI
     private let updateUserInformationClient: UpdateWalletInformationClientAPI
-    
+
     init(jwtService: JWTServiceAPI = resolve(),
          updateUserInformationClient: UpdateWalletInformationClientAPI = resolve()) {
         self.jwtService = jwtService

@@ -3,7 +3,7 @@
 import PlatformKit
 
 extension Country {
-    
+
     // MARK: - Flag (As Emoji Unicode Representation)
     public var flag: String {
         let base : UInt32 = 127397

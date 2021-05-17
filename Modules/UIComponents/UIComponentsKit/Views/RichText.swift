@@ -5,19 +5,19 @@ import SwiftUI
 /// A view that is able to render styled text.
 /// This view currently supports only **bold** text.
 public struct RichText: View {
-    
+
     fileprivate struct Element {
         struct Style: OptionSet {
             let rawValue: Int
-            
+
             static let plain = Style(rawValue: 1 << 0)
             static let bold = Style(rawValue: 1 << 1)
             static let italic = Style(rawValue: 1 << 2)
         }
-        
+
         let content: String
         let style: Style
-        
+
         var textView: Text {
             var view = Text(content)
             if style.contains(.bold) {
@@ -29,13 +29,13 @@ public struct RichText: View {
             return view
         }
     }
-    
+
     private let elements: [Element]
-    
+
     init(_ content: String) {
         elements = content.elements
     }
-    
+
     public var body: some View {
         elements
             .map(\.textView)
@@ -44,11 +44,11 @@ public struct RichText: View {
 }
 
 extension String {
-    
+
     struct Markup {
         static let marks: Set<Character> = ["*", "_"]
     }
-    
+
     fileprivate func parseStyle(
         from fromIndex: String.Index,
         to toIndex: String.Index,
@@ -61,11 +61,11 @@ extension String {
         let foundStyle: RichText.Element.Style = isNextCharacterSameMark ? .bold : .italic
         return stylesQueue.count > 1 ? [stylesQueue.first!, foundStyle] : foundStyle
     }
-    
+
     fileprivate var elements: [RichText.Element] {
         var results: [RichText.Element] = [], stylesQueue: [RichText.Element.Style] = []
         var substringStart = startIndex, current = startIndex
-        
+
         func appendSubstringToResults(popStyle: Bool) {
             // append results of characters from substringStart up to, but not including, current
             let style: RichText.Element.Style
@@ -77,7 +77,7 @@ extension String {
             let substring = String(self[substringStart ..< current])
             results.append(.init(content: substring, style: style))
         }
-        
+
         while current < endIndex {
             if Markup.marks.contains(self[current]) {
                 let isNextCharacterSameMark = current < index(before: endIndex) && self[current] == self[index(after: current)]
@@ -96,7 +96,7 @@ extension String {
                 } else {
                     appendSubstringToResults(popStyle: true)
                 }
-                
+
                 // move pointers forward
                 current = index(current, offsetBy: isNextCharacterSameMark ? 2 : 1)
                 substringStart = current

@@ -3,7 +3,7 @@
 import RxSwift
 
 public protocol FiatCurrencySettingsServiceAPI: FiatCurrencyServiceAPI {
-        
+
     /// Updates the fiat currency associated with the wallet
     /// - Parameter currency: The new fiat currency
     /// - Parameter context: The context in which the request has happened

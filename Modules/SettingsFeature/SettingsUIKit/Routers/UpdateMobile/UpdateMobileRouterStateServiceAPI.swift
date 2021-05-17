@@ -5,7 +5,7 @@ import RxRelay
 import RxSwift
 
 protocol UpdateMobileStateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<UpdateMobileRouterStateService.Action> { get }

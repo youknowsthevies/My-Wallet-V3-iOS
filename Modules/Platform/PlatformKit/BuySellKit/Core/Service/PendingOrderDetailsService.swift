@@ -11,7 +11,7 @@ public protocol PendingOrderDetailsServiceAPI: class {
 }
 
 final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
-        
+
     var pendingOrderDetails: Single<OrderDetails?> {
         ordersService.fetchOrders()
             .map { orders in
@@ -21,7 +21,7 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
             }
             .map { $0.first }
     }
-    
+
     var pendingActionOrderDetails: Single<OrderDetails?> {
         ordersService.fetchOrders()
             .map { orders in
@@ -31,20 +31,20 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
             }
             .map { $0.first }
     }
-    
+
     // MARK: - Injected
-    
+
     private let ordersService: OrdersServiceAPI
     private let cancallationService: OrderCancellationServiceAPI
-    
+
     // MARK: - Setup
-    
+
     init(ordersService: OrdersServiceAPI = resolve(),
          cancallationService: OrderCancellationServiceAPI = resolve()) {
         self.ordersService = ordersService
         self.cancallationService = cancallationService
     }
-    
+
     func cancel() -> Completable {
         pendingOrderDetails
             .flatMapCompletable(weak: self) { (self, details) -> Completable in

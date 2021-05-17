@@ -4,7 +4,7 @@ import PlatformKit
 
 public struct StellarPrivateKey {
     public var secret: String
-    
+
     public init(secret: String) {
         self.secret = secret
     }

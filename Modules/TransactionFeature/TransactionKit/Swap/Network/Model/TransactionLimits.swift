@@ -24,7 +24,7 @@ public struct TransactionLimits: Decodable {
         case weekly
         case annual
     }
-    
+
     struct Limit: Decodable {
         let limit: String
         let available: String
@@ -35,7 +35,7 @@ public struct TransactionLimits: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         currency = try values.decode(FiatCurrency.self, forKey: .currency)
         let zero = FiatValue.zero(currency: currency)
-        
+
         minOrder = FiatValue.create(
             minor: try values.decode(String.self, forKey: .minOrder),
             currency: currency
@@ -48,7 +48,7 @@ public struct TransactionLimits: Decodable {
             minor: try values.decode(String.self, forKey: .maxOrder),
             currency: currency
         ) ?? zero
-        
+
         if let daily = try values.decodeIfPresent(Limit.self, forKey: .daily) {
             self.daily = .init(fiatCurrency: currency, limit: daily)
         } else {

@@ -3,32 +3,32 @@
 import PlatformUIKit
 
 public final class InterestDashboardAnnouncementViewController: UIViewController {
-    
+
     private let tableView = SelfSizingTableView()
     private let presenter: InterestDashboardAnnouncementPresenting
-    
+
     public init(presenter: InterestDashboardAnnouncementPresenting) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     public override func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         tableView.reloadData()
     }
-    
+
     private func setupTableView() {
         view.addSubview(tableView)
         tableView.layoutToSuperview(axis: .horizontal, usesSafeAreaLayoutGuide: true)
@@ -54,7 +54,7 @@ extension InterestDashboardAnnouncementViewController: UITableViewDelegate, UITa
                           numberOfRowsInSection section: Int) -> Int {
         presenter.cellCount
     }
-    
+
     public func tableView(_ tableView: UITableView,
                           cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
@@ -73,37 +73,36 @@ extension InterestDashboardAnnouncementViewController: UITableViewDelegate, UITa
         }
         return cell
     }
-        
+
     // MARK: - Accessors
-    
+
     private func announcement(for indexPath: IndexPath, viewModel: AnnouncementCardViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(AnnouncementTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func numberedCell(for indexPath: IndexPath, viewModel: BadgeNumberedItemViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(BadgeNumberedTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func lineItemCell(for indexPath: IndexPath, presenter: LineItemCellPresenting) -> UITableViewCell {
         let cell = tableView.dequeue(LineItemTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
-    
+
     private func footerCell(for indexPath: IndexPath, presenter: FooterTableViewCellPresenter) -> FooterTableViewCell {
         let cell = tableView.dequeue(FooterTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
-    
+
     private func buttonsCell(for indexPath: IndexPath, buttons: [ButtonViewModel]) -> UITableViewCell {
         let cell = tableView.dequeue(ButtonsTableViewCell.self, for: indexPath)
         cell.models = buttons
         return cell
     }
 }
-

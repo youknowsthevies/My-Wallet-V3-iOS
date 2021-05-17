@@ -3,7 +3,7 @@
 import PlatformUIKit
 
 struct AirdropStatusCellData {
-    
+
     struct CellContent {
         let text: String
         let accessibility: Accessibility
@@ -14,12 +14,12 @@ struct AirdropStatusCellData {
 }
 
 final class AirdropStatusCellPresenter {
-    
+
     // MARK: - Properties
-    
+
     let title: LabelContent
     let value: LabelContent
-    
+
     init(data: AirdropStatusCellData) {
         title = LabelContent(
             text: data.title.text,

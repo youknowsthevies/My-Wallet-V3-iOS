@@ -6,24 +6,24 @@ import RIBs
 import RxSwift
 
 final class PendingCardStatusInteractor: Interactor {
-    
+
     // MARK: - Types
-    
+
     enum State {
         case active(CardData)
         case inactive
         case timeout
     }
-    
+
     // MARK: - Properties
-        
+
     private let cardId: String
     private let activationService: CardActivationServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let routingInteractor: CardRouterInteractor
 
     // MARK: - Setup
-    
+
     init(cardId: String,
          activationService: CardActivationServiceAPI = resolve(),
          paymentMethodTypesService: PaymentMethodTypesServiceAPI,
@@ -33,7 +33,7 @@ final class PendingCardStatusInteractor: Interactor {
         self.activationService = activationService
         self.paymentMethodTypesService = paymentMethodTypesService
     }
-    
+
     func startPolling() -> Single<State> {
         activationService
             .waitForActivation(of: cardId)
@@ -55,13 +55,13 @@ final class PendingCardStatusInteractor: Interactor {
                 }
             }
     }
-    
+
     /// End the polling in confirmation state
     /// - Parameter cardData: The data of the card
     func endWithConfirmation(with cardData: CardData) {
         routingInteractor.end(with: cardData)
     }
-    
+
     /// End the polling without confirmation 
     func endWithoutConfirmation() {
         routingInteractor.dismiss()

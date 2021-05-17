@@ -5,11 +5,11 @@ import PlatformUIKit
 import SafariServices
 
 public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnouncementRouting {
-    
+
     private weak var topMostViewControllerProvider: TopMostViewControllerProviding!
     private let router: KYCRouterAPI
     private let navigationRouterAPI: NavigationRouterAPI
-    
+
     public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
                 routerAPI: KYCRouterAPI = resolve(),
                 navigationRouter: NavigationRouterAPI) {
@@ -17,7 +17,7 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
         self.router = routerAPI
         self.navigationRouterAPI = navigationRouter
     }
-    
+
     public func dismiss(startKYC: Bool) {
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
@@ -25,7 +25,7 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
             self.router.start()
         })
     }
-    
+
     public func visitBlockchainTapped() {
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }

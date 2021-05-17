@@ -7,7 +7,7 @@ import PlatformUIKit
 import XCTest
 
 class QRCodeGeneratorTests: XCTestCase {
-    
+
     var subject: QRCodeGenerator!
 
     override func setUp() {
@@ -25,14 +25,14 @@ class QRCodeGeneratorTests: XCTestCase {
         let image = subject.createQRImage(fromString: testString)
         XCTAssertNotNil(image)
     }
-    
+
     func test_qrcode_from_address() {
         let address = "<ADDRESS>"
         let amount = "12.34"
         let asset: LegacyAssetType = .bitcoin
         let metadata = BitcoinURLPayload(address: address, amount: amount, includeScheme: false)
         var qrCode: QRCodeAPI? = QRCode(metadata: metadata)
-        
+
         let image = subject.qrImage(
             fromAddress: address,
             amount: amount,

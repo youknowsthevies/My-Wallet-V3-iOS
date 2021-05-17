@@ -9,18 +9,18 @@ import SafariServices
 import ToolKit
 
 public final class SellRouter: RIBs.Router<SellRouterInteractor> {
-    
+
     // MARK: - Injected
-    
+
     private let routingType: RoutingType
     private let navigationRouter: NavigationRouterAPI
     private let builder: SellBuilderAPI
     private let kycRouter: KYCRouterAPI
-    
+
     /// A kyc subscription dispose bag
     private var kycDisposeBag = DisposeBag()
     private let disposeBag = DisposeBag()
-    
+
     public init(routingType: RoutingType = .modal,
                 navigationRouter: NavigationRouterAPI = NavigationRouter(),
                 kycRouter: KYCRouterAPI = resolve(),
@@ -31,18 +31,18 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
         self.builder = builder
         super.init(interactor: builder.routerInteractor)
     }
-    
+
     // MARK: - Lifecycle
-    
+
     public override func didLoad() {
         super.didLoad()
-        
+
         // Embed the entire flow in another navigation controller
         // instead of generating one of its own
         if case .embed(inside: let navigationController) = routingType {
             navigationRouter.navigationControllerAPI = navigationController
         }
-        
+
         // Action is a steam of events derived from a pblish relay
         interactor.action
             .emit(weak: self) { (self, action) in
@@ -56,12 +56,12 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         /// TODO: Remove once `AppCoordinator` moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
     }
-    
+
     private func next(to state: SellRouterInteractor.State) {
         switch state {
         case .accountSelector:
@@ -107,7 +107,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             }
         }
     }
-    
+
     private func previous(from state: SellRouterInteractor.State) {
         switch state {
         case .inactive:
@@ -128,16 +128,16 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             navigationRouter.dismiss()
         }
     }
-    
+
     // MARK: - Navigation Accessors
-    
+
     private func showKYC() {
         kycDisposeBag = DisposeBag()
         let stopped = kycRouter.kycStopped
             .take(1)
             .observeOn(MainScheduler.instance)
             .share()
-        
+
         stopped
             .filter { $0 == .tier2 }
             .mapToVoid()
@@ -145,20 +145,20 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
                 self.interactor.nextFromKYC()
             }
             .disposed(by: kycDisposeBag)
-        
+
         stopped
             .filter { $0 != .tier2 }
             .mapToVoid()
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: kycDisposeBag)
-        
+
         kycRouter.start(tier: .tier2)
     }
-    
+
     private func navigateToVerificationFailedScreen() {
         navigationRouter.present(viewController: builder.buySellKYCInvalidViewController())
     }
-    
+
     private func navigateToContactSupportPage() {
         navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
@@ -169,7 +169,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             top.present(controller, animated: true, completion: nil)
         })
     }
-    
+
     private func navigateToIneligibilityPage() {
         navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
@@ -181,24 +181,24 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             top.present(controller, animated: true, completion: nil)
         })
     }
-    
+
     private func navigateToIneligibleScreen() {
         let viewController = builder.ineligibleViewController()
         viewController.transitioningDelegate = sheetPresenter
         viewController.modalPresentationStyle = .custom
         navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
     }
-    
+
     private func navigateToSellIntroductionScreen() {
         let viewController = builder.sellIdentityIntroductionViewController()
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func navigateToPendingScreen(orderDetails: OrderDetails) {
         let viewController = builder.pendingScreenViewController(for: orderDetails)
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private func navigateToTransferCancellation(with data: CheckoutData) {
         let viewController = builder.transferCancellationViewController(data: data)
         navigationRouter.present(viewController: viewController)
@@ -221,12 +221,12 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
         let viewController = builder.sellCryptoViewController(data: data)
         navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
     }
-    
+
     private func navigationToCheckoutScreen(with data: CheckoutData) {
         let viewController = builder.checkoutScreenViewController(data: data)
         navigationRouter.present(viewController: viewController)
     }
-    
+
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: false)
     }()

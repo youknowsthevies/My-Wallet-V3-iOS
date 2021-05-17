@@ -15,13 +15,13 @@ protocol SwitchCellPresenting {
 }
 
 class EmailNotificationsSwitchCellPresenter: SwitchCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.EmailNotifications.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
-    
+
     init(service: EmailNotificationSettingsServiceAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.emailNotifications,
@@ -70,13 +70,13 @@ class SMSTwoFactorSwitchCellPresenter: SwitchCellPresenting {
 }
 
 class BalanceSharingSwitchCellPresenter: SwitchCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.BalanceSharing.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
-    
+
     init(service: BalanceSharingSettingsServiceAPI) {
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.balanceSharing,
@@ -87,13 +87,13 @@ class BalanceSharingSwitchCellPresenter: SwitchCellPresenting {
 }
 
 class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.BioAuthentication.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
-    
+
     init(biometryProviding: BiometryProviding,
          appSettingsAuthenticating: AppSettingsAuthenticating,
          authenticationCoordinator: AuthenticationCoordinating) {
@@ -108,15 +108,15 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
 }
 
 class SwipeReceiveSwitchCellPresenter: SwitchCellPresenting {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-    
+
     let accessibility: Accessibility = .id(AccessibilityId.SwipeToReceive.title)
     let labelContentPresenting: LabelContentPresenting
     let switchViewPresenting: SwitchViewPresenting
-    
+
     init(appSettings: BlockchainSettings.App) {
-        
+
         switchViewPresenting = SwipeReceiveSwitchViewPresenter(appSettings: appSettings)
         labelContentPresenting = DefaultLabelContentPresenter(
             knownValue: LocalizationConstants.Settings.swipeToReceive,

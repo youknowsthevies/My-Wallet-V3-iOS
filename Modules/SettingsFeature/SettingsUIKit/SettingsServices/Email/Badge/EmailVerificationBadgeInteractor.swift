@@ -6,9 +6,9 @@ import RxRelay
 import RxSwift
 
 final class EmailVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
-    
+
     // MARK: - Setup
-    
+
     init(service: SettingsServiceAPI) {
         super.init()
         service

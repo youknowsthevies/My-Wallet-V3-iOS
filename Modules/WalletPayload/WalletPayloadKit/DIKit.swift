@@ -3,17 +3,17 @@
 import DIKit
 
 extension DependencyContainer {
-    
+
     // MARK: - WalletPayloadKit Module
-     
+
     public static var walletPayloadKit = module {
-        
+
         factory { WalletCryptoService() as WalletCryptoServiceAPI }
-        
+
         factory { WalletPayloadCryptor() as WalletPayloadCryptorAPI }
-        
+
         factory { PayloadCrypto() as PayloadCryptoAPI }
-        
+
         factory { AESCryptor() as AESCryptorAPI }
 
         // MARK: Wallet Upgrade

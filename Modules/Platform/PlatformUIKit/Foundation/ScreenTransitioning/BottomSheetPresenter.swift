@@ -5,15 +5,15 @@ import RxRelay
 import RxSwift
 
 public class BottomSheetPresenter: UIPresentationController {
-    
+
     // MARK: Private Lazy Properties
-    
+
     private lazy var tapGesture: UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(onDismissal(_:)))
         tap.cancelsTouchesInView = false
         return tap
     }()
-    
+
     private lazy var roundingView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -21,7 +21,7 @@ public class BottomSheetPresenter: UIPresentationController {
         view.clipsToBounds = true
         return view
     }()
-    
+
     private lazy var dimmingView: UIView = {
         let view = UIView()
         view.backgroundColor = #colorLiteral(red: 0.01, green: 0.07, blue: 0.18, alpha: 1).withAlphaComponent(0.6)
@@ -29,9 +29,9 @@ public class BottomSheetPresenter: UIPresentationController {
         view.alpha = 0
         return view
     }()
-    
+
     // MARK: Init
-    
+
     public init(
         presentedViewController: UIViewController,
         presenting presentingViewController: UIViewController?,
@@ -40,71 +40,71 @@ public class BottomSheetPresenter: UIPresentationController {
         tapGesture.isEnabled = !ignoresBackroundTouches
         dimmingView.addGestureRecognizer(tapGesture)
     }
-    
+
     // MARK: Overrides
-    
+
     public override func containerViewWillLayoutSubviews() {
         super.containerViewWillLayoutSubviews()
         installPresentedViewInCustomViews()
     }
-    
+
     public override func containerViewDidLayoutSubviews() {
         super.containerViewDidLayoutSubviews()
         roundingView.applyRadius(16.0, to: [.topLeft, .topRight])
     }
-    
+
     public override var presentedView: UIView? {
         roundingView
     }
-    
+
     public override func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
-        
+
         installCustomViews()
         installPresentedViewInCustomViews()
         animateDimmingViewIn()
     }
-    
+
     public override func presentationTransitionDidEnd(_ completed: Bool) {
         super.presentationTransitionDidEnd(completed)
         guard completed == false else { return }
         removeCustomViews()
     }
-    
+
     public override func dismissalTransitionWillBegin() {
         super.dismissalTransitionWillBegin()
         animateDimmingViewOut()
     }
-    
+
     public override func dismissalTransitionDidEnd(_ completed: Bool) {
         super.dismissalTransitionDidEnd(completed)
         guard completed == false else { return }
         removeCustomViews()
     }
-    
+
     // MARK: Private Functions
-    
+
     @objc private func onDismissal(_ sender: UITapGestureRecognizer) {
         presentingViewController.dismiss(animated: true, completion: nil)
     }
-    
+
     private func installCustomViews() {
         guard let containerView = containerView else { return }
-        
+
         containerView.addSubview(dimmingView)
         containerView.addSubview(roundingView)
-        
+
         NSLayoutConstraint.activate([
             dimmingView.topAnchor.constraint(equalTo: containerView.topAnchor),
             dimmingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             containerView.bottomAnchor.constraint(equalTo: dimmingView.bottomAnchor),
             containerView.trailingAnchor.constraint(equalTo: dimmingView.trailingAnchor),
-            
+
             roundingView.topAnchor.constraint(greaterThanOrEqualTo: containerView.readableContentGuide.topAnchor),
             roundingView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             containerView.bottomAnchor.constraint(equalTo: roundingView.bottomAnchor),
             containerView.trailingAnchor.constraint(equalTo: roundingView.trailingAnchor), {
-                
+
                 /// Fit to the content size of the `UIViewController` that you are presenting.
                 let minimizingHeight = roundingView.heightAnchor.constraint(equalToConstant: containerView.frame.height)
                 minimizingHeight.priority = .fittingSizeLevel
@@ -113,13 +113,13 @@ public class BottomSheetPresenter: UIPresentationController {
             ]
         )
     }
-    
+
     private func installPresentedViewInCustomViews() {
         guard roundingView.subviews.contains(presentedViewController.view) == false else { return }
-        
+
         presentedViewController.view.translatesAutoresizingMaskIntoConstraints = false
         roundingView.addSubview(presentedViewController.view)
-        
+
         NSLayoutConstraint.activate([
             presentedViewController.view.topAnchor.constraint(equalTo: roundingView.topAnchor),
             presentedViewController.view.leadingAnchor.constraint(equalTo: roundingView.leadingAnchor),
@@ -127,19 +127,19 @@ public class BottomSheetPresenter: UIPresentationController {
             roundingView.trailingAnchor.constraint(equalTo: presentedViewController.view.trailingAnchor)
             ])
     }
-    
+
     private func animateDimmingViewIn() {
-        presentingViewController.transitionCoordinator?.animate(alongsideTransition: { (context) in
+        presentingViewController.transitionCoordinator?.animate(alongsideTransition: { (_) in
             self.dimmingView.alpha = 1
         }, completion: nil)
     }
-    
+
     private func animateDimmingViewOut() {
         presentingViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.dimmingView.alpha = 0
         }, completion: nil)
     }
-    
+
     private func removeCustomViews() {
         roundingView.removeFromSuperview()
         dimmingView.removeFromSuperview()
@@ -147,18 +147,18 @@ public class BottomSheetPresenter: UIPresentationController {
 }
 
 public class BottomSheetPresenting: NSObject, UIViewControllerTransitioningDelegate {
-    
+
     private var ignoresBackroundTouches = false
-    
+
     @objc public override init() {
         super.init()
     }
-    
+
     public init(ignoresBackroundTouches: Bool) {
         self.ignoresBackroundTouches = ignoresBackroundTouches
         super.init()
     }
-    
+
     public func presentationController(
         forPresented presented: UIViewController,
         presenting: UIViewController?,

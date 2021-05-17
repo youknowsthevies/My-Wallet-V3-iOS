@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 
 final class SettingsSectionsProvider {
-        
+
     var states: Observable<SettingSectionsLoadingStates> {
         Observable
         .combineLatest(
@@ -29,22 +29,22 @@ final class SettingsSectionsProvider {
         }
         .share()
     }
-    
+
     var sections: Observable<[SettingsSectionViewModel]> {
         states
             .map { $0.all }
             .map { $0.compactMap { $0.value } }
             .map { $0.compactMap { $0.viewModel } }
             .map { $0.sorted(by: { $0.sectionType.rawValue < $1.sectionType.rawValue }) }
-        
+
     }
-    
+
     private var all: [SettingsSectionPresenting] {
         Array(presenters.values)
     }
-    
+
     private var presenters: [SettingsSectionType: SettingsSectionPresenting] = [:]
-    
+
     init(about: SettingsSectionPresenting,
          connect: SettingsSectionPresenting,
          banks: SettingsSectionPresenting,

@@ -8,12 +8,12 @@ import RxRelay
 import RxSwift
 
 final class PasswordRequiredScreenPresenter {
-    
+
     /// Typealias to lessen verbosity
     private typealias LocalizedString = LocalizationConstants.Onboarding.PasswordRequiredScreen
-        
+
     // MARK: - Exposed Properties
-    
+
     let navBarStyle = Screen.Style.Bar.lightContent()
     let titleStyle = Screen.Style.TitleView.text(value: LocalizedString.title)
     let description = LocalizedString.description
@@ -29,33 +29,33 @@ final class PasswordRequiredScreenPresenter {
     let forgotPasswordButtonViewModel = ButtonViewModel.secondary(
         with: LocalizedString.forgotButton
     )
-    
+
     let forgetWalletButtonViewModel = ButtonViewModel.destructive(
         with: LocalizedString.forgetWalletButton
     )
-    
+
     /// The total state of the presentation
     var state: Driver<FormPresentationState> {
         stateRelay.asDriver()
     }
-    
+
     // MARK: - Injected
-    
+
     private let loadingViewPresenter: LoadingViewPresenting
     private let launchAnnouncementPresenter: LaunchAnnouncementPresenter
     private let interactor: PasswordRequiredScreenInteractor
     private let alertPresenter: AlertViewPresenter
     private unowned let onboardingRouter: OnboardingRouter
-    
+
     // MARK: - Private Properties
-    
+
     private let stateReducer = FormPresentationStateReducer()
     private let stateRelay = BehaviorRelay<FormPresentationState>(value: .invalid(.emptyTextField))
-            
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(loadingViewPresenter: LoadingViewPresenting = resolve(),
          onboardingRouter: OnboardingRouter = AppCoordinator.shared.onboardingRouter,
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
@@ -66,7 +66,7 @@ final class PasswordRequiredScreenPresenter {
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
         self.interactor = interactor
-                    
+
         let stateObservable = passwordTextFieldViewModel.state
             .map(weak: self) { (self, payload) -> FormPresentationState in
                 try self.stateReducer.reduce(states: [payload])
@@ -74,46 +74,46 @@ final class PasswordRequiredScreenPresenter {
             /// Should never get to `catchErrorJustReturn`.
             .catchErrorJustReturn(.invalid(.invalidTextField))
             .share(replay: 1)
-            
+
         stateObservable
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         stateObservable
             .map { $0.isValid }
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         passwordTextFieldViewModel.state
             .compactMap { $0.value }
             .bindAndCatch(to: interactor.passwordRelay)
             .disposed(by: disposeBag)
-        
+
         forgetWalletButtonViewModel.tapRelay
             .bind { [unowned self] in
                 self.showForgetWalletAlert()
             }
             .disposed(by: disposeBag)
-        
+
         forgotPasswordButtonViewModel.tapRelay
             .bind { [unowned self] in
                 self.showSupportAlert()
             }
             .disposed(by: disposeBag)
-        
+
         continueButtonViewModel.tapRelay
             .bind { [weak self] in
                 self?.authenticate()
             }
             .disposed(by: disposeBag)
-        
+
         interactor.error
             .bind { [weak self] error in
                 self?.handle(error: error)
             }
             .disposed(by: disposeBag)
     }
-    
+
     /// Should be invoked as the presenting view appears
     func viewWillAppear() {
         launchAnnouncementPresenter.execute()
@@ -124,7 +124,7 @@ final class PasswordRequiredScreenPresenter {
     private func handle(error: Error) {
         alertPresenter.showKeychainReadError()
     }
-    
+
     private func showForgetWalletAlert() {
         let title = LocalizedString.ForgetWalletAlert.title
         let message = LocalizedString.ForgetWalletAlert.message
@@ -138,7 +138,7 @@ final class PasswordRequiredScreenPresenter {
             actions: [okAction, cancelAction]
         )
     }
-    
+
     private func showSupportAlert() {
         let title = LocalizedString.ForgotPasswordAlert.title
         let message = String(format: LocalizedString.ForgotPasswordAlert.message, Constants.Url.blockchainSupport)
@@ -153,13 +153,13 @@ final class PasswordRequiredScreenPresenter {
             actions: [okAction, cancelAction]
         )
     }
-    
+
     /// Forgets the wallet and routes to the first onboarding screen
     private func forgetWallet() {
         interactor.forget()
         onboardingRouter.start()
     }
-    
+
     /// Authenticate
     private func authenticate() {
         loadingViewPresenter.showCircular(with: LocalizedString.loadingLabel)

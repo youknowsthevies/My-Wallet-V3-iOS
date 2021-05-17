@@ -6,4 +6,3 @@ public struct SavingsAccountInterestRateResponse: Decodable {
     public let currency: String
     public let rate: Double
 }
-

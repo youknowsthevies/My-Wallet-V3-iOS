@@ -9,7 +9,7 @@ import ToolKit
 public enum ActiveAmountInput {
     case fiat
     case crypto
-    
+
     var inverted: ActiveAmountInput {
         switch self {
         case .fiat:
@@ -21,13 +21,13 @@ public enum ActiveAmountInput {
 }
 
 public final class AmountTranslationInteractor {
-    
+
     // MARK: - Types
-    
+
     public enum Input {
         case insert(Character)
         case remove
-        
+
         var character: Character? {
             switch self {
             case .insert(let value):
@@ -37,7 +37,7 @@ public final class AmountTranslationInteractor {
             }
         }
     }
-    
+
     public enum State {
         case empty
         case inBounds
@@ -51,12 +51,12 @@ public final class AmountTranslationInteractor {
         case failure(error: Error)
         case none
     }
-        
+
     // MARK: - Properties
-    
+
     /// Fiat interactor
     public let fiatInteractor: InputAmountLabelInteractor
-    
+
     /// Crypto interactor
     public let cryptoInteractor: InputAmountLabelInteractor
 
@@ -73,7 +73,7 @@ public final class AmountTranslationInteractor {
             .take(1)
             .asSingle()
     }
-    
+
     /// The state of the component
     public let stateRelay = BehaviorRelay<State>(value: .empty)
     public var state: Observable<State> {
@@ -85,36 +85,36 @@ public final class AmountTranslationInteractor {
             .asObservable()
             .distinctUntilChanged()
     }
-    
+
     /// The active input relay
     public let activeInputRelay: BehaviorRelay<ActiveAmountInput>
-    
+
     /// A relay responsible for accepting deletion events for the active input
     public let deleteLastRelay = PublishRelay<Void>()
-    
+
     /// A relay responsible for appending new characters to the active input
     public let appendNewRelay = PublishRelay<Character>()
-        
+
     /// The active input - streams distinct elements of `ActiveInput`
     public var activeInput: Observable<ActiveAmountInput> {
         activeInputRelay
             .asObservable()
             .distinctUntilChanged()
     }
-    
+
     /// Input injection relay - allow any client of the component to inject number as a `Decimal` type
     public let inputInjectionRelay = PublishRelay<Decimal>()
-    
+
     /// Streams the amount as `FiatValue`
     public var fiatAmount: Observable<MoneyValue> {
         fiatAmountRelay.asObservable()
     }
-    
+
     /// Streams the amount as `CryptoValue`
     public var cryptoAmount: Observable<MoneyValue> {
         cryptoAmountRelay.asObservable()
     }
-    
+
     /// Streams the amount depending on the `ActiveAmountInput` type. 
     public var amount: Observable<MoneyValue> {
         Observable
@@ -129,28 +129,28 @@ public final class AmountTranslationInteractor {
                 }
             }
     }
-    
+
     /// The amount as `FiatValue`
     private let fiatAmountRelay: BehaviorRelay<MoneyValue>
-    
+
     /// The amount as `CryptoValue`
     private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
 
     /// A relay that streams an effect, such as a failure
     private let effectRelay = BehaviorRelay<Effect>(value: .none)
-    
+
     // MARK: - Injected
-    
+
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let cryptoCurrencyService: CryptoCurrencyServiceAPI
     private let priceProvider: AmountTranslationPriceProviding
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(fiatCurrencyService: FiatCurrencyServiceAPI,
                 cryptoCurrencyService: CryptoCurrencyServiceAPI,
                 priceProvider: AmountTranslationPriceProviding = AmountTranslationPriceProvider(),
@@ -167,30 +167,30 @@ public final class AmountTranslationInteractor {
         fiatAmountRelay = BehaviorRelay<MoneyValue>(
             value: .zero(currency: defaultFiatCurrency)
         )
-        
+
         /// Currency Change - upon selection of a new fiat or crypto currency,
         /// take the current input amount and based on that and the new currency
         /// modify the fiat / crypto value
-        
+
         // Fiat changes affect crypto
         let failibleFiatCurrency = fiatCurrencyService.fiatCurrencyObservable
             .map { $0 as Currency }
-            
+
         let failibleCryptoCurrency = cryptoCurrencyService.cryptoCurrencyObservable
             .map { $0 as Currency }
-        
+
         let fiatCurrency = failibleFiatCurrency
             .catchError { _ -> Observable<Currency> in
                 .empty()
             }
             .share(replay: 1, scope: .whileConnected)
-            
+
         let cryptoCurrency = failibleCryptoCurrency
             .catchError { _ -> Observable<Currency> in
                 .empty()
             }
             .share(replay: 1, scope: .whileConnected)
-        
+
         fiatCurrency
             .bindAndCatch(to: fiatInteractor.interactor.currencyRelay)
             .disposed(by: disposeBag)
@@ -230,7 +230,7 @@ public final class AmountTranslationInteractor {
                 self.pairFromFiatInput(amount: value.amount).asObservable()
             }
             .consumeErrorToEffect(on: self)
-        
+
         let pairFromCryptoInput = currenciesMerged
             .flatMap(weak: self) { (self, _) -> Observable<MoneyValueInputScanner.Input> in
                 self.cryptoInteractor.scanner.input
@@ -262,14 +262,14 @@ public final class AmountTranslationInteractor {
             .map { "\($0)" }
             .bindAndCatch(to: fiatInteractor.scanner.rawInputRelay)
             .disposed(by: disposeBag)
-        
+
         let anyPair = Observable
             .merge(
                 pairFromCryptoInput,
                 pairFromFiatInput
             )
             .share(replay: 1)
-        
+
         anyPair
             .bindAndCatch(weak: self) { (self, value) in
                 switch value.base.currencyType {
@@ -282,29 +282,29 @@ public final class AmountTranslationInteractor {
                 }
             }
             .disposed(by: disposeBag)
- 
+
         // Bind deletion events
-                
+
         let deleteAction = deleteLastRelay
             .withLatestFrom(activeInput)
             .share(replay: 1)
-        
+
         deleteAction
             .filter { $0 == .fiat }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
             .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
-        
+
         deleteAction
             .filter { $0 == .crypto }
             .mapToVoid()
             .map { MoneyValueInputScanner.Action.remove }
             .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
-        
+
         // Bind insertion events
-        
+
         let insertAction = appendNewRelay
             .map { MoneyValueInputScanner.Action.insert($0) }
             .flatMap(weak: self) { (self, action) in
@@ -313,19 +313,19 @@ public final class AmountTranslationInteractor {
                     .map { (activeInputType: $0, action: action) }
             }
             .share(replay: 1)
-        
+
         insertAction
             .filter { $0.0 == .fiat }
             .map { $0.1 }
             .bindAndCatch(to: fiatInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
-        
+
         insertAction
             .filter { $0.0 == .crypto }
             .map { $0.1 }
             .bindAndCatch(to: cryptoInteractor.scanner.actionRelay)
             .disposed(by: disposeBag)
-        
+
         state
             .map { state in
                 switch state {
@@ -337,7 +337,7 @@ public final class AmountTranslationInteractor {
             }
             .bindAndCatch(to: fiatInteractor.interactor.stateRelay, cryptoInteractor.interactor.stateRelay)
             .disposed(by: disposeBag)
-        
+
         let inputInjectionAction = inputInjectionRelay
             .flatMap(weak: self) { (self, input) in
                 self.activeInput
@@ -345,14 +345,14 @@ public final class AmountTranslationInteractor {
                     .map { (activeInputType: $0, action: input) }
             }
             .share(replay: 1)
-        
+
         inputInjectionAction
             .filter { $0.0 == .fiat }
             .map { $0.1 }
             .map { .init(decimal: $0) }
             .bindAndCatch(to: fiatInteractor.scanner.internalInputRelay)
             .disposed(by: disposeBag)
-        
+
         inputInjectionAction
             .filter { $0.0 == .crypto }
             .map { $0.1 }
@@ -360,7 +360,7 @@ public final class AmountTranslationInteractor {
             .bindAndCatch(to: cryptoInteractor.scanner.internalInputRelay)
             .disposed(by: disposeBag)
     }
-    
+
     public func connect(input: Driver<Input>) -> Driver<State> {
         // Input Actions
         input
@@ -368,7 +368,7 @@ public final class AmountTranslationInteractor {
             .asObservable()
             .bindAndCatch(to: self.appendNewRelay)
             .disposed(by: disposeBag)
-        
+
         input
             .filter { $0.character == nil }
             .asObservable()
@@ -379,7 +379,7 @@ public final class AmountTranslationInteractor {
         return state
             .asDriver(onErrorJustReturn: .empty)
     }
-    
+
     public func set(amount: String) {
         currentInteractor
             .asObservable()

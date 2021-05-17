@@ -6,24 +6,24 @@ import RxSwift
 import ToolKit
 
 final class LaunchAnnouncementPresenter: VersionUpdateAlertDisplaying {
-    
+
     // MARK: - Properties
-    
+
     private let interactor: LaunchAnnouncementInteractor
     private let alertPresenter: AlertViewPresenter
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(interactor: LaunchAnnouncementInteractor = LaunchAnnouncementInteractor(),
          alertPresenter: AlertViewPresenter = .shared) {
         self.alertPresenter = alertPresenter
         self.interactor = interactor
     }
-    
+
     // MARK: - API
-    
+
     /// Checks for announcement and displays it if needed
     func execute() {
         interactor.updateType

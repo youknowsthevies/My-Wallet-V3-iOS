@@ -4,30 +4,30 @@ import BigInt
 import ToolKit
 
 public protocol MoneyImplementing: Money {
-    
+
     associatedtype MoneyCurrency: Currency
-    
+
     var currencyType: MoneyCurrency { get }
-    
+
     var value: Self { get }
-    
+
     init(amount: BigInt, currency: MoneyCurrency)
 }
 
 extension MoneyImplementing {
-    
+
     public var currency: CurrencyType {
         currencyType.currency
     }
-    
+
     // MARK: - Zero
-    
+
     /// The `0` value of the currency (e.g. `0 USD`, or `0 BTC`)
     /// - Parameter currency: the currency
     public static func zero(currency: MoneyCurrency) -> Self {
         Self.init(amount: BigInt.zero, currency: currency)
     }
-    
+
     /// The `1` value of the currency (e.g. `1 USD`, or `1 BTC`)
     /// - Parameter currency: the currency
     public static func one(currency: MoneyCurrency) -> Self {
@@ -36,7 +36,7 @@ extension MoneyImplementing {
             currency: currency
         )
     }
-    
+
     // MARK: - Major value
 
     /// Creates a `Money` conforming type from a provided a `String` value in major units and currency code.
@@ -112,21 +112,21 @@ extension MoneyImplementing {
     public static func create(minor value: Int, currency: MoneyCurrency) -> Self {
         Self.init(amount: BigInt(value), currency: currency)
     }
-    
+
     // MARK: - Private methods
-    
+
     private static func create(major value: String, currency: MoneyCurrency, locale: Locale) -> Self? {
         guard let majorDecimal = Decimal(string: value, locale: locale), !majorDecimal.isNaN else {
             return nil
         }
         return create(major: majorDecimal, currency: currency)
     }
-    
+
     public static func create(major value: Decimal, currency: MoneyCurrency) -> Self {
         let minorDecimal = value * pow(10, currency.maxDecimalPlaces)
         return create(minor: minorDecimal, currency: currency)
     }
-    
+
     private static func create(minor value: Decimal, currency: MoneyCurrency) -> Self {
         let amount = BigInt(stringLiteral: "\(value.roundTo(places: 0))")
         return Self.init(amount: amount, currency: currency)

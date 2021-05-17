@@ -5,76 +5,76 @@ import PlatformKit
 import ToolKit
 
 struct AirdropCampaigns {
-        
+
     static var dateFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
         return formatter
     }
-    
+
     struct Campaign {
-        
+
         enum Name: String {
             case blockstack = "BLOCKSTACK"
             case sunriver = "SUNRIVER"
         }
-        
+
         /// The computed state of the airdrop - it's much more simplified to look at
         enum CurrentState {
-            
+
             /// The airdrop has expired
             case expired
-            
+
             /// the user is not eligible
             case ineligible
-            
+
             /// The airdrop has been received
             case received
-            
+
             /// The airdrop has been claimed
             case claimed
-            
+
             /// The user has been enrolled to the airdrop
             case enrolled
-            
+
             /// Not registered
             case notRegistered
         }
-        
+
         enum GeneralState: String, Decodable {
             case none = "NONE"
             case started = "STARTED"
             case ended = "ENDED"
         }
-        
+
         enum UserState: String, Decodable {
             case none = "NONE"
-            
+
             /// Enrolled
             case registered = "REGISTERED"
-            
+
             /// Claimed (blockstack)
             case taskFinished = "TASK_FINISHED"
-            
+
             /// Claimed (sunriver)
             case rewardSend = "REWARD_SEND"
-            
+
             /// Received (sunriver)
             case rewardReceived = "REWARD_RECEIVED"
-            
+
             /// Failed (declined)
             case failed = "FAILED"
         }
-            
+
         struct Attributes {
             let address: String
             let code: String
             let email: String
             let rejectionReason: String
         }
-        
+
         struct Transaction: Decodable {
-            
+
             enum CodingKeys: String, CodingKey {
                 case state = "userCampaignTransactionState"
                 case fiatValue
@@ -83,7 +83,7 @@ struct AirdropCampaigns {
                 case withdrawalCurrency
                 case withdrawalAt
             }
-            
+
             enum State: String, Decodable {
                 case none = "NONE"
                 case pendingDeposit = "PENDING_DEPOSIT"
@@ -92,30 +92,30 @@ struct AirdropCampaigns {
                 case finishedWithdrawal = "FINISHED_WITHDRAWAL"
                 case failed = "FAILED"
             }
-            
+
             let state: State
             let fiatValue: Decimal
             let fiatCurrency: String
             let withdrawalQuantity: Decimal
             let withdrawalCurrency: String
             let withdrawalAt: String
-            
+
             var fiat: FiatValue {
                 FiatValue.create(major: fiatValue / 100, currency: FiatCurrency(code: fiatCurrency)!)
             }
-                    
+
             var withdrawalDate: Date! {
                 AirdropCampaigns.dateFormatter.date(from: withdrawalAt)
             }
-            
+
             var cryptoCurrency: TriageCryptoCurrency! {
                 try? TriageCryptoCurrency(code: withdrawalCurrency)
             }
-            
+
             var isValid: Bool {
                 cryptoCurrency != nil && withdrawalDate != nil
             }
-            
+
             var crypto: CryptoValue? {
                 guard let cryptoCurrency = cryptoCurrency.cryptoCurrency else {
                     return nil
@@ -128,7 +128,7 @@ struct AirdropCampaigns {
                     currency: cryptoCurrency
                 )
             }
-            
+
             init(from decoder: Decoder) throws {
                 let values = try decoder.container(keyedBy: CodingKeys.self)
                 state = try values.decode(State.self, forKey: .state)
@@ -138,7 +138,7 @@ struct AirdropCampaigns {
                 withdrawalCurrency = try values.decode(String.self, forKey: .withdrawalCurrency)
                 withdrawalAt = try values.decode(String.self, forKey: .withdrawalAt)
             }
-            
+
             init(state: State,
                  fiatValue: Decimal,
                  fiatCurrency: String,
@@ -153,7 +153,7 @@ struct AirdropCampaigns {
                 self.withdrawalAt = withdrawalAt
             }
         }
-        
+
         /// Validates the campaign's values
         var isValid: Bool {
             guard !name.isEmpty else { return false }
@@ -162,12 +162,12 @@ struct AirdropCampaigns {
             guard !(transactions.contains { !$0.isValid }) else { return false }
             return true
         }
-        
+
         /// Returns the latest transaction
         var latestTransaction: Transaction? {
             transactions.first
         }
-        
+
         /// Returns the crypto currency
         var cryptoCurrency: TriageCryptoCurrency! {
             if let cryptoCurrency = latestTransaction?.cryptoCurrency {
@@ -183,7 +183,7 @@ struct AirdropCampaigns {
                 return TriageCryptoCurrency(cryptoCurrency: .stellar)
             }
         }
-        
+
         var cryptoDisplayValue: String? {
             guard let latestTransaction = latestTransaction else { return nil }
             if let cryptoDisplayValue = latestTransaction.crypto?.toDisplayString(includeSymbol: false) {
@@ -200,7 +200,7 @@ struct AirdropCampaigns {
                 return nil
             }
         }
-        
+
         /// Returns the state of the user in relation to the campaign state
         var currentState: CurrentState {
             /// If the campaign is supported continue
@@ -226,10 +226,10 @@ struct AirdropCampaigns {
                 return .notRegistered
             }
         }
-        
+
         /// The airdrop date
         var dropDate: Date? {
-            
+
             /// If the end date is known it's simple - just return it.
             /// Typically, if a campaign ends, the date will be known
             if let endDate = endDate {
@@ -240,7 +240,7 @@ struct AirdropCampaigns {
             if let date = latestTransaction?.withdrawalDate {
                 return date
             }
-            
+
             /// If the campaign is supported continue
             guard let name = Name(rawValue: name) else {
                 return nil
@@ -262,20 +262,20 @@ struct AirdropCampaigns {
                 return updateDate
             }
         }
-        
+
         let name: String
         let state: GeneralState
-        
+
         private let userState: UserState
         private let attributes: Attributes
-        
+
         /// The tranactions are sorted chronologically in a descending order
         private let transactions: [Transaction]
-    
+
         /// The date of the last status change on the backend side.
         private let endDate: Date?
         private let updateDate: Date?
-        
+
         init(name: String,
              state: GeneralState,
              userState: UserState,
@@ -292,17 +292,17 @@ struct AirdropCampaigns {
             self.endDate = endDate
         }
     }
-    
+
     let campaigns: Set<Campaign>
-    
+
     var ended: Set<Campaign> {
         campaigns.filter { $0.state == .ended }
     }
-    
+
     var started: Set<Campaign> {
         campaigns.filter { $0.state == .started }
     }
-    
+
     func campaign(by name: Campaign.Name) -> Campaign? {
         campaigns.first { $0.name == name.rawValue }
     }
@@ -311,15 +311,15 @@ struct AirdropCampaigns {
 // MARK: - Hashable
 
 extension AirdropCampaigns.Campaign: Hashable {
-    
+
     // MARK: - Equatable
-    
+
     static func == (lhs: AirdropCampaigns.Campaign, rhs: AirdropCampaigns.Campaign) -> Bool {
         lhs.name == rhs.name
     }
-    
+
     // MARK: - Hashable
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(name)
     }
@@ -331,9 +331,9 @@ extension AirdropCampaigns: Decodable {
     enum CodingKeys: String, CodingKey {
         case campaigns = "userCampaignsInfoResponseList"
     }
-    
+
     // MARK: - Setup + Validation
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let campaigns = try values.decode([Campaign].self, forKey: .campaigns)
@@ -351,17 +351,17 @@ extension AirdropCampaigns.Campaign: Decodable {
         case attributes
         case transactions = "userCampaignTransactionResponseList"
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         name = try values.decode(String.self, forKey: .name)
-                
+
         if let updateDate = try values.decodeIfPresent(String.self, forKey: .updateDate) {
             self.updateDate = AirdropCampaigns.dateFormatter.date(from: updateDate)
         } else {
             updateDate = nil
         }
-        
+
         if let endDate = try values.decodeIfPresent(String.self, forKey: .endDate) {
             self.endDate = AirdropCampaigns.dateFormatter.date(from: endDate)
         } else {
@@ -382,11 +382,11 @@ extension AirdropCampaigns.Campaign.Attributes: Decodable {
         case email = "x-campaign-email"
         case rejectionReason = "x-campaign-reject-reason"
     }
-    
+
     static var empty: AirdropCampaigns.Campaign.Attributes {
         .init(address: "", code: "", email: "", rejectionReason: "")
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         address = try values.decodeIfPresent(String.self, forKey: .address) ?? ""

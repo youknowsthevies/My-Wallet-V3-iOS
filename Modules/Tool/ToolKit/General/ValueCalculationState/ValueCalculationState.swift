@@ -3,20 +3,20 @@
 /// A calculation state for value. Typically used to reflect an ongoing
 /// calculation of values
 public enum ValueCalculationState<Value> {
-    
+
     public enum CalculationError: Error {
         case valueCouldNotBeCalculated
         case empty
     }
-    
+
     /// Value is available
     case value(Value)
-    
+
     /// Value is being calculated
     case calculating
-    
+
     case invalid(CalculationError)
-    
+
     /// Returns the value when available
     public var value: Value? {
         switch self {
@@ -26,7 +26,7 @@ public enum ValueCalculationState<Value> {
             return nil
         }
     }
-    
+
     /// Returns `true` if has a value
     public var isValue: Bool {
         switch self {
@@ -36,7 +36,7 @@ public enum ValueCalculationState<Value> {
             return false
         }
     }
-    
+
     /// Returns `true` if is invalid
     public var isInvalid: Bool {
         switch self {
@@ -46,7 +46,7 @@ public enum ValueCalculationState<Value> {
             return false
         }
     }
-    
+
     public var isCalculating: Bool {
         switch self {
         case .calculating:

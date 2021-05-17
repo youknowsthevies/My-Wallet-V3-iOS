@@ -4,18 +4,18 @@ import BigInt
 import ToolKit
 
 public struct FiatValue: Fiat, Hashable {
-    
+
     /// The amount is the smallest unit of the currency (i.e. cents for USD)
     /// a.k.a. the minor value of the currency
     public let amount: BigInt
-        
+
     /// The fiat currency
     public let currencyType: FiatCurrency
-    
+
     public var value: FiatValue {
         self
     }
-    
+
     public init(amount: BigInt, currency: FiatCurrency) {
         self.amount = amount
         self.currencyType = currency
@@ -23,9 +23,9 @@ public struct FiatValue: Fiat, Hashable {
 }
 
 extension FiatValue {
-    
+
     // MARK: - Conversion
-    
+
     /// Converts this value into a corresponding CryptoValue given an exchange rate for a given currency
     ///
     /// - Parameters:
@@ -49,7 +49,7 @@ extension FiatValue {
 }
 
 extension FiatValue: MoneyOperating {
-    
+
     /// Creates a `FiatValue` from a provided amount in major units and currency code.
     ///
     /// - Parameters:
@@ -60,7 +60,7 @@ extension FiatValue: MoneyOperating {
         let minorDecimal = value * pow(10, currency.maxDecimalPlaces)
         return create(minor: minorDecimal, currency: currency)
     }
-    
+
     private static func create(minor value: Decimal, currency: FiatCurrency) -> FiatValue {
         let amount = BigInt(stringLiteral: "\(value.roundTo(places: 0))")
         return FiatValue(amount: amount, currency: currency)

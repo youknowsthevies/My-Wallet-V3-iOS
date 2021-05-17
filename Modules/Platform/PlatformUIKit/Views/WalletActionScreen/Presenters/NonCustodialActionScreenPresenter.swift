@@ -7,36 +7,36 @@ import RxCocoa
 import RxSwift
 
 final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
-    
+
     // MARK: - Types
-    
+
     typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
     typealias LocalizationIds = LocalizationConstants.DashboardDetails
     typealias CellType = WalletActionCellType
-    
+
     // MARK: - Public Properties
-    
+
     var sections: Observable<[WalletActionItemsSectionViewModel]> {
         sectionsRelay
             .asObservable()
     }
-    
+
     let selectionRelay: PublishRelay<WalletActionCellType> = .init()
-    
+
     let assetBalanceViewPresenter: CurrentBalanceCellPresenter
-    
+
     var currency: CurrencyType {
         interactor.currency
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let sectionsRelay = BehaviorRelay<[WalletActionItemsSectionViewModel]>(value: [])
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(using interactor: WalletActionScreenInteracting,
          stateService: NonCustodialActionStateServiceAPI,
          featureConfigurator: FeatureConfiguring = resolve()) {
@@ -45,7 +45,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         let descriptionValue: () -> Observable<String> = {
             .just(currency.name)
         }
-        
+
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
@@ -58,9 +58,9 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                 fiatAccessiblitySuffix: "\(AccessibilityId.NonCustodial.fiatValue)"
             )
         )
-        
+
         var actionCells: [WalletActionCellType] = [.balance(assetBalanceViewPresenter)]
-        
+
         guard case let .crypto(crypto) = currency else { return }
         var actionPresenters: [DefaultWalletActionCellPresenter] = []
 
@@ -75,22 +75,22 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                 .init(currencyType: currency, action: .receive)
             )
         }
-        
+
         if crypto.hasSwapSupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .swap)
             )
         }
-        
+
         if crypto.hasNonCustodialSupport {
             actionPresenters.append(
                 .init(currencyType: currency, action: .activity)
             )
         }
-        
+
         actionCells.append(contentsOf: actionPresenters.map { .default($0) })
         sectionsRelay.accept([.init(items: actionCells)])
-        
+
         selectionRelay
             .bind { model in
                 guard case let .default(presenter) = model else { return }

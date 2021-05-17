@@ -9,17 +9,17 @@ import ToolKit
 final class CrashlyticsRecorder: Recording {
 
     // MARK: - Properties
-    
+
     private let crashlytics: Crashlytics
-    
+
     // MARK: - Setup
-    
+
     init(crashlytics: Crashlytics = Crashlytics.crashlytics()) {
         self.crashlytics = crashlytics
     }
-    
+
     // MARK: - ErrorRecording
-    
+
     /// Records error using Crashlytics.
     /// If the only necessary recording data is the context, just call `error()` with no `error` parameter.
     /// - Parameter error: The error to be recorded by the crash service. defaults to `BreadcrumbError` instance.
@@ -57,7 +57,7 @@ final class CrashlyticsRecorder: Recording {
     }
 
     // MARK: - MessageRecording
-    
+
     /// Records any type of message.
     /// - Parameter message: The message to be recorded by the crash service. defaults to an empty string.
     func record(_ message: String) {
@@ -65,7 +65,7 @@ final class CrashlyticsRecorder: Recording {
     }
 
     // MARK: - UIOperationRecording
-    
+
     /// Should be called if there is a suspicion that a UI action is performed on a background thread.
     /// In such case, a non-fatal error will be recorded.
     func recordIllegalUIOperationIfNeeded() {

@@ -14,7 +14,7 @@ public enum Visibility: Int {
             return 1
         }
     }
-    
+
     /// Returns the inverted alpha for visibility value
     public var invertedAlpha: CGFloat {
         1 - defaultAlpha
@@ -28,4 +28,3 @@ public enum Visibility: Int {
         self == .hidden ? .visible : .hidden
     }
 }
-

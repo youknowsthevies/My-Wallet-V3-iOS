@@ -9,50 +9,50 @@ import RxRelay
 import RxSwift
 
 final class UpdateEmailScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     typealias BadgeItem = BadgeAsset.Value.Presentation.BadgeItem
     private typealias AccessibilityIDs = Accessibility.Identifier.Settings.UpdateEmail
     private typealias LocalizationIDs = LocalizationConstants.Settings.UpdateEmail
-    
+
     // MARK: - Public Properties
-    
+
     var leadingButton: Screen.Style.LeadingButton {
         .back
     }
-    
+
     var titleView: Screen.Style.TitleView {
         .text(value: LocalizationIDs.title)
     }
-    
+
     var barStyle: Screen.Style.Bar {
         .darkContent()
     }
-    
+
     var badgeState: Observable<LoadingState<BadgeItem>> {
         badgeRelay.asObservable()
     }
-    
+
     var resendVisibility: Driver<Visibility> {
         resendVisibilityRelay.asDriver()
     }
-    
+
     let textField: TextFieldViewModel
     let updateButtonViewModel: ButtonViewModel
     let resendButtonViewModel: ButtonViewModel
     let descriptionContent: LabelContent
-    
+
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     private let resendVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
     private let badgeRelay = BehaviorRelay<LoadingState<BadgeItem>>(value: .loading)
     private let interactor: UpdateEmailScreenInteractor
-    
+
     init(emailScreenInteractor: UpdateEmailScreenInteractor,
          loadingViewPresenting: LoadingViewPresenting = resolve()) {
         self.interactor = emailScreenInteractor
@@ -69,50 +69,50 @@ final class UpdateEmailScreenPresenter {
             alignment: .left,
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
-        
+
         updateButtonViewModel = .primary(with: LocalizationIDs.update, accessibilityId: AccessibilityIDs.updateEmailButton)
         resendButtonViewModel = .secondary(with: LocalizationIDs.resend, accessibilityId: AccessibilityIDs.resendEmailButton)
-        
+
         resendButtonViewModel.tapRelay
             .bindAndCatch(to: interactor.resendRelay)
             .disposed(by: disposeBag)
-        
+
         updateButtonViewModel.tapRelay
             .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
-        
+
         textField.state
             .map { $0.isValid }
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         textField.state
             .compactMap { $0.value }
             .bindAndCatch(to: interactor.contentRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .compactMap { $0.value }
             .map { $0.values.isEmailVerified }
             .map { $0 ? .hidden : .visible }
             .bindAndCatch(to: resendVisibilityRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .filter { $0.value?.state != .updating }
             .compactMap { $0.value }
             .map { $0.values.email }
             .bindAndCatch(to: textField.textRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .map { $0.isLoading }
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
          let interactionStateValue = interactor.interactionState
             .compactMap { $0.value }
-        
+
         Observable.combineLatest(interactionStateValue, textField.state)
             .map { (value) -> Bool in
                 let interactionState = value.0.state
@@ -123,18 +123,18 @@ final class UpdateEmailScreenPresenter {
             }
             .bindAndCatch(to: resendButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .compactMap { $0.value }
             .map { $0.state != .updating }
             .bindAndCatch(to: updateButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .map { .init(with: $0) }
             .bindAndCatch(to: badgeRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.interactionState
             .compactMap { $0.value }
             .map { $0.state == .updating }
@@ -148,7 +148,7 @@ final class UpdateEmailScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     func viewWillDisappear() {
         interactor.cancelRelay.accept(())
     }

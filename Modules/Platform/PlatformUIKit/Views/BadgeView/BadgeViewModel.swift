@@ -5,14 +5,14 @@ import RxSwift
 import UIKit
 
 public struct BadgeViewModel {
-    
+
     // MARK: - Types
-    
+
     public struct Theme {
         public let backgroundColor: UIColor
         public let contentColor: UIColor
         public let text: String
-        
+
         public init(backgroundColor: UIColor,
                     contentColor: UIColor,
                     text: String) {
@@ -25,9 +25,9 @@ public struct BadgeViewModel {
     public enum Accessory {
         case progress(BadgeCircleViewModel)
     }
-    
+
     // MARK: - Properties
-    
+
     /// The theme of the view
     public var theme: Theme {
         get {
@@ -41,42 +41,42 @@ public struct BadgeViewModel {
             textRelay.accept(newValue.text)
         }
     }
-    
+
     /// Accessibility for the badge view
     public let accessibility: Accessibility
-    
+
     /// Corner radius
     public let cornerRadius: CGFloat
-    
+
     /// The font of the label
     public let font: UIFont
 
     public let accessory: Accessory?
-    
+
     /// The background color relay
     public let backgroundColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The background color of the badge
     public var backgroundColor: Driver<UIColor> {
         backgroundColorRelay.asDriver()
     }
-    
+
     /// The content color relay
     public let contentColorRelay = BehaviorRelay<UIColor>(value: .clear)
-    
+
     /// The content color of the title
     public var contentColor: Driver<UIColor> {
         contentColorRelay.asDriver()
     }
-    
+
     /// The text relay
     public let textRelay = BehaviorRelay<String>(value: "")
-    
+
     /// Text to be displayed on the badge
     public var text: Driver<String> {
         textRelay.asDriver()
     }
-    
+
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
     public init(font: UIFont = .main(.semibold, 14), cornerRadius: CGFloat = 4, accessory: Accessory? = nil, accessibility: Accessibility) {
@@ -88,7 +88,7 @@ public struct BadgeViewModel {
 }
 
 extension BadgeViewModel {
-    
+
     /// Returns a destructive badge with text
     public static func destructive(
         with text: String,
@@ -138,7 +138,7 @@ extension BadgeViewModel {
         )
         return viewModel
     }
-    
+
     /// Returns a default badgeViewModel with text only
     public static func `default`(
         with text: String,

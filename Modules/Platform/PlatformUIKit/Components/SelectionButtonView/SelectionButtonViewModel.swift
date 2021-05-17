@@ -13,7 +13,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
     public struct AccessibilityContent {
         public let id: String
         public let label: String
-        
+
         fileprivate static var empty: AccessibilityContent {
             AccessibilityContent(id: "", label: "")
         }
@@ -26,24 +26,24 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 isAccessible: !id.isEmpty
             )
         }
-        
+
         public init(id: String, label: String) {
             self.id = id
             self.label = label
         }
     }
-    
+
     public enum LeadingContent {
         case badgeImage(BadgeImageViewModel)
         case label(LabelContent)
         case none
     }
-    
+
     public enum TrailingContent {
         case transaction(TransactionDescriptorViewModel)
         case image(ImageViewContent)
         case empty
-        
+
         var transaction: TransactionDescriptorViewModel? {
             switch self {
             case .transaction(let value):
@@ -52,7 +52,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 return nil
             }
         }
-        
+
         var image: ImageViewContent? {
             switch self {
             case .image(let value):
@@ -62,7 +62,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
             }
         }
     }
-    
+
     public enum LeadingContentType {
         public struct Image {
             let name: String
@@ -71,7 +71,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
             let offset: CGFloat
             let size: CGSize
             let renderingMode: ImageViewContent.RenderingMode
-            
+
             public init(name: String,
                         background: Color,
                         offset: CGFloat = 4,
@@ -86,7 +86,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 self.renderingMode = renderingMode
             }
         }
-        
+
         case image(Image)
         case text(String)
     }
@@ -101,10 +101,10 @@ public final class SelectionButtonViewModel: IdentifiableType {
 
     /// Title Relay: title describing the selection
     public let titleRelay = BehaviorRelay<String>(value: "")
-    
+
     /// Title Font Relay: Font of the leading title
     public let titleFontRelay = BehaviorRelay<UIFont>(value: .main(.semibold, 16))
-    
+
     /// Title Color Relay: Color of the title
     public let titleFontColor = BehaviorRelay<UIColor>(value: .titleText)
 
@@ -112,10 +112,10 @@ public final class SelectionButtonViewModel: IdentifiableType {
     ///
     /// A  nil value represents the inexistence of a subtitle, in which case a view may react to this by changing its layout.
     public let subtitleRelay = BehaviorRelay<String?>(value: "")
-    
+
     /// Subtitle Font Relay: Font of the leading subtitle
     public let subtitleFontRelay = BehaviorRelay<UIFont>(value: .main(.medium, 14))
-    
+
     /// Subtitle Color Relay: Color of the subtitle
     public let subtitleFontColor = BehaviorRelay<UIColor>(value: .descriptionText)
 
@@ -135,39 +135,39 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 }
             }
     }
-    
+
     /// Accessibility for the title
     public let titleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
-    
+
     /// Accessibility for the subtitle
     public let subtitleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
-    
+
     /// Accessibility content relay
     public let accessibilityContentRelay = BehaviorRelay<AccessibilityContent>(value: .empty)
-    
+
     /// Trailing content relay
     public let trailingContentRelay = BehaviorRelay<TrailingContent>(value: .empty)
-    
+
     /// Title Relay: title describing the selection
     public let shouldShowSeparatorRelay = BehaviorRelay(value: false)
-    
+
     /// Horizontal offset relay
     public let horizontalOffsetRelay = BehaviorRelay<CGFloat>(value: 24)
-    
+
     /// Vertical offset relay
     public let verticalOffsetRelay = BehaviorRelay<CGFloat>(value: 16)
-    
+
     /// Allows any component to observe taps
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     /// Determines if the button accepts touches
     public let isButtonEnabledRelay = BehaviorRelay(value: true)
     var isButtonEnabled: Driver<Bool> {
         isButtonEnabledRelay.asDriver()
     }
-    
+
     // MARK: - Internal Properties
 
     /// A tap relay that accepts taps on the button
@@ -177,17 +177,17 @@ public final class SelectionButtonViewModel: IdentifiableType {
     var horizontalOffset: Driver<CGFloat> {
         horizontalOffsetRelay.asDriver()
     }
-    
+
     /// The vertical offset of the content
     var verticalOffset: Driver<CGFloat> {
         verticalOffsetRelay.asDriver()
     }
-    
+
     /// Streams the leading image
     var shouldShowSeparator: Driver<Bool> {
         shouldShowSeparatorRelay.asDriver()
     }
-    
+
     /// Streams the leading content
     var leadingContent: Driver<LeadingContent> {
         leadingContentRelay.asDriver()
@@ -237,7 +237,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
             }
             .asDriver(onErrorJustReturn: LabelContent.empty)
     }
-    
+
     /// Streams the trailing content
     var trailingContent: Driver<TrailingContent> {
         trailingContentRelay
@@ -255,10 +255,10 @@ public final class SelectionButtonViewModel: IdentifiableType {
 
     private let leadingContentRelay = BehaviorRelay<LeadingContent>(value: .none)
     private let disposeBag = DisposeBag()
-    
+
     public init(showSeparator: Bool = false) {
         shouldShowSeparatorRelay.accept(showSeparator)
-        
+
         leadingContentTypeRelay
             .map { type in
                 switch type {

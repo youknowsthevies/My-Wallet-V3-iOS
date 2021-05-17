@@ -11,7 +11,7 @@ public enum QRCodePresentationType {
 }
 
 final class QRCodeScannerViewController: UIViewController, UINavigationControllerDelegate {
-    
+
     private var viewFrame: CGRect {
         guard let window = UIApplication.shared.keyWindow else {
             fatalError("Trying to get key window before it was set!")
@@ -20,14 +20,14 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         let height = window.bounds.size.height - 65
         return CGRect(x: 0, y: 0, width: width, height: height)
     }
-    
+
     private var scannerView: QRCodeScannerView!
-    
+
     private let viewModel: QRCodeScannerViewModelProtocol
     private let loadingViewStyle: LoadingViewPresenter.LoadingViewStyle
     private let loadingViewPresenter: LoadingViewPresenting
     private let presentationType: QRCodePresentationType
-    
+
     init(presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
          viewModel: QRCodeScannerViewModelProtocol,
          loadingViewPresenter: LoadingViewPresenting = resolve(),
@@ -47,16 +47,16 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         case .child:
             break
         }
-        
+
         self.viewModel.scanningStarted = { [weak self] in
             self?.scanDidStart()
             Logger.shared.info("Scanning started")
         }
-        
+
         self.viewModel.scanningStopped = { [weak self] in
             self?.scanDidStop()
         }
-        
+
         self.viewModel.scanComplete = { [weak self] result in
             self?.handleScanComplete(with: result)
         }
@@ -64,12 +64,12 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             self?.showImagePicker()
         }
     }
-    
+
     @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor.primary.withAlphaComponent(0.9)
@@ -91,22 +91,22 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
         view.addSubview(scannerView)
         scannerView.fillSuperview()
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewModel.startReadingQRCode(from: scannerView)
         scannerView?.startReadingQRCode()
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         viewModel.viewWillDisappear()
     }
-    
+
     @objc func closeButtonClicked(sender: AnyObject) {
         viewModel.closeButtonPressed()
     }
-    
+
     private func handleScanComplete(with result: Result<String, QRScannerError>) {
         if let loadingText = viewModel.loadingText {
             switch loadingViewStyle {
@@ -115,7 +115,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             case .circle:
                 loadingViewPresenter.showCircular(with: loadingText)
             }
-            
+
         }
         switch presentationType {
         case .modal(dismissWithAnimation: let animated):
@@ -126,7 +126,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             viewModel.handleDismissCompleted(with: result)
         }
     }
-    
+
     private func scanDidStart() {
         UIView.animate(
             withDuration: 0.25,
@@ -138,7 +138,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             completion: nil
         )
     }
-    
+
     private func scanDidStop() {
         UIView.animate(
             withDuration: 0.25,
@@ -152,7 +152,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             }
         )
     }
-    
+
     private func showImagePicker() {
         let pickerController = UIImagePickerController()
         pickerController.delegate = self

@@ -49,7 +49,7 @@ final class KYCCoordinator: KYCRouterAPI {
     private(set) var user: NabuUser?
 
     private(set) var country: CountryData?
-    
+
     private(set) var states: [KYCState] = []
 
     private var pager: KYCPagerAPI!
@@ -145,7 +145,7 @@ final class KYCCoordinator: KYCRouterAPI {
     func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCParentFlow) {
         self.parentFlow = parentFlow
         rootViewController = viewController
-        
+
         switch tier {
         case .tier0:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier0Start)
@@ -154,7 +154,7 @@ final class KYCCoordinator: KYCRouterAPI {
         case .tier2:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Start)
         }
-    
+
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let postTierObservable = post(tier: tier).asObservable()
         let userObservable = dataRepository.fetchNabuUser().asObservable()
@@ -291,7 +291,7 @@ final class KYCCoordinator: KYCRouterAPI {
                         for: status,
                         isReceivingAirdrop: isReceivingAirdrop
                     )
-                    controller.primaryButtonAction = { viewController in
+                    controller.primaryButtonAction = { _ in
                         switch status {
                         case .approved:
                             self.finish()
@@ -537,7 +537,7 @@ final class KYCCoordinator: KYCRouterAPI {
         } else {
             presentingViewController.present(navController, animated: true)
         }
-        
+
         return navController
     }
 }

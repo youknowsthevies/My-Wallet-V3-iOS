@@ -7,7 +7,7 @@ public class RequestBuilder {
     public enum Error: Swift.Error {
         case buildingRequest
     }
-    
+
     private var defaultComponents: URLComponents {
         var urlComponents = URLComponents()
         urlComponents.scheme = networkConfig.apiScheme
@@ -15,15 +15,15 @@ public class RequestBuilder {
         urlComponents.path = RequestBuilder.path(from: networkConfig.pathComponents)
         return urlComponents
     }
-    
+
     private let networkConfig: Network.Config
-    
+
     init(networkConfig: Network.Config = resolve()) {
         self.networkConfig = networkConfig
     }
-    
+
     // MARK: - GET
-    
+
     public func get(path components: [String] = [],
                     parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders = [:],
@@ -41,7 +41,7 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     public func get(path: String,
                     parameters: [URLQueryItem]? = nil,
                     headers: HTTPHeaders = [:],
@@ -60,9 +60,9 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     // MARK: - PUT
-    
+
     public func put(path components: [String] = [],
                     parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
@@ -82,7 +82,7 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     public func put(path: String,
                     parameters: [URLQueryItem]? = nil,
                     body: Data? = nil,
@@ -103,9 +103,9 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     // MARK: - POST
-    
+
     public func post(path components: [String] = [],
                      parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
@@ -125,7 +125,7 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     public func post(path: String,
                      parameters: [URLQueryItem]? = nil,
                      body: Data? = nil,
@@ -146,9 +146,9 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     // MARK: - Delete
-    
+
     public func delete(path components: [String] = [],
                        parameters: [URLQueryItem]? = nil,
                        headers: HTTPHeaders = [:],
@@ -167,15 +167,15 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     public static func path(from components: [String] = []) -> String {
         components.reduce(into: "") { path, component in
             path += "/\(component)"
         }
     }
-    
+
     // MARK: - Private methods
-    
+
     private func buildRequest(method: NetworkRequest.NetworkMethod,
                               path: String,
                               parameters: [URLQueryItem]? = nil,
@@ -199,7 +199,7 @@ public class RequestBuilder {
             recordErrors: recordErrors
         )
     }
-    
+
     private func buildURL(path: String, parameters: [URLQueryItem]? = nil) -> URL? {
         var components = defaultComponents
         components.path += path

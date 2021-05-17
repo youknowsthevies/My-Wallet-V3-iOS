@@ -6,13 +6,13 @@ import PlatformKit
 import ToolKit
 
 extension EnterAmountScreenPresenter.DisplayBundle {
-    
+
     static func sell(cryptoCurrency: CryptoCurrency) -> EnterAmountScreenPresenter.DisplayBundle {
-        
+
         typealias LocalizedString = LocalizationConstants.SimpleBuy.SellCryptoScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.SellScreen
-        
+
         return EnterAmountScreenPresenter.DisplayBundle(
             strings: Strings(
                 title: "\(LocalizedString.titlePrefix) \(cryptoCurrency.code)",
@@ -54,4 +54,3 @@ extension EnterAmountScreenPresenter.DisplayBundle {
         )
     }
 }
-

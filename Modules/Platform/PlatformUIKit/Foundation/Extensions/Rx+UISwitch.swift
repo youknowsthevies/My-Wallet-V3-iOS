@@ -11,13 +11,13 @@ extension Reactive where Base: UISwitch {
             switchView.thumbTintColor = color
         }
     }
-    
+
     public var fillColor: Binder<UIColor> {
         Binder(base) { switchView, fillColor in
             switchView.onTintColor = fillColor
         }
     }
-    
+
     public var isEnabled: Binder<Bool> {
         Binder(base) { switchView, isEnabled in
             switchView.isEnabled = isEnabled

@@ -4,11 +4,11 @@ import DIKit
 import PlatformKit
 
 extension DependencyContainer {
-    
+
     // MARK: - BitcoinCashKit Module
-     
+
     public static var bitcoinCashKit = module {
-        
+
         factory { APIClient() as APIClientAPI }
 
         factory { BitcoinCashWalletAccountRepository() }
@@ -20,6 +20,6 @@ extension DependencyContainer {
         factory { BitcoinCashActivityItemEventDetailsFetcher() }
 
         factory { BitcoinCashTransactionalActivityItemEventsService() }
-        
+
     }
 }

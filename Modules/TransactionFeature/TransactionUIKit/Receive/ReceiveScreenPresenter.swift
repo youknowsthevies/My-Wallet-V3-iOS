@@ -110,7 +110,7 @@ final class ReceiveScreenPresenter {
         let state = interactor.state
             .asObservable()
             .share(replay: 1)
-        
+
         let qrCodeMetadata = state
             .map(\.metadata)
 
@@ -138,7 +138,7 @@ final class ReceiveScreenPresenter {
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: balanceLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
-        
+
         state
             .map(\.memo)
             .compactMap { $0 }
@@ -146,7 +146,7 @@ final class ReceiveScreenPresenter {
             .map { .loaded(next: $0) }
             .bindAndCatch(to: memoLabelContentPresenting.interactor.stateRelay)
             .disposed(by: disposeBag)
-        
+
         memoNoteViewModel.tap
             .map { $0.url }
             .bindAndCatch(to: webViewLaunchRelay)
@@ -160,13 +160,13 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .bindAndCatch(weak: self) { (self, theme) in
+            .bindAndCatch(weak: self) { (_, _) in
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                 feedbackGenerator.prepare()
                 feedbackGenerator.impactOccurred()
             }
             .disposed(by: disposeBag)
-        
+
         copyButton.tapRelay
             .map {
                 ButtonViewModel.Theme(

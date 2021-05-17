@@ -6,20 +6,20 @@ import RxSwift
 
 public struct BitcoinPrivateKey: Equatable {
     public let key: HDPrivateKey
-    
+
     init(key: HDPrivateKey) {
         self.key = key
     }
 }
 
 public struct BitcoinKeyPair: KeyPair, Equatable {
-    
+
     public var publicKey: String {
         privateKey.key.xpub
     }
-    
+
     public var privateKey: BitcoinPrivateKey
-    
+
     public init(privateKey: BitcoinPrivateKey) {
         self.privateKey = privateKey
     }
@@ -28,7 +28,7 @@ public struct BitcoinKeyPair: KeyPair, Equatable {
 public struct BitcoinKeyDerivationInput: KeyDerivationInput, Equatable {
     public let mnemonic: String
     public let password: String
-    
+
     public init(mnemonic: String, password: String) {
         self.mnemonic = mnemonic
         self.password = password
@@ -40,26 +40,26 @@ public protocol BitcoinKeyPairDeriverAPI: KeyPairDeriverAPI where Input == Bitco
 }
 
 public class AnyBitcoinKeyPairDeriver: BitcoinKeyPairDeriverAPI {
-    
+
     private let deriver: AnyKeyPairDeriver<BitcoinKeyPair, BitcoinKeyDerivationInput>
-    
+
     // MARK: - Init
-    
+
     public convenience init() {
         self.init(with: BitcoinKeyPairDeriver())
     }
-    
+
     public init<D: KeyPairDeriverAPI>(with deriver: D) where D.Input == BitcoinKeyDerivationInput, D.Pair == BitcoinKeyPair {
         self.deriver = AnyKeyPairDeriver<BitcoinKeyPair, BitcoinKeyDerivationInput>(deriver: deriver)
     }
-    
+
     public func derive(input: BitcoinKeyDerivationInput) -> Result<BitcoinKeyPair, Error> {
         deriver.derive(input: input)
     }
 }
 
 public class BitcoinKeyPairDeriver: BitcoinKeyPairDeriverAPI {
-    
+
     public func derive(input: BitcoinKeyDerivationInput) -> Result<BitcoinKeyPair, Error> {
         let mnemonic = input.mnemonic
         let passphrase = Passphrase(rawValue: input.password)
@@ -78,5 +78,5 @@ public class BitcoinKeyPairDeriver: BitcoinKeyPairDeriverAPI {
         )
         return .success(BitcoinKeyPair(privateKey: privateKey))
     }
-    
+
 }

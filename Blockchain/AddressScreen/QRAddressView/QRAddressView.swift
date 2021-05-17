@@ -6,9 +6,9 @@ import RxSwift
 
 /// Crypto address represented as QR image and address text
 final class QRAddressView: UIView {
-    
+
     // MARK: - UI Properties
-    
+
     @IBOutlet private var statusLabel: UILabel!
     @IBOutlet private var activityIndicatorView: UIActivityIndicatorView!
     @IBOutlet private var qrImageView: UIImageView!
@@ -17,43 +17,43 @@ final class QRAddressView: UIView {
     @IBOutlet private var button: UIButton!
 
     // MARK: - Rx
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     var viewModel: QRAddressViewModel! {
         didSet {
             addressLabel.accessibility = viewModel.addressLabelAccessibility
             qrImageView.accessibility = viewModel.addressImageViewAccessibility
             button.accessibility = viewModel.copyButtonAcessibility
-            
+
             // Bind status to the the display
             viewModel.status
                 .bind { [weak self] status in
                     self?.setup(for: status)
                 }
                 .disposed(by: disposeBag)
-            
+
             // Bind taps to the view model
             button.rx.tap
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         let borderColor = UIColor.mediumBorder
@@ -64,7 +64,7 @@ final class QRAddressView: UIView {
         activityIndicatorView.color = .primary
         statusLabel.textColor = .primary
     }
-    
+
     // Setups the UI according to a given display status
     private func setup(for status: DisplayAddressStatus) {
         let contentVisibility: Visibility
@@ -93,17 +93,17 @@ final class QRAddressView: UIView {
                         self.statusLabel.alpha = contentVisibility.invertedAlpha
         }, completion: nil)
     }
-    
+
     // MARK: - User Actions
-    
+
     @IBAction private func touchDown() {
         animateTouch(scale: 0.95)
     }
-    
+
     @IBAction private func touchUp() {
         animateTouch(scale: 1)
     }
-    
+
     private func animateTouch(scale: CGFloat) {
         UIView.animate(
             withDuration: 0.1,

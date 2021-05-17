@@ -14,4 +14,3 @@ public struct AaveToken: ERC20Token {
         crypto: CryptoValue.create(major: "0.01", currency: assetType)!
     )
 }
-

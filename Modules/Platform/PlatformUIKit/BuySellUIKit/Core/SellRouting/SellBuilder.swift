@@ -9,42 +9,42 @@ import ToolKit
 
 /// Provides an API for building sell components
 public protocol SellBuilderAPI: AnyObject {
-    
+
     var routerInteractor: SellRouterInteractor { get }
-    
+
     /// Builds the `BuySellKYCInvalidViewController` screen.
     /// Shown to users who have been rejected from KYC.
     func buySellKYCInvalidViewController() -> UIViewController
-    
+
     /// Builds the `ineligible` screen where the user is shown
     /// that due to their KYC status or region, they are not eligible
     /// for `Sell`
     func ineligibleViewController() -> UIViewController
-    
+
     /// Start of `Sell` if the user has not completed KYC.
     func sellIdentityIntroductionViewController() -> UIViewController
-    
+
     /// Start of `Sell`. Builds the account selection screen.
     func accountSelectionRouter() -> AccountPickerRouting
-    
+
     /// Builds the fiat account selection screen.
     func fiatAccountSelectionRouter() -> AccountPickerRouting
-    
+
     /// Builds and provides a sell crypto VIP stack, based on `EnterAmountScreenViewController`.
     /// - Parameter data: The data required for building the interaction state
     /// - Returns: A `UIViewController` instance to show within a `UINavigationController`.
     func sellCryptoViewController(data: SellCryptoInteractionData) -> UIViewController
-    
+
     /// Builds and provides a checkout VIP stack.
     /// - Parameter data: The data required for building the interaction state
     /// - Returns: A `UIViewController` instance to show within a `UINavigationController`.
     func checkoutScreenViewController(data: CheckoutData) -> UIViewController
-    
+
     /// Builds and provides a pending VIP stack.
     /// - Parameter data: The data required for building the interaction state
     /// - Returns: A `UIViewController` instance to show within a `UINavigationController`.
     func pendingScreenViewController(for orderDetails: OrderDetails) -> UIViewController
-    
+
     /// Builds and provides a transfer cancellation VIP stack.
     /// - Parameter data: The data required for building the interaction state
     /// - Returns: A `UIViewController` instance to show within a `UINavigationController`.
@@ -53,13 +53,13 @@ public protocol SellBuilderAPI: AnyObject {
 
 /// Builds sell components
 public final class SellBuilder: SellBuilderAPI {
-    
+
     // MARK: - Public Properties
-    
+
     public let routerInteractor: SellRouterInteractor
-    
+
     // MARK: - Private Properties
-    
+
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let priceService: PriceServiceAPI
     private let balanceProvider: BalanceProviding
@@ -67,7 +67,7 @@ public final class SellBuilder: SellBuilderAPI {
     private let accountSelectionService: AccountSelectionServiceAPI
 
     // MARK: - Setup
-    
+
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 routerInteractor: SellRouterInteractor,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -144,13 +144,13 @@ public final class SellBuilder: SellBuilderAPI {
         let viewController = EnterAmountScreenViewController(presenter: presenter)
         return viewController
     }
-    
+
     public func sellIdentityIntroductionViewController() -> UIViewController {
         let presenter = SellIdentityIntroductionPresenter(interactor: routerInteractor)
         let controller = SellIdentityIntroductionViewController(presenter: presenter)
         return controller
     }
-    
+
     public func pendingScreenViewController(for orderDetails: OrderDetails) -> UIViewController {
         let interactor = PendingOrderStateScreenInteractor(
             orderDetails: orderDetails
@@ -164,12 +164,12 @@ public final class SellBuilder: SellBuilderAPI {
         )
         return viewController
     }
-    
+
     public func transferCancellationViewController(data: CheckoutData) -> UIViewController {
         let interactor = TransferCancellationInteractor(
             checkoutData: data
         )
-        
+
         let presenter = TransferCancellationScreenPresenter(
             routingInteractor: SellTransferCancellationRoutingInteractor(
                 routingInteractor: routerInteractor
@@ -180,7 +180,7 @@ public final class SellBuilder: SellBuilderAPI {
         let viewController = TransferCancellationViewController(presenter: presenter)
         return viewController
     }
-    
+
     public func checkoutScreenViewController(data: CheckoutData) -> UIViewController {
         let orderInteractor = SellOrderCheckoutInteractor(
             fundsAndBankInteractor: FundsAndBankOrderCheckoutInteractor()
@@ -199,7 +199,7 @@ public final class SellBuilder: SellBuilderAPI {
         let viewController = DetailsScreenViewController(presenter: presenter)
         return viewController
     }
-    
+
     public func ineligibleViewController() -> UIViewController {
         let presenter = BuySellIneligibleScreenPresenter(
             interactor: BuySellIneligibleScreenInteractor(),
@@ -209,4 +209,3 @@ public final class SellBuilder: SellBuilderAPI {
         return controller
     }
 }
-

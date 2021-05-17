@@ -9,35 +9,35 @@ import RxSwift
 import ToolKit
 
 final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePresenterAPI {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout.PendingOrderScreen
-    
+
     // MARK: - Properties
-        
+
     var viewModel: Driver<PendingStateViewModel> {
         viewModelRelay
             .asDriver()
             .compactMap { $0 }
     }
-         
+
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
     private let routingInteractor: PendingOrderRoutingInteracting
     private let interactor: PendingOrderStateScreenInteractor
     private let analyticsRecorder: AnalyticsEventRecording
     private let disposeBag = DisposeBag()
-    
+
     private var amount: String {
         interactor.amount.toDisplayString(includeSymbol: true)
     }
-    
+
     private var currencyType: CurrencyType {
         interactor.amount.currencyType
     }
-    
+
     // MARK: - Setup
-    
+
     init(routingInteractor: PendingOrderRoutingInteracting,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          interactor: PendingOrderStateScreenInteractor) {
@@ -46,9 +46,9 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         self.interactor = interactor
         super.init(interactable: interactor)
     }
-        
+
     // MARK: - Lifecycle
-    
+
     public override func viewDidLoad() {
         super.viewDidLoad()
         let isBuy = interactor.isBuy
@@ -66,34 +66,34 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 subtitle: subtitle
             )
         )
-        
+
         viewModelRelay
             .asObservable()
             .compactMap { $0 }
             .flatMap(\.tap)
             .bindAndCatch(to: routingInteractor.tapRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.startPolling()
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onError: { [weak self] error in
+                onError: { [weak self] _ in
                     self?.showError()
                 }
             )
             .disposed(by: disposeBag)
     }
-        
+
     private func showError() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
             .map { .completed }
             .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
-        
+
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
@@ -107,7 +107,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         )
         viewModelRelay.accept(viewModel)
     }
-    
+
     private func handleTimeout(order: OrderDetails) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
@@ -127,7 +127,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         } else {
             title = LocalizedString.Timeout.Sell.titleSuffix
         }
-        
+
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
@@ -142,7 +142,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         )
         viewModelRelay.accept(viewModel)
     }
-    
+
     private func handleSuccess() {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
@@ -175,7 +175,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         )
         self.viewModelRelay.accept(viewModel)
     }
-        
+
     private func handle(state: PolledOrder) {
         switch state {
         case .final(let order):

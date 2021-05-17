@@ -4,11 +4,11 @@ import DIKit
 import ToolKit
 
 @objc public protocol CertificatePinnerAPI {
-    
+
     var certificateData: Data? { get }
-    
+
     func pinCertificateIfNeeded()
-    
+
     func didReceive(_ challenge: URLAuthenticationChallenge, completion: @escaping AuthChallengeHandler)
 }
 
@@ -22,7 +22,7 @@ final class CertificatePinner: CertificatePinnerAPI {
     }
 
     // MARK: - Properties
-    
+
     /// Certificate Data
     var certificateData: Data? {
         guard let certificateURL = localCertificateURL else {
@@ -30,12 +30,12 @@ final class CertificatePinner: CertificatePinnerAPI {
         }
         return try? Data(contentsOf: certificateURL)
     }
-    
+
     /// Path to the local certificate file
     private lazy var localCertificateURL: URL? = {
         Bundle(for: CertificatePinner.self).url(forResource:"blockchain", withExtension: "der")
     }()
-    
+
     private let session: URLSession
 
     // MARK: - Initialization

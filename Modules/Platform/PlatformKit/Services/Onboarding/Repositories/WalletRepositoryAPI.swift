@@ -14,6 +14,6 @@ public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
                                      & CredentialsRepositoryAPI
 
 public protocol WalletRepositoryProvider {
-    
+
     var repository: WalletRepositoryAPI! { get }
 }

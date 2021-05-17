@@ -8,20 +8,20 @@ import PlatformKit
 import ToolKit
 
 class FirebaseAnalyticsService: AnalyticsServiceProviding {
-    
+
     // Enumerates campaigns that can be used in analytics events
     enum Campaigns: String, CaseIterable {
         case sunriver
     }
-    
+
     private struct FirebaseConstants {
-        
+
         struct MaxLength {
-            
+
             static let key = 40
             static let value = 100
         }
-        
+
         static let reservedKeys = [
             "ad_activeview",
             "ad_click",
@@ -45,13 +45,13 @@ class FirebaseAnalyticsService: AnalyticsServiceProviding {
             "user_engagement"
         ]
     }
-    
+
     // MARK: - Properties
-    
+
     private let queue = DispatchQueue(label: "AnalyticsService", qos: .background)
-    
+
     // MARK: Public Methods
-    
+
     func trackEvent(title: String, parameters: [String: Any]?) {
         queue.async { [weak self] in
             guard let self = self else { return }
@@ -71,9 +71,9 @@ class FirebaseAnalyticsService: AnalyticsServiceProviding {
             Analytics.logEvent(title, parameters: params)
         }
     }
-    
+
     // MARK: Private methods
-    
+
     private func isReservedKey(_ key: String) -> Bool {
         FirebaseConstants.reservedKeys.contains(key)
     }

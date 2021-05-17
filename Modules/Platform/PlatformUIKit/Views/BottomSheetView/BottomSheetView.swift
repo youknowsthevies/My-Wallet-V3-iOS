@@ -3,24 +3,24 @@
 import Foundation
 
 public class BottomSheetView: UIView {
-    
+
     // MARK: Private Static Properties
-    
+
     fileprivate static let actionInterItemSpacing: CGFloat = 16.0
     fileprivate static let verticalPadding: CGFloat = 97.0
     fileprivate static let actionHeight: CGFloat = 56.0
-    
+
     // MARK: Private IBOutlets
-    
+
     @IBOutlet fileprivate var closeButton: UIButton!
     @IBOutlet fileprivate var title: UILabel!
     @IBOutlet fileprivate var stackView: UIStackView!
-    
+
     // MARK: Private Properties
-    
+
     fileprivate var model: BottomSheet!
     fileprivate var completion: ((BottomSheetAction) -> Void)?
-    
+
     public class func make(with model: BottomSheet, completion: ((BottomSheetAction) -> Void)?) -> BottomSheetView {
         let bundle = Bundle(for: BottomSheetView.self)
         let nib = UINib(nibName: String(describing: BottomSheetView.self), bundle: bundle)
@@ -29,32 +29,32 @@ public class BottomSheetView: UIView {
         view.completion = completion
         return view
     }
-    
+
     public class func estimatedHeight(model: BottomSheet) -> CGFloat {
         guard let window = UIApplication.shared.keyWindow else { return 0.0 }
-        
+
         let buttonsHeight = model.actions.map { _ -> CGFloat in
             actionHeight
         }
         .reduce(0, +)
         let interitemPadding = ((buttonsHeight / actionHeight) - 1) * actionInterItemSpacing
-        
+
         let titleHeight = NSAttributedString(string: model.title, attributes: [.font: titleFont()]).height
 
         return verticalPadding + interitemPadding + buttonsHeight + titleHeight + window.safeAreaInsets.bottom
     }
-    
+
     public override func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
         applyRadius(12.0, to: [.topLeft, .topRight])
     }
-    
+
     @objc func dismiss() {
         guard model.dismissable == true else { return }
         teardown()
     }
-    
+
     @objc func selectionTapped(_ sender: UIButton) {
         guard let model = model else { return }
         if let index = stackView.arrangedSubviews.firstIndex(of: sender) {
@@ -62,14 +62,14 @@ public class BottomSheetView: UIView {
             teardown(with: action)
         }
     }
-    
+
     fileprivate static func titleFont() -> UIFont {
         Font(.branded(.montserratSemiBold), size: .custom(16.0)).result
     }
-    
+
     fileprivate func apply(model: BottomSheet) {
         guard stackView.arrangedSubviews.count == 0 else { return }
-        
+
         title.text = model.title
         closeButton.setTitle(model.dismissalTitle, for: .normal)
         model.actions.forEach { sheetAction in
@@ -89,7 +89,7 @@ public class BottomSheetView: UIView {
             stackView.addArrangedSubview(button)
         }
     }
-    
+
     fileprivate func teardown(with selectedAction: BottomSheetAction? = nil) {
         UIView.animateKeyframes(
             withDuration: 0.3,
@@ -114,13 +114,13 @@ public class BottomSheetView: UIView {
             }
         )
     }
-    
+
     @IBAction func dismissButtonTapped(_ sender: UIButton) {
         teardown()
     }
-    
+
     // MARK: Public
-    
+
     public func show() {
         guard let window = UIApplication.shared.keyWindow else { return }
         alpha = 0.0
@@ -139,7 +139,7 @@ public class BottomSheetView: UIView {
         )
         window.addSubview(dimmingView)
         window.addSubview(self)
-        
+
         UIView.animateKeyframes(
             withDuration: 0.4,
             delay: 0.0,
@@ -159,7 +159,7 @@ public class BottomSheetView: UIView {
             completion: nil
         )
     }
-    
+
     fileprivate lazy var dimmingView: UIView = {
         let dimming = UIView(frame: UIScreen.main.bounds)
         dimming.backgroundColor = .black
@@ -174,7 +174,7 @@ public class BottomSheetView: UIView {
         dimming.addGestureRecognizer(dismissTapGesture)
         return dimming
     }()
-    
+
     fileprivate lazy var dismissTapGesture: UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         return tap

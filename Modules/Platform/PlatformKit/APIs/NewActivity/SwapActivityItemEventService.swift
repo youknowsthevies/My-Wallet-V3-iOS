@@ -6,9 +6,9 @@ import RxSwift
 import ToolKit
 
 public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
-    
+
     // MARK: - Public Properties
-    
+
     public var swapActivityEvents: Single<[SwapActivityItemEvent]> {
         fiatCurrencyProvider
             .fiatCurrency
@@ -22,21 +22,21 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
                     .map { $0.items }
             }
     }
-    
+
     public var swapActivityObservable: Observable<[SwapActivityItemEvent]> {
         swapActivityEvents.asObservable()
     }
-    
+
     public var custodial: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return custodialRelay.asObservable()
     }
-    
+
     public var nonCustodial: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return onChainRelay.asObservable()
     }
-    
+
     public var state: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return Observable.combineLatest(custodial, nonCustodial)
@@ -49,25 +49,25 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loaded(next: []))
     }
-    
+
     public let fetchTriggerRelay = PublishRelay<Void>()
-    
+
     // MARK: - Private Properties
-    
+
     private let fetcher: SwapActivityItemEventFetcherAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
     private let onChainRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let custodialRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let stateRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     private lazy var setup: Void = {
         let fiatCurrencyCode = fiatCurrencyProvider
             .fiatCurrencyObservable
             .map { $0.code }
-        
+
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
-        
+
         let activityItems = Observable
             .combineLatest(
                 fiatCurrencyCode,
@@ -80,38 +80,37 @@ public class SwapActivityItemEventService: SwapActivityItemEventServiceAPI {
                     .catchErrorJustReturn(.init(hasNextPage: false, items: []))
                     .map { $0.items }
             }
-        
+
         let onChain: Observable<[ActivityItemEvent]> = activityItems
             .map { items -> [SwapActivityItemEvent] in
                 items.filter(\.isNonCustodial)
             }
             .map { items in items.map { .swap($0) } }
-        
+
         let custodial: Observable<[ActivityItemEvent]> = activityItems
             .map { items -> [SwapActivityItemEvent] in
                 items.filter(\.isCustodial)
             }
             .map { items in items.map { .swap($0) } }
-        
+
         onChain
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: onChainRelay)
             .disposed(by: disposeBag)
-        
+
         custodial
             .map { .loaded(next: $0) }
             .catchErrorJustReturn(.loaded(next: []))
             .bindAndCatch(to: custodialRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     // MARK: - Init
-    
+
     public init(fetcher: SwapActivityItemEventFetcherAPI,
                 fiatCurrencyProvider: FiatCurrencySettingsServiceAPI = resolve()) {
         self.fetcher = fetcher
         self.fiatCurrencyProvider = fiatCurrencyProvider
     }
 }
-

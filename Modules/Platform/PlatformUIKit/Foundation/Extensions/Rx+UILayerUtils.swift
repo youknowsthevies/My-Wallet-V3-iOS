@@ -19,19 +19,19 @@ extension Reactive where Base: CAShapeLayer {
             layer.path = path?.cgPath
         }
     }
-    
+
     public var strokeColor: Binder<UIColor?> {
         Binder(base) { layer, color in
             layer.strokeColor = color?.cgColor
         }
     }
-    
+
     public var fillColor: Binder<UIColor?> {
         Binder(base) { layer, color in
             layer.fillColor = color?.cgColor
         }
     }
-    
+
     public var lineWidth: Binder<CGFloat> {
         Binder(base) { layer, lineWidth in
             layer.lineWidth = lineWidth

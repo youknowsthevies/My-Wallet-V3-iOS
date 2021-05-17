@@ -14,7 +14,7 @@ public extension ObservableType {
             element
         }
     }
-    
+
     func mapToVoid() -> Observable<Void> {
         map { _ in () }
     }
@@ -26,7 +26,7 @@ public extension PrimitiveSequenceType where Trait == SingleTrait {
             element
         }
     }
-    
+
     func mapToVoid() -> Single<Void> {
         map { _ in () }
     }

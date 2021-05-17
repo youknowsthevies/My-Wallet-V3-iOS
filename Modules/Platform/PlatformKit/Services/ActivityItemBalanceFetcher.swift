@@ -7,25 +7,25 @@ import ToolKit
 public protocol ActivityItemBalanceFetching {
     /// The exchange service
     var exchange: PairExchangeServiceAPI { get }
-    
+
     /// The calculation state of the `MoneyValuePair`
     var calculationState: Observable<MoneyValuePairCalculationState> { get }
-    
+
     /// Trigger a refresh on the balance and exchange rate
     func refresh()
 }
 
 public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
-    
+
     public let exchange: PairExchangeServiceAPI
-    
+
     public var calculationState: Observable<MoneyValuePairCalculationState> {
         _ = setup
         return calculationStateRelay.asObservable()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let calculationStateRelay = BehaviorRelay<MoneyValuePairCalculationState>(value: .calculating)
     private let disposeBag = DisposeBag()
     private let moneyValue: MoneyValue
@@ -49,12 +49,12 @@ public final class ActivityItemBalanceFetcher: ActivityItemBalanceFetching {
     }()
 
     // MARK: - Private Properties
-        
+
     public init(exchange: PairExchangeServiceAPI, moneyValue: MoneyValue) {
         self.exchange = exchange
         self.moneyValue = moneyValue
     }
-    
+
     public func refresh() {
         exchange.fetchTriggerRelay.accept(())
     }

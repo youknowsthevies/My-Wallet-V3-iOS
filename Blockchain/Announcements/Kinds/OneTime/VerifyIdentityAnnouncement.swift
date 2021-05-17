@@ -10,9 +10,9 @@ import ToolKit
 
 /// Verify identity announcement
 final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.IdentityVerification.ctaButton
@@ -45,7 +45,7 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
             }
         )
     }
-    
+
     var shouldShow: Bool {
         guard isCompletingKyc else {
             return false
@@ -55,21 +55,21 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.verifyIdentity
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
-    
+
     private let user: NabuUserSunriverAirdropRegistering
     private let isCompletingKyc: Bool
-    
+
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(user: NabuUserSunriverAirdropRegistering,
          isCompletingKyc: Bool,
          cacheSuite: CacheSuite = resolve(),

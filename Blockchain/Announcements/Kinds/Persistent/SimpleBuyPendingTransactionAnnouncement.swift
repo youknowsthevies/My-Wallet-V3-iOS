@@ -30,7 +30,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
 
         let orderDetails = order!
         let assetCode = orderDetails.outputValue.currencyType.displayCode
-        
+
         let imageName: String
         let title: String
         let description: String
@@ -43,7 +43,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
             description = ""
             imageName = "icon-card"
         }
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(
@@ -90,4 +90,3 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
         self.analyticsRecorder = analyticsRecorder
     }
 }
-

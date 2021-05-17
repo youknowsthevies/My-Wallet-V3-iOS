@@ -3,9 +3,9 @@
 @testable import Blockchain
 
 final class MockFirebaseInstanceID: RemoteNotificationTokenFetching {
-    
+
     private let expectedResult: RemoteNotificationTokenFetchResult
-    
+
     init(expectedResult: RemoteNotificationTokenFetchResult) {
         self.expectedResult = expectedResult
     }

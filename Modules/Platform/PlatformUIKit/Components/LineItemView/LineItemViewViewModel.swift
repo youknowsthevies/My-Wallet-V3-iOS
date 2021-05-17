@@ -3,11 +3,11 @@
 public final class LineItemViewViewModel {
     let title: LabelContent
     let subtitle: LabelContent
-    
+
     public var identifier: String {
         "\(title.text) \(subtitle.text)"
     }
-    
+
     public init(title: String,
                 subtitle: String) {
         self.title = .init(
@@ -25,7 +25,7 @@ public final class LineItemViewViewModel {
             accessibility: .none
         )
     }
-    
+
     public init(title: LabelContent,
                 subtitle: LabelContent) {
         self.title = title

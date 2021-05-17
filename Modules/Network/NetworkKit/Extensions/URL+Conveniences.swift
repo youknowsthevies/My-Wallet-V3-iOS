@@ -3,7 +3,7 @@
 import Foundation
 
 extension URL {
-    
+
     /// Returns the query arguments of this URL as a key-value pair
     public var queryArgs: [String: String] {
         query?.queryArgs ?? [:]

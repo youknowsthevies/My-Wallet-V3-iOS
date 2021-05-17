@@ -4,13 +4,13 @@ import Foundation
 
 public protocol NavigationControllerAPI: ViewControllerAPI {
     func pushViewController(_ viewController: UIViewController, animated: Bool)
-    
+
     @discardableResult
     func popViewController(animated: Bool) -> UIViewController?
     func popToRootViewControllerAnimated(animated: Bool)
-    
+
     var viewControllers: [UIViewController] { get set }
-    
+
     var viewControllersCount: Int { get }
 }
 

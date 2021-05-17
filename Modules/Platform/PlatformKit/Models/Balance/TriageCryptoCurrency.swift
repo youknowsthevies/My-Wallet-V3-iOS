@@ -9,10 +9,10 @@ public enum TriageCryptoCurrency: Equatable {
     enum CryptoError: Error {
         case cryptoCurrencyAdditionRequired
     }
-    
+
     case blockstack
     case supported(CryptoCurrency)
-    
+
     public var code: String {
         switch self {
         case .blockstack:
@@ -21,7 +21,7 @@ public enum TriageCryptoCurrency: Equatable {
             return currency.code
         }
     }
-    
+
     public var displayCode: String {
         switch self {
         case .blockstack:
@@ -30,7 +30,7 @@ public enum TriageCryptoCurrency: Equatable {
             return currency.displayCode
         }
     }
-    
+
     public var cryptoCurrency: CryptoCurrency? {
         switch self {
         case .supported(let currency):
@@ -39,7 +39,7 @@ public enum TriageCryptoCurrency: Equatable {
             return nil
         }
     }
-    
+
     public var maxDecimalPlaces: Int {
         switch self {
         case .supported(let currency):
@@ -48,7 +48,7 @@ public enum TriageCryptoCurrency: Equatable {
             return 7
         }
     }
-    
+
     public var maxDisplayableDecimalPlaces: Int {
         switch self {
         case .supported(let currency):
@@ -57,12 +57,12 @@ public enum TriageCryptoCurrency: Equatable {
             return 7
         }
     }
-        
+
     public func displayValue(amount: BigInt, locale: Locale = Locale.current) -> String {
         let divisor = BigInt(10).power(maxDecimalPlaces)
         var majorValue = amount.decimalDivision(divisor: divisor)
         majorValue = majorValue.roundTo(places: maxDecimalPlaces)
-        
+
         let formatter = NumberFormatter.cryptoFormatter(
             locale: locale,
             minFractionDigits: 1,
@@ -76,7 +76,7 @@ extension TriageCryptoCurrency {
     public init(cryptoCurrency: CryptoCurrency) {
         self = .supported(cryptoCurrency)
     }
-    
+
     public init(code: String) throws {
         if let supportedCurrency = CryptoCurrency(code: code) {
             self = .supported(supportedCurrency)

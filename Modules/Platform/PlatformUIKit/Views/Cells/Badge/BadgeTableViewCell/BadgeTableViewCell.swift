@@ -4,9 +4,9 @@ import RxCocoa
 import RxSwift
 
 public final class BadgeTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public Properites
-    
+
     public var presenter: BadgeCellPresenting! {
         willSet {
             disposeBag = DisposeBag()
@@ -17,42 +17,42 @@ public final class BadgeTableViewCell: UITableViewCell {
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             presenter.labelContentPresenting.state
                 .compactMap { $0 }
                 .bindAndCatch(to: rx.content)
                 .disposed(by: disposeBag)
-            
+
             accessibility = presenter.accessibility
         }
     }
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet fileprivate var titleLabel: UILabel!
     @IBOutlet fileprivate var badgeView: BadgeView!
-    
+
     // MARK: - Private Properties
-    
+
     private var disposeBag = DisposeBag()
     fileprivate var badgeShimmeringView: ShimmeringView!
     fileprivate var titleShimmeringView: ShimmeringView!
-    
+
     // MARK: - Lifecycle
-    
+
     public override func awakeFromNib() {
         super.awakeFromNib()
         shimmer()
         titleLabel.textColor = .titleText
     }
-    
+
     // MARK: - Lifecycle
-    
+
     public override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }
-    
+
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
@@ -76,7 +76,7 @@ extension Reactive where Base: BadgeTableViewCell {
             let loading = {
                 view.badgeShimmeringView.start()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
@@ -94,13 +94,13 @@ extension Reactive where Base: BadgeTableViewCell {
             }
         }
     }
-    
+
     var content: Binder<LabelContent.State.Presentation> {
          Binder(base) { view, state in
             let loading = {
                 view.titleShimmeringView.start()
             }
-            
+
             switch state {
             case .loading:
                 UIView.animate(withDuration: 0.5,

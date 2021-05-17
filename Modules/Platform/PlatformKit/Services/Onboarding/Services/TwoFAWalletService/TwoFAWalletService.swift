@@ -4,41 +4,41 @@ import RxSwift
 import WalletPayloadKit
 
 public final class TwoFAWalletService: TwoFAWalletServiceAPI {
-    
+
     /// Potential errors that may arise during 2FA initialization
     public enum ServiceError: Error {
-        
+
         /// Cannot send 2FA code because the code is empty
         case missingCode
-        
+
         /// 2FA OTP code is wrong
         case wrongCode(attemptsLeft: Int)
-        
+
         /// The payload returned from the backend is empty
         case missingPayload
-        
+
         case accountLocked
     }
-    
+
     // MARK: - Properties
-    
+
     private let client: TwoFAWalletClientAPI
     private let repository: WalletRepositoryAPI
-    
+
     public init(client: TwoFAWalletClientAPI, repository: WalletRepositoryAPI) {
         self.client = client
         self.repository = repository
     }
-    
+
     public func send(code: String) -> Completable {
         // Trim whitespaces before verifying and sending
         let code = code.trimmingWhitespaces
-        
+
         /// Verify the code is not empty to save network call
         guard !code.isEmpty else {
             return .error(ServiceError.missingCode)
         }
-        
+
         /// 1. Zip guid and session-token
         /// 2. Verify they have values
         /// 3. Send payload request using client
@@ -47,7 +47,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
         /// *. Errors along the way should be caught and mapped
         return Single
             .zip(repository.guid, repository.sessionToken)
-            .map(weak: self) { (self, credentials) -> (guid: String, sessionToken: String) in
+            .map(weak: self) { (_, credentials) -> (guid: String, sessionToken: String) in
                 guard let guid = credentials.0 else {
                     throw MissingCredentialsError.guid
                 }

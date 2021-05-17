@@ -5,18 +5,18 @@ import RxSwift
 import UIKit
 
 final class DigitPadButtonView: UIView {
-    
+
     // MARK: - UI Properties
 
     @IBOutlet private var backgroundView: UIView!
     @IBOutlet private var button: UIButton!
-    
+
     // MARK: - Rx
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     var viewModel: DigitPadButtonViewModel! {
         didSet {
             backgroundView.layer.cornerRadius = viewModel.background.cornerRadius
@@ -30,9 +30,9 @@ final class DigitPadButtonView: UIView {
             case .none:
                 break
             }
-            
+
             button.accessibility = viewModel.content.accessibility
-            
+
             // Bind button taps to the view model tap relay
             button.rx.tap
                 .bindAndCatch(weak: self) { (self) in
@@ -41,34 +41,33 @@ final class DigitPadButtonView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         button.titleLabel?.font = .main(.medium, 32)
         backgroundView.clipsToBounds = true
         backgroundColor = .clear
     }
-    
+
     // MARK: - Button touches
-    
+
     @IBAction private func touchDown() {
         backgroundView.backgroundColor = viewModel.background.highlightColor
     }
-    
+
     @IBAction private func touchUp() {
         backgroundView.backgroundColor = .clear
     }
 }
-

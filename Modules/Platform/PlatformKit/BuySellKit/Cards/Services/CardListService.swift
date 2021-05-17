@@ -6,24 +6,24 @@ import RxSwift
 import ToolKit
 
 public protocol CardListServiceAPI: class {
-    
+
     /// Streams an updated array of cards.
     /// Expected to reactively stream the updated cards after
     var cards: Observable<[CardData]> { get }
 
     var cardsSingle: Single<[CardData]> { get }
-    
+
     func card(by identifier: String) -> Single<CardData?>
-        
+
     func fetchCards() -> Single<[CardData]>
-    
+
     func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool>
 }
 
 public final class CardListService: CardListServiceAPI {
-    
+
     // MARK: - Public properties
-        
+
     public var cards: Observable<[CardData]> {
         cardsRelay
             .flatMap(weak: self) { (self, cardData) -> Observable<[CardData]> in
@@ -39,7 +39,7 @@ public final class CardListService: CardListServiceAPI {
     public var cardsSingle: Single<[CardData]> {
         cards.take(1).asSingle()
     }
-    
+
     // MARK: - Private properties
 
     private let cardsRelay = BehaviorRelay<[CardData]?>(value: nil)
@@ -49,7 +49,7 @@ public final class CardListService: CardListServiceAPI {
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
 
     // MARK: - Setup
-    
+
     public init(client: CardListClientAPI = resolve(),
                 reactiveWallet: ReactiveWalletAPI = resolve(),
                 fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
@@ -64,7 +64,7 @@ public final class CardListService: CardListServiceAPI {
             self?.cardsRelay.accept(nil)
         }
     }
-    
+
     public func card(by identifier: String) -> Single<CardData?> {
         cards
             .take(1)
@@ -85,7 +85,7 @@ public final class CardListService: CardListServiceAPI {
     public func fetchCards() -> Single<[CardData]> {
         createFetchSingle()
     }
-    
+
     public func doesCardExist(number: String, expiryMonth: String, expiryYear: String) -> Single<Bool> {
         cards.take(1)
             .asSingle()

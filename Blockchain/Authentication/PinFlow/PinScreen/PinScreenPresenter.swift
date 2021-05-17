@@ -36,7 +36,7 @@ final class PinScreenPresenter {
                          CloudBackupConfiguring
 
     // MARK: - Properties
-    
+
     var trailingButton: Screen.Style.TrailingButton {
         var hash = ""
         if let info = Bundle.main.infoDictionary {
@@ -60,7 +60,7 @@ final class PinScreenPresenter {
             return .none
         }
     }
-    
+
     var leadingButton: Screen.Style.LeadingButton {
         switch flow {
         case .authenticate(from: let origin, logoutRouting: _):
@@ -76,7 +76,7 @@ final class PinScreenPresenter {
             return .none
         }
     }
-    
+
     var titleView: Screen.Style.TitleView {
         switch flow {
         case .change:
@@ -85,7 +85,7 @@ final class PinScreenPresenter {
             return .image(name: "logo_large", width: 40)
         }
     }
-    
+
     var barStyle: Screen.Style.Bar {
         switch flow {
         case .authenticate(from: .background, logoutRouting: _):
@@ -101,14 +101,14 @@ final class PinScreenPresenter {
     let backgroundColor: UIColor
 
     // MARK: Rx
-    
+
     private let disposeBag = DisposeBag()
-    
+
     private let pinProcessingObservable: Observable<Pin>
     let pin = BehaviorRelay<Pin?>(value: nil)
-    
+
     private let isProcessingRelay = BehaviorRelay<Bool>(value: false)
-    
+
     /// When `true`, the the presenter is pending for an update from the interactor
     var isProcessing: Observable<Bool> {
         isProcessingRelay
@@ -130,7 +130,7 @@ final class PinScreenPresenter {
     }
 
     let serverStatusTitle = LocalizationConstants.ServerStatus.mainTitle
-    
+
     // MARK: Routing
 
     private let performEffect: PinRouting.RoutingType.Effect
@@ -138,7 +138,7 @@ final class PinScreenPresenter {
     let backwardRouting: PinRouting.RoutingType.Backward!
 
     // MARK: Services
-    
+
     private let interactor: PinInteracting
     private let recorder: Recording
     private let appSettings: Settings
@@ -146,23 +146,23 @@ final class PinScreenPresenter {
     private let credentialsStore: CredentialsStoreAPI
 
     // MARK: - View Models
-    
+
     let digitPadViewModel: DigitPadViewModel
     let securePinViewModel: SecurePinViewModel
-    
+
     /// The flow which `useCase` is under
     let flow: PinRouting.Flow
-    
+
     /// The use case for the screen
     let useCase: PinScreenUseCase
-    
+
     /// Returns `true` in case the flow should show swipe to receive button
     var showsSwipeToReceive: Bool {
         useCase.isAuthenticateOnLogin && appSettings.swipeToReceiveEnabled
     }
-    
+
     // MARK: - Setup
-    
+
     init(useCase: PinScreenUseCase,
          flow: PinRouting.Flow,
          interactor: PinInteracting = PinInteractor(),
@@ -200,10 +200,10 @@ final class PinScreenPresenter {
             emptyPinColor = UIColor.white.withAlphaComponent(0.12)
             buttonHighlightColor = UIColor.white.withAlphaComponent(0.08)
         }
-        
+
         // Setup the bottom leading button (biometrics) if necessary
         let customButtonViewModel: DigitPadButtonViewModel
-        
+
         switch useCase {
         case .authenticateBeforeChanging, .authenticateOnLogin:
             let currentBiometricsType = biometryProvider.configuredType
@@ -230,7 +230,7 @@ final class PinScreenPresenter {
         case .authenticateBeforeEnablingBiometrics, .create, .select:
             customButtonViewModel = .empty
         }
-        
+
         // Setup the subject
         let securePinTitle: String
         switch useCase {
@@ -253,24 +253,24 @@ final class PinScreenPresenter {
             tint: contentColor,
             emptyPinColor: emptyPinColor
         )
-        
+
         // Bind PIN length to fill count
         digitPadViewModel.valueLengthObservable
             .bindAndCatch(to: securePinViewModel.fillCountRelay)
             .disposed(by: disposeBag)
-        
+
         // Get the pin string once it's filled, map it to `Pin`, unwrap it.
         pinProcessingObservable = digitPadViewModel.valueInsertedObservable
             .withLatestFrom(digitPadViewModel.valueObservable)
             .map { Pin(string: $0) }
             .filter { $0 != nil }
             .map { $0! }
-        
+
         // Bind pin processing to pin relay
         pinProcessingObservable
             .bindAndCatch(to: pin)
             .disposed(by: disposeBag)
-        
+
         // Bind tapping on the biometrics button to authentication using biometrics
         digitPadViewModel.customButtonTapObservable
             .bind { [unowned self] in
@@ -286,7 +286,7 @@ final class PinScreenPresenter {
     }
 
     func viewDidLoad() {
-        
+
         // TODO: Re-enable this once we have isolated the source of the crash
 //        interactor.serverStatus()
 //            .map { incident -> ServerStatusViewModel in
@@ -325,21 +325,21 @@ extension PinScreenPresenter {
 // MARK: - API & Functionality
 
 extension PinScreenPresenter {
-    
+
     /// Resets the pin
     /// - parameter value: the value to reset the pin to
     func reset(to value: String = "") {
         digitPadViewModel.reset(to: value)
     }
-    
+
     /// Authenticate using set biometrics
     func authenticateUsingBiometricsIfNeeded() {
-        
+
         // Verify the use case is authentication
         guard useCase.isAuthenticate else {
             return
         }
-        
+
         // Verify biometrics authenticators are enabled on device and configured in app
         guard biometryProvider.configurationStatus.isConfigured else {
             return
@@ -365,66 +365,66 @@ extension PinScreenPresenter {
             )
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Changing/First Time Setting Pin
-    
+
     /// Validates that the 1st pin entered by the user during the change pin flow,
     /// or the first time the user is setting a pin, is valid.
     func validateFirstEntry() -> Completable {
         Completable.create { [unowned self] completable in
-            
+
             // Check for validity
             guard let pin = self.pin.value, pin.isValid else {
                 completable(.error(PinError.invalid))
                 return Disposables.create()
             }
-            
+
             // Check that the current pin is different from the previous pin
             guard pin != self.useCase.pin else {
                 completable(.error(PinError.identicalToPrevious))
                 return Disposables.create()
             }
-            
+
             // A completion to be executed in an case
             let completion = { [unowned self] in
                 self.forwardRouting(.pin(value: pin))
                 completable(.completed)
             }
-                        
+
             completion()
             return Disposables.create()
         }
     }
-    
+
     /// Validates that the 2nd pin entered during the create/change pin flow matches the
     /// 1st pin entered, and if so, it will proceed to change the user's pin.
     func validateSecondEntry() -> Completable {
         Completable.create { [weak self] completable in
             guard let self = self else { return Disposables.create() }
-            
+
             // Extract both current and previous pins before comparing them. Both MUST NOT be nil at that point
             let previousPin = self.useCase.pin!
             let pin = self.pin.value!
-            
+
             // Current pin must be equal to the previous pin
             guard pin == previousPin else {
                 completable(.error(PinError.pinMismatch(recovery: self.backwardRouting)))
                 return Disposables.create()
             }
-            
+
             // Generate a random key-pair
             guard let keyPair = try? PinStoreKeyPair.generateNewKeyPair() else {
                 completable(.error(PinError.custom(LocalizationConstants.Pin.genericError)))
                 return Disposables.create()
             }
-            
+
             // Create the pin payload
             let payload = PinPayload(pinCode: pin.toString,
                                      keyPair: keyPair,
                                      persistsLocally: self.biometryProvider.configurationStatus.isConfigured)
 
             self.isProcessingRelay.accept(true)
-            
+
             // Create the pin in the remote store
             self.interactor
                 .create(using: payload)
@@ -447,10 +447,10 @@ extension PinScreenPresenter {
             return Disposables.create()
         }
     }
-    
+
     /// Invoked when user is authenticating himself using his PIN, before selecting a new one
     func verifyPinBeforeChanging() -> Completable {
-        
+
         // Pin MUST NOT be nil at that point as it accompanies the use-case.
         let pin = self.pin.value!
 
@@ -547,21 +547,21 @@ extension PinScreenPresenter {
 // MARK: - Accessors
 
 extension PinScreenPresenter {
-    
+
     /// Opts out the user
     func logout() {
         interactor.hasLogoutAttempted = true
         flow.logoutRouting?()
         credentialsStore.erase()
     }
-    
+
     // Should be called after setting pin successfully
     func didSetPinSuccessfully() {
         forwardRouting(.pin(value: pin.value!))
     }
-    
+
     // MARK: - Pin Validation
-    
+
     /// Validates if the pin is correct, by generating payload (i.e. pin code and pin key combination)
     /// - Returns: Single wrapping the pin decryption key
     private func verify() -> Single<String> {
@@ -571,19 +571,19 @@ extension PinScreenPresenter {
             }
             return .error(PinError.noInternetConnection(recovery: reset))
         }
-        
+
         guard let pinKey = appSettings.pinKey else {
             return .error(PinError.nullifiedPinKey)
         }
-        
+
         // Pin MUST NOT be nil at that point
         let pin = self.pin.value!
-        
+
         // Create a pin payload to be validated by the interactor
         let payload = PinPayload(pinCode: pin.toString,
                                  pinKey: pinKey,
                                  persistsLocally: useCase.isAuthenticateBeforeEnablingBiometrics)
-        
+
         isProcessingRelay.accept(true)
 
         // Ask the interactor to validate the payload
@@ -598,7 +598,7 @@ extension PinScreenPresenter {
 /// the presenter only decides what alert model should be displayed
 /// and returns it to the component that requested it.
 extension PinScreenPresenter {
-    
+
     /// Logout alert model
     var logoutAlertModel: AlertModel {
         let okButton = AlertAction(style: .confirm(LocalizationConstants.okString))
@@ -609,7 +609,7 @@ extension PinScreenPresenter {
                           image: image,
                           style: .sheet)
     }
-    
+
     /// Enabling biometrics alert model (if biometrics is configurable)
     var biometricsAlertModel: AlertModel? {
         let biometricsStatus = biometryProvider.configurationStatus
@@ -618,7 +618,7 @@ extension PinScreenPresenter {
         guard biometricsStatus.isConfigurable else {
             return nil
         }
-        
+
         let okButtonAction = { [unowned self] in
             self.interactor.persist(pin: self.pin.value!)
         }
@@ -642,13 +642,13 @@ extension PinScreenPresenter {
                                style: .sheet)
         return alert
     }
-    
+
     /// Set pin success alert model
     var setPinSuccessAlertModel: AlertModel? {
         guard flow.isChange else {
             return nil
         }
-        
+
         let okButton = AlertAction(style: .confirm(LocalizationConstants.continueString))
         let image = UIImage(named: "success_icon")!
         let alert = AlertModel(headline: LocalizationConstants.Pin.pinSuccessfullySet,

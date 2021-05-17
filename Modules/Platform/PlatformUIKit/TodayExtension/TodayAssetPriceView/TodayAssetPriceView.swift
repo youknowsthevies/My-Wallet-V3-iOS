@@ -4,9 +4,9 @@ import RxCocoa
 import RxSwift
 
 public final class TodayAssetPriceView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var presenter: TodayAssetPriceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -18,33 +18,33 @@ public final class TodayAssetPriceView: UIView {
             presenter.alignment
                 .drive(stackView.rx.alignment)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .compactMap { $0.value }
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     fileprivate let priceLabel = UILabel()
     fileprivate let changeLabel = UILabel()
     private let stackView = UIStackView()
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         backgroundColor = .clear
         addSubview(stackView)
@@ -52,7 +52,7 @@ public final class TodayAssetPriceView: UIView {
         stackView.layout(dimension: .height, to: 32, priority: .defaultLow)
         stackView.addArrangedSubview(priceLabel)
         stackView.addArrangedSubview(changeLabel)
-        
+
         stackView.distribution = .fillProportionally
         stackView.axis = .vertical
         stackView.spacing = 4.0

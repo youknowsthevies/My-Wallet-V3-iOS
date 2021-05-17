@@ -9,14 +9,14 @@ import RxSwift
 public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable, HistoricalTransaction, Tokenized {
 
     public typealias Address = EthereumAddress
-    
+
     /// There's not much point to `token` in this case since
     /// for ERC20 paging we use the `wallet.transactions.count` to determine
     /// if we need to fetch additional transactions.
     public var token: String {
         transactionHash
     }
-    
+
     public var identifier: String {
         transactionHash
     }
@@ -29,7 +29,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
     public var fee: CryptoValue?
     public var historicalFiatValue: FiatValue?
     public var memo: String?
-    
+
     public init(
         fromAddress: EthereumAddress,
         toAddress: EthereumAddress,
@@ -49,7 +49,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         self.fee = fee
         self.memo = memo
     }
-    
+
     public func make(from direction: Direction, fee: CryptoValue? = nil, memo: String? = nil) -> ERC20HistoricalTransaction<Token> {
         ERC20HistoricalTransaction<Token>(
             fromAddress: fromAddress,
@@ -62,9 +62,9 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             memo: memo
         )
     }
-    
+
     // MARK: Decodable
-    
+
     enum CodingKeys: String, CodingKey {
         case transactionHash
         case timestamp
@@ -72,7 +72,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         case to
         case value
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let from = try values.decode(String.self, forKey: .from)
@@ -88,7 +88,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         } else {
             createdAt = Date()
         }
-        
+
         // ⚠️ NOTE: The direction is populated when you fetch transactions
         // and the user's ETH address is passed in. That's the only way to know
         // whether or not it is a debit or credit.
@@ -99,9 +99,9 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         fee = nil
         memo = nil
     }
-    
+
     // MARK: Hashable
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(fromAddress)
         hasher.combine(toAddress)
@@ -110,9 +110,9 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         hasher.combine(transactionHash)
         hasher.combine(createdAt)
     }
-    
+
     // MARK: Private
-    
+
     struct ERC20TransactionDetails<T: ERC20Token>: Decodable {
         let gasPrice: BigInt
         let gasLimit: BigInt
@@ -126,7 +126,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
         }
 
         // MARK: Decodable
-        
+
         enum CodingKeys: String, CodingKey {
             case gasPrice
             case gasLimit
@@ -134,7 +134,7 @@ public struct ERC20HistoricalTransaction<Token: ERC20Token>: Decodable, Hashable
             case success
             case data
         }
-        
+
         init(from decoder: Decoder) throws {
             let values = try decoder.container(keyedBy: CodingKeys.self)
             let limit = try values.decode(String.self, forKey: .gasLimit)

@@ -14,28 +14,28 @@ import RxSwift
 /// and if there should be a single service per asset, it makes sense to place
 /// that it inside a specialized container.
 final class DataProvider: DataProviding {
-        
+
     /// The default container
     @Inject static var `default`: DataProvider
-    
+
     /// Historical service that provides past prices for a given asset type
     let historicalPrices: HistoricalFiatPriceProviding
-    
+
     /// Exchange service for any asset
     let exchange: ExchangeProviding
-    
+
     /// Balance change service
     let balanceChange: BalanceChangeProviding
-    
+
     /// Balance service for any asset
     let balance: BalanceProviding
-    
+
     let syncing: PortfolioSyncingService
-    
+
     init(featureFetching: FeatureFetchingConfiguring = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          enabledCurrencies: EnabledCurrenciesServiceAPI = resolve()) {
-        
+
         var fiatExchangeServices: [FiatCurrency: PairExchangeServiceAPI] = [:]
         for fiatCurrency in enabledCurrencies.allEnabledFiatCurrencies {
             fiatExchangeServices[fiatCurrency] = PairExchangeService(
@@ -43,7 +43,7 @@ final class DataProvider: DataProviding {
                 fiatCurrencyService: fiatCurrencyService
             )
         }
-        
+
         var cryptoExchangeServices: [CryptoCurrency: PairExchangeServiceAPI] = [:]
         for cryptoCurrency in CryptoCurrency.allCases {
             cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
@@ -51,7 +51,7 @@ final class DataProvider: DataProviding {
                 fiatCurrencyService: fiatCurrencyService
             )
         }
-        
+
         self.exchange = ExchangeProvider(
             fiats: fiatExchangeServices,
             cryptos: cryptoExchangeServices
@@ -112,7 +112,7 @@ final class DataProvider: DataProviding {
             exchangeAPI: exchange[CryptoCurrency.yearnFinance],
             fiatCurrencyService: fiatCurrencyService
         )
-        
+
         self.historicalPrices = HistoricalFiatPriceProvider(
             aave: aaveHistoricalFiatService,
             algorand: algorandHistoricalFiatService,
@@ -134,7 +134,7 @@ final class DataProvider: DataProviding {
         let savingsBalanceStatesFetcher = CustodialBalanceStatesFetcher(
             savingAccountService: resolve()
         )
-        
+
         var fiatBalanceFetchers: [FiatCurrency: AssetBalanceFetching] = [:]
         for fiatCurrency in enabledCurrencies.allEnabledFiatCurrencies {
             let currencyType = CurrencyType.fiat(fiatCurrency)
@@ -307,7 +307,7 @@ final class DataProvider: DataProviding {
             ),
             exchange: exchange[CurrencyType.crypto(.bitcoinCash)]
         )
-        
+
         let cryptoBalanceFetchers: [CryptoCurrency: AssetBalanceFetching] = [
             .aave: aaveBalanceFetcher,
             .algorand: algorandBalanceFetcher,
@@ -321,14 +321,14 @@ final class DataProvider: DataProviding {
             .wDGLD: wDGLDBalanceFetcher,
             .yearnFinance: yearnFinanceBalanceFetcher
         ]
-        
+
         let balance = BalanceProvider(
             fiats: fiatBalanceFetchers,
             cryptos: cryptoBalanceFetchers
         )
-        
+
         self.balance = balance
-        
+
         balanceChange = BalanceChangeProvider(
             currencies: enabledCurrencies.allEnabledCryptoCurrencies,
             aave: AssetBalanceChangeProvider(
@@ -387,7 +387,7 @@ final class DataProvider: DataProviding {
                 cryptoCurrency: .yearnFinance
             )
         )
-        
+
         syncing = .init(
             balanceProviding: balance,
             balanceChangeProviding: balanceChange,

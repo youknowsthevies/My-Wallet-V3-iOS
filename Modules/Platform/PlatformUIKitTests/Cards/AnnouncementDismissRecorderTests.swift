@@ -15,7 +15,7 @@ extension AnnouncementRecord.DisplayState {
             return true
         }
     }
-    
+
     var isShown: Bool {
         switch self {
         case .hide, .conditional:
@@ -24,7 +24,7 @@ extension AnnouncementRecord.DisplayState {
             return true
         }
     }
-    
+
     var isConditional: Bool {
         switch self {
         case .conditional:

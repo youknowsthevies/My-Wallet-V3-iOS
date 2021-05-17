@@ -4,16 +4,16 @@ import RxRelay
 import RxSwift
 
 public final class RecoveryPhraseVerifyingService: RecoveryPhraseVerifyingServiceAPI {
-    
+
     public var phraseComponents: [String] = []
     public var selection: [String] = []
-    
+
     private let verificationService: MnemonicVerificationService
-    
+
     public init(wallet: WalletRecoveryVerifing) {
         self.verificationService = MnemonicVerificationService(walletRecoveryVerifier: wallet)
     }
-    
+
     public func markBackupVerified() -> Completable {
         verificationService.verifyMnemonicAndSync()
     }

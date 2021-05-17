@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension SellRouterInteractor.State: CustomDebugStringConvertible {
-    
+
     var debugDescription: String {
         switch self {
         case .inactive:

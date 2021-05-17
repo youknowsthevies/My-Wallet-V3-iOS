@@ -12,7 +12,7 @@ protocol LinkedBanksSelectionBuildable {
 final class LinkedBanksSelectionBuilder: LinkedBanksSelectionBuildable {
 
     private let currency: FiatCurrency
-    
+
     public init(currency: FiatCurrency) {
         self.currency = currency
     }

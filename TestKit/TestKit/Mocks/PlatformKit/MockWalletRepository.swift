@@ -8,12 +8,12 @@ import ToolKit
 @testable import PlatformKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
-    
+
     var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
         expectedOfflineTokenResponse
             .publisher
     }
-    
+
     func setPublisher(
         offlineTokenResponse: NabuOfflineTokenResponse
     ) -> AnyPublisher<Void, CredentialWritingError> {
@@ -21,27 +21,27 @@ final class MockWalletRepository: WalletRepositoryAPI {
             self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
         }
     }
-    
+
     var guidPublisher: AnyPublisher<String?, Never> {
         .just(expectedGuid)
     }
-    
+
     func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
             self?.expectedGuid = guid
         }
     }
-    
+
     var sharedKeyPublisher: AnyPublisher<String?, Never> {
         .just(expectedSharedKey)
     }
-    
+
     func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
             self?.expectedSharedKey = sharedKey
         }
     }
-    
+
     var expectedSessionToken: String?
     var expectedAuthenticatorType: AuthenticatorType = .standard
     var expectedGuid: String?
@@ -62,25 +62,25 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
         expectedOfflineTokenResponse.single
     }
-    
+
     func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
         perform { [weak self] in
             self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
         }
     }
-    
+
     func set(sessionToken: String) -> Completable {
         perform { [weak self] in
             self?.expectedSessionToken = sessionToken
         }
     }
-    
+
     func set(sharedKey: String) -> Completable {
         perform { [weak self] in
             self?.expectedSharedKey = sharedKey
         }
     }
-    
+
     func set(password: String) -> Completable {
         perform { [weak self] in
             self?.expectedPassword = password
@@ -92,29 +92,29 @@ final class MockWalletRepository: WalletRepositoryAPI {
             self?.expectedGuid = guid
         }
     }
-    
+
     func set(syncPubKeys: Bool) -> Completable {
         perform { [weak self] in
             self?.expectedSyncPubKeys = syncPubKeys
         }
     }
-    
+
     func set(language: String) -> Completable {
         .empty()
     }
-    
+
     func set(authenticatorType: AuthenticatorType) -> Completable {
         perform { [weak self] in
             self?.expectedAuthenticatorType = authenticatorType
         }
     }
-    
+
     func set(payload: String) -> Completable {
         perform { [weak self] in
             self?.expectedPayload = payload
         }
     }
-    
+
     func cleanSessionToken() -> Completable {
         perform { [weak self] in
             self?.expectedSessionToken = nil
@@ -133,7 +133,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
                 return Disposables.create()
             }
     }
-    
+
     private func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
         AnyPublisher
             .create { observer -> AnyCancellable in

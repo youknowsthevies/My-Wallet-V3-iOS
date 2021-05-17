@@ -7,16 +7,16 @@ import RxSwift
 import ToolKit
 
 final class SettingsService: SettingsServiceAPI {
-    
+
     // MARK: - Exposed Properties
-    
+
     /// Streams the first available settings element
     var valueSingle: Single<WalletSettings> {
         valueObservable
             .take(1)
             .asSingle()
     }
-    
+
     var valueObservable: Observable<WalletSettings> {
         settingsRelay
             .flatMap(weak: self) { (self, settings) -> Observable<WalletSettings> in
@@ -27,24 +27,24 @@ final class SettingsService: SettingsServiceAPI {
             }
             .distinctUntilChanged()
     }
-    
+
     // MARK: - Private Properties
 
     private let client: SettingsClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
-    
+
     private let settingsRelay = BehaviorRelay<WalletSettings?>(value: nil)
     private let disposeBag = DisposeBag()
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
     private let semaphore = DispatchSemaphore(value: 1)
-        
+
     // MARK: - Setup
-    
+
     init(client: SettingsClientAPI = resolve(),
          credentialsRepository: CredentialsRepositoryAPI = resolve()) {
         self.client = client
         self.credentialsRepository = credentialsRepository
-        
+
         NotificationCenter.when(.login) { [weak self] _ in
             self?.settingsRelay.accept(nil)
         }
@@ -53,9 +53,9 @@ final class SettingsService: SettingsServiceAPI {
             self?.settingsRelay.accept(nil)
         }
     }
-    
+
     // MARK: - Public Methods
-        
+
     func fetch(force: Bool) -> Single<WalletSettings> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
@@ -76,7 +76,7 @@ final class SettingsService: SettingsServiceAPI {
                         observer(.error(error))
                     }
                 }
-            
+
             return Disposables.create {
                 disposable.dispose()
                 self.semaphore.signal()
@@ -84,7 +84,7 @@ final class SettingsService: SettingsServiceAPI {
         }
         .subscribeOn(scheduler)
     }
-    
+
     private func fetchSettings(settings: WalletSettings?, force: Bool) -> Single<WalletSettings> {
         guard force || settings == nil else { return Single.just(settings!) }
         return credentialsRepository.credentials
@@ -102,9 +102,9 @@ final class SettingsService: SettingsServiceAPI {
 }
 
 extension SettingsService {
-    
+
     // MARK: - SettingsServiceCombineAPI
-    
+
     var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
         valueSingle
             .asObservable()
@@ -117,7 +117,7 @@ extension SettingsService {
             }
             .eraseToAnyPublisher()
     }
-    
+
     var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
         valueObservable
             .publisher
@@ -129,7 +129,7 @@ extension SettingsService {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError> {
         fetch(force: force)
             .asObservable()
@@ -158,7 +158,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             }
             .distinctUntilChanged()
     }
-    
+
     var fiatCurrency: Single<FiatCurrency> {
         valueSingle
             .map { settings -> FiatCurrency in
@@ -168,7 +168,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
                 return currency
             }
     }
-    
+
     func update(currency: FiatCurrency, context: FlowContext) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
@@ -184,7 +184,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             }
             .asCompletable()
     }
-    
+
     @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencyServiceAPI`")
     var legacyCurrency: FiatCurrency? {
         settingsRelay.value?.currency
@@ -198,7 +198,7 @@ extension SettingsService: EmailSettingsServiceAPI {
     var email: Single<String> {
         valueSingle.map { $0.email }
     }
-    
+
     func update(email: String, context: FlowContext?) -> Completable {
         credentialsRepository.credentials
             .flatMapCompletable(weak: self) { (self, payload) -> Completable in
@@ -210,7 +210,7 @@ extension SettingsService: EmailSettingsServiceAPI {
                 )
             }
     }
-    
+
     func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError> {
         credentialsRepository.fetchCredentials()
             .mapError(EmailSettingsServiceError.credentialsError)

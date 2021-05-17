@@ -8,15 +8,15 @@ import RxSwift
 /// subview in a `UITableViewCell` for when the user needs to select
 /// a wallet for a specific action (e.g. `send`).
 final class WalletView: UIView {
-    
+
     let badgeImageView = BadgeImageView()
     let thumbSideImageView = BadgeImageView()
     let nameLabel = UILabel()
     let balanceLabel = UILabel()
     let stackView = UIStackView()
-    
+
     // MARK: - Injected
-    
+
     public var viewModel: WalletViewViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -28,40 +28,40 @@ final class WalletView: UIView {
             Driver.just(viewModel.badgeImageViewModel)
                 .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             Driver.just(viewModel.accountTypeBadge)
                 .drive(thumbSideImageView.rx.viewModel)
                 .disposed(by: disposeBag)
-            
+
             Driver.just(viewModel.nameLabelContent)
                 .drive(nameLabel.rx.content)
                 .disposed(by: disposeBag)
-            
+
             viewModel
                 .balanceLabelContent
                 .drive(balanceLabel.rx.content)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     public convenience init() {
         self.init(frame: .zero)
     }
-    
+
     private func setup() {
         addSubview(badgeImageView)
         addSubview(stackView)
@@ -69,15 +69,15 @@ final class WalletView: UIView {
         [nameLabel, balanceLabel].forEach { [stackView] label in
             stackView.addArrangedSubview(label)
         }
-        
+
         stackView.axis = .vertical
         stackView.spacing = 4.0
         stackView.distribution = .fill
-        
+
         thumbSideImageView.layout(size: .edge(16))
         thumbSideImageView.layout(to: .trailing, of: badgeImageView, offset: 4)
         thumbSideImageView.layout(to: .bottom, of: badgeImageView, offset: 4)
-        
+
         badgeImageView.layout(size: .edge(32.0))
         badgeImageView.layout(to: .centerY, of: self)
         badgeImageView.layoutToSuperview(.leading)

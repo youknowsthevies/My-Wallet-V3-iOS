@@ -16,16 +16,16 @@ extension SwapActivityServiceAPI {
 }
 
 final class SwapActivityService: SwapActivityServiceAPI {
-    
+
     private let client: SwapClientAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
-    
+
     init(client: SwapClientAPI = resolve(),
          fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
     }
-    
+
     func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]> {
         fiatCurrencyProvider.fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
@@ -35,7 +35,7 @@ final class SwapActivityService: SwapActivityServiceAPI {
                 )
             }
     }
-    
+
     func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]> {
         fiatCurrencyProvider.fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in

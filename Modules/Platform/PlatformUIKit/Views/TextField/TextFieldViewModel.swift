@@ -8,33 +8,33 @@ import ToolKit
 
 /// A view model for text field
 public class TextFieldViewModel {
-    
+
     // MARK: - Type
 
     /// The trailing accessory view.
     /// Can potentially support, images, labels and even custom views
     public enum AccessoryContentType: Equatable {
-        
+
         /// Image accessory view
         case badgeImageView(BadgeImageViewModel)
-        
+
         /// Label accessory view
         case badgeLabel(BadgeViewModel)
-        
+
         /// Empty accessory view
         case empty
     }
-    
+
     public enum Focus: Equatable {
         public enum OffSource: Equatable {
             case returnTapped
             case endEditing
             case setup
         }
-        
+
         case on
         case off(OffSource)
-        
+
         var isOn: Bool {
             switch self {
             case .on:
@@ -44,21 +44,21 @@ public class TextFieldViewModel {
             }
         }
     }
-    
+
     struct Mode: Equatable {
-        
+
         /// The title text
         let title: String
-        
+
         /// The title color
         let titleColor: Color
-        
+
         /// The border color
         let borderColor: Color
-        
+
         /// The cursor color
         let cursorColor: Color
-        
+
         init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String) {
             if shouldShowHint && !hint.isEmpty {
                 self.title = hint
@@ -78,7 +78,7 @@ public class TextFieldViewModel {
             }
         }
     }
-        
+
     private typealias LocalizedString = LocalizationConstants.TextField
 
     // MARK: Properties
@@ -87,7 +87,7 @@ public class TextFieldViewModel {
     public var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     /// Should text field gain / drop focus 
     public let focusRelay = BehaviorRelay<Focus>(value: .off(.setup))
     public var focus: Driver<Focus> {
@@ -95,33 +95,33 @@ public class TextFieldViewModel {
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     /// The content type of the `UITextField`
     var contentType: Driver<UITextContentType?> {
         contentTypeRelay
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     /// The keyboard type of the `UITextField`
     var keyboardType: Driver<UIKeyboardType> {
         keyboardTypeRelay
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     /// The isSecureTextEntry of the `UITextField`
     var isSecure: Driver<Bool> {
         isSecureRelay
             .asDriver()
             .distinctUntilChanged()
     }
-    
+
     /// The color of the content (.mutedText, .textFieldText)
     var textColor: Driver<UIColor> {
         textColorRelay.asDriver()
     }
-        
+
     /// A text to display below the text field in case of an error
     var mode: Driver<Mode> {
         Driver
@@ -147,17 +147,17 @@ public class TextFieldViewModel {
     var isEnabled: Observable<Bool> {
         isEnabledRelay.asObservable()
     }
-    
+
     /// The placeholder of the text-field
     public let placeholderRelay: BehaviorRelay<NSAttributedString>
     var placeholder: Driver<NSAttributedString> {
         placeholderRelay.asDriver()
     }
-    
+
     var autocapitalizationType: Observable<UITextAutocapitalizationType> {
         autocapitalizationTypeRelay.asObservable()
     }
-                
+
     /// A relay for accessory content type
     let accessoryContentTypeRelay = BehaviorRelay<AccessoryContentType>(value: .empty)
     var accessoryContentType: Observable<AccessoryContentType> {
@@ -172,12 +172,12 @@ public class TextFieldViewModel {
             .map { $0?.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
     }
-    
+
     /// Streams events when the accessory is being tapped
     public var tap: Signal<Void> {
         tapRelay.asSignal()
     }
-    
+
     /// Streams events when the accessory is being tapped
     public let tapRelay = PublishRelay<Void>()
 
@@ -188,9 +188,9 @@ public class TextFieldViewModel {
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .distinctUntilChanged()
     }
-        
+
     let showHintIfNeededRelay = BehaviorRelay(value: false)
-    
+
     let titleFont = UIFont.main(.medium, 14)
     let textFont = UIFont.main(.medium, 16)
     let titleRelay: BehaviorRelay<String>
@@ -205,9 +205,9 @@ public class TextFieldViewModel {
     private let hintRelay = BehaviorRelay<String>(value: "")
     private let stateRelay = BehaviorRelay<State>(value: .empty)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     let returnKeyType: UIReturnKeyType
     let validator: TextValidating
     let formatter: TextFormatting
@@ -215,9 +215,9 @@ public class TextFieldViewModel {
     let type: TextFieldType
     let accessibility: Accessibility
     let messageRecorder: MessageRecording
-    
+
     // MARK: - Setup
-    
+
     public init(with type: TextFieldType,
                 accessibilitySuffix: String? = nil,
                 returnKeyType: UIReturnKeyType = .done,
@@ -230,7 +230,7 @@ public class TextFieldViewModel {
         self.validator = validator
         self.textMatcher = textMatcher
         self.type = type
-        
+
         let placeholder = NSAttributedString(
             string: type.placeholder,
             attributes: [
@@ -238,20 +238,20 @@ public class TextFieldViewModel {
                 .font: textFont
             ]
         )
-        
+
         autocapitalizationTypeRelay = BehaviorRelay(value: type.autocapitalizationType)
         placeholderRelay = BehaviorRelay(value: placeholder)
         titleRelay = BehaviorRelay(value: type.title)
         contentTypeRelay = BehaviorRelay(value: type.contentType)
         keyboardTypeRelay = BehaviorRelay(value: type.keyboardType)
         isSecureRelay.accept(type.isSecure)
-        
+
         if let suffix = accessibilitySuffix {
             accessibility = type.accessibility.with(idSuffix: ".\(suffix)")
         } else {
             accessibility = type.accessibility
         }
-        
+
         self.returnKeyType = returnKeyType
 
         originalText
@@ -277,7 +277,7 @@ public class TextFieldViewModel {
         } else {
             matchState = .just(.valid)
         }
-                
+
         Observable
             .combineLatest(
                 matchState,
@@ -293,13 +293,13 @@ public class TextFieldViewModel {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         self.state
             .map { $0.hint ?? "" }
             .bindAndCatch(to: hintRelay)
             .disposed(by: disposeBag)
     }
-    
+
     public func set(next: TextFieldViewModel) {
         focusRelay
             .filter { $0 == .off(.returnTapped) }
@@ -307,29 +307,29 @@ public class TextFieldViewModel {
             .bindAndCatch(to: next.focusRelay)
             .disposed(by: disposeBag)
     }
-    
+
     func textFieldDidEndEditing() {
         focusRelay.accept(.off(.endEditing))
         showHintIfNeededRelay.accept(true)
     }
-    
+
     func textFieldShouldReturn() -> Bool {
         focusRelay.accept(.off(.returnTapped))
         return true
     }
-    
+
     func textFieldShouldBeginEditing() -> Bool {
         focusRelay.accept(.on)
         return true
     }
-    
+
     /// Should be called upon editing the text field
     func textFieldEdited(with value: String) {
         messageRecorder.record("Text field \(type.debugDescription) edited")
         textRelay.accept(value)
         showHintIfNeededRelay.accept(type.showsHintWhileTyping)
     }
-    
+
     func editIfNecessary(_ text: String, operation: TextInputOperation) -> TextFormattingSource {
         let processResult = formatter.format(text, operation: operation)
         switch processResult {
@@ -343,22 +343,22 @@ public class TextFieldViewModel {
 // MARK: - State
 
 extension TextFieldViewModel {
-    
+
     /// A state of a single text field
     public enum State {
-        
+
         /// Valid state - validation is passing
         case valid(value: String)
-        
+
         /// Empty field
         case empty
-        
+
         /// Mismatch error
         case mismatch(reason: String?)
-        
+
         /// Invalid state - validation is not passing.
         case invalid(reason: String?)
-    
+
         var hint: String? {
             switch self {
             case .invalid(reason: let reason), .mismatch(reason: let reason):
@@ -367,7 +367,7 @@ extension TextFieldViewModel {
                 return nil
             }
         }
-        
+
         public var isEmpty: Bool {
             switch self {
             case .empty:
@@ -385,7 +385,7 @@ extension TextFieldViewModel {
                 return false
             }
         }
-        
+
         var isMismatch: Bool {
             switch self {
             case .mismatch:
@@ -394,7 +394,7 @@ extension TextFieldViewModel {
                 return false
             }
         }
-        
+
         /// Returns the text value if there is a valid value
         public var value: String? {
             switch self {
@@ -404,7 +404,7 @@ extension TextFieldViewModel {
                 return nil
             }
         }
-                
+
         /// Returns whether or not the currenty entry is valid
         public var isValid: Bool {
             switch self {
@@ -414,7 +414,7 @@ extension TextFieldViewModel {
                 return false
             }
         }
-        
+
         /// Reducer for possible validation states
         init(matchState: TextValidationState, validationState: TextValidationState, text: String) {
             guard !text.isEmpty else {

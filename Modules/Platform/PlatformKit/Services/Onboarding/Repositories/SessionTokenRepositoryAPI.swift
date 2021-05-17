@@ -3,16 +3,16 @@
 import RxSwift
 
 public protocol SessionTokenRepositoryAPI: class {
-    
+
     /// Streams `Bool` indicating whether a session token is currently cached in the repo
     var hasSessionToken: Single<Bool> { get }
-    
+
     /// Streams the cached session token or `nil` if it is not cached
     var sessionToken: Single<String?> { get }
-    
+
     /// Sets the session token
     func set(sessionToken: String) -> Completable
-    
+
     /// Cleans the session token
     func cleanSessionToken() -> Completable
 }

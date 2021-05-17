@@ -19,7 +19,7 @@ public final class ShimmeringView: UIView {
         addSubview(view)
         return view
     }()
-    
+
     public var isShimmering: Bool {
         animatingView.isShimmering
     }
@@ -55,7 +55,7 @@ public final class ShimmeringView: UIView {
         layoutIfNeeded()
         start()
     }
-    
+
     public init(in superview: UIView,
                 centeredIn anchorView: UIView,
                 size: CGSize,
@@ -92,7 +92,7 @@ public final class ShimmeringView: UIView {
         animatingView.startShimmering(color: dark)
         alpha = 1
     }
-    
+
     public func stop() {
         alpha = 0
         animatingView.stopShimmering()
@@ -103,4 +103,3 @@ public final class ShimmeringView: UIView {
         animatingView.layoutShimmeringFrameIfNeeded()
     }
 }
-

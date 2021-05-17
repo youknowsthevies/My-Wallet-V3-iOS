@@ -6,7 +6,7 @@ import XCTest
 @testable import PlatformKit
 
 class CryptoValueTests: XCTestCase {
-    
+
     func testMajorValue() {
         XCTAssertEqual(Decimal(100), CryptoValue.create(minor: "10000000000", currency: .bitcoin)!.displayMajorValue)
         XCTAssertEqual(Decimal(10), CryptoValue.bitcoin(satoshis: 1_000_000_000).displayMajorValue)
@@ -24,7 +24,7 @@ class CryptoValueTests: XCTestCase {
         // (i.e. the underlying value will be something like 4.9099392300000234821
         XCTAssertEqual("4.90993923", "\(CryptoValue.bitcoin(satoshis: 490993923).displayMajorValue)")
     }
-    
+
     func testCreateFromMajorBitcoin() {
         XCTAssertEqual(
             1_000_000_000,
@@ -158,12 +158,12 @@ class CryptoValueTests: XCTestCase {
             CryptoValue.create(major: "1.234567890123456789", currency: .pax)!.amount
         )
     }
-    
+
     func testIsZero() {
         XCTAssertTrue(CryptoValue.create(major: "0", currency: .bitcoin)!.isZero)
         XCTAssertFalse(CryptoValue.create(major: "0.1", currency: .bitcoin)!.isZero)
     }
-    
+
     func testIsPositive() {
         XCTAssertFalse(CryptoValue.create(major: "0", currency: .bitcoin)!.isPositive)
         XCTAssertTrue(CryptoValue.create(major: "0.1", currency: .bitcoin)!.isPositive)
@@ -175,15 +175,15 @@ class CryptoValueTests: XCTestCase {
             CryptoValue.create(major: "0.123", currency: .bitcoin),
             CryptoValue.create(major: "0.123", currency: .bitcoin)
         )
-    }   
-    
+    }
+
     func testCreateFromMajorRoundOff() {
         XCTAssertEqual(
             300_000,
             CryptoValue.create(major: "0.00300000000002", currency: .bitcoin)!.amount
         )
     }
-    
+
     func testAddition() throws {
         XCTAssertEqual(
             CryptoValue.create(major: "3.00", currency: .ethereum),
@@ -197,31 +197,31 @@ class CryptoValueTests: XCTestCase {
             try CryptoValue.create(major: "3.00", currency: .ethereum)! - CryptoValue.create(major: "2.00", currency: .ethereum)!
         )
     }
-    
+
     func testMultiplication() throws {
         let expected = CryptoValue.create(minor: "1111111111111111111111111088888888", currency: .ethereum)!
         let value = CryptoValue.create(minor: "33333333333333333333333333", currency: .ethereum)!
         let result = try value * value
         XCTAssertEqual(expected, result)
     }
-    
+
     func testDivision() throws {
         let expected = CryptoValue.create(major: "1.00", currency: .ethereum)!
         let value = CryptoValue.create(major: "3.00", currency: .ethereum)!
         let result = try value / value
         XCTAssertEqual(expected, result)
     }
-    
+
     func testMinorString() {
         let expected100MillionMajor = "100000000000000000000000000"
         let value100MillionMajor = CryptoValue.create(major: "100000000.00", currency: .ethereum)!
         XCTAssertEqual(expected100MillionMajor, value100MillionMajor.minorString)
-        
+
         let expected1Minor = "1"
         let value1Minor = CryptoValue.create(minor: "1", currency: .ethereum)!
         XCTAssertEqual(expected1Minor, value1Minor.minorString)
     }
-} 
+}
 
 extension CryptoValue {
     fileprivate static func create(major value: String, currency: CryptoCurrency, locale: Locale) -> CryptoValue? {
@@ -230,7 +230,7 @@ extension CryptoValue {
         }
         return create(major: majorDecimal, currency: currency)
     }
-    
+
     private static func create(major value: Decimal, currency: CryptoCurrency) -> CryptoValue {
         let minorDecimal = value * pow(10, currency.maxDecimalPlaces)
         let amount = BigInt(stringLiteral: "\(minorDecimal.roundTo(places: 0))")

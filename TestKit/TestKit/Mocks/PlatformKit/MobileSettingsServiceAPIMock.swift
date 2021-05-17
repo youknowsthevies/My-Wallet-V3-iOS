@@ -5,19 +5,19 @@ import PlatformKit
 import RxSwift
 
 class MobileSettingsServiceAPIMock: MobileSettingsServiceAPI {
-    
+
     var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
         .just(underlyingWalletSettings)
     }
-    
+
     var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> {
         .just(underlyingWalletSettings)
     }
-    
+
     func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError> {
         .just(underlyingWalletSettings)
     }
-    
+
     var underlyingWalletSettings: WalletSettings!
 
     var valueSingle: Single<WalletSettings> {

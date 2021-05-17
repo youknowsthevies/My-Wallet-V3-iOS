@@ -44,11 +44,11 @@ extension Data {
     public var sha256: String {
         sha256Digest.compactMap { String(format: "%02x", $0) }.joined()
     }
-    
+
     private var sha256Data: Data {
         Data(sha256Digest)
     }
-    
+
     private var sha256Digest: CryptoKit.SHA256.Digest {
         CryptoKit.SHA256.hash(data: self)
     }

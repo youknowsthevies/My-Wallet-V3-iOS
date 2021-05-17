@@ -3,7 +3,7 @@
 import PlatformUIKit
 
 public extension Accessibility.Identifier {
-    
+
     enum Interest {
         enum Dashboard {
             enum Announcement {

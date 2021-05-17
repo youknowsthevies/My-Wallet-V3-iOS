@@ -3,33 +3,33 @@
 import RxSwift
 
 public final class RadioLineItemTableViewCell: UITableViewCell {
-    
+
     // MARK: - Public Properties
-    
+
     public var presenter: RadioLineItemCellPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let presenter = presenter else { return }
-            
+
             presenter
                 .image
                 .drive(radioView.rx.image)
                 .disposed(by: disposeBag)
-            
+
             presenter
                 .isSeparatorHidden
                 .drive(separatorView.rx.isHidden)
                 .disposed(by: disposeBag)
-            
+
             presenter
                 .viewModel
                 .drive(lineItemView.rx.rx_viewModel)
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private Properties
 
     private var disposeBag = DisposeBag()

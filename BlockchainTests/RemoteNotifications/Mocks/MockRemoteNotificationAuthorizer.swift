@@ -8,7 +8,7 @@ import UserNotifications
 final class MockRemoteNotificationAuthorizer {
     private let expectedAuthorizationStatus: UNAuthorizationStatus
     private let authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>
-    
+
     init(expectedAuthorizationStatus: UNAuthorizationStatus,
          authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>) {
         self.expectedAuthorizationStatus = expectedAuthorizationStatus

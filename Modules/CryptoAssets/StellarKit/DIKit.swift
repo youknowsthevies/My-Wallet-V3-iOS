@@ -34,11 +34,11 @@ extension DependencyContainer {
         }
 
         factory(tag: CryptoCurrency.stellar) { StellarAsset() as CryptoAsset }
-        
+
         factory(tag: CryptoCurrency.stellar) { StellarOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
-        
+
         factory { StellarTransactionalActivityItemEventsService() }
-        
+
         factory { StellarActivityItemEventDetailsFetcher() }
 
         single { AnyCryptoFeeService(service: CryptoFeeService<StellarTransactionFee>()) }

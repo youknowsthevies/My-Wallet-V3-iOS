@@ -40,12 +40,12 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
 
     typealias AnalyticsEvent = AnalyticsEvents.Swap
     typealias LocalizationId = LocalizationConstants.Swap.Trending
-    
+
     weak var router: SwapLandingRouting?
     weak var listener: SwapLandingListener?
-    
+
     // MARK: - Private properties
-    
+
     private var initialState: Observable<State> {
         let custodialAccounts = accountProviding
             .accounts(accountType: .custodial(.trading))
@@ -54,7 +54,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             }
             .map { $0.map { $0 as! CryptoAccount } }
             .catchErrorJustReturn([])
-        
+
         let nonCustodialAccounts = accountProviding
             .accounts(accountType: .nonCustodial)
             .map { accounts in
@@ -62,7 +62,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             }
             .map { $0.map { $0 as! CryptoAccount } }
             .catchErrorJustReturn([])
-        
+
         return eligibilityService.isEligible
             .flatMap { $0 ? custodialAccounts : nonCustodialAccounts }
             .catchError { _ in nonCustodialAccounts }
@@ -93,13 +93,13 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .asObservable()
             .share(replay: 1, scope: .whileConnected)
     }
-    
+
     private let accountProviding: BlockchainAccountProviding
     private let eligibilityService: EligibilityServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     // MARK: - Init
-    
+
     init(presenter: SwapLandingPresentable,
          accountProviding: BlockchainAccountProviding = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -110,12 +110,12 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         super.init(presenter: presenter)
         presenter.listener = self
     }
-    
+
     // MARK: - Internal methods
-    
+
     override func didBecomeActive() {
         super.didBecomeActive()
-        
+
         let items = initialState
             .map { state -> SwapLandingSectionModel in
                 let pairs: [SwapLandingSectionItem] = state.pairViewModels.map { .pair($0) }
@@ -127,11 +127,11 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             //  https://blockchain.atlassian.net/browse/IOS-4268
             .catchErrorJustReturn(SwapLandingSelectionAction.items([]))
             .asDriverCatchError()
-        
+
         let header = initialState
             .map(\.header)
             .asDriverCatchError()
-        
+
         let model = Driver.zip(items, header)
             .map { SwapLandingScreenState(header: $0.1, action: $0.0) }
 
@@ -144,13 +144,13 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     override func willResignActive() {
         super.willResignActive()
     }
-    
+
     func newSwap(withPair pair: SwapTrendingPair?) {
         listener?.routeToSwap(with: pair)
     }
-    
+
     // MARK: - Private methods
-    
+
     func handleEffects(_ effect: SwapLandingSelectionEffects) {
         switch effect {
         case .swap(let pair):
@@ -198,4 +198,3 @@ extension Array where Element == CryptoAccount {
         )
     }
 }
-

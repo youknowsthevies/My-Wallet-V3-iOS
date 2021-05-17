@@ -7,7 +7,7 @@ extension ScreenNavigationModel {
 }
 
 extension ScreenNavigationModel.AccountPicker {
-    
+
     public static func modal(title: String = LocalizationConstants.WalletPicker.title) -> ScreenNavigationModel {
         ScreenNavigationModel(
             leadingButton: .none,
@@ -16,14 +16,14 @@ extension ScreenNavigationModel.AccountPicker {
             barStyle: .darkContent()
         )
     }
-    
+
     public static let navigation = ScreenNavigationModel(
         leadingButton: .back,
         trailingButton: .none,
         titleViewStyle: .text(value: LocalizationConstants.WalletPicker.title),
         barStyle: .darkContent()
     )
-    
+
     public static func navigationClose(title: String = LocalizationConstants.WalletPicker.title) -> ScreenNavigationModel {
         ScreenNavigationModel(
             leadingButton: .back,

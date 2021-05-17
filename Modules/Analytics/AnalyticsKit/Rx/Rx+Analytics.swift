@@ -3,7 +3,7 @@
 import RxSwift
 
 extension PrimitiveSequence where Trait == SingleTrait {
-    
+
     /// Records analytics event using a given recorder on success
     public func recordOnSuccess(analyticsEvent: AnalyticsEvent,
                                 using recorder: AnalyticsEventRecording) -> Single<Element> {
@@ -11,15 +11,15 @@ extension PrimitiveSequence where Trait == SingleTrait {
             recorder.record(event: analyticsEvent)
         })
     }
-    
+
     /// Records analytics event using a given recorder on error
     public func recordOnError(analyticsEvent: AnalyticsEvent,
                               using recorder: AnalyticsEventRecording) -> Single<Element> {
-        self.do(onError: { error in
+        self.do(onError: { _ in
               recorder.record(event: analyticsEvent)
         })
     }
-    
+
     /// Records analytics event using a given recorder on any `Single` result
     public func recordOnResult(successEvent: AnalyticsEvent,
                                errorEvent: AnalyticsEvent,
@@ -28,12 +28,12 @@ extension PrimitiveSequence where Trait == SingleTrait {
             onSuccess: { _ in
                 recorder.record(event: successEvent)
             },
-            onError: { error in
+            onError: { _ in
               recorder.record(event: errorEvent)
             }
         )
     }
-    
+
     /// Records analytics event using a given recorder on any `Single` lifecycle
     public func record(subscribeEvent: AnalyticsEvent,
                        successEvent: AnalyticsEvent,
@@ -43,7 +43,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
             onSuccess: { _ in
                 recorder.record(event: successEvent)
             },
-            onError: { error in
+            onError: { _ in
                 recorder.record(event: errorEvent)
             },
             onSubscribe: {
@@ -55,7 +55,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 
 /// Extension for `ObservableType` that enables the loader to take part in a chain of observables
 extension ObservableType {
-    
+
     /// Records analytics event using a given recorder
     public func record(analyticsEvent: AnalyticsEvent,
                        using recorder: AnalyticsEventRecording) -> Observable<Element> {

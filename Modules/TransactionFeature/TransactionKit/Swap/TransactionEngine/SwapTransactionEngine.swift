@@ -53,7 +53,7 @@ extension SwapTransactionEngine {
             preconditionFailure("Engine.canTransactFiat \(canTransactFiat) but amount.isFiat: \(amount.isFiat)")
         }
     }
-    
+
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         Single.zip(sourceExchangeRatePair, destinationExchangeRatePair)
             .map { tuple -> TransactionMoneyValuePairs in
@@ -65,7 +65,7 @@ extension SwapTransactionEngine {
             }
             .asObservable()
     }
-    
+
     var transactionExchangeRatePair: Observable<MoneyValuePair> {
         quotesEngine
             .getRate(
@@ -211,7 +211,7 @@ extension SwapTransactionEngine {
     private func startQuotesFetching() -> Disposable {
         quotesEngine
             .getRate(direction: orderDirection, pair: pair)
-            .do(onNext: { [weak self] pricedQuote in
+            .do(onNext: { [weak self] _ in
                 _ = self?.askForRefreshConfirmation(true).subscribe()
             })
             .subscribe()
@@ -247,7 +247,7 @@ extension SwapTransactionEngine {
     }
 
     // MARK: - SwapTransactionEngine
-    
+
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
         Single.zip(target.receiveAddress,
                    sourceAccount.receiveAddress)
@@ -279,7 +279,7 @@ extension SwapTransactionEngine {
     }
 
     // MARK: - Private Functions
-    
+
     var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency
@@ -290,7 +290,7 @@ extension SwapTransactionEngine {
                     .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
             }
     }
-    
+
     private var destinationExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency
@@ -301,7 +301,7 @@ extension SwapTransactionEngine {
                     .map { MoneyValuePair(base: .one(currency: self.target.currencyType), quote: $0) }
             }
     }
-    
+
     private func doValidateAmount(pendingTransaction: PendingTransaction) -> Completable {
         sourceAccount
             .actionableBalance

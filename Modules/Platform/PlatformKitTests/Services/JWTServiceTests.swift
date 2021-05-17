@@ -8,15 +8,15 @@ import XCTest
 @testable import PlatformKit
 
 final class JWTServiceTests: XCTestCase {
-   
+
     private var cancellables: Set<AnyCancellable>!
     private var subject: JWTService!
     private var client: JWTClientMock!
     private var repository: MockWalletRepository!
-    
+
     override func setUp() {
         super.setUp()
-        
+
         client = JWTClientMock()
         repository = MockWalletRepository()
         subject = JWTService(
@@ -31,20 +31,20 @@ final class JWTServiceTests: XCTestCase {
         repository = nil
         subject = nil
         cancellables = nil
-        
+
         super.tearDown()
     }
 
     func testSuccessfulTokenFetch() throws {
-        
+
         // Arrange
         client.expectedResult = .success("jwt-token")
-        
+
         let offlineTokenResponse = NabuOfflineTokenResponse(
             userId: "user-id",
             token: "offline-token"
         )
-        
+
         try repository
             .set(offlineTokenResponse: offlineTokenResponse)
             .andThen(Single.just(()))
@@ -60,11 +60,11 @@ final class JWTServiceTests: XCTestCase {
             .andThen(Single.just(()))
             .toBlocking()
             .first()
-        
+
         let correctTokenSetExpectation = self.expectation(
             description: "Correct token set"
         )
-        
+
         // Act
         subject.token
             .receive(on: DispatchQueue.main)
@@ -83,7 +83,7 @@ final class JWTServiceTests: XCTestCase {
                 }
             )
             .store(in: &cancellables)
-            
+
         // Assert
         wait(
             for: [
@@ -93,17 +93,17 @@ final class JWTServiceTests: XCTestCase {
             enforceOrder: true
         )
     }
-    
+
     func testFailureForMissingCredentials() throws {
-        
+
         // Arrange
         client.expectedResult = .success("jwt-token")
-        
+
         let offlineTokenResponse = NabuOfflineTokenResponse(
             userId: "user-id",
             token: "offline-token"
         )
-        
+
         try repository
             .set(offlineTokenResponse: offlineTokenResponse)
             .andThen(Single.just(()))
@@ -114,11 +114,11 @@ final class JWTServiceTests: XCTestCase {
             .andThen(Single.just(()))
             .toBlocking()
             .first()
-        
+
         let missingCredentialsErrorExpectation = self.expectation(
             description: "Expect a missing credentials error"
         )
-        
+
         // Act
         subject.token
             .sink(
@@ -146,7 +146,7 @@ final class JWTServiceTests: XCTestCase {
                 }
             )
             .store(in: &cancellables)
-            
+
         // Assert
         wait(
             for: [
@@ -157,4 +157,4 @@ final class JWTServiceTests: XCTestCase {
         )
     }
 }
- 
+

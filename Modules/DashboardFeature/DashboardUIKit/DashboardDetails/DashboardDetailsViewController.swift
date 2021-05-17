@@ -5,21 +5,21 @@ import PlatformUIKit
 import RxSwift
 
 final class DashboardDetailsViewController: BaseScreenViewController {
-    
+
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
 
     // MARK: - IBOutlets
-    
+
     @IBOutlet private var tableView: SelfSizingTableView!
-    
+
     // MARK: - Injected
-    
+
     private let presenter: DashboardDetailsScreenPresenter
 
     // MARK: - Setup
-    
+
     init(using presenter: DashboardDetailsScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: DashboardDetailsViewController.objectName, bundle: DashboardDetailsViewController.bundle)
@@ -29,12 +29,12 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     required init?(coder: NSCoder) { nil }
 
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
-        
+
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         presenter.presentationAction
@@ -42,12 +42,12 @@ final class DashboardDetailsViewController: BaseScreenViewController {
                 self?.execute(action: action)
             })
             .disposed(by: disposeBag)
-        
+
         presenter.setup()
     }
-    
+
     // MARK: - Setup
-    
+
     private func setupTableView() {
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 312
@@ -57,11 +57,11 @@ final class DashboardDetailsViewController: BaseScreenViewController {
         tableView.registerNibCell(AssetLineChartTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.separatorColor = .clear
-        
+
         presenter.isScrollEnabled
             .drive(tableView.rx.isScrollEnabled)
             .disposed(by: disposeBag)
-        
+
         tableView.rx.itemSelected
             .map { $0.row }
             .map(weak: self) { (self, row) in
@@ -70,16 +70,16 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             .bindAndCatch(to: presenter.presenterSelectionRelay)
             .disposed(by: disposeBag)
     }
-    
+
     private func setupNavigationBar() {
         set(barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton)
         titleViewStyle = presenter.titleView
     }
-    
+
     // MARK: - Actions
-    
+
     private func execute(action: DashboardDetailsScreenPresenter.PresentationAction) {
         switch action {
         case .show(let balanceType):
@@ -97,7 +97,7 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
                    numberOfRowsInSection section: Int) -> Int {
         presenter.cellCount
     }
-    
+
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
@@ -113,22 +113,22 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         cell.selectionStyle = .none
         return cell
     }
-        
+
     // MARK: - Accessors
-    
+
     private func priceAlertCell(for indexPath: IndexPath) -> PriceAlertTableViewCell {
         let cell = tableView.dequeue(PriceAlertTableViewCell.self, for: indexPath)
         cell.currency = presenter.currency
         return cell
     }
-    
+
     private func multiActionCell(for indexPath: IndexPath,
                                  presenter: MultiActionViewPresenting) -> MultiActionTableViewCell {
         let cell = tableView.dequeue(MultiActionTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
-    
+
     private func currentBalanceCell(for indexPath: IndexPath,
                                     type: BalanceType) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
@@ -142,7 +142,7 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         }
         return cell
     }
-    
+
     private func assetLineChartCell(for indexPath: IndexPath,
                                     presenter: AssetLineChartTableViewCellPresenter) -> AssetLineChartTableViewCell {
         let cell = tableView.dequeue(AssetLineChartTableViewCell.self, for: indexPath)

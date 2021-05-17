@@ -10,20 +10,20 @@ import RxRelay
 import RxSwift
 
 final class ActivityScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.Activity
     private typealias LocalizedString = LocalizationConstants.Activity.MainScreen
-    
+
     // MARK: - Public Properties
-    
+
     /// The screen title
     let title = LocalizedString.title
-    
+
     /// The `SelectionButtonView`
     let selectionButtonViewModel: SelectionButtonViewModel
-    
+
     /// The title of the empty state
     var emptyActivityTitle: LabelContent {
         .init(text: LocalizedString.Empty.title,
@@ -32,7 +32,7 @@ final class ActivityScreenPresenter {
               alignment: .center,
               accessibility: .none)
     }
-    
+
     /// The subtitle of the empty state
     var emptyActivitySubtitle: LabelContent {
         .init(text: LocalizedString.Empty.subtitle,
@@ -41,7 +41,7 @@ final class ActivityScreenPresenter {
               alignment: .center,
               accessibility: .none)
     }
-    
+
     /// The visibility state of the subviews that should be
     /// visible when there are no activity events for the
     /// selected wallet
@@ -51,15 +51,15 @@ final class ActivityScreenPresenter {
             .map { $0 ? .visible : .hidden }
             .asDriver(onErrorJustReturn: .hidden)
     }
-    
+
     /// All the sections that should be displayed in the
     /// Activity screen
     var sectionsObservable: Observable<[ActivityItemsSectionViewModel]> {
         activityItemsObservable
     }
-    
+
     // MARK: - Private Properties (Rx)
-    
+
     /// Observable of the `ActivityItemsSectionViewModel` section
     private var activityItemsObservable: Observable<[ActivityItemsSectionViewModel]> {
         interactor
@@ -83,44 +83,44 @@ final class ActivityScreenPresenter {
 
     let longPressRelay: PublishRelay<ActivityItemViewModel> = .init()
     let selectedModelRelay: PublishRelay<ActivityCellItem> = .init()
-    
+
     // MARK: - Injected
 
     private let drawerRouter: DrawerRouting
     private let router: ActivityRouterAPI
     private let interactor: ActivityScreenInteractor
-    
+
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(router: ActivityRouterAPI,
          interactor: ActivityScreenInteractor,
          drawerRouter: DrawerRouting = resolve()) {
         self.drawerRouter = drawerRouter
         self.router = router
         self.interactor = interactor
-        
+
         selectionButtonViewModel = SelectionButtonViewModel()
         selectionButtonViewModel.shouldShowSeparatorRelay.accept(true)
         selectionButtonViewModel.accessibilityContentRelay.accept(.init(id: AccessibilityId.WalletSelectorView.button, label: ""))
         selectionButtonViewModel.titleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.titleLabel))
         selectionButtonViewModel.subtitleAccessibilityRelay.accept(.id(AccessibilityId.WalletSelectorView.subtitleLabel))
-        
+
         selectionButtonViewModel.tap
             .emit(onNext: { [unowned router] in
                 router.showWalletSelectionScreen()
             })
             .disposed(by: disposeBag)
-        
+
         interactor
             .selectedData
             .map { SelectionButtonViewModel.LeadingContent.content(from: $0) }
             .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
-        
+
         let titleObservable: Observable<String> = interactor
             .selectedData
             .map { selection in
@@ -133,7 +133,7 @@ final class ActivityScreenPresenter {
                     return currency.displayCode + " " + LocalizedString.Item.wallet
                 }
             }
-        
+
         titleObservable
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
@@ -159,7 +159,7 @@ final class ActivityScreenPresenter {
             .map { .image($0) }
             .bindAndCatch(to: selectionButtonViewModel.trailingContentRelay)
             .disposed(by: disposeBag)
-        
+
         let subtitleObservable: Observable<String> = Observable
             .combineLatest(
                 interactor.activityBalance,
@@ -168,7 +168,7 @@ final class ActivityScreenPresenter {
             )
             .map { $0.amount.toDisplayString(includeSymbol: true) + " \($0.currency.code)" }
             .catchErrorJustReturn("")
-        
+
         subtitleObservable
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
@@ -179,20 +179,20 @@ final class ActivityScreenPresenter {
                 self?.router.showTransactionScreen(with: presenter.viewModel.event)
             }
             .disposed(by: disposeBag)
-        
+
         longPressRelay
             .bind { [weak self] model in
                 self?.router.showActivityShareSheet(model.event)
             }
             .disposed(by: disposeBag)
     }
-    
+
     func refresh() {
         interactor.refresh()
     }
-    
+
     // MARK: - Navigation
-    
+
     /// Should be invoked upon tapping navigation bar leading button
     func navigationBarLeadingButtonPressed() {
         drawerRouter.toggleSideMenu()

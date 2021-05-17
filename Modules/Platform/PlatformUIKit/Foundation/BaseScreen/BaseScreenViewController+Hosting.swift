@@ -4,7 +4,7 @@ import SwiftUI
 import UIKit
 
 extension BaseScreenViewController {
-    
+
     /// A simple extension on `BaseScreenViewController` to be able to present `SwiftUI.View`s.
     /// - Remark: See also `UIViewController.present(view:,inNavigationController:)`
     /// - Parameters:

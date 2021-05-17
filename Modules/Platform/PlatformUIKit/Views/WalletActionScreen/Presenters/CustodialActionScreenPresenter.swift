@@ -8,29 +8,29 @@ import RxRelay
 import RxSwift
 
 public final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
-    
+
     // MARK: - Types
 
     private typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
     public typealias CellType = WalletActionCellType
-    
+
     // MARK: - Public Properties
-    
+
     public var sections: Observable<[WalletActionItemsSectionViewModel]> {
         sectionsRelay
             .asObservable()
     }
-    
+
     public let assetBalanceViewPresenter: CurrentBalanceCellPresenter
-    
+
     public var currency: CurrencyType {
         interactor.currency
     }
-    
+
     public let selectionRelay: PublishRelay<WalletActionCellType> = .init()
-    
+
     // MARK: - Private Properties
-    
+
     private var actionCellPresenters: Single<[DefaultWalletActionCellPresenter]> {
         switch currency {
         case .crypto(let cryptoCurrency):
@@ -39,15 +39,15 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             return actionCellPresenters(for: fiatCurrency)
         }
     }
-    
+
     private let sectionsRelay = BehaviorRelay<[WalletActionItemsSectionViewModel]>(value: [])
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let eligiblePaymentService: PaymentMethodsServiceAPI
     private let interactor: WalletActionScreenInteracting
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(using interactor: WalletActionScreenInteracting,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
                 stateService: CustodyActionStateServiceAPI,
@@ -65,7 +65,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 return .just(fiatCurrency.displayCode)
             }
         }
-        
+
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
@@ -78,9 +78,9 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 fiatAccessiblitySuffix: "\(AccessibilityId.CustodialAction.fiatValue)"
             )
         )
-        
+
         actionCellPresenters
-            .catchError(weak: self) { [currency] (self, error) -> Single<[DefaultWalletActionCellPresenter]> in
+            .catchError(weak: self) { [currency] (self, _) -> Single<[DefaultWalletActionCellPresenter]> in
                 switch currency {
                 case .crypto(let cryptoCurrency):
                     return self.actionCellPresenters(for: cryptoCurrency)
@@ -97,7 +97,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             .asObservable()
             .bindAndCatch(to: sectionsRelay)
             .disposed(by: disposeBag)
-        
+
         selectionRelay
             .bind { model in
                 guard case let .default(presenter) = model else { return }
@@ -122,9 +122,9 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Private methods
-    
+
     private func actionCellPresenters(for cryptoCurrency: CryptoCurrency) -> Single<[DefaultWalletActionCellPresenter]> {
         var presenters: [DefaultWalletActionCellPresenter] = [
             .init(currencyType: currency, action: .buy),
@@ -145,7 +145,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
         }
         return .just(presenters)
     }
-    
+
     private func actionCellPresenters(for fiatCurrency: FiatCurrency) -> Single<[DefaultWalletActionCellPresenter]> {
         eligiblePaymentService.paymentMethodsSingle
             .map(weak: self) { (self, methods) -> [DefaultWalletActionCellPresenter] in

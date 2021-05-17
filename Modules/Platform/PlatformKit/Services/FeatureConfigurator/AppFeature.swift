@@ -5,23 +5,23 @@ import Foundation
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
 @objc
 public enum AppFeature: Int, CaseIterable {
-    
+
     // MARK: - Local features
-    
+
     case biometry
     case swipeToReceive
-    
+
     // MARK: - Firebase features
-    
+
     /// The announcements
     case announcements
-    
+
     /// Sift Science SDK is enabled
     case siftScienceEnabled
-    
+
     /// Enable Secure Channel
     case secureChannel
-    
+
     /// Enable receiving to trading account
     case tradingAccountReceive
 

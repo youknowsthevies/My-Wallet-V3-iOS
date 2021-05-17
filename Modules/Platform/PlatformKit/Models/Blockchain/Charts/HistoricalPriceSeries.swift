@@ -4,12 +4,12 @@ import Foundation
 
 public struct HistoricalPriceSeries {
     public let currency: CryptoCurrency
-        
+
     /// The difference in percentage between the latest price to the first price
     public let delta: Double
     public let prices: [PriceQuoteAtTimeResponse]
     public let fiatChange: Decimal
-    
+
     public init(currency: CryptoCurrency, prices: [PriceQuoteAtTimeResponse]) {
         self.currency = currency
         self.prices = prices

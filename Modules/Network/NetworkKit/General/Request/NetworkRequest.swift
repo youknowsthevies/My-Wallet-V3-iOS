@@ -6,7 +6,7 @@ import RxSwift
 public typealias HTTPHeaders = [String: String]
 
 public struct NetworkRequest {
-    
+
     public enum NetworkMethod: String {
         case get = "GET"
         case post = "POST"
@@ -19,27 +19,27 @@ public struct NetworkRequest {
         case json = "application/json"
         case formUrlEncoded = "application/x-www-form-urlencoded"
     }
-    
+
     var URLRequest: URLRequest {
-        
+
         if authenticated && headers[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
         }
-        
+
         let request: NSMutableURLRequest = NSMutableURLRequest(
             url: endpoint,
             cachePolicy: .reloadIgnoringLocalCacheData,
             timeoutInterval: 30.0
         )
-        
+
         request.httpMethod = method.rawValue
-        
+
         let requestHeaders = headers.merging(defaultHeaders)
-        
+
         for (key, value) in requestHeaders {
             request.addValue(value, forHTTPHeaderField: key)
         }
-        
+
         if request.value(forHTTPHeaderField: HttpHeaderField.accept) == nil {
             request.addValue(
                 HttpHeaderValue.json,
@@ -52,12 +52,12 @@ public struct NetworkRequest {
                 forHTTPHeaderField: HttpHeaderField.contentType
             )
         }
-        
+
         addHttpBody(to: request)
-        
+
         return request.copy() as! URLRequest
     }
-    
+
     let method: NetworkMethod
     let endpoint: URL
     private(set) var headers: HTTPHeaders
@@ -68,13 +68,13 @@ public struct NetworkRequest {
     // TODO: modify this to be an Encodable type so that JSON serialization is done in this class
     // vs. having to serialize outside of this class
     let body: Data?
-    
+
     let recordErrors: Bool
-    
+
     let authenticated: Bool
-    
+
     let requestId = UUID()
-    
+
     private var defaultHeaders: HTTPHeaders {
         [HttpHeaderField.requestId: requestId.uuidString]
     }
@@ -100,13 +100,13 @@ public struct NetworkRequest {
         self.responseHandler = responseHandler
         self.recordErrors = recordErrors
     }
-    
+
     func adding(authenticationToken: String) -> Self {
         var request = self
         request.headers[HttpHeaderField.authorization] = authenticationToken
         return request
     }
-    
+
     private func addHttpBody(to request: NSMutableURLRequest) {
         guard let data = body else {
             return

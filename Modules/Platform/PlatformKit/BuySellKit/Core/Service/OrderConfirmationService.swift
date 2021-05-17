@@ -9,26 +9,26 @@ public protocol OrderConfirmationServiceAPI: class {
 }
 
 final class OrderConfirmationService: OrderConfirmationServiceAPI {
-    
+
     // MARK: - Service Error
-    
+
     enum ServiceError: Error {
         case mappingError
     }
-    
+
     // MARK: - Properties
-    
+
     private let analyticsRecorder: AnalyticsEventRecording
     private let client: CardOrderConfirmationClientAPI
 
     // MARK: - Setup
-    
+
     init(analyticsRecorder: AnalyticsEventRecording = resolve(),
          client: CardOrderConfirmationClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
     }
-    
+
     public func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
         let orderId = checkoutData.order.identifier
         let paymentMethodId = checkoutData.order.paymentMethodId
@@ -43,7 +43,7 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
         case .funds:
             partner = .funds
         }
-                
+
         return self.client.confirmOrder(
                 with: orderId,
                 partner: partner,

@@ -30,7 +30,7 @@ extension Array where Element: Equatable {
         guard let first = self.first else { return true }
         return !dropFirst().contains { $0 != first }
     }
-    
+
     /// Returns `true` if if all elements are equal to a given value
     public func areAllElements(equal element: Element) -> Bool {
         !contains { $0 != element }

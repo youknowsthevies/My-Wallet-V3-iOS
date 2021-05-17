@@ -38,12 +38,12 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
             .map { .loaded(next: .init(isOn: $0, isEnabled: true)) }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         NotificationCenter.when(.login) { [weak self] _ in
             guard let self = self else { return }
             self.refresh()
         }
-        
+
         switchTriggerRelay
             .do(onNext: { [weak self] in
                 guard let self = self else { return }
@@ -58,7 +58,7 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
             .subscribe()
             .disposed(by: disposeBag)
     }
-    
+
     private func refresh() {
         Observable
             .just(settingsAuthenticating.biometryEnabled)

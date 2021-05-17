@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 
 protocol EthereumAccountBalanceServiceAPI {
-    
+
     func balance(for address: String) -> Single<CryptoValue>
 }
 

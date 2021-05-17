@@ -11,7 +11,7 @@ public struct FiatCustodialAccountBalance: CustodialAccountBalanceType, FiatAcco
     public let fiatValue: FiatValue
     public let withdrawable: MoneyValue
     public let pending: MoneyValue
-    
+
     public init(available: FiatValue,
                 withdrawable: FiatValue,
                 pending: FiatValue) {

@@ -5,9 +5,9 @@ import RxRelay
 import RxSwift
 
 public final class AssetSparklineView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var presenter: AssetSparklinePresenter! {
         willSet {
             presenterDisposeBag = DisposeBag()
@@ -20,46 +20,46 @@ public final class AssetSparklineView: UIView {
             calculate()
         }
     }
-    
+
     // MARK: - Private Properties
-    
+
     private var path: Driver<UIBezierPath?> {
         pathRelay.asDriver()
     }
-    
+
     private var lineColor: Driver<UIColor> {
         .just(presenter.lineColor)
     }
-    
+
     private var fillColor: Driver<UIColor> {
         .just(.clear)
     }
-    
+
     private var lineWidth: Driver<CGFloat> {
         .just(attributes.lineWidth)
     }
-    
+
     private let pathRelay: BehaviorRelay<UIBezierPath?> = BehaviorRelay(value: nil)
     private let shape: CAShapeLayer = CAShapeLayer()
     private let disposeBag = DisposeBag()
     private var presenterDisposeBag = DisposeBag()
-    
+
     private var attributes: SparklineAttributes {
         .init(size: frame.size)
     }
 
     // MARK: - Init
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func calculate() {
         let calculator = SparklineCalculator(attributes: attributes)
         presenter
@@ -87,7 +87,7 @@ public final class AssetSparklineView: UIView {
             .drive(shape.rx.lineWidth)
             .disposed(by: presenterDisposeBag)
     }
-    
+
     private func setup() {
         if layer.sublayers == nil {
             shape.bounds = frame

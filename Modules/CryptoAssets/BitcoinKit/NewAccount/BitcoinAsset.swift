@@ -92,7 +92,7 @@ final class BitcoinAsset: CryptoAsset {
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
     }
-    
+
     private var custodialGroup: Single<AccountGroup> {
         .just(CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)]))
     }
@@ -103,7 +103,7 @@ final class BitcoinAsset: CryptoAsset {
             .just(CryptoInterestAccount(asset: asset))
             .map { CryptoAccountCustodialGroup(asset: asset, accounts: [$0]) }
     }
-    
+
     private var exchangeGroup: Single<AccountGroup> {
         let asset = self.asset
         return exchangeAccountProvider

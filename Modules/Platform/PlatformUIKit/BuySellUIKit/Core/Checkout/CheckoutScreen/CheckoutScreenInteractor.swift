@@ -6,26 +6,26 @@ import RxSwift
 import ToolKit
 
 final class CheckoutScreenInteractor {
-    
+
     // MARK: - Types
-    
+
     enum InteractionError: Error {
         case missingInternalOrderData
         case impossibleState
     }
-    
+
     // MARK: - Properties
-    
+
     private(set) var checkoutData: CheckoutData
-        
+
     // MARK: - Services
-    
+
     private let orderCheckoutInterator: OrderCheckoutInteracting
     private let cancellationService: OrderCancellationServiceAPI
     private let confirmationService: OrderConfirmationServiceAPI
-    
+
     // MARK: - Setup
-    
+
     init(confirmationService: OrderConfirmationServiceAPI = resolve(),
          cancellationService: OrderCancellationServiceAPI = resolve(),
          orderCheckoutInterator: OrderCheckoutInteracting = resolve(),
@@ -35,7 +35,7 @@ final class CheckoutScreenInteractor {
         self.cancellationService = cancellationService
         self.checkoutData = checkoutData
     }
-    
+
     /// Performs a setup of the data
     func setup() -> Single<CheckoutInteractionData> {
         if checkoutData.order.is3DSConfirmedCardOrder || checkoutData.order.isPending3DSCardOrder {
@@ -67,7 +67,7 @@ final class CheckoutScreenInteractor {
             return .just((checkoutData, false))
         }
     }
-    
+
     /// Cancels the order if possible
     func cancelIfPossible() -> Single<Bool> {
         if checkoutData.order.isPendingConfirmation {
@@ -78,7 +78,7 @@ final class CheckoutScreenInteractor {
             return .just(false)
         }
     }
-    
+
     private func set(data: CheckoutData) -> Single<CheckoutData> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in

@@ -11,7 +11,7 @@ import PlatformKit
 final class RemoteNotificationAuthorizerTests: XCTestCase {
 
     // MARK: - Test Authorization Request
-    
+
     func testSuccessfulAuthorization() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -30,7 +30,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             XCTFail("expected successful registration. got \(error) instead")
         }
     }
-    
+
     func testFailedAuthorizationAfterDenyingPermissions() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -48,10 +48,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         } catch {
             // Okay
         }
-        
+
         XCTAssertFalse(registry.isRegistered)
     }
-    
+
     func testFailedAuthorizationWhenPermissionIsAlreadyDetermined() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -71,12 +71,12 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         } catch {
             XCTFail("expected error \(RemoteNotificationAuthorizer.ServiceError.statusWasAlreadyDetermined). got \(error) instead")
         }
-        
+
         XCTAssertFalse(registry.isRegistered)
     }
-    
+
     // MARK: - Test Registration If Already Authorized
-    
+
     func testRegistrationSuccessfulForRemoteNotificationsIfAuthorized() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -88,7 +88,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
-        
+
         do {
             try authorizer.registerForRemoteNotificationsIfAuthorized().toBlocking().first()!
             XCTAssertTrue(registry.isRegistered)
@@ -96,7 +96,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             XCTFail("expected successful registration. got \(error) instead")
         }
     }
-    
+
     func testRegistrationFailureForRemoteNotificationsIfNotAuthorized() {
         let registry = MockRemoteNotificationsRegistry()
         let userNotificationCenter = MockUNUserNotificationCenter(
@@ -108,7 +108,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
-        
+
         do {
             try authorizer.registerForRemoteNotificationsIfAuthorized().toBlocking().first()!
             XCTFail("expected \(RemoteNotificationAuthorizer.ServiceError.unauthorizedStatus). got success instead")
@@ -120,4 +120,3 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         }
     }
 }
-

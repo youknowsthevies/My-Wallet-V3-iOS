@@ -4,25 +4,25 @@ import PlatformKit
 import ToolKit
 
 public struct OrderPair: RawRepresentable {
-    
+
     public typealias RawValue = String
-    
+
     enum OrderPairDecodingError: Error {
         case decodingError
     }
-    
+
     public let sourceCurrencyType: CurrencyType
     public let destinationCurrencyType: CurrencyType
-    
+
     public var rawValue: String {
         "\(sourceCurrencyType.code)-\(destinationCurrencyType.code)"
     }
-    
+
     init(sourceCurrencyType: CurrencyType, destinationCurrencyType: CurrencyType) {
         self.sourceCurrencyType = sourceCurrencyType
         self.destinationCurrencyType = destinationCurrencyType
     }
-    
+
     public init?(rawValue: String) {
         var components: [String] = []
         for value in ["-", "_"] {
@@ -44,7 +44,7 @@ public struct OrderPair: RawRepresentable {
             return nil
         }
     }
-    
+
     init(string: String) throws {
         var components: [String] = []
         for value in ["-", "_"] {
@@ -53,7 +53,7 @@ public struct OrderPair: RawRepresentable {
                 break
             }
         }
-        
+
         guard let source = components.first else {
             throw OrderPairDecodingError.decodingError
         }
@@ -62,7 +62,7 @@ public struct OrderPair: RawRepresentable {
         }
         let sourceType = try CurrencyType(code: source)
         let destionationType = try CurrencyType(code: destination)
-        
+
         self.init(
             sourceCurrencyType: sourceType,
             destinationCurrencyType: destionationType

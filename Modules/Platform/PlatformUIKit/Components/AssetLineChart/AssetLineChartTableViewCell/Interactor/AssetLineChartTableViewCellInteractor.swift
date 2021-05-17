@@ -6,9 +6,9 @@ import RxCocoa
 import RxSwift
 
 final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellInteracting {
-    
+
     // MARK: - AssetLineChartTableViewCellInteracting
-    
+
     let lineChartUserInteractor: AssetLineChartUserInteracting
     let lineChartInteractor: AssetLineChartInteracting
     let assetPriceViewInteractor: AssetPriceViewInteracting
@@ -16,15 +16,15 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
     var isDeselected: Driver<Bool> {
         isDeselectedRelay.asDriver()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let isDeselectedRelay = BehaviorRelay<Bool>(value: false)
     private let historicalFiatPriceService: HistoricalFiatPriceServiceAPI
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
-    
+
     init(cryptoCurrency: CryptoCurrency,
          fiatCurrency: FiatCurrency,
          historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
@@ -42,16 +42,16 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
             .map { $0 == .deselected }
             .bindAndCatch(to: isDeselectedRelay)
             .disposed(by: disposeBag)
-        
+
         /// Bind window relay to the `PublishRelay<PriceWindow>` on
         /// both the `AssetLineChartInteractor` and the `HistoricalFiatPriceService`.
         window
             .bindAndCatch(to: lineChartInteractor.priceWindowRelay)
             .disposed(by: disposeBag)
-        
+
         window
             .bindAndCatch(to: historicalFiatPriceService.fetchTriggerRelay)
             .disposed(by: disposeBag)
     }
-    
+
 }

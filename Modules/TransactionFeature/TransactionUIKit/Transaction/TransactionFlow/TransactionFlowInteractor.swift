@@ -54,7 +54,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         super.init(presenter: presenter)
         presenter.listener = self
     }
-    
+
     deinit {
         transactionModel.destroy()
     }
@@ -74,7 +74,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         requireSecondPassword
             .observeOn(MainScheduler.asyncInstance)
-            .map(weak: self) { [sourceAccount, target, action] (self, passwordRequired) -> TransactionAction in
+            .map(weak: self) { [sourceAccount, target, action] (_, passwordRequired) -> TransactionAction in
                 guard let sourceAccount = sourceAccount else {
                     return .initialiseWithNoSourceOrTargetAccount(
                         action: action,
@@ -120,7 +120,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     override func willResignActive() {
         super.willResignActive()
     }
-    
+
     func didSelect(blockchainAccount: BlockchainAccount) {
         guard let target = blockchainAccount as? TransactionTarget else {
             fatalError("Account \(blockchainAccount.self) is not currently supported.")
@@ -169,7 +169,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     func checkoutDidTapBack() {
         transactionModel.process(action: .returnToPreviousStep)
     }
-    
+
     func didSelectSourceAccount(account: CryptoAccount) {
         analyticsHook.onAccountSelected(account.currencyType)
         transactionModel.process(action: .sourceAccountSelected(account))

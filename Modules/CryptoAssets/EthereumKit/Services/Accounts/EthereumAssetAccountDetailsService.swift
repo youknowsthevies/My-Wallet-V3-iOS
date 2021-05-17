@@ -23,7 +23,7 @@ public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
     private let client: APIClientAPI
 
     // MARK: - Setup
-    
+
     init(with bridge: EthereumWalletBridgeAPI = resolve(), client: APIClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client

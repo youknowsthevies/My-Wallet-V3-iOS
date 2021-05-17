@@ -7,7 +7,7 @@ import XCTest
 class EthereumTransactionFeeTests: XCTestCase {
 
     var sut: EthereumTransactionFee!
-    
+
     override func setUp() {
         sut = EthereumTransactionFee(
             limits: TransactionFeeLimits(min: 1, max: 3),

@@ -7,19 +7,19 @@ import ToolKit
 
 @objc
 public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
-   
+
     @available(*, deprecated, message: "Don't use this, resolve using DIKit instead.")
     @Inject @objc public static var shared: AlertViewPresenter
-    
+
     public let disposeBag = DisposeBag()
-    
+
     // MARK: - Services
-    
+
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let loadingViewPresenter: LoadingViewPresenting
-    
+
     // MARK: - Setup
-    
+
     init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -62,13 +62,13 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
             self.standardNotify(alert: alert, in: viewController)
         }
     }
-        
+
     public func notify(content: AlertViewContent, in viewController: UIViewController? = nil) {
         standardNotify(title: content.title, message: content.message, actions: content.actions, in: viewController)
     }
-    
+
     // MARK: - Error
-    
+
     /// Notify the user on error that occurred
     public func error(in viewController: UIViewController? = nil, action: (() -> Void)? = nil) {
         typealias AlertString = LocalizationConstants.ErrorAlert
@@ -87,9 +87,9 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
             in: viewController
         )
     }
-    
+
     // MARK: - Internet Connection
-    
+
     @objc
     public func internetConnection() {
         internetConnection(completion: nil)
@@ -106,7 +106,7 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
             completion?()
         }
     }
-    
+
     /// Displays the standard error alert
     @objc
     public func standardError(title: String = LocalizationConstants.Errors.error,
@@ -120,9 +120,9 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
             handler: handler
         )
     }
-    
+
     // MARK: - Dismissal
-    
+
     /// Dismisses an alert if needed
     public func dismissIfNeeded(completion: (() -> Void)? = nil) {
         guard let viewController = topMostViewControllerProvider.topMostViewController else {
@@ -135,20 +135,20 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
         }
         alertController.dismiss(animated: true, completion: completion)
     }
-    
+
     public func standardNotify(alert: UIAlertController, in viewController: UIViewController? = nil) {
         Execution.MainQueue.dispatch {
             guard let topMostViewController = self.topMostViewControllerProvider.topMostViewController else {
                 return
             }
-            
+
             let presentingVC = viewController ?? topMostViewController
             self.present(alert: alert, from: presentingVC)
         }
     }
-    
+
     // MARK: - Private Accessors
-        
+
     /// Dismisses an alert controller if currently presented.
     /// Since only one alert is allowed at the same time, we need to dismiss
     /// the currently displayed alert in case another one should be displayed

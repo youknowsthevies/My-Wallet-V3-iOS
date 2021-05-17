@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 struct BeneficiaryResponse: Decodable {
-    
+
     struct Agent: Decodable {
         let account: String
     }
-    
+
     let id: String
     let address: String
     let currency: String

@@ -10,16 +10,16 @@ import ToolKit
 /// lifecycle events that are the same as a `UITabBarController` while using the segmented control.
 /// This also gives us the option to include custom transitions.
 public final class SegmentedTabViewController: UITabBarController {
-    
+
     // MARK: - Public Properties
-    
+
     let itemIndexSelectedRelay = PublishRelay<Int?>()
-    
+
     // MARK: - Private Properties
-    
+
     private let items: [SegmentedViewScreenItem]
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
 
     required init?(coder: NSCoder) { unimplemented() }
@@ -27,16 +27,16 @@ public final class SegmentedTabViewController: UITabBarController {
         self.items = items
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     // MARK: - Lifecycle
-    
+
     public override func viewDidLoad() {
         setViewControllers(
             items.map(\.viewController),
             animated: true
         )
         tabBar.isHidden = true
-        
+
         itemIndexSelectedRelay
             .compactMap { $0 }
             .map(weak: self) { (self, index) -> UIViewController? in

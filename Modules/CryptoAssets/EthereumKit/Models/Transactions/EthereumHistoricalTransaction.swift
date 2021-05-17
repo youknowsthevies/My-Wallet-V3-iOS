@@ -26,7 +26,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
     public var confirmations: Int
     public var state: EthereumTransactionState
     public let data: String?
-    
+
     public init(
         identifier: String,
         fromAddress: EthereumAddress,
@@ -54,7 +54,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
         self.state = state
         self.data = data
     }
-    
+
     public init(response: EthereumHistoricalTransactionResponse,
                 memo: String? = nil,
                 accountAddress: String,
@@ -82,11 +82,11 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
         self.state = response.state
         self.data = response.data
     }
-    
+
     private static func created(timestamp: Int) -> Date {
         Date(timeIntervalSince1970: TimeInterval(timestamp))
     }
-    
+
     private static func direction(to: String, from: String, accountAddress: String) -> Direction {
         let incoming = to.lowercased() == accountAddress.lowercased()
         let outgoing = from.lowercased() == accountAddress.lowercased()
@@ -98,7 +98,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
         }
         return .credit
     }
-    
+
     private static func fee(gasPrice: String, gasUsed: String?) -> CryptoValue {
         guard let gasUsed = gasUsed else {
             return CryptoValue.etherZero
@@ -106,7 +106,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
         let fee = BigInt(stringLiteral: gasPrice) * BigInt(stringLiteral: gasUsed)
         return CryptoValue.create(minor: fee, currency: .ethereum)
     }
-    
+
     private static func confirmations(latestBlock: Int, blockNumber: String?) -> Int {
         guard let blockNumber: Int = blockNumber.flatMap({ Int($0) }) else {
             return 0

@@ -7,18 +7,18 @@ import RxRelay
 import RxSwift
 
 final class UpdateMobileRouter {
-    
+
     private var stateService: UpdateMobileStateServiceAPI!
     private let serviceProvider: MobileSettingsServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let disposeBag = DisposeBag()
-    
+
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
          service: MobileSettingsServiceAPI = resolve()) {
         self.serviceProvider = service
         self.navigationRouter = navigationRouter
     }
-    
+
     func start() {
         stateService = UpdateMobileRouterStateService()
         stateService.action
@@ -33,7 +33,7 @@ final class UpdateMobileRouter {
             .disposed(by: disposeBag)
         stateService.nextRelay.accept(())
     }
-    
+
     func next(to state: UpdateMobileRouterStateService.State) {
         switch state {
         case .start:
@@ -46,19 +46,19 @@ final class UpdateMobileRouter {
             showCodeEntryScreen()
         }
     }
-    
+
     func previous() {
         navigationRouter.dismiss()
     }
-    
+
     // MARK: - Private Functions
-    
+
     func showUpdateMobileScreen() {
         let presenter = UpdateMobileScreenPresenter(stateService: stateService, settingsAPI: serviceProvider)
         let controller = UpdateMobileScreenViewController(presenter: presenter)
         navigationRouter.present(viewController: controller)
     }
-    
+
     func showCodeEntryScreen() {
         let presenter = MobileCodeEntryScreenPresenter(stateService: stateService, service: serviceProvider)
         let controller = MobileCodeEntryViewController(presenter: presenter)

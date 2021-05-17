@@ -6,23 +6,23 @@ import RxRelay
 import RxSwift
 
 public final class AssetBalanceViewPresenter {
-    
+
     typealias PresentationState = AssetBalanceViewModel.State.Presentation
-        
+
     // MARK: - Exposed Properties
-    
+
     var state: Observable<PresentationState> {
         _ = setup
         return stateRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     var alignment: Driver<UIStackView.Alignment> {
         alignmentRelay.asDriver()
     }
-    
+
     // MARK: - Injected
-    
+
     private lazy var setup: Void = {
         /// Map interaction state into presnetation state
         /// and bind it to `stateRelay`
@@ -38,18 +38,18 @@ public final class AssetBalanceViewPresenter {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let interactor: AssetBalanceViewInteracting
     private let descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
-    
+
     // MARK: - Private Accessors
-    
+
     private let alignmentRelay: BehaviorRelay<UIStackView.Alignment>
     private let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(alignment: UIStackView.Alignment = .fill,
                 interactor: AssetBalanceViewInteracting,
                 descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {

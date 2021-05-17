@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct CandidateOrderDetails {
-    
+
     /// The payment method
     public let paymentMethod: PaymentMethodType?
-    
+
     /// Fiat value
     public let fiatValue: FiatValue
-    
+
     /// Crypto value
     public let cryptoValue: CryptoValue
 
@@ -17,12 +17,12 @@ public struct CandidateOrderDetails {
     /// The Fiat Currency that is being traded
     /// This may be different from the fiat currency used to input the desired amount.
     public let fiatCurrency: FiatCurrency
-    
+
     /// Whether the order is a `Buy` or a `Sell`
     public let action: Order.Action
-    
+
     public let paymentMethodId: String?
-    
+
     private init(paymentMethod: PaymentMethodType?,
                  action: Order.Action,
                  fiatValue: FiatValue,
@@ -38,7 +38,7 @@ public struct CandidateOrderDetails {
         self.cryptoCurrency = cryptoCurrency
         self.paymentMethodId = paymentMethodId
     }
-    
+
     public static func buy(paymentMethod: PaymentMethodType? = nil,
                            fiatValue: FiatValue,
                            cryptoValue: CryptoValue,
@@ -53,7 +53,7 @@ public struct CandidateOrderDetails {
             paymentMethodId: paymentMethodId
         )
     }
-    
+
     public static func sell(paymentMethod: PaymentMethodType? = nil,
                             fiatValue: FiatValue,
                             destinationFiatCurrency: FiatCurrency,
@@ -72,12 +72,12 @@ public struct CandidateOrderDetails {
 }
 
 public struct CheckoutData {
-        
+
     public let order: OrderDetails
     public let paymentAccount: PaymentAccountDescribing!
     public let isPaymentMethodFinalized: Bool
     public let linkedBankData: LinkedBankData?
-    
+
     // MARK: - Properties
 
     public var hasCardCheckoutMade: Bool {
@@ -91,19 +91,19 @@ public struct CheckoutData {
     public var isPendingDeposit: Bool {
         order.isPendingDeposit
     }
-    
+
     public var isPending3DS: Bool {
         order.isPending3DSCardOrder
     }
-        
+
     public var outputCurrency: CurrencyType {
         order.outputValue.currencyType
     }
-    
+
     public var inputCurrency: CurrencyType {
         order.inputValue.currencyType
     }
-    
+
     public var fiatValue: FiatValue? {
         if let fiat = order.inputValue.fiatValue {
             return fiat
@@ -113,7 +113,7 @@ public struct CheckoutData {
         }
         return nil
     }
-    
+
     public var cryptoValue: CryptoValue? {
         if let crypto = order.inputValue.cryptoValue {
             return crypto
@@ -123,7 +123,7 @@ public struct CheckoutData {
         }
         return nil
     }
-    
+
     /// `true` if the order is card but is undetermined
     public var isUnknownCardType: Bool {
         order.paymentMethod.isCard && order.paymentMethodId == nil
@@ -133,11 +133,11 @@ public struct CheckoutData {
     public var isUnknownBankTransfer: Bool {
         order.paymentMethod.isBankTransfer && order.paymentMethodId == nil
     }
-    
+
     public var isPendingConfirmationFunds: Bool {
         order.isPendingConfirmation && order.paymentMethod.isFunds
     }
-                
+
     public init(order: OrderDetails, paymentAccount: PaymentAccountDescribing? = nil, linkedBankData: LinkedBankData? = nil) {
         self.order = order
         self.paymentAccount = paymentAccount
@@ -156,14 +156,14 @@ public struct CheckoutData {
         order.paymentMethodId = bankAccount.identifier
         return CheckoutData(order: order, linkedBankData: bankAccount)
     }
-    
+
     func checkoutData(byAppending paymentAccount: PaymentAccountDescribing) -> CheckoutData {
         CheckoutData(
             order: order,
             paymentAccount: paymentAccount
         )
     }
-    
+
     func checkoutData(byAppending orderDetails: OrderDetails) -> CheckoutData {
         CheckoutData(
             order: orderDetails,

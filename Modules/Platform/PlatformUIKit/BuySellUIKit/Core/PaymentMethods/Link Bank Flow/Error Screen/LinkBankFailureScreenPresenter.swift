@@ -57,4 +57,3 @@ final class LinkBankFailureScreenPresenter: RibBridgePresenter, PendingStatePres
         supplementaryButton: canceButtonModel)
     }
 }
-

@@ -51,7 +51,7 @@ final class PriceClient: PriceClientAPI {
             return ( path: ["price", "index"], query: items )
         }
     }
-    
+
     // MARK: - Private properties
 
     private let networkAdapter: NetworkAdapterAPI

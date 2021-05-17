@@ -9,9 +9,9 @@ import UIKit
 /// a state such as verified, rejected, or a flag indicating the
 /// currency you have selected in settings.
 public final class BadgeView: UIView {
-    
+
     // MARK: - Private IBOutlets
-    
+
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var containerView: UIView!
     @IBOutlet private var accessoryContainer: UIView!
@@ -20,11 +20,11 @@ public final class BadgeView: UIView {
     @IBOutlet private var accessoryContainerTrailing: NSLayoutConstraint!
 
     // MARK: - Rx
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Public Properties
-    
+
     public var viewModel: BadgeViewModel! {
         willSet {
             disposeBag = DisposeBag()
@@ -36,20 +36,20 @@ public final class BadgeView: UIView {
             // Set non-reactive properties
             layer.cornerRadius = viewModel.cornerRadius
             titleLabel.font = viewModel.font
-            
+
             // Set accessibility
             accessibility = viewModel.accessibility
-            
+
             // Bind background color
             viewModel.backgroundColor
                 .drive(containerView.rx.backgroundColor)
                 .disposed(by: disposeBag)
-            
+
             // bind label color
             viewModel.contentColor
                 .drive(titleLabel.rx.textColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind label text
             viewModel.text
                 .drive(titleLabel.rx.text)
@@ -86,19 +86,19 @@ public final class BadgeView: UIView {
             accessoryContainerWidth.priority = .defaultLow
         }
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         fromNib()
         clipsToBounds = true

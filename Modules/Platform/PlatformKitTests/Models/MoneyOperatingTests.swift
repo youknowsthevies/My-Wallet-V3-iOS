@@ -29,7 +29,7 @@ final class MoneyOperatingTests: XCTestCase {
                         shouldBe result: BigInt) {
         XCTAssertEqual((try x / y).amount, result)
     }
-    
+
     private func percentage(x: MoneyValue,
                             y: MoneyValue,
                             shouldBe result: Decimal) {

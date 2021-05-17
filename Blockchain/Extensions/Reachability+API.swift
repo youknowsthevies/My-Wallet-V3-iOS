@@ -25,7 +25,7 @@ public final class InternetReachability: InternetReachabilityAPI {
     public enum ErrorType: Error {
         case internetUnreachable
     }
-    
+
     var canConnect: Bool {
         Reachability.hasInternetConnection()
     }

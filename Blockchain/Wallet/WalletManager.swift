@@ -15,9 +15,9 @@ import WalletPayloadKit
  */
 @objc
 class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, WalletRepositoryProvider {
-    
+
     @Inject static var shared: WalletManager
-    
+
     @objc static var sharedInstance: WalletManager {
         shared
     }
@@ -26,7 +26,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     @objc let wallet: Wallet
     let reactiveWallet: ReactiveWalletAPI
     private let appSettings: BlockchainSettings.App
-    
+
     // TODO: make this private(set) once other methods in RootService have been migrated in here
     @objc var latestMultiAddressResponse: MultiAddressResponse?
 
@@ -48,13 +48,13 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     private(set) var legacyRepository: WalletRepository!
 
     private let disposeBag = DisposeBag()
-    
+
     /// Once a payment is recieved any subscriber is able to get an update
     private let paymentReceivedRelay = PublishRelay<ReceivedPaymentDetails>()
     var paymentReceived: Observable<ReceivedPaymentDetails> {
         paymentReceivedRelay.asObservable()
     }
-    
+
     init(wallet: Wallet = Wallet()!,
          appSettings: BlockchainSettings.App = resolve(),
          reactiveWallet: ReactiveWallet = resolve()) {
@@ -70,13 +70,13 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
         self.wallet.ethereum.reactiveWallet = reactiveWallet
         self.wallet.bitcoin.reactiveWallet = reactiveWallet
     }
-    
+
     /// Returns the context. Should be invoked on the main queue always.
     /// If the context has not been generated,
     func fetchJSContext() -> JSContext {
         wallet.loadContextIfNeeded()
     }
-    
+
     /// Performs closing operations on the wallet. This should be called on logout and
     /// when the app is backgrounded
     func close() {
@@ -104,10 +104,10 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 
         // Clear all cookies (important one is the server session id SID)
         HTTPCookieStorage.shared.deleteAllCookies()
-        
+
         legacyRepository.legacySessionToken = nil
         legacyRepository.legacyPassword = nil
-        
+
         AssetAddressRepository.shared.removeAllSwipeAddresses()
         BlockchainSettings.App.shared.guid = nil
         BlockchainSettings.App.shared.sharedKey = nil
@@ -144,7 +144,7 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
 
     fileprivate func updateFiatSymbols() {
         guard wallet.hasLoadedAccountInfo == true else { return }
-        
+
         guard let fiatCode = wallet.accountInfo["currency"] as? String else {
             Logger.shared.warning("Could not get fiat code")
             return
@@ -349,7 +349,7 @@ extension WalletManager: WalletDelegate {
     @objc func getPrivateKeyPassword(withSuccess success: WalletSuccessCallback) {
         secondPasswordDelegate?.getPrivateKeyPassword(success: success)
     }
-    
+
     // MARK: - Key Importing
     func askUserToAddWatchOnlyAddress(_ address: AssetAddress, then: @escaping () -> Void) {
         DispatchQueue.main.async { [unowned self] in

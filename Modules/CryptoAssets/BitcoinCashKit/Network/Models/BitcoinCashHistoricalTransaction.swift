@@ -131,7 +131,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
         memo = nil
     }
-    
+
     // MARK: - BitcoinChainHistoricalTransaction
 
     public func apply(latestBlockHeight: Int) {

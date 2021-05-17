@@ -34,7 +34,7 @@ public final class WalletUpgradeViewController: UIViewController {
         loading.layout(edges: .centerX, to: view)
         loading.layout(size: .edge(50))
         loading.startAnimating()
-        
+
         view.addSubview(label)
         label.numberOfLines = 0
         label.layout(edge: .top, to: .bottom, of: loading, offset: 8)

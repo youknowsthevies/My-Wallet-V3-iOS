@@ -5,13 +5,13 @@ import RxSwift
 
 /// Subscribes to payments and presents a confirmation to the user upon receiving them
 class PaymentPresenter {
-    
+
     // MARK: - Properties
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(walletManager: WalletManager = .shared) {
         walletManager.paymentReceived
             .observeOn(MainScheduler.instance)
@@ -20,7 +20,7 @@ class PaymentPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func displayAlert(with payment: ReceivedPaymentDetails) {
         let button = AlertAction(style: .confirm(LocalizationConstants.close))
         let title = "\(payment.asset.name) \(LocalizationConstants.PaymentReceivedAlert.titleSuffix)"

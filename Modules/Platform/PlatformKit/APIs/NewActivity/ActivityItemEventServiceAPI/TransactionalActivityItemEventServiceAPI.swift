@@ -8,7 +8,7 @@ public protocol TransactionalActivityItemEventServiceAPI {
     var transactionActivityEvents: Single<[TransactionalActivityItemEvent]> { get }
     var transactionActivityObservable: Observable<[TransactionalActivityItemEvent]> { get }
     var state: Observable<ActivityItemEventsLoadingState> { get }
-    
+
     /// Forces the service to fetch events.
     /// Note that this should ignore the cache.
     var fetchTriggerRelay: PublishRelay<Void> { get }

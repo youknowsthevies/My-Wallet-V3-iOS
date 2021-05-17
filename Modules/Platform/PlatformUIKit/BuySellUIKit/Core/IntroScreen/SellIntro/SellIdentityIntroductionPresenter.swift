@@ -6,47 +6,47 @@ import RxCocoa
 import RxSwift
 
 final class SellIdentityIntroductionPresenter {
-    
+
     private typealias LocalizationId = LocalizationConstants.SimpleBuy.IntroScreen.Sell
-    
+
     enum CellType {
         case announcement(AnnouncementCardViewModel)
         case numberedItem(BadgeNumberedItemViewModel)
         case buttons([ButtonViewModel])
     }
-    
+
     /// Returns the total count of cells
     var cellCount: Int {
         cellArrangement.count
     }
-    
+
     // MARK: - Navigation Properties
-    
+
     var trailingButton: Screen.Style.TrailingButton {
         .close
     }
-    
+
     var leadingButton: Screen.Style.LeadingButton {
         .none
     }
-    
+
     var titleView: Screen.Style.TitleView {
         .none
     }
-    
+
     var barStyle: Screen.Style.Bar {
         .lightContent()
     }
-    
+
     let cellArrangement: [CellType]
-    
+
     let announcement: AnnouncementCardViewModel
     let verifyIdentityButtonViewModel: ButtonViewModel
     let badgeNumberedItemViewModels: [BadgeNumberedItemViewModel]
-    
+
     private let interactor: SellRouterInteractor
     private let disposeBag = DisposeBag()
-    
+
     init(interactor: SellRouterInteractor) {
         self.interactor = interactor
         badgeNumberedItemViewModels = [
@@ -84,12 +84,12 @@ final class SellIdentityIntroductionPresenter {
             description: LocalizationId.description,
             dismissState: .undismissible
         )
-        
+
         verifyIdentityButtonViewModel = .primary(with: LocalizationId.verifyIdentity)
 
         let badgedNumberedItems: [CellType] = badgeNumberedItemViewModels.map { .numberedItem($0) }
         cellArrangement = [.announcement(announcement)] + badgedNumberedItems + [.buttons([verifyIdentityButtonViewModel])]
-        
+
         verifyIdentityButtonViewModel
             .tapRelay
             .bindAndCatch(weak: self) { (self) in
@@ -98,4 +98,3 @@ final class SellIdentityIntroductionPresenter {
             .disposed(by: disposeBag)
     }
 }
-

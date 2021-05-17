@@ -4,24 +4,24 @@ import Foundation
 
 /// Represents the status of a displayable address
 enum DisplayAddressStatus {
-    
+
     /// Ready to fetch a new address
     case awaitingFetch
-    
+
     /// Fetching in progress
     case fetching
-    
+
     /// Fetch failure with associated localized reason
     case fetchFailure(localizedReason: String)
-    
+
     /// Valid address status
     case readyForDisplay(content: WalletAddressContent)
-    
+
     /// Returns `true` if the status is `awaitingFetch`
     var isAwaitingFetch: Bool {
         self == .awaitingFetch
     }
-    
+
     /// Returns `true` if the status is `readyForDisplay`
     var isReady: Bool {
         switch self {
@@ -31,7 +31,7 @@ enum DisplayAddressStatus {
             return false
         }
     }
-    
+
     /// Returns the content of the address
     var addressContent: WalletAddressContent? {
         switch self {
@@ -58,4 +58,3 @@ extension DisplayAddressStatus: Equatable {
         }
     }
 }
-

@@ -5,22 +5,22 @@ import RxRelay
 import RxSwift
 
 public final class FiatBalanceViewInteractor {
-    
+
     // MARK: - Types
-    
+
     public typealias InteractionState = FiatBalanceViewAsset.State.Interaction
-    
+
     // MARK: - Exposed Properties
-    
+
     public var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
-    
+
     public init(balance: MoneyValueBalancePairs) {
         stateRelay.accept(
             .loaded(

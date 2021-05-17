@@ -3,13 +3,13 @@
 import PlatformKit
 
 public struct StellarTransactionFee: TransactionFee, Decodable {
-    
+
     enum CodingKeys: String, CodingKey {
         case regular
         case priority
         case limits
     }
-    
+
     public static var cryptoType: HasPathComponent = CryptoCurrency.stellar
     public static let `default` = StellarTransactionFee(
         limits: StellarTransactionFee.defaultLimits,
@@ -17,11 +17,11 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         priority: 10000
     )
     public static let defaultLimits = TransactionFeeLimits(min: 100, max: 10000)
-    
+
     public var limits: TransactionFeeLimits
     public var regular: CryptoValue
     public var priority: CryptoValue
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)

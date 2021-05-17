@@ -5,7 +5,7 @@ import AnalyticsKit
 enum APIErrorEvent: AnalyticsEvent {
     case payloadError(ErrorDetails?)
     case serverError(ErrorDetails?)
-    
+
     struct ErrorDetails {
         var params: [String: String] {
             var parameters: [String: String] = [
@@ -23,13 +23,13 @@ enum APIErrorEvent: AnalyticsEvent {
             }
             return parameters
         }
-        
+
         let host: String
         let path: String
         let errorCode: String?
         let body: String?
         let requestId: String?
-        
+
         init?(request: NetworkRequest, errorResponse: ServerErrorResponse? = nil, body: String? = nil) {
             guard
                 let url = request.URLRequest.url,
@@ -52,18 +52,18 @@ enum APIErrorEvent: AnalyticsEvent {
             self.requestId = requestId
         }
     }
-    
+
     var name: String {
         "api_error"
     }
-    
+
     var params: [String : String]? {
         switch self {
         case .payloadError(let details), .serverError(let details):
             return details?.params ?? [:]
         }
     }
-    
+
     init?(request: NetworkRequest,
           error: NetworkError,
           decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil) {

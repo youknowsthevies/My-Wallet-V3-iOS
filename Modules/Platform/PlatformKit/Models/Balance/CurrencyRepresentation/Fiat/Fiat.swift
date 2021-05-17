@@ -4,27 +4,27 @@ import BigInt
 import ToolKit
 
 public protocol Fiat: Money {
-    
+
     /// The `FiatCurrency` (e.g. `USD`, `GBP`)
     var currencyType: FiatCurrency { get }
-    
+
     /// The current fiat currency value represented as a `FiatValue`
     var value: FiatValue { get }
 }
 
 extension Fiat {
-    
+
     public static func zero(currencyCode: String) -> FiatValue? {
         guard let currency = FiatCurrency(code: currencyCode) else {
             return nil
         }
         return FiatValue.zero(currency: currency)
     }
-    
+
     public func toDisplayString(includeSymbol: Bool, locale: Locale) -> String {
         toDisplayString(includeSymbol: includeSymbol, format: .fullLength, locale: locale)
     }
-    
+
     public func toDisplayString(includeSymbol: Bool,
                                 format: NumberFormatter.CurrencyFormat,
                                 locale: Locale) -> String {

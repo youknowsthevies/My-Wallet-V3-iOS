@@ -10,7 +10,7 @@ public struct PendingTransaction: Equatable {
         case xlmMemo
         case bitpayTimer
     }
-    
+
     /// The maximum amount the user can spend. We compare the amount entered to the
     /// `maximumLimit` as `CryptoValues` and return whichever is smaller.
     public var maxSpendable: MoneyValue {
@@ -22,15 +22,15 @@ public struct PendingTransaction: Equatable {
         }
         return (try? MoneyValue.min(available, availableMaximumLimit)) ?? .zero(currency: amount.currencyType)
     }
-    
+
     public var feeLevel: FeeLevel {
         feeSelection.selectedLevel
     }
-    
+
     public var availableFeeLevels: Set<FeeLevel> {
         feeSelection.availableLevels
     }
-    
+
     public var customFeeAmount: MoneyValue? {
         feeSelection.customAmount
     }
@@ -68,19 +68,19 @@ public struct PendingTransaction: Equatable {
         self.minimumLimit = minimumLimit
         self.maximumLimit = maximumLimit
     }
-    
+
     public func update(validationState: TransactionValidationState) -> PendingTransaction {
         var copy = self
         copy.validationState = validationState
         return copy
     }
-    
+
     public func update(amount: MoneyValue) -> PendingTransaction {
         var copy = self
         copy.amount = amount
         return copy
     }
-    
+
     public func update(amount: MoneyValue, available: MoneyValue) -> PendingTransaction {
         var copy = self
         copy.amount = amount
@@ -93,7 +93,7 @@ public struct PendingTransaction: Equatable {
         copy.feeSelection = copy.feeSelection.update(selectedLevel: selectedFeeLevel)
         return copy
     }
-    
+
     public func update(availableFeeLevels: Set<FeeLevel>) -> PendingTransaction {
         var copy = self
         copy.feeSelection = copy.feeSelection.update(availableFeeLevels: availableFeeLevels)
@@ -152,11 +152,11 @@ public struct PendingTransaction: Equatable {
         copy.confirmations = confirmations.filter { $0.type != optionType }
         return copy
     }
-    
+
     public func hasFeeLevelChanged(newLevel: FeeLevel, newAmount: MoneyValue) -> Bool {
         feeLevel != newLevel || (feeLevel == .custom && newAmount != customFeeAmount)
     }
-    
+
     // MARK: - Equatable
 
     public static func == (lhs: PendingTransaction, rhs: PendingTransaction) -> Bool {

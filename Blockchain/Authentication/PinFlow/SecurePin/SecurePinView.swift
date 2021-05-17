@@ -7,16 +7,16 @@ import RxSwift
 final class SecurePinView: UIView {
 
     // MARK: - UI Properties
-    
+
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var pinViewsArray: [UIView]!
-    
+
     // MARK: - Rx
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Injected
-    
+
     var viewModel: SecurePinViewModel! {
         didSet {
             titleLabel.text = viewModel.title
@@ -27,19 +27,19 @@ final class SecurePinView: UIView {
             .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Setup
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         fromNib()
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         fromNib()
     }
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         titleLabel.accessibility = Accessibility(id: .value(AccessibilityIdentifiers.PinScreen.pinSecureViewTitle),
@@ -48,14 +48,14 @@ final class SecurePinView: UIView {
             view.accessibilityIdentifier = "\(AccessibilityIdentifiers.PinScreen.pinIndicatorFormat)\(index)"
         }
     }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
         pinViewsArray.forEach {
             $0.layer.cornerRadius = min($0.bounds.height, $0.bounds.width) * 0.5
         }
     }
-    
+
     private func updatePin(to count: Int) {
         UIView.animate(
             withDuration: 0.3,
@@ -77,7 +77,7 @@ final class SecurePinView: UIView {
             completion: nil
         )
     }
-    
+
     /// Returns the UIPropertyAnimator with jolt animation embedded witihin
     var joltAnimator: UIViewPropertyAnimator {
         let duration: TimeInterval = 0.4

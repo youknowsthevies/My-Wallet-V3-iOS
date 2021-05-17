@@ -2,13 +2,13 @@
 
 /// Filter option for simple buy
 public enum SupportedPairsFilterOption {
-    
+
     /// Fetch all supported pairs
     case all
-    
+
     /// Fetch all supported pairs
     case only(fiatCurrency: FiatCurrency)
-    
+
     var fiatCurrency: FiatCurrency? {
         switch self {
         case .only(fiatCurrency: let currency):

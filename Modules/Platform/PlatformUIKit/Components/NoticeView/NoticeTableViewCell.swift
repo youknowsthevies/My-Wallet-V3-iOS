@@ -9,22 +9,22 @@ public final class NoticeTableViewCell: UITableViewCell {
             noticeView.viewModel = viewModel
         }
     }
-    
+
     public var topOffset: CGFloat = 16 {
         didSet {
             verticalConstraints.leading.constant = topOffset
         }
     }
-    
+
     public var bottomOffset: CGFloat = 16 {
         didSet {
             verticalConstraints.trailing.constant = -bottomOffset
         }
     }
-        
+
     private let noticeView = NoticeView()
     private var verticalConstraints: Axis.Constraints!
-        
+
     // MARK: - Lifecycle
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

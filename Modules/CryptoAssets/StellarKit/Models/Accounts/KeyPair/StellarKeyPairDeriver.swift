@@ -6,7 +6,7 @@ import stellarsdk
 
 public class StellarKeyPairDeriver: KeyPairDeriverAPI {
     public typealias StellarWallet = stellarsdk.Wallet
-    
+
     public func derive(input: StellarKeyDerivationInput) -> Result<StellarKeyPair, Error> {
         let keyPair: stellarsdk.KeyPair
         do {

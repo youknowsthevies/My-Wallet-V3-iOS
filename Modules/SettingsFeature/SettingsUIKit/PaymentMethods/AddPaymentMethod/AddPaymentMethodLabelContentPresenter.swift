@@ -6,19 +6,19 @@ import RxRelay
 import RxSwift
 
 final class AddPaymentMethodLabelContentPresenter: LabelContentPresenting {
-    
+
     typealias PresentationState = LabelContent.State.Presentation
-    
+
     let stateRelay = BehaviorRelay<PresentationState>(value: .loading)
     var state: Observable<PresentationState> {
         stateRelay.asObservable()
     }
-    
+
     // MARK: - Private Accessors
-    
+
     let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
-    
+
     init(interactor: AddPaymentMethodLabelContentInteractor) {
         self.interactor = interactor
         Observable

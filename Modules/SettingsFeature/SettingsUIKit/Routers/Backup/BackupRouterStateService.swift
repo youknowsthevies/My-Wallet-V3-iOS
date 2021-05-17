@@ -10,20 +10,20 @@ import ToolKit
 final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
     // MARK: - Types
-            
+
     struct States {
-        
+
         /// The actual state of the flow
         let current: State
-        
+
         /// The previous states sorted chronologically
         let previous: [State]
-        
+
         /// The starting state
         static var start: States {
             States(current: .start, previous: [])
         }
-        
+
         /// Maps the instance of `States` into a new instance where the appended
         /// state is the current
         func states(byAppending state: State) -> States {
@@ -42,80 +42,80 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
             )
         }
     }
-    
+
     // MARK: - Types
-    
+
     public enum State {
         case start
-        
+
         /// The CTA for funds backup
         case backupFunds(PresentationType, BackupRouterEntry)
-        
+
         /// The recovery phrase screen
         case recovery
-        
+
         /// The verification screen
         case verification
-        
+
         /// ~Fin~
         case end
     }
-    
+
     enum Action {
-        
+
         /// Procede to the next `State`
         case next(State)
-        
+
         /// Return to the prior screen
         case previous
-        
+
         /// Dismiss the screen
         case dismiss
-        
+
         /// Dismiss the screen and the
         /// flow has been completed.
         case complete
     }
-    
+
     // MARK: - Properties
-    
+
     var states: Observable<States> {
         statesRelay.asObservable()
     }
-    
+
     var currentState: Observable<BackupRouterStateService.State> {
         states.map { $0.current }
     }
-    
+
     var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     let nextRelay = PublishRelay<Void>()
     let previousRelay = PublishRelay<Void>()
-    
+
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
     private let entry: BackupRouterEntry
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(entry: BackupRouterEntry) {
         self.entry = entry
         nextRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
-        
+
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
             .disposed(by: disposeBag)
     }
-    
+
     private func next() {
         let action: Action
         var state: State
@@ -145,7 +145,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         let nextStates = states.states(byAppending: state)
         apply(action: action, states: nextStates)
     }
-    
+
     private func previous() {
         let states = statesRelay.value.statesByRemovingLast()
         let action: Action
@@ -159,7 +159,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
         }
         apply(action: action, states: states)
     }
-    
+
     private func apply(action: Action, states: States) {
         actionRelay.accept(action)
         statesRelay.accept(states)

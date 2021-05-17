@@ -9,7 +9,7 @@ import RxSwift
 final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
 
     // MARK: - BitcoinCashWalletBridgeAPI
-    
+
     var defaultWallet: Single<BitcoinCashWalletAccount> {
         reactiveWallet
             .waitUntilInitializedSingle
@@ -27,10 +27,10 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
     }
 
     // MARK: - Injected
-    
+
     private let reactiveWallet: ReactiveWalletAPI
     private let wallet: LegacyBitcoinCashWalletProtocol
-    
+
     init(reactiveWallet: ReactiveWalletAPI = resolve(),
          walletManager: WalletManager = resolve()) {
         self.reactiveWallet = reactiveWallet
@@ -90,7 +90,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
             return Disposables.create()
         }
     }
-    
+
     private func fetchDefaultWallet() -> Single<BitcoinCashWalletAccount> {
         Single<BitcoinCashWalletAccount>.create(weak: self) { (self, observer) -> Disposable in
             guard let payload = self.wallet.bitcoinCashDefaultWallet() else {
@@ -106,7 +106,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                     observer(.error(WalletError.unknown))
                     return Disposables.create()
                 }
-            
+
             let account = BitcoinCashWalletAccount(
                 index: index.intValue,
                 publicKey: xpub,

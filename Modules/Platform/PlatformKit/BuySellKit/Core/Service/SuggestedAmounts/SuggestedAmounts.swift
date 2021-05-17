@@ -1,11 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct SuggestedAmounts {
-    
+
     public subscript(currency: FiatCurrency) -> [FiatValue] {
         amountsPerCurrency[currency] ?? []
     }
-    
+
     private let amountsPerCurrency: [FiatCurrency: [FiatValue]]
 
     init(response: SuggestedAmountsResponse) {

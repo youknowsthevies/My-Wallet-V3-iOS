@@ -5,17 +5,17 @@ import RxRelay
 import RxSwift
 
 public final class AssetPieChartInteractor: AssetPieChartInteracting {
-        
+
     // MARK: - Properties
-    
+
     public var state: Observable<AssetPieChart.State.Interaction> {
         _ = setup
         return stateRelay
             .asObservable()
     }
-            
+
     // MARK: - Private Accessors
-    
+
     private lazy var setup: Void = {
         let currencies = Observable.just(currencyTypes)
         Observable
@@ -24,9 +24,9 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
                 guard let totalFiatValue = totalBalance.value else {
                     return .loading
                 }
-                
+
                 let total = MoneyValue(fiatValue: totalFiatValue)
-                
+
                 guard total.isPositive else {
                     let zero = MoneyValue.zero(currency: total.currencyType)
                     let states = currencies.map { AssetPieChart.Value.Interaction(asset: $0, percentage: zero) }
@@ -50,7 +50,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
-    
+
     private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
     private let disposeBag = DisposeBag()
 
@@ -58,9 +58,9 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     private let balanceProvider: BalanceProviding
 
     // MARK: - Setup
-    
+
     public init(balanceProvider: BalanceProviding, currencyTypes: [CurrencyType]) {
         self.balanceProvider = balanceProvider
         self.currencyTypes = currencyTypes
-    }    
+    }
 }

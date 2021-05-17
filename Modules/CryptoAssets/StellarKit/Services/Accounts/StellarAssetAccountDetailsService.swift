@@ -8,13 +8,13 @@ import ToolKit
 
 final class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
     typealias AccountDetails = StellarAssetAccountDetails
-    
+
     private let horizonProxy: HorizonProxyAPI
 
     init(horizonProxy: HorizonProxyAPI = resolve()) {
         self.horizonProxy = horizonProxy
     }
-    
+
     func accountDetails(for accountID: String) -> Single<AccountDetails> {
         horizonProxy.accountResponse(for: accountID)
             .map { response -> AccountDetails in

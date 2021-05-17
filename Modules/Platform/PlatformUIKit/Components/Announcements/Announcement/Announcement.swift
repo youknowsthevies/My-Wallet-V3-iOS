@@ -6,20 +6,20 @@ import PlatformKit
 /// Protocol for an announcement that is shown to the user. These are typically
 /// used for new products and features that we launch in the wallet.
 public protocol Announcement {
-    
+
     /// Indicates whether the announcement should show.
     /// Should be overridden by the inheriting concrete type.
     var shouldShow: Bool { get }
-    
+
     /// The view model of the announcement card
     var viewModel: AnnouncementCardViewModel { get }
-    
+
     /// The type of the announcement
     var type: AnnouncementType { get }
-    
+
     /// The analytics recorder
     var analyticsRecorder: AnalyticsEventRecording { get }
-    
+
     /// An analytics event for appearance
     var didAppearAnalyticsEvent: AnalyticsEvents.Announcement { get }
 }

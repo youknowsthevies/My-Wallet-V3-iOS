@@ -7,11 +7,11 @@ public enum CustodialSingleAccountBalanceError: Error {
 }
 
 public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
-    
+
     private enum Value: Equatable {
         case fiat(FiatCustodialAccountBalance)
         case crypto(CryptoCustodialAccountBalance)
-        
+
         init(minor amount: String,
              fiat fiatCurrency: FiatCurrency,
              withdrawable: String,
@@ -28,7 +28,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
                 )
             )
         }
-        
+
         init(major amount: String,
              fiat fiatCurrency: FiatCurrency,
              withdrawable: String,
@@ -45,7 +45,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
                 )
             )
         }
-        
+
         init(minor amount: String,
              crypto cryptoCurrency: CryptoCurrency,
              withdrawable: String,
@@ -62,7 +62,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
                 )
             )
         }
-        
+
         init(major amount: String,
              crypto cryptoCurrency: CryptoCurrency,
              withdrawable: String,
@@ -89,7 +89,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             return balance.available
         }
     }
-    
+
     public var withdrawable: MoneyValue {
         switch self._value {
         case .crypto(let balance):
@@ -98,7 +98,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             return balance.withdrawable
         }
     }
-    
+
     public var pending: MoneyValue {
         switch self._value {
         case .crypto(let balance):
@@ -107,9 +107,9 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             return balance.pending
         }
     }
-    
+
     private let _value: Value
-    
+
     init(currency: CurrencyType, response: CustodialBalanceResponse.Balance) {
         switch currency {
         case .crypto(let currencyType):
@@ -123,7 +123,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             )
         }
     }
-    
+
     public init(minorValue available: String,
                 currencyType: CurrencyType,
                 withdrawable: String = "0",
@@ -145,7 +145,7 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             )
         }
     }
-    
+
     public init(majorValue available: String,
                 currencyType: CurrencyType,
                 withdrawable: String = "0",
@@ -167,11 +167,11 @@ public struct CustodialAccountBalance: CustodialAccountBalanceType, Equatable {
             )
         }
     }
-    
+
     public var currency: CurrencyType {
         available.currencyType
     }
-    
+
     public var symbol: String {
         available.currencyType.symbol
     }

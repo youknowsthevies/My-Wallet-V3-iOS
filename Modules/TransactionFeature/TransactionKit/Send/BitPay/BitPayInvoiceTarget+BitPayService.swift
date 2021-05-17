@@ -14,23 +14,23 @@ enum BitPayError: Error {
 }
 
 extension BitPayInvoiceTarget {
-    
+
     // MARK: - Enums
-    
+
     private enum Prefix {
         static let bitpay = "bitpay.com"
         static let bitcoin = "bitcoin:?r="
         static let bitcoinCash = "bitcoincash:?r="
     }
-    
+
     private enum Constants {
         static let forMerchant = "for merchant "
     }
-    
+
     private static let bitpayService: BitPayServiceAPI = resolve()
-    
+
     // MARK: - Public Factory
-    
+
     public static func isBitcoin(_ data: String) -> Completable {
         Completable.fromCallable {
             guard data.contains(Prefix.bitcoin) else {
@@ -38,7 +38,7 @@ extension BitPayInvoiceTarget {
             }
         }
     }
-    
+
     public static func isBitcoinCash(_ data: String) -> Completable {
         Completable.fromCallable {
             guard data.contains(Prefix.bitcoinCash) else {
@@ -46,7 +46,7 @@ extension BitPayInvoiceTarget {
             }
         }
     }
-    
+
     public static func isSupportedAsset(_ asset: CryptoCurrency) -> Completable {
         Completable.fromCallable {
             guard asset.supportsBitPay else {
@@ -54,7 +54,7 @@ extension BitPayInvoiceTarget {
             }
         }
     }
-    
+
     public static func isBitPay(_ data: String) -> Completable {
         Completable.fromCallable {
             guard data.contains(Prefix.bitpay) else {
@@ -62,7 +62,7 @@ extension BitPayInvoiceTarget {
             }
         }
     }
-    
+
     public static func make(from data: String,
                             asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
         isBitPay(data)
@@ -90,9 +90,9 @@ extension BitPayInvoiceTarget {
                 Logger.shared.error("\(error)")
             })
     }
-    
+
     // MARK: - Private Functions
-    
+
     private static func invoiceId(from data: String) -> Single<String> {
         .create { observer -> Disposable in
             let payload = data

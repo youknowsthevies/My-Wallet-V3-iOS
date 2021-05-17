@@ -27,11 +27,11 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
     public var description: Driver<String> {
         descriptionRelay.asDriver()
     }
-    
+
     public var pending: Driver<String> {
        .empty()
     }
-    
+
     public var pendingLabelVisibility: Driver<Visibility> {
         .just(.hidden)
     }
@@ -49,7 +49,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         ),
         height: 24
     )
-    
+
     public let titleAccessibilitySuffix: String
     public let descriptionAccessibilitySuffix: String
     public let pendingAccessibilitySuffix: String

@@ -5,11 +5,11 @@ import UIKit
 final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Properties
-    
+
     var presenter: FiatCustodialBalanceViewPresenter! {
         didSet {
             custodialBalanceView.presenter = presenter
-            
+
             guard let presenter = presenter else {
                 return
             }
@@ -23,10 +23,10 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-    
+
     private var custodialBalanceViewWidthConstraint: NSLayoutConstraint!
     private let custodialBalanceView: FiatCustodialBalanceView
-        
+
     // MARK: - Setup
 
     override init(frame: CGRect) {
@@ -42,7 +42,7 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
                                                                           to: UIScreen.main.bounds.width,
                                                                           priority: .penultimateHigh)
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 

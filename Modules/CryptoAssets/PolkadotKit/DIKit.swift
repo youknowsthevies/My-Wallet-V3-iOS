@@ -8,7 +8,7 @@ extension DependencyContainer {
     public static var polkadotKit = module {
 
         factory(tag: CryptoCurrency.polkadot) { PolkadotAsset() as CryptoAsset }
-        
+
         factory(tag: CryptoCurrency.polkadot) { PolkadotCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
     }
 }

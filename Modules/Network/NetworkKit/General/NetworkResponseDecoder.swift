@@ -12,33 +12,33 @@ public protocol NetworkResponseDecoderAPI {
         responseType: ResponseType.Type,
         for request: NetworkRequest
     ) -> Result<ResponseType?, NetworkError>
-    
+
     func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
     ) -> Result<ResponseType?, ErrorResponseType>
-    
+
     func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType>
-    
+
     func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, NetworkError>
-    
+
     func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType
-    
+
     func decodeFailureToString(errorResponse: ServerErrorResponse) -> String?
 }
 
 final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
-    
+
     // MARK: - Properties
 
     private static let defaultJSONDecoder: JSONDecoder = {
@@ -49,7 +49,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     private let jsonDecoder: JSONDecoder
     private let interalFeatureFlagService: InternalFeatureFlagServiceAPI
-    
+
     // MARK: - Setup
 
     init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder,
@@ -57,9 +57,9 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         self.jsonDecoder = jsonDecoder
         self.interalFeatureFlagService = interalFeatureFlagService
     }
-    
+
     // MARK: - NetworkResponseDecoderAPI
-    
+
     public func decodeOptional<ResponseType: Decodable>(
         response: ServerResponse,
         responseType: ResponseType.Type,
@@ -76,7 +76,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             }
         )
     }
-    
+
     public func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
@@ -94,7 +94,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
         .mapError(ErrorResponseType.from)
     }
-    
+
     public func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
@@ -102,7 +102,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         decode(response: response, for: request)
             .mapError(ErrorResponseType.from)
     }
-    
+
     public func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
@@ -115,7 +115,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             }
         )
     }
-    
+
     public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
@@ -144,16 +144,16 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         }
         return decodedErrorResponse
     }
-    
+
     public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
         }
         return String(data: payload, encoding: .utf8)
     }
-    
+
     // MARK: - Private methods
-    
+
     private func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest,
@@ -206,7 +206,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 return .failure(.payloadError(.badData(rawPayload: rawPayload)))
             }
     }
-    
+
     private func debugErrorMessage<ResponseType: Decodable>(
         for decodingError: Error,
         response: HTTPURLResponse,

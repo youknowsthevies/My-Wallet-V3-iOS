@@ -7,7 +7,7 @@ import XCTest
 @testable import PlatformKit
 
 class WalletPayloadServiceTests: XCTestCase {
-    
+
     /// Tests a valid response to payload fetching that requires 2FA code
     func testValid2FAResponse() throws {
         let expectedAuthType = AuthenticatorType.sms // expect SMS
@@ -33,7 +33,7 @@ class WalletPayloadServiceTests: XCTestCase {
             XCTFail("expected payload fetching to require \(expectedAuthType), got error: \(error)")
         }
     }
-    
+
     func testValidPayloadResponse() throws {
         let expectedAuthType = AuthenticatorType.standard // expect no 2FA
         let serverResponse = WalletPayloadClient.Response.fake(

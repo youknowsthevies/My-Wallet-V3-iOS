@@ -11,7 +11,7 @@ final class EthereumAssetBalanceFetcher: CryptoAccountBalanceFetching {
     // MARK: - Exposed Properties
 
     let accountType: SingleAccountType = .nonCustodial
-    
+
     var balance: Single<CryptoValue> {
         assetAccountRepository
             .currentAssetAccountDetails(fromCache: true)
@@ -19,12 +19,12 @@ final class EthereumAssetBalanceFetcher: CryptoAccountBalanceFetching {
             .asSingle()
             .map { $0.balance }
     }
-    
+
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
             .asObservable()
     }
-    
+
     var pendingBalanceMoney: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .ethereum))
     }

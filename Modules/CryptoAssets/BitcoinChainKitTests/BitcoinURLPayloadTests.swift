@@ -61,7 +61,7 @@ class BitcoinURLPayloadTests: XCTestCase {
         XCTAssertEqual(address, payload!.address)
         XCTAssertEqual(amount, payload!.amount)
     }
-    
+
     func testBitcoinPaymentRequestUrl() {
         let address = ""
         let paymentRequestUrl = "https://bitpay.com/i/7pZrguiGf21Y73rPN8J3s5"

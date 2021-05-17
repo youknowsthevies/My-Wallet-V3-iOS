@@ -5,16 +5,16 @@ import Localization
 import PlatformKit
 
 public struct Biometry {
-    
+
     public enum BiometryError: LocalizedError {
         private typealias LocalizedString = LocalizationConstants.Biometry
-        
+
         case authenticationFailed
         case passcodeNotSet
         case biometryLockout
         case biometryNotAvailable
         case biometryNotEnrolled(type: BiometryType)
-        
+
         case appCancel
         case systemCancel
         case userCancel
@@ -50,14 +50,14 @@ public struct Biometry {
                 return ""
             }
         }
-        
+
         /// Initializes with error, expects the error to have `code`
         /// compatible code to `LAError.Code.rawValue`
         public init(with error: Error, type: BiometryType) {
             let code = (error as NSError).code
             self.init(with: code, type: type)
         }
-        
+
         /// Initializes with expected `LAError.Code`'s `rawValue`
         init(with rawCodeValue: Int, type: BiometryType) {
             if let localAuthenticationCode = LAError.Code(rawValue: rawCodeValue) {
@@ -66,7 +66,7 @@ public struct Biometry {
                 self = .general
             }
         }
-        
+
         /// Initializes with `LAError.Code` value
         init(with error: LAError.Code, type: BiometryType) {
             switch error {
@@ -96,12 +96,12 @@ public struct Biometry {
             }
         }
     }
-    
+
     // MARK: - Types
 
     public enum Reason {
         case enterWallet
-        
+
         var localized: String {
             switch self {
             case .enterWallet:
@@ -109,20 +109,20 @@ public struct Biometry {
             }
         }
     }
-    
+
     /// Indicates the current biometrics configuration state
     public enum Status {
-        
+
         /// Not configured on device but there is no restriction for configuring one
         case configurable(BiometryType)
-        
+
         /// Configured on the device and in app
         case configured(BiometryType)
-        
+
         /// Cannot be configured because the device do not support it,
         /// or because the user hasn't enabled it, or because that feature is not remotely
         case unconfigurable(Error)
-        
+
         /// Returns `true` if biometrics is configurable
         public var isConfigurable: Bool {
             switch self {
@@ -132,7 +132,7 @@ public struct Biometry {
                 return false
             }
         }
-        
+
         /// Returns `true` if biometrics is configured
         public var isConfigured: Bool {
             switch self {
@@ -142,7 +142,7 @@ public struct Biometry {
                 return false
             }
         }
-        
+
         /// Returns associated `BiometricsType` if any
         public var biometricsType: BiometryType {
             switch self {
@@ -155,7 +155,7 @@ public struct Biometry {
             }
         }
     }
-    
+
     /// A type of biomety authenticator
     public enum BiometryType {
 
@@ -191,15 +191,15 @@ public struct Biometry {
                 return nil
             }
         }
-        
+
         public var isValid: Bool {
             self != .none
         }
     }
-    
+
     /// Represents `LAContext` result on calling `canEvaluatePolicy` for biometrics
     public enum EvaluationError: LocalizedError {
-        
+
         /// Wraps
         case system(BiometryError)
         case notAllowed
@@ -212,5 +212,5 @@ public struct Biometry {
                 return LocalizationConstants.Biometry.notConfigured
             }
         }
-    }    
+    }
 }

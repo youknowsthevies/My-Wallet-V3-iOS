@@ -78,7 +78,7 @@ final class LinkBankFlowRootInteractor: Interactor,
         // Refresh the underlying value of BeneficiariesService once we've linked a bank
         linkBankFlowEffect
             .filter { $0 == .bankLinked }
-            .flatMap { [beneficiariesService] effect -> Single<LinkBankFlowEffect> in
+            .flatMap { [beneficiariesService] _ -> Single<LinkBankFlowEffect> in
                 beneficiariesService.fetch()
                     .take(1)
                     .asSingle()

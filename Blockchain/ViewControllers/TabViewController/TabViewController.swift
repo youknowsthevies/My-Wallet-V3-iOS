@@ -178,7 +178,7 @@ import ToolKit
             let position = location.position
             let screen = location.screen
             guard screen == .dashboard else { return }
-            
+
             switch position {
             case .home:
                 PulseViewPresenter.shared.show(viewModel: .init(container: self.homePassthroughContainer, onSelection: pulseViewModel.action))
@@ -191,5 +191,5 @@ import ToolKit
             }
         }
     }
-    
+
 }

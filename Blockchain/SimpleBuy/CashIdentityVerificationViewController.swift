@@ -3,32 +3,32 @@
 import PlatformUIKit
 
 final class CashIdentityVerificationViewController: UIViewController {
-    
+
     private let tableView = SelfSizingTableView()
     private let presenter: CashIdentityVerificationPresenter
-    
+
     init(presenter: CashIdentityVerificationPresenter) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Lifecycle
-    
+
     override func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         tableView.reloadData()
     }
-    
+
     private func setupTableView() {
         view.addSubview(tableView)
         tableView.layoutToSuperview(axis: .horizontal, usesSafeAreaLayoutGuide: true)
@@ -52,7 +52,7 @@ extension CashIdentityVerificationViewController: UITableViewDelegate, UITableVi
                    numberOfRowsInSection section: Int) -> Int {
         presenter.cellCount
     }
-    
+
     func tableView(_ tableView: UITableView,
                    cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
@@ -67,25 +67,24 @@ extension CashIdentityVerificationViewController: UITableViewDelegate, UITableVi
         }
         return cell
     }
-        
+
     // MARK: - Accessors
-    
+
     private func announcement(for indexPath: IndexPath, viewModel: AnnouncementCardViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(AnnouncementTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func numberedCell(for indexPath: IndexPath, viewModel: BadgeNumberedItemViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(BadgeNumberedTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell
     }
-    
+
     private func buttonsCell(for indexPath: IndexPath, buttons: [ButtonViewModel]) -> UITableViewCell {
         let cell = tableView.dequeue(ButtonsTableViewCell.self, for: indexPath)
         cell.models = buttons
         return cell
     }
 }
-

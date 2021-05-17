@@ -8,13 +8,13 @@ import ToolKit
 import TransactionKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
-    
+
     typealias AskForRefreshConfirmations =  (Bool) -> Completable
-    
+
     // MARK: - OnChainTransactionEngine
 
     var askForRefreshConfirmation: (AskForRefreshConfirmations)!
-    
+
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
     let requireSecondPassword: Bool
@@ -28,7 +28,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .asObservable()
     }
-    
+
     // MARK: - Private Properties
 
     private let feeCache: CachedValue<EthereumTransactionFee>
@@ -48,9 +48,9 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             fatalError("Impossible State for Ethereum On Chain Engine: transactionTarget is \(type(of: transactionTarget))")
         }
     }
-    
+
     // MARK: - Init
-    
+
     init(requireSecondPassword: Bool,
          priceService: PriceServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -68,12 +68,12 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             self.feeService.fees
         }
     }
-    
+
     func assertInputsValid() {
         defaultAssertInputsValid()
         precondition(sourceCryptoCurrency == .ethereum)
     }
-    
+
     func initializeTransaction() -> Single<PendingTransaction> {
         fiatCurrencyService
             .fiatCurrency
@@ -92,7 +92,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 )
             }
     }
-    
+
     func start(
         sourceAccount: CryptoAccount,
         transactionTarget: TransactionTarget,
@@ -102,14 +102,14 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionTarget = transactionTarget
         self.askForRefreshConfirmation = askForRefreshConfirmation
     }
-    
+
     func restart(transactionTarget: TransactionTarget, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         defaultRestart(
             transactionTarget: transactionTarget,
             pendingTransaction: pendingTransaction
         )
     }
-    
+
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         Single
             .zip(
@@ -139,7 +139,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .map { pendingTransaction.update(confirmations: $0) }
     }
-    
+
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         guard let crypto = amount.cryptoValue else {
             preconditionFailure("Not a `CryptoValue`")
@@ -164,7 +164,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             )
         }
     }
-    
+
     func doOptionUpdateRequest(pendingTransaction: PendingTransaction, newConfirmation: TransactionConfirmation) -> Single<PendingTransaction> {
         switch newConfirmation {
         case .feeSelection(let value) where value.selectedLevel != pendingTransaction.feeLevel:
@@ -189,7 +189,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
     }
-    
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         sourceAccount.actionableBalance
             .flatMap(weak: self) { (self, actionableBalance) -> Single<PendingTransaction> in
@@ -199,7 +199,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                     .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
             }
     }
-    
+
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         guard let crypto = pendingTransaction.amount.cryptoValue else {
             preconditionFailure("Not a `CryptoValue`")
@@ -207,7 +207,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         guard let ethereumValue = try? EthereumValue(crypto: crypto) else {
             preconditionFailure("Not an ethereum value")
         }
-        
+
         return receiveAddress
             .map(\.address)
             .map { try EthereumAccountAddress(string: $0) }
@@ -222,21 +222,21 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .map { TransactionResult.hashed(txHash: $0.transactionHash, amount: pendingTransaction.amount) }
     }
-    
+
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         unimplemented()
     }
-    
+
     func startConfirmationsUpdate(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .never()
     }
-    
+
     func doRefreshConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         unimplemented()
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func validateNoPendingTransaction() -> Completable {
         bridge
             .isWaitingOnTransaction
@@ -247,7 +247,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             }
             .asCompletable()
     }
-    
+
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
             if try pendingTransaction.amount <= .init(cryptoValue: .etherZero) {
@@ -299,7 +299,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 return fees.absoluteFee(with: level, isContract: false)
             }
     }
-    
+
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,

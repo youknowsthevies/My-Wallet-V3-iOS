@@ -84,7 +84,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let transactionState: Observable<TransactionState> = transactionModel
             .state
             .share(replay: 1, scope: .whileConnected)
-        
+
         amountInteractor
             .effect
             .subscribe { [weak self] effect  in
@@ -120,7 +120,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 self?.transactionModel.process(action: .updateAmount(amount))
             }
             .disposeOnDeactivate(interactor: self)
-        
+
         let spendable = Observable
             .combineLatest(
                 transactionState,
@@ -137,17 +137,17 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 )
             }
             .share(scope: .whileConnected)
-        
+
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
             .map(\.feeAmount)
             .share(scope: .whileConnected)
-        
+
         auxiliaryViewInteractor
             .connect(fee: fee)
             .disposeOnDeactivate(interactor: self)
-        
+
         auxiliaryViewInteractor
             .connect(stream: spendable.map(\.max))
             .disposeOnDeactivate(interactor: self)
@@ -158,7 +158,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 self?.amountInteractor.set(amount: maxSpendable)
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         spendable
             .map { [weak listener] spendable in
                 spendable.errorState.toAmountInteractorState(
@@ -280,7 +280,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             break
         }
     }
-    
+
     private func initialState() -> State {
         let topSelectionState = TopSelectionState(
             sourceAccount: nil,

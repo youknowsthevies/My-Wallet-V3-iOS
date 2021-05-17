@@ -10,11 +10,11 @@ public protocol ViewControllerAPI: class {
 }
 
 extension UIViewController: ViewControllerAPI {
-    
+
     public var presentedViewControllerAPI: ViewControllerAPI? {
         presentedViewController
     }
-    
+
     public var navigationControllerAPI: NavigationControllerAPI? {
         navigationController
     }

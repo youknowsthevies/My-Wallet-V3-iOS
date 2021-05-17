@@ -6,11 +6,11 @@ import RxSwift
 import SettingsKit
 
 final class ProfileSectionPresenter: SettingsSectionPresenting {
-    
+
     // MARK: - SettingsSectionPresenting
-    
+
     let sectionType: SettingsSectionType = .profile
-    
+
     var state: Observable<SettingsSectionLoadingState> {
         .just(
             .loaded(next:
@@ -29,11 +29,11 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
             )
         )
     }
-    
+
     private let limitsPresenter: TierLimitsCellPresenter
     private let emailVerificationPresenter: EmailVerificationCellPresenter
     private let mobileVerificationPresenter: MobileVerificationCellPresenter
-    
+
     init(tiersLimitsProvider: TierLimitsProviding,
          emailVerificationInteractor: EmailVerificationBadgeInteractor,
          mobileVerificationInteractor: MobileVerificationBadgeInteractor) {
@@ -42,4 +42,3 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
         mobileVerificationPresenter = .init(interactor: mobileVerificationInteractor)
     }
 }
-

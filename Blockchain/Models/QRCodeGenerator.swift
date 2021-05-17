@@ -11,16 +11,16 @@ import PlatformUIKit
     @objc override init() {
         super.init()
     }
-    
+
     @objc func qrImage(fromAddress address: String, amount: String?, asset legacyAsset: LegacyAssetType, includeScheme: Bool) -> UIImage? {
         guard let metadata = metadata(address: address, amount: amount, asset: legacyAsset, includeScheme: includeScheme) else { return nil }
         return QRCode(metadata: metadata)?.image
     }
-    
+
     @objc func createQRImage(fromString string: String) -> UIImage? {
         QRCode(string: string)?.image
     }
-    
+
     private func metadata(address: String, amount: String?, asset legacyAsset: LegacyAssetType, includeScheme: Bool) -> CryptoAssetQRMetadata? {
         switch legacyAsset {
         case .bitcoin:

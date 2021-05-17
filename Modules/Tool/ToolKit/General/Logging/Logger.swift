@@ -2,7 +2,7 @@
 
 /// Class in charge of logging debug/info/warning/error messages to a `LogDestination`.
 @objc public class Logger: NSObject {
-    
+
     private var destinations = [LogDestination]()
 
     private lazy var timestampFormatter: DateFormatter = {
@@ -58,7 +58,7 @@
     ) {
         log(message, level: .error, file: file, function: function, line: line)
     }
-    
+
     public func error(_ error: Error) {
         log(error.localizedDescription, level: .error)
     }

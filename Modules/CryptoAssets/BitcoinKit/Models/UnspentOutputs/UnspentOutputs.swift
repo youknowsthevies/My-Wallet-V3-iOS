@@ -9,7 +9,7 @@ enum UnspentOutputError: Error {
 }
 
 struct UnspentOutputs: Equatable {
-    
+
     let outputs: [UnspentOutput]
 }
 
@@ -20,4 +20,3 @@ extension UnspentOutputs {
             .compactMap { try? UnspentOutput(response: $0) }
     }
 }
-

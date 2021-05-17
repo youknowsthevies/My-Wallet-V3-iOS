@@ -5,13 +5,13 @@ import DIKit
 import RxSwift
 
 final class BitcoinAddressValidator: BitcoinAddressValidatorAPI {
-    
+
     private let bridge: BitcoinWalletBridgeAPI
-    
+
     init(bridge: BitcoinWalletBridgeAPI = resolve()) {
         self.bridge = bridge
     }
-    
+
     func validate(address: String) -> Completable {
         Completable.fromCallable { [weak self] in
             guard let self = self else {

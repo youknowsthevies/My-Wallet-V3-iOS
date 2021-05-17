@@ -4,7 +4,7 @@ import PlatformKit
 
 extension BuySellActivityItemEvent {
     init(with orderDetails: OrderDetails) {
-        
+
         let paymentMethod: PaymentMethod
         switch orderDetails.paymentMethod {
         case .bankAccount:
@@ -16,7 +16,7 @@ extension BuySellActivityItemEvent {
         case .funds:
             paymentMethod = .funds
         }
-        
+
         self.init(
             identifier: orderDetails.identifier,
             creationDate: orderDetails.creationDate ?? Date(),
@@ -47,4 +47,3 @@ extension OrderDetails {
         }
     }
 }
-

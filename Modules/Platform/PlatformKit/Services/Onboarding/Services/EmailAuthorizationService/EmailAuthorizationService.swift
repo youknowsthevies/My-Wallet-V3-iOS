@@ -4,31 +4,31 @@ import RxRelay
 import RxSwift
 
 public final class EmailAuthorizationService {
-    
+
     // MARK: - Types
-        
+
     public enum ServiceError: Error {
-                
+
         /// Session token is missing
         case missingSessionToken
-        
+
         /// Instance of self was deallocated
         case unretainedSelf
-        
+
         /// Authorization is already active
         case authorizationAlreadyActive
-        
+
         /// Cancellation error
         case authorizationCancelled
     }
-    
+
     /// Steams a `completed` event once, upon successful authorization.
     /// Keeps polling until completion event is received
     public var authorize: Completable {
         authorizeEmail()
             .asCompletable()
     }
-    
+
     private let lock = NSRecursiveLock()
     private var _isActive = false
     private var isActive: Bool {
@@ -43,24 +43,24 @@ public final class EmailAuthorizationService {
             self._isActive = newValue
         }
     }
-    
+
     // MARK: - Injected
-    
+
     private let guidService: GuidServiceAPI
-        
+
     // MARK: - Setup
-    
+
     public init(guidService: GuidServiceAPI) {
         self.guidService = guidService
     }
-    
+
     /// Cancels the authorization by sending interrupt to stop polling
     public func cancel() {
         isActive = false
     }
-    
+
     // MARK: - Accessors
-    
+
     private func authorizeEmail() -> Single<Void> {
         guard !isActive else {
             return .error(ServiceError.authorizationAlreadyActive)

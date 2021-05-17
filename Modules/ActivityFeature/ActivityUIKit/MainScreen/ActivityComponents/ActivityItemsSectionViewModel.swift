@@ -6,7 +6,7 @@ import ToolKit
 
 struct ActivityItemsSectionViewModel {
     var items: [ActivityCellItem]
-    
+
     var identity: AnyHashable {
         // There's only ever one `ActivityItemsSectionViewModel` section
         // so it must be a static string for an identifier.
@@ -16,7 +16,7 @@ struct ActivityItemsSectionViewModel {
 
 extension ActivityItemsSectionViewModel: AnimatableSectionModelType {
     typealias Item = ActivityCellItem
-    
+
     init(original: ActivityItemsSectionViewModel, items: [ActivityCellItem]) {
         self = original
         self.items = items

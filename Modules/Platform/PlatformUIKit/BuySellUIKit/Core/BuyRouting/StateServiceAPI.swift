@@ -6,7 +6,7 @@ import RxSwift
 
 /// A passive state receiver API for Simple-Buy flow.
 public protocol StateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<StateService.Action> { get }

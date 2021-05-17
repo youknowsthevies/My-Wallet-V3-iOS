@@ -5,7 +5,7 @@ import RxSwift
 import TransactionKit
 
 final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
-    
+
     func makeExternalAssetAddress(
         address: String,
         label: String,

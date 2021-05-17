@@ -8,28 +8,28 @@ import RxSwift
 import ToolKit
 
 final class AutoPairingScreenInteractor {
-    
+
     // MARK: - Properties
-    
+
     /// Streams potential parsing errors
     var error: Observable<Error> {
         errorRelay.asObservable()
     }
-    
+
     let parser = PairingDataQRCodeParser()
-    
+
     /// The service responsible for taking the parser code and the login using it
     private let service: AutoWalletPairingServiceAPI
-    
+
     private let walletFetcher: PairingWalletFetching
-    
+
     private let analyticsRecorder: AnalyticsEventRecording
     private let errorRelay = PublishRelay<Error>()
 
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(service: AutoWalletPairingServiceAPI = AutoWalletPairingService(
             repository: WalletManager.shared.repository
          ),
@@ -39,7 +39,7 @@ final class AutoPairingScreenInteractor {
         self.analyticsRecorder = analyticsRecorder
         self.walletFetcher = walletFetcher
     }
-    
+
     /// Receives the result of the paiting code and passes it on to the login service
     func handlePairingCodeResult(result: Result<PairingData, PairingDataQRCodeParser.PairingCodeParsingError>) {
         switch result {
@@ -51,9 +51,9 @@ final class AutoPairingScreenInteractor {
             errorRelay.accept(error)
         }
     }
-    
+
     // MARK: - Private methods
-    
+
     /// Login using pairing data retrieved from parsing the QR code
     private func login(with pairingData: PairingData) {
         service.pair(using: pairingData)

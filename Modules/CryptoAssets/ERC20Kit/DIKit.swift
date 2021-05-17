@@ -10,7 +10,7 @@ extension DependencyContainer {
     // MARK: - ERC20Kit Module
 
     public static var erc20Kit = module {
-        
+
         single(tag: Tags.ERC20AccountService.addressCache) {
             Atomic<[String: Bool]>([:])
         }
@@ -66,9 +66,9 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.pax) { ERC20Asset<PaxToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<PaxToken>() }
-        
+
         factory(tag: CryptoCurrency.pax) { ERC20OnChainTransactionEngineFactory<PaxToken>() as OnChainTransactionEngineFactory }
-        
+
         factory(tag: CryptoCurrency.pax) { ERC20ExternalAssetAddressFactory<PaxToken>() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.pax) {
@@ -86,13 +86,13 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<PaxToken>() }
-        
+
         factory { ERC20AccountService<PaxToken>() }
 
         factory(tag: CryptoCurrency.pax) { ERC20AssetBalanceFetcher<PaxToken>() as CryptoAccountBalanceFetching }
-        
+
         factory { AnyERC20HistoricalTransactionService<PaxToken>() }
-        
+
         factory { ERC20Service<PaxToken>() }
 
         factory { () -> AnyERC20Service<PaxToken> in
@@ -112,9 +112,9 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.tether) { ERC20Asset<TetherToken>() as CryptoAsset }
 
         factory { ERC20AssetAccountRepository<TetherToken>() }
-        
+
         factory(tag: CryptoCurrency.tether) { ERC20OnChainTransactionEngineFactory<TetherToken>() as OnChainTransactionEngineFactory }
-        
+
         factory(tag: CryptoCurrency.tether) { ERC20ExternalAssetAddressFactory<TetherToken>() as CryptoReceiveAddressFactory }
 
         factory(tag: CryptoCurrency.tether) {
@@ -132,7 +132,7 @@ extension DependencyContainer {
         }
 
         factory { ERC20AccountAPIClient<TetherToken>() }
-        
+
         factory { ERC20AccountService<TetherToken>() }
 
         factory(tag: CryptoCurrency.tether) { ERC20AssetBalanceFetcher<TetherToken>() as CryptoAccountBalanceFetching }

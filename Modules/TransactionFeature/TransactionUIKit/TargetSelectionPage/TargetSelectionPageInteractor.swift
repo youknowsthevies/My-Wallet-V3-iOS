@@ -27,7 +27,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     weak var router: TargetSelectionPageRouting?
 
     // MARK: - Private Properties
-    
+
     private let accountProvider: SourceAndTargetAccountProviding
     private let targetSelectionPageModel: TargetSelectionPageModel
     private let action: AssetAction
@@ -90,7 +90,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 }
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         /// Fetch the source account provided.
         let sourceAccount = accountProvider.sourceAccount
             .map { account -> CryptoAccount in
@@ -109,7 +109,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .map(\.text)
             .bind(to: cryptoAddressViewModel.originalTextRelay)
             .disposeOnDeactivate(interactor: self)
-        
+
         let requiredValidationAction = targetSelectionPageModel
             .state
             .map(\.inputValidated)
@@ -130,12 +130,12 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self?.targetSelectionPageModel.process(action: .validateAddress(text, account))
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         /// The text the user has entered into the textField
         let text = cryptoAddressViewModel
             .text
             .distinctUntilChanged()
-        
+
         /// Whether or not the textField is in focus
         let isFocused = cryptoAddressViewModel
             .focusRelay
@@ -156,7 +156,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self?.targetSelectionPageModel.process(action: .validateAddress(text, account))
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         /// Launch the QR scanner should the button be tapped
         cryptoAddressViewModel
             .tapRelay
@@ -198,7 +198,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self.handleStateChange(newState: state, sourceAccount: source)
             })
             .disposeOnDeactivate(interactor: self)
-            
+
         sourceAccount
             .map { (account) -> NSAttributedString in
                 NSAttributedString(
@@ -218,7 +218,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 self.targetSelectionPageModel.process(action: .sourceAccountSelected(account, self.action))
             })
             .disposeOnDeactivate(interactor: self)
-        
+
         let interactorState = transactionState
             .observeOn(MainScheduler.instance)
             .scan(.empty) { [weak self] (state, updater) -> TargetSelectionPageInteractor.State in
@@ -301,7 +301,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             break
         }
     }
-    
+
     private var initialStep: Bool = true
     private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: CryptoAccount) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
@@ -315,7 +315,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     private func finishFlow() {
         targetSelectionPageModel.process(action: .resetFlow)
     }
-    
+
     private func showFlowStep(newState: TargetSelectionPageState, sourceAccount: CryptoAccount) {
         guard !newState.isGoingBack else {
             listener?.didTapBack()
@@ -347,7 +347,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             )
         }
     }
-    
+
     private func initialState() -> TargetSelectionPageState {
         TargetSelectionPageState(nextEnabled: false, destination: nil)
     }
@@ -361,7 +361,7 @@ extension TargetSelectionPageInteractor {
         var destinationInteractors: [TargetSelectionPageCellItem.Interactor]
 
         var actionButtonEnabled: Bool
-        
+
         private init(actionButtonEnabled: Bool) {
             self.actionButtonEnabled = actionButtonEnabled
             self.sourceInteractor = nil

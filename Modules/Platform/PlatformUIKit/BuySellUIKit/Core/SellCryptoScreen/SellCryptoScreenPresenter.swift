@@ -9,20 +9,20 @@ import RxSwift
 import ToolKit
 
 final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.SellCryptoScreen
-    
+
     // MARK: - Properties
-    
+
     private let auxiliaryViewPresenter: SendAuxiliaryViewPresenter
     private let interactor: SellCryptoScreenInteractor
     private let routerInteractor: SellRouterInteractor
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(
         analyticsRecorder: AnalyticsEventRecorderAPI,
         interactor: SellCryptoScreenInteractor,
@@ -50,7 +50,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             interactor: interactor
         )
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         topSelectionButtonViewModel.isButtonEnabledRelay.accept(false)
@@ -62,13 +62,13 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         topSelectionButtonViewModel.subtitleRelay.accept(
             String(format: LocalizedString.to, interactor.data.destination.currencyType.code)
         )
-        
+
         struct CTAData {
             let kycState: KycState
             let isSimpleBuyEligible: Bool
             let candidateOrderDetails: CandidateOrderDetails
         }
-        
+
         let ctaObservable = continueButtonTapped
             .asObservable()
             .withLatestFrom(interactor.candidateOrderDetails)
@@ -98,7 +98,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                 }
             }
             .share()
-        
+
         ctaObservable
         .observeOn(MainScheduler.instance)
         .bindAndCatch(weak: self) { (self, result) in
@@ -114,7 +114,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                         self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
                     }
                 case (.shouldComplete, _):
-                    self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                    self.createOrder(from: data.candidateOrderDetails) { [weak self] _ in
                         self?.loader.hide()
                         // TODO: KYC with checkout data
                     }
@@ -125,17 +125,17 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         }
         .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Private methods
-    
+
     private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
                              with completion: @escaping (CheckoutData) -> Void) {
-        
+
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
-                onError: { [weak self] error in
+                onError: { [weak self] _ in
                     self?.handleError()
                 }
             )

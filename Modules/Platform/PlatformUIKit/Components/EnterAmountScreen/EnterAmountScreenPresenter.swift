@@ -13,20 +13,20 @@ import ToolKit
 open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     // MARK: - Types
-    
+
     /// The state of the bottom auxiliary view
     public enum BottomAuxiliaryViewModelState {
-        
+
         /// A selection button - used to show dropdowns
         case selection(SelectionButtonViewModel)
-        
+
         /// Max available style button with available amount for spending and use-maximum button
         case maxAvailable(SendAuxiliaryViewPresenter)
-        
+
         /// Hidden - nothing to present
         case hidden
     }
-    
+
     // MARK: - Properties
 
     public let deviceType = DevicePresenter.type
@@ -35,26 +35,26 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public var bottomAuxiliaryViewModelState: Driver<BottomAuxiliaryViewModelState> {
         bottomAuxiliaryViewModelStateRelay.asDriver()
     }
-    
+
     public let bottomAuxiliaryViewModelStateRelay = BehaviorRelay(
         value: BottomAuxiliaryViewModelState.hidden
     )
-    
+
     public var continueButtonTapped: Signal<Void> {
         continueButtonViewModel.tap
     }
-    
+
     // MARK: - Components (ViewModels / Presenters)
-    
+
     public let topSelectionButtonViewModel: SelectionButtonViewModel
-    
+
     let continueButtonViewModel: ButtonViewModel
     let amountTranslationPresenter: AmountTranslationPresenter
     let bottomAuxiliaryItemSeparatorViewModel: TitledSeparatorViewModel
     let digitPadViewModel: DigitPadViewModel
 
     // MARK: - Injected
-    
+
     public let loader: LoadingViewPresenting
     public let alert: AlertViewPresenterAPI
     public let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -63,13 +63,13 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve(),
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -101,19 +101,19 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         topSelectionButtonViewModel = SelectionButtonViewModel(showSeparator: true)
         super.init(interactable: interactor)
     }
-    
+
     // MARK: - Exposed methods
-    
+
     open override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         // Hide swap button
         amountTranslationPresenter.swapButtonVisibilityRelay.accept(.hidden)
 
         interactor.hasValidState
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.selectedCurrencyType
             .map {
                 .image(
@@ -140,12 +140,12 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             .disposed(by: disposeBag)
 
         let displayBundle = self.displayBundle
-        
+
         interactor.selectedCurrencyType
             .map { displayBundle.events.sourceAccountChanged($0.code) }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
-    
+
         topSelectionButtonViewModel.trailingContentRelay.accept(
             .image(
                 ImageViewContent(
@@ -153,19 +153,19 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
                 )
             )
         )
-        
+
         interactor.didLoad()
     }
-    
+
     open override func viewWillAppear() {
         super.viewWillAppear()
         analyticsRecorder.record(event: displayBundle.events.didAppear)
     }
-        
+
     func previous() {
         backwardsNavigation()
     }
-            
+
     public func handleError() {
         analyticsRecorder.record(event: displayBundle.events.confirmFailure)
         loader.hide()

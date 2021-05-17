@@ -29,11 +29,11 @@ public final class SendAuxiliaryViewPresenter {
             self.maxButtonTitle = maxButtonTitle
         }
     }
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizationId = LocalizationConstants.Transaction.Send
-    
+
     // MARK: - Public Properties
 
     private(set) public lazy var state = stateRelay.asDriver()
@@ -51,11 +51,11 @@ public final class SendAuxiliaryViewPresenter {
     let networkFeeContentViewPresenter: ContentLabelViewPresenter
 
     let imageContent: Driver<ImageViewContent>
-    
+
     // MARK: - Private
 
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Init
 
     public init(interactor: SendAuxiliaryViewInteractorAPI,

@@ -13,36 +13,36 @@ public protocol ActionableLabelDelegate: AnyObject {
 }
 
 public final class ActionableLabel: UILabel {
-    
+
     // MARK: Public Properties
-    
+
     public weak var delegate: ActionableLabelDelegate?
-    
+
     private var tapGesture: UITapGestureRecognizer!
-    
+
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         commonInit()
     }
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
-    
+
     public init() {
         super.init(frame: CGRect.zero)
     }
-    
+
     private func commonInit() {
         isUserInteractionEnabled = true
         tapGesture = UITapGestureRecognizer(target: self, action: #selector(action(_:)))
         tapGesture.numberOfTapsRequired = 1
         addGestureRecognizer(tapGesture)
     }
-    
+
     // MARK: Touch Handling
-    
+
     @objc private func action(_ tapGesture: UITapGestureRecognizer) {
         let location = tapGesture.location(in: self)
         guard let range = delegate?.targetRange(self) else { return }
@@ -52,23 +52,23 @@ public final class ActionableLabel: UILabel {
     }
 
     // MARK: Actionable Helpers
-    
+
     private func didTap(inRange targetRange: NSRange, location: CGPoint) -> Bool {
         guard let text = attributedText else { return false }
         let layoutManager = NSLayoutManager()
         let textContainer = NSTextContainer(size: CGSize(width: bounds.width, height: .greatestFiniteMagnitude))
         let textStorage = NSTextStorage(attributedString: text)
-        
+
         layoutManager.addTextContainer(textContainer)
         textStorage.addLayoutManager(layoutManager)
-        
+
         textContainer.lineFragmentPadding = 0.0
         textContainer.lineBreakMode = lineBreakMode
         textContainer.maximumNumberOfLines = numberOfLines
-        
+
         let index = layoutManager.characterIndex(for: location, in: textContainer, fractionOfDistanceBetweenInsertionPoints: .none)
-        
+
         return NSLocationInRange(index, targetRange)
     }
-    
+
 }

@@ -22,11 +22,11 @@ class LegacyWalletMock: LegacyWalletAPI {
     ) {
         completion(.success(""))
     }
-    
+
     func needsSecondPassword() -> Bool {
         false
     }
-    
+
     func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
         ""
     }

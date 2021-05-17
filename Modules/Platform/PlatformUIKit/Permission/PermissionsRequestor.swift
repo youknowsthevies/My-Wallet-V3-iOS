@@ -119,7 +119,7 @@ public class PermissionsRequestor {
             DispatchQueue.main.async(execute: {
                 UNUserNotificationCenter.current().requestAuthorization(
                     options: [.alert, .sound],
-                    completionHandler: { (granted, error) in
+                    completionHandler: { (_, _) in
                         done()
                     }
                 )
@@ -150,7 +150,7 @@ public class PermissionsRequestor {
 
     // MARK: Private Static Functions
 
-    private static func validatePermissionsAvailability(completion: @escaping (Bool) -> ()) {
+    private static func validatePermissionsAvailability(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             let enabled = cameraPermissionsUndetermined() && settings.authorizationStatus == .authorized
             completion(enabled)

@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 
 final class ERC20ActivityDetailsInteractor {
-    
+
     // MARK: - Private Properties
 
     private let fiatCurrencySettings: FiatCurrencySettingsServiceAPI
@@ -14,7 +14,7 @@ final class ERC20ActivityDetailsInteractor {
     private let detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails>
     private let wallet: EthereumWalletBridgeAPI
     private let cryptoCurrency: CryptoCurrency
-    
+
     // MARK: - Init
 
     init(wallet: EthereumWalletBridgeAPI = resolve(),
@@ -30,7 +30,7 @@ final class ERC20ActivityDetailsInteractor {
     }
 
     // MARK: - Public Functions
-    
+
     func details(identifier: String, createdAt: Date) -> Observable<ERC20ActivityDetailsViewModel> {
         let transaction = detailsService
             .details(for: identifier)
@@ -45,9 +45,9 @@ final class ERC20ActivityDetailsInteractor {
             )
             .map { ERC20ActivityDetailsViewModel(details: $0, price: $1?.moneyValue.fiatValue) }
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func price(at date: Date) -> Single<PriceQuoteAtTime> {
         fiatCurrencySettings
             .fiatCurrency

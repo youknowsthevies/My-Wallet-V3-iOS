@@ -15,7 +15,7 @@ enum ActivityCellItem: IdentifiableType {
             return presenter.identity
         }
     }
-    
+
     case selection(SelectionButtonViewModel)
     case skeleton(Int)
     case activity(ActivityItemPresenter)

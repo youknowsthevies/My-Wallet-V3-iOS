@@ -3,9 +3,9 @@
 import Foundation
 
 public class AlertView: UIView {
-    
+
     // MARK: Private Static Properties
-    
+
     fileprivate static let sheetBottomPadding: CGFloat = 16.0
     fileprivate static let titleTrailingPadding: CGFloat = 58.0
     fileprivate static let horizontalOffset: CGFloat = 32.0
@@ -17,7 +17,7 @@ public class AlertView: UIView {
     fileprivate static let actionsVerticalPadding: CGFloat = 20.0
     fileprivate static let actionButtonHeight: CGFloat = 56.0
     fileprivate static let imageHeight: CGFloat = 72.0
-    
+
     // MARK: Private IBOutlets
 
     @IBOutlet fileprivate var notch: UIView!
@@ -34,7 +34,7 @@ public class AlertView: UIView {
     @IBOutlet fileprivate var imageViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet var defaultButtonHeightConstraint: NSLayoutConstraint!
     @IBOutlet var okayButtonHeightConstraint: NSLayoutConstraint!
-    
+
     fileprivate var observer: NSKeyValueObservation?
     fileprivate var model: AlertModel!
     fileprivate var completion: ((AlertAction) -> Void)?
@@ -42,9 +42,9 @@ public class AlertView: UIView {
     fileprivate var pushBehavior: UIPushBehavior!
     fileprivate var snapBehavior: UISnapBehavior!
     fileprivate var gravityBehavior: UIGravityBehavior!
-    
+
     // MARK: Public Class Functions
-    
+
     /// Note that the `completion` block is optional, however if you do provide
     /// a completion block, the action of type `.dismiss` will **always** be called
     /// assuming the user didn't tap one of the buttons.
@@ -59,7 +59,7 @@ public class AlertView: UIView {
         view.completion = completion
         return view
     }
-    
+
     public class func estimatedHeight(for width: CGFloat, model: AlertModel) -> CGFloat {
         let adjustedWidth = width - horizontalPadding
         let imageViewHeight: CGFloat = model.image?.size.height ?? 0
@@ -99,7 +99,7 @@ public class AlertView: UIView {
             )
             topNoteHeight = attributed.heightForWidth(width: adjustedWidth)
         }
-        
+
         if model.headline != nil && model.body != nil {
             interItemPadding += headlineToMessagePadding
         }
@@ -125,45 +125,45 @@ public class AlertView: UIView {
             interItemPadding
         return result
     }
-    
+
     public class func headlineFont() -> UIFont {
         let font = Font(.branded(.montserratSemiBold), size: .custom(20.0))
         return font.result
     }
-    
+
     public class func messageFont() -> UIFont {
         let font = Font(.branded(.montserratSemiBold), size: .custom(14.0))
         return font.result
     }
-    
+
     public class func noteFont() -> UIFont {
         let font = Font(.branded(.montserratMedium), size: .custom(10.0))
         return font.result
     }
-    
+
     public class func topNoteFont() -> UIFont {
         let font = Font(.branded(.montserratRegular), size: .custom(14))
         return font.result
     }
-    
+
     public override func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
     }
-    
+
     public func registerForNotifications() {
         NotificationCenter.when(UIApplication.didEnterBackgroundNotification) { [weak self] _ in
             guard let self = self else { return }
             self.teardown()
         }
     }
-    
+
     deinit {
         observer?.invalidate()
     }
-    
+
     // MARK: Private
-    
+
     fileprivate func apply(model: AlertModel) {
         if model.style == .sheet {
             notch.isHidden = model.dismissable == false
@@ -185,19 +185,19 @@ public class AlertView: UIView {
         if let imageTintColor = model.imageTintColor {
             imageView.tintColor = imageTintColor
         }
-        
+
         confirmButton.isHidden = model.actions.first(where: { $0.style == .confirm($0.title ?? "") }) == nil
-        
+
         defaultButton.isHidden = model.actions.first(where: { $0.style == .default($0.title ?? "") }) == nil
-        
+
         if defaultButton.isHidden {
            defaultButtonHeightConstraint.constant = 0.0
         }
-        
+
         if confirmButton.isHidden {
             okayButtonHeightConstraint.constant = 0.0
         }
-        
+
         layer.cornerRadius = 8.0
         closeButton.tintColor = .gray4
         closeButton.isHidden = model.style == .sheet
@@ -231,16 +231,16 @@ public class AlertView: UIView {
             }
         }
         [confirmButton, defaultButton].forEach({ $0?.layer.cornerRadius = 4.0 })
-        
+
         defaultButton.layer.borderColor = UIColor.primaryButton.cgColor
         defaultButton.layer.borderWidth = 1.0
         confirmButton.backgroundColor = .primaryButton
-        
+
         if model.dismissable && model.style == .sheet {
             setupDynamicBehavior()
         }
     }
-    
+
     fileprivate func teardown(with selectedAction: AlertAction? = nil) {
         UIView.animateKeyframes(
             withDuration: 0.3,
@@ -273,7 +273,7 @@ public class AlertView: UIView {
             }
         )
     }
-    
+
     @objc func pannedView(panGestureRecognizer: UIPanGestureRecognizer) {
         switch panGestureRecognizer.state {
         case .began:
@@ -295,7 +295,7 @@ public class AlertView: UIView {
             break
         }
     }
-    
+
     fileprivate func startAnimators(with velocity: CGPoint, offset: UIOffset) {
         guard animator.behaviors.contains(pushBehavior) == false else { return }
         pushBehavior.pushDirection = velocity.vector
@@ -306,11 +306,11 @@ public class AlertView: UIView {
         animator.addBehavior(pushBehavior)
         isUserInteractionEnabled = false
     }
-    
+
     fileprivate func setupDynamicBehavior() {
         guard animator == nil else { return }
         guard let window = UIApplication.shared.keyWindow else { return }
-        
+
         animator = UIDynamicAnimator(referenceView: window)
         snapBehavior = UISnapBehavior(
             item: self,
@@ -320,12 +320,12 @@ public class AlertView: UIView {
         gravityBehavior.magnitude = 10
         pushBehavior = UIPushBehavior(items: [self], mode: .instantaneous)
         animator.addBehavior(snapBehavior)
-        
+
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(pannedView(panGestureRecognizer:)))
         isUserInteractionEnabled = true
         addGestureRecognizer(panGesture)
     }
-    
+
     public override func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil {
@@ -334,13 +334,13 @@ public class AlertView: UIView {
             observer?.invalidate()
         }
     }
-    
+
     private func observeCenter() {
         guard observer == nil else {
             return
         }
         observer?.invalidate()
-        observer = observe(\.center, options: [.new]) { [weak self] (object, change) in
+        observer = observe(\.center, options: [.new]) { [weak self] (_, change) in
             guard let self = self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
@@ -371,7 +371,7 @@ public class AlertView: UIView {
             )
         }
     }
-    
+
     @objc func dismiss() {
         guard model.dismissable == true else { return }
         if let dismiss = model.actions.first(where: { $0.style == .dismiss }) {
@@ -380,28 +380,28 @@ public class AlertView: UIView {
             teardown(with: .defaultDismissal)
         }
     }
-    
+
     // MARK: Actions
-    
+
     @IBAction func confirmButtonTapped(_ sender: UIButton) {
         guard let confirm = model.actions.first(where: { $0.style == .confirm($0.title ?? "") }) else { return }
         teardown(with: confirm)
     }
-    
+
     @IBAction func defaultButtonTapped(_ sender: UIButton) {
         guard let action = model.actions.first(where: { $0.style == .default($0.title ?? "") }) else { return }
         teardown(with: action)
     }
-    
+
     @IBAction func dismissButtonTapped(_ sender: UIButton) {
         teardown()
     }
-    
+
     // MARK: Public
-    
+
     public func show() {
         guard let window = UIApplication.shared.keyWindow else { return }
-        
+
         /// You can only present one `AlertView` at a time
         guard window.subviews.contains(where: { $0 is AlertView }) == false else {
             print("You can only present one `AlertView` at a time.")
@@ -415,7 +415,7 @@ public class AlertView: UIView {
         }
         registerForNotifications()
     }
-    
+
     fileprivate func presentDefaultView() {
         guard let window = UIApplication.shared.keyWindow else { return }
         alpha = 0.0
@@ -435,7 +435,7 @@ public class AlertView: UIView {
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         window.addSubview(dimmingView)
         window.addSubview(self)
-        
+
         UIView.animateKeyframes(
             withDuration: 0.4,
             delay: 0.0,
@@ -452,7 +452,7 @@ public class AlertView: UIView {
             completion: nil
         )
     }
-    
+
     fileprivate func presentSheetView() {
         guard let window = UIApplication.shared.keyWindow else { return }
         alpha = 0.0
@@ -474,9 +474,9 @@ public class AlertView: UIView {
         )
         window.addSubview(dimmingView)
         window.addSubview(self)
-        
+
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-        
+
         UIView.animateKeyframes(
             withDuration: 0.4,
             delay: 0.0,
@@ -497,7 +497,7 @@ public class AlertView: UIView {
             completion: nil
         )
     }
-    
+
     fileprivate lazy var dimmingView: UIView = {
         let dimming = UIView(frame: UIScreen.main.bounds)
         dimming.backgroundColor = .black
@@ -512,12 +512,12 @@ public class AlertView: UIView {
         dimming.addGestureRecognizer(dismissTapGesture)
         return dimming
     }()
-    
+
     fileprivate lazy var dismissTapGesture: UITapGestureRecognizer = {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         return tap
     }()
-    
+
 }
 
 extension CGPoint {

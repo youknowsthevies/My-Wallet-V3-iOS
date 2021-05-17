@@ -24,7 +24,7 @@ final class LockboxViewController: UIViewController {
     @IBOutlet private var mainCardDescriptionLabel: UILabel!
     @IBOutlet private var mainCardImageView: UIImageView!
     @IBOutlet private var mainCardButton: UIButton!
-    
+
     @IBOutlet private var announcementCardView: UIView!
     @IBOutlet private var announcementCardTitleLabel: UILabel!
     @IBOutlet private var announcementCardDescriptionLabel: UILabel!

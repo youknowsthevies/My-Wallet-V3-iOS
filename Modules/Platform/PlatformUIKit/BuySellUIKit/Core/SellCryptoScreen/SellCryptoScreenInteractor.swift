@@ -12,7 +12,7 @@ public struct SellCryptoInteractionData {
         let id: String
         let currencyType: CurrencyType
     }
-    
+
     let source: AnyAccount
     let destination: AnyAccount
 }
@@ -20,13 +20,13 @@ public struct SellCryptoInteractionData {
 final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Types
-    
+
     enum State {
         case inBounds(data: CandidateOrderDetails)
         case tooLow(min: MoneyValue)
         case tooHigh(max: MoneyValue)
         case empty
-                
+
         var isValid: Bool {
             switch self {
             case .inBounds:
@@ -35,7 +35,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 return false
             }
         }
-        
+
         var isEmpty: Bool {
             switch self {
             case .empty:
@@ -45,26 +45,26 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
         }
     }
-    
+
     override var selectedCurrencyType: Observable<CurrencyType> {
         .just(data.source.currencyType)
     }
-    
+
     override var hasValidState: Observable<Bool> {
         stateRelay.map { $0.isValid }
     }
-    
+
     var state: Observable<State> {
         stateRelay.asObservable()
     }
-    
+
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
             .map { $0.isTier2Approved }
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
-    
+
     /// Streams a boolean indicating whether the user is eligible to Simple Buy
     var currentEligibilityState: Observable<Result<Bool, Error>> {
         eligibilityService
@@ -88,11 +88,11 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
 
     // MARK: - Interactors
-    
+
     let auxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI
-    
+
     // MARK: - Injected
-    
+
     let data: SellCryptoInteractionData
     private let balanceProvider: BalanceProviding
     private let eligibilityService: EligibilityServiceAPI
@@ -114,9 +114,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     private let stateRelay: BehaviorRelay<State>
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(kycTiersService: KYCTiersServiceAPI = resolve(),
          pairsService: SupportedPairsInteractorServiceAPI = resolve(),
          eligibilityService: EligibilityServiceAPI = resolve(),
@@ -138,7 +138,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             balanceProvider: balanceProvider,
             currencyType: data.source.currencyType
         )
-                
+
         super.init(
             priceService: priceService,
             fiatCurrencyService: fiatCurrencyService,
@@ -165,11 +165,11 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 }
             }
             .share(replay: 1)
-        
+
         auxiliaryViewInteractor.resetToMaxAmount
             .withLatestFrom(balance)
             .map { ($0.base, $0.quote) }
-            .do(onNext: { (base, quote) in
+            .do(onNext: { (_, quote) in
                 #warning("This will break once we enable input using either fiat or crypto")
                 amountTranslationInteractor.set(amount: quote)
             })
@@ -245,7 +245,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         state
             .flatMapLatest { state -> Observable<AmountTranslationInteractor.State> in
                 amountTranslationInteractor.activeInputRelay
@@ -284,9 +284,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             .bindAndCatch(to: amountTranslationInteractor.stateRelay)
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Actions
-    
+
     func createOrder(from candidate: CandidateOrderDetails) -> Single<CheckoutData> {
         orderCreationService.create(using: candidate)
     }

@@ -6,7 +6,7 @@ import PlatformUIKit
 final class TotalBalanceTableViewCell: UITableViewCell {
 
     // MARK: - Injected
-    
+
     /// Presenter should be injected
     var presenter: TotalBalanceViewPresenter! {
         didSet {
@@ -20,16 +20,16 @@ final class TotalBalanceTableViewCell: UITableViewCell {
             }
         }
     }
-    
+
     // MARK: - IBOutlet Properties
-    
+
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var balanceView: AssetPriceView!
     @IBOutlet private var pieChartView: AssetPieChartView!
     @IBOutlet private var bottomSeparatorView: UIView!
 
     // MARK: - Lifecycle
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         bottomSeparatorView.backgroundColor = .lightBorder
@@ -38,7 +38,7 @@ final class TotalBalanceTableViewCell: UITableViewCell {
             estimatedChangeLabelSize: CGSize(width: 120, height: 17)
         )
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil

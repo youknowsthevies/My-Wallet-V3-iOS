@@ -19,15 +19,15 @@ class MockWalletCredentialsProvider: WalletCredentialsProviding {
 }
 
 class GuidSharedKeyRepositoryAPIMock: GuidRepositoryAPI, SharedKeyRepositoryAPI {
-    
+
     var hasGuidPublisher: AnyPublisher<Bool, Never> {
         guidPublisher.map { $0 != nil }.eraseToAnyPublisher()
     }
-    
+
     var guidPublisher: AnyPublisher<String?, Never> {
         .just(expectedGuid)
     }
-    
+
     func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
         expectedGuid = guid
         return .empty()

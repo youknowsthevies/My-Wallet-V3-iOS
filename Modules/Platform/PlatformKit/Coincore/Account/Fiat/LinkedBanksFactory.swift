@@ -10,13 +10,13 @@ public protocol LinkedBanksFactoryAPI {
 }
 
 final class LinkedBanksFactory: LinkedBanksFactoryAPI {
-    
+
     private let linkedBankService: LinkedBanksServiceAPI
-    
+
     init(linkedBankService: LinkedBanksServiceAPI = resolve()) {
         self.linkedBankService = linkedBankService
     }
-    
+
     var linkedBanks: Single<[LinkedBankAccount]> {
         linkedBankService
             .linkedBanks
@@ -35,7 +35,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                 }
             }
     }
-    
+
     var nonWireTransferBanks: Single<[LinkedBankAccount]> {
         // TODO: Filter for the correct payment method type.
         // TICKET: IOS-4632

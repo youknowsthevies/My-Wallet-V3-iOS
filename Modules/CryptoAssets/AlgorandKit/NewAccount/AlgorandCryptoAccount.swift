@@ -13,7 +13,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     let label: String
     let asset: CryptoCurrency = .algorand
     let isDefault: Bool = false
-    
+
     var pendingBalance: Single<MoneyValue> {
         unimplemented()
     }
@@ -25,7 +25,7 @@ class AlgorandCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> { .just([]) }
 
     private let exchangeService: PairExchangeServiceAPI
-    
+
     init(id: String,
          label: String?,
          exchangeProviding: ExchangeProviding = resolve()) {

@@ -12,7 +12,7 @@ struct EditEmailState: Equatable {
     fileprivate var isEmailValid: Bool = false
     fileprivate var savingEmailAddress: Bool = false
     fileprivate var saveEmailFailureAlert: AlertState<EditEmailAction>?
-    
+
     init(emailAddress: String) {
         self.emailAddress = emailAddress
     }
@@ -37,12 +37,12 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
     case .didAppear:
         state.isEmailValid = environment.validateEmail(state.emailAddress)
         return .none
-        
+
     case .didChangeEmailAddress(let emailAddress):
         state.emailAddress = emailAddress
         state.isEmailValid = environment.validateEmail(emailAddress)
         return .none
-        
+
     case .save:
         state.savingEmailAddress = true
         return environment.emailVerificationService.updateEmailAddress(to: state.emailAddress)
@@ -56,13 +56,13 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
                     return .didReceiveSaveResponse(.failure(error))
                 }
             }
-        
+
     case .didReceiveSaveResponse(let response):
         state.savingEmailAddress = false
         switch response {
         case .success:
             return .none
-            
+
         case .failure:
             state.saveEmailFailureAlert = AlertState(
                 title: TextState(L10n.GenericError.title),
@@ -75,7 +75,7 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
             )
             return .none
         }
-        
+
     case .dismissSaveEmailFailureAlert:
         state.saveEmailFailureAlert = nil
         return .none
@@ -83,9 +83,9 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
 }
 
 struct EditEmailView: View {
-    
+
     let store: Store<EditEmailState, EditEmailAction>
-    
+
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
@@ -98,9 +98,9 @@ struct EditEmailView: View {
                                 .textStyle(.body)
                         }
                         .frame(maxWidth: .infinity)
-                        
+
                         Spacer()
-                        
+
                         VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
                             FormTextFieldGroup(
                                 title: L10n.EditEmail.editEmailFieldLabel,
@@ -116,7 +116,7 @@ struct EditEmailView: View {
                                 )
                             }
                         }
-                        
+
                         Spacer()
                     }
                     .multilineTextAlignment(.leading)
@@ -156,7 +156,7 @@ struct EditEmailView_Previews: PreviewProvider {
                 )
             )
         )
-        
+
         // Invalid state: invalid email typed by user
         EditEmailView(
             store: .init(
@@ -168,7 +168,7 @@ struct EditEmailView_Previews: PreviewProvider {
                 )
             )
         )
-        
+
         // Valid state
         EditEmailView(
             store: .init(

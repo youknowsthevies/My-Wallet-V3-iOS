@@ -7,13 +7,13 @@ enum PayloadDecoderError: Error {
 }
 
 final class PayloadDecoder {
-    
+
     private static let wrapperDecoder = JSONDecoder()
-    
+
     func decode(wrapper: String) -> Result<WalletPayloadWrapper, Error> {
         decode(string: wrapper, with: Self.wrapperDecoder)
     }
-    
+
     private func decode<T: Decodable>(string payload: String, with decoder: JSONDecoder) -> Result<T, Error> {
         guard let data = payload.data(using: .utf8) else {
             return .failure(PayloadDecoderError.decodingError)

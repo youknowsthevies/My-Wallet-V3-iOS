@@ -10,20 +10,20 @@ import RxSwift
 import ToolKit
 
 final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
-    
+
     // MARK: - Properties
-        
+
     private let stateService: CheckoutServiceAPI
     private let router: RouterAPI
     private let interactor: BuyCryptoScreenInteractor
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(router: RouterAPI,
          stateService: CheckoutServiceAPI,
          interactor: BuyCryptoScreenInteractor,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
-        
+
         self.interactor = interactor
         self.stateService = stateService
         self.router = router
@@ -37,10 +37,10 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             interactor: interactor
         )
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         interactor.effect
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] effect in
@@ -52,15 +52,15 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 }
             })
             .disposed(by: disposeBag)
-        
+
         topSelectionButtonViewModel.tap
             .emit(weak: self) { (self) in
                 self.router.showCryptoSelectionScreen()
             }
             .disposed(by: disposeBag)
-        
+
         // Payment Method Selection Button Setup
-        
+
         Observable
             .combineLatest(
                 interactor.preferredPaymentMethodType,
@@ -77,15 +77,15 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 self.setup(preferredPaymentMethodType: payload.0, methodCount: payload.1)
             }
             .disposed(by: disposeBag)
-        
+
         /// Additional binding
-        
+
         struct CTAData {
             let kycState: KycState
             let isSimpleBuyEligible: Bool
             let candidateOrderDetails: CandidateOrderDetails
         }
-        
+
         let ctaObservable = continueButtonTapped
             .asObservable()
             .withLatestFrom(interactor.candidateOrderDetails)
@@ -123,7 +123,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 .just(.failure(error))
             }
             .share()
-        
+
         ctaObservable
             .compactMap { result -> CandidateOrderDetails? in
                 guard case let .success(data) = result else { return nil }
@@ -139,7 +139,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
-            
+
         ctaObservable
             .map(weak: self) { (self, result) -> AnalyticsEvent in
                 switch result {
@@ -151,7 +151,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
             .disposed(by: disposeBag)
-        
+
         ctaObservable
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self, result) in
@@ -177,7 +177,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 }
             }
             .disposed(by: disposeBag)
-        
+
         interactor.selectedCurrencyType
             .map { $0.cryptoCurrency! }
             .flatMap(weak: self) { (self, cryptoCurrency) -> Observable<String?> in
@@ -192,9 +192,9 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .bindAndCatch(to: topSelectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
-        
+
         // Bind to the pairs the user is able to buy
-        
+
         interactor.pairsCalculationState
             .handle(loadingViewPresenter: loader)
             .catchError { _ -> Observable<ValueCalculationState<SupportedPairs>> in
@@ -208,22 +208,22 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             }
             .disposed(by: disposeBag)
     }
-    
+
     // MARK: - Private methods
-    
+
     private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
                              with completion: @escaping (CheckoutData) -> Void) {
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
-                onError: { [weak self] error in
+                onError: { [weak self] _ in
                     self?.handleError()
                 }
             )
             .disposed(by: disposeBag)
     }
-    
+
     private func subtitleForCryptoCurrencyPicker(cryptoCurrency: CryptoCurrency) -> Observable<String?> {
         guard deviceType != .superCompact else {
             return .just(nil)
@@ -249,13 +249,13 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 .just(nil)
             }
     }
-    
+
     private func setup(preferredPaymentMethodType: PaymentMethodType?, methodCount: Int) {
         let viewModel = SelectionButtonViewModel(with: preferredPaymentMethodType)
         if deviceType == .superCompact {
             viewModel.subtitleRelay.accept(nil)
         }
-        
+
         let trailingImageViewContent: ImageViewContent
         // in case there's no preferredPaymentMethodType
         // but the payment methods count is greater than zero
@@ -270,7 +270,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             trailingImageViewContent = .empty
             viewModel.isButtonEnabledRelay.accept(false)
         }
-        
+
         viewModel.trailingContentRelay.accept(.image(trailingImageViewContent))
 
         viewModel.tap
@@ -278,7 +278,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 self.stateService.paymentMethods()
             }
             .disposed(by: disposeBag)
-        
+
         bottomAuxiliaryViewModelStateRelay.accept(.selection(viewModel))
     }
 }

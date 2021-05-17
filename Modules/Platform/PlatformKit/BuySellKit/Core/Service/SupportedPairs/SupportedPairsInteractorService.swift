@@ -28,21 +28,21 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
             }
             .distinctUntilChanged()
     }
-    
+
     // MARK: - Private properties
-    
+
     private let pairsRelay = BehaviorRelay<SupportedPairs?>(value: nil)
 
     private let pairsService: SupportedPairsServiceAPI
     private let fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
-    
+
     // MARK: - Setup
 
     init(pairsService: SupportedPairsServiceAPI = resolve(),
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.pairsService = pairsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
-        
+
         NotificationCenter.when(.logout) { [weak pairsRelay] _ in
             pairsRelay?.accept(nil)
         }

@@ -4,7 +4,7 @@ import Combine
 import ToolKit
 
 public protocol NetworkResponseHandlerAPI {
-    
+
     /// Performs handling on the `data` and `response` returned by the network request
     /// - Parameters:
     ///   - elements: the `data` and `response` to handle
@@ -16,16 +16,16 @@ public protocol NetworkResponseHandlerAPI {
 }
 
 final class NetworkResponseHandler: NetworkResponseHandlerAPI {
-    
+
     func handle(
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
         handler(elements: elements, for: request).publisher
     }
-    
+
     // MARK: - Private methods
-    
+
     private func handler(
         elements: (data: Data, response: URLResponse),
         for request: NetworkRequest

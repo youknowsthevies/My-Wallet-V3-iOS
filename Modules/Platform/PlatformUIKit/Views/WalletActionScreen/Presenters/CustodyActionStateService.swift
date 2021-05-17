@@ -14,7 +14,7 @@ public protocol RecoveryPhraseStatusProviding {
 }
 
 public protocol CustodyActionStateReceiverServiceAPI: class {
-        
+
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<CustodyActionState>> { get }
@@ -59,20 +59,20 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public typealias Action = RoutingAction<State>
 
     // MARK: - Types
-            
+
     public struct States {
-        
+
         /// The actual state of the flow
         let current: State
-        
+
         /// The previous states sorted chronologically
         let previous: [State]
-        
+
         /// The starting state
         static var start: States {
             States(current: .start, previous: [])
         }
-        
+
         /// Maps the instance of `States` into a new instance where the appended
         /// state is the current
         func states(byAppending state: State) -> States {
@@ -91,32 +91,32 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             )
         }
     }
-    
+
     // MARK: - Types
-    
+
     private enum Constant {
         static let introScreenShown = "custodySendInterstitialViewed"
     }
-    
+
     // MARK: - Properties
 
     var hasShownCustodyIntroductionScreen: Bool {
         cacheSuite.bool(forKey: Constant.introScreenShown)
     }
-    
+
     public var states: Observable<States> {
         statesRelay.asObservable()
     }
-    
+
     public var currentState: Observable<CustodyActionStateService.State> {
         states.map { $0.current }
     }
-    
+
     public var action: Observable<Action> {
         actionRelay
             .observeOn(MainScheduler.instance)
     }
-    
+
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
     public let activityRelay = PublishRelay<Void>()
@@ -125,27 +125,27 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public let buyRelay = PublishRelay<Void>()
     public let withdrawRelay = PublishRelay<Void>()
     public let swapRelay = PublishRelay<Void>()
-    
+
     private let statesRelay = BehaviorRelay<States>(value: .start)
     private let actionRelay = PublishRelay<Action>()
     private let cacheSuite: CacheSuite
     private let recoveryStatusProviding: RecoveryPhraseStatusProviding
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(cacheSuite: CacheSuite = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
                 recoveryStatusProviding: RecoveryPhraseStatusProviding) {
         self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite
-        
+
         nextRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.next() }
             .disposed(by: disposeBag)
-        
+
         previousRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in self.previous() }
@@ -158,7 +158,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.activity), states: nextStates)
             }
             .disposed(by: disposeBag)
-        
+
         swapRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
@@ -166,7 +166,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.swap), states: nextStates)
             }
             .disposed(by: disposeBag)
-        
+
         depositRelay
             .observeOn(MainScheduler.instance)
             .flatMap {
@@ -181,7 +181,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.deposit(isKYCApproved: isKYCApproved)), states: nextStates)
             }
             .disposed(by: disposeBag)
-        
+
         buyRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
@@ -189,7 +189,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                 self.apply(action: .next(.buy), states: nextStates)
             }
             .disposed(by: disposeBag)
-        
+
         sellRelay
             .observeOn(MainScheduler.instance)
             .bindAndCatch(weak: self) { (self) in
@@ -213,7 +213,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             }
             .disposed(by: disposeBag)
     }
-    
+
     private func next() {
         let action: Action
         var state: State
@@ -248,7 +248,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         let nextStates = states.states(byAppending: state)
         apply(action: action, states: nextStates)
     }
-    
+
     private func previous() {
         let states = statesRelay.value.statesByRemovingLast()
         let action: Action
@@ -260,7 +260,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
         }
         apply(action: action, states: states)
     }
-    
+
     private func apply(action: Action, states: States) {
         actionRelay.accept(action)
         statesRelay.accept(states)

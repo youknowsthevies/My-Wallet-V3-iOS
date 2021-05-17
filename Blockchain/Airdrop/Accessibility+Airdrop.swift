@@ -12,14 +12,14 @@ extension Accessibility.Identifier {
             static let description = "\(prefix)description-"
         }
     }
-    
+
     struct AirdropStatusScreen {
         private static let prefix = "AirdropStatusScreen."
         static let backgroundImageView = "\(prefix)backgroundImageView"
         static let thumbImageView = "\(prefix)thumbImageView"
         static let titleLabel = "\(prefix)titleLabel"
         static let descriptionLabel = "\(prefix)descriptionLabel"
-        
+
         struct Cell {
             private static let prefix = "\(AirdropStatusScreen.prefix)Cell."
             struct Status {

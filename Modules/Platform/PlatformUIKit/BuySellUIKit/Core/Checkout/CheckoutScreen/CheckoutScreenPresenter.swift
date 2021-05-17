@@ -10,9 +10,9 @@ import RxSwift
 import ToolKit
 
 final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
-    
+
     // MARK: - Types
-    
+
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.Checkout
 
@@ -33,7 +33,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     }
 
     // MARK: - Injected
-    
+
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let interactor: CheckoutScreenInteractor
     private let checkoutRouting: CheckoutRoutingInteracting
@@ -41,12 +41,12 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     private let alert: AlertViewPresenterAPI
 
     // MARK: - Private Properties
-    
+
     private let disposeBag = DisposeBag()
     private let contentReducer: CheckoutScreenContentReducing
 
     // MARK: - Setup
-    
+
     init(checkoutRouting: CheckoutRoutingInteracting,
          contentReducer: CheckoutScreenContentReducing,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
@@ -142,7 +142,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Navigation
 
     var navigationBarLeadingButtonAction: DetailsScreen.BarButtonAction {
@@ -156,7 +156,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
             self?.checkoutRouting.previousRelay.accept(())
         }
     }
-    
+
     /// Is called as the interaction setup fails
     private func setupDidFail() {
         alert.error(in: nil) { [weak self] in

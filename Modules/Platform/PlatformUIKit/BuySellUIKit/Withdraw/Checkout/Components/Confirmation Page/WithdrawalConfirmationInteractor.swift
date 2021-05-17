@@ -20,7 +20,7 @@ final class WithdrawalConfirmationInteractor: Interactor {
         }
         return true
     }
-    
+
     var isSuccess: Bool {
         guard case .success = type else {
             return false

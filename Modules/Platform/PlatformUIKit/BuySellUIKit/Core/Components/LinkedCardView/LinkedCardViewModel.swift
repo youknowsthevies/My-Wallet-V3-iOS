@@ -4,13 +4,13 @@ import PlatformKit
 import RxCocoa
 
 final class LinkedCardViewModel {
-    
+
     // MARK: - Private Types
-    
+
     private typealias AccessibilityIDs = Accessibility.Identifier.LinkedCardView
-    
+
     // MARK: - Types
-    
+
     struct Theme {
         let cardName: String
         let cardNameFont: UIFont
@@ -18,7 +18,7 @@ final class LinkedCardViewModel {
         let limit: String
         let limitFont: UIFont
         let limitContentColor: UIColor
-        
+
         init(cardName: String,
              cardNameFont: UIFont = .main(.semibold, 16.0),
              cardNameContentColor: UIColor = .textFieldText,
@@ -33,13 +33,13 @@ final class LinkedCardViewModel {
             self.limitContentColor = limitContentColor
         }
     }
-    
+
     struct Content {
         let nameContent: LabelContent
         let limitContent: LabelContent
         let limitText: String
         let nameText: String
-        
+
         init(theme: Theme) {
             limitText = theme.limit
             nameText = theme.cardName
@@ -55,9 +55,9 @@ final class LinkedCardViewModel {
                                  accessibility: .id(AccessibilityIDs.limit))
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// The theme of the view
     var content: Content {
         get {
@@ -73,25 +73,25 @@ final class LinkedCardViewModel {
             limitContentRelay.accept(newValue.limitContent)
         }
     }
-    
+
     var nameContent: Driver<LabelContent> {
         nameContentRelay.asDriver()
     }
-    
+
     var limitContent: Driver<LabelContent> {
         limitContentRelay.asDriver()
     }
-    
+
     let accessibility: Accessibility = .id(AccessibilityIDs.view)
     let badgeImageViewModel: BadgeImageViewModel
-    
+
     // MARK: - Private
-    
+
     private let nameContentRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let limitContentRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let nameTextRelay = BehaviorRelay(value: "")
     private let limitTextRelay = BehaviorRelay(value: "")
-    
+
     init(type: CardType) {
         self.badgeImageViewModel = .default(
             with: type.thumbnail ?? "",
@@ -110,4 +110,3 @@ extension Accessibility.Identifier {
         static let limit = "\(prefix)limit"
     }
 }
-

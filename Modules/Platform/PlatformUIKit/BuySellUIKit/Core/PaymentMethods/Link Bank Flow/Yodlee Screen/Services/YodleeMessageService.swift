@@ -16,7 +16,7 @@ final class YodleeMessageService {
         case accountIdNotFound
         case generic
     }
-    
+
     enum Effect: Equatable {
         case openExternal(url: URL)
         case success(data: YodleeSuccessData)

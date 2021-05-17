@@ -7,13 +7,13 @@ public protocol PortfolioProviding {
 }
 
 public final class PortfolioProvider: PortfolioProviding {
-    
+
     private let balanceProviding: BalanceProviding
     private let balanceChangeProviding: BalanceChangeProviding
     private let portfolioBalanceChangeProviding: PortfolioBalanceChangeProviding
     private let fiatCurrencyProviding: FiatCurrencyServiceAPI
     private let disposeBag = DisposeBag()
-    
+
     public init(balanceProviding: BalanceProviding,
                 balanceChangeProviding: BalanceChangeProviding,
                 fiatCurrencyProviding: FiatCurrencyServiceAPI) {
@@ -25,9 +25,9 @@ public final class PortfolioProvider: PortfolioProviding {
             balanceChangeProvider: balanceChangeProviding
         )
     }
-    
+
     // MARK: - PortfolioProviding
-    
+
     public var portfolio: Observable<Portfolio> {
         let balancesObservable = Observable.combineLatest(
             balance(for: .ethereum),
@@ -58,16 +58,16 @@ public final class PortfolioProvider: PortfolioProviding {
                 )
             }
     }
-    
+
     // MARK: - PortfolioChange
-    
+
     private var change: Observable<PortfolioBalanceChange> {
         portfolioBalanceChangeProviding
             .changeObservable
     }
-    
+
     // MARK: - Balance Descriptions
-    
+
     private func balance(for currency: CryptoCurrency) -> Observable<String> {
         balanceProviding[.crypto(currency)]
             .calculationState

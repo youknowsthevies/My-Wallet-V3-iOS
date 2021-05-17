@@ -4,13 +4,13 @@ import RxRelay
 import RxSwift
 
 public final class SearchController: UISearchController {
-    
+
     public var text: Observable<String> {
         relay.asObservable()
     }
-    
+
     private let relay = PublishRelay<String>()
-    
+
     public init(placeholderText: String) {
         super.init(nibName: nil, bundle: nil)
         searchResultsUpdater = self
@@ -20,7 +20,7 @@ public final class SearchController: UISearchController {
         searchBar.backgroundColor = .white
         searchBar.isTranslucent = false
     }
-    
+
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

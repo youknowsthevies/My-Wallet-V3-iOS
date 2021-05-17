@@ -4,17 +4,17 @@ import Localization
 import PlatformKit
 
 public final class DefaultWalletActionCellPresenter {
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
     private typealias LocalizationId = LocalizationConstants.WalletAction.Default
-    
+
     let badgeImageViewModel: BadgeImageViewModel
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
     let action: WalletAction
     init(currencyType: CurrencyType, action: WalletAction) {
         self.action = action
-        
+
         var templateColor: UIColor = .clear
         var accentColor: UIColor = .clear
         switch currencyType {
@@ -31,7 +31,7 @@ public final class DefaultWalletActionCellPresenter {
             backgroundColor: accentColor,
             accessibilityIdSuffix: "\(action.accessibilityId)"
         )
-        
+
         titleLabelContent = .init(
             text: action.name,
             font: .main(.semibold, 16.0),
@@ -39,9 +39,9 @@ public final class DefaultWalletActionCellPresenter {
             alignment: .left,
             accessibility: .id(AccessibilityId.Action.title)
         )
-        
+
         var description: String = ""
-        
+
         switch action {
         case .activity:
             description = LocalizationId.Activity.description
@@ -69,7 +69,7 @@ public final class DefaultWalletActionCellPresenter {
         case .sell:
             description = LocalizationId.Sell.description
         }
-        
+
         descriptionLabelContent = .init(
             text: description,
             font: .main(.medium, 14.0),

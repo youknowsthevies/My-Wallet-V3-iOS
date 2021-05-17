@@ -8,24 +8,24 @@ import ToolKit
 
 /// A view model that represents a password text field
 public final class PasswordTextFieldViewModel: TextFieldViewModel {
-    
+
     // MARK: - Types
-    
+
     /// Describes the score of the text field
     /// Handly when passwords / passphrases are involved
     enum Score {
         /// No score is needed
         case hidden
-        
+
         /// Weak score
         case weak
-        
+
         /// Normal score
         case normal
-        
+
         /// Strong score
         case strong
-        
+
         /// Title that repreents the score
         var title: String {
             switch self {
@@ -39,7 +39,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
                 return LocalizationConstants.TextField.PasswordScore.strong
             }
         }
-        
+
         /// Progress moves in the range of [0...1]
         var progress: CGFloat {
             switch self {
@@ -53,7 +53,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
                 return 1
             }
         }
-        
+
         /// Color that represents the score
         var color: UIColor {
             switch self {
@@ -67,7 +67,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
                 return .strongPassword
             }
         }
-        
+
         init(score: PasswordValidationScore) {
             switch score {
             case .none:
@@ -81,24 +81,24 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
             }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     /// A validating object for passwords
     private let passwordValidator: NewPasswordValidating
-    
+
     /// The score of the text field content
     var score: Observable<Score> {
         scoreRelay
             .asObservable()
             .distinctUntilChanged()
     }
-        
+
     private let scoreRelay = BehaviorRelay<Score>(value: .hidden)
     private let disposeBag =  DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     public init(with type: TextFieldType,
                 passwordValidator: NewPasswordValidating,
                 textMatchValidator: CollectionTextMatchValidator,
@@ -109,7 +109,7 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
             .map { Score(score: $0) }
             .bindAndCatch(to: scoreRelay)
             .disposed(by: disposeBag)
-        
+
         // Bind score title to score label
         scoreRelay
             .map {

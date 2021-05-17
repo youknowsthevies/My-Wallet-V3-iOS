@@ -35,7 +35,7 @@ public final class LabelTableViewCell: UITableViewCell {
     private var disposeBag = DisposeBag()
 
     // MARK: - IBOutlets
-    
+
     fileprivate let titleLabel: UILabel = .init()
     fileprivate var titleShimmeringView: ShimmeringView!
 

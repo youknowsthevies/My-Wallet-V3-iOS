@@ -6,11 +6,11 @@ import RxSwift
 import ToolKit
 
 final class FiatWithdrawalTransactionEngine: TransactionEngine {
-    
+
     var fiatExchangeRatePairs: Observable<TransactionMoneyValuePairs> {
         .empty()
     }
-    
+
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let priceService: PriceServiceAPI
     let requireSecondPassword: Bool = false
@@ -21,11 +21,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     var sourceTradingAccount: FiatAccount! {
         sourceAccount as? FiatAccount
     }
-    
+
     var target: LinkedBankAccount { transactionTarget as! LinkedBankAccount }
     var targetAsset: FiatCurrency { target.fiatCurrency }
     var sourceAsset: FiatCurrency { sourceTradingAccount.fiatCurrency }
-    
+
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
@@ -33,14 +33,14 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
     }
-    
+
     // MARK: - TransactionEngine
-    
+
     func assertInputsValid() {
         precondition(sourceAccount is FiatAccount)
         precondition(transactionTarget is LinkedBankAccount)
     }
-    
+
     func initializeTransaction() -> Single<PendingTransaction> {
         Single.zip(sourceAccount.actionableBalance,
                    sourceAccount.balance,
@@ -66,7 +66,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 )
             }
     }
-    
+
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction
                 .insert(
@@ -80,11 +80,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 )
         )
     }
-    
+
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction.update(amount: amount))
     }
-    
+
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         if pendingTransaction.validationState == .uninitialized && pendingTransaction.amount.isZero {
             return .just(pendingTransaction)
@@ -93,16 +93,16 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 .updateTxValidityCompletable(pendingTransaction: pendingTransaction)
         }
     }
-    
+
     func doValidateAll(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         validateAmount(pendingTransaction: pendingTransaction)
             .updateTxValiditySingle(pendingTransaction: pendingTransaction)
     }
-    
+
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         target
             .receiveAddress
-            .flatMapCompletable(weak: self) { (self, receiveAddress) -> Completable in
+            .flatMapCompletable(weak: self) { (_, _) -> Completable in
                 // TODO: Create withdraw order
                 unimplemented()
             }
@@ -110,18 +110,18 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                 .just(TransactionResult.unHashed(amount: pendingTransaction.amount))
             }
     }
-    
+
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
         unimplemented()
     }
-    
+
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
         precondition(pendingTransaction.feeSelection.availableLevels.contains(level))
         return .just(pendingTransaction)
     }
-    
+
     // MARK: - Private Functions
-    
+
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
             guard let maxLimit = pendingTransaction.maximumLimit,

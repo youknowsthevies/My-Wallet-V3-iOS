@@ -4,11 +4,11 @@ import PlatformKit
 import RxSwift
 
 final class PreferencesSectionPresenter: SettingsSectionPresenting {
-    
+
     // MARK: - SettingsSectionPresenting
-    
+
     let sectionType: SettingsSectionType = .preferences
-    
+
     var state: Observable<SettingsSectionLoadingState> {
         .just(
             .loaded(next:
@@ -24,10 +24,10 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
             )
         )
     }
-    
+
     private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
-    
+
     init(emailNotificationService: EmailNotificationSettingsServiceAPI,
          preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor) {
         emailNotificationsCellPresenter = .init(service: emailNotificationService)

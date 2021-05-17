@@ -37,4 +37,3 @@ extension LoadingState where Content == AssetBalanceViewModel.Value.Presentation
         }
     }
 }
-

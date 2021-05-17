@@ -7,9 +7,9 @@ import RxRelay
 import RxSwift
 
 struct AddPaymentMethodLocalizedStrings {
-    
+
     private typealias AccessibilityID = Accessibility.Identifier.Settings
-    
+
     private static var card: AddPaymentMethodLocalizedStrings {
         typealias LocalizedString = LocalizationConstants.Settings.Card
         return AddPaymentMethodLocalizedStrings(
@@ -19,7 +19,7 @@ struct AddPaymentMethodLocalizedStrings {
             accessibilityId: "\(AccessibilityID.AddPaymentMethodCell.disclaimer).card"
         )
     }
-    
+
     private static func bank(for fiatCurrency: FiatCurrency) -> AddPaymentMethodLocalizedStrings {
         typealias LocalizedString = LocalizationConstants.Settings.Bank
         return AddPaymentMethodLocalizedStrings(
@@ -29,7 +29,7 @@ struct AddPaymentMethodLocalizedStrings {
             accessibilityId: "\(AccessibilityID.AddPaymentMethodCell.disclaimer).bank.\(fiatCurrency.code)"
         )
     }
-    
+
     let kycDisabled: String
     let notAbleToAddNew: String
     let cta: String
@@ -48,38 +48,38 @@ extension AddPaymentMethodLocalizedStrings {
 }
 
 final class AddPaymentMethodLabelContentInteractor: LabelContentInteracting {
-    
+
     // MARK: - Types
 
     typealias InteractionState = LabelContent.State.Interaction
     typealias Descriptors = LabelContent.Value.Presentation.Content.Descriptors
-    
+
     // MARK: - Properties
-    
+
     let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     let descriptorRelay = BehaviorRelay<Descriptors>(value: .settings)
     var descriptorObservable: Observable<Descriptors> {
         descriptorRelay.asObservable()
     }
-    
+
     // MARK: - Private Properties
-    
+
     private let localizedStrings: AddPaymentMethodLocalizedStrings
     private let interactor: AddPaymentMethodInteractor
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
-    
+
     init(interactor: AddPaymentMethodInteractor, localizedStrings: AddPaymentMethodLocalizedStrings) {
         self.interactor = interactor
         self.localizedStrings = localizedStrings
         setup()
     }
-    
+
     private func setup() {
         let localizedStrings = self.localizedStrings
         interactor.isEnabledForUser
@@ -92,7 +92,7 @@ final class AddPaymentMethodLabelContentInteractor: LabelContentInteracting {
             }
             .bindAndCatch(to: descriptorRelay)
             .disposed(by: disposeBag)
-        
+
         Observable
             .combineLatest(
                 interactor.isAbleToAddNew,

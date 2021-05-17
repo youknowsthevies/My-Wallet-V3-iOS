@@ -3,15 +3,15 @@
 import RxSwift
 
 public final class GuidService: GuidServiceAPI {
-    
+
     // MARK: - Types
-    
+
     public enum FetchError: Error {
         case missingSessionToken
     }
-    
+
     // MARK: - Properties
-    
+
     /// Fetches the `GUID`
     public var guid: Single<String> {
         sessionTokenRepository
@@ -23,12 +23,12 @@ public final class GuidService: GuidServiceAPI {
                 return self.client.guid(by: token)
             }
     }
-    
+
     private let sessionTokenRepository: SessionTokenRepositoryAPI
     private let client: GuidClientAPI
-    
+
     // MARK: - Setup
-    
+
     public init(sessionTokenRepository: SessionTokenRepositoryAPI, client: GuidClientAPI) {
         self.sessionTokenRepository = sessionTokenRepository
         self.client = client

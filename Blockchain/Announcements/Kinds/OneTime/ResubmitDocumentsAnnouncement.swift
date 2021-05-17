@@ -52,13 +52,13 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.resubmitDocuments
     let analyticsRecorder: AnalyticsEventRecording
 
     var dismiss: CardAnnouncementAction
     var recorder: AnnouncementRecorder
-    
+
     let action: CardAnnouncementAction
 
     private let user: NabuUser

@@ -9,16 +9,16 @@ public enum ERC20TransactionEvaluationResult<Token: ERC20Token> {
 }
 
 public struct ERC20TransactionProposal<Token: ERC20Token> {
-    
+
     public var aboveMinimumSpendable: Bool {
         value.amount >= Token.smallestSpendableValue.amount
     }
-    
+
     public let from: EthereumAddress
     public let gasPrice: BigUInt
     public let gasLimit: BigUInt
     public let value: ERC20TokenValue<Token>
-    
+
     public init(from: EthereumAddress,
                 gasPrice: BigUInt,
                 gasLimit: BigUInt,

@@ -50,20 +50,20 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: "5740")
-        
+
         do {
             _ = try presenter.authenticatePin().toBlocking().first()
         } catch {
             XCTFail("expected success. got \(error) instead")
         }
     }
-    
+
     // Tests a case where the pin inserted is detected as incorrect by the interactor
     func testAuthenticationPinIncorrectOnLogin() {
         let flow = PinRouting.Flow.authenticate(from: .background, logoutRouting: {})
         let useCase = PinScreenUseCase.authenticateOnLogin
         let interactor = MockPinInteractor(expectedError: .incorrectPin("pin incorrect"))
-        let forward: PinRouting.RoutingType.Forward = { input in
+        let forward: PinRouting.RoutingType.Forward = { _ in
             XCTFail("expected an error \(PinError.incorrectPin). `forwardRouting` was invoked instead")
         }
         let presenter = PinScreenPresenter(useCase: useCase,
@@ -75,7 +75,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: "5740")
-        
+
         do {
             _ = try presenter.authenticatePin().toBlocking().first()
             XCTFail("expected \(PinError.incorrectPin). got success instead")
@@ -86,16 +86,16 @@ class PinScreenPresenterTests: XCTestCase {
             }
         }
     }
-    
+
     // MARK: - Tests PIN creation
-    
+
     // Test first phase of pin entry during creation process
     func testCreationSuccessOnFirstEntry() {
         let flow = PinRouting.Flow.create(parent: .init(nil))
         let useCase = PinScreenUseCase.select(previousPin: nil)
         let interactor = MockPinInteractor()
-        let forward: PinRouting.RoutingType.Forward = { input in
-            
+        let forward: PinRouting.RoutingType.Forward = { _ in
+
         }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
@@ -106,20 +106,20 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: "5740")
-        
+
         do {
             _ = try presenter.validateFirstEntry().toBlocking().first()
         } catch {
             XCTFail("expected success in validating first pin entry, got \(error) instead")
         }
     }
-    
+
     // Tests that selection of invalid pin fails when selecting a new pin
     func testFailureOnInvalidPinSelection() {
         let flow = PinRouting.Flow.create(parent: .init(nil))
         let useCase = PinScreenUseCase.select(previousPin: nil)
         let interactor = MockPinInteractor()
-        let forward: PinRouting.RoutingType.Forward = { input in }
+        let forward: PinRouting.RoutingType.Forward = { _ in }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            interactor: interactor,
@@ -129,7 +129,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: Pin.invalid.toString)
-        
+
         do {
             _ = try presenter.validateFirstEntry().toBlocking().first()
             XCTFail("expected \(PinError.invalid). got success instead")
@@ -147,8 +147,8 @@ class PinScreenPresenterTests: XCTestCase {
         let flow = PinRouting.Flow.create(parent: .init(nil))
         let useCase = PinScreenUseCase.create(firstPin: selectedPin)
         let interactor = MockPinInteractor()
-        let forward: PinRouting.RoutingType.Forward = { input in
-            
+        let forward: PinRouting.RoutingType.Forward = { _ in
+
         }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
@@ -159,14 +159,14 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: selectedPin.toString)
-        
+
         do {
             _ = try presenter.validateSecondEntry().toBlocking().first()
         } catch {
             XCTFail("expected success in validating second pin entry, got \(error) instead")
         }
     }
-    
+
     // Test pin mismatch when the second pin != first pin
     func testCreationPinsMismatchFailure() {
         let pin = Pin(string: "5740")!
@@ -186,10 +186,10 @@ class PinScreenPresenterTests: XCTestCase {
                                            backwardRouting: backward,
                                            forwardRouting: forward,
                                            performEffect: { _ in })
-        
+
         // Set a different value than the previosly selected one
         presenter.reset(to: "9154")
-        
+
         do {
             _ = try presenter.validateSecondEntry().toBlocking().first()
         } catch {
@@ -199,7 +199,7 @@ class PinScreenPresenterTests: XCTestCase {
             }
         }
     }
-    
+
     func testAuthenticationBeforeChanging() {
         let pin = "5740"
         let flow = PinRouting.Flow.change(parent: .init(nil), logoutRouting: {})
@@ -217,20 +217,20 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: pin)
-        
+
         do {
             _ = try presenter.verifyPinBeforeChanging().toBlocking().first()
         } catch {
             XCTFail("expected a success. got \(error) instead")
         }
     }
-    
+
     func testChangingPinToPreviousValueFailure() {
         let previousPin = Pin(string: "5475")!
         let flow = PinRouting.Flow.change(parent: .init(nil), logoutRouting: {})
         let useCase = PinScreenUseCase.select(previousPin: previousPin)
         let interactor = MockPinInteractor()
-        let forward: PinRouting.RoutingType.Forward = { input in }
+        let forward: PinRouting.RoutingType.Forward = { _ in }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            interactor: interactor,
@@ -240,7 +240,7 @@ class PinScreenPresenterTests: XCTestCase {
                                            forwardRouting: forward,
                                            performEffect: { _ in })
         presenter.reset(to: previousPin.toString)
-        
+
         do {
             _ = try presenter.validateFirstEntry().toBlocking().first()
             XCTFail("expected \(PinError.identicalToPrevious). got success instead")

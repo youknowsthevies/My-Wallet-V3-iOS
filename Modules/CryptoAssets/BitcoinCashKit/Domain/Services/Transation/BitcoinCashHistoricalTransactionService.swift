@@ -6,22 +6,22 @@ import RxSwift
 import ToolKit
 
 public final class BitcoinCashHistoricalTransactionService: TokenizedHistoricalTransactionAPI {
-    
+
     public typealias Model = BitcoinCashHistoricalTransaction
     public typealias PageModel = PageResult<Model>
-    
+
     private let client: APIClientAPI
     private let bridge: BitcoinCashWalletBridgeAPI
-    
+
     convenience init(bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.init(with: resolve(), bridge: bridge)
     }
-    
+
     init(with client: APIClientAPI, bridge: BitcoinCashWalletBridgeAPI) {
         self.client = client
         self.bridge = bridge
     }
-    
+
     public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
         bridge.defaultWallet.flatMap(weak: self) { (self, walletAccount) -> Single<PageModel> in
             self.client.multiAddress(for: [ walletAccount.publicKey ])

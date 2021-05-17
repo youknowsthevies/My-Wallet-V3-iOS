@@ -4,17 +4,17 @@ import PlatformKit
 
 /// Encapsulates the payload of a "bitcoin:" URL payload
 public class BitcoinURLPayload: BIP21URI {
-    
+
     public static var scheme: String {
         AssetConstants.URLSchemes.bitcoin
     }
-    
+
     public let cryptoCurrency: CryptoCurrency = .bitcoin
     public let address: String
     public let amount: String?
     public let paymentRequestUrl: String?
     public let includeScheme: Bool
-    
+
     public var absoluteString: String {
         let prefix = includeScheme ? "\(Self.scheme):" : ""
         let uri = "\(prefix)\(address)"
@@ -23,14 +23,14 @@ public class BitcoinURLPayload: BIP21URI {
         }
         return uri
     }
-    
+
     public required init(address: String, amount: String?, paymentRequestUrl: String?) {
         self.address = address
         self.amount = amount
         self.paymentRequestUrl = paymentRequestUrl
         includeScheme = false
     }
-    
+
     public required init(address: String, amount: String?, includeScheme: Bool = false) {
         self.address = address
         self.amount = amount

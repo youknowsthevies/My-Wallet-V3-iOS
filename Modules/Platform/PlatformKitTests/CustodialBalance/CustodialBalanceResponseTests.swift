@@ -12,4 +12,3 @@ class CustodialBalanceResponseTests: XCTestCase {
         XCTAssertNotNil(result[.crypto(CryptoCurrency.bitcoin)], "CustodialBalanceResponse.btc should exist")
     }
 }
-

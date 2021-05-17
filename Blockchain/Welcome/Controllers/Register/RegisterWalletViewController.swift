@@ -6,28 +6,28 @@ import ToolKit
 
 /// This class represents the wallet creation form
 final class RegisterWalletViewController: BaseScreenViewController {
-    
+
     // MARK: Private IBOutlets
-    
+
     @IBOutlet private var stackView: UIStackView!
     @IBOutlet private var emailTextField: TextFieldView!
     @IBOutlet private var passwordTextField: PasswordTextFieldView!
     @IBOutlet private var confirmPasswordTextField: PasswordTextFieldView!
     @IBOutlet private var termsOfUseTextView: InteractableTextView!
     @IBOutlet private var buttonView: ButtonView!
-    
+
     private var keyboardInteractionController: KeyboardInteractionController!
 
     // MARK: - Injected
-    
+
     private let presenter: RegisterWalletScreenPresenter
-    
+
     // MARK: - Accessors
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: RegisterWalletScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: RegisterWalletViewController.objectName, bundle: nil)
@@ -37,14 +37,14 @@ final class RegisterWalletViewController: BaseScreenViewController {
     required init?(coder: NSCoder) {
         unimplemented()
     }
-    
+
     // MARK: - Lifecycle
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presenter.viewDidAppear()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
@@ -65,7 +65,7 @@ final class RegisterWalletViewController: BaseScreenViewController {
             viewModel: presenter.confirmPasswordTextFieldViewModel,
             keyboardInteractionController: keyboardInteractionController
         )
-        
+
         if DevicePresenter.type == .superCompact {
             let topInset: CGFloat = 8
             emailTextField.topInset = topInset

@@ -16,7 +16,7 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
     private typealias LocalizationId = LocalizationConstants.AnnouncementCards.FiatFundsLinkBank
 
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationId.linkABank,
@@ -72,7 +72,7 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
     private let shouldShowLinkBankAnnouncement: Bool
 
     // MARK: - Setup
-    
+
     init(shouldShowLinkBankAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),

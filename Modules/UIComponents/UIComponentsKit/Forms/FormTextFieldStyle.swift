@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct FormTextFieldStyle: TextFieldStyle {
-    
+
     let paddingInsets: EdgeInsets = EdgeInsets(
         top: 12,
         leading: 12,
@@ -9,11 +9,11 @@ public struct FormTextFieldStyle: TextFieldStyle {
         trailing: 12
     )
     let borderWidth: CGFloat = 1
-    
+
     public init() {
         // required for exposing the view to the external world
     }
-    
+
     public func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .textStyle(.formField)
@@ -28,7 +28,7 @@ public struct FormTextFieldStyle: TextFieldStyle {
 
 #if DEBUG
 struct FormTextFieldStyleDemoView: View {
-    
+
     var body: some View {
         VStack {
             TextField("Placeholder", text: .constant(""))

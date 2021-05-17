@@ -16,7 +16,7 @@ public struct ButtonContent: Equatable {
     public static var empty: ButtonContent {
         ButtonContent()
     }
-    
+
     let text: String
     let font: UIFont
     let color: UIColor
@@ -24,7 +24,7 @@ public struct ButtonContent: Equatable {
     let border: Border
     let cornerRadius: CGFloat
     let accessibility: Accessibility
-    
+
     public init(text: String = "",
                 font: UIFont = ButtonContent.defaultFont,
                 color: UIColor = ButtonContent.defaultColor,
@@ -40,11 +40,11 @@ public struct ButtonContent: Equatable {
         self.cornerRadius = cornerRadius
         self.accessibility = accessibility
     }
-    
+
     public static func == (lhs: ButtonContent, rhs: ButtonContent) -> Bool {
         lhs.text == rhs.text
     }
-    
+
     var isEmpty: Bool {
         text.isEmpty
     }

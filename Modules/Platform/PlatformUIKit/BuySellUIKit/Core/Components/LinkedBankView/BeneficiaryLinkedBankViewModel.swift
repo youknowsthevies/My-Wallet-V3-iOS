@@ -17,15 +17,15 @@ public protocol LinkedBankViewModelAPI {
 }
 
 public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
-    
+
     // MARK: - Types
-    
+
     private typealias AccessibilityId = Accessibility.Identifier.LinkedBankView
-    
+
     // MARK: - Properties
-    
+
     public let data: Beneficiary
-    
+
     public let nameLabelContent: LabelContent
     public let limitLabelContent: LabelContent
     public let accountLabelContent: LabelContent
@@ -34,10 +34,10 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
     public let tapRelay = PublishRelay<Void>()
     public let isCustomButtonEnabled: Bool = false
     // MARK: - Setup
-    
+
     public init(data: Beneficiary) {
         self.data = data
-        
+
         badgeImageViewModel = .template(
             with: "icon-bank",
             templateColor: .secondary,
@@ -46,26 +46,26 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
             accessibilityIdSuffix: data.identifier
         )
         badgeImageViewModel.marginOffsetRelay.accept(6)
-        
+
         nameLabelContent = LabelContent(
             text: data.name,
             font: .main(.semibold, 16),
             color: .titleText,
             accessibility: .id("\(AccessibilityId.name)\(data.identifier)")
         )
-        
+
         var limitText = ""
         if let limit = data.limit {
             limitText = "\(limit.toDisplayString(includeSymbol: true)) \(LocalizationConstants.Settings.Bank.dailyLimit)"
         }
-        
+
         limitLabelContent = LabelContent(
             text: limitText,
             font: .main(.medium, 14),
             color: .descriptionText,
             accessibility: .id("\(AccessibilityId.limits)\(data.identifier)")
         )
-        
+
         accountLabelContent = LabelContent(
             text: data.account,
             font: .main(.semibold, 16),

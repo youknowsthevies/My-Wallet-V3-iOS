@@ -5,9 +5,9 @@ import RxSwift
 import UIKit
 
 public final class FiatBalanceView: UIView {
-    
+
     // MARK: - Injected
-    
+
     public var presenter: FiatBalanceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
@@ -16,23 +16,23 @@ public final class FiatBalanceView: UIView {
             guard let presenter = presenter else {
                 return
             }
-            
+
             presenter.alignment
                 .drive(stackView.rx.alignment)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .compactMap { $0.value }
                 .drive(rx.values)
                 .disposed(by: disposeBag)
-            
+
             presenter.state
                 .map { $0.isLoading }
                 .drive(weak: self) { (self, _) in
                     self.startShimmering()
                 }
                 .disposed(by: disposeBag)
-                
+
             presenter.state
                 .filter { $0.isLoading == false }
                 .drive(weak: self) { (self, _) in
@@ -41,28 +41,28 @@ public final class FiatBalanceView: UIView {
                 .disposed(by: disposeBag)
         }
     }
-    
+
     // MARK: - Private IBOutlets
-    
+
     private let stackView = UIStackView()
     fileprivate let baseLabel = UILabel()
     fileprivate let quoteLabel = UILabel()
-    
+
     fileprivate var fiatLabelShimmeringView: ShimmeringView!
     fileprivate var baseFiatLabelShimmeringView: ShimmeringView!
-    
+
     private var disposeBag = DisposeBag()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         addSubview(stackView)
         stackView.axis = .vertical
@@ -72,12 +72,12 @@ public final class FiatBalanceView: UIView {
         quoteLabel.horizontalContentHuggingPriority = .fittingSizeLevel
         quoteLabel.adjustsFontSizeToFitWidth = true
         quoteLabel.minimumScaleFactor = 0.4
-        
+
         for view in [quoteLabel, baseLabel] {
             stackView.addArrangedSubview(view)
         }
     }
-    
+
     /// Should be called once when the parent view loads
     public func shimmer(estimatedFiatLabelSize: CGSize, estimatedCryptoLabelSize: CGSize) {
         fiatLabelShimmeringView = ShimmeringView(
@@ -91,22 +91,22 @@ public final class FiatBalanceView: UIView {
             size: estimatedCryptoLabelSize
         )
     }
-    
+
     private func stopShimmering() {
         guard fiatLabelShimmeringView != nil else { return }
         guard baseFiatLabelShimmeringView != nil else { return }
         guard fiatLabelShimmeringView.isShimmering && baseFiatLabelShimmeringView.isShimmering else { return }
-        
+
         baseLabel.alpha = 0
         quoteLabel.alpha = 0
-        
+
         let animation = {
             self.baseLabel.alpha = 1
             self.quoteLabel.alpha = 1
             self.fiatLabelShimmeringView.stop()
             self.baseFiatLabelShimmeringView.stop()
         }
-        
+
         UIView.animate(
             withDuration: 0.3,
             delay: 0,
@@ -114,14 +114,14 @@ public final class FiatBalanceView: UIView {
             animations: animation
         )
     }
-    
+
     private func startShimmering() {
         guard quoteLabel.content.isEmpty else { return }
         guard baseLabel.content.isEmpty else { return }
         fiatLabelShimmeringView.start()
         baseFiatLabelShimmeringView.start()
     }
-    
+
     fileprivate func setup(with presentation: FiatBalanceViewAsset.Value.Presentation) {
         baseLabel.content = presentation.baseBalanceLabelContent
         switch presentation.quoteBalanceLabelContent {

@@ -21,12 +21,12 @@ public typealias FeatureFetchingConfiguring = FeatureFetching & FeatureConfiguri
 
 /// This protocol is responsible for variant fetching
 public protocol FeatureVariantFetching: class {
-    
+
     /// Returns an expected variant for the provided feature key
     /// - Parameter feature: the feature key
     /// - Returns: the `FeatureTestingVariant` value wrapped in a `RxSwift.Single`
     func fetchTestingVariant(for key: AppFeature) -> Single<FeatureTestingVariant>
-    
+
     /// Returns an expected variant for the provided feature key.
     /// - Parameter feature: the feature key
     /// - Parameter defaultVariant: expected value to be returned if an error occurs

@@ -8,7 +8,7 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
     public static var cryptoType: HasPathComponent {
         Token.coin.cryptoCurrency
     }
-    
+
     public static var `default`: BitcoinChainTransactionFee<Token> {
         switch Token.coin {
         case .bitcoin:
@@ -22,21 +22,21 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
             )
         }
     }
-    
+
     public static var defaultLimits: TransactionFeeLimits {
         TransactionFeeLimits(min: 2, max: 16)
     }
-    
+
     public var limits: TransactionFeeLimits
     public var regular: CryptoValue
     public var priority: CryptoValue
-    
+
     enum CodingKeys: String, CodingKey {
         case regular
         case priority
         case limits
     }
-    
+
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
@@ -52,7 +52,7 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
             limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
         }
     }
-    
+
     init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
         switch Token.coin {

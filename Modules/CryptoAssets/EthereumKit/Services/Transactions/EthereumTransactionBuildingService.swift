@@ -7,17 +7,17 @@ import RxSwift
 import TransactionKit
 
 protocol EthereumTransactionBuildingServiceAPI {
-    
+
     func buildTransaction(with amount: EthereumValue,
                           to: EthereumAddress,
                           feeLevel: FeeLevel) -> Single<EthereumTransactionCandidate>
 }
 
 final class EthereumTransactionBuildingService: EthereumTransactionBuildingServiceAPI {
-    
+
     private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
     private let repository: EthereumAssetAccountRepository
-    
+
     init(with feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
          repository: EthereumAssetAccountRepository = resolve()) {
         self.feeService = feeService
@@ -46,17 +46,17 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 let gasLimit = BigUInt(fee.gasLimit)
                 let balance = BigUInt(balance.amount)
                 let transactionFee = gasPrice * gasLimit
-                
+
                 guard transactionFee < balance else {
                     throw EthereumKitValidationError.insufficientFunds
                 }
-                
+
                 let availableBalance = balance - transactionFee
-                
+
                 guard value <= availableBalance else {
                     throw EthereumKitValidationError.insufficientFunds
                 }
-                
+
                 return EthereumTransactionCandidate(
                     to: to,
                     gasPrice: gasPrice,
@@ -66,9 +66,9 @@ final class EthereumTransactionBuildingService: EthereumTransactionBuildingServi
                 )
             }
     }
-    
+
     private var balance: Single<CryptoValue> {
-        repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (self, details) -> Single<CryptoValue> in
+        repository.currentAssetAccountDetails(fromCache: false).flatMap(weak: self, { (_, details) -> Single<CryptoValue> in
             Single.just(details.balance)
         })
     }

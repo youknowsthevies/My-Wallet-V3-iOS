@@ -4,10 +4,10 @@ import PlatformKit
 import PlatformUIKit
 
 final class ActivityItemInteractor {
-    
+
     let balanceViewInteractor: AssetBalanceViewInteracting
     let event: ActivityItemEvent
-    
+
     init(exchangeAPI: PairExchangeServiceAPI,
          assetBalanceFetcher: AssetBalanceFetching,
          activityItemEvent: ActivityItemEvent) {

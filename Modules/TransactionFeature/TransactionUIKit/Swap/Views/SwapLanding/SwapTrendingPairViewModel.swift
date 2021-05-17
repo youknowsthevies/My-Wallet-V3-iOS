@@ -8,15 +8,15 @@ struct SwapTrendingPairViewModel {
     let titleLabel: LabelContent
     let subtitleLabel: LabelContent
     let trendingPair: SwapTrendingPair
-    
+
     var sourceAccount: CryptoAccount {
         trendingPair.sourceAccount
     }
-    
+
     var destinationAccount: CryptoAccount {
         trendingPair.destinationAccount
     }
-    
+
     init(trendingPair: SwapTrendingPair) {
         self.trendingPair = trendingPair
         self.titleLabel = .init(
@@ -26,7 +26,7 @@ struct SwapTrendingPairViewModel {
             alignment: .left,
             accessibility: .none
         )
-        
+
         self.subtitleLabel = .init(
             text: "\(LocalizationConstants.Swap.receive) \(trendingPair.destinationAccount.currencyType.name)",
             font: .main(.medium, 14.0),

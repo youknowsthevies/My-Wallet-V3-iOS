@@ -78,7 +78,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        
+
         switch event.isNonCustodial {
         case true:
             toPresenter = TransactionalLineItem.to(event.kind.withdrawalAddress).defaultCopyablePresenter(
@@ -115,7 +115,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
         badgesModel
             .badgesRelay
             .accept([statusBadge])
-        
+
         var values: [DetailsScreen.CellType] = [
             .label(cryptoAmountLabelPresenter),
             .badges(badgesModel),
@@ -131,7 +131,7 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .lineItem(valuePresenter),
             .separator
         ]
-        
+
         switch event.isCustodial {
         case true:
             values.append(contentsOf: [

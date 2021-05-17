@@ -60,7 +60,7 @@ struct TransactionState: Equatable, StateType {
         }
         return account.currencyType
     }
-    
+
     /// The fees associated with the transaction
     var feeSelection: FeeSelection {
         guard let pendingTx = pendingTransaction else {

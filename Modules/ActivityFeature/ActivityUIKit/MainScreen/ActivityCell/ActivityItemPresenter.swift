@@ -25,10 +25,10 @@ final class ActivityItemPresenter: IdentifiableType {
     var descriptionLabelContent: Driver<LabelContent> {
         descriptionRelay.asDriver()
     }
-    
+
     private let titleRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let descriptionRelay = BehaviorRelay<LabelContent>(value: .empty)
-    
+
     init(interactor: ActivityItemInteractor) {
         viewModel = ActivityItemViewModel(event: interactor.event)
         badgeImageViewModel = .template(

@@ -14,7 +14,7 @@ internal struct ExtendedKey {
 
 internal struct HDKey {
     internal let extendedKey: ExtendedKey
-    
+
     internal init(libWallyHDKey: LibWally.HDKey) {
         fatalError("Not yet implemented, LibWally.HDKey.ext_key is private")
     }

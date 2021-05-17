@@ -4,14 +4,14 @@ import PlatformKit
 import PlatformUIKit
 
 final class AssetPriceCellPresenter {
-    
+
     let currency: CryptoCurrency
     let priceViewPresenter: TodayAssetPriceViewPresenter
     let thumbnailContent: ImageViewContent
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
     private let interactor: AssetPriceCellInteractor
-    
+
     init(interactor: AssetPriceCellInteractor) {
         self.interactor = interactor
         currency = interactor.currency

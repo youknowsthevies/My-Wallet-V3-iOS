@@ -13,7 +13,7 @@ protocol PaymentMethodRouting: ViewableRouting { }
 protocol PaymentMethodListener: class {
     /// Routes to the `Linked Banks` screen
     func routeToLinkedBanks()
-    
+
     /// Routes to the `Add [FiatCurrency] Wire Transfer` screen
     func routeToWireTransfer()
 }
@@ -24,7 +24,7 @@ final class PaymentMethodInteractor: Interactor, PaymentMethodInteractable {
     weak var listener: PaymentMethodListener?
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         super.init()

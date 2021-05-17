@@ -10,33 +10,33 @@ import UIKit
 public final class SegmentedView: UISegmentedControl {
 
     // MARK: - Rx
-    
+
     private var disposeBag = DisposeBag()
-    
+
     // MARK: - Dependencies
-    
+
     public var viewModel: SegmentedViewModel! {
         willSet {
             disposeBag = DisposeBag()
         }
         didSet {
             guard let viewModel = viewModel else { return }
-            
+
             layer.cornerRadius = viewModel.cornerRadius
-            
+
             // Set accessibility
             accessibility = viewModel.accessibility
-            
+
             // Bind backgroundColor
             viewModel.backgroundColor
                 .drive(rx.backgroundImageFillColor)
                 .disposed(by: disposeBag)
-            
+
             // Set the divider color
             viewModel.dividerColor
                 .drive(rx.dividerColor)
                 .disposed(by: disposeBag)
-            
+
             // Set the text attributes
             Driver
                 .zip(viewModel.contentColor, viewModel.normalFont)
@@ -50,7 +50,7 @@ public final class SegmentedView: UISegmentedControl {
                 }
                 .drive(rx.normalTextAttributes)
                 .disposed(by: disposeBag)
-            
+
             Driver
                 .zip(viewModel.selectedFontColor, viewModel.selectedFont)
                 .map { tuple -> [NSAttributedString.Key: Any]? in
@@ -63,28 +63,28 @@ public final class SegmentedView: UISegmentedControl {
                 }
                 .drive(rx.selectedTextAttributes)
                 .disposed(by: disposeBag)
-            
+
             // Bind border color
             viewModel.borderColor
                 .drive(layer.rx.borderColor)
                 .disposed(by: disposeBag)
-            
+
             // Bind view model enabled indication to button
             viewModel.isEnabled
                 .drive(rx.isEnabled)
                 .disposed(by: disposeBag)
-            
+
             // Bind opacity
             viewModel.alpha
                 .drive(rx.alpha)
                 .disposed(by: disposeBag)
-            
+
             rx.value
                 .bindAndCatch(to: viewModel.tapRelay)
                 .disposed(by: disposeBag)
 
             isMomentary = viewModel.isMomentary
-            
+
             removeAllSegments()
             viewModel.items.enumerated().forEach {
                 switch $1.content {
@@ -94,29 +94,29 @@ public final class SegmentedView: UISegmentedControl {
                     insertSegment(withTitle: title, at: $0, animated: false)
                 }
             }
-            
+
             guard isMomentary == false else { return }
             selectedSegmentIndex = viewModel.defaultSelectedSegmentIndex
             sendActions(for: .valueChanged)
         }
     }
-    
+
     // MARK: - Setup
 
     public convenience init() {
         self.init(frame: .zero)
     }
-    
+
     public override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
-    
+
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
     }
-    
+
     private func setup() {
         layer.borderWidth = 1
     }

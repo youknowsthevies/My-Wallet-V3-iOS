@@ -9,7 +9,7 @@ import RxSwift
 final class AutoPairingViewController: BaseScreenViewController {
 
     // MARK: - Properties
-    
+
     private var viewFrame: CGRect {
         guard let window = UIApplication.shared.keyWindow else {
             fatalError("Trying to get key window before it was set!")
@@ -18,25 +18,25 @@ final class AutoPairingViewController: BaseScreenViewController {
         let height = window.bounds.size.height - Constants.Measurements.DefaultHeaderHeight
         return CGRect(x: 0, y: 0, width: width, height: height)
     }
-    
+
     private let presenter: AutoPairingScreenPresenter
     private var viewFinderViewController: UIViewController!
-    
+
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: AutoPairingScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: AutoPairingViewController.objectName, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-        
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
@@ -45,21 +45,21 @@ final class AutoPairingViewController: BaseScreenViewController {
             .emit(to: rx.fallbackAction)
             .disposed(by: disposeBag)
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         start()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         stop()
     }
-        
+
     fileprivate func stop() {
         viewFinderViewController?.remove()
     }
-    
+
     fileprivate func start() {
         guard let scanner = presenter.scannerBuilder.build() else {
             return

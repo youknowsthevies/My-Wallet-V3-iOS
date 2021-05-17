@@ -11,10 +11,10 @@ import ToolKit
 public protocol DepositRootRouting: ViewableRouting {
     /// Routes to the `Select a Funding Method` screen
     func routeToDepositLanding()
-    
+
     /// Routes to the TransactonFlow with a given `FiatAccount`
     func routeToDeposit(sourceAccount: FiatAccount)
-    
+
     /// Exits the TransactonFlow
     func dismissTransactionFlow()
 }
@@ -27,7 +27,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     weak var listener: DepositRootListener?
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         super.init()
@@ -42,35 +42,35 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         super.willResignActive()
         // TODO: Pause any business logic.
     }
-    
+
     func routeToWireTransfer() {
         unimplemented()
     }
-    
+
     func routeToLinkedBanks() {
         unimplemented()
     }
-    
+
     func routeToAddABank() {
         unimplemented()
     }
-    
+
     func routeToTransactionFlow(sourceAccount: LinkedBankAccount) {
         unimplemented()
     }
-    
+
     func presentKYCTiersScreen() {
         unimplemented()
     }
-    
+
     func dismissTransactionFlow() {
         unimplemented()
     }
-    
+
     private lazy var routeViewDidAppear: Void = {
         router?.routeToDepositLanding()
     }()
-    
+
     func viewDidAppear() {
         // if first time, got to variant router
         _ = routeViewDidAppear

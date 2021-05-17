@@ -10,7 +10,7 @@ final class MockBiometryProvider: BiometryProviding {
     let configurationStatus: Biometry.Status
 
     private let authenticatesSuccessfully: Bool
-    
+
     init(authenticatesSuccessfully: Bool,
          canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError>,
          configuredType: Biometry.BiometryType,
@@ -20,7 +20,7 @@ final class MockBiometryProvider: BiometryProviding {
         self.configuredType = configuredType
         self.configurationStatus = configurationStatus
     }
-    
+
     func authenticate(reason: Biometry.Reason) -> Single<Void> {
         switch canAuthenticate {
         case .success:

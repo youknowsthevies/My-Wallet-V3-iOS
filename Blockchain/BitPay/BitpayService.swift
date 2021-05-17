@@ -14,22 +14,22 @@ enum BitpayServiceError: Error {
 }
 
 final class BitpayService: BitpayServiceProtocol {
-    
+
     // MARK: Public Properties
-    
+
     let contentRelay = BehaviorRelay<URL?>(value: nil)
-    
+
     // MARK: Models
-    
+
     private struct Payment: Encodable {
         let chain: String
         let transactions: [Transaction]
-        
+
         struct Transaction: Encodable {
             let tx: String
             let weightedSize: Int
         }
-        
+
         init(chain: String, transactions: [Transaction]) {
             self.chain = chain
             self.transactions = transactions
@@ -40,14 +40,14 @@ final class BitpayService: BitpayServiceProtocol {
     private let networkAdapter: NetworkAdapterAPI
     private let bitpayUrl: String = "https://bitpay.com/"
     private let invoicePath: String = "i/"
-    
+
     /// A recorder that marks the Bitpay announcement removed once the URI was used
     private let announcementRecorder: AnnouncementRecorder
-    
+
     // MARK: Init
-    
+
     static let shared = BitpayService()
-    
+
     init(recorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          networkAdapter: NetworkAdapterAPI = resolve(),
@@ -56,9 +56,9 @@ final class BitpayService: BitpayServiceProtocol {
         self.networkAdapter = networkAdapter
         self.announcementRecorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
     }
-    
+
     // MARK: BitpayServiceProtocol
-    
+
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<ObjcCompatibleBitpayObject> {
         buildBitpayPaymentRequest(invoiceID: invoiceID, currency: currency).map {
             let expiresLocalTime = self.UTCToLocal(date: $0.expires)
@@ -71,7 +71,7 @@ final class BitpayService: BitpayServiceProtocol {
             )
         }
     }
-    
+
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
         let signed = Payment(chain: currency.rawValue, transactions: [transaction])
@@ -81,12 +81,12 @@ final class BitpayService: BitpayServiceProtocol {
             "BP_PARTNER": "Blockchain",
             "BP_PARTNER_VERSION": "V6.28.0"
         ]
-        
+
         let url = URL(string: bitpayUrl + invoicePath + invoiceID)!
         let request = NetworkRequest(endpoint: url, method: .post, body: try? JSONEncoder().encode(signed), headers: headers)
         return networkAdapter.perform(request: request)
     }
-    
+
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
         let signed = Payment(chain: currency.rawValue, transactions: [transaction])
@@ -104,9 +104,9 @@ final class BitpayService: BitpayServiceProtocol {
             self?.recorder.record(event: AnalyticsEvents.Bitpay.bitpayPaymentFailure(error: error))
         })
     }
-    
+
     // MARK: Private Functions
-    
+
     private func buildBitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
         let payload = [
             "chain": currency.rawValue
@@ -157,7 +157,7 @@ final class BitpayService: BitpayServiceProtocol {
             fatalError(error.localizedDescription)
         }
     }
-    
+
     func getRawPaymentRequest(for invoiceId: String) -> Single<ObjcCompatibleBitpayObject> {
         let headers = [
             HttpHeaderField.accept: "application/payment-request",

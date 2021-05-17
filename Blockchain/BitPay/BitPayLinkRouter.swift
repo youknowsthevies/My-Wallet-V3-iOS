@@ -3,23 +3,23 @@
 import PlatformKit
 
 class BitPayLinkRouter: DeepLinkRouting {
-    
+
     // MARK: - Private Properties
-    
+
     private let service: BitpayServiceProtocol
-    
+
     // MARK: - Init
-    
+
     init(bitpayService: BitpayServiceProtocol = BitpayService.shared) {
         self.service = bitpayService
     }
-    
+
     // MARK: - Static Functions
-    
+
     static func isBitPayURL(_ url: URL) -> Bool {
         url.absoluteString.contains("https://bitpay.com/")
     }
-    
+
     // MARK: - DeepLinkRouting
 
     func routeIfNeeded() -> Bool {

@@ -10,13 +10,13 @@ import SettingsKit
 import ToolKit
 
 final class ExchangeCoordinator {
-    
+
     // MARK: Public Properties
-    
+
     static let shared = ExchangeCoordinator()
-    
+
     // MARK: Private Properties
-    
+
     private var navController: BaseNavigationController!
     private weak var rootViewController: UIViewController?
     private let disposables: CompositeDisposable = CompositeDisposable()
@@ -26,9 +26,9 @@ final class ExchangeCoordinator {
     private let loadingIndicatorAPI: LoadingViewPresenting
     private let appSettings: BlockchainSettings.App
     private let campaignComposer: CampaignComposer
-    
+
     // MARK: Init
-    
+
     init(repository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository(),
          authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
          loadingIndicatorAPI: LoadingViewPresenting = resolve(),
@@ -40,9 +40,9 @@ final class ExchangeCoordinator {
         self.loadingIndicatorAPI = loadingIndicatorAPI
         self.appSettings = appSettings
     }
-    
+
     // MARK: Public Functions
-    
+
     func start() {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
             Logger.shared.warning("Cannot start KYC. rootViewController is nil.")
@@ -50,7 +50,7 @@ final class ExchangeCoordinator {
         }
         start(from: rootViewController)
     }
-    
+
     func start(from viewController: UIViewController) {
         rootViewController = viewController
         hasLinkedExchangeAccount().subscribe(onSuccess: { [weak self] linked in
@@ -65,21 +65,21 @@ final class ExchangeCoordinator {
             Logger.shared.error(error)
         })
         .disposed(by: bag)
-        
+
         appSettings.didTapOnExchangeDeepLink = false
     }
-    
+
     // Called when the KYC process is completed or stopped before completing.
     func stop() {
         if navController == nil { return }
         navController.dismiss(animated: true)
         navController = nil
     }
-    
+
     private func showExchangeConnectScreen() {
         guard let root = rootViewController else { return }
         let connect = ExchangeConnectViewController.makeFromStoryboard()
-        
+
         connect.connectRelay
             .flatMap(weak: self) { (self, _) -> Observable<Bool> in
                 self.userRequiresEmailVerification()
@@ -93,7 +93,7 @@ final class ExchangeCoordinator {
                 }
             })
             .disposed(by: bag)
-        
+
         connect.learnMoreRelay
             .map(weak: self) { (self, _) -> URLComponents in
                 var components = URLComponents()
@@ -115,17 +115,17 @@ final class ExchangeCoordinator {
             .disposed(by: bag)
         navController = presentInNavigationController(connect, in: root)
     }
-    
+
     private func userRequiresEmailVerification() -> Observable<Bool> {
         BlockchainDataRepository.shared.fetchNabuUser().asObservable().take(1).flatMap {
             Observable.just($0.email.verified == false)
         }
     }
-    
+
     private func showEmailConfirmationScreen() {
         guard let navController = navController else { return }
         let emailConfirmationScreen = ExchangeEmailVerificationViewController.makeFromStoryboard()
-        
+
         let disposable = emailConfirmationScreen.verificationObserver
             .dismissNavControllerOnDisposal(navController: self.navController)
             .subscribe(onNext: { [weak self] _ in
@@ -135,13 +135,13 @@ final class ExchangeCoordinator {
             }, onError: { (error) in
                 Logger.shared.error(error)
             })
-        
+
         disposables.insertWithDiscardableResult(disposable)
         let navigationController = BaseNavigationController(rootViewController: emailConfirmationScreen)
         navigationController.modalPresentationStyle = .fullScreen
         navController.present(navigationController, animated: true, completion: nil)
     }
-    
+
     @discardableResult private func presentInNavigationController(
         _ viewController: UIViewController,
         in presentingViewController: UIViewController
@@ -152,9 +152,9 @@ final class ExchangeCoordinator {
         presentingViewController.present(navController, animated: true)
         return navController
     }
-    
+
     // MARK: Alerts
-    
+
     private func showEmailVerifiedAlert() {
         let block = { [weak self] in
             guard let self = self else { return }
@@ -178,7 +178,7 @@ final class ExchangeCoordinator {
         }
         alertView.show()
     }
-    
+
     private func syncAddressesAndLaunchExchange() {
         if isLinkingToExistingExchangeUser() {
             syncAddressesAndLinkExchangeToWallet()
@@ -186,7 +186,7 @@ final class ExchangeCoordinator {
             syncAddressAndLinkWalletToExchange()
         }
     }
-    
+
     private func syncAddressAndLinkWalletToExchange() {
         /// Users that have linked their Exchange account should be sent to the `/trade`
         /// page and not the Exchange landing page.
@@ -208,7 +208,7 @@ final class ExchangeCoordinator {
             })
             .disposed(by: bag)
     }
-    
+
     private func syncAddressesAndLinkExchangeToWallet() {
         authenticator.exchangeLinkID
             .flatMapCompletable(weak: self) { (self, linkID) -> Completable in
@@ -230,18 +230,18 @@ final class ExchangeCoordinator {
             })
             .disposed(by: bag)
     }
-    
+
     private func hasLinkedExchangeAccount() -> Single<Bool> {
         repository.hasLinkedExchangeAccount
             .observeOn(MainScheduler.instance)
     }
-    
+
     private func isLinkingToExistingExchangeUser() -> Bool {
         appSettings.exchangeLinkIdentifier != nil
     }
-    
+
     // MARK: Lazy Private Properties
-    
+
     private lazy var syncingBottomAlertSheet: BottomAlertSheet = {
         let loading = LoadingBottomAlert(
             title: LocalizationConstants.Exchange.Alerts.connectingYou,
@@ -250,7 +250,7 @@ final class ExchangeCoordinator {
         )
         return BottomAlertSheet.make(with: loading)
     }()
-    
+
     private lazy var successfulLinkingBottomSheet: BottomAlertSheet = {
         let success = ThumbnailBottomAlert(
             title: LocalizationConstants.Exchange.Alerts.success,
@@ -260,7 +260,7 @@ final class ExchangeCoordinator {
         )
         return BottomAlertSheet.make(with: success)
     }()
-    
+
     private lazy var failureLinkingBottomSheet: BottomAlertSheet = {
         let success = ThumbnailBottomAlert(
             title: LocalizationConstants.Exchange.Alerts.error,
@@ -273,7 +273,7 @@ final class ExchangeCoordinator {
 }
 
 fileprivate extension ObservableType {
-    
+
     func dismissNavControllerOnDisposal(navController: BaseNavigationController) -> Observable<Element> {
         self.do(onDispose: {
             navController.popToRootViewController(animated: true)
@@ -281,11 +281,11 @@ fileprivate extension ObservableType {
             AppCoordinator.shared.closeSideMenu()
         })
     }
-    
+
 }
 
 private extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
-    
+
     func dismissNavControllerOnDisposal(navController: BaseNavigationController?) -> Completable {
         self.do(onDispose: {
             navController?.popToRootViewController(animated: true)
@@ -293,7 +293,7 @@ private extension PrimitiveSequenceType where Trait == CompletableTrait, Element
             AppCoordinator.shared.closeSideMenu()
         })
     }
-    
+
     func dismissNavControllerOnSubscription(navController: BaseNavigationController?) -> Completable {
         self.do(onSubscribed: {
             navController?.popToRootViewController(animated: true)
@@ -301,6 +301,5 @@ private extension PrimitiveSequenceType where Trait == CompletableTrait, Element
             AppCoordinator.shared.closeSideMenu()
         })
     }
-    
-}
 
+}

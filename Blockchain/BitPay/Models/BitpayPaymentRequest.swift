@@ -8,7 +8,7 @@ struct BitpayPaymentRequest: Decodable {
     let paymentUrl: String
     let paymentId: String
     let outputs: [Output]
-    
+
     enum CodingKeys: String, CodingKey {
         case memo
         case expires
@@ -17,7 +17,7 @@ struct BitpayPaymentRequest: Decodable {
         case instructions
         case outputs
     }
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         memo = try values.decode(String.self, forKey: .memo)
@@ -27,7 +27,7 @@ struct BitpayPaymentRequest: Decodable {
         let instructions = try values.decode([BitpayInstructions].self, forKey: .instructions)
         outputs = instructions.map { $0.outputs }.flatMap { $0 }
     }
-    
+
     init(memo: String, expires: String, paymentUrl: String, paymentId: String, outputs: [Output]) {
         self.memo = memo
         self.expires = expires
@@ -52,7 +52,7 @@ class ObjcCompatibleBitpayObject: NSObject {
     @objc var paymentUrl: String
     @objc var amount: Int
     @objc var address: String
-    
+
     init(memo: String, expires: Date, paymentUrl: String, amount: Int, address: String) {
         self.memo = memo
         self.expires = expires
@@ -60,5 +60,5 @@ class ObjcCompatibleBitpayObject: NSObject {
         self.amount = amount
         self.address = address
     }
-    
+
 }

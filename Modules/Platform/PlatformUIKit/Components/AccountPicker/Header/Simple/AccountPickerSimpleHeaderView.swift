@@ -22,7 +22,7 @@ final class AccountPickerSimpleHeaderView: UIView {
         super.init(coder: coder)
         setup()
     }
-    
+
     private func setup() {
         addSubview(subtitleLabel)
         addSubview(separator)

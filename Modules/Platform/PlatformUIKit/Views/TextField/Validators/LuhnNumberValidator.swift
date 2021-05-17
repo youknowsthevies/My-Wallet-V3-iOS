@@ -1,14 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public final class LuhnNumberValidator {
-    
+
     private let decimalDigits = CharacterSet.decimalDigits
-     
+
     public func validate(number: String) -> Bool {
         guard !(number.contains { !decimalDigits.contains($0) }) else {
             return false
         }
-        
+
         let sum = number
             .map { Int(String($0))! }
             .reversed()

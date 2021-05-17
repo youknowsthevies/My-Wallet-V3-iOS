@@ -3,22 +3,22 @@
 import Foundation
 
 struct CryptoExchangeAddressResponse: Decodable {
-    
+
     // MARK: - Types
-    
+
     /// Error to be thrown in case decoding is unsuccessful
     enum ResponseError: Error {
         case assetType
         case state
         case address
     }
-    
+
     /// State of Exchange account linking
     enum State: String {
         case pending = "PENDING"
         case active = "ACTIVE"
         case blocked = "BLOCKED"
-        
+
         /// Returns `true` for an active state
         var isActive: Bool {
             switch self {
@@ -29,7 +29,7 @@ struct CryptoExchangeAddressResponse: Decodable {
             }
         }
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case state
         case currency
@@ -38,22 +38,22 @@ struct CryptoExchangeAddressResponse: Decodable {
 
     /// The asset type
     let assetType: CryptoCurrency
-    
+
     /// The address associated with the asset type
     let address: String
 
     /// Thr state of the account
     let state: State
-    
+
     // MARK: - Setup
-    
+
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         address = try values.decode(String.self, forKey: .address)
         guard !address.isEmpty else {
             throw ResponseError.address
         }
-        
+
         let currency = try values.decode(String.self, forKey: .currency)
         if let assetType = CryptoCurrency(code: currency) {
             self.assetType = assetType

@@ -59,15 +59,15 @@ extension UserDefaults: CacheSuite {}
 public class MemoryCacheSuite: CacheSuite {
 
     // MARK: - Properties
-    
+
     private var cache: [String: Any]
-    
+
     // MARK: - Setup
-    
+
     public init(cache: [String: Any] = [:]) {
         self.cache = cache
     }
-    
+
     // MARK: - Getters
 
     public func object(forKey key: String) -> Any? {
@@ -121,7 +121,7 @@ public class MemoryCacheSuite: CacheSuite {
     public func set(_ value: Double, forKey key: String) {
         cache[key] = value
     }
-    
+
     public func set(_ value: Any?, forKey key: String) {
         cache[key] = value
     }

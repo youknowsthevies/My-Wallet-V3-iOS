@@ -12,32 +12,32 @@ public enum BlockstackError: Error {
 }
 
 public struct BlockstackAddress: RawRepresentable {
-    
+
     public let rawValue: String
-    
+
     public init?(rawValue value: String) {
         self.rawValue = value
     }
-    
+
     init(address: Address) {
         self.rawValue = address.description
     }
-    
+
 }
 
 public protocol BlockstackAccountAPI {
-    
+
     var accountAddress: Single<BlockstackAddress> { get }
 }
 
 public final class BlockstackAccountRepository: BlockstackAccountAPI {
-    
+
     public typealias Bridge =
           MnemonicAccessAPI
         & PasswordAccessAPI
-    
+
     // MARK: - Public properties
-    
+
     public var accountAddress: Single<BlockstackAddress> {
         Maybe.zip(bridge.mnemonic, bridge.password)
             .asObservable()
@@ -51,19 +51,19 @@ public final class BlockstackAccountRepository: BlockstackAccountAPI {
                     .single
             }
     }
-    
+
     // MARK: - Private properties
-    
+
     private let bridge: Bridge
     private let client: APIClientAPI
     private let addressDeriver: BlockstackAddressDeriverAPI
-    
+
     // MARK: - Init
-    
+
     public convenience init(with bridge: Bridge) {
         self.init(with: bridge, client: resolve(), addressDeriver: BlockstackAddressDeriver())
     }
-    
+
     init(with bridge: Bridge, client: APIClientAPI, addressDeriver: BlockstackAddressDeriverAPI) {
         self.bridge = bridge
         self.client = client
@@ -76,7 +76,7 @@ protocol BlockstackAddressDeriverAPI {
 }
 
 class BlockstackAddressDeriver: BlockstackAddressDeriverAPI {
-    
+
     func deriveAddress(mnemonic: String, password: String) -> Result<BlockstackAddress, Error> {
         guard
             let mn = BIP39Mnemonic(mnemonic),
@@ -94,5 +94,5 @@ class BlockstackAddressDeriver: BlockstackAddressDeriverAPI {
         let blockstackAddress = key.address(.payToPubKeyHash)
         return .success(BlockstackAddress(address: blockstackAddress))
     }
-    
+
 }

@@ -9,13 +9,13 @@ final class WalletViewViewModel {
     struct Descriptors {
         let accessibilityPrefix: String
     }
-    
+
     let identifier: String
     let accountTypeBadge: BadgeImageViewModel
     let badgeImageViewModel: BadgeImageViewModel
     let nameLabelContent: LabelContent
     let balanceLabelContent: Driver<LabelContent>
-    
+
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
         identifier = account.id
@@ -24,7 +24,7 @@ final class WalletViewViewModel {
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )
-        
+
         switch (account, currency) {
         case (is NonCustodialAccount, .fiat),
              (is TradingAccount, .fiat):
@@ -64,10 +64,10 @@ final class WalletViewViewModel {
         default:
             fatalError("Unhandled account type: \(String(describing: account))")
         }
-        
+
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
         accountTypeBadge.marginOffsetRelay.accept(1.0)
-        
+
         nameLabelContent = .init(
             text: account.label,
             font: .main(.semibold, 16.0),
@@ -81,7 +81,7 @@ final class WalletViewViewModel {
             balanceLabelContent = .empty()
             return
         }
-        
+
         balanceLabelContent = account
                     .balance
                     .map(\.displayString)

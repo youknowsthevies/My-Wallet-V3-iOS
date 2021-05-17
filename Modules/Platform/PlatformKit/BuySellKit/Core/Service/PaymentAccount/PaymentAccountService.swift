@@ -7,7 +7,7 @@ public protocol PaymentAccountServiceAPI: class {
 
     /// Fetch the Payment Account information for the currency wallet's fiat currency
     var paymentAccount: Single<PaymentAccountDescribing> { get }
-    
+
     /// Fetch the Payment Account information for the given currency.
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountDescribing>
 }
@@ -19,9 +19,9 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
     private enum ServiceError: Error {
         case invalidResponse
     }
-    
+
     // MARK: - Public Properties
-    
+
     /// Using a currency service, get the currency currency and check if the user has a
     /// payment account for the currenctly set fiat currency
     var paymentAccount: Single<PaymentAccountDescribing> {
@@ -30,7 +30,7 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
                 self.paymentAccount(for: currency)
             }
     }
-    
+
     // MARK: - Private Properties
 
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
@@ -49,7 +49,7 @@ final class PaymentAccountService: PaymentAccountServiceAPI {
         self.dataRepository = dataRepository
         self.patcher = patcher
     }
-    
+
     // MARK: - Public Methods
 
     func paymentAccount(for currency: FiatCurrency) -> Single<PaymentAccountDescribing> {

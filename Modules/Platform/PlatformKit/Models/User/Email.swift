@@ -20,4 +20,3 @@ public struct Email: Decodable {
         self.verified = verified
     }
 }
-

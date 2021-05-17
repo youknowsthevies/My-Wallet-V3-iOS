@@ -12,11 +12,11 @@ public struct CustodialBalanceResponse: Decodable {
         let pendingWithdrawal: String
         let available: String
         let withdrawable: String
-        
+
         var totalPending: String {
             String((Int(pendingDeposit) ?? 0) - (Int(pendingWithdrawal) ?? 0))
         }
-        
+
         static let zero = Balance(
             pending: "0",
             pendingDeposit: "0",

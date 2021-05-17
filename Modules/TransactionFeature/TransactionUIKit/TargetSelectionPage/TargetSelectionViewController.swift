@@ -32,9 +32,9 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     private lazy var dataSource: RxDataSource = {
         RxDataSource(animationConfiguration: AnimationConfiguration(insertAnimation: .none, reloadAnimation: .none, deleteAnimation: .none),
-                     configureCell: { [weak self] dataSource, tableView, indexPath, item in
+                     configureCell: { [weak self] _, _, indexPath, item in
             guard let self = self else { return UITableViewCell() }
-            
+
             let cell: UITableViewCell
             switch item.presenter {
             case .cardView(let viewModel):
@@ -119,11 +119,11 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         stateWait.map(\.sections)
             .drive(tableView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
-        
+
         stateWait.map(\.actionButtonModel)
             .drive(actionButton.rx.viewModel)
             .disposed(by: disposeBag)
-        
+
         let selectionEffect = tableView.rx
             .modelSelected(TargetSelectionPageSectionModel.Item.self)
             .filter(\.isSelectable)
@@ -138,7 +138,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         let closeButtonEffect = closeButtonRelay
             .map { TargetSelectionPageInteractor.Effects.closed }
             .asDriverCatchError()
-        
+
         let nextButtonEffect = stateWait
             .map(\.actionButtonModel)
             .flatMap { viewModel -> Signal<Void> in
@@ -153,7 +153,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
                       selectionEffect,
                       nextButtonEffect)
     }
-    
+
     // MARK: - Private Methods
 
     private func setupUI() {
@@ -182,7 +182,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         cell.setup(viewModel: viewModel, keyboardInteractionController: keyboardInteractionController, scrollView: tableView)
         return cell
     }
-    
+
     private func radioCell(for indexPath: IndexPath, presenter: RadioAccountCellPresenter) -> UITableViewCell {
         let cell = tableView.dequeue(RadioAccountTableViewCell.self, for: indexPath)
         cell.presenter = presenter
@@ -194,7 +194,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
         cell.presenter = presenter
         return cell
     }
-    
+
     private func cardCell(for indexPath: IndexPath, viewModel: CardViewViewModel) -> UITableViewCell {
         let cell = tableView.dequeue(CardTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel

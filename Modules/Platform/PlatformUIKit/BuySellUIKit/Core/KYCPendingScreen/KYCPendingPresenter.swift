@@ -19,7 +19,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     // MARK: - Properties
 
     let title = LocalizedString.title
-    
+
     var tap: Observable<URL> {
         .empty()
     }
@@ -36,7 +36,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
     private var dismissControllerOnSuccess: () -> Void
 
     // MARK: - Setup
-    
+
     init(stateService: RoutingStateEmitterAPI,
          interactor: KYCPendingInteractor,
          dismissControllerOnSuccess: @escaping () -> Void,
@@ -48,7 +48,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
         super.init(interactable: interactor)
         modelRelay = BehaviorRelay(value: model(verificationState: .loading))
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         interactor
@@ -59,7 +59,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
             }
             .bindAndCatch(to: modelRelay)
             .disposed(by: disposeBag)
-        
+
         interactor.verificationState
             .map { $0.analyticsEvent }
             .bindAndCatch(to: analyticsRecorder.recordRelay)
@@ -77,7 +77,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
         interactor.startPollingForGoldTier()
     }
-    
+
     private func model(verificationState: KYCPendingVerificationState) -> PendingStateViewModel {
         func actionButton(title: String) -> ButtonViewModel {
             let button = ButtonViewModel.primary(with: title)

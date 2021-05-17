@@ -13,7 +13,7 @@ struct TodayExtensionSectionViewModel {
 extension TodayExtensionSectionViewModel: AnimatableSectionModelType {
     typealias Identity = String
     typealias Item = TodayExtensionCellViewModel
-    
+
     init(original: TodayExtensionSectionViewModel, items: [TodayExtensionCellViewModel]) {
         self = original
         self.items = items

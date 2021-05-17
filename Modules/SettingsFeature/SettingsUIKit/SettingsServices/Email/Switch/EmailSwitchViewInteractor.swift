@@ -9,22 +9,22 @@ import RxSwift
 import ToolKit
 
 class EmailSwitchViewInteractor: SwitchViewInteracting {
-    
+
     typealias InteractionState = LoadingState<SwitchInteractionAsset>
-    
+
     var state: Observable<InteractionState> {
         stateRelay.asObservable()
     }
-    
+
     var switchTriggerRelay = PublishRelay<Bool>()
-    
+
     private let service: EmailNotificationSettingsServiceAPI
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
 
     init(service: EmailNotificationSettingsServiceAPI) {
         self.service = service
-        
+
         service.valueObservable
             .map { ValueCalculationState.value($0) }
             .map { .init(with: $0) }
@@ -32,7 +32,7 @@ class EmailSwitchViewInteractor: SwitchViewInteracting {
             .startWith(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-        
+
         switchTriggerRelay
             .do(onNext: { [weak self] _ in
                 self?.stateRelay.accept(.loading)
@@ -48,7 +48,7 @@ class EmailSwitchViewInteractor: SwitchViewInteracting {
 }
 
 fileprivate extension LoadingState where Content == (SwitchInteractionAsset) {
-    
+
     /// Initializer that receives the interaction state and
     /// maps it to `self`
     init(with state: ValueCalculationState<WalletSettings>) {

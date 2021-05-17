@@ -17,7 +17,7 @@ class BlockchainDataRepository: DataRepositoryAPI {
 
     private let disposeBag = DisposeBag()
     private let userService: NabuUserServiceAPI
-    
+
     init(userService: NabuUserServiceAPI = resolve()) {
         self.userService = userService
     }
@@ -27,11 +27,11 @@ class BlockchainDataRepository: DataRepositoryAPI {
     var user: Observable<User> {
         userService.user.asObservable().map { $0 }
     }
-    
+
     var userSingle: Single<User> {
         userService.user.map { $0 }
     }
-    
+
     var nabuUserSingle: Single<NabuUser> {
         userService.user
     }

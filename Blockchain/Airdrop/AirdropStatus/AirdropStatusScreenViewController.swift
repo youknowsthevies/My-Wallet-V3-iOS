@@ -8,23 +8,23 @@ import RxSwift
 final class AirdropStatusScreenViewController: BaseScreenViewController {
 
     // MARK: - Private Properties
-    
+
     @IBOutlet private var backgroundImageView: UIImageView!
     @IBOutlet private var thumbImageView: UIImageView!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var tableView: UITableView!
-    
+
     private let presenter: AirdropStatusScreenPresenter
     private let disposeBag = DisposeBag()
-    
+
     // MARK: - Setup
-    
+
     init(presenter: AirdropStatusScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: Self.objectName, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -47,7 +47,7 @@ final class AirdropStatusScreenViewController: BaseScreenViewController {
         presenter.title
             .drive(titleLabel.rx.content)
             .disposed(by: disposeBag)
-        
+
         presenter.description
             .drive(descriptionLabel.rx.content)
             .disposed(by: disposeBag)

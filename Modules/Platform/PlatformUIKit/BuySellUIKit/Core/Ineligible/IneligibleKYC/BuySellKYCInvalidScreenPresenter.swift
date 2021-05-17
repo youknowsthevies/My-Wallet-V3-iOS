@@ -6,32 +6,32 @@ import RxCocoa
 import RxSwift
 
 final class BuySellKYCInvalidScreenPresenter {
-    
+
     private typealias LocalizationId = LocalizationConstants.SimpleBuy.KYCInvalid
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.KYCInvalidScreen
-    
+
     enum CellType {
         case announcement(AnnouncementCardViewModel)
         case numberedItem(BadgeNumberedItemViewModel)
         case label(LabelContent)
         case buttons([ButtonViewModel])
     }
-    
+
     /// Returns the total count of cells
     var cellCount: Int {
         cellArrangement.count
     }
-    
+
     let title = LocalizationId.title
-    
+
     let cellArrangement: [CellType]
-    
+
     let announcement: AnnouncementCardViewModel
     let contactSupportButtonViewModel: ButtonViewModel
     let badgeNumberedItemViewModels: [BadgeNumberedItemViewModel]
-    
+
     private let disposeBag = DisposeBag()
-    
+
     init(routerInteractor: SellRouterInteractor) {
         badgeNumberedItemViewModels = [
             .init(
@@ -67,12 +67,12 @@ final class BuySellKYCInvalidScreenPresenter {
             description: LocalizationId.subtitle,
             dismissState: .undismissible
         )
-        
+
         contactSupportButtonViewModel = .secondary(
             with: LocalizationId.button,
             accessibilityId: "\(AccessibilityId.contactSupportButton)"
         )
-        
+
         let content = LabelContent(
             text: LocalizationId.disclaimer,
             font: .main(.medium, 12.0),
@@ -82,15 +82,15 @@ final class BuySellKYCInvalidScreenPresenter {
         )
 
         let badgedNumberedItems: [CellType] = badgeNumberedItemViewModels.map { .numberedItem($0) }
-        
+
         cellArrangement = [.announcement(announcement)] +
             badgedNumberedItems +
             [.label(content)] +
             [.buttons([contactSupportButtonViewModel])]
-        
+
         contactSupportButtonViewModel
             .tapRelay
-            .bindAndCatch(weak: self) { (self) in
+            .bindAndCatch(weak: self) { (_) in
                 routerInteractor.nextFromVerificationFailed()
             }
             .disposed(by: disposeBag)

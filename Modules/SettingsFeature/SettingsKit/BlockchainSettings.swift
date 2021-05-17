@@ -12,15 +12,15 @@ public protocol KeychainItemWrapping {
     func pinFromKeychain() -> String?
     func removePinFromKeychain()
     func setPINInKeychain(_ pin: String?)
-    
+
     func guid() -> String?
     func removeGuidFromKeychain()
     func setGuidInKeychain(_ guid: String?)
-    
+
     func sharedKey() -> String?
     func removeSharedKeyFromKeychain()
     func setSharedKeyInKeychain(_ sharedKey: String?)
-    
+
     func getSingleSwipeAddress(for: CryptoCurrency) -> String?
     func removeAllSwipeAddresses(for: CryptoCurrency)
     func setSingleSwipeAddress(_ address: String, for: CryptoCurrency)
@@ -178,13 +178,13 @@ public final class BlockchainSettings: NSObject {
                 }
             }
         }
-        
+
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         @objc
         public var fiatCurrencySymbol: String {
             fiatCurrency.symbol
         }
-        
+
         @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencySettingsServiceAPI`")
         public var fiatCurrency: FiatCurrency {
             FiatCurrency(code: fiatSettings.legacyCurrency?.code ?? "USD")!
@@ -421,11 +421,11 @@ public final class BlockchainSettings: NSObject {
                 defaults.set(newValue, forKey: UserDefaults.Keys.custodySendInterstitialViewed.rawValue)
             }
         }
-        
+
         private var buySellCache: EventCache {
             resolve()
         }
-        
+
         private var fiatSettings: FiatCurrencySettingsServiceAPI {
             resolve()
         }
@@ -472,7 +472,7 @@ public final class BlockchainSettings: NSObject {
             let kycSettings: KYCSettingsAPI = resolve()
             kycSettings.reset()
             AnnouncementRecorder.reset()
-            
+
             buySellCache.reset()
 
             Logger.shared.info("Application settings have been reset.")

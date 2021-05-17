@@ -17,11 +17,11 @@ extension KYC {
         public var isInProgress: Bool {
             self == .pending || self == .underReview
         }
-        
+
         public var isApproved: Bool {
             self == .approved
         }
-        
+
         public var isInProgressOrApproved: Bool {
             isInProgress || isApproved
         }

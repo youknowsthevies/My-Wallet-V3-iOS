@@ -10,9 +10,9 @@ import ToolKit
 
 /// Enable 2-FA announcement
 final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement {
-    
+
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.TwoFA.ctaButton
@@ -26,7 +26,7 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
                 self.dismiss()
             }
             .disposed(by: disposeBag)
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "card-icon-lock"),
@@ -45,29 +45,29 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
             }
         )
     }
-    
+
     var shouldShow: Bool {
         guard shouldEnable2FA else {
             return false
         }
         return !isDismissed
     }
-    
+
     let type = AnnouncementType.twoFA
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
 
     let action: CardAnnouncementAction
 
     let appearanceRules: PeriodicAnnouncementAppearanceRules
-    
+
     private let shouldEnable2FA: Bool
-    
+
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(shouldEnable2FA: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,

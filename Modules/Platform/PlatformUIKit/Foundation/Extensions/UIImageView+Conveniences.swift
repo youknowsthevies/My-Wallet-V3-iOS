@@ -26,7 +26,7 @@ public struct ImageViewContent {
     public var isEmpty: Bool {
         imageName == nil
     }
-    
+
     var templateColor: UIColor? {
         renderingMode.templateColor
     }

@@ -4,13 +4,13 @@ import Localization
 import PlatformKit
 
 extension SelectionButtonViewModel {
-    
+
     // MARK: - Types
-    
+
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen
-    
+
     // MARK: - Setup
-    
+
     convenience init(with paymentMethodType: PaymentMethodType?) {
         self.init()
         let leadingContent: SelectionButtonViewModel.LeadingContentType?

@@ -32,7 +32,7 @@ public final class AccountPickerSelectionService: AccountSelectionServiceAPI {
 /// by a `PublishRelay`, meaning it doesn't have a pre-defined value nor it 'replays' the last known value
 /// on subscription.
 public class AccountSelectionService: AccountSelectionServiceAPI {
-    
+
     public var selectedData: Observable<BlockchainAccount> {
         selectedDataRelay.asObservable()
     }

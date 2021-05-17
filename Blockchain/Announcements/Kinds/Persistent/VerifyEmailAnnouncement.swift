@@ -13,7 +13,7 @@ import ToolKit
 final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnouncement {
 
     // MARK: - Properties
-    
+
     var viewModel: AnnouncementCardViewModel {
         let button = ButtonViewModel.primary(
             with: LocalizationConstants.AnnouncementCards.VerifyEmail.ctaButton
@@ -25,7 +25,7 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
                 self.action()
             }
             .disposed(by: disposeBag)
-        
+
         return AnnouncementCardViewModel(
             type: type,
             image: AnnouncementCardViewModel.Image(name: "card-icon-email"),
@@ -39,21 +39,21 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
             }
         )
     }
-    
+
     var shouldShow: Bool {
         !isEmailVerified
     }
-    
+
     let type = AnnouncementType.verifyEmail
     let analyticsRecorder: AnalyticsEventRecording
-    
+
     let action: CardAnnouncementAction
-    
+
     private let isEmailVerified: Bool
-    
+
     private let disposeBag = DisposeBag()
     // MARK: - Setup
-    
+
     init(isEmailVerified: Bool,
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
@@ -63,4 +63,3 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
         self.analyticsRecorder = analyticsRecorder
     }
 }
-

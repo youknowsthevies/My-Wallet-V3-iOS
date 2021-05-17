@@ -8,15 +8,15 @@ import RxSwift
 import ToolKit
 
 final class AddressInteractor: AddressInteracting {
-    
+
     /// The type of the asset coupled to the interactor
     let asset: CryptoCurrency
-    
+
     /// The type of the subscribed address
     private let addressType: AssetAddressType
-    
+
     // MARK: - Services
-    
+
     /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
     /// the wallet is initialized during the wallet creation - which generate a crash.
     private lazy var addressFetcher: AssetAddressFetching = addressFetcherProvider()
@@ -24,18 +24,18 @@ final class AddressInteractor: AddressInteracting {
     private let addressSubscriber: AssetAddressSubscribing
     private let recorder: ErrorRecording
     private let urlFactory: AssetURLPayloadFactoryAPI
-    
+
     // MARK: - Rx
 
     private let disposeBag = DisposeBag()
-    
+
     private let receivedPaymentRelay = PublishRelay<ReceivedPaymentDetails>()
-    
+
     /// Streams any received payment that is coupled with the currently observed address
     var receivedPayment: Observable<ReceivedPaymentDetails> {
         receivedPaymentRelay.asObservable()
     }
-    
+
     /// Fetches a new address from repo (for the asset coupled with `Self` instance) ->
     /// Verifies that the address hasn't been used in other transaction ->
     /// Subscribes to future payments made to that address ->
@@ -56,7 +56,7 @@ final class AddressInteractor: AddressInteracting {
                 } else {
                     qrUrl = address
                 }
-                                                       
+
                 // Generate a QR image out of the provided url
                 guard let qrCode = QRCode(string: qrUrl) else {
                     let error = AddressFetchingError.parsing
@@ -67,7 +67,7 @@ final class AddressInteractor: AddressInteracting {
                 return WalletAddressContent(string: address, qrCode: qrCode)
             }
     }
-    
+
     // Subscribes address to incoming payments using the wallet
     private var addressSubscribedToPayments: Single<String> {
         unusedAddress
@@ -79,7 +79,7 @@ final class AddressInteractor: AddressInteracting {
                                                  addressType: self.addressType)
             })
     }
-    
+
     // Retrive the status of the address (used, unused, unknown), validates it and map it to raw representation
     private var unusedAddress: Single<String> {
         fetchedAddress
@@ -98,7 +98,7 @@ final class AddressInteractor: AddressInteracting {
                 $0.address
             }
     }
-    
+
     // Get the address from address-repo
     private var fetchedAddress: Single<String> {
         .create { [weak self] single in
@@ -106,7 +106,7 @@ final class AddressInteractor: AddressInteracting {
                 single(.error(AddressFetchingError.unretainedSelf))
                 return Disposables.create()
             }
-            
+
             // Get a swipe to receive address
             guard let address = self.addressFetcher.addresses(by: self.addressType, asset: self.asset).first?.publicKey else {
                 let error = AddressFetchingError.absent
@@ -118,9 +118,9 @@ final class AddressInteractor: AddressInteracting {
             return Disposables.create()
         }
     }
-    
+
     // MARK: - Setup
-    
+
     init(asset: CryptoCurrency,
          addressType: AssetAddressType,
          addressFetcherProvider: @escaping () -> AssetAddressFetching = { AssetAddressRepository.shared },
@@ -134,7 +134,7 @@ final class AddressInteractor: AddressInteracting {
         self.addressSubscriber = addressSubscriber
         self.recorder = recorder
         self.urlFactory = urlFactory
-        
+
         // Observe received payments for the associated asset.
         // Upon payment to that asset, removes the first swipe to receive address
         transactionObserver.paymentReceived
@@ -147,7 +147,7 @@ final class AddressInteractor: AddressInteracting {
             .bindAndCatch(to: receivedPaymentRelay)
             .disposed(by: disposeBag)
     }
-    
+
     /// Removes used addresses if necessary
     private func remove(address: String) {
         guard !asset.shouldAddressesBeReused else {

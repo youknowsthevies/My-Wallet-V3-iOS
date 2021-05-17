@@ -4,7 +4,7 @@ import PlatformKit
 import ToolKit
 
 extension NSMutableAttributedString {
-    
+
     /// Makes the whole range hyperrlink
     public func makeHyperlink(to urlString: String) {
         guard let url = URL(string: urlString) else {
@@ -14,7 +14,7 @@ extension NSMutableAttributedString {
         let range = NSRange(location: 0, length: string.count)
         addAttribute(NSAttributedString.Key.link, value: url, range: range)
     }
-    
+
     /// Adds a given line spacing
     public func add(lineSpacing: CGFloat) {
         let style = NSMutableParagraphStyle()
@@ -22,7 +22,7 @@ extension NSMutableAttributedString {
         let range = NSRange(location: 0, length: string.count)
         addAttribute(.paragraphStyle, value: style, range: range)
     }
-    
+
     /// Adds a given alignment
     public func add(alignment: NSTextAlignment) {
         let style = NSMutableParagraphStyle()
@@ -41,7 +41,7 @@ extension NSAttributedString {
     public static func space() -> NSAttributedString {
         NSAttributedString(string: " ")
     }
-    
+
     public convenience init(_ labelContent: LabelContent) {
         self.init(
             labelContent.text,
@@ -49,45 +49,45 @@ extension NSAttributedString {
             color: labelContent.color
         )
     }
-    
+
     public convenience init(_ text: String, font: UIFont, color: UIColor) {
         self.init(string: text, attributes: [.font: font, .foregroundColor: color])
     }
-    
+
     public static func + (leading: NSAttributedString, trailing: NSAttributedString) -> NSAttributedString {
         let attributedString = NSMutableAttributedString()
         attributedString.append(leading)
         attributedString.append(trailing)
         return attributedString
     }
-        
+
     public var height: CGFloat {
         heightForWidth(width: CGFloat.greatestFiniteMagnitude)
     }
-    
+
     public var width: CGFloat {
         let size = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
         let rect = boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
         return ceil(rect.size.width)
     }
-    
+
     public func boundingRectForWidth(_ width: CGFloat) -> CGRect {
         let size = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
         return boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesDeviceMetrics], context: .none)
     }
-    
+
     public func fontAttribute() -> UIFont? {
         guard length > 0 else { return nil }
         guard let font = attribute(.font, at: 0, effectiveRange: nil) as? UIFont else { return nil }
         return font
     }
-    
+
     public func heightForWidth(width: CGFloat) -> CGFloat {
         let size = CGSize(width: width, height: width == CGFloat.greatestFiniteMagnitude ? 0 : CGFloat.greatestFiniteMagnitude)
         let rect = boundingRect(with: size, options: [.usesLineFragmentOrigin, .usesFontLeading], context: nil)
         return ceil(rect.size.height)
     }
-    
+
     public func withFont(_ font: UIFont) -> NSAttributedString {
         if fontAttribute() == .none {
             let copy = NSMutableAttributedString(attributedString: self)

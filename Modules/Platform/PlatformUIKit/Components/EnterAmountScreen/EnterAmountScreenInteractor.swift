@@ -13,7 +13,7 @@ public protocol EnterAmountScreenInteractorAPI: AnyObject {
 }
 
 open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorAPI {
-    
+
     /// Must be implemented - decides whether the interactor has a valid state.
     /// if streams `true`, then the CTA button would become enabled.
     /// `super.hasValidState` must not be called by the subclass.
@@ -32,18 +32,18 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
     open func didLoad() {
         unimplemented()
     }
-    
+
     // MARK: - Injected
-    
+
     public let priceService: PriceServiceAPI
     public let fiatCurrencyService: FiatCurrencyServiceAPI
     public let cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI
 
     // MARK: - Interactors
-    
+
     /// Amount translation interactor
     public let amountTranslationInteractor: AmountTranslationInteractor
-    
+
     public init(priceService: PriceServiceAPI,
                 fiatCurrencyService: FiatCurrencyServiceAPI,
                 cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
@@ -51,7 +51,7 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService
-        
+
         amountTranslationInteractor = AmountTranslationInteractor(
             fiatCurrencyService: fiatCurrencyService,
             cryptoCurrencyService: cryptoCurrencySelectionService,

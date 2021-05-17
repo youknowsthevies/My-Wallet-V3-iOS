@@ -198,7 +198,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         topSelection.map(\.subtitleDescriptor.textColor)
             .drive(topSelectionButtonView.viewModel.subtitleFontColor)
             .disposed(by: disposeBag)
-        
+
         state.map(\.bottomAuxiliaryState)
             .distinctUntilChanged()
             .drive(weak: self) { (self, state) in

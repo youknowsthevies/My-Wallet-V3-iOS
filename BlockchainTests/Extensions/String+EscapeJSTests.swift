@@ -6,11 +6,11 @@ import XCTest
 import ToolKit
 
 class StringEscapeJSTests: XCTestCase {
-    
+
     override func setUp() {
         super.setUp()
     }
-    
+
     override func tearDown() {
         super.tearDown()
     }

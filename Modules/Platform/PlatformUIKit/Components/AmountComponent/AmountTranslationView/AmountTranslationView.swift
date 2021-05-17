@@ -7,40 +7,40 @@ import RxSwift
 import ToolKit
 
 public final class AmountTranslationView: UIView {
-    
+
     // MARK: - Types
-    
+
     private struct AmountLabelConstraints {
         var top: [NSLayoutConstraint]
         var bottom: [NSLayoutConstraint]
-        
+
         init(top: [NSLayoutConstraint], bottom: [NSLayoutConstraint]) {
             self.top = top
             self.bottom = bottom
         }
-        
+
         func activate() {
             top.forEach { $0.priority = .penultimateHigh }
             bottom.forEach { $0.priority = .penultimateLow }
         }
-        
+
         func deactivate() {
             top.forEach { $0.priority = .penultimateLow }
             bottom.forEach { $0.priority = .penultimateHigh }
         }
     }
-    
+
     // MARK: - Properties
-    
+
     private let fiatAmountLabelView = AmountLabelView()
     private let cryptoAmountLabelView = AmountLabelView()
     private let auxiliaryButton = ButtonView()
     private let swapButton = UIButton()
 
     private let presenter: AmountTranslationPresenter
-    
+
     private let disposeBag = DisposeBag()
-        
+
     private var fiatLabelConstraints: AmountLabelConstraints!
     private var cryptoLabelConstraints: AmountLabelConstraints!
 
@@ -52,15 +52,15 @@ public final class AmountTranslationView: UIView {
     public init(presenter: AmountTranslationPresenter) {
         self.presenter = presenter
         super.init(frame: UIScreen.main.bounds)
-                
+
         fiatAmountLabelView.presenter = presenter.fiatPresenter.presenter
         cryptoAmountLabelView.presenter = presenter.cryptoPresenter.presenter
-        
+
         func setupConstraints(for amountLabelView: UIView, isActive: Bool) -> AmountLabelConstraints {
-             
+
             amountLabelView.layoutToSuperview(.centerX)
             amountLabelView.layout(dimension: .height, to: 48)
-            
+
             let topPriority: UILayoutPriority = isActive ? .penultimateHigh : .penultimateLow
             let topLeadingConstraint = amountLabelView.layoutToSuperview(
                 .leading,
@@ -86,7 +86,7 @@ public final class AmountTranslationView: UIView {
                 topTrailingConstraint,
                 topVerticalConstraint
             ]
-            
+
             let bottomPriority: UILayoutPriority = isActive ? .penultimateLow : .penultimateHigh
             let bottomLeadingConstraint = amountLabelView.layoutToSuperview(
                 .leading,
@@ -114,18 +114,18 @@ public final class AmountTranslationView: UIView {
                 bottomTrailingConstraint,
                 bottomVerticalConstraint
             ]
-            
+
             return AmountLabelConstraints(top: top, bottom: bottom)
         }
-        
+
         addSubview(fiatAmountLabelView)
         addSubview(cryptoAmountLabelView)
         addSubview(auxiliaryButton)
         addSubview(swapButton)
-        
+
         fiatLabelConstraints = setupConstraints(for: fiatAmountLabelView, isActive: true)
         cryptoLabelConstraints = setupConstraints(for: cryptoAmountLabelView, isActive: false)
-    
+
         cryptoLabelConstraints.bottom.append(
             swapButton.layout(
                 to: .centerY,
@@ -162,16 +162,16 @@ public final class AmountTranslationView: UIView {
                                  of: swapButton,
                                  relation: .lessThanOrEqual,
                                  offset: 0)
-        
+
         let swapImage = UIImage(named: "vertical-swap-icon", in: bundle, compatibleWith: nil)
         swapButton.setImage(swapImage, for: .normal)
         swapButton.layout(size: .init(edge: 40))
         swapButton.layout(to: .trailing, of: self, offset: -16)
-             
+
         presenter.swapButtonVisibility
             .drive(swapButton.rx.visibility)
             .disposed(by: disposeBag)
-        
+
         swapButton.rx.tap
             .bindAndCatch(to: presenter.swapButtonTapRelay)
             .disposed(by: disposeBag)
@@ -224,7 +224,7 @@ public final class AmountTranslationView: UIView {
             auxiliaryButton.viewModel = nil
             limitButtonVisibility = .hidden
         }
-        
+
         let fiatVisibility: Visibility
         let cryptoVisibility: Visibility
         switch activeAmountInput {
@@ -249,7 +249,7 @@ public final class AmountTranslationView: UIView {
         )
         return state
     }
-    
+
     private func didChangeActiveInput(to newInput: ActiveAmountInput) {
         layoutIfNeeded()
         UIView.animate(

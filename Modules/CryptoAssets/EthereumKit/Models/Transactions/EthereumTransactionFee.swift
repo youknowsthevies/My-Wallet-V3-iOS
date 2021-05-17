@@ -17,13 +17,13 @@ public struct EthereumTransactionFee: TransactionFee, Decodable {
         gasLimitContract: 65_000
     )
     public static let defaultLimits = TransactionFeeLimits(min: 23, max: 23)
-    
+
     public var limits: TransactionFeeLimits
     public var regular: CryptoValue
     public var priority: CryptoValue
     public var gasLimit: Int
     public var gasLimitContract: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case regular
         case priority

@@ -2,21 +2,21 @@
 
 /// The announcement dismissal / approval record
 public struct AnnouncementRecord: Codable {
-    
+
     enum DisplayState {
         case show
         case hide
         case conditional(lastDismissalDate: Date, dismissalsSoFar: Int)
     }
-    
+
     // MARK: - Properties
-    
+
     /// The dismissal state of the record
     let state: State
-    
+
     /// The category of the announcement
     let category: Category
-    
+
     /// Returns the display state: whether the announcement can be displayed, depending on the following factors -
     /// Category, Dismissal Date, Current Date
     var displayState: DisplayState {

@@ -3,19 +3,19 @@
 import RxSwift
 
 public final class SessionTokenService: SessionTokenServiceAPI {
-        
+
     // MARK: - Injected
-    
+
     private let client: SessionTokenClientAPI
     private let repository: SessionTokenRepositoryAPI
-    
+
     // MARK: - Setup
-    
+
     public init(client: SessionTokenClientAPI = SessionTokenClient(), repository: SessionTokenRepositoryAPI) {
         self.client = client
         self.repository = repository
     }
-    
+
     /// Requests a session token for the wallet, if not available already
     /// and assign it to the repository.
     public func setupSessionToken() -> Completable {
