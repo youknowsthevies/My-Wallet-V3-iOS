@@ -48,6 +48,9 @@ class SideMenuViewController: UIViewController {
     
     private let recorder: ErrorRecording = CrashlyticsRecorder()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private var appCoordinator: AppCoordinator {
+        AppCoordinator.shared
+    }
 
     // MARK: - View Controller Lifecycle
 
@@ -55,14 +58,13 @@ class SideMenuViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.NavigationBar.LightContent.background
         tableViewBackgroundView.backgroundColor = UIColor.NavigationBar.LightContent.background
-        AppCoordinator.shared.slidingViewController.delegate = self
         tapToCloseGestureRecognizerTabBar = UITapGestureRecognizer(
-            target: AppCoordinator.shared,
-            action: #selector(AppCoordinator.shared.toggleSideMenu)
+            target: appCoordinator,
+            action: #selector(appCoordinator.toggleSideMenu)
         )
         tapToCloseGestureRecognizerVC = UITapGestureRecognizer(
-            target: AppCoordinator.shared,
-            action: #selector(AppCoordinator.shared.toggleSideMenu)
+            target: appCoordinator,
+            action: #selector(appCoordinator.toggleSideMenu)
         )
         registerCells()
         initializeTableView()
@@ -129,14 +131,14 @@ class SideMenuViewController: UIViewController {
     }
 
     private func addShadow() {
-        guard let view = AppCoordinator.shared.slidingViewController.topViewController.view else { return }
+        guard let view = appCoordinator.slidingViewController?.topViewController.view else { return }
         view.layer.shadowOpacity = 0.3
         view.layer.shadowRadius = 10.0
         view.layer.shadowColor = UIColor.black.cgColor
     }
 
     private func setSideMenuGestures() {
-        guard let tabControllerManager = AppCoordinator.shared.tabControllerManager else { return }
+        guard let tabControllerManager = appCoordinator.tabControllerManager else { return }
         let tabViewController = tabControllerManager.tabViewController
 
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
@@ -146,7 +148,7 @@ class SideMenuViewController: UIViewController {
         }
         
         // Enable Pan gesture and tap gesture to close sideMenu
-        guard let slidingViewController = AppCoordinator.shared.slidingViewController else {
+        guard let slidingViewController = appCoordinator.slidingViewController else {
             return
         }
         
@@ -164,9 +166,9 @@ class SideMenuViewController: UIViewController {
     }
 
     private func resetSideMenuGestures() {
-        guard let tabControllerManager = AppCoordinator.shared.tabControllerManager else { return }
+        guard let tabControllerManager = appCoordinator.tabControllerManager else { return }
         let tabViewController = tabControllerManager.tabViewController
-        guard let slidingViewController = AppCoordinator.shared.slidingViewController else { return }
+        guard let slidingViewController = appCoordinator.slidingViewController else { return }
         if let activeViewController = tabViewController.activeViewController {
             activeViewController.view.removeGestureRecognizer(slidingViewController.panGesture)
             activeViewController.view.removeGestureRecognizer(tapToCloseGestureRecognizerVC)
@@ -205,19 +207,5 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
         let item = sideMenuItems[indexPath.row]
         presenter.onItemSelection(item)
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-}
-
-extension SideMenuViewController: ECSlidingViewControllerDelegate {
-    func slidingViewController(
-        _ slidingViewController: ECSlidingViewController!,
-        animationControllerFor operation: ECSlidingViewControllerOperation,
-        topViewController: UIViewController!
-    ) -> UIViewControllerAnimatedTransitioning? {
-        // SideMenu will slide in
-        if operation == .anchorRight {
-            setSideMenuGestures()
-        }
-        return nil
     }
 }
