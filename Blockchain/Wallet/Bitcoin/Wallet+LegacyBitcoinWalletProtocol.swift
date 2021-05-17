@@ -57,7 +57,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func validateBitcoin(address: String) -> Bool {
@@ -100,7 +100,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             function = "MyWallet.wallet.deleteNote(\"\(transaction.escapedForJS())\")"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(function)
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
@@ -141,7 +141,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void) {
@@ -162,7 +162,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         let address = receiveAddress.escapedForJS()
         
         script = "\(function)(\"\(address)\")"
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -185,7 +185,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -208,6 +208,6 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }

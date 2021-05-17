@@ -323,7 +323,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         
         if authenticated {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
-            _ = deepLinkRouter.routeIfNeeded()
+            deepLinkRouter.routeIfNeeded()
             return true
         }
 

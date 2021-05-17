@@ -378,7 +378,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                     observer(.error(PasswordRepositoryError.syncFailed))
                 }, forJsFunctionName: JSSetter.Password.error as NSString)
                 
-                _ = self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+                self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
             return Disposables.create()
         }
     }
@@ -397,7 +397,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let value = syncPubKeys ? "true" : "false"
             let script = String(format: JSSetter.syncPubKeys, value)
-            _ = jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     
@@ -406,7 +406,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let escaped = language.escapedForJS()
             let script = String(format: JSSetter.language, escaped)
-            _ = jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     
@@ -415,7 +415,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         perform { [weak jsContextProvider] in
             let escaped = payload.escapedForJS()
             let script = String(format: JSSetter.payload, escaped)
-            _ = jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
         }
     }
     

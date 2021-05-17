@@ -29,7 +29,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         let memo: String = memo?.escapedForJS() ?? ""
         let transaction = transaction.escapedForJS()
         let function: String = "MyWalletPhone.saveEtherNote(\"\(transaction)\", \"\(memo)\")"
-        _ = context.evaluateScriptCheckIsOnMainQueue(function)
+        context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
     public func ethereumAccounts(with secondPassword: String?, success: @escaping ([[String: Any]]) -> Void, error: @escaping (String) -> Void) {
@@ -52,7 +52,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
     public func getLabelForEthereumAccount(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
@@ -113,7 +113,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)()"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     public func saveERC20Tokens(with secondPassword: String?,
@@ -140,7 +140,7 @@ extension Wallet: LegacyEthereumWalletAPI {
         } else {
             script = "\(function)(\'\(escapedTokens)\')"
         }
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
     
     @objc public func checkIfEthereumAccountExists() -> Bool {
@@ -164,6 +164,6 @@ extension Wallet: LegacyEthereumWalletAPI {
         let escapedTransactionHash = "'\(transactionHash.escapedForJS())'"
         let function: String = "MyWalletPhone.recordLastTransactionAsync"
         let script = "\(function)(\(escapedTransactionHash))"
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }

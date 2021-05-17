@@ -105,7 +105,7 @@ public class CachedValue<Value> {
     }
     
     private func refresh() {
-        _ = performFetchAndUpdateCache()
+        performFetchAndUpdateCache()
             .subscribe()
             .disposed(by: disposeBag)
     }
@@ -120,6 +120,7 @@ public class CachedValue<Value> {
         return performFetchAndUpdateCache()
     }
     
+    @discardableResult
     private func performFetchAndUpdateCache() -> Single<Value> {
         performFetch()
             .do(onSuccess: { [weak self] value in

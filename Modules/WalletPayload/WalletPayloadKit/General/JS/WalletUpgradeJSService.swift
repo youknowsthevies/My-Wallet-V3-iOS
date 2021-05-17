@@ -74,7 +74,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
                 },
                 forJsFunctionName: JSCallback.V3Payload.didFail.rawValue
             )
-            _ = context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
+            context.evaluateScriptCheckIsOnMainQueue(JSFunction.V3Payload.upgrade(with: walletName))
             return Disposables.create()
         }
         .subscribeOn(MainScheduler.asyncInstance)
@@ -95,7 +95,7 @@ final class WalletUpgradeJSService: WalletUpgradeJSServicing {
                 },
                 forJsFunctionName: JSCallback.V4Payload.didFail.rawValue
             )
-            _ = context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
+            context.evaluateScriptCheckIsOnMainQueue(JSFunction.V4Payload.upgrade.rawValue)
             return Disposables.create()
         }
         .subscribeOn(MainScheduler.asyncInstance)
