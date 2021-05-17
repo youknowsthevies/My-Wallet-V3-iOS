@@ -110,11 +110,12 @@ extension SettingsService {
             .asObservable()
             .publisher
             .mapError { error -> SettingsServiceError in
-                guard case .timedOut = error as? ToolKitError else {
+                switch error {
+                case ToolKitError.timedOut:
+                    return .timedOut
+                default:
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
-                return .timedOut
             }
             .eraseToAnyPublisher()
     }
@@ -123,11 +124,12 @@ extension SettingsService {
         valueObservable
             .publisher
             .mapError { error -> SettingsServiceError in
-                guard case .timedOut = error as? ToolKitError else {
+                switch error {
+                case ToolKitError.timedOut:
+                    return .timedOut
+                default:
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
-                return .timedOut
             }
             .eraseToAnyPublisher()
     }
@@ -137,11 +139,12 @@ extension SettingsService {
             .asObservable()
             .publisher
             .mapError { error -> SettingsServiceError in
-                guard case .timedOut = error as? ToolKitError else {
+                switch error {
+                case ToolKitError.timedOut:
+                    return .timedOut
+                default:
                     return .fetchFailed(error)
                 }
-                fatalError("error: \(error)")
-                return .timedOut
             }
             .eraseToAnyPublisher()
     }
