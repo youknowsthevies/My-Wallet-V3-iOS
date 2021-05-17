@@ -3,7 +3,6 @@
 import AnalyticsKit
 import DIKit
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 
 public protocol CardComponentBuilderAPI: AnyObject {

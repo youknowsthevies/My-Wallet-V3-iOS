@@ -43,9 +43,9 @@ extension AnnouncementRecord.State: Decodable {
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        if let _ = try? container.decode(Base.self, forKey: .valid) {
+        if (try? container.decode(Base.self, forKey: .valid)) != nil {
             self = .valid
-        } else if let _ = try? container.decode(Base.self, forKey: .removed) {
+        } else if (try? container.decode(Base.self, forKey: .removed)) != nil {
             self = .removed
         } else if let date = try? container.decode(Date.self, forKey: .dateOfDismissal),
                   let count = try? container.decode(Int.self, forKey: .numberOfDismissals) {

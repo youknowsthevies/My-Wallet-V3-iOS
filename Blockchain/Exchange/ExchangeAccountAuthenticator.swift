@@ -64,7 +64,8 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
         Observable<Int>.interval(
             3,
             scheduler: MainScheduler.asyncInstance
-        ).flatMap(weak: self, selector: { (self, _) -> Observable<NabuUser> in
+        )
+        .flatMap(weak: self, selector: { (self, _) -> Observable<NabuUser> in
             self.blockchainRepository.fetchNabuUser().asObservable()
         })
     }

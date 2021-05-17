@@ -3,7 +3,6 @@
 import AnalyticsKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
@@ -120,7 +119,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                         // TODO: KYC with checkout data
                     }
                 }
-            case .failure(let error):
+            case .failure:
                 self.handleError()
             }
         }

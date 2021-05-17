@@ -48,7 +48,8 @@ final class MnemonicValidator: MnemonicValidating {
                 /// The total number of duplicates entered
                 let duplicatesCount = duplicates.map { dupe in
                     components.filter { $0 == dupe }.count
-                }.reduce(0, +)
+                }
+                .reduce(0, +)
                 
                 /// Make a set for all the individual entries
                 let set = Set(phrase.components(separatedBy: .whitespacesAndNewlines)).filter { $0.count > 0 && duplicates.contains($0) == false }
@@ -76,7 +77,8 @@ final class MnemonicValidator: MnemonicValidating {
                 /// included in the `WordList`
                 let ranges = difference.map { delta -> [NSRange] in
                     phrase.ranges(of: delta)
-                }.flatMap { $0 }
+                }
+                .flatMap { $0 }
                 
                 return .invalid(ranges)
         }

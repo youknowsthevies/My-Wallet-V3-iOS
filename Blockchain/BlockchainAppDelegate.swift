@@ -241,7 +241,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    var backgroundTaskTimer = BackgroundTaskTimer(invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid))
+    var backgroundTaskTimer = BackgroundTaskTimer(
+        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
+            identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
         DataProvider.default.syncing.sync()
         backgroundTaskTimer.begin(application) { [weak self] in
@@ -312,7 +314,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // Handle "bitcoin://" scheme
-        if let bitcoinUrlPayload = BitcoinURLPayload(url: url) {
+        if BitcoinURLPayload(url: url) != nil {
             ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
             // TODO: Send P3: Handle deeplinks.

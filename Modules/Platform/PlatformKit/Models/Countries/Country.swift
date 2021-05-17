@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// swiftlint:disable file_length
 import Foundation
 
 /// To regenerate this file use:

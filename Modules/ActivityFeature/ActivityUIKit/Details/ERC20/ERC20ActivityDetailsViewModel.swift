@@ -45,6 +45,7 @@ struct ERC20ActivityDetailsViewModel: Equatable {
     init(details: EthereumActivityItemEventDetails, price: FiatValue?) {
         confirmation = Confirmation(
             needConfirmation: details.confirmation.needConfirmation,
+            // swiftlint:disable line_length
             title: "\(details.confirmation.confirmations) \(LocalizedString.of) \(details.confirmation.requiredConfirmations) \(LocalizedString.confirmations)",
             factor: details.confirmation.factor,
             statusBadge: ERC20ActivityDetailsViewModel.statusBadge(for: details.confirmation.status)

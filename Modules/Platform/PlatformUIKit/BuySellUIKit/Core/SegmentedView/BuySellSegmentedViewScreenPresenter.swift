@@ -3,7 +3,6 @@
 import DIKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxRelay
 import RxSwift
 import ToolKit

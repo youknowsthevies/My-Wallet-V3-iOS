@@ -16,12 +16,11 @@ public final class EventCache {
     
     /// Key subscript for an entry
     public subscript(key: Key) -> Bool {
-        set {
-            cacheSuite.set(newValue, forKey: key.rawValue)
-
-        }
         get {
             cacheSuite.bool(forKey: key.rawValue)
+        }
+        set {
+            cacheSuite.set(newValue, forKey: key.rawValue)
         }
     }
         

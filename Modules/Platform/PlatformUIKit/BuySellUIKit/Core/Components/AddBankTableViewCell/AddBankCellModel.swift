@@ -2,7 +2,6 @@
 
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxDataSources
 
 final class AddBankCellModel {

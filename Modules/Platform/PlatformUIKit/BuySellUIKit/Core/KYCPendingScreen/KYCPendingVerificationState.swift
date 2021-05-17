@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import PlatformUIKit
 import ToolKit
 
 enum KYCPendingVerificationState {

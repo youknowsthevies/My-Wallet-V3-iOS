@@ -3,7 +3,6 @@
 import PlatformKit
 import RxSwift
 import ToolKit
-import ToolKit
 
 final class PersonalDetailsCoordinator {
 

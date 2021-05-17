@@ -32,12 +32,12 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
     }
     
     var shouldShow: Bool {
-        guard let _ = introductionEntry.value else { return true }
+        guard introductionEntry.value != nil else { return true }
         return false
     }
     
     init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
-        selection: @escaping WalletIntroductionAction) {
+         selection: @escaping WalletIntroductionAction) {
         self.introductionRecorder = introductionRecorder
         self.selection = selection
     }

@@ -10,7 +10,9 @@ public protocol ERC20API {
     
     func transfer(to: EthereumAddress, amount cryptoValue: ERC20TokenValue<Token>) -> Single<EthereumTransactionCandidate>
     
-    func transfer(to: EthereumAddress, amount cryptoValue: ERC20TokenValue<Token>, fee: EthereumTransactionFee) -> Single<EthereumTransactionCandidate>
+    func transfer(to: EthereumAddress,
+                  amount cryptoValue: ERC20TokenValue<Token>,
+                  fee: EthereumTransactionFee) -> Single<EthereumTransactionCandidate>
     
     func transfer(proposal: ERC20TransactionProposal<Token>, to address: EthereumAddress) -> Single<EthereumTransactionCandidate>
 }

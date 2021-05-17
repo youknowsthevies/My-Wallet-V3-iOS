@@ -122,8 +122,9 @@ extension Wallet: LegacyWalletAPI {
             },
             forJsFunctionName: "objc_on_create_order_payment_error" as NSString
         )
+        // swiftlint:disable line_length
         let script = "MyWalletPhone.tradeExecution.\(tradeExecutionType).createPayment(\(orderTransaction.from), \"\(orderTransaction.to.escapedForJS())\", \(formattedAmount.escapedForJS()), \(formattedFee.escapedForJS()))"
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
     func sendOrderTransaction(
@@ -165,7 +166,7 @@ extension Wallet: LegacyWalletAPI {
         )
         let secondPassword = secondPassword?.escapedForJS() ?? ""
         let script = "MyWalletPhone.tradeExecution.\(tradeExecutionType).send(\"\(secondPassword)\")"
-        _ = context.evaluateScriptCheckIsOnMainQueue(script)
+        context.evaluateScriptCheckIsOnMainQueue(script)
     }
 }
 

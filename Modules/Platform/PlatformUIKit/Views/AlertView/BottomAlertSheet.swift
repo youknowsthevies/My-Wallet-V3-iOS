@@ -143,21 +143,27 @@ public class BottomAlertSheet: UIView {
     }
     
     public func hide() {
-        UIView.animateKeyframes(withDuration: 0.3, delay: 0.0, options: .calculationModeCubic, animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
-                self.alpha = 0.0
-                self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
-                self.dimmingView.alpha = 0.0
-                guard let window = UIApplication.shared.keyWindow else { return }
-                self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
-            })
-        }, completion: { [weak self] _ in
-            guard let self = self else { return }
-            self.dimmingView.removeFromSuperview()
-            self.removeFromSuperview()
-        })
+        UIView.animateKeyframes(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: .calculationModeCubic,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0.2, relativeDuration: 0.1, animations: {
+                    self.alpha = 0.0
+                    self.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.1, relativeDuration: 0.2, animations: {
+                    self.dimmingView.alpha = 0.0
+                    guard let window = UIApplication.shared.keyWindow else { return }
+                    self.frame = self.frame.offsetBy(dx: 0.0, dy: window.bounds.maxY)
+                })
+            },
+            completion: { [weak self] _ in
+                guard let self = self else { return }
+                self.dimmingView.removeFromSuperview()
+                self.removeFromSuperview()
+            }
+        )
     }
     
     public class func titleFont() -> UIFont {
@@ -224,19 +230,25 @@ public class BottomAlertSheet: UIView {
         
         transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
         
-        UIView.animateKeyframes(withDuration: 0.4, delay: 0.0, options: .calculationModeCubic, animations: {
-            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
-                self.dimmingView.alpha = 0.4
-            })
-            UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
-                self.alpha = 1.0
-                self.transform = .identity
-                self.frame.origin = CGPoint(
-                    x: self.frame.origin.x,
-                    y: window.frame.maxY - height - BottomAlertSheet.sheetBottomPadding
-                )
-            })
-        }, completion: nil)
+        UIView.animateKeyframes(
+            withDuration: 0.4,
+            delay: 0.0,
+            options: .calculationModeCubic,
+            animations: {
+                UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1, animations: {
+                    self.dimmingView.alpha = 0.4
+                })
+                UIView.addKeyframe(withRelativeStartTime: 0.3, relativeDuration: 0.2, animations: {
+                    self.alpha = 1.0
+                    self.transform = .identity
+                    self.frame.origin = CGPoint(
+                        x: self.frame.origin.x,
+                        y: window.frame.maxY - height - BottomAlertSheet.sheetBottomPadding
+                    )
+                })
+            },
+            completion: nil
+        )
     }
     
     public override func didMoveToWindow() {
@@ -259,20 +271,24 @@ public class BottomAlertSheet: UIView {
             guard UIScreen.main.bounds.contains(point) == false else { return }
             guard let superview = self.superview else { return }
             guard superview.subviews.contains(self.dimmingView) else { return }
-            UIView.animate(withDuration: 0.5, animations: { [weak self] in
-                guard let self = self else { return }
-                self.alpha = 0.0
-                self.dimmingView.alpha = 0.0
-            }) { [weak self] _ in
-                guard let self = self else { return }
-                guard let observer = self.observer else {
-                    return
+            UIView.animate(
+                withDuration: 0.5,
+                animations: { [weak self] in
+                    guard let self = self else { return }
+                    self.alpha = 0.0
+                    self.dimmingView.alpha = 0.0
+                },
+                completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    guard let observer = self.observer else {
+                        return
+                    }
+                    observer.invalidate()
+                    self.dimmingView.removeFromSuperview()
+                    self.removeFromSuperview()
+                    self.observer = nil
                 }
-                observer.invalidate()
-                self.dimmingView.removeFromSuperview()
-                self.removeFromSuperview()
-                self.observer = nil
-            }
+            )
         }
     }
     

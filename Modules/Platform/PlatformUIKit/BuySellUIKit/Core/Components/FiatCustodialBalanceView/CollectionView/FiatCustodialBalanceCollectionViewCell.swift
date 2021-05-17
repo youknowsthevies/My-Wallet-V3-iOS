@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
 import UIKit
 
 final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
@@ -39,7 +38,9 @@ final class FiatCustodialBalanceCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(custodialBalanceView)
         custodialBalanceView.layoutToSuperview(axis: .vertical)
         custodialBalanceView.layoutToSuperview(axis: .horizontal)
-        custodialBalanceViewWidthConstraint = custodialBalanceView.layout(dimension: .width, to: UIScreen.main.bounds.width, priority: .penultimateHigh)
+        custodialBalanceViewWidthConstraint = custodialBalanceView.layout(dimension: .width,
+                                                                          to: UIScreen.main.bounds.width,
+                                                                          priority: .penultimateHigh)
     }
     
     @available(*, unavailable)

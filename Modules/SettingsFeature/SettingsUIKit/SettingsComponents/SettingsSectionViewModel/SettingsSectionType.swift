@@ -81,7 +81,8 @@ enum SettingsSectionType: Int, Equatable {
         }
 
         /// Any payment method can get under this category
-        enum LinkedPaymentMethodCellType<AddNewCellPresenter: IdentifiableType, LinkedCellPresenter: Equatable & IdentifiableType>: Equatable, IdentifiableType {
+        enum LinkedPaymentMethodCellType<AddNewCellPresenter: IdentifiableType,
+                                         LinkedCellPresenter: Equatable & IdentifiableType>: Equatable, IdentifiableType {
             var identity: AnyHashable {
                 switch self {
                 case .skeleton(let index):

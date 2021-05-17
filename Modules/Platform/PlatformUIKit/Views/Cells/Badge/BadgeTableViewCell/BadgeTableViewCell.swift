@@ -81,13 +81,16 @@ extension Reactive where Base: BadgeTableViewCell {
             case .loading:
                 UIView.animate(withDuration: 0.5, animations: loading)
             case .loaded(next: let value):
-                UIView.animate(withDuration: 0.2,
-                               delay: 0.0,
-                               options: .transitionCrossDissolve,
-                               animations: {
-                    view.badgeView.viewModel = value.viewModel
-                    view.badgeShimmeringView.stop()
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.badgeView.viewModel = value.viewModel
+                        view.badgeShimmeringView.stop()
+                    },
+                    completion: nil
+                )
             }
         }
     }
@@ -103,13 +106,16 @@ extension Reactive where Base: BadgeTableViewCell {
                 UIView.animate(withDuration: 0.5,
                                animations: loading)
             case .loaded(next: let value):
-                UIView.animate(withDuration: 0.2,
-                               delay: 0.0,
-                               options: .transitionCrossDissolve,
-                               animations: {
-                                view.titleLabel.content = value.labelContent
-                                view.titleShimmeringView.stop()
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.2,
+                    delay: 0.0,
+                    options: .transitionCrossDissolve,
+                    animations: {
+                        view.titleLabel.content = value.labelContent
+                        view.titleShimmeringView.stop()
+                    },
+                    completion: nil
+                )
             }
         }
     }

@@ -70,14 +70,16 @@ extension KYCTiersFooterView {
         disclaimerLabel.attributedText = actionableText
     }
 
-    private func actionAttributes() -> [NSAttributedString.Key: Any] {
-        [.font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
-         .foregroundColor: UIColor.brandSecondary]
+    private func actionAttributes() -> [NSAttributedString.Key: Any] {[
+            .font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
+            .foregroundColor: UIColor.brandSecondary
+        ]
     }
 
-    private func defaultAttributes() -> [NSAttributedString.Key: Any] {
-        [.font: KYCTiersFooterView.disclaimerFont(),
-         .foregroundColor: disclaimerLabel.textColor]
+    private func defaultAttributes() -> [NSAttributedString.Key: Any] {[
+            .font: KYCTiersFooterView.disclaimerFont(),
+            .foregroundColor: disclaimerLabel.textColor
+        ]
     }
 }
 

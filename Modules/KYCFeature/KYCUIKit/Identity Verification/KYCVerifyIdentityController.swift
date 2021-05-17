@@ -152,14 +152,16 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
         countrySupportedDescription.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedSubheaderText
     }
 
-    private func actionAttributes() -> [NSAttributedString.Key: Any] {
-        [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-                .foregroundColor: UIColor.brandSecondary]
+    private func actionAttributes() -> [NSAttributedString.Key: Any] {[
+            .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+            .foregroundColor: UIColor.brandSecondary
+        ]
     }
 
-    private func defaultAttributes() -> [NSAttributedString.Key: Any] {
-        [.font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-                .foregroundColor: countrySupportedDescription.textColor]
+    private func defaultAttributes() -> [NSAttributedString.Key: Any] {[
+            .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+            .foregroundColor: countrySupportedDescription.textColor
+        ]
     }
 
     override func viewWillAppear(_ animated: Bool) {

@@ -4,7 +4,6 @@ import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
-import PlatformUIKit
 import ToolKit
 
 final class CardAuthorizationScreenPresenter: RibBridgePresenter {

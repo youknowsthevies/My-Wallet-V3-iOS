@@ -50,19 +50,19 @@ extension Wallet {
         switch cryptoCurrency {
         case .bitcoin:
             isSyncing = true
-            _ = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.setLabelForAccount(\(index), \"\(label)\")")
+            context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.setLabelForAccount(\(index), \"\(label)\")")
             NotificationCenter.default.addObserver(self,
                                                    selector: #selector(didSetLabelForAccount),
                                                    name: Constants.NotificationKeys.backupSuccess,
                                                    object: nil)
         case .bitcoinCash:
-            _ = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.setLabelForAccount(\(index), \"\(label)\")")
+            context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.setLabelForAccount(\(index), \"\(label)\")")
             getHistory()
         case .stellar:
-            _ = context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.xlm.accounts[\(index)].label = \"\(label)\"")
+            context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.xlm.accounts[\(index)].label = \"\(label)\"")
             getHistory()
         case .ethereum:
-            _ = context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.eth.accounts[\(index)].label = \"\(label)\"")
+            context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.eth.accounts[\(index)].label = \"\(label)\"")
             getHistory()
         case .aave,
              .algorand,

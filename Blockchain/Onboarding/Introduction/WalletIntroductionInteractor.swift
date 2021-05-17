@@ -38,9 +38,11 @@ class WalletIntroductionInteractor: WalletIntroductionInteracting {
     
     var isIntroductionComplete: Single<Bool> {
         lastLocation.ifEmpty(default: .starter).flatMap(weak: self, { (self, step) -> Single<Bool> in
-            self.next(step).map { _ -> Bool in
+            self.next(step)
+                .map { _ -> Bool in
                 false
-            }.catchErrorJustReturn(true)
+            }
+            .catchErrorJustReturn(true)
         })
     }
     

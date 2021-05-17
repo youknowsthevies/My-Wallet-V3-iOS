@@ -2,7 +2,6 @@
 
 import Charts
 import PlatformKit
-import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift

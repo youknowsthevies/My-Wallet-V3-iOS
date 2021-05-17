@@ -2,7 +2,6 @@
 
 import Localization
 import PlatformKit
-import PlatformUIKit
 import RxRelay
 import RxSwift
 

@@ -16,7 +16,8 @@ extension ValueCalculationState {
 }
 
 extension ObservableType {
-    public func handle<Value>(loadingViewPresenter: LoadingViewPresenting, text: String? = nil) -> Observable<ValueCalculationState<Value>> where Element == ValueCalculationState<Value> {
+    public func handle<Value>(loadingViewPresenter: LoadingViewPresenting,
+                              text: String? = nil) -> Observable<ValueCalculationState<Value>> where Element == ValueCalculationState<Value> {
         self.do(
             onNext: { state in
                 state.handle(loadingViewPresenter: loadingViewPresenter, text: text)

@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 /// Filter option for simple buy
 public enum SupportedPairsFilterOption {
     

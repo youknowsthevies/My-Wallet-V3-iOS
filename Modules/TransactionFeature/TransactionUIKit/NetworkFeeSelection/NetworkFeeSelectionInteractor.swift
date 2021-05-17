@@ -27,7 +27,9 @@ protocol NetworkFeeSelectionListener: class {
     func dismissNetworkFeeSelectionScreen()
 }
 
-final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelectionPresentable>, NetworkFeeSelectionInteractable, NetworkFeeSelectionPresentableListener {
+final class NetworkFeeSelectionInteractor: PresentableInteractor<NetworkFeeSelectionPresentable>,
+                                           NetworkFeeSelectionInteractable,
+                                           NetworkFeeSelectionPresentableListener {
 
     weak var router: NetworkFeeSelectionRouting?
     weak var listener: NetworkFeeSelectionListener?

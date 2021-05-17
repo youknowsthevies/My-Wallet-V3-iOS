@@ -58,9 +58,9 @@ class WalletOptionsVersionUpdateTests: XCTestCase {
     private func generateUpdateType(from updateTypeRawValue: String, version: String) -> WalletOptions.UpdateType {
         let json = [
             WalletOptions.Keys.ios: [
-                WalletOptions.Keys.update:
-                    [WalletOptions.Keys.updateType: updateTypeRawValue,
-                     WalletOptions.Keys.latestStoreVersion: version
+                WalletOptions.Keys.update: [
+                    WalletOptions.Keys.updateType: updateTypeRawValue,
+                    WalletOptions.Keys.latestStoreVersion: version
                 ]
             ]
         ]

@@ -138,8 +138,8 @@ final class SwapActivityDetailsPresenter: DetailsScreenPresenterAPI {
                  .lineItem(fromPresenter),
                  .separator,
                  .lineItem(toPresenter),
-                 .separator]
-            )
+                 .separator
+            ])
         case false:
             values.append(contentsOf: [
                 .lineItem(toPresenter),

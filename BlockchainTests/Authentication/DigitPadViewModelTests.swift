@@ -74,7 +74,8 @@ class DigitPadViewModelTests: XCTestCase {
         
         viewModel.customButtonTapObservable.bind {
             isTapped = true
-        }.disposed(by: bag)
+        }
+        .disposed(by: bag)
         
         customButtonViewModel.tap()
         XCTAssert(isTapped)

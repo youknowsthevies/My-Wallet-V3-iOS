@@ -254,11 +254,15 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 return Disposables.create()
             }
             
-            wallet.bitcoinWalletIndex(receiveAddress: receiveAddress, success: { walletIndex in
-                observer(.success(walletIndex))
-            }, error: { errorMessage in
-                observer(.error(WalletError.unknown))
-            })
+            wallet.bitcoinWalletIndex(
+                receiveAddress: receiveAddress,
+                success: { walletIndex in
+                    observer(.success(walletIndex))
+                },
+                error: { errorMessage in
+                    observer(.error(WalletError.unknown))
+                }
+            )
             return Disposables.create()
         }
     }

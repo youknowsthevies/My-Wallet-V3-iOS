@@ -2,7 +2,6 @@
 
 import AnalyticsKit
 import BigInt
-import PlatformKit
 
 public struct SellOrderDetails {
     

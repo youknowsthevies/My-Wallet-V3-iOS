@@ -83,7 +83,7 @@ final class TodayViewPresenter {
         case 1:
             return .prices
         default:
-            fatalError()
+            fatalError("Unexpected section")
         }
     }
     

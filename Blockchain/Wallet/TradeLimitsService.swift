@@ -69,7 +69,8 @@ final class TradeLimitsService: TradeLimitsAPI {
                 return self.getTradeLimitsNetwork(withFiatCurrency: currency)
             }
             return Single.just(cachedLimits)
-        }.do(onSuccess: { [weak self] response in
+        }
+        .do(onSuccess: { [weak self] response in
             self?.cachedLimits.accept(response)
         })
     }

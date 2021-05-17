@@ -76,8 +76,9 @@ class ValidationTextField: NibBasedView {
                 ) ?? UIFont.systemFont(ofSize: 16)
             let value = NSAttributedString(
                 string: placeholder,
-                attributes: [NSAttributedString.Key.font: font,
-                             NSAttributedString.Key.foregroundColor: placeholderFillColor
+                attributes: [
+                    NSAttributedString.Key.font: font,
+                    NSAttributedString.Key.foregroundColor: placeholderFillColor
                 ])
             textField.attributedPlaceholder = value
         }
@@ -128,11 +129,11 @@ class ValidationTextField: NibBasedView {
     }
 
     var text: String? {
-        set {
-            textField.text = newValue
-        }
         get {
             textField.text
+        }
+        set {
+            textField.text = newValue
         }
     }
 
@@ -241,9 +242,12 @@ class ValidationTextField: NibBasedView {
         UIView.animate(
             withDuration: 0.2,
             delay: 0.0,
-            options: [.beginFromCurrentState, .curveEaseOut], animations: {
+            options: [.beginFromCurrentState, .curveEaseOut],
+            animations: {
                 self.layoutIfNeeded()
-        }, completion: nil)
+            },
+            completion: nil
+        )
     }
 }
 

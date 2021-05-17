@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
-
 public struct LinkedBankResponse: Decodable {
     struct Details: Decodable {
         enum AccountType: String, Decodable {

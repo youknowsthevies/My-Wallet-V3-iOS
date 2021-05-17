@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
-
 extension Accessibility.Identifier {
 
     enum SimpleBuy {

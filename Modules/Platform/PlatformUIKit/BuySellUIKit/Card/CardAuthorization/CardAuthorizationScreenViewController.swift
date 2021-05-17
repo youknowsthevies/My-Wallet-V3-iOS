@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformUIKit
 import WebKit
 
 final class CardAuthorizationScreenViewController: BaseScreenViewController {
@@ -8,6 +7,7 @@ final class CardAuthorizationScreenViewController: BaseScreenViewController {
     // MARK: - UI Properties
     
     private lazy var webView: WKWebView = {
+        // swiftlint:disable line_length
         let script = "var meta = document.createElement('meta'); meta.setAttribute('name', 'viewport'); meta.setAttribute('content', 'width=device-width'); document.getElementsByTagName('head')[0].appendChild(meta);"
         let userScript = WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: true)
         let userContentController = WKUserContentController()

@@ -2,7 +2,6 @@
 
 import DIKit
 import PlatformKit
-import PlatformUIKit
 import RxSwift
 
 public final class FiatCurrencySelectionProvider: FiatCurrencySelectionProviderAPI {

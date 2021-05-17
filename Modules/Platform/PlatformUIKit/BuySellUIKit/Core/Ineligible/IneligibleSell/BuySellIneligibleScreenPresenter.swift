@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
-import PlatformUIKit
 import RxCocoa
 import RxSwift
 

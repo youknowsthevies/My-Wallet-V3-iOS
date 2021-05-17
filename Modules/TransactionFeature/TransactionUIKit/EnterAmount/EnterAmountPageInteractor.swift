@@ -400,7 +400,7 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 extension TransactionErrorState {
     private typealias LocalizedString = LocalizationConstants.Transaction
     func toAmountInteractorState(min: MoneyValue,
-                                 max:  MoneyValue,
+                                 max: MoneyValue,
                                  exchangeRate: MoneyValuePair?,
                                  activeInput: ActiveAmountInput,
                                  stateAmount:  MoneyValue,

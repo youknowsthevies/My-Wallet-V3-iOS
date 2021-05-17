@@ -62,7 +62,9 @@ extension ObservableType {
     - returns: Observable sequence that will be automatically repeat if error occurred
     */
 
-    public func retry(_ behavior: RepeatBehavior, scheduler: SchedulerType = MainScheduler.instance, shouldRetry: RetryPredicate? = nil) -> Observable<Element> {
+    public func retry(_ behavior: RepeatBehavior,
+                      scheduler: SchedulerType = MainScheduler.instance,
+                      shouldRetry: RetryPredicate? = nil) -> Observable<Element> {
         retry(1, behavior: behavior, scheduler: scheduler, shouldRetry: shouldRetry)
     }
 
@@ -75,7 +77,10 @@ extension ObservableType {
     - returns: Observable sequence that will be automatically repeat if error occurred
     */
 
-    internal func retry(_ currentAttempt: UInt, behavior: RepeatBehavior, scheduler: SchedulerType = MainScheduler.instance, shouldRetry: RetryPredicate? = nil)
+    internal func retry(_ currentAttempt: UInt,
+                        behavior: RepeatBehavior,
+                        scheduler: SchedulerType = MainScheduler.instance,
+                        shouldRetry: RetryPredicate? = nil)
         -> Observable<Element> {
             guard currentAttempt > 0 else { return Observable.empty() }
 

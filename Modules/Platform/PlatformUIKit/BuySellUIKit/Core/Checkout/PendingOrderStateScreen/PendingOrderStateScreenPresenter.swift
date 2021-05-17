@@ -152,6 +152,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         let suffix = interactor.isBuy ? LocalizedString.Success.Buy.titleSuffix : LocalizedString.Success.Sell.titleSuffix
         let name = interactor.isBuy ? currencyType.name : LocalizedString.Success.Sell.cash
         let buySubtitle = String(format: "\(LocalizedString.Success.Subtitle.Buy.subtitle)", interactor.inputCurrencyType.displayCode)
+        // swiftlint:disable line_length
         let subtitle = interactor.isBuy ? buySubtitle : "\(LocalizedString.Success.Subtitle.prefix) \(name) \(LocalizedString.Success.Subtitle.suffix)"
         var interactibleText: String?
         var url: String?

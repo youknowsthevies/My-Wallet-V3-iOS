@@ -12,7 +12,8 @@ protocol NetworkFeeSelectionViewControllable: ViewControllable {
     func connect(state: Driver<NetworkFeeSelectionPresenter.State>) -> Driver<NetworkFeeSelectionEffects>
 }
 
-final class NetworkFeeSelectionRouter: ViewableRouter<NetworkFeeSelectionInteractable, NetworkFeeSelectionViewControllable>, NetworkFeeSelectionRouting {
+final class NetworkFeeSelectionRouter: ViewableRouter<NetworkFeeSelectionInteractable,
+                                                      NetworkFeeSelectionViewControllable>, NetworkFeeSelectionRouting {
 
     // TODO: Constructor inject child builder protocols to allow building children.
     override init(interactor: NetworkFeeSelectionInteractable, viewController: NetworkFeeSelectionViewControllable) {
