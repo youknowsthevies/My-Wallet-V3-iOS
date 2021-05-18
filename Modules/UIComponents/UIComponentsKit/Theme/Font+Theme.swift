@@ -10,7 +10,7 @@ public enum FontWeight {
 }
 
 extension Font {
-    
+
     init(weight: FontWeight, size: CGFloat) {
         self.init(UIFont.main(weight, size))
     }
@@ -45,14 +45,14 @@ extension UIFont {
 }
 
 extension UIFont {
-    
+
     static func loadCustomFonts() {
         registerFont(fileName: "\(InterType.regular.rawValue).ttf")
         registerFont(fileName: "\(InterType.medium.rawValue).ttf")
         registerFont(fileName: "\(InterType.semibold.rawValue).ttf")
         registerFont(fileName: "\(InterType.bold.rawValue).ttf")
     }
-    
+
     static func registerFont(fileName: String, bundle: Bundle = Bundle.current) {
         let pathForResourceString = bundle.path(forResource: fileName, ofType: nil)
         if let fontData = NSData(contentsOfFile: pathForResourceString!), let dataProvider = CGDataProvider.init(data: fontData) {

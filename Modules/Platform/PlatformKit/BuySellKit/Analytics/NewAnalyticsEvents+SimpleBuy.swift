@@ -5,20 +5,20 @@ import Foundation
 
 extension AnalyticsEvents {
     public enum New {
-        
+
         public enum SimpleBuy: AnalyticsEvent {
-            
+
             public var type: AnalyticsEventType {
                 .new
             }
-            
+
             case buyAmountEntered(inputAmount: Double, inputCurrency: String, outputAmount: Double, outputCurrency: String)
             case buyPaymentMethodSelected(paymentType: PaymentType)
             case buySellClicked(type: BuySellType, origin: BuySellOrigin)
             case buySellViewed(type: BuySellType)
             case swapClicked
             case swapViewed
-            
+
             public var name: String {
                 switch self {
                 case .buyAmountEntered:
@@ -35,7 +35,7 @@ extension AnalyticsEvents {
                     return "Swap Viewed"
                 }
             }
-            
+
             public var params: [String : Any]? {
                 switch self {
                 case let .buyAmountEntered(inputAmount, inputCurrency, outputAmount, outputCurrency):
@@ -74,13 +74,13 @@ extension AnalyticsEvents {
                 }
             }
         }
-        
+
         public enum PaymentType: String {
             case bankAccount = "BANK_ACCOUNT"
             case bankTransfer = "BANK_TRANSFER"
             case funds = "FUNDS"
             case paymentCard = "PAYMENT_CARD"
-            
+
             public init(paymentMethod: PaymentMethod) {
                 switch paymentMethod.type {
                 case .card:
@@ -94,12 +94,12 @@ extension AnalyticsEvents {
                 }
             }
         }
-        
+
         public enum BuySellType: String {
             case buy = "BUY"
             case sell = "SELL"
         }
-        
+
         public enum BuySellOrigin: String {
             case buyWidget = "BUY_WIDGET"
             case dashboardPromo = "DASHBOARD_PROMO"

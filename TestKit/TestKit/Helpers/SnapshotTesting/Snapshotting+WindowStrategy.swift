@@ -6,7 +6,7 @@ import UIKit
 import XCTest
 
 extension XCTestCase {
-    
+
     func assert<Content: View>(
         _ view: Content,
         on config: ViewImageConfig,
@@ -31,11 +31,11 @@ extension XCTestCase {
 }
 
 extension Snapshotting where Value: UIViewController, Format == UIImage {
-    
+
     static var windowedImage: Snapshotting {
         windowedImage(on: nil)
     }
-    
+
     /// Snapshots a `ViewController` by embedding it within a `UIWindow`. Animations are disabled while snapshotting.
     /// - Parameters:
     ///   - config: You can specify a config matching a specific device. E.g. `.iPhoneSE`.
@@ -54,8 +54,8 @@ extension Snapshotting where Value: UIViewController, Format == UIImage {
                 DispatchQueue.main.async {
                     let format = UIGraphicsImageRendererFormat()
                     format.scale = scale
-                    
-                    let image = UIGraphicsImageRenderer(bounds: window.bounds, format: format).image { ctx in
+
+                    let image = UIGraphicsImageRenderer(bounds: window.bounds, format: format).image { _ in
                         window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
                     }
                     callback(image)
@@ -67,11 +67,11 @@ extension Snapshotting where Value: UIViewController, Format == UIImage {
 }
 
 extension Snapshotting where Value: View, Format == UIImage {
-    
+
     static var windowedImage: Snapshotting {
         windowedImage(on: nil)
     }
-    
+
     /// Snapshots a `SwiftUI.View`
     /// - Parameters:
     ///   - config: You can specify a config matching a specific device. E.g. `.iPhoneSE`.
@@ -88,7 +88,7 @@ extension Snapshotting where Value: View, Format == UIImage {
             UIHostingController(rootView: view)
         }
     }
-    
+
     /// Snapshots a `SwiftUI.View` by embedding it within a `UIWindow`. Animations are disabled while snapshotting.
     /// - Parameters:
     ///   - config: You can specify a config matching a specific device. E.g. `.iPhoneSE`.

@@ -27,7 +27,7 @@ extension EnterAmountScreenPresenter {
             public let confirmFailure: AnalyticsEvent
             public let confirmTapped: (CurrencyType, MoneyValue, CryptoCurrency, CryptoValue, [String: String]) -> [AnalyticsEvent]
             public let sourceAccountChanged: (String) -> AnalyticsEvent
-            
+
             public init(didAppear: [AnalyticsEvent],
                         confirmSuccess: AnalyticsEvent,
                         confirmFailure: AnalyticsEvent,

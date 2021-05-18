@@ -17,7 +17,7 @@ public extension AnalyticsEvent {
     var timestamp: Date? {
         nil
     }
-    
+
     var params: [String: Any]? {
         nil
     }

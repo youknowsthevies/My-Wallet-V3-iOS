@@ -29,7 +29,7 @@ final class AnalyticsServiceMock: AnalyticsEventRecorderAPI {
     func record(events: [AnalyticsEvent]) {
         // NOOP
     }
-    
+
     let recordRelay = PublishRelay<AnalyticsEvent>()
 
     func record(event: AnalyticsEvent) {

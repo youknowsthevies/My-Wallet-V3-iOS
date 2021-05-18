@@ -28,7 +28,7 @@ final class AnnouncementPresenter {
     private let interactor: AnnouncementInteracting
     private let webViewServiceAPI: WebViewServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
-    
+
     // MARK: - Rx
 
     /// Returns a driver with `.none` as default value for announcement action
@@ -74,7 +74,7 @@ final class AnnouncementPresenter {
         self.featureFetcher = featureFetcher
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
-        
+
         announcement
             .asObservable()
             .filter { $0.isHide }

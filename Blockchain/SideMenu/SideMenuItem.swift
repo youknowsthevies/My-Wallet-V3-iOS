@@ -24,7 +24,7 @@ enum SideMenuItem {
 }
 
 extension SideMenuItem {
-    
+
     var analyticsEvents: [AnalyticsEvent] {
         switch self {
         case .accountsAndAddresses:
