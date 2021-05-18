@@ -1,22 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct LinkedBankResponse: Decodable {
-    struct Details: Decodable {
-        enum AccountType: String, Decodable {
-            case savings = "SAVINGS"
-            case checking = "CHECKING"
-        }
-        let bankAccountType: AccountType
-        let bankName: String
-        let accountName: String
-        let accountNumber: String
-        let routingNumber: String
+    enum AccountType: String, Decodable {
+        case savings = "SAVINGS"
+        case checking = "CHECKING"
     }
+    
     let id: String
     let currency: String
     let partner: String
+    let bankAccountType: AccountType?
+    let name: String
+    let accountName: String?
+    let accountNumber: String?
+    let routingNumber: String?
+    let isBankAccount: Bool
+    let isBankTransferAccount: Bool
     let state: State
-    let details: Details?
+    let attributes: Attributes?
     let error: Error?
 
     enum CodingKeys: CodingKey {
@@ -26,6 +27,14 @@ public struct LinkedBankResponse: Decodable {
         case state
         case details
         case error
+        case isBankAccount
+        case isBankTransferAccount
+        case attributes
+        case bankAccountType
+        case name
+        case accountName
+        case accountNumber
+        case routingNumber
     }
 
     public init(from decoder: Decoder) throws {
@@ -34,8 +43,28 @@ public struct LinkedBankResponse: Decodable {
         currency = try container.decode(String.self, forKey: .currency)
         partner = try container.decode(String.self, forKey: .partner)
         state = try container.decode(State.self, forKey: .state)
-        details = try? container.decodeIfPresent(Details.self, forKey: .details)
+        isBankAccount = try container.decode(Bool.self, forKey: .isBankAccount)
+        isBankTransferAccount = try container.decode(Bool.self, forKey: .isBankTransferAccount)
+        name = try container.decode(String.self, forKey: .name)
+        attributes = try? container.decodeIfPresent(Attributes.self, forKey: .attributes)
         error = try container.decodeIfPresent(Error.self, forKey: .error)
+        bankAccountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
+        accountName = try container.decodeIfPresent(String.self, forKey: .accountName)
+        accountNumber = try container.decodeIfPresent(String.self, forKey: .accountNumber)
+        routingNumber = try container.decodeIfPresent(String.self, forKey: .routingNumber)
+    }
+}
+
+extension LinkedBankResponse {
+    struct Attributes: Decodable {
+        let entity: String
+        let media: [Media]
+        let status: String
+        let authorisationUrl: URL
+        struct Media: Decodable {
+            let source: String
+            let type: String
+        }
     }
 }
 

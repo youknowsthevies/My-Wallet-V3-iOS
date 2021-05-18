@@ -53,9 +53,10 @@ final class APIClient: SimpleBuyClientAPI {
         static let eligible = [ "simple-buy", "eligible" ]
         static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
         static let withdrawal = [ "payments", "withdrawals" ]
-        static let linkedBanks = [ "payments", "banktransfer" ]
+        static let bankTransfer = [ "payments", "banktransfer" ]
+        static let linkedBanks = [ "payments", "banking-info" ]
         static func updateLinkedBank(id: String) -> [String] {
-            linkedBanks + [id, "update"]
+            bankTransfer + [id, "update"]
         }
     }
 
@@ -446,7 +447,7 @@ final class APIClient: SimpleBuyClientAPI {
 
     func deleteLinkedBank(for id: String) -> Completable {
         let request = requestBuilder.delete(
-            path: Path.linkedBanks + [id],
+            path: Path.bankTransfer + [id],
             authenticated: true
         )!
         return networkAdapter
@@ -462,7 +463,7 @@ final class APIClient: SimpleBuyClientAPI {
         }
         let payload = Payload(currency: currency.code)
         let request = requestBuilder.post(
-            path: Path.linkedBanks,
+            path: Path.bankTransfer,
             body: try? payload.encode(),
             authenticated: true
         )!

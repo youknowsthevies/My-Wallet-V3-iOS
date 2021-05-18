@@ -13,14 +13,17 @@ public struct LinkedBankData {
         public let bankName: String
         public let number: String
 
-        init?(details: LinkedBankResponse.Details?) {
-            guard let details = details else {
+        init?(response: LinkedBankResponse) {
+            guard
+                let accountType = response.bankAccountType,
+                let accountName = response.accountName,
+                let accountNumber = response.accountNumber else {
                 return nil
             }
-            name = details.accountName
-            type = AccountType(from: details.bankAccountType)
-            bankName = details.bankName
-            number = details.accountNumber.replacingOccurrences(of: "x", with: "")
+            name = accountName
+            type = AccountType(from: accountType)
+            bankName = response.name
+            number = accountNumber.replacingOccurrences(of: "x", with: "")
         }
     }
     public enum LinkageError {
@@ -35,6 +38,7 @@ public struct LinkedBankData {
     public let account: Account?
     let state: LinkedBankResponse.State
     public let error: LinkageError?
+    public let paymentMethodType: PaymentMethodPayloadType
 
     public var topLimit: FiatValue
 
@@ -44,9 +48,10 @@ public struct LinkedBankData {
 
     init?(response: LinkedBankResponse) {
         identifier = response.id
-        account = Account(details: response.details)
+        account = Account(response: response)
         state = response.state
         error = LinkageError(from: response.error)
+        paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }
@@ -65,7 +70,7 @@ extension LinkedBankData.Account.AccountType {
         }
     }
 
-    init(from type: LinkedBankResponse.Details.AccountType) {
+    init(from type: LinkedBankResponse.AccountType) {
         switch type {
         case .savings:
             self = .savings
