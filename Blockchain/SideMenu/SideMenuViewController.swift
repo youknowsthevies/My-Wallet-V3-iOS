@@ -117,7 +117,7 @@ class SideMenuViewController: UIViewController {
     // MARK: - Private Methods
 
     private func didTapItem(_ item: SideMenuItem) {
-        analyticsRecorder.record(event: item.analyticsEvent)
+        analyticsRecorder.record(events: item.analyticsEvents)
         delegate?.sideMenuViewController(self, didTapOn: item)
     }
 

@@ -16,16 +16,16 @@ class APIClient: EventSendingAPI {
 
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
-    private let nabuTokenStore: NabuTokenStore
+    private let tokenProvider: TokenProviding
 
     // MARK: - Setup
 
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
-         nabuTokenStore: NabuTokenStore = resolve()) {
+         tokenProvider: TokenProviding = resolve()) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
-        self.nabuTokenStore = nabuTokenStore
+        self.tokenProvider = tokenProvider
     }
 
     func publish(events: EventsWrapper) -> AnyPublisher<Void, NetworkError> {
@@ -34,10 +34,10 @@ class APIClient: EventSendingAPI {
         guard let body = try? jsonEncoder.encode(events) else {
             fatalError("Error encoding analytics event body.")
         }
-        return nabuTokenStore.sessionTokenDataPublisher
-            .compactMap { [requestBuilder] token in
+        return tokenProvider.token
+            .compactMap { [requestBuilder] in
                 var headers = HTTPHeaders()
-                if let token = token {
+                if let token = $0 {
                     headers[HttpHeaderField.authorization] = "Bearer \(token)"
                 }
                 return requestBuilder.post(path: Path.transactions, body: body, headers: headers)

@@ -37,6 +37,7 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
     // MARK: - Types
 
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
+    private typealias NewAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.AddPaymentMethodSelectionScreen
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.PaymentMethodsScreen
 
@@ -173,7 +174,10 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                         event = .newCard
                     }
                     self.eventRecorder.record(
-                        event: AnalyticsEvent.sbPaymentMethodSelected(selection: event)
+                        events: [
+                            AnalyticsEvent.sbPaymentMethodSelected(selection: event),
+                            NewAnalyticsEvent.buyPaymentMethodSelected(paymentType: AnalyticsEvents.New.PaymentType(paymentMethod: method))
+                        ]
                     )
                 }
                 .map { _ in (method, paymentMethodType) }

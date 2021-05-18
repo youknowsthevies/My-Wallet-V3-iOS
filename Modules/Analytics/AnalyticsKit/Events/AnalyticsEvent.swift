@@ -5,7 +5,7 @@ import Foundation
 public protocol AnalyticsEvent {
     var timestamp: Date? { get }
     var name: String { get }
-    var params: [String: String]? { get }
+    var params: [String: Any]? { get }
     var type: AnalyticsEventType { get }
 }
 
@@ -18,7 +18,7 @@ public extension AnalyticsEvent {
         nil
     }
 
-    var params: [String: String]? {
+    var params: [String: Any]? {
         nil
     }
 }

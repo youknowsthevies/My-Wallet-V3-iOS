@@ -1,13 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import KYCKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
-
-// TODO: Tests - Create a protocol for tests, and inject protocol dependencies.
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.
@@ -28,6 +27,7 @@ final class AnnouncementPresenter {
     private let topMostViewControllerProvider: TopMostViewControllerProviding
     private let interactor: AnnouncementInteracting
     private let webViewServiceAPI: WebViewServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Rx
 
@@ -58,7 +58,8 @@ final class AnnouncementPresenter {
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
          kycSettings: KYCSettingsAPI = DIKit.resolve(),
          webViewServiceAPI: WebViewServiceAPI = DIKit.resolve(),
-         wallet: Wallet = WalletManager.shared.wallet) {
+         wallet: Wallet = WalletManager.shared.wallet,
+         analyticsRecorder: AnalyticsEventRecorderAPI = DIKit.resolve()) {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
@@ -72,6 +73,7 @@ final class AnnouncementPresenter {
         self.kycSettings = kycSettings
         self.featureFetcher = featureFetcher
         self.wallet = wallet
+        self.analyticsRecorder = analyticsRecorder
 
         announcement
             .asObservable()
@@ -209,9 +211,8 @@ extension AnnouncementPresenter {
         SimpleBuyPendingTransactionAnnouncement(
             order: order,
             action: { [weak self] in
-                guard let self = self else { return }
-                self.hideAnnouncement()
-                self.appCoordinator.handleBuyCrypto()
+                self?.hideAnnouncement()
+                self?.handleBuyCrypto()
             }
         )
     }
@@ -225,7 +226,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.handleBuyCrypto()
+                self.handleBuyCrypto()
             }
         )
     }
@@ -331,8 +332,8 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto(currency: .aave)
+            action: { [weak self] in
+                self?.handleBuyCrypto(currency: .aave)
             }
         )
     }
@@ -403,8 +404,8 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: { [weak appCoordinator] in
-                appCoordinator?.handleBuyCrypto(currency: .bitcoin)
+            action: { [weak self] in
+                self?.handleBuyCrypto(currency: .bitcoin)
             }
         )
     }
@@ -418,8 +419,9 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: { [weak appCoordinator] in
-                appCoordinator?.switchTabToSwap()
+            action: { [weak self] in
+                self?.appCoordinator.switchTabToSwap()
+                self?.analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.swapClicked(origin: .dashboardPromo))
             }
         )
     }
@@ -469,6 +471,15 @@ extension AnnouncementPresenter {
                                      tier: tier,
                                      parentFlow: .none)
             }
+        )
+    }
+}
+
+private extension AnnouncementPresenter {
+    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
+        appCoordinator.handleBuyCrypto(currency: currency)
+        analyticsRecorder.record(
+            event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)
         )
     }
 }

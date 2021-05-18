@@ -43,7 +43,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Properties
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
-   override var selectedCurrencyType: Observable<CurrencyType> {
+    override var selectedCurrencyType: Observable<CurrencyType> {
         cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency.currency }.asObservable()
     }
 
@@ -194,10 +194,10 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                         cryptoCurrencySelectionService.cryptoCurrency
                     )
                     .flatMap(weak: self) { (self, values) -> Single<AmountTranslationInteractor.State> in
-                        let activeInput = values.0
-                        let currency = values.1
+                        let (activeInput, currency) = values
                         switch state {
-                        case .tooHigh(max: let fiatValue), .tooLow(min: let fiatValue):
+                        case .tooHigh(max: let fiatValue),
+                             .tooLow(min: let fiatValue):
                             return self.priceService
                                 .moneyValuePair(
                                     base: fiatValue,

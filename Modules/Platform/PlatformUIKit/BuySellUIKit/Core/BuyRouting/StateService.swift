@@ -617,7 +617,7 @@ extension StateService {
             case (.card, _):
                 state = .authorizeCard(order: checkoutData.order)
             }
-            
+
             let states = self.states(byAppending: state)
             self.apply(action: .next(to: state), states: states)
         }

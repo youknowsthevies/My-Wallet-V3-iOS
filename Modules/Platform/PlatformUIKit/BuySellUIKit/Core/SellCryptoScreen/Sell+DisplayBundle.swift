@@ -11,6 +11,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
 
         typealias LocalizedString = LocalizationConstants.SimpleBuy.SellCryptoScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
+        typealias NewAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.SellScreen
 
         return EnterAmountScreenPresenter.DisplayBundle(
@@ -23,17 +24,18 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                 digitPadTopSeparator: .lightBorder,
                 bottomAuxiliaryItemSeparator: .clear
             ),
-            // TODO: Daniel - Events
             events: Events(
-                didAppear: AnalyticsEvent.sbBuyFormShown,
+                didAppear: [AnalyticsEvent.sbBuyFormShown, NewAnalyticsEvent.buySellViewed(type: .sell)],
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
-                confirmTapped: { (currencyType, amount, additionalParameters) in
-                    AnalyticsEvent.sbBuyFormConfirmClick(
-                        currencyCode: currencyType.code,
-                        amount: amount.toDisplayString(includeSymbol: true),
-                        additionalParameters: additionalParameters
-                    )
+                confirmTapped: { (currencyType, amount, _, _, additionalParameters) in
+                    [
+                        AnalyticsEvent.sbBuyFormConfirmClick(
+                            currencyCode: currencyType.code,
+                            amount: amount.toDisplayString(includeSymbol: true),
+                            additionalParameters: additionalParameters
+                        )
+                    ]
                 },
                 sourceAccountChanged: { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
             ),

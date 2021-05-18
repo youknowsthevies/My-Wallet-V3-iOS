@@ -11,6 +11,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
 
         typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen
         typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
+        typealias NewAnalyticsEvent = AnalyticsEvents.New.SimpleBuy
         typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.BuyScreen
 
         return EnterAmountScreenPresenter.DisplayBundle(
@@ -24,15 +25,23 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                 bottomAuxiliaryItemSeparator: .lightBorder
             ),
             events: Events(
-                didAppear: AnalyticsEvent.sbBuyFormShown,
+                didAppear: [AnalyticsEvent.sbBuyFormShown, NewAnalyticsEvent.buySellViewed(type: .buy)],
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
-                confirmTapped: { (currencyType, amount, additionalParameters) in
-                    AnalyticsEvent.sbBuyFormConfirmClick(
-                        currencyCode: currencyType.code,
-                        amount: amount.toDisplayString(includeSymbol: true),
-                        additionalParameters: additionalParameters
-                    )
+                confirmTapped: { (currencyType, amount, cryptoType, cryptoAmount, additionalParameters) in
+                    [
+                        AnalyticsEvent.sbBuyFormConfirmClick(
+                            currencyCode: currencyType.code,
+                            amount: amount.toDisplayString(includeSymbol: true),
+                            additionalParameters: additionalParameters
+                        ),
+                        NewAnalyticsEvent.buyAmountEntered(
+                            inputAmount: amount.displayMajorValue.doubleValue,
+                            inputCurrency: currencyType.code,
+                            outputAmount: cryptoAmount.displayMajorValue.doubleValue,
+                            outputCurrency: cryptoType.code
+                        )
+                    ]
                 },
                 sourceAccountChanged: { AnalyticsEvent.sbBuyFormCryptoChanged(asset: $0) }
             ),
