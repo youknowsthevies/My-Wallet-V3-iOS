@@ -275,7 +275,9 @@ public class TextFieldView: UIView {
 extension TextFieldView: UITextFieldDelegate {
     
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        viewModel.textFieldShouldBeginEditing()
+        DispatchQueue.main.async {
+            viewModel.textFieldShouldBeginEditing()
+        }
     }
     
     public func textField(_ textField: UITextField,
@@ -295,11 +297,15 @@ extension TextFieldView: UITextFieldDelegate {
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        viewModel.textFieldShouldReturn()
+        DispatchQueue.main.async {
+            viewModel.textFieldShouldReturn()
+        }
     }
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        viewModel.textFieldDidEndEditing()
+        DispatchQueue.main.async {
+            viewModel.textFieldDidEndEditing()
+        }
     }
 }
 
