@@ -421,7 +421,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     func startSimpleBuyAtLogin() {
         let stateService = PlatformUIKit.StateService()
-        guard !stateService.cache[.hasShownIntroScreen] else {
+        guard !stateService.cache.value[.hasShownIntroScreen] else {
             return
         }
 

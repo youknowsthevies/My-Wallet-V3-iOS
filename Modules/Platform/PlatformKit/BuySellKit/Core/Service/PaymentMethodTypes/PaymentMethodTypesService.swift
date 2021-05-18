@@ -125,7 +125,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 } else {
                     // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
                     // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
-                    return self.methodTypes.take(1)
+                    return self.methodTypes
                         .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
                             // we filter valid methods for buy
                             types.filterValidForBuy(

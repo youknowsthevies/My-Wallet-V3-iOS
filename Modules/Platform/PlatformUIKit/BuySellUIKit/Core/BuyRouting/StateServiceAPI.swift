@@ -3,6 +3,7 @@
 import PlatformKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 /// A passive state receiver API for Simple-Buy flow.
 public protocol StateReceiverServiceAPI: class {
@@ -59,7 +60,7 @@ public protocol CurrencySelectionServiceAPI {
 }
 
 public protocol StateCacheProviderAPI: class {
-    var cache: EventCache { get }
+    var cache: Atomic<EventCache> { get }
 }
 
 public protocol PendingOrderCompletionStateServiceAPI: class {

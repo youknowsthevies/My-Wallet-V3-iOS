@@ -17,6 +17,7 @@ final class KYCPendingInteractor: Interactor {
 
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTierUpdatePollingServiceAPI
+    private let eligiblePaymentMethodsService: PaymentMethodsServiceAPI
     private let disposeBag = DisposeBag()
 
     private let verificationStateRelay = BehaviorRelay<KYCPendingVerificationState>(value: .loading)
@@ -24,9 +25,11 @@ final class KYCPendingInteractor: Interactor {
     // MARK: - Setup
 
     init(kycTiersService: KYCTierUpdatePollingServiceAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve()) {
+         eligibilityService: EligibilityServiceAPI = resolve(),
+         eligiblePaymentMethodsService: PaymentMethodsServiceAPI = resolve()) {
         self.kycTiersService = kycTiersService
         self.eligibilityService = eligibilityService
+        self.eligiblePaymentMethodsService = eligiblePaymentMethodsService
     }
 
     func startPollingForGoldTier() {
@@ -40,9 +43,15 @@ final class KYCPendingInteractor: Interactor {
                 return self.eligibilityService.fetch()
                     .map { $0 ? .completed : .ineligible }
             }
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(
-                onSuccess: { [weak verificationStateRelay] newState in
-                    verificationStateRelay?.accept(newState)
+                onSuccess: { [weak self] newState in
+                    self?.verificationStateRelay.accept(newState)
+                    // ugly, I know, but we need to refresh the eligible payment methods
+                    // once we have a verification state other than loading
+                    if newState != .loading {
+                        self?.eligiblePaymentMethodsService.refresh()
+                    }
                 },
                 onError: { [weak verificationStateRelay] _ in
                     verificationStateRelay?.accept(.pending)
