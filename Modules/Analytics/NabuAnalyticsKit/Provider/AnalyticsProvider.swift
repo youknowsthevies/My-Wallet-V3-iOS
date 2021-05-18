@@ -6,9 +6,14 @@ import DIKit
 import Foundation
 
 public class AnalyticsProvider: AnalyticsServiceProviding {
+    
+    private enum Constant {
+        static let retryCount = 3
+    }
+    
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
-
-    @LazyInject private var nabuAnalyticsClient: EventSendingAPI
+    
+    @LazyInject private var nabuAnalyticsService: AnalyticsEventServiceAPI
     @LazyInject private var contextProvider: ContextProviding
 
     private var cancellables = Set<AnyCancellable>()
@@ -19,15 +24,11 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
         let event = Event(title: title, properties: parameters)
         // TODO: IOS-4556 - batching
         let eventsWrapper = EventsWrapper(contextProvider: contextProvider, events: [event])
-        nabuAnalyticsClient.publish(events: eventsWrapper)
+        nabuAnalyticsService.publish(events: eventsWrapper)
             .retry(Constant.retryCount)
             .sink() { (error) in
                 print(error) // TODO: IOS-4556 - persistence
             } receiveValue: { _ in }
             .store(in: &cancellables)
-    }
-
-    private enum Constant {
-        static let retryCount = 3
     }
 }

@@ -3,13 +3,15 @@
 import DIKit
 
 extension DependencyContainer {
-
+    
+    // MARK: - NabuAnalyticsKit Module
+     
     public static var nabuAnalyticsKit = module {
-
-        single { APIClient() as EventSendingAPI }
-
+        
+        single { AnalyticsEventService() as AnalyticsEventServiceAPI }
+        
         single { ContextProvider() as ContextProviding }
-
+        
         single { TokenProvider() as TokenProviding }
     }
 }

@@ -82,6 +82,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: SettingsUIKitTests
         randomExecutionOrder: true
+      - name: NabuAnalyticsDataKitTests
+        randomExecutionOrder: true
 schemes:
   Blockchain:
     templateAttributes:
@@ -326,6 +328,26 @@ targets:
       featureName: Analytics
     templates:
     - Module
+  NabuAnalyticsDataKit:
+    dependencies:
+    - target: NabuAnalyticsKit
+    - target: NetworkKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - Module
+  NabuAnalyticsDataKitTests:
+    dependencies:
+    - target: NabuAnalyticsDataKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - ModuleTests
   BitcoinCashKit:
     dependencies:
     - carthage: BigInt
@@ -464,6 +486,7 @@ targets:
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
     - target: NabuAnalyticsKit
+    - target: NabuAnalyticsDataKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
