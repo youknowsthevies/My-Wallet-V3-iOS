@@ -16,7 +16,7 @@ extension AnalyticsEvents {
             case buyPaymentMethodSelected(paymentType: PaymentType)
             case buySellClicked(type: BuySellType, origin: BuySellOrigin)
             case buySellViewed(type: BuySellType)
-            case swapClicked
+            case swapClicked(origin: SwapOrigin)
             case swapViewed
 
             public var name: String {
@@ -62,9 +62,9 @@ extension AnalyticsEvents {
                         "type": type.rawValue,
                         "platform": "WALLET"
                     ]
-                case .swapClicked:
+                case let .swapClicked(origin):
                     return [
-                        "origin": "NAVIGATION",
+                        "origin": origin.rawValue,
                         "platform": "WALLET"
                     ]
                 default:
@@ -110,6 +110,11 @@ extension AnalyticsEvents {
             case send = "SEND"
             case transationDetails = "TRANSACTION_DETAILS"
             case welcome = "WELCOME"
+        }
+
+        public enum SwapOrigin: String {
+            case dashboardPromo = "DASHBOARD_PROMO"
+            case navigation = "NAVIGATION"
         }
     }
 }

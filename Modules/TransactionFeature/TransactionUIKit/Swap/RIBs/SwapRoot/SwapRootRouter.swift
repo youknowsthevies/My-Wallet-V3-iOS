@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import KYCKit
 import KYCUIKit
@@ -27,6 +28,9 @@ protocol SwapRootRouting: ViewableRouting {
 }
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
+
+    @LazyInject
+    private var analyticsRecoder: AnalyticsEventRecorderAPI
 
     private var transactionFlowRouting: TransactionFlowRouting? {
         children
@@ -86,6 +90,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.present(viewController: viewControllable)
+        analyticsRecoder.record(event: AnalyticsEvents.New.SimpleBuy.swapViewed)
     }
 
     func dismissTransactionFlow() {

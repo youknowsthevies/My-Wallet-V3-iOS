@@ -76,14 +76,11 @@ final class TabControllerManager: NSObject {
         guard swapViewController == nil else { return }
         guard swapRouter == nil else { return }
 
-        func populateNewSwap() {
-            let router = SwapRootBuilder().build()
-            swapViewController = router.viewControllable.uiviewController
-            swapRouter = router
-            router.interactable.activate()
-            router.load()
-        }
-        populateNewSwap()
+        let router = SwapRootBuilder().build()
+        swapViewController = router.viewControllable.uiviewController
+        swapRouter = router
+        router.interactable.activate()
+        router.load()
     }
 
     func showSwap() {
@@ -215,7 +212,7 @@ extension TabControllerManager: TabViewControllerDelegate {
     func swapClicked() {
         analyticsEventRecorder.record(events: [
             AnalyticsEvents.Swap.swapTabItemClick,
-            AnalyticsEvents.New.SimpleBuy.swapClicked
+            AnalyticsEvents.New.SimpleBuy.swapClicked(origin: .navigation)
         ])
         showSwap()
     }
