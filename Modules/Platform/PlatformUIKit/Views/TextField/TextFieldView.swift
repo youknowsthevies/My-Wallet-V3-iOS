@@ -275,9 +275,11 @@ public class TextFieldView: UIView {
 extension TextFieldView: UITextFieldDelegate {
     
     public func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        DispatchQueue.main.async {
-            viewModel.textFieldShouldBeginEditing()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.textFieldShouldBeginEditing()
         }
+        return true
     }
     
     public func textField(_ textField: UITextField,
@@ -297,14 +299,17 @@ extension TextFieldView: UITextFieldDelegate {
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        DispatchQueue.main.async {
-            viewModel.textFieldShouldReturn()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.textFieldShouldReturn()
         }
+        return true
     }
     
     public func textFieldDidEndEditing(_ textField: UITextField) {
-        DispatchQueue.main.async {
-            viewModel.textFieldDidEndEditing()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.viewModel.textFieldDidEndEditing()
         }
     }
 }
