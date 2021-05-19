@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import XCTest
 @testable import NabuAnalyticsDataKit
+import XCTest
 
 class NabuAnalyticsDataKitTests: XCTestCase {
 

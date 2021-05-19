@@ -5,7 +5,7 @@ import DIKit
 import NetworkKit
 
 protocol EventSendingAPI {
-    
+
     func publish<Events: Encodable>(
         events: Events,
         token: String?
@@ -13,22 +13,22 @@ protocol EventSendingAPI {
 }
 
 final class APIClient: EventSendingAPI {
-    
+
     // MARK: - Types
-    
+
     private enum Path {
-        
+
         static let transactions = [ "events", "publish" ]
     }
-    
+
     // MARK: - Properties
-    
+
     private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
     private let jsonEncoder: JSONEncoder
 
     // MARK: - Setup
-    
+
     init(networkAdapter: NetworkAdapterAPI = resolve(),
          requestBuilder: RequestBuilder = resolve(),
          jsonEncoder: JSONEncoder = {
@@ -40,9 +40,9 @@ final class APIClient: EventSendingAPI {
         self.requestBuilder = requestBuilder
         self.jsonEncoder = jsonEncoder
     }
-    
+
     // MARK: - Methods
-    
+
     func publish<Events: Encodable>(
         events: Events,
         token: String?
