@@ -37,6 +37,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let states = "states"
         static let benefiary = "beneficiary"
         static let eligibleOnly = "eligibleOnly"
+        static let paymentMethod = "paymentMethod"
     }
 
     private enum Path {
@@ -61,6 +62,7 @@ final class APIClient: SimpleBuyClientAPI {
     }
 
     private enum Constants {
+        static let bankTransfer = "BANK_TRANSFER"
         static let simpleBuyProduct = "SIMPLEBUY"
     }
 
@@ -401,6 +403,10 @@ final class APIClient: SimpleBuyClientAPI {
             URLQueryItem(
                 name: Parameter.product,
                 value: Constants.simpleBuyProduct
+            ),
+            URLQueryItem(
+                name: Parameter.paymentMethod,
+                value: Constants.bankTransfer
             )
         ]
         let request = requestBuilder.get(

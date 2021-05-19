@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import DIKit
 import RxSwift
 
@@ -19,14 +20,14 @@ final class WithdrawalService: WithdrawalServiceAPI {
     func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue> {
         client.withdrawFee(currency: currency)
             .map { response -> CurrencyFeeResponse? in
-                response.fees.first(where: { $0.symbol == currency.symbol })
+                response.fees.first(where: { $0.symbol == currency.code })
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
-                      let amount = Decimal(string: feeResponse.value) else {
+                      let minorValue = BigInt(feeResponse.minorValue) else {
                     return .zero(currency: currency)
                 }
-                return FiatValue.create(major: amount, currency: currency)
+                return FiatValue(amount: minorValue, currency: currency)
             }
     }
 

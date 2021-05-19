@@ -2,7 +2,7 @@
 
 struct CurrencyFeeResponse: Decodable {
     let symbol: String
-    let value: String
+    let minorValue: String
 }
 
 struct WithdrawFeesResponse: Decodable {
