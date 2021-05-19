@@ -7,6 +7,7 @@ import Firebase
 import FirebaseCrashlytics
 import SettingsKit
 import UIKit
+import NabuAnalyticsDataKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     var window: UIWindow?
@@ -81,6 +82,7 @@ private func defineDependencies() {
         DependencyContainer.kycKit;
         DependencyContainer.kycUIKit;
         DependencyContainer.analyticsKit;
+        DependencyContainer.nabuAnalyticsDataKit;
         DependencyContainer.nabuAnalyticsKit;
         DependencyContainer.blockchain;
         #if INTERNAL_BUILD
