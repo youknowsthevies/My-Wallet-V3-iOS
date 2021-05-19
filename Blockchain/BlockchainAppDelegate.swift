@@ -104,6 +104,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.settingsKit;
             DependencyContainer.settingsUIKit;
             DependencyContainer.analyticsKit;
+            DependencyContainer.nabuAnalyticsDataKit;
             DependencyContainer.nabuAnalyticsKit;
             #if INTERNAL_BUILD
             DependencyContainer.debugUIKit;
