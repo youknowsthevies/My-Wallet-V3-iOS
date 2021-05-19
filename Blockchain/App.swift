@@ -5,9 +5,11 @@ import DebugUIKit
 import DIKit
 import Firebase
 import FirebaseCrashlytics
-import SettingsKit
-import UIKit
 import NabuAnalyticsDataKit
+import PlatformKit
+import SettingsKit
+import ToolKit
+import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
     var window: UIWindow?
@@ -36,6 +38,15 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window = windowProvider(screen: .main)
         self.window = window
+        if useNewOnboarding() {
+            let hostingController = AppHostingController(
+                store: store.scope(
+                    state: \.coreState,
+                    action: AppAction.core
+                )
+            )
+            window.rootViewController = hostingController
+        }
         window.makeKeyAndVisible()
         eraseWalletForUITestsIfNeeded()
         if shouldStopProccessOnDebugAndTestingMode() {
@@ -90,6 +101,11 @@ private func defineDependencies() {
         #endif
     })
     // swiftlint:enable trailing_semicolon
+}
+
+private func useNewOnboarding() -> Bool {
+    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+    return featureFlagService.isEnabled(.newOnboarding)
 }
 
 private func eraseWalletForUITestsIfNeeded() {

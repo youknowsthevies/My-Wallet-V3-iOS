@@ -5,6 +5,7 @@ import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import SettingsKit
 import ToolKit
 
 public struct AppEnvironment {
@@ -22,24 +23,9 @@ public struct AppEnvironment {
     var deeplinkAppHandler: DeeplinkAppHandler
     var backgroundAppHandler: BackgroundAppHandler
     var dataProvider: DataProvider
-}
+    var internalFeatureService: InternalFeatureFlagServiceAPI
 
-extension AppEnvironment {
-    static var live: AppEnvironment {
-        AppEnvironment(
-            debugCoordinator: resolve(tag : DebugScreenContext.tag),
-            onboardingSettings: resolve(),
-            blurEffectHandler: .init(),
-            appCoordinator: .shared,
-            cacheSuite: resolve(),
-            remoteNotificationServiceContainer: .default,
-            certificatePinner: resolve(),
-            siftService: resolve(),
-            alertViewPresenter: resolve(),
-            userActivityHandler: .init(),
-            deeplinkAppHandler: .init(),
-            backgroundAppHandler: .init(),
-            dataProvider: .default
-        )
-    }
+    var appFeatureConfigurator: AppFeatureConfigurator
+    var blockchainSettings: BlockchainSettings.App
+    var credentialsStore: CredentialsStoreAPI
 }

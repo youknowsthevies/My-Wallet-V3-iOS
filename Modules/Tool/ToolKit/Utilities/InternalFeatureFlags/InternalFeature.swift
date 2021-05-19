@@ -14,6 +14,10 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables deposit and withdraw for US users
     case withdrawAndDepositACH
 
+    /// Enable the new Pin/OnBoarding which uses ComposableArchitecture
+    case newOnboarding
+    
+
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 

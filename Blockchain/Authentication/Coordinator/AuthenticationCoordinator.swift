@@ -206,9 +206,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     /// Starts the authentication flow. If the user has a pin set, it will trigger
     /// present the pin entry screen, otherwise, it will show the password screen.
-    func start(flowProvider: MainFlowProviding = AppCoordinator.shared) {
+    func start() {
         if appSettings.isPinSet {
-            authenticatePin(flowProvider: flowProvider)
+            authenticatePin()
         } else {
             showPasswordRequiredViewController()
         }
@@ -485,7 +485,7 @@ extension AuthenticationCoordinator {
     }
 
     /// Authenticate using a pin code. Used during login when the app enters active state.
-    func authenticatePin(flowProvider: MainFlowProviding = AppCoordinator.shared) {
+    func authenticatePin() {
         // If already authenticating, skip this as the screen is already presented
         guard pinRouter == nil || !pinRouter.isDisplayingLoginAuthentication else {
             return

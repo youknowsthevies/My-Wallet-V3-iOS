@@ -5,6 +5,7 @@ import SettingsKit
 
 public struct AppState: Equatable {
     var appSettings: AppDelegateState = .init()
+    var coreState: CoreAppState = .init()
 
     /// `true` if a user activiy was handled, such as universal links, otherwise `false`
     var userActivityHandled: Bool = false
@@ -14,6 +15,7 @@ public struct AppState: Equatable {
 
 public enum AppAction: Equatable {
     case appDelegate(AppDelegateAction)
+    case core(CoreAppAction)
 }
 
 let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
@@ -34,12 +36,26 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     backgroundAppHandler: $0.backgroundAppHandler
                 )
             }),
+    mainAppReducer
+        .pullback(
+            state: \.coreState,
+            action: /AppAction.core,
+            environment: {
+                CoreAppEnvironment(
+                    appFeatureConfigurator: $0.appFeatureConfigurator,
+                    blockchainSettings: $0.blockchainSettings,
+                    credentialsStore: $0.credentialsStore
+                )
+            }),
     appReducerCore
 )
 
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
+        guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
+            return .init(value: .core(.start(window: window)))
+        }
         return .fireAndForget {
             environment.appCoordinator.window = window
             environment.appCoordinator.start()
@@ -58,6 +74,8 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     case .appDelegate(.open(let url)):
         state.urlHandled = environment.deeplinkAppHandler.handle(url: url)
         return .none
+    case .core(.start):
+        return .init(value: .core(.onboarding(.start)))
     default:
         return .none
     }

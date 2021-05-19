@@ -18,6 +18,8 @@ struct InternalFeatureItem: Equatable {
             return "Trading Account Receive"
         case .withdrawAndDepositACH:
             return "Withdraw and Deposit - US ACH"
+        case .newOnboarding:
+            return "New Pin/Onboarding (experimental)"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
         case .showEmailVerificationAtLogin:
