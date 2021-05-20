@@ -53,23 +53,23 @@ enum TargetSelectionAction: MviAction {
             return oldState
                 .update(keyPath: \.inputValidated, value: .text(.invalid(address)))
         case .addressValidated(let inputValidation):
-            guard case let .valid(address) = inputValidation else {
+            switch inputValidation {
+            case .valid(let address):
+                return oldState
+                    .update(keyPath: \.inputValidated, value: .text(inputValidation))
+                    .update(keyPath: \.destination, value: address)
+                    .update(keyPath: \.nextEnabled, value: true)
+                    .withUpdatedBackstack(oldState: oldState)
+            case .invalid, .inactive:
                 return oldState
                     .update(keyPath: \.destination, value: nil)
                     .update(keyPath: \.inputValidated, value: .text(inputValidation))
                     .update(keyPath: \.nextEnabled, value: false)
                     .withUpdatedBackstack(oldState: oldState)
             }
-            let destination = address as TransactionTarget
-            return oldState
-                .update(keyPath: \.inputValidated, value: .text(inputValidation))
-                .update(keyPath: \.destination, value: destination)
-                .update(keyPath: \.nextEnabled, value: true)
-                .withUpdatedBackstack(oldState: oldState)
         case .validBitPayInvoiceTarget(let invoice):
-            let destination = invoice as TransactionTarget
             return oldState
-                .update(keyPath: \.destination, value: destination)
+                .update(keyPath: \.destination, value: invoice)
                 .update(keyPath: \.nextEnabled, value: true)
                 .withUpdatedBackstack(oldState: oldState)
         case .returnToPreviousStep:

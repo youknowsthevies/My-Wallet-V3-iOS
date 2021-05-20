@@ -166,12 +166,11 @@ enum TransactionAction: MviAction {
         case .returnToPreviousStep:
             var stepsBackStack = oldState.stepsBackStack
             let previousStep = stepsBackStack.popLast() ?? .initial
-            var newState = oldState
-            newState.stepsBackStack = stepsBackStack
-            newState.step = previousStep
-            newState.isGoingBack = true
-            newState.errorState = .none
-            return newState
+            return oldState
+                .update(keyPath: \.stepsBackStack, value: stepsBackStack)
+                .update(keyPath: \.step, value: previousStep)
+                .update(keyPath: \.isGoingBack, value: true)
+                .update(keyPath: \.errorState, value: .none)
         case .modifyTransactionConfirmation:
             return oldState
         case .invalidateTransaction:

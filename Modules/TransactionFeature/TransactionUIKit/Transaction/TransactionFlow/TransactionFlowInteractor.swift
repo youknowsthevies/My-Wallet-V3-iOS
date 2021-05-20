@@ -139,7 +139,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 case .selectTarget:
                     let selectedSource = state.source!
                     self?.didSelectDestinationAccount(target: target)
-                    self?.analyticsHook.onPairConfirmed(selectedSource.currencyType, target: target)
+                    self?.analyticsHook.onPairConfirmed(selectedSource.currencyType, target: target, action: state.action)
                 default:
                     break
                 }
@@ -153,7 +153,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     func didTapClose() {
         router?.closeFlow()
-        analyticsHook.onClose()
+        analyticsHook.onClose(action: action)
     }
 
     func enterAmountDidTapBack() {
@@ -163,7 +163,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     func closeFlow() {
         transactionModel.process(action: .resetFlow)
         router?.closeFlow()
-        analyticsHook.onClose()
+        analyticsHook.onClose(action: action)
     }
 
     func checkoutDidTapBack() {
@@ -171,7 +171,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
     
     func didSelectSourceAccount(account: CryptoAccount) {
-        analyticsHook.onAccountSelected(account.currencyType)
+        analyticsHook.onAccountSelected(account.currencyType, action: action)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
 
