@@ -27,6 +27,9 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable sending from a trading account to any crypto address.
     case tradingAccountExternalSend
+
+    /// Enable resolving a domain name when sending crypto.
+    case sendToDomainName
 }
 
 extension AppFeature {
@@ -44,6 +47,8 @@ extension AppFeature {
             return "trading_account_receive_ios"
         case .tradingAccountExternalSend:
             return "trading_account_external_send_ios"
+        case .sendToDomainName:
+            return "send_to_domain_name_ios"
         case .biometry,
              .swipeToReceive:
             return nil

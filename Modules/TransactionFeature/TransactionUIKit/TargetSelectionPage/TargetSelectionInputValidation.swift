@@ -92,7 +92,7 @@ enum TargetSelectionInputValidation: Equatable {
             case .invalid(let value):
                 return value
             case .valid(let receiveAddress):
-                return receiveAddress.address
+                return receiveAddress.label.isEmpty ? receiveAddress.address : receiveAddress.label
             }
         }
 

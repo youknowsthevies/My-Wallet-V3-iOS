@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -13,7 +14,8 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
                                     OrderFetchingClientAPI &
                                     OrderUpdateClientAPI &
                                     CustodialTransferClientAPI &
-                                    BitPayClientAPI
+                                    BitPayClientAPI &
+                                    BlockchainNameResolutionAPI
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
@@ -40,6 +42,7 @@ final class APIClient: TransactionKitClientAPI {
         static let limits = ["trades", "limits"]
         static let transfer = [ "payments", "withdrawals" ]
         static let transferFees = [ "payments", "withdrawals", "fees" ]
+        static let domainResolution = ["resolve"]
         static func updateOrder(transactionID: String) -> [String] {
             createOrder + [transactionID]
         }
@@ -55,25 +58,33 @@ final class APIClient: TransactionKitClientAPI {
 
     // MARK: - Properties
 
-    private let requestBuilder: RequestBuilder
-    private let networkAdapter: NetworkAdapterAPI
+    private let retailNetworkAdapter: NetworkAdapterAPI
+    private let retailRequestBuilder: RequestBuilder
+    private let defaultNetworkAdapter: NetworkAdapterAPI
+    private let defaultRequestBuilder: RequestBuilder
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
-        self.networkAdapter = networkAdapter
-        self.requestBuilder = requestBuilder
+    init(
+        retailNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail),
+        retailRequestBuilder: RequestBuilder = DIKit.resolve(tag: DIKitContext.retail),
+        defaultNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(),
+        defaultRequestBuilder: RequestBuilder = DIKit.resolve()
+    ) {
+        self.retailNetworkAdapter = retailNetworkAdapter
+        self.retailRequestBuilder = retailRequestBuilder
+        self.defaultNetworkAdapter = defaultNetworkAdapter
+        self.defaultRequestBuilder = defaultRequestBuilder
     }
 
     // MARK: - AvailablePairsClientAPI
 
     var availableOrderPairs: Single<AvailableTradingPairsResponse> {
-        let request = requestBuilder.get(
+        let request = retailRequestBuilder.get(
             path: Path.availablePairs,
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -83,12 +94,12 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - CustodialQuoteAPI
 
     func fetchQuoteResponse(with request: OrderQuoteRequest) -> Single<OrderQuoteResponse> {
-        let request = requestBuilder.post(
+        let request = retailRequestBuilder.post(
             path: Path.quote,
             body: try? request.encode(),
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -98,12 +109,12 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - OrderCreationClientAPI
 
     func create(with orderRequest: OrderCreationRequest) -> Single<SwapActivityItemEvent> {
-        let request = requestBuilder.post(
+        let request = retailRequestBuilder.post(
             path: Path.createOrder,
             body: try? orderRequest.encode(),
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -113,12 +124,12 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - OrderUpdateClientAPI
 
     func updateOrder(with transactionId: String, updateRequest: OrderUpdateRequest) -> Completable {
-        let request = requestBuilder.post(
+        let request = retailRequestBuilder.post(
             path: Path.updateOrder(transactionID: transactionId),
             body: try? updateRequest.encode(),
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -128,11 +139,11 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - OrderFetchingClientAPI
 
     func fetchTransaction(with transactionId: String) -> Single<SwapActivityItemEvent> {
-        let request = requestBuilder.get(
+        let request = retailRequestBuilder.get(
             path: Path.fetchOrder + [transactionId],
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -143,13 +154,13 @@ final class APIClient: TransactionKitClientAPI {
 
     func send(transferRequest: CustodialTransferRequest) -> Single<CustodialTransferResponse> {
         let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
-        let request = requestBuilder.post(
+        let request = retailRequestBuilder.post(
             path: Path.transfer,
             body: try? transferRequest.encode(),
             headers: headers,
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -162,13 +173,13 @@ final class APIClient: TransactionKitClientAPI {
             URLQueryItem(name: Parameter.product, value: Parameter.simpleBuy),
             URLQueryItem(name: Parameter.paymentMethod, value: Parameter.default)
         ]
-        let request = requestBuilder.get(
+        let request = retailRequestBuilder.get(
             path: Path.transferFees,
             parameters: parameters,
             headers: headers,
             authenticated: false
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
@@ -192,7 +203,7 @@ final class APIClient: TransactionKitClientAPI {
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request
             )
@@ -221,7 +232,7 @@ final class APIClient: TransactionKitClientAPI {
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request
             )
@@ -249,7 +260,7 @@ final class APIClient: TransactionKitClientAPI {
             body: try? JSONEncoder().encode(payload),
             headers: headers
         )
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request
             )
@@ -274,6 +285,7 @@ final class APIClient: TransactionKitClientAPI {
                 value: "true"
             )
         ]
+
         switch product {
         case .swap(let orderDirection):
             parameters.append(
@@ -283,15 +295,26 @@ final class APIClient: TransactionKitClientAPI {
                 URLQueryItem(name: Parameter.orderDirection, value: orderDirection.rawValue)
             )
         }
-        let request = requestBuilder.get(
+        let request = retailRequestBuilder.get(
             path: Path.limits,
             parameters: parameters,
             authenticated: true
         )!
-        return networkAdapter
+        return retailNetworkAdapter
             .perform(
                 request: request,
                 errorResponseType: NabuNetworkError.self
             )
+    }
+
+    // MARK: BlockchainNameResolutionAPI
+
+    func resolve(domainName: String, currency: String) -> AnyPublisher<DomainResolutionResponse, NetworkError> {
+        let payload = DomainResolutionRequest(currency: currency, name: domainName)
+        let request = defaultRequestBuilder.post(
+            path: Path.domainResolution,
+            body: try? JSONEncoder().encode(payload)
+        )!
+        return defaultNetworkAdapter.perform(request: request)
     }
 }

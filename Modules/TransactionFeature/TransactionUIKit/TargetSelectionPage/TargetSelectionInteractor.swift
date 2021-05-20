@@ -9,9 +9,17 @@ import TransactionKit
 final class TargetSelectionInteractor {
 
     private let coincore: Coincore
+    private let featureFetcher: FeatureFetching
+    private let nameResolutionService: BlockchainNameResolutionServicing
 
-    init(coincore: Coincore = resolve()) {
+    init(
+        coincore: Coincore = resolve(),
+        nameResolutionService: BlockchainNameResolutionServicing = resolve(),
+        featureFetcher: FeatureFetching = resolve()
+    ) {
         self.coincore = coincore
+        self.featureFetcher = featureFetcher
+        self.nameResolutionService = nameResolutionService
     }
 
     func getBitPayInvoiceTarget(data: String, asset: CryptoCurrency) -> Single<BitPayInvoiceTarget> {
@@ -38,11 +46,33 @@ final class TargetSelectionInteractor {
         }
         return asset
             .parse(address: address)
-            .map { address -> Result<ReceiveAddress, Error> in
-                guard let address = address else {
-                    return .failure(CryptoAssetError.addressParseFailure)
+            .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in
+                guard let validatedAddress = validatedAddress else {
+                    return self.validate(domainName: address, currency: account.asset)
                 }
-                return .success(address)
+                return .just(.success(validatedAddress))
+            }
+    }
+
+    private func validate(domainName: String, currency: CryptoCurrency) -> Single<Result<ReceiveAddress, Error>> {
+        featureFetcher.fetchBool(for: .sendToDomainName)
+            .flatMap(weak: self) { (self, isEnabled) -> Single<Result<ReceiveAddress, Error>> in
+                guard isEnabled else {
+                    return .just(.failure(CryptoAssetError.addressParseFailure))
+                }
+                return self.nameResolutionService
+                    .validate(domainName: domainName, currency: currency)
+                    .asObservable()
+                    .take(1)
+                    .asSingle()
+                    .map { receiveAddress -> Result<ReceiveAddress, Error> in
+                        switch receiveAddress {
+                        case .some(let receiveAddress):
+                            return .success(receiveAddress)
+                        case .none:
+                            return .failure(CryptoAssetError.addressParseFailure)
+                        }
+                    }
             }
     }
 }

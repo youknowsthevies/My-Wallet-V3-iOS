@@ -75,12 +75,17 @@ final class TargetSelectionPageModel {
     private func validateCrypto(address: String, account: CryptoAccount) -> Disposable {
         interactor
             .validateCrypto(address: address, account: account)
-            .subscribe(onSuccess: { [weak self] (result) in
-                guard case .success(let receiveAddress) = result else {
-                    self?.process(action: .addressValidated(.invalid(address)))
-                    return
+            .map { result -> TargetSelectionInputValidation.TextInput in
+                switch result {
+                case .success(let receiveAddress):
+                    return .valid(receiveAddress)
+                case .failure:
+                    return .invalid(address)
                 }
-                self?.process(action: .addressValidated(.valid(receiveAddress)))
+            }
+            .map(TargetSelectionAction.addressValidated)
+            .subscribe(onSuccess: { [weak self] action in
+                self?.process(action: action)
             })
     }
 }

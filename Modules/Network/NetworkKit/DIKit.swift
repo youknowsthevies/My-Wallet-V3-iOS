@@ -5,7 +5,6 @@ import DIKit
 import RxSwift
 
 public enum DIKitContext: String {
-    case network
     case explorer
     case wallet
     case retail

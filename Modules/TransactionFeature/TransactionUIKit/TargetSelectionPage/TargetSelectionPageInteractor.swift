@@ -110,8 +110,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .bind(to: cryptoAddressViewModel.originalTextRelay)
             .disposeOnDeactivate(interactor: self)
 
-        let requiredValidationAction = targetSelectionPageModel
-            .state
+        let requiredValidationAction = transactionState
             .map(\.inputValidated)
             /// Only the QR scanner requires validation. The textfield
             /// validates itself so long as it's in focus.
@@ -121,7 +120,6 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             /// conflating text entry with QR scanning or deep linking.
             .map(\.text)
             .distinctUntilChanged()
-            .share(replay: 1, scope: .whileConnected)
 
         requiredValidationAction
             .withLatestFrom(sourceAccount) { ($0, $1) }
@@ -143,13 +141,24 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             /// when the text field is not in focus.
             .map { $0 == .on }
 
-        let isTypingAction = text
+        // `textWhileTyping` stream the text field text while it has focus.
+        let textWhileTyping: Observable<String> = text
             .withLatestFrom(isFocused) { ($0, $1) }
             .filter { $0.1 }
             .map(\.0)
             .share(replay: 1, scope: .whileConnected)
 
-        isTypingAction
+        // As soon as something is inputted, we want to disable the 'next' action.
+        textWhileTyping
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] text in
+                self?.targetSelectionPageModel.process(action: .destinationDeselected)
+            })
+            .disposeOnDeactivate(interactor: self)
+
+        // The stream is debounced and we then process the validation.
+        textWhileTyping
+            .debounce(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
             .withLatestFrom(sourceAccount) { ($0, $1) }
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] text, account in
@@ -172,11 +181,11 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             .distinctUntilChanged()
             .map(RadioSelectionAction.initialValues)
 
-        let deselectAction = Observable.merge(isTypingAction, requiredValidationAction)
+        let deselectAction = Observable.merge(textWhileTyping, requiredValidationAction)
             .map { _ in RadioSelectionAction.deselectAll }
 
         let radioSelectionAction = transactionState
-            // a selected input is infered if the inputValidated is TargetSelectionInputValidation.account
+            // a selected input is inferred if the inputValidated is TargetSelectionInputValidation.account
             .filter { $0.inputValidated.isAccountSelection }
             .compactMap { $0.destination as? SingleAccount }
             .map(\.id)
