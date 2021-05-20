@@ -1,9 +1,4 @@
-//
-//  ConfigTests.swift
-//  NetworkKitTests
-//
-//  Created by Paulo on 14/04/2020.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import NetworkKit
 import XCTest

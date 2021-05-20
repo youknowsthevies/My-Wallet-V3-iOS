@@ -16,14 +16,14 @@ final class QRCodeScannerView: UIView, QRCodeScannableArea {
     private let viewModel: QRCodeScannerViewModelProtocol
     private let overlay: QRCodeScannerViewOverlay
 
-    init(viewModel: QRCodeScannerViewModelProtocol, frame: CGRect) {
+    init(viewModel: QRCodeScannerViewModelProtocol, targetCoordinateSpace: UICoordinateSpace) {
         self.viewModel = viewModel
-        self.overlay = QRCodeScannerViewOverlay(viewModel: viewModel.overlayViewModel, frame: frame)
-        super.init(frame: frame)
-
+        self.overlay = QRCodeScannerViewOverlay(viewModel: viewModel.overlayViewModel, targetCoordinateSpace: targetCoordinateSpace)
+        super.init(frame: .zero)
         self.setupViewFinder()
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -6,9 +6,15 @@ import PlatformKit
 public protocol QRCodeScannerTextViewModel {
     var loadingText: String? { get }
     var headerText: String { get }
+    var subtitleText: String? { get }
 }
 
-protocol QRCodeScannerViewModelProtocol: class {
+public extension QRCodeScannerTextViewModel {
+    var loadingText: String? { nil }
+    var subtitleText: String? { nil }
+}
+
+protocol QRCodeScannerViewModelProtocol: AnyObject {
     var scanningStarted: (() -> Void)? { get set }
     var scanningStopped: (() -> Void)? { get set }
     var closeButtonTapped: (() -> Void)? { get set }
@@ -89,7 +95,7 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         self.scanner = scanner
         self.completed = completed
         self.closeHandler = closeHandler
-        self.overlayViewModel = .init(supportsCameraRoll: supportsCameraRoll)
+        self.overlayViewModel = .init(supportsCameraRoll: supportsCameraRoll, subtitleText: textViewModel.subtitleText)
         self.scanner.delegate = self
     }
 

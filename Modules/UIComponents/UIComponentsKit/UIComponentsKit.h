@@ -1,9 +1,4 @@
-//
-//  UIComponentsKit.h
-//  UIComponentsKit
-//
-//  Created by Gianluca Tranchedone on 21/04/2021.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 #import <Foundation/Foundation.h>
 

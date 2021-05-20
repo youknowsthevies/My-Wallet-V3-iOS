@@ -41,6 +41,17 @@ extension Result {
 }
 
 extension Result {
+    public var completable: Completable {
+        switch self {
+        case .success:
+            return Completable.empty()
+        case .failure(let error):
+            return Completable.error(error)
+        }
+    }
+}
+
+extension Result {
     public var maybe: Maybe<Success> {
         switch self {
         case .success(let value):

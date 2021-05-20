@@ -12,13 +12,14 @@ public enum QRCodePresentationType {
 
 final class QRCodeScannerViewController: UIViewController, UINavigationControllerDelegate {
 
-    private var viewFrame: CGRect {
+    private var targetCoordinateSpace: UICoordinateSpace {
+        guard isViewLoaded else {
+            fatalError("viewFrame should only be accessed after the view is loaded.")
+        }
         guard let window = UIApplication.shared.keyWindow else {
             fatalError("Trying to get key window before it was set!")
         }
-        let width = window.bounds.size.width
-        let height = window.bounds.size.height - 65
-        return CGRect(x: 0, y: 0, width: width, height: height)
+        return window.coordinateSpace
     }
 
     private var scannerView: QRCodeScannerView!
@@ -31,7 +32,7 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
     init(presentationType: QRCodePresentationType = .modal(dismissWithAnimation: true),
          viewModel: QRCodeScannerViewModelProtocol,
          loadingViewPresenter: LoadingViewPresenting = resolve(),
-         loadingViewStyle: LoadingViewPresenter.LoadingViewStyle = .activityIndicator) {
+         loadingViewStyle: LoadingViewPresenter.LoadingViewStyle) {
         self.presentationType = presentationType
         self.viewModel = viewModel
         self.loadingViewPresenter = loadingViewPresenter
@@ -86,10 +87,10 @@ final class QRCodeScannerViewController: UIViewController, UINavigationControlle
             break
         }
 
-        scannerView = QRCodeScannerView(viewModel: viewModel, frame: viewFrame)
+        scannerView = QRCodeScannerView(viewModel: viewModel, targetCoordinateSpace: targetCoordinateSpace)
         scannerView.alpha = 0
         view.addSubview(scannerView)
-        scannerView.fillSuperview()
+        scannerView.layoutToSuperview(.leading, .trailing, .top, .bottom)
     }
 
     override func viewDidAppear(_ animated: Bool) {

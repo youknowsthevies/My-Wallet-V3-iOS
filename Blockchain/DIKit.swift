@@ -222,6 +222,11 @@ extension DependencyContainer {
             return app
         }
 
+        factory { () -> AppSettingsSecureChannel in
+            let app: BlockchainSettings.App = DIKit.resolve()
+            return app as AppSettingsSecureChannel
+        }
+
         // MARK: - Settings
 
         factory { () -> RecoveryPhraseVerifyingServiceAPI in

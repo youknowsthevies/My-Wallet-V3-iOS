@@ -17,8 +17,9 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     // MARK: - RemoteNotificationServicing (services)
 
-    let relay: RemoteNotificationEmitting
     let authorizer: RemoteNotificationAuthorizing
+    let backgroundReceiver: RemoteNotificationBackgroundReceiving
+    let relay: RemoteNotificationEmitting
 
     // MARK: - Privately used services
 
@@ -31,15 +32,16 @@ final class RemoteNotificationService: RemoteNotificationServicing {
     // MARK: - Setup
 
     init(authorizer: RemoteNotificationAuthorizing = RemoteNotificationAuthorizer(),
-         relay: RemoteNotificationEmitting = RemoteNotificationRelay(),
+         notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving = RemoteNotificationRelay(),
          externalService: ExternalNotificationProviding = ExternalNotificationServiceProvider(),
          networkService: RemoteNotificationNetworkServicing = RemoteNotificationNetworkService(),
          walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI = WalletManager.shared.repository) {
         self.authorizer = authorizer
-        self.relay = relay
         self.externalService = externalService
         self.networkService = networkService
         self.walletRepository = walletRepository
+        self.relay = notificationRelay
+        self.backgroundReceiver = notificationRelay
     }
 }
 
@@ -71,11 +73,11 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
 
 extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
     func appDidFailToRegisterForRemoteNotifications(with error: Error) {
-        Logger.shared.info("remote notification registration failed with error: \(error)")
+        Logger.shared.info("Remote Notification Registration Failed with error: \(error)")
     }
 
     func appDidRegisterForRemoteNotifications(with deviceToken: Data) {
-        Logger.shared.info("remote notification registration failed")
+        Logger.shared.info("Remote Notification Registration Succeeded")
 
         // FCM service must be informed about the new token
         externalService.didReceiveNewApnsToken(token: deviceToken)

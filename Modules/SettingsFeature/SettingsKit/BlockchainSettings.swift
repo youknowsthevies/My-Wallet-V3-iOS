@@ -40,7 +40,13 @@ public final class BlockchainSettings: NSObject {
     // MARK: - App
 
     @objc(BlockchainSettingsApp)
-    public class App: NSObject, AppSettingsAPI, AppSettingsAuthenticating, SwipeToReceiveConfiguring, CloudBackupConfiguring, PermissionSettingsAPI {
+    public class App: NSObject,
+                      AppSettingsAPI,
+                      AppSettingsAuthenticating,
+                      AppSettingsSecureChannel,
+                      CloudBackupConfiguring,
+                      PermissionSettingsAPI,
+                      SwipeToReceiveConfiguring {
 
         @Inject
         @objc
@@ -261,6 +267,24 @@ public final class BlockchainSettings: NSObject {
             }
             set {
                 defaults.set(newValue, forKey: UserDefaults.Keys.cloudBackupEnabled.rawValue)
+            }
+        }
+
+        public var deviceKey: String? {
+            get {
+                defaults.string(forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
+            }
+            set {
+                defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelDeviceKey.rawValue)
+            }
+        }
+
+        public var browserIdentities: String? {
+            get {
+                defaults.string(forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
+            }
+            set {
+                defaults.set(newValue, forKey: UserDefaults.Keys.secureChannelBrowserIdentities.rawValue)
             }
         }
 

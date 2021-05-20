@@ -11,6 +11,10 @@ final class QRCodeScannerOverlayViewModel {
             .asDriver(onErrorJustReturn: .hidden)
     }
 
+    var subtitleLabelContent: Driver<LabelContent> {
+        subtitleLabelContentRelay.asDriver()
+    }
+
     /// Is the flash enabled
     var flashEnabled: Driver<Bool> {
         qrCodeFlashService.isEnabled
@@ -30,10 +34,15 @@ final class QRCodeScannerOverlayViewModel {
 
     private let qrCodeFlashService = QRCodeScannerFlashService()
     private let cameraRollButtonVisibilityRelay = BehaviorRelay<Visibility>(value: .hidden)
+    private let subtitleLabelContentRelay = BehaviorRelay<LabelContent>(value: .empty)
     private let disposeBag = DisposeBag()
 
-    init(supportsCameraRoll: Bool) {
+    init(supportsCameraRoll: Bool, subtitleText: String?) {
         cameraRollButtonVisibilityRelay.accept(supportsCameraRoll ? .visible : .hidden)
+        if let subtitleText = subtitleText {
+            let labelContent = LabelContent(text: subtitleText, font: .main(.medium, 14), color: .white, alignment: .left)
+            subtitleLabelContentRelay.accept(labelContent)
+        }
         flashTapRelay
             .bindAndCatch(weak: self) { (self) in
                 self.toggleFlash()

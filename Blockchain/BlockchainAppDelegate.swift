@@ -54,15 +54,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject private var deepLinkRouter: DeepLinkRouting
 
-    /// A service that provides remote notification registration logic,
-    /// thus taking responsibility off `AppDelegate` instance.
-    private lazy var remoteNotificationRegistrationService: RemoteNotificationRegistering = {
-        RemoteNotificationServiceContainer.default.authorizer
-    }()
-
-    /// A receipient for device tokens
-    private lazy var remoteNotificationTokenReceiver: RemoteNotificationDeviceTokenReceiving = {
-        RemoteNotificationServiceContainer.default.tokenReceiver
+    private lazy var remoteNotificationServiceContainer: RemoteNotificationServiceContainer = {
+        RemoteNotificationServiceContainer.default
     }()
 
     @LazyInject(tag: DebugScreenContext.tag)
@@ -151,7 +144,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
 
         // Register the application for remote notifications
-        remoteNotificationRegistrationService.registerForRemoteNotificationsIfAuthorized()
+        remoteNotificationServiceContainer.authorizer
+            .registerForRemoteNotificationsIfAuthorized()
             .subscribe()
             .disposed(by: disposeBag)
 
@@ -337,6 +331,19 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable : Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        remoteNotificationServiceContainer.backgroundReceiver
+            .didReceiveRemoteNotification(
+                userInfo,
+                onApplicationState: application.applicationState,
+                fetchCompletionHandler: completionHandler
+            )
+    }
+
+    func application(
+        _ application: UIApplication,
         continue userActivity: NSUserActivity,
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
@@ -432,10 +439,12 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 extension BlockchainAppDelegate {
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
-        remoteNotificationTokenReceiver.appDidFailToRegisterForRemoteNotifications(with: error)
+        remoteNotificationServiceContainer.tokenReceiver
+            .appDidFailToRegisterForRemoteNotifications(with: error)
     }
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        remoteNotificationTokenReceiver.appDidRegisterForRemoteNotifications(with: deviceToken)
+        remoteNotificationServiceContainer.tokenReceiver
+            .appDidRegisterForRemoteNotifications(with: deviceToken)
     }
 }

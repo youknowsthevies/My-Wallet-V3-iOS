@@ -3,6 +3,6 @@
 import RxSwift
 
 /// Entry point for observing any incoming notification within the app
-protocol RemoteNotificationEmitting: class {
+protocol RemoteNotificationEmitting: AnyObject {
     var notification: Observable<RemoteNotification.NotificationType> { get }
 }

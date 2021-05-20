@@ -98,6 +98,16 @@ extension DependencyContainer {
             return repository as NabuAuthenticationExecutor.CredentialsRepository
         }
 
+        // MARK: - Secure Channel
+
+        single { SecureChannelService() as SecureChannelAPI }
+
+        single { BrowserIdentityService() }
+
+        single { SecureChannelClient() as SecureChannelClientAPI }
+
+        factory { SecureChannelMessageService() }
+
         // MARK: - Services
 
         single { EnabledCurrenciesService() as EnabledCurrenciesServiceAPI }

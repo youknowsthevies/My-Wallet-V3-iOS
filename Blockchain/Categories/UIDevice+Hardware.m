@@ -1,10 +1,5 @@
-//
-//  UIDevice+Hardware.m
-//  Blockchain
-//
-//  Created by Ben Reeves on 06/04/2012.
-//  Copyright (c) 2012 Blockchain Luxembourg S.A. All rights reserved.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 /*
  Erica Sadun, http://ericasadun.com
  iPhone Developer's Cookbook, 5.0 Edition

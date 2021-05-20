@@ -1,11 +1,4 @@
-//
-//  RibBridgePresenter.swift
-//  PlatformUIKit
-//
-//  Created by Daniel on 16/07/2020.
-//  Copyright © 2020 Blockchain Luxembourg S.A. All rights reserved.
-//  Implementation Reference: https://github.com/uber/RIBs (RIBs Architecture by Uber)
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RIBs
 

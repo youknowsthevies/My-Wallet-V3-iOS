@@ -8,12 +8,16 @@ extension DependencyContainer {
 
     public static var platformUIKit = module {
 
+        // MARK: - AlertViewPresenterAPI
+
         single { AlertViewPresenter() }
 
         factory { () -> AlertViewPresenterAPI in
             let presenter: AlertViewPresenter = DIKit.resolve()
             return presenter as AlertViewPresenterAPI
         }
+
+        // MARK: - LoadingViewPresenting
 
         single { LoadingViewPresenter() }
 
@@ -22,10 +26,22 @@ extension DependencyContainer {
             return presenter
         }
 
+        // MARK: - TopMostViewControllerProviding
+
         factory { UIApplication.shared as TopMostViewControllerProviding }
+
+        // MARK: - WebViewServiceAPI
 
         factory { WebViewService() as WebViewServiceAPI }
 
+        // MARK: - Pasteboarding
+
         factory { UIPasteboard.general as Pasteboarding }
+
+        // MARK: - Secure Channel
+
+        single { SecureChannelRouter() as SecureChannelRouting }
+
+        factory { SecureChannelNotificationRelay() as SecureChannelNotificationRelaying }
     }
 }

@@ -1389,8 +1389,6 @@ MyWalletPhone.getBitcoinWalletsAsync = function (secondPassword) {
         return Promise.resolve(accountsJSONString);
     };
     var success = function (accounts) {
-        console.log('Fetched accounts');
-        console.log(accounts);
         objc_on_didGetBitcoinWalletsAsync(accounts);
     };
     var error = function (e) {

@@ -716,6 +716,10 @@ targets:
       path: Modules/SharedPackages/SharedPackagesKit
     type: framework
   CommonCryptoKit:
+    dependencies:
+    - carthage: CryptoSwift
+    - carthage: SwiftProtobuf
+    - carthage: WalletCore
     scheme:
       testTargets:
       - CommonCryptoKitTests

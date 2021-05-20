@@ -41,6 +41,7 @@ import WalletPayloadKit
     @LazyInject private var reactiveWallet: ReactiveWalletAPI
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
     @LazyInject private var recorder: AnalyticsEventRecording
+    @LazyInject private var secureChannelRouter: SecureChannelRouting
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
@@ -303,8 +304,37 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         airdropRouter.presentAirdropCenterScreen()
     }
 
+    struct SecureChannelQRCodeTextViewModel: QRCodeScannerTextViewModel {
+        private typealias LocalizedString = LocalizationConstants.SecureChannel.QRCode
+        let headerText: String = LocalizedString.header
+        let subtitleText: String? = LocalizedString.subtitle
+    }
+
     private func handleSecureChannel() {
-        // TODO: (paulo) Modern Wallet P3 - Show new QR code screen.
+        let parser = SecureChannelQRCodeParser()
+        let textViewModel = SecureChannelQRCodeTextViewModel()
+        let builder = QRCodeScannerViewControllerBuilder(
+            parser: parser,
+            textViewModel: textViewModel,
+            completed: { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success(let string):
+                    self.secureChannelRouter.didScanPairingQRCode(msg: string)
+                case .failure(let error):
+                    Logger.shared.debug(error.localizedDescription)
+                    AlertViewPresenter.shared
+                        .standardError(message: error.localizedDescription)
+                }
+            }
+        )
+        guard let viewController = builder.build() else {
+            fatalError("Something went wrong.")
+        }
+        UIApplication.shared.topMostViewController?.present(
+            viewController,
+            animated: true
+        )
     }
 
     func startBackupFlow() {

@@ -28,6 +28,8 @@ extension UserDefaults {
         case custodySendInterstitialViewed
         case pin
         case password
+        case secureChannelDeviceKey
+        case secureChannelBrowserIdentities
     }
 }
 

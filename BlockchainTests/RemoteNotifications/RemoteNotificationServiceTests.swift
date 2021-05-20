@@ -49,7 +49,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
 
         let service = RemoteNotificationService(
             authorizer: authorizer,
-            relay: relay,
+            notificationRelay: relay,
             externalService: externalServiceProvider,
             networkService: networkService,
             walletRepository: GuidSharedKeyRepositoryAPIMock()
@@ -71,7 +71,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedAuthorizationStatus: .authorized,
                 authorizationRequestExpectedStatus: .success(())
             ),
-            relay: MockRemoteNotificationRelay(),
+            notificationRelay: MockRemoteNotificationRelay(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
@@ -97,7 +97,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedAuthorizationStatus: .denied,
                 authorizationRequestExpectedStatus: .success(())
             ),
-            relay: MockRemoteNotificationRelay(),
+            notificationRelay: MockRemoteNotificationRelay(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
@@ -122,7 +122,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedAuthorizationStatus: .authorized,
                 authorizationRequestExpectedStatus: .success(())
             ),
-            relay: MockRemoteNotificationRelay(),
+            notificationRelay: MockRemoteNotificationRelay(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .failure(.init(info: "token fetch failure")),
                 expectedTopicSubscriptionResult: .success(())
@@ -147,7 +147,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedAuthorizationStatus: .authorized,
                 authorizationRequestExpectedStatus: .success(())
             ),
-            relay: MockRemoteNotificationRelay(),
+            notificationRelay: MockRemoteNotificationRelay(),
             externalService: MockExternalNotificationServiceProvider(
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())

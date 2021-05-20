@@ -2,7 +2,7 @@
 
 import FirebaseMessaging
 
-protocol FCMServiceAPI: class {
+protocol FCMServiceAPI: AnyObject {
     var apnsToken: Data? { get set }
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo

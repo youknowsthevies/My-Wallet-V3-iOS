@@ -26,6 +26,10 @@ final class RemoteNotificationServiceContainer {
         service.authorizer
     }
 
+    var backgroundReceiver: RemoteNotificationBackgroundReceiving {
+        service.backgroundReceiver
+    }
+
     /// Token sender
     var tokenSender: RemoteNotificationTokenSending {
         service

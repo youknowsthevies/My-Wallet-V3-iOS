@@ -1,9 +1,4 @@
-//
-//  CardTextFieldViewModelTests.swift
-//  
-//
-//  Created by Daniel Huri on 25/03/2020.
-//
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import RxBlocking
 import RxSwift

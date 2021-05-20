@@ -41,8 +41,7 @@ extension AppFeature {
         case .siftScienceEnabled:
             return "sift_science_enabled"
         case .secureChannel:
-            // TODO: (paulo) Modern Wallet P3 - Use "secure_channel_ios".
-            return "secure_channel_ios_dev"
+            return "secure_channel_ios"
         case .tradingAccountReceive:
             return "trading_account_receive_ios"
         case .tradingAccountExternalSend:
