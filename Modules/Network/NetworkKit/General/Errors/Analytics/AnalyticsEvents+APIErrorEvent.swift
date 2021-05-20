@@ -32,7 +32,7 @@ enum APIErrorEvent: AnalyticsEvent {
         
         init?(request: NetworkRequest, errorResponse: ServerErrorResponse? = nil, body: String? = nil) {
             guard
-                let url = request.URLRequest.url,
+                let url = request.urlRequest.url,
                 let host = url.host
                 else {
                     return nil

@@ -42,7 +42,7 @@ final class NetworkResponseHandler: NetworkResponseHandlerAPI {
                 case 200...299:
                     return .success(ServerResponse(payload: payload, response: response))
                 default:
-                    let requestPath = request.URLRequest.url?.path ?? ""
+                    let requestPath = request.urlRequest.url?.path ?? ""
                     #if INTERNAL_BUILD
                     if let json = try? JSONSerialization.jsonObject(with: payload, options: .allowFragments) {
                         Logger.shared.error("\(json)")

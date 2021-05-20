@@ -3,13 +3,53 @@
 import Foundation
 
 extension TimeInterval {
-    
-    /// Represents a day in second units
-    public static let day: TimeInterval = 60 * 60 * 24
-    
-    /// Represents a week in second units
-    public static let week: TimeInterval = day * 7
-    
-    /// Represents a year in second units
-    public static let year: TimeInterval = 365.0 * day
+
+    private static func duration(of component: Calendar.Component) -> TimeInterval {
+        Calendar(identifier: .gregorian).dateInterval(of: component, for: Date())!.duration
+    }
+
+    /// Represents minutes in seconds using the Gregorian calendar
+    public static func minutes(_ minutes: UInt) -> TimeInterval {
+        TimeInterval(minutes) * duration(of: .minute)
+    }
+
+    /// Represents hours in s..dateIntervaeconds using the Gregorian calendar
+    public static func hours(_ hours: UInt) -> TimeInterval {
+        TimeInterval(hours) * .duration(of: .hour)
+    }
+
+    /// Represents days in seconds using the Gregorian calendar
+    public static func days(_ hours: UInt) -> TimeInterval {
+        TimeInterval(hours) * .duration(of: .day)
+    }
+
+    /// Represents weeks in seconds using the Gregorian calendar
+    public static func weeks(_ weeks: UInt) -> TimeInterval {
+        TimeInterval(weeks) * .duration(of: .weekOfMonth)
+    }
+
+    /// Represents a number of typical months in seconds using the Gregorian calendar
+    public static func months(_ months: UInt) -> TimeInterval {
+        TimeInterval(months) * .duration(of: .month)
+    }
+
+    /// Represents a number of typical years in seconds using the Gregorian calendar
+    public static func years(_ years: UInt) -> TimeInterval {
+        TimeInterval(years) * .duration(of: .year)
+    }
+
+    /// Represents an hour from now in seconds using the Gregorian calendar
+    public static let hour: TimeInterval = .hours(1)
+
+    /// Represents a day from now in seconds using the Gregorian calendar
+    public static let day: TimeInterval = .days(1)
+
+    /// Represents a week from now in seconds using the Gregorian calendar
+    public static let week: TimeInterval = .weeks(1)
+
+    /// Represents a month from now in seconds using the Gregorian calendar
+    public static let month: TimeInterval = .months(1)
+
+    /// Represents a year from now in seconds using the Gregorian calendar
+    public static let year: TimeInterval = .years(1)
 }

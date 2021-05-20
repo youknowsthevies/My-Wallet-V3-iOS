@@ -20,7 +20,7 @@ public struct NetworkRequest {
         case formUrlEncoded = "application/x-www-form-urlencoded"
     }
     
-    var URLRequest: URLRequest {
+    var urlRequest: URLRequest {
         
         if authenticated && headers[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
@@ -122,6 +122,28 @@ public struct NetworkRequest {
                 request.httpBody = data
             }
         }
+    }
+}
+
+extension NetworkRequest: CustomStringConvertible {
+
+    public var description: String {
+        "\(type(of: self)) underlying URLRequest: \(urlRequest)"
+    }
+}
+
+extension NetworkRequest: Hashable {
+
+    public static func == (lhs: NetworkRequest, rhs: NetworkRequest) -> Bool {
+        // NOTE: Can't compare urlRequests directly because each request's headers object contains a unique ID T_T
+        lhs.endpoint == rhs.endpoint && lhs.method == rhs.method && lhs.body == rhs.body
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        // NOTE: Can't hash urlRequests directly because each request's headers object contains a unique ID T_T
+        hasher.combine(endpoint)
+        hasher.combine(method)
+        hasher.combine(body)
     }
 }
 

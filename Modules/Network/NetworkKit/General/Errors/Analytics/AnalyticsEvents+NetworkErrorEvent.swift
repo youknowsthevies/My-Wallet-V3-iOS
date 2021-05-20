@@ -24,7 +24,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
         
         init?(request: NetworkRequest, message: String? = nil) {
             guard
-                let url = request.URLRequest.url,
+                let url = request.urlRequest.url,
                 let host = url.host
                 else {
                     return nil
