@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import Blockchain
+@testable import RemoteNotificationsKit
 
 final class MockFirebaseInstanceID: RemoteNotificationTokenFetching {
 

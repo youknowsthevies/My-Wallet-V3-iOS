@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FirebaseMessaging
-
 @testable import Blockchain
+@testable import RemoteNotificationsKit
 
 final class MockMessagingService: FCMServiceAPI {
 

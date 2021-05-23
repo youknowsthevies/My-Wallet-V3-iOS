@@ -2,7 +2,7 @@
 
 import XCTest
 
-@testable import Blockchain
+@testable import RemoteNotificationsKit
 
 final class MockRemoteNotificationsRegistry: UIApplicationRemoteNotificationsAPI {
 

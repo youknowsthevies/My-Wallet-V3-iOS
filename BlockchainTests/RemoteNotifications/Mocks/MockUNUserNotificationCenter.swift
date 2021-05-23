@@ -2,7 +2,7 @@
 
 import UserNotifications
 
-@testable import Blockchain
+@testable import RemoteNotificationsKit
 
 final class MockUNUserNotificationCenter: UNUserNotificationCenterAPI {
 

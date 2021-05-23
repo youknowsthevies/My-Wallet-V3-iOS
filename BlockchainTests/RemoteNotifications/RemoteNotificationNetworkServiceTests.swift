@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import Blockchain
 import NetworkKit
 import PlatformKit
+@testable import RemoteNotificationsKit
 import RxBlocking
 import RxSwift
 import UserNotifications
 import XCTest
-
-@testable import Blockchain
 
 final class RemoteNotificationNetworkServiceTests: XCTestCase {
 

@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import Blockchain
+@testable import RemoteNotificationsKit
 import RxSwift
 import UserNotifications
-
-@testable import Blockchain
 
 final class MockRemoteNotificationAuthorizer {
     private let expectedAuthorizationStatus: UNAuthorizationStatus

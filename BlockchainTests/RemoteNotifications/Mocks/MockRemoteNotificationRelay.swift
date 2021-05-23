@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import UIKit
 import RxRelay
 import RxSwift
 
-@testable import Blockchain
+@testable import RemoteNotificationsKit
 
 final class MockRemoteNotificationRelay: RemoteNotificationEmitting, RemoteNotificationBackgroundReceiving {
 
