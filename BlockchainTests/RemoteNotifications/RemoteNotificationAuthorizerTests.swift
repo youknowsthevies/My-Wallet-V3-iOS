@@ -1,12 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import Blockchain
+import DIKit
+import PlatformKit
+@testable import RemoteNotificationsKit
 import RxBlocking
 import RxSwift
 import UserNotifications
 import XCTest
-
-@testable import Blockchain
-import PlatformKit
 
 final class RemoteNotificationAuthorizerTests: XCTestCase {
 
@@ -20,6 +21,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         )
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -39,6 +41,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         )
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -60,6 +63,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         )
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -85,6 +89,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         )
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -105,6 +110,7 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
         )
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )

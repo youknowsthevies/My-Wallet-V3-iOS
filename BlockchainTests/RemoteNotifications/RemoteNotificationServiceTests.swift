@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
+import DIKit
+@testable import RemoteNotificationsKit
 import RxBlocking
 import RxSwift
 import XCTest
 
 import NetworkKit
 import PlatformKit
-@testable import RemoteNotificationsKit
 
 final class RemoteNotificationServiceTests: XCTestCase {
 
@@ -33,6 +34,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
 
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -53,7 +55,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             notificationRelay: relay,
             externalService: externalServiceProvider,
             networkService: networkService,
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            walletRepository: credentialsProvider
         )
 
         let observable = service.sendTokenIfNeeded().toBlocking()

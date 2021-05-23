@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import Blockchain
 import NetworkKit
 import PlatformKit
 @testable import RemoteNotificationsKit
