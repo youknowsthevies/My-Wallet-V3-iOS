@@ -12,10 +12,6 @@ final class RemoteNotificationServiceContainer {
 
     // MARK: - Properties
 
-    /// A default container instance - provides a container with default services
-    /// Test-suites should create their own container.
-    static let `default` = RemoteNotificationServiceContainer()
-
     /// Emitter of notification enums
     var emitter: RemoteNotificationEmitting {
         service.relay

@@ -13,6 +13,7 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     private enum ServiceError: Error {
         case unauthorizedRemoteNotificationsPermission
+        case missingWalletRepository
     }
 
     // MARK: - RemoteNotificationServicing (services)
@@ -25,17 +26,17 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     private let externalService: ExternalNotificationProviding
     private let networkService: RemoteNotificationNetworkServicing
-    private let walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI
+    private var walletRepository: (SharedKeyRepositoryAPI & GuidRepositoryAPI)? = nil
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(authorizer: RemoteNotificationAuthorizing = RemoteNotificationAuthorizer(),
-         notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving = RemoteNotificationRelay(),
-         externalService: ExternalNotificationProviding = ExternalNotificationServiceProvider(),
-         networkService: RemoteNotificationNetworkServicing = RemoteNotificationNetworkService(),
-         walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI = WalletManager.shared.repository) {
+    init(authorizer: RemoteNotificationAuthorizing,
+         notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving,
+         externalService: ExternalNotificationProviding,
+         networkService: RemoteNotificationNetworkServicing,
+         walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI) {
         self.authorizer = authorizer
         self.externalService = externalService
         self.networkService = networkService
@@ -53,7 +54,10 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void> {
-        authorizer.isAuthorized
+        guard let walletRepository = self.walletRepository else {
+            return Single.error(ServiceError.missingWalletRepository)
+        }
+        return authorizer.isAuthorized
             .filter { isAuthorized in
                 guard isAuthorized else {
                     throw ServiceError.unauthorizedRemoteNotificationsPermission
@@ -64,7 +68,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
                 self.externalService.token
             }
             .flatMap(weak: self, { (self, token) -> Single<Void> in
-                self.networkService.register(with: token, using: self.walletRepository)
+                self.networkService.register(with: token, using: walletRepository)
             })
     }
 }

@@ -353,6 +353,10 @@ extension DependencyContainer {
 
         factory { WalletUpgrading() as WalletUpgradingAPI }
 
+        // MARK: Remote Notifications
+
+        single { RemoteNotificationServiceContainer() as RemoteNotificationServiceContainer }
+
         // MARK: Helpers
 
         factory { UIApplication.shared as ExternalAppOpener }

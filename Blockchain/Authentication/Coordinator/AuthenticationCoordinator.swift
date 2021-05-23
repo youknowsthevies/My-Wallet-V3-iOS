@@ -96,7 +96,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          deepLinkRouter: DeepLinkRouting = resolve(),
          settingsAPIClient: SettingsServiceAPI = resolve(),
          featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
-         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
+         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = resolve()) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.appSettings = appSettings

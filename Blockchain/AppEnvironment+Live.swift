@@ -11,7 +11,7 @@ extension AppEnvironment {
             blurEffectHandler: .init(),
             appCoordinator: .shared,
             cacheSuite: resolve(),
-            remoteNotificationServiceContainer: .default,
+            remoteNotificationServiceContainer: resolve(),
             certificatePinner: resolve(),
             siftService: resolve(),
             alertViewPresenter: resolve(),

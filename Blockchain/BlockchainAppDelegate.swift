@@ -54,9 +54,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject private var deepLinkRouter: DeepLinkRouting
 
-    private lazy var remoteNotificationServiceContainer: RemoteNotificationServiceContainer = {
-        RemoteNotificationServiceContainer.default
-    }()
+    private lazy var remoteNotificationServiceContainer: RemoteNotificationServiceContainer = resolve()
 
     @LazyInject(tag: DebugScreenContext.tag)
     private var debugCoordinator: DebugCoordinating
