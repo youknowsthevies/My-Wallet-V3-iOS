@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import XCTest
-@testable import RemoteNotifications
+@testable import RemoteNotificationsKit
 
-class RemoteNotificationsTests: XCTestCase {
+class RemoteNotificationsKitTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
