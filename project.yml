@@ -1393,6 +1393,8 @@ targets:
       path: TestKit/TestKit/Mocks/ToolKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/RemoteNotificationsKit
     templateAttributes:
       featureName: RemoteNotifications
     templates:

@@ -18,13 +18,13 @@ final class RemoteNotificationRelay: NSObject {
     private let relay = PublishRelay<RemoteNotification.NotificationType>()
 
     private let userNotificationCenter: UNUserNotificationCenterAPI
-    private let messagingService: FCMServiceAPI
+    private let messagingService: FirebaseCloudMessagingServiceAPI
     private let secureChannelNotificationRelay: SecureChannelNotificationRelaying
 
     // MARK: - Setup
 
     init(userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-         messagingService: FCMServiceAPI = Messaging.messaging(),
+         messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
          secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()) {
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService

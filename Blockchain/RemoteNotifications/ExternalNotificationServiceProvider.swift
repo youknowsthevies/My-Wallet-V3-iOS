@@ -26,14 +26,14 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
     }
 
     private let tokenFetcher: RemoteNotificationTokenFetching
-    private let messagingService: FCMServiceAPI
+    private let messagingService: FirebaseCloudMessagingServiceAPI
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(tokenFetcher: RemoteNotificationTokenFetching = InstanceID.instanceID(),
-         messagingService: FCMServiceAPI = Messaging.messaging()) {
+         messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging()) {
         self.tokenFetcher = tokenFetcher
         self.messagingService = messagingService
     }

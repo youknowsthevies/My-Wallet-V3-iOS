@@ -1,24 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import Blockchain
-
 import Combine
 import PlatformKit
 import RxSwift
 
-class MockWalletCredentialsProvider: WalletCredentialsProviding {
-    static var valid: WalletCredentialsProviding {
-        MockWalletCredentialsProvider(
-            legacyPassword: "blockchain"
-        )
-    }
-    let legacyPassword: String?
-    init(legacyPassword: String?) {
-        self.legacyPassword = legacyPassword
-    }
-}
-
-class GuidSharedKeyRepositoryAPIMock: GuidRepositoryAPI, SharedKeyRepositoryAPI {
+class MockGuidSharedKeyRepositoryAPI: GuidRepositoryAPI, SharedKeyRepositoryAPI {
 
     var hasGuidPublisher: AnyPublisher<Bool, Never> {
         guidPublisher.map { $0 != nil }.eraseToAnyPublisher()

@@ -13,7 +13,7 @@ public final class RemoteNotificationAuthorizer {
     // MARK: - Types
 
     /// Any potential error that may be risen during authrorization request
-    enum ServiceError: Error {
+    public enum ServiceError: Error {
 
         /// Any system error
         case system(Error)

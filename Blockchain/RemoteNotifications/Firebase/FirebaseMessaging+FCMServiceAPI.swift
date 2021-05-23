@@ -2,11 +2,11 @@
 
 import FirebaseMessaging
 
-protocol FCMServiceAPI: AnyObject {
+protocol FirebaseCloudMessagingServiceAPI: AnyObject {
     var apnsToken: Data? { get set }
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo
     func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?)
 }
 
-extension Messaging: FCMServiceAPI {}
+extension Messaging: FirebaseCloudMessagingServiceAPI {}

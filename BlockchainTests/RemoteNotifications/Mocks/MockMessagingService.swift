@@ -1,10 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FirebaseMessaging
+import RemoteNotificationsKit
 @testable import Blockchain
-@testable import RemoteNotificationsKit
 
-final class MockMessagingService: FCMServiceAPI {
+final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
 
     enum FakeError: Error {
         case subscriptionFailure

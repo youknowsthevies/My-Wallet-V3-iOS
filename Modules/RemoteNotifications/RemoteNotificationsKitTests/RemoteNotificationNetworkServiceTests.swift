@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import NetworkKit
 import PlatformKit
 @testable import RemoteNotificationsKit
@@ -17,7 +18,7 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
 
     func testHttpCodeOkWithSuccess() {
         let token = "remote-notification-token"
-        let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
+        let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let service = prepareServiceForHttpCodeOk(with: .success)
         let observable = service.register(with: token, using: credentialsProvider).toBlocking()
 
@@ -30,7 +31,7 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
 
     func testHttpCodeOkWithFailure() {
         let token = "remote-notification-token"
-        let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
+        let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let service = prepareServiceForHttpCodeOk(with: .failure)
         let observable = service.register(with: token, using: credentialsProvider).toBlocking()
 
