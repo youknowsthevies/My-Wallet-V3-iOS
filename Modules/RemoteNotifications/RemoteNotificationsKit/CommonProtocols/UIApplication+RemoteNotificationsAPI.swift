@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-protocol UIApplicationRemoteNotificationsAPI: class {
+import UIKit
+
+public protocol UIApplicationRemoteNotificationsAPI: class {
     func registerForRemoteNotifications()
 }
 

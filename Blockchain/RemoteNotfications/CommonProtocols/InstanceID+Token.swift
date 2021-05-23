@@ -2,9 +2,10 @@
 
 import Firebase
 import FirebaseInstanceID
+import RemoteNotificationsKit
 
 extension InstanceID: RemoteNotificationTokenFetching {
-    func instanceID(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
+    public func instanceID(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
         instanceID { (result, error) in
             if let error = error {
                 handler(.failure(.external(error)))
