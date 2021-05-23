@@ -3,11 +3,10 @@
 import DIKit
 import NetworkKit
 import PlatformKit
-import RemoteNotificationsKit
 import RxSwift
 
 /// Remote notification network service
-final class RemoteNotificationNetworkService {
+public final class RemoteNotificationNetworkService {
 
     // MARK: - Types
 
@@ -29,7 +28,7 @@ final class RemoteNotificationNetworkService {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve()) {
+    public init(networkAdapter: NetworkAdapterAPI = resolve()) {
         self.networkAdapter = networkAdapter
     }
 }
@@ -38,7 +37,7 @@ final class RemoteNotificationNetworkService {
 
 extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
 
-    func register(
+    public func register(
         with token: String,
         using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI
     ) -> Single<Void> {

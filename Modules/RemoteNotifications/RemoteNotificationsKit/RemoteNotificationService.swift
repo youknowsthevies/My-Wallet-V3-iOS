@@ -33,10 +33,10 @@ public final class RemoteNotificationService: RemoteNotificationServicing {
     // MARK: - Setup
 
     public init(authorizer: RemoteNotificationAuthorizing,
-         notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving,
-         externalService: ExternalNotificationProviding,
-         networkService: RemoteNotificationNetworkServicing,
-         walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI) {
+                notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving,
+                externalService: ExternalNotificationProviding,
+                networkService: RemoteNotificationNetworkServicing,
+                walletRepository: SharedKeyRepositoryAPI & GuidRepositoryAPI) {
         self.authorizer = authorizer
         self.externalService = externalService
         self.networkService = networkService
