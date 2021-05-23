@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import PlatformKit
+import RemoteNotificationsKit
 import RxSwift
 import ToolKit
 import UserNotifications

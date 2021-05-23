@@ -4,6 +4,7 @@ import DIKit
 import FirebaseMessaging
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
 import RxRelay
 import RxSwift
 import ToolKit

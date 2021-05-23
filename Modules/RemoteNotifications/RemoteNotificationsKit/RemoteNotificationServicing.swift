@@ -1,20 +1,21 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import UIKit
 import RxSwift
 
 /// A protocol that encapsulates the sending of a pre-known notification token
-protocol RemoteNotificationTokenSending: AnyObject {
+public protocol RemoteNotificationTokenSending: AnyObject {
     func sendTokenIfNeeded() -> Single<Void>
 }
 
 /// A protocol defining an object that reacts to the registration, or failure, of remote notifications.
-protocol RemoteNotificationDeviceTokenReceiving: AnyObject {
+public protocol RemoteNotificationDeviceTokenReceiving: AnyObject {
     func appDidFailToRegisterForRemoteNotifications(with error: Error)
     func appDidRegisterForRemoteNotifications(with deviceToken: Data)
 }
 
 /// A protocol that defines an object that receives data/background notifications ( "remote-notification" background mode).
-protocol RemoteNotificationBackgroundReceiving: AnyObject {
+public protocol RemoteNotificationBackgroundReceiving: AnyObject {
     /// Method should be called when application receives a background notification.
     /// - Parameters:
     ///   - userInfo: Notification payload.
@@ -28,7 +29,7 @@ protocol RemoteNotificationBackgroundReceiving: AnyObject {
 }
 
 /// An umbrella protocol that represents a single entry to common notification services
-protocol RemoteNotificationServicing: AnyObject {
+public protocol RemoteNotificationServicing: AnyObject {
     var relay: RemoteNotificationEmitting { get }
     var backgroundReceiver: RemoteNotificationBackgroundReceiving { get }
     var authorizer: RemoteNotificationAuthorizing { get }

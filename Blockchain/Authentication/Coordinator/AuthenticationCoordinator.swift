@@ -8,6 +8,7 @@ import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
 import RxRelay
 import RxSwift
 import SettingsKit

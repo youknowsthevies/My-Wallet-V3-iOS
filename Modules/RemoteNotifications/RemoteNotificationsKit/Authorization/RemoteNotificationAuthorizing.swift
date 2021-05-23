@@ -3,23 +3,23 @@
 import RxSwift
 import UserNotifications
 
-typealias RemoteNotificationAuthorizing = RemoteNotificationRegistering &
+public typealias RemoteNotificationAuthorizing = RemoteNotificationRegistering &
                                           RemoteNotificationAuthorizationRequesting &
                                           RemoteNotificationAuthorizationStatusProviding
 
 /// A protocol that encapsulates the registration to any notification service
 /// The app delegate should hold its instance and inform it about registration events.
-protocol RemoteNotificationRegistering: class {
+public protocol RemoteNotificationRegistering: class {
     func registerForRemoteNotificationsIfAuthorized() -> Single<Void>
 }
 
 /// A protocol that defines remote-notification authorization / registration methods
-protocol RemoteNotificationAuthorizationRequesting: class {
+public protocol RemoteNotificationAuthorizationRequesting: class {
     func requestAuthorizationIfNeeded() -> Single<Void>
 }
 
 /// A protocol that defines remote-notification auth-status reading abilities
-protocol RemoteNotificationAuthorizationStatusProviding {
+public protocol RemoteNotificationAuthorizationStatusProviding {
     var status: Single<UNAuthorizationStatus> { get }
     var isAuthorized: Single<Bool> { get }
 }
@@ -27,7 +27,7 @@ protocol RemoteNotificationAuthorizationStatusProviding {
 extension RemoteNotificationAuthorizationStatusProviding {
     /// A `Single` that streams a boolean value indicating whether `status` is authorized
     /// A default implementation that depends on the status
-    var isAuthorized: Single<Bool> {
+    public var isAuthorized: Single<Bool> {
         status.map { $0 == .authorized }
     }
 }

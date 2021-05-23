@@ -3,26 +3,9 @@
 import Foundation
 
 /// Embeds any nesting types: e.g topics and types of notifications
-struct RemoteNotification {
-
-    /// Remote notification token representation
-    typealias Token = String
-
-    /// Potential errors during token fetching
-    enum TokenFetchError: Error {
-
-        /// Embeds any firebase error
-        case external(Error)
-
-        /// Token is empty
-        case tokenIsEmpty
-
-        /// Result is nullified
-        case resultIsNil
-    }
-
+public struct RemoteNotification {
     /// A data bag for push notification format
-    enum NotificationType {
+    public enum NotificationType {
 
         // MARK: - Cases
 
@@ -41,7 +24,23 @@ struct RemoteNotification {
     }
 
     // TODO: Add topics here
-    enum Topic: String {
+    public enum Topic: String {
         case todo = "todo_topics"
+    }
+
+    /// Remote notification token representation
+    public typealias Token = String
+
+    /// Potential errors during token fetching
+    public enum TokenFetchError: Error {
+
+        /// Embeds any firebase error
+        case external(Error)
+
+        /// Token is empty
+        case tokenIsEmpty
+
+        /// Result is nullified
+        case resultIsNil
     }
 }

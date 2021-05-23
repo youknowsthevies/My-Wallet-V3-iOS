@@ -4,6 +4,7 @@ import Firebase
 import FirebaseInstanceID
 import FirebaseMessaging
 import PlatformKit
+import RemoteNotificationsKit
 import RxSwift
 
 /// A class that is a gateway to external notification service functionality

@@ -6,6 +6,7 @@ import DebugUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
 import SettingsKit
 import ToolKit
 import UIKit

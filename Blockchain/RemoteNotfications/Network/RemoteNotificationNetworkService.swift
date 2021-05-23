@@ -3,6 +3,7 @@
 import DIKit
 import NetworkKit
 import PlatformKit
+import RemoteNotificationsKit
 import RxSwift
 
 /// Remote notification network service

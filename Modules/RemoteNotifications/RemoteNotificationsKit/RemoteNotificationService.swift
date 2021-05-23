@@ -7,7 +7,7 @@ import RxSwift
 import ToolKit
 
 /// A service that coordinates
-final class RemoteNotificationService: RemoteNotificationServicing {
+public final class RemoteNotificationService: RemoteNotificationServicing {
 
     // MARK: - ServiceError
 
@@ -18,21 +18,21 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     // MARK: - RemoteNotificationServicing (services)
 
-    let authorizer: RemoteNotificationAuthorizing
-    let backgroundReceiver: RemoteNotificationBackgroundReceiving
-    let relay: RemoteNotificationEmitting
+    public let authorizer: RemoteNotificationAuthorizing
+    public let backgroundReceiver: RemoteNotificationBackgroundReceiving
+    public let relay: RemoteNotificationEmitting
 
     // MARK: - Privately used services
 
     private let externalService: ExternalNotificationProviding
     private let networkService: RemoteNotificationNetworkServicing
-    private var walletRepository: (SharedKeyRepositoryAPI & GuidRepositoryAPI)? = nil
+    private var walletRepository: (SharedKeyRepositoryAPI & GuidRepositoryAPI)?
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(authorizer: RemoteNotificationAuthorizing,
+    public init(authorizer: RemoteNotificationAuthorizing,
          notificationRelay: RemoteNotificationEmitting & RemoteNotificationBackgroundReceiving,
          externalService: ExternalNotificationProviding,
          networkService: RemoteNotificationNetworkServicing,
@@ -53,7 +53,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
     /// Sends the token. Only if remote notification permission was pre-authorized.
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
-    func sendTokenIfNeeded() -> Single<Void> {
+    public func sendTokenIfNeeded() -> Single<Void> {
         guard let walletRepository = self.walletRepository else {
             return Single.error(ServiceError.missingWalletRepository)
         }
@@ -76,11 +76,11 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
 // MARK: - RemoteNotificationDeviceTokenReceiving
 
 extension RemoteNotificationService: RemoteNotificationDeviceTokenReceiving {
-    func appDidFailToRegisterForRemoteNotifications(with error: Error) {
+    public func appDidFailToRegisterForRemoteNotifications(with error: Error) {
         Logger.shared.info("Remote Notification Registration Failed with error: \(error)")
     }
 
-    func appDidRegisterForRemoteNotifications(with deviceToken: Data) {
+    public func appDidRegisterForRemoteNotifications(with deviceToken: Data) {
         Logger.shared.info("Remote Notification Registration Succeeded")
 
         // FCM service must be informed about the new token

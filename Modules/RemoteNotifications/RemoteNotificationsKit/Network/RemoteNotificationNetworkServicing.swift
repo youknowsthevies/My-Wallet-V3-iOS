@@ -3,7 +3,7 @@
 import PlatformKit
 import RxSwift
 
-protocol RemoteNotificationNetworkServicing: class {
+public protocol RemoteNotificationNetworkServicing: class {
     func register(with deviceToken: String,
                   using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void>
 }
