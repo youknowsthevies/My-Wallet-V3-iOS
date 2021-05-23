@@ -3,12 +3,12 @@
 import AnalyticsKit
 import DIKit
 import PlatformKit
-import RemoteNotificationsKit
+import PlatformUIKit
 import RxSwift
 import ToolKit
 import UserNotifications
 
-final class RemoteNotificationAuthorizer {
+public final class RemoteNotificationAuthorizer {
 
     // MARK: - Types
 
@@ -39,10 +39,10 @@ final class RemoteNotificationAuthorizer {
 
     // MARK: - Setup
 
-    init(application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-         options: UNAuthorizationOptions = [.alert, .badge, .sound]) {
+    public init(application: UIApplicationRemoteNotificationsAPI,
+                analyticsRecorder: AnalyticsEventRecording,
+                userNotificationCenter: UNUserNotificationCenterAPI,
+                options: UNAuthorizationOptions) {
         self.application = application
         self.analyticsRecorder = analyticsRecorder
         self.userNotificationCenter = userNotificationCenter
@@ -82,7 +82,7 @@ final class RemoteNotificationAuthorizer {
 
 extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusProviding {
     /// A `Single` that streams the authorization status of the notifications, on demand.
-    var status: Single<UNAuthorizationStatus> {
+    public var status: Single<UNAuthorizationStatus> {
         Single<UNAuthorizationStatus>
             .create(weak: self) { (self, observer) -> Disposable in
                 self.userNotificationCenter.getAuthorizationStatus(completionHandler: { status in
@@ -98,7 +98,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationStatusPro
 extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
     /// Registers for remote notifications ONLY if the authorization status is `.authorized`.
     /// Should be called at the application startup after first initializing Firebase Messaging.
-    func registerForRemoteNotificationsIfAuthorized() -> Single<Void> {
+    public func registerForRemoteNotificationsIfAuthorized() -> Single<Void> {
         isAuthorized
             .map { isAuthorized -> Void in
                 guard isAuthorized else {
@@ -123,7 +123,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
 extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting {
     // TODO: Handle a `.denied` case
     /// Request authorization for remote notifications if the status is not yet determined.
-    func requestAuthorizationIfNeeded() -> Single<Void> {
+    public func requestAuthorizationIfNeeded() -> Single<Void> {
         isNotDetermined
             .map { isNotDetermined -> Void in
                 guard isNotDetermined else {
