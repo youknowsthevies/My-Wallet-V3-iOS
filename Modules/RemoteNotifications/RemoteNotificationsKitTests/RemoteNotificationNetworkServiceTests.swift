@@ -16,6 +16,13 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
         case failure = "remote-notification-registration-failure"
     }
 
+    override class func setUp() {
+        DependencyContainer.defined(by: modules {
+            DependencyContainer.toolKit;
+            DependencyContainer.networkKit;
+        })
+    }
+
     func testHttpCodeOkWithSuccess() {
         let token = "remote-notification-token"
         let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
