@@ -84,6 +84,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: NabuAnalyticsDataKitTests
         randomExecutionOrder: true
+      - name: RemoteNotificationsKitTests
+        randomExecutionOrder: true
 schemes:
   Blockchain:
     templateAttributes:
@@ -519,6 +521,7 @@ targets:
     - target: SettingsKit
     - target: SharedPackagesKit
     - target: UIComponentsKit
+    - target: RemoteNotificationsKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
@@ -1363,5 +1366,36 @@ targets:
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: WalletPayload
+    templates:
+    - ModuleTests
+  RemoteNotificationsKit:
+    dependencies:
+    - carthage: RxCocoa
+    - carthage: RxRelay
+    - carthage: RxSwift
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: ToolKit
+    - target: AnalyticsKit
+    - target: NetworkKit
+    scheme:
+      testTargets:
+      - RemoteNotificationsKitTests
+    templateAttributes:
+      featureName: RemoteNotifications
+    templates:
+    - Module
+  RemoteNotificationsKitTests:
+    dependencies:
+    - target: RemoteNotificationsKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/RemoteNotificationsKit
+    templateAttributes:
+      featureName: RemoteNotifications
     templates:
     - ModuleTests
