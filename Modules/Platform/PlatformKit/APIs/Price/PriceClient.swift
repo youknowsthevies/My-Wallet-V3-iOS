@@ -115,7 +115,7 @@ final class PriceClient: PriceClientAPI {
         start: String,
         scale: String
     ) -> Single<[PriceQuoteAtTimeResponse]> {
-        priceSeriesPublisher(of: baseCurrencyCode, in: quoteCurrencyCode, start: scale, scale: scale)
+        priceSeriesPublisher(of: baseCurrencyCode, in: quoteCurrencyCode, start: start, scale: scale)
             .asObservable()
             .asSingle()
     }
