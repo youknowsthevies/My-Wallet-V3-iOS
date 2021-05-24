@@ -956,6 +956,8 @@ targets:
       path: TestKit/TestKit/Mocks/PlatformUIKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: KYCFeature
     templates:
@@ -1098,6 +1100,8 @@ targets:
       path: TestKit/TestKit/Mocks/PlatformUIKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: Platform
     templates:
@@ -1334,6 +1338,8 @@ targets:
       path: TestKit/TestKit/Mocks/PlatformUIKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: TransactionFeature
     templates:
@@ -1395,6 +1401,8 @@ targets:
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/RemoteNotificationsKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: RemoteNotifications
     templates:

@@ -18,6 +18,7 @@ import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import PolkadotKit
+import RemoteNotificationsKit
 import RIBs
 import RxSwift
 import SettingsKit
@@ -54,7 +55,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject private var deepLinkRouter: DeepLinkRouting
 
-    private lazy var remoteNotificationServiceContainer: RemoteNotificationServiceContainer = resolve()
+    private lazy var remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()
 
     @LazyInject(tag: DebugScreenContext.tag)
     private var debugCoordinator: DebugCoordinating
@@ -97,6 +98,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             DependencyContainer.analyticsKit;
             DependencyContainer.nabuAnalyticsDataKit;
             DependencyContainer.nabuAnalyticsKit;
+            DependencyContainer.remoteNotificationsKit;
             #if INTERNAL_BUILD
             DependencyContainer.debugUIKit;
             #endif

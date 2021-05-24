@@ -55,7 +55,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
             notificationRelay: relay,
             externalService: externalServiceProvider,
             networkService: networkService,
-            walletRepository: credentialsProvider
+            sharedKeyRepository: credentialsProvider,
+            guidRepository: credentialsProvider
         )
 
         let observable = service.sendTokenIfNeeded().toBlocking()
@@ -79,8 +80,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
             ),
-            networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: MockGuidSharedKeyRepositoryAPI()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -106,7 +107,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: MockGuidSharedKeyRepositoryAPI()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -131,7 +133,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: MockGuidSharedKeyRepositoryAPI()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -156,7 +159,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .failure(.registrationFailure)),
-            walletRepository: MockGuidSharedKeyRepositoryAPI()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()

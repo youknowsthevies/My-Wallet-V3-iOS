@@ -12,8 +12,9 @@ final class MockRemoteNotificationNetworkService: RemoteNotificationNetworkServi
         self.expectedResult = expectedResult
     }
 
-    func register(with token: String,
-                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void> {
+    func register(with deviceToken: String,
+                  sharedKeyProvider: SharedKeyRepositoryAPI,
+                  guidProvider: GuidRepositoryAPI) -> Single<Void> {
         expectedResult.single
     }
 }

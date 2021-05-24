@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import Blockchain
+@testable import AnalyticsKit
 import DIKit
 import PlatformKit
 @testable import RemoteNotificationsKit
@@ -19,9 +19,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             initialAuthorizationStatus: .notDetermined,
             expectedAuthorizationResult: .success(true)
         )
+        let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
-            analyticsRecorder: resolve(),
+            analyticsRecorder: analyticsProvider,
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -39,9 +40,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             initialAuthorizationStatus: .notDetermined,
             expectedAuthorizationResult: .failure(.init(info: "permission denied"))
         )
+        let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
-            analyticsRecorder: resolve(),
+            analyticsRecorder: analyticsProvider,
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -61,9 +63,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             initialAuthorizationStatus: .authorized,
             expectedAuthorizationResult: .success(true)
         )
+        let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
-            analyticsRecorder: resolve(),
+            analyticsRecorder: analyticsProvider,
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -87,9 +90,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             initialAuthorizationStatus: .authorized,
             expectedAuthorizationResult: .success(true)
         )
+        let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
-            analyticsRecorder: resolve(),
+            analyticsRecorder: analyticsProvider,
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -108,9 +112,10 @@ final class RemoteNotificationAuthorizerTests: XCTestCase {
             initialAuthorizationStatus: .notDetermined,
             expectedAuthorizationResult: .success(true)
         )
+        let analyticsProvider = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()])
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
-            analyticsRecorder: resolve(),
+            analyticsRecorder: analyticsProvider,
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )

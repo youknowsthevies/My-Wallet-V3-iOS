@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 
 /// Remote notification network service
-public final class RemoteNotificationNetworkService {
+final class RemoteNotificationNetworkService {
 
     // MARK: - Types
 
@@ -28,7 +28,7 @@ public final class RemoteNotificationNetworkService {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve()) {
+    init(networkAdapter: NetworkAdapterAPI = resolve()) {
         self.networkAdapter = networkAdapter
     }
 }
@@ -37,11 +37,12 @@ public final class RemoteNotificationNetworkService {
 
 extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
 
-    public func register(
+    func register(
         with token: String,
-        using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI
+        sharedKeyProvider: SharedKeyRepositoryAPI,
+        guidProvider: GuidRepositoryAPI
     ) -> Single<Void> {
-        registrationRequest(with: token, using: credentialsProvider)
+        registrationRequest(with: token, sharedKeyProvider: sharedKeyProvider, guidProvider: guidProvider)
             .flatMap(weak: self) { (self, request) -> Single<RegistrationResponseData> in
                 self.networkAdapter.perform(request: request)
             }
@@ -54,12 +55,13 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
 
     private func registrationRequest(
         with token: String,
-        using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI
+        sharedKeyProvider: SharedKeyRepositoryAPI,
+        guidProvider: GuidRepositoryAPI
     ) -> Single<NetworkRequest> {
         Single
             .zip(
-                credentialsProvider.sharedKey,
-                credentialsProvider.guid
+                sharedKeyProvider.sharedKey,
+                guidProvider.guid
             )
             .map { credentials -> RemoteNotificationTokenQueryParametersBuilder in
                 guard let guid: String = credentials.1, let sharedKey: String = credentials.0 else {

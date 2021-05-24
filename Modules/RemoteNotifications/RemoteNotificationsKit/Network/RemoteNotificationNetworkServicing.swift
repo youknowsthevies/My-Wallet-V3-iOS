@@ -5,5 +5,6 @@ import RxSwift
 
 public protocol RemoteNotificationNetworkServicing: class {
     func register(with deviceToken: String,
-                  using credentialsProvider: SharedKeyRepositoryAPI & GuidRepositoryAPI) -> Single<Void>
+                  sharedKeyProvider: SharedKeyRepositoryAPI,
+                  guidProvider: GuidRepositoryAPI) -> Single<Void>
 }

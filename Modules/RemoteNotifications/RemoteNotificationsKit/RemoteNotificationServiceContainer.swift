@@ -1,11 +1,19 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
-import RemoteNotificationsKit
 
 /// Remote notification service container provides maximum abstraction
 /// for notification authorization, registration, sending and emitting services.
-final class RemoteNotificationServiceContainer {
+
+public protocol RemoteNotificationServiceContaining {
+    var emitter: RemoteNotificationEmitting { get }
+    var authorizer: RemoteNotificationAuthorizing { get }
+    var backgroundReceiver: RemoteNotificationBackgroundReceiving { get }
+    var tokenSender: RemoteNotificationTokenSending { get }
+    var tokenReceiver: RemoteNotificationDeviceTokenReceiving { get }
+}
+
+final class RemoteNotificationServiceContainer: RemoteNotificationServiceContaining {
 
     // MARK: - Types
 
