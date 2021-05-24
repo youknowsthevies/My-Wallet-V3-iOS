@@ -35,12 +35,12 @@ final class RemoteNotificationService: RemoteNotificationServicing {
     // MARK: - Setup
 
     init(authorizer: RemoteNotificationAuthorizing = resolve(),
-                notificationRelay: RemoteNotificationEmitting = resolve(),
-                backgroundReceiver: RemoteNotificationBackgroundReceiving = resolve(),
-                externalService: ExternalNotificationProviding = resolve(),
-                networkService: RemoteNotificationNetworkServicing = resolve(),
-                sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
-                guidRepository: GuidRepositoryAPI = resolve()) {
+         notificationRelay: RemoteNotificationEmitting = resolve(),
+         backgroundReceiver: RemoteNotificationBackgroundReceiving = resolve(),
+         externalService: ExternalNotificationProviding = resolve(),
+         networkService: RemoteNotificationNetworkServicing = resolve(),
+         sharedKeyRepository: SharedKeyRepositoryAPI = resolve(),
+         guidRepository: GuidRepositoryAPI = resolve()) {
         self.authorizer = authorizer
         self.externalService = externalService
         self.networkService = networkService
