@@ -4,7 +4,7 @@ import DIKit
 import Foundation
 import SettingsKit
 
-class ContextProvider: ContextProviderAPI {
+final class ContextProvider: ContextProviderAPI {
 
     private let settings: BlockchainSettings.App
     private let timeZone: TimeZone

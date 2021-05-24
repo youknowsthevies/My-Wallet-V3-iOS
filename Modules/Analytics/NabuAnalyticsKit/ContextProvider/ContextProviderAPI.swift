@@ -3,6 +3,7 @@
 import Foundation
 
 protocol ContextProviderAPI {
+    
     var context: Context { get }
     var anonymousId: String? { get }
 }

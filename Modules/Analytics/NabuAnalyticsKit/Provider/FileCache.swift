@@ -2,7 +2,7 @@
 
 import Foundation
 
-class FileCache {
+final class FileCache {
 
     private enum Constants {
         enum AnalyticsFile {

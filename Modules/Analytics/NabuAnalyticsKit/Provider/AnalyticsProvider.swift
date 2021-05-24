@@ -6,11 +6,11 @@ import CombineExt
 import DIKit
 import Foundation
 
-public class AnalyticsProvider: AnalyticsServiceProviding {
+public final class AnalyticsProvider: AnalyticsServiceProviding {
 
     private enum Constants {
         static let batchSize = 20
-        static let updateRate: TimeInterval = 30
+        static let updateLatency: TimeInterval = 30
     }
 
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
@@ -25,9 +25,8 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
     @Published private var events = [Event]()
 
     public init(queue: DispatchQueue = DispatchQueue(label: "NabuAnalyticsProvider", qos: .background)) {
-
         let updateRateTimer = Timer
-            .publish(every: Constants.updateRate, on: .main, in: .default)
+            .publish(every: Constants.updateLatency, on: .main, in: .default)
             .autoconnect()
             .receive(on: queue)
             .withLatestFrom($events)
@@ -52,7 +51,7 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
         NotificationCenter.default
             .publisher(for: UIApplication.willEnterForegroundNotification)
             .receive(on: queue)
-            .compactMap { _ in self.fileCache.read() }
+            .compactMap { [fileCache] _ in fileCache.read() }
             .filter { !$0.isEmpty }
             .removeDuplicates()
             .sink(receiveValue: send)
@@ -66,8 +65,13 @@ public class AnalyticsProvider: AnalyticsServiceProviding {
     private func send(events: [Event]) {
         self.events = self.events.filter { !events.contains($0) }
         nabuAnalyticsService.publish(events: EventsWrapper(contextProvider: contextProvider, events: events))
-            .sink() { [unowned self] _ in
-                self.fileCache.save(events: events)
+            .sink() { [fileCache] completion in
+                switch completion {
+                case .failure:
+                    fileCache.save(events: events)
+                case .finished:
+                    break
+                }
             } receiveValue: { _ in /* NOOP */ }
             .store(in: &cancellables)
     }

@@ -10,7 +10,7 @@ protocol TokenRepositoryAPI {
     var token: AnyPublisher<String?, Never> { get }
 }
 
-class TokenRepository: TokenRepositoryAPI {
+final class TokenRepository: TokenRepositoryAPI {
 
     let token: AnyPublisher<String?, Never>
 
