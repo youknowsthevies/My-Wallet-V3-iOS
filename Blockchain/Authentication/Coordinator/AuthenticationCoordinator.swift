@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BitcoinKit
 import Combine
 import DIKit
@@ -68,6 +69,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
     @LazyInject private var coincore: Coincore
+
+    @LazyInject private var analyticsRecoder: AnalyticsEventRecorderAPI
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
@@ -181,6 +184,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             .disposed(by: bag)
 
         NotificationCenter.default.post(name: .login, object: nil)
+        analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedIn)
 
         if isCreatingWallet {
             if featureFlagsService.isEnabled(.showEmailVerificationAtLogin) {
@@ -224,6 +228,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         WalletManager.shared.close()
 
         NotificationCenter.default.post(name: .logout, object: nil)
+        analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedOut)
 
         let sift: SiftServiceAPI = resolve()
         sift.removeUserId()
