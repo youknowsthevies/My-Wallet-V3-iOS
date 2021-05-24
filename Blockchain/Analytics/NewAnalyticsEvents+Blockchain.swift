@@ -21,7 +21,7 @@ extension AnalyticsEvents {
             }
 
             var params: [String : Any]? {
-                return [
+                [
                     "platform": "WALLET"
                 ]
             }
