@@ -59,7 +59,7 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void> {
-        return authorizer.isAuthorized
+        authorizer.isAuthorized
             .filter { isAuthorized in
                 guard isAuthorized else {
                     throw ServiceError.unauthorizedRemoteNotificationsPermission

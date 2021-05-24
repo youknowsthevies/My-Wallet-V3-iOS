@@ -80,6 +80,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTokenResult: .success("firebase-token-value"),
                 expectedTopicSubscriptionResult: .success(())
             ),
+            networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
             sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
             guidRepository: MockGuidSharedKeyRepositoryAPI()
         )

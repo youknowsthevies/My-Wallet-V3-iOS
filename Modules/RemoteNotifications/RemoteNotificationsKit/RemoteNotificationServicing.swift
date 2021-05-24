@@ -29,7 +29,7 @@ public protocol RemoteNotificationBackgroundReceiving: AnyObject {
 }
 
 /// An umbrella protocol that represents a single entry to common notification services
-public protocol RemoteNotificationServicing: AnyObject {
+protocol RemoteNotificationServicing: AnyObject {
     var relay: RemoteNotificationEmitting { get }
     var backgroundReceiver: RemoteNotificationBackgroundReceiving { get }
     var authorizer: RemoteNotificationAuthorizing { get }

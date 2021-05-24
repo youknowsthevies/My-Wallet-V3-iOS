@@ -2,7 +2,7 @@
 
 import UIKit
 
-public protocol UIApplicationRemoteNotificationsAPI: class {
+protocol UIApplicationRemoteNotificationsAPI: class {
     func registerForRemoteNotifications()
 }
 

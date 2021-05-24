@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import UserNotifications
-
 @testable import RemoteNotificationsKit
 
 final class MockUNUserNotificationCenter: UNUserNotificationCenterAPI {
