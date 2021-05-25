@@ -137,10 +137,14 @@ public final class SelectionButtonViewModel: IdentifiableType {
     }
 
     /// Accessibility for the title
-    public let titleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
+    public let titleAccessibilityRelay = BehaviorRelay<Accessibility>(
+        value: .id(Accessibility.Identifier.ContentLabelView.title)
+    )
 
     /// Accessibility for the subtitle
-    public let subtitleAccessibilityRelay = BehaviorRelay<Accessibility>(value: .none)
+    public let subtitleAccessibilityRelay = BehaviorRelay<Accessibility>(
+        value: .id(Accessibility.Identifier.ContentLabelView.description)
+    )
 
     /// Accessibility content relay
     public let accessibilityContentRelay = BehaviorRelay<AccessibilityContent>(value: .empty)
