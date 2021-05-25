@@ -1378,7 +1378,6 @@ targets:
     dependencies:
     - carthage: RxCocoa
     - carthage: RxRelay
-    - carthage: RxSwift
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
