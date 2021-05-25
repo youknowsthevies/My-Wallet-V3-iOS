@@ -90,6 +90,10 @@ extension Accessibility {
     public static func id(_ rawValue: String) -> Accessibility {
         .init(id: .value(rawValue))
     }
+
+    public static func label(_ rawValue: String) -> Accessibility {
+        .init(label: .value(rawValue))
+    }
 }
 
 extension Accessibility: Equatable {

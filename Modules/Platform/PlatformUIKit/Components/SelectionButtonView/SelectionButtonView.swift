@@ -147,16 +147,8 @@ public final class SelectionButtonView: UIView {
     private let leadingLabel = UILabel()
     private let separatorView = UIView()
     private let labelsStackView = UIStackView()
-    private let titleLabel: UILabel = {
-        let titleLabel = UILabel()
-        titleLabel.accessibility = .id(Accessibility.Identifier.ContentLabelView.title)
-        return titleLabel
-    }()
-    private let subtitleLabel: UILabel = {
-        let titleLabel = UILabel()
-        titleLabel.accessibility = .id(Accessibility.Identifier.ContentLabelView.description)
-        return titleLabel
-    }()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
     private let trailingImageView = UIImageView()
     private let button = UIButton()
 
