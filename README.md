@@ -16,6 +16,10 @@ After installing Xcode, open it to begin the Command Line Tools installation. Af
 
     $ git submodule update --init
 
+If the submodules are not fetched, run:
+
+    $ git submodule update --recursive --force
+
 ## Install `homebrew`
 
 https://brew.sh/
