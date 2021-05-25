@@ -4,14 +4,14 @@ import Combine
 import NetworkKit
 
 public enum AnalyticsEventsDataError: Error {
-    
+
     /// A network error
     case network(NetworkError)
 }
 
 /// Publishes the analytics events to the store
 public protocol AnalyticsEventsRepositoryAPI {
-    
+
     /// Publishes the analytics events to the store
     /// - Parameters:
     ///   - events: the `Encodable` analytics event payload

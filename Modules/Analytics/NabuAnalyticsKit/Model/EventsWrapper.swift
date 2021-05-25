@@ -7,7 +7,7 @@ struct EventsWrapper: Encodable {
     let context: Context
     let events: [Event]
 
-    init(contextProvider: ContextProviding, events: [Event]) {
+    init(contextProvider: ContextProviderAPI, events: [Event]) {
         self.id = contextProvider.anonymousId
         self.context = contextProvider.context
         self.events = events

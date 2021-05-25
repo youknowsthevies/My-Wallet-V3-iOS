@@ -2,33 +2,77 @@
 
 import AnalyticsKit
 import Combine
+import CombineExt
 import DIKit
 import Foundation
 
-public class AnalyticsProvider: AnalyticsServiceProviding {
-    
-    private enum Constant {
-        static let retryCount = 3
+public final class AnalyticsProvider: AnalyticsServiceProviding {
+
+    private enum Constants {
+        static let batchSize = 20
+        static let updateLatency: TimeInterval = 30
     }
-    
+
     public var supportedEventTypes: [AnalyticsEventType] = [.new]
-    
+
     @LazyInject private var nabuAnalyticsService: AnalyticsEventServiceAPI
-    @LazyInject private var contextProvider: ContextProviding
+    @LazyInject private var contextProvider: ContextProviderAPI
+
+    private let fileCache = FileCache()
 
     private var cancellables = Set<AnyCancellable>()
 
-    public init() { }
+    @Published private var events = [Event]()
+
+    public init(queue: DispatchQueue = DispatchQueue(label: "NabuAnalyticsProvider", qos: .background)) {
+        let updateRateTimer = Timer
+            .publish(every: Constants.updateLatency, on: .main, in: .default)
+            .autoconnect()
+            .receive(on: queue)
+            .withLatestFrom($events)
+
+        let batchFull = $events
+            .filter { $0.count >= Constants.batchSize }
+            .receive(on: queue)
+
+        let enteredBackground = NotificationCenter.default
+            .publisher(for: UIApplication.willResignActiveNotification)
+            .receive(on: queue)
+            .withLatestFrom($events)
+
+        updateRateTimer
+            .merge(with: batchFull)
+            .merge(with: enteredBackground)
+            .filter { !$0.isEmpty }
+            .removeDuplicates()
+            .sink(receiveValue: send)
+            .store(in: &cancellables)
+
+        NotificationCenter.default
+            .publisher(for: UIApplication.willEnterForegroundNotification)
+            .receive(on: queue)
+            .compactMap { [fileCache] _ in fileCache.read() }
+            .filter { !$0.isEmpty }
+            .removeDuplicates()
+            .sink(receiveValue: send)
+            .store(in: &cancellables)
+    }
 
     public func trackEvent(title: String, parameters: [String: Any]?) {
-        let event = Event(title: title, properties: parameters)
-        // TODO: IOS-4556 - batching
-        let eventsWrapper = EventsWrapper(contextProvider: contextProvider, events: [event])
-        nabuAnalyticsService.publish(events: eventsWrapper)
-            .retry(Constant.retryCount)
-            .sink() { (error) in
-                print(error) // TODO: IOS-4556 - persistence
-            } receiveValue: { _ in }
+        events.append(Event(title: title, properties: parameters))
+    }
+
+    private func send(events: [Event]) {
+        self.events = self.events.filter { !events.contains($0) }
+        nabuAnalyticsService.publish(events: EventsWrapper(contextProvider: contextProvider, events: events))
+            .sink() { [fileCache] completion in
+                switch completion {
+                case .failure:
+                    fileCache.save(events: events)
+                case .finished:
+                    break
+                }
+            } receiveValue: { _ in /* NOOP */ }
             .store(in: &cancellables)
     }
 }
