@@ -1,10 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import UIKit
 import RxSwift
+import UIKit
 
 /// A protocol that encapsulates the sending of a pre-known notification token
 public protocol RemoteNotificationTokenSending: AnyObject {
+    /// Sends the token. Only if remote notification permission was pre-authorized.
+    /// Typically called after the user has identified himself with his PIN since the
+    /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void>
 }
 

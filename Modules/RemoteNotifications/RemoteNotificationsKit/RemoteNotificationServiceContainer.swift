@@ -30,6 +30,7 @@ final class RemoteNotificationServiceContainer: RemoteNotificationServiceContain
         service.authorizer
     }
 
+    /// Receiver of data/background notifications
     var backgroundReceiver: RemoteNotificationBackgroundReceiving {
         service.backgroundReceiver
     }

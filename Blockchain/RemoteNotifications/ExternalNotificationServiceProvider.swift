@@ -12,8 +12,6 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
 
     // MARK: - Properties
 
-    /// A `Single` that streams the token value if exist and not empty or `nil`.
-    /// Throws an error (`RemoteNotificationTokenFetchError`) in case the service has failed or if the token came out empty.
     var token: Single<String> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
@@ -38,9 +36,6 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
         self.messagingService = messagingService
     }
 
-    /// Subscribes to a given topic so the client will be able to receive notifications for it.
-    /// - Parameter topic: the topic that the client should subscribe to.
-    /// - Returns: A `Single` acknowledges the subscription.
     func subscribe(to topic: RemoteNotification.Topic) -> Single<Void> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
@@ -55,7 +50,6 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
         }
     }
 
-    // Let the messaging service know about the new token
     func didReceiveNewApnsToken(token: Data) {
         messagingService.apnsToken = token
     }

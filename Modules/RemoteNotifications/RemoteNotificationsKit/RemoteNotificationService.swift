@@ -53,10 +53,6 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 // MARK: - RemoteNotificationTokenSending
 
 extension RemoteNotificationService: RemoteNotificationTokenSending {
-
-    /// Sends the token. Only if remote notification permission was pre-authorized.
-    /// Typically called after the user has identified himself with his PIN since the
-    /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void> {
         authorizer.isAuthorized
             .filter { isAuthorized in
