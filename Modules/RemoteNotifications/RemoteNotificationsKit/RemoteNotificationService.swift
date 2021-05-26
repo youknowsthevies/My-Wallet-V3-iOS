@@ -14,7 +14,6 @@ final class RemoteNotificationService: RemoteNotificationServicing {
 
     private enum ServiceError: Error {
         case unauthorizedRemoteNotificationsPermission
-        case missingWalletRepository
     }
 
     // MARK: - RemoteNotificationServicing (services)
