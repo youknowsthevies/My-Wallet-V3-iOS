@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import KYCKit
 import Localization
@@ -73,6 +74,8 @@ final class KYCCoordinator: KYCRouterAPI {
     private let tiersService: KYCTiersServiceAPI
     private let networkAdapter: NetworkAdapterAPI
     private let analyticsRecorder: AnalyticsEventRecording
+    private var errorRecorder: ErrorRecording
+    private var alertPresenter: AlertViewPresenterAPI
     private let dataRepository: DataRepositoryAPI
     private let requestBuilder: RequestBuilder
 
@@ -101,18 +104,23 @@ final class KYCCoordinator: KYCRouterAPI {
         kycFinishedRelay.asObservable()
     }
 
-    init(requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
-         webViewServiceAPI: WebViewServiceAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve(),
-         appSettings: AppSettingsAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         dataRepository: DataRepositoryAPI = resolve(),
-         kycSettings: KYCSettingsAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
+    init(
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
+        webViewServiceAPI: WebViewServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        appSettings: AppSettingsAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecording = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        alertPresenter: AlertViewPresenterAPI = resolve(),
+        dataRepository: DataRepositoryAPI = resolve(),
+        kycSettings: KYCSettingsAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.requestBuilder = requestBuilder
         self.analyticsRecorder = analyticsRecorder
+        self.errorRecorder = errorRecorder
+        self.alertPresenter = alertPresenter
         self.dataRepository = dataRepository
         self.webViewServiceAPI = webViewServiceAPI
         self.tiersService = tiersService
@@ -156,8 +164,10 @@ final class KYCCoordinator: KYCRouterAPI {
         }
     
         loadingViewPresenter.show(with: LocalizationConstants.loading)
-        let postTierObservable = post(tier: tier).asObservable()
-        let userObservable = dataRepository.fetchNabuUser().asObservable()
+        let postTierObservable = post(tier: tier)
+            .asObservable()
+        let userObservable = dataRepository.fetchNabuUser()
+            .asObservable()
 
         let disposable = Observable.zip(userObservable, postTierObservable)
             .subscribeOn(MainScheduler.asyncInstance)
@@ -183,9 +193,10 @@ final class KYCCoordinator: KYCRouterAPI {
 
                 strongSelf.initializeNavigationStack(viewController, user: user, tier: tier)
                 strongSelf.restoreToMostRecentPageIfNeeded(tier: tier)
-            }, onError: { error in
+            }, onError: { [weak self] error in
                 Logger.shared.error("Failed to get user: \(error.localizedDescription)")
-                AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                self?.errorRecorder.error(error)
+                self?.alertPresenter.notify(content: .init(title: "Failed to get user", message: error.localizedDescription), in: viewController)
             })
         disposables.insertWithDiscardableResult(disposable)
     }
@@ -433,7 +444,6 @@ final class KYCCoordinator: KYCRouterAPI {
     }
 
     private func handleFailurePage(for error: KYCPageError) {
-
         let informationViewController = KYCInformationController.make(with: self)
         informationViewController.viewConfig = KYCInformationViewConfig(
             titleColor: UIColor.gray5,
@@ -507,20 +517,22 @@ final class KYCCoordinator: KYCRouterAPI {
         }
     }
 
-    private func post(tier: KYC.Tier) -> Single<KYC.UserTiers> {
+    private func post(tier: KYC.Tier) -> AnyPublisher<KYC.UserTiers, NabuNetworkError> {
         let body = KYCTierPostBody(selectedTier: tier)
         guard let request = requestBuilder.post(
             path: ["kyc", "tiers"],
             body: try? JSONEncoder().encode(body),
             authenticated: true
         ) else {
-            return .error(RequestBuilder.Error.buildingRequest)
-        }
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
+            return .failure(
+                NabuNetworkError.communicatorError(
+                    .payloadError(
+                        .badData(rawPayload: String(describing: body))
+                    )
+                )
             )
+        }
+        return networkAdapter.perform(request: request)
     }
 
     @discardableResult private func presentInNavigationController(
