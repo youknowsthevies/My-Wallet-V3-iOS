@@ -24,6 +24,18 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
          statusService: ExchangeAccountStatusServiceAPI = resolve()) {
         self.statusService = statusService
         self.client = client
+        NotificationCenter.when(.login) { [weak self] _ in
+            guard let self = self else { return }
+            self.storage.mutate { cache in
+                cache.removeAll()
+            }
+        }
+        NotificationCenter.when(.logout) { [weak self] _ in
+            guard let self = self else { return }
+            self.storage.mutate { cache in
+                cache.removeAll()
+            }
+        }
     }
 
     // MARK: - ExchangeAccountsProviderAPI
