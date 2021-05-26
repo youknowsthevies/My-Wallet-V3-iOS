@@ -104,6 +104,7 @@ class BitcoinCashAsset: CryptoAsset {
         let asset = self.asset
         return exchangeAccountProvider
             .account(for: asset)
+            .optional()
             .catchError { error in
                 /// TODO: This shouldn't prevent users from seeing all accounts.
                 /// Potentially return nil should this fail.

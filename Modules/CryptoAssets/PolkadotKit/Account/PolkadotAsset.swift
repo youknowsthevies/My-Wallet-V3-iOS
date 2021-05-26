@@ -75,6 +75,7 @@ final class PolkadotAsset: CryptoAsset {
     private var exchangeGroup: Single<AccountGroup> {
         exchangeAccountProvider
             .account(for: asset)
+            .optional()
             .catchError { error in
                 /// TODO: This shouldn't prevent users from seeing all accounts.
                 /// Potentially return nil should this fail.
