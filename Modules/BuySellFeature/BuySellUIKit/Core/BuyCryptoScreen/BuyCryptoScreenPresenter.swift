@@ -69,8 +69,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.paymentMethodTypes.map { $0.count }
             )
             .observeOn(MainScheduler.asyncInstance)
-            .do(onError: { [weak self] error in
-                self?.handle(error)
+            .do(onError: { [weak self] _ in
+                self?.router.showFailureAlert()
             })
             .catchError { _ -> Observable<(PaymentMethodType?, Int)> in
                 .empty()
@@ -174,8 +174,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                             self?.stateService.kyc(with: checkoutData)
                         }
                     }
-                case .failure(let error):
-                    self.handle(error)
+                case .failure:
+                    self.handleError()
                 }
             }
             .disposed(by: disposeBag)
@@ -203,10 +203,10 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 .just(.invalid(ValueCalculationState<SupportedPairs>.CalculationError.valueCouldNotBeCalculated))
             }
             .bindAndCatch(weak: self) { (self, state) in
-                guard case let .invalid(error) = state, error == .valueCouldNotBeCalculated else {
+                guard case .invalid(.valueCouldNotBeCalculated) = state else {
                     return
                 }
-                self.handle(error)
+                self.handleError()
             }
             .disposed(by: disposeBag)
     }
@@ -220,7 +220,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .subscribe(
                 onSuccess: completion,
                 onError: { [weak self] error in
-                    self?.handle(error)
+                    self?.handleError()
                 }
             )
             .disposed(by: disposeBag)

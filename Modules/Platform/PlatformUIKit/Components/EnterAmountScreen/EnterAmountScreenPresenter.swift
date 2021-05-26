@@ -61,7 +61,6 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public let displayBundle: DisplayBundle
     public let inputTypeToggleVisiblity: Visibility
 
-    private let errorRecorder: ErrorRecording
     private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
     
@@ -71,20 +70,16 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     
     // MARK: - Setup
     
-    public init(
-        loader: LoadingViewPresenting = resolve(),
-        alert: AlertViewPresenterAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-        errorRecorder: ErrorRecording = resolve(),
-        inputTypeToggleVisibility: Visibility,
-        backwardsNavigation: @escaping () -> Void,
-        displayBundle: DisplayBundle,
-        interactor: EnterAmountScreenInteractor
-    ) {
+    public init(loader: LoadingViewPresenting = resolve(),
+                alert: AlertViewPresenterAPI = resolve(),
+                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+                inputTypeToggleVisibility: Visibility,
+                backwardsNavigation: @escaping () -> Void,
+                displayBundle: DisplayBundle,
+                interactor: EnterAmountScreenInteractor) {
         self.loader = loader
         self.alert = alert
         self.analyticsRecorder = analyticsRecorder
-        self.errorRecorder = errorRecorder
         self.interactor = interactor
         self.backwardsNavigation = backwardsNavigation
         self.title = displayBundle.strings.title
@@ -171,18 +166,10 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         backwardsNavigation()
     }
             
-    public func handle(_ error: Error) {
-        errorRecorder.error(error)
-        Logger.shared.error(error.localizedDescription)
+    public func handleError() {
         analyticsRecorder.record(event: displayBundle.events.confirmFailure)
         loader.hide()
-        alert.notify(
-            content: AlertViewContent(
-                title: "Something went wrong. Please try again later.",
-                message: error.localizedDescription
-            ),
-            in: nil
-        )
+        alert.error(in: nil, action: nil)
     }
 
     private static func digitPadViewModel() -> DigitPadViewModel {

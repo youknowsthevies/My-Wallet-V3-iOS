@@ -122,7 +122,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                     }
                 }
             case .failure(let error):
-                self.handle(error)
+                self.handleError()
             }
         }
         .disposed(by: disposeBag)
@@ -132,12 +132,13 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     
     private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
                              with completion: @escaping (CheckoutData) -> Void) {
+        
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
                 onError: { [weak self] error in
-                    self?.handle(error)
+                    self?.handleError()
                 }
             )
             .disposed(by: disposeBag)
