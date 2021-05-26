@@ -50,18 +50,24 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
     }
 
     private func fetchAccount(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount> {
-        client.exchangeAddress(with: currency)
-            .map { response in
-                CryptoExchangeAccount(response: response)
-            }
-            .do(onSuccess: { [weak self] account in
-                self?.storage.mutate { cache in
-                    cache[currency] = account
+        statusService.hasLinkedExchangeAccount
+            .flatMap(weak: self) { (self, hasLinkedExchangeAccount) -> Single<CryptoExchangeAccount> in
+                guard hasLinkedExchangeAccount else {
+                    return .error(ExchangeAccountsNetworkError.missingAccount)
                 }
-            })
-            .catchError { error -> Single<CryptoExchangeAccount> in
-                Logger.shared.debug("Fetch Error: \(currency.code)")
-                throw ExchangeAccountsNetworkError.missingAccount
+                return self.client.exchangeAddress(with: currency)
+                    .map { response in
+                        CryptoExchangeAccount(response: response)
+                    }
+                    .do(onSuccess: { [weak self] account in
+                        self?.storage.mutate { cache in
+                            cache[currency] = account
+                        }
+                    })
+                    .catchError { error -> Single<CryptoExchangeAccount> in
+                        Logger.shared.debug("Fetch Error: \(currency.code)")
+                        throw ExchangeAccountsNetworkError.missingAccount
+                    }
             }
     }
 }
