@@ -25,16 +25,31 @@ final class TransactionAnalyticsHook {
         }
     }
 
-    func onAccountSelected(_ account: CurrencyType) {
-        analyticsRecorder.record(event: SwapAnalyticsEvent.fromAccountSelected)
+    func onAccountSelected(_ account: CurrencyType, action: AssetAction) {
+        switch action {
+        case .swap:
+            analyticsRecorder.record(event: SwapAnalyticsEvent.fromAccountSelected)
+        default:
+            return
+        }
     }
 
-    func onPairConfirmed(_ account: CurrencyType, target: TransactionTarget) {
-        analyticsRecorder.record(event: SwapAnalyticsEvent.swapConfirmPair(asset: account, target: target.label))
+    func onPairConfirmed(_ account: CurrencyType, target: TransactionTarget, action: AssetAction) {
+        switch action {
+        case .swap:
+            analyticsRecorder.record(event: SwapAnalyticsEvent.swapConfirmPair(asset: account, target: target.label))
+        default:
+            return
+        }
     }
 
-    func onClose() {
-        analyticsRecorder.record(event: SwapAnalyticsEvent.cancelTransaction)
+    func onClose(action: AssetAction) {
+        switch action {
+        case .swap:
+            analyticsRecorder.record(event: SwapAnalyticsEvent.cancelTransaction)
+        default:
+            return
+        }
     }
 
     func onEnterAmountContinue(with state: TransactionState) {

@@ -47,8 +47,10 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        let sent = transactionModel
-            .state
+        let transactionState = transactionModel.state
+            .share(replay: 1)
+        
+        let sent: Observable<MoneyValue> = transactionState
             .map { [crashOnError] state -> MoneyValue in
                 switch state.moneyValueFromSource() {
                 case .success(let value):
@@ -64,43 +66,31 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 }
             }
 
-        let received = transactionModel
-            .state
+        let received: Observable<MoneyValue?> = transactionState
             .map { [crashOnError] state -> MoneyValue? in
                 switch state.moneyValueFromDestination() {
                 case .success(let value):
                     return value
                 case .failure(let error):
-                    guard let destination = state.destination else {
-                        fatalError("No state.destination")
-                    }
-                    let currencyType: CurrencyType
-                    switch destination {
-                    case let account as SingleAccount:
-                        currencyType = account.currencyType
-                    case let cryptoTarget as CryptoTarget:
-                        currencyType = cryptoTarget.asset.currency
-                    default:
-                        fatalError("Unsupported state.destination: \(String(reflecting: destination))")
-                    }
                     if crashOnError {
                         fatalError(error.localizedDescription)
                     }
-                    return .zero(currency: currencyType)
+                    switch state.destination {
+                    case nil:
+                        return nil
+                    case let account as SingleAccount:
+                        return MoneyValue.zero(currency: account.currencyType)
+                    case let cryptoTarget as CryptoTarget:
+                        return MoneyValue.zero(currency: cryptoTarget.asset)
+                    default:
+                        fatalError("Unsupported state.destination: \(String(reflecting: state.destination))")
+                    }
                 }
             }
 
-        let action = transactionModel
-            .state
-            .map(\.action)
-
-        let destination = transactionModel
-            .state
-            .compactMap(\.destination)
-
-        let executionStatus = transactionModel
-            .state
-            .map(\.executionStatus)
+        let action = transactionState.map(\.action)
+        let destination = transactionState.compactMap(\.destination)
+        let executionStatus = transactionState.map(\.executionStatus)
 
         let interactorState = Observable
             .combineLatest(sent, received, destination, executionStatus, action)
@@ -119,7 +109,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
         executionStatus
             .asObservable()
-            .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .withLatestFrom(transactionState) { ($0, $1) }
             .subscribe(onNext: { [weak self] (executionStatus, transactionState) in
                 switch executionStatus {
                 case .inProgress, .notStarted:
@@ -184,6 +174,14 @@ extension PendingTransactionPageInteractor {
             buttonViewModel == nil ? .hidden : .visible
         }
         let effects: PendingTransactionPageInteractor.Effects
+
+        private static var crashOnError: Bool = {
+            #if INTERNAL_BUILD
+            return true
+            #else
+            return false
+            #endif
+        }()
 
         private init(title: String,
                      subtitle: String,
@@ -340,21 +338,26 @@ extension PendingTransactionPageInteractor {
                     buttonViewModel: nil
                 )
             case .swap:
-                guard let receivedAmount = received else {
-                    fatalError("Expected an amount received.")
+                guard let received = received else {
+                    fatalError("Expected Valid Inputs. 'received' is nil.")
                 }
-                var title = String(
-                    format: SwapLocalizationIds.Pending.title,
-                    sent.displayString,
-                    receivedAmount.displayString
-                )
-                let zeroSent = MoneyValue.zero(currency: sent.currencyType)
-                let zeroReceived = MoneyValue.zero(currency: receivedAmount.currencyType)
-                if sent == zeroSent || received == zeroReceived {
+                let title: String
+                if !received.isZero, !sent.isZero {
+                    // If we have both sent and receive values:
+                    title = String(
+                        format: SwapLocalizationIds.Pending.title,
+                        sent.displayString,
+                        received.displayString
+                    )
+                } else if crashOnError {
+                    // If we have invalid inputs and we should crash:
+                    fatalError("Expected Valid Inputs. 'received': \(String(describing: received)). 'sent': \(sent)")
+                } else {
+                    // If we have invalid inputs but we should continue.
                     title = String(
                         format: SwapLocalizationIds.Pending.title,
                         sent.displayCode,
-                        receivedAmount.displayCode
+                        received.displayCode
                     )
                 }
                 return .init(

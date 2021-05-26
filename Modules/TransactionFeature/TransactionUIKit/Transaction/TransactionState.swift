@@ -10,7 +10,11 @@ struct TransactionState: Equatable, StateType {
     var allowFiatInput: Bool = false
     var availableSources: [BlockchainAccount] = []
     var availableTargets: [TransactionTarget] = []
-    var destination: TransactionTarget?
+    var destination: TransactionTarget? {
+        didSet {
+            Logger.shared.debug("TransactionTarget: \(String(describing: destination))")
+        }
+    }
     var destinationToFiatPair: MoneyValuePair?
     var errorState: TransactionErrorState = .none
     var executionStatus: TransactionExecutionStatus = .notStarted

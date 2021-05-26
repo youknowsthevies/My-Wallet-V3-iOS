@@ -121,7 +121,7 @@ final class TransactionModel {
         case .modifyTransactionConfirmation(let confirmation):
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .invalidateTransaction:
-            return proccessInvalidateTransaction()
+            return processInvalidateTransaction()
         }
     }
 
@@ -257,7 +257,7 @@ final class TransactionModel {
             })
     }
 
-    private func proccessInvalidateTransaction() -> Disposable {
+    private func processInvalidateTransaction() -> Disposable {
         interactor.invalidateTransaction()
             .subscribe()
     }
