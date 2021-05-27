@@ -1,13 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+@testable import KYCKit
 @testable import KYCUIKit
 import XCTest
 
 final class EmailVerificationReducerTests: XCTestCase {
 
     fileprivate struct RecordedInvocations {
-        var flowCompletionCallback: Int = 0
+        var flowCompletionCallback: [FlowResult] = []
     }
 
     fileprivate struct StubbedResults {
@@ -54,6 +55,16 @@ final class EmailVerificationReducerTests: XCTestCase {
         XCTAssertEqual(state.flowStep, .verifyEmailPrompt)
     }
 
+    func test_closes_flow_as_abandoned_when_closeButton_tapped() throws {
+        XCTAssertEqual(recordedInvocations.flowCompletionCallback, [])
+        testStore.assert(
+            .send(.closeButtonTapped),
+            .do {
+                XCTAssertEqual(self.recordedInvocations.flowCompletionCallback, [.abandoned])
+            }
+        )
+    }
+
     func test_loads_verificationStatus_when_app_opened_unverified() throws {
         testStore.assert(
             .send(.didEnterForeground),
@@ -61,7 +72,7 @@ final class EmailVerificationReducerTests: XCTestCase {
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
-            .receive(.didReceiveEmailVerficationResponse(.success(.unverified))),
+            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
             .receive(.presentStep(.verifyEmailPrompt)) {
                 $0.flowStep = .verifyEmailPrompt
             }
@@ -70,14 +81,14 @@ final class EmailVerificationReducerTests: XCTestCase {
 
     func test_loads_verificationStatus_when_app_opened_verified() throws {
         let mockService = testStore.environment.emailVerificationService as? MockEmailVerificationService
-        mockService?.stubbedResults.checkEmailVerificationStatus = .just(.verified)
+        mockService?.stubbedResults.checkEmailVerificationStatus = .just(.init(emailAddress: "test@example.com", status: .verified))
         testStore.assert(
             .send(.didEnterForeground),
             .receive(.loadVerificationState),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
-            .receive(.didReceiveEmailVerficationResponse(.success(.verified))),
+            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .verified)))),
             .receive(.presentStep(.emailVerifiedPrompt)) {
                 $0.flowStep = .emailVerifiedPrompt
             }
@@ -86,14 +97,14 @@ final class EmailVerificationReducerTests: XCTestCase {
 
     func test_loads_verificationStatus_when_app_opened_error() throws {
         let mockService = testStore.environment.emailVerificationService as? MockEmailVerificationService
-        mockService?.stubbedResults.checkEmailVerificationStatus = .failure(.nabuError(.mockError))
+        mockService?.stubbedResults.checkEmailVerificationStatus = .failure(.unknown(MockError.unknown))
         testStore.assert(
             .send(.didEnterForeground),
             .receive(.loadVerificationState),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
-            .receive(.didReceiveEmailVerficationResponse(.failure(.nabuError(.mockError)))) {
+            .receive(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown)))) {
                 $0.emailVerificationFailedAlert = AlertState(
                     title: TextState(L10n.GenericError.title),
                     message: TextState(L10n.EmailVerification.couldNotLoadVerificationStatusAlertMessage),
@@ -109,7 +120,7 @@ final class EmailVerificationReducerTests: XCTestCase {
 
     func test_dismisses_verification_status_error() throws {
         testStore.assert(
-            .send(.didReceiveEmailVerficationResponse(.failure(.nabuError(.mockError)))) {
+            .send(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown)))) {
                 $0.emailVerificationFailedAlert = AlertState(
                     title: TextState(L10n.GenericError.title),
                     message: TextState(L10n.EmailVerification.couldNotLoadVerificationStatusAlertMessage),
@@ -162,12 +173,12 @@ final class EmailVerificationReducerTests: XCTestCase {
 
     // MARK: Email Verified State Manipulation
 
-    func test_email_verified_continue_calls_flowCompletion() throws {
-        XCTAssertEqual(recordedInvocations.flowCompletionCallback, 0)
+    func test_email_verified_continue_calls_flowCompletion_as_completed() throws {
+        XCTAssertEqual(recordedInvocations.flowCompletionCallback, [])
         testStore.assert(
             .send(.emailVerified(.acknowledgeEmailVerification)),
             .do {
-                XCTAssertEqual(self.recordedInvocations.flowCompletionCallback, 1)
+                XCTAssertEqual(self.recordedInvocations.flowCompletionCallback, [.completed])
             }
         )
     }
@@ -362,8 +373,8 @@ final class EmailVerificationReducerTests: XCTestCase {
             reducer: emailVerificationReducer,
             environment: EmailVerificationEnvironment(
                 emailVerificationService: MockEmailVerificationService(),
-                flowCompletionCallback: { [weak self] in
-                    self?.recordedInvocations.flowCompletionCallback += 1
+                flowCompletionCallback: { [weak self] result in
+                    self?.recordedInvocations.flowCompletionCallback.append(result)
                 },
                 mainQueue: .immediate,
                 openMailApp: { [unowned self] in

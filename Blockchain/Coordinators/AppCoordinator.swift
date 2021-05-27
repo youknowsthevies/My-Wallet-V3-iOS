@@ -16,7 +16,7 @@ import WalletPayloadKit
 
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
-/// TICKET: https://blockchain.atlassian.net/browse/IOS-2619
+/// TICKET: IOS-2619
 @objc class AppCoordinator: NSObject, Coordinator, MainFlowProviding {
 
     // MARK: - Properties

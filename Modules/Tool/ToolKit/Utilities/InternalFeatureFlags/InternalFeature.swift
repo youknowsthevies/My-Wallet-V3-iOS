@@ -16,13 +16,20 @@ public enum InternalFeature: String, CaseIterable {
 
     /// Enable the new Pin/OnBoarding which uses ComposableArchitecture
     case newOnboarding
-    
 
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
 
+    // MARK: - Email Verification
+
     /// Shows Email Verification insted of Simple Buy at Login
     case showEmailVerificationAtLogin
+
+    /// Shows Email Verification, if needed, when a user tries to make a purchase
+    case showEmailVerificationInBuyFlow
+}
+
+extension InternalFeature {
 
     internal var defaultsKey: String {
         "internal-flag-\(rawValue)-key"

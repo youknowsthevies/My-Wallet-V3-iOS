@@ -124,7 +124,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             }
             .map { SwapLandingSelectionAction.items([$0]) }
             // TODO: implement empty state for trending pairs:
-            //  https://blockchain.atlassian.net/browse/IOS-4268
+            // TICKET: IOS-4268
             .catchErrorJustReturn(SwapLandingSelectionAction.items([]))
             .asDriverCatchError()
 

@@ -14,7 +14,7 @@ final class RouterTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockExternalAppOpener = MockExternalAppOpener()
-        router = .init(emailVerificationService: MockEmailVerificationService(), externalAppOpener: mockExternalAppOpener)
+        router = .init(emailVerificationService: MockEmailVerificationService(), openMailApp: mockExternalAppOpener.openMailApp)
     }
 
     override func tearDownWithError() throws {
@@ -25,7 +25,7 @@ final class RouterTests: XCTestCase {
 
     func test_routesTo_emailVerification() throws {
         let viewController = MockViewController()
-        router.routeToEmailVerification(from: viewController, emailAddress: "test@example.com", flowCompletion: {})
+        router.routeToEmailVerification(from: viewController, emailAddress: "test@example.com", flowCompletion: { _ in })
         let presentedViewController = viewController.recordedInvocations.presentViewController.first
         XCTAssertEqual(presentedViewController?.children.count, 1)
         let swiftUIHostingController = presentedViewController?.children.first as? UIHostingController<EmailVerificationView>
@@ -34,15 +34,15 @@ final class RouterTests: XCTestCase {
 
     func test_calls_back_to_passedIn_completionBlock() throws {
         var didCallCompletionBlock = false
-        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: {
+        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: { _ in
             didCallCompletionBlock = true
         })
-        environment.flowCompletionCallback?()
+        environment.flowCompletionCallback?(.completed)
         XCTAssertTrue(didCallCompletionBlock)
     }
 
     func test_uses_extenalAppOpener_to_openMailApp() throws {
-        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: {})
+        let environment = router.buildEmailVerificationEnvironment(emailAddress: "test@example.com", flowCompletion: { _ in })
         var valueReceived = false
         let e = expectation(description: "Wait for publisher to send value")
         let cancellable = environment.openMailApp()

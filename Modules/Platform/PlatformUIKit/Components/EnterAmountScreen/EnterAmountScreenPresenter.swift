@@ -166,7 +166,8 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         backwardsNavigation()
     }
 
-    public func handleError() {
+    public func handle(_ error: Error) {
+        Logger.shared.error(error)
         analyticsRecorder.record(event: displayBundle.events.confirmFailure)
         loader.hide()
         alert.error(in: nil, action: nil)

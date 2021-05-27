@@ -9,7 +9,7 @@ protocol AirdropCenterClientAPI: class {
     var campaigns: Single<AirdropCampaigns> { get }
 }
 
-/// TODO: Move into `PlatformKit` when https://blockchain.atlassian.net/browse/IOS-2724 is merged
+/// TODO: Move into `PlatformKit` when IOS-2724 is merged
 final class AirdropCenterClient: AirdropCenterClientAPI {
 
     // MARK: - Properties

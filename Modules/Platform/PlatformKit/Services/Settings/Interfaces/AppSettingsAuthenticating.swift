@@ -12,7 +12,7 @@ public protocol AppSettingsAuthenticating: AnyObject {
     var isPairedWithWallet: Bool { get }
 }
 
-// TICKET: https://blockchain.atlassian.net/browse/IOS-2738
+// TICKET: IOS-2738
 // TODO: Refactor BlockchainSettings.App/Onboarding Rx code to be thread-safe
 extension AppSettingsAuthenticating {
     public var pin: Single<String?> {

@@ -10,6 +10,7 @@ import DIKit
 import ERC20Kit
 import EthereumKit
 import KYCKit
+import KYCUIKit
 import NabuAnalyticsKit
 import PlatformKit
 import PlatformUIKit
@@ -356,5 +357,29 @@ extension DependencyContainer {
         // MARK: Helpers
 
         factory { UIApplication.shared as ExternalAppOpener }
+
+        // MARK: KYC Module
+
+        factory { () -> KYCUIKit.Routing in
+            let emailVerificationService: KYCKit.EmailVerificationServiceAPI = DIKit.resolve()
+            let externalAppOpener: ExternalAppOpener = DIKit.resolve()
+            return KYCUIKit.Router(
+                emailVerificationService: emailVerificationService,
+                openMailApp: externalAppOpener.openMailApp
+            )
+        }
+
+        factory { () -> KYCKit.EmailVerificationAPI in
+            EmailVerificationAdapter(settingsService: DIKit.resolve())
+        }
+
+        // MARK: Transactions Module
+
+        factory { () -> PlatformUIKit.KYCRouting  in
+            KYCAdapter(
+                router: DIKit.resolve(),
+                emailVerificationService: DIKit.resolve()
+            )
+        }
     }
 }

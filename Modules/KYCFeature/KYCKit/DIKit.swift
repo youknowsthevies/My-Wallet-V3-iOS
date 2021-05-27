@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import PlatformKit
 
 extension DependencyContainer {
 
@@ -13,6 +12,6 @@ extension DependencyContainer {
 
         factory { KYCStatusChecker() as KYCStatusChecking }
 
-        factory { EmailVerificationService() as EmailVerificationServiceAPI }
+        factory { EmailVerificationService(apiClient: DIKit.resolve()) as EmailVerificationServiceAPI }
     }
 }

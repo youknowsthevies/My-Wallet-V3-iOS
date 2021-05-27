@@ -4,16 +4,12 @@ import AnalyticsKit
 import BitcoinKit
 import Combine
 import DIKit
-import KYCKit
 import KYCUIKit
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import RxRelay
 import RxSwift
 import SettingsKit
 import ToolKit
-import WalletPayloadKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)
@@ -323,16 +319,15 @@ extension AuthenticationCoordinator: PairingWalletFetching {
                 guard let self = self, let viewController = viewController else {
                     fatalError("Check you're retaining this instances!")
                 }
-                let router = KYCUIKit.Router(
-                    emailVerificationService: resolve(),
-                    externalAppOpener: resolve()
-                )
+                let router: KYCUIKit.Routing = resolve()
                 router.routeToEmailVerification(
                     from: viewController,
                     emailAddress: emailAddress,
-                    flowCompletion: {
+                    flowCompletion: { [weak self] result in
                         viewController.dismiss(animated: true, completion: {
-                            self.presentSimpleBuyFlow()
+                            if result == .completed {
+                                self?.presentSimpleBuyFlow()
+                            }
                         })
                     }
                 )

@@ -1,10 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComposableArchitecture
 import KYCKit
-import SharedPackagesKit
 import SwiftUI
-import ToolKit
 import UIComponentsKit
 
 struct EmailVerificationHelpState: Equatable {
@@ -78,39 +77,38 @@ let emailVerificationHelpReducer = EmailVerificationHelpReducer { state, action,
 struct EmailVerificationHelpView: View {
 
     let store: Store<EmailVerificationHelpState, EmailVerificationHelpAction>
-    let viewStore: ViewStore<EmailVerificationHelpState, EmailVerificationHelpAction>
-
-    init(store: Store<EmailVerificationHelpState, EmailVerificationHelpAction>) {
-        self.store = store
-        self.viewStore = ViewStore(store)
-    }
 
     var body: some View {
-        ActionableView(
-            image: {
-                Image("email_verification_help", bundle: .kycUIKit)
-                    .accessibility(identifier: "KYC.EmailVerification.help.prompt.image")
-            },
-            title: L10n.EmailVerificationHelp.title,
-            message: L10n.EmailVerificationHelp.message,
-            buttons: [
-                .init(
-                    title: L10n.EmailVerificationHelp.sendEmailAgainButtonTitle,
-                    action: {
-                        viewStore.send(.sendVerificationEmail)
-                    },
-                    loading: viewStore.sendingVerificationEmail
-                ),
-                .init(
-                    title: L10n.EmailVerificationHelp.editEmailAddressButtonTitle,
-                    action: {
-                        viewStore.send(.editEmailAddress)
-                    }
-                )
-            ],
-            imageSpacing: 0
-        )
-        .alert(store.scope(state: \.sentFailedAlert), dismiss: .dismissEmailSendingFailureAlert)
+        WithViewStore(store) { viewStore in
+            ActionableView(
+                image: {
+                    Image("email_verification_help", bundle: .kycUIKit)
+                        .accessibility(identifier: "KYC.EmailVerification.help.prompt.image")
+                },
+                title: L10n.EmailVerificationHelp.title,
+                message: L10n.EmailVerificationHelp.message,
+                buttons: [
+                    .init(
+                        title: L10n.EmailVerificationHelp.sendEmailAgainButtonTitle,
+                        action: {
+                            viewStore.send(.sendVerificationEmail)
+                        },
+                        loading: viewStore.sendingVerificationEmail
+                    ),
+                    .init(
+                        title: L10n.EmailVerificationHelp.editEmailAddressButtonTitle,
+                        action: {
+                            viewStore.send(.editEmailAddress)
+                        }
+                    )
+                ],
+                imageSpacing: 0
+            )
+            .alert(
+                store.scope(state: \.sentFailedAlert),
+                dismiss: .dismissEmailSendingFailureAlert
+            )
+        }
         .background(Color.viewPrimaryBackground)
         .accessibility(identifier: "KYC.EmailVerification.help.container")
     }

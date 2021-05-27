@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
@@ -11,6 +12,12 @@ import ToolKit
 
 final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
+    private struct CTAData {
+        let kycState: KycState
+        let isSimpleBuyEligible: Bool
+        let candidateOrderDetails: CandidateOrderDetails
+    }
+
     // MARK: - Properties
 
     private let stateService: CheckoutServiceAPI
@@ -19,14 +26,19 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     private let disposeBag = DisposeBag()
 
-    init(router: RouterAPI,
-         stateService: CheckoutServiceAPI,
-         interactor: BuyCryptoScreenInteractor,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    private let featureFlagsService: InternalFeatureFlagServiceAPI
 
+    init(
+        router: RouterAPI,
+        stateService: CheckoutServiceAPI,
+        interactor: BuyCryptoScreenInteractor,
+        featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.interactor = interactor
         self.stateService = stateService
         self.router = router
+        self.featureFlagsService = featureFlagsService
         super.init(
             analyticsRecorder: analyticsRecorder,
             inputTypeToggleVisibility: .hidden,
@@ -80,39 +92,30 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         /// Additional binding
 
-        struct CTAData {
-            let kycState: KycState
-            let isSimpleBuyEligible: Bool
-            let candidateOrderDetails: CandidateOrderDetails
-        }
-
         let ctaObservable = continueButtonTapped
             .asObservable()
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: loader, style: .circle)
-            .flatMap(weak: interactor) { (interactor, candidateOrderDetails) in
-                Observable
-                    .zip(
-                        interactor.currentKycState.asObservable(),
-                        interactor.currentEligibilityState
-                    )
-                    .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
-                        switch (currentKycState, currentEligibilityState) {
-                        case (.success(let kycState), .success(let isSimpleBuyEligible)):
-                            let ctaData = CTAData(
-                                kycState: kycState,
-                                isSimpleBuyEligible: isSimpleBuyEligible,
-                                candidateOrderDetails: candidateOrderDetails
-                            )
-                            return .success(ctaData)
-                        case (.failure(let error), .success):
-                            return .failure(error)
-                        case (.success, .failure(let error)):
-                            return .failure(error)
-                        case (.failure(let error), .failure):
-                            return .failure(error)
-                        }
+            .flatMap(weak: self) { [router, featureFlagsService] (self, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
+                // Perform email verification and KYC checks to obtain a CTAData value used by
+                let performKYCChecks: () -> Observable<Result<CTAData, Error>> = { [weak self] in
+                    guard let self = self else {
+                        return Observable.error(ToolKitError.nullReference(Self.self))
+                    }
+                    // TODO: present new KYC depending on feature flag (IOS-4471)
+                    return self.performLegacyKYCCheck(for: candidateOrderDetails)
+                }
+                guard featureFlagsService.isEnabled(.showEmailVerificationInBuyFlow) else {
+                    return performKYCChecks()
+                }
+                return router.presentEmailVerificationIfNeeded()
+                    .asObservable()
+                    .flatMap { _ in
+                        performKYCChecks()
+                    }
+                    .catchError { error in
+                        .just(.failure(error))
                     }
             }
             .observeOn(MainScheduler.asyncInstance)
@@ -171,13 +174,25 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                             self?.stateService.nextFromBuyCrypto(with: checkoutData)
                         }
                     case (.shouldComplete, _):
+                        // This logic should only happen when performing legacy KYC checks
                         self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
                             self?.loader.hide()
                             self?.stateService.kyc(with: checkoutData)
                         }
                     }
-                case .failure:
-                    self.handleError()
+                case .failure(let error):
+                    if let error = error as? RouterError {
+                        switch error {
+                        case .kyc(.emailVerificationAbandoned), .kyc(.kycVerificationAbandoned):
+                            // user dismissed flow, don't show an alert
+                            self.loader.hide()
+                            return
+                        default:
+                            // continue to error handling logic
+                            break
+                        }
+                    }
+                    self.handle(error)
                 }
             }
             .disposed(by: disposeBag)
@@ -205,10 +220,10 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 .just(.invalid(ValueCalculationState<SupportedPairs>.CalculationError.valueCouldNotBeCalculated))
             }
             .bindAndCatch(weak: self) { (self, state) in
-                guard case .invalid(.valueCouldNotBeCalculated) = state else {
+                guard case let .invalid(error) = state, error == .valueCouldNotBeCalculated else {
                     return
                 }
-                self.handleError()
+                self.handle(error)
             }
             .disposed(by: disposeBag)
     }
@@ -221,8 +236,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
-                onError: { [weak self] _ in
-                    self?.handleError()
+                onError: { [weak self] error in
+                    self?.handle(error)
                 }
             )
             .disposed(by: disposeBag)
@@ -284,5 +299,29 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .disposed(by: disposeBag)
 
         bottomAuxiliaryViewModelStateRelay.accept(.selection(viewModel))
+    }
+
+    private func performLegacyKYCCheck(for candidateOrderDetails: CandidateOrderDetails) -> Observable<Result<CTAData, Error>> {
+        Observable.zip(
+            interactor.currentKycState.asObservable(),
+            interactor.currentEligibilityState
+        )
+        .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+            switch (currentKycState, currentEligibilityState) {
+            case (.success(let kycState), .success(let isSimpleBuyEligible)):
+                let ctaData = CTAData(
+                    kycState: kycState,
+                    isSimpleBuyEligible: isSimpleBuyEligible,
+                    candidateOrderDetails: candidateOrderDetails
+                )
+                return .success(ctaData)
+            case (.failure(let error), .success):
+                return .failure(error)
+            case (.success, .failure(let error)):
+                return .failure(error)
+            case (.failure(let error), .failure):
+                return .failure(error)
+            }
+        }
     }
 }

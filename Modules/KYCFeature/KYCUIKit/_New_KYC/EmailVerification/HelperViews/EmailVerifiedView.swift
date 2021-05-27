@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import SharedPackagesKit
+import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit
 

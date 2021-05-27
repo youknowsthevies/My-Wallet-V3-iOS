@@ -24,6 +24,8 @@ struct InternalFeatureItem: Equatable {
             return "Enable Network Request Console Logs"
         case .showEmailVerificationAtLogin:
             return "Show Email Verification at Login"
+        case .showEmailVerificationInBuyFlow:
+            return "Show Email Verification in Buy Flow"
         }
     }
 }

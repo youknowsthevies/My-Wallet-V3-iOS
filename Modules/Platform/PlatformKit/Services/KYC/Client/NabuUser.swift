@@ -35,6 +35,7 @@ public struct NabuUser: Decodable {
     public let identifier: String
     public let personalDetails: PersonalDetails
     public let address: UserAddress?
+    @available(*, deprecated, message: "Never read this! This may be an old email address! Use Wallet API instead!")
     public let email: Email
     public let mobile: Mobile?
     public let status: KYC.AccountStatus

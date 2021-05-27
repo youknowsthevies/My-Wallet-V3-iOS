@@ -119,8 +119,8 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                         // TODO: KYC with checkout data
                     }
                 }
-            case .failure:
-                self.handleError()
+            case .failure(let error):
+                self.handle(error)
             }
         }
         .disposed(by: disposeBag)
@@ -135,8 +135,8 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: completion,
-                onError: { [weak self] _ in
-                    self?.handleError()
+                onError: { [weak self] error in
+                    self?.handle(error)
                 }
             )
             .disposed(by: disposeBag)
