@@ -111,7 +111,7 @@ final class AnnouncementPresenter {
             .disposed(by: disposeBag)
     }
 
-    /// Resolves the first valid announcement according by the provided types and preloiminary data
+    /// Resolves the first valid announcement according by the provided types and preliminary data
     private func resolve(metadata: AnnouncementsMetadata,
                          preliminaryData: AnnouncementPreliminaryData) -> AnnouncementDisplayAction {
         for type in metadata.order {
@@ -171,6 +171,8 @@ final class AnnouncementPresenter {
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
             case .aaveYfiDot:
                 announcement = aaveYfiDot
+            case .sendToDomains:
+                announcement = sendToDomains(hasWalletBalance: preliminaryData.hasAnyWalletBalance)
             }
             // Return the first different announcement that should show
             if announcement.shouldShow {
@@ -336,6 +338,20 @@ extension AnnouncementPresenter {
                 self?.handleBuyCrypto(currency: .aave)
             }
         )
+    }
+
+    /// Computes Send to Domains announcement for users with any wallet balance
+    private func sendToDomains(hasWalletBalance: Bool) -> Announcement {
+        SendToDomainsAnnouncement(
+            shouldShowSendToDomainsAnnouncement: hasWalletBalance,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                guard let self = self else { return }
+                self.hideAnnouncement()
+                self.appCoordinator.switchToSend()
+            })
     }
 
     /// Cash Support Announcement for users who have not KYC'd

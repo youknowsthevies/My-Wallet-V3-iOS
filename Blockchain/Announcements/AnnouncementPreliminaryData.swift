@@ -39,6 +39,9 @@ struct AnnouncementPreliminaryData {
 
     let pendingOrderDetails: OrderDetails?
 
+    /// Whether the user has a wallet balance in any account.
+    let hasAnyWalletBalance: Bool
+
     private let isSimpleBuyAvailable: Bool
     private let simpleBuyEventCache: EventCache
 
@@ -50,7 +53,8 @@ struct AnnouncementPreliminaryData {
          authenticatorType: AuthenticatorType,
          pendingOrderDetails: OrderDetails?,
          isSimpleBuyAvailable: Bool,
-         isSimpleBuyEligible: Bool) {
+         isSimpleBuyEligible: Bool,
+         hasAnyWalletBalance: Bool) {
         self.user = user
         self.tiers = tiers
         self.hasLinkedBanks = hasLinkedBanks
@@ -59,6 +63,7 @@ struct AnnouncementPreliminaryData {
         self.pendingOrderDetails = pendingOrderDetails
         self.isSimpleBuyAvailable = isSimpleBuyAvailable
         self.isSimpleBuyEligible = isSimpleBuyEligible
+        self.hasAnyWalletBalance = hasAnyWalletBalance
         country = countries.first { $0.code == user.address?.countryCode }
     }
 }
