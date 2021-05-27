@@ -309,6 +309,7 @@ public class TextFieldViewModel {
     }
     
     func textFieldDidEndEditing() {
+        ensureIsOnMainQueue()
         DispatchQueue.main.async {
             self.focusRelay.accept(.off(.endEditing))
             self.showHintIfNeededRelay.accept(true)
@@ -316,6 +317,7 @@ public class TextFieldViewModel {
     }
 
     func textFieldShouldReturn() -> Bool {
+        ensureIsOnMainQueue()
         DispatchQueue.main.async {
             self.focusRelay.accept(.off(.returnTapped))
         }
@@ -323,6 +325,7 @@ public class TextFieldViewModel {
     }
 
     func textFieldShouldBeginEditing() -> Bool {
+        ensureIsOnMainQueue()
         DispatchQueue.main.async {
             self.focusRelay.accept(.on)
         }
