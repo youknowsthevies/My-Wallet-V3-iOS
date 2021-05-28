@@ -127,7 +127,7 @@ public struct NetworkRequest {
 extension NetworkRequest: CustomStringConvertible {
 
     public var description: String {
-        "\(type(of: self)) underlying URLRequest: \(urlRequest)"
+        "\(method.rawValue) \(endpoint) (\(authenticated ? "authenticated" : "unauthenticated"))"
     }
 }
 
