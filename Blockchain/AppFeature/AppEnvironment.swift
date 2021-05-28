@@ -5,6 +5,7 @@ import DIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
 import SettingsKit
 import ToolKit
 
@@ -15,7 +16,7 @@ public struct AppEnvironment {
     var blurEffectHandler: BlurVisualEffectHandler
     var appCoordinator: AppCoordinator
     var cacheSuite: CacheSuite
-    var remoteNotificationServiceContainer: RemoteNotificationServiceContainer
+    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var certificatePinner: CertificatePinnerAPI
     var siftService: SiftServiceAPI
     var alertViewPresenter: AlertViewPresenterAPI

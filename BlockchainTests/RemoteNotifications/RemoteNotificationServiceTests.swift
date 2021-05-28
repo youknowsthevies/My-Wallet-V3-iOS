@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+@testable import Blockchain
+import DIKit
+@testable import RemoteNotificationsKit
 import RxBlocking
 import RxSwift
 import XCTest
 
-@testable import Blockchain
 import NetworkKit
 import PlatformKit
 
@@ -24,7 +26,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
         )
         let messagingService = MockMessagingService()
         let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(token))
-        let credentialsProvider = GuidSharedKeyRepositoryAPIMock()
+        let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let networkAdapter = NetworkAdapterMock()
         networkAdapter.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
 
@@ -32,6 +34,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
 
         let authorizer = RemoteNotificationAuthorizer(
             application: registry,
+            analyticsRecorder: resolve(),
             userNotificationCenter: userNotificationCenter,
             options: [.alert, .badge, .sound]
         )
@@ -52,7 +55,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
             notificationRelay: relay,
             externalService: externalServiceProvider,
             networkService: networkService,
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            sharedKeyRepository: credentialsProvider,
+            guidRepository: credentialsProvider
         )
 
         let observable = service.sendTokenIfNeeded().toBlocking()
@@ -77,7 +81,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -103,7 +108,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -128,7 +134,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .success(())),
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()
@@ -153,7 +160,8 @@ final class RemoteNotificationServiceTests: XCTestCase {
                 expectedTopicSubscriptionResult: .success(())
             ),
             networkService: MockRemoteNotificationNetworkService(expectedResult: .failure(.registrationFailure)),
-            walletRepository: GuidSharedKeyRepositoryAPIMock()
+            sharedKeyRepository: MockGuidSharedKeyRepositoryAPI(),
+            guidRepository: MockGuidSharedKeyRepositoryAPI()
         )
 
         let result = service.sendTokenIfNeeded().toBlocking()

@@ -8,10 +8,6 @@ import XCTest
 @testable import PlatformUIKit
 @testable import ToolKit
 
-class MockAnalyticsService: AnalyticsServiceProviding {
-    func trackEvent(title: String, parameters: [String: Any]?) { }
-}
-
 struct MockOneTimeAnnouncement: OneTimeAnnouncement {
 
     var viewModel: AnnouncementCardViewModel {

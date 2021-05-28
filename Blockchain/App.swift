@@ -96,6 +96,7 @@ private func defineDependencies() {
         DependencyContainer.nabuAnalyticsDataKit;
         DependencyContainer.nabuAnalyticsKit;
         DependencyContainer.blockchain;
+        DependencyContainer.remoteNotificationsKit;
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit;
         #endif

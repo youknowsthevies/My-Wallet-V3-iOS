@@ -7,6 +7,8 @@ import DIKit
 import KYCUIKit
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
+import RxRelay
 import RxSwift
 import SettingsKit
 import ToolKit
@@ -95,7 +97,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          deepLinkRouter: DeepLinkRouting = resolve(),
          settingsAPIClient: SettingsServiceAPI = resolve(),
          featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
-         remoteNotificationServiceContainer: RemoteNotificationServiceContainer = .default) {
+         remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.appSettings = appSettings

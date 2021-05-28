@@ -14,6 +14,7 @@ import KYCUIKit
 import NabuAnalyticsKit
 import PlatformKit
 import PlatformUIKit
+import RemoteNotificationsKit
 import SettingsKit
 import SettingsUIKit
 import StellarKit
@@ -190,6 +191,11 @@ extension DependencyContainer {
             return walletManager.wallet as WalletRecoveryVerifing
         }
 
+        factory { () -> SharedKeyRepositoryAPI in
+            let walletManager: WalletManager = DIKit.resolve()
+            return walletManager.repository as SharedKeyRepositoryAPI
+        }
+
         factory { () -> GuidRepositoryAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.repository as GuidRepositoryAPI
@@ -353,6 +359,22 @@ extension DependencyContainer {
         // MARK: Wallet Upgrade
 
         factory { WalletUpgrading() as WalletUpgradingAPI }
+
+        // MARK: Remote Notifications
+
+        factory { ExternalNotificationServiceProvider() as ExternalNotificationProviding }
+
+        factory { () -> RemoteNotificationEmitting in
+            let relay: RemoteNotificationRelay = DIKit.resolve()
+            return relay as RemoteNotificationEmitting
+        }
+
+        factory { () -> RemoteNotificationBackgroundReceiving in
+            let relay: RemoteNotificationRelay = DIKit.resolve()
+            return relay as RemoteNotificationBackgroundReceiving
+        }
+
+        single { RemoteNotificationRelay() }
 
         // MARK: Helpers
 
