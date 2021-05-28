@@ -2,7 +2,7 @@
 
 import Foundation
 
-struct Event: Encodable {
+struct Event: Codable, Equatable {
     var originalTimestamp: Date
     let name: String
     var type: EventType

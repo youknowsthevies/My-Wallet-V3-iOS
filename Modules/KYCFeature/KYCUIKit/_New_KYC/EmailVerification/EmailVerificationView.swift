@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import SharedPackagesKit
+import ComposableArchitecture
 import SwiftUI
 import UIComponentsKit
 
@@ -8,7 +8,7 @@ import UIComponentsKit
 struct EmailVerificationView: View {
 
     let store: Store<EmailVerificationState, EmailVerificationAction>
-    let viewStore: ViewStore<EmailVerificationState, EmailVerificationAction>
+    @ObservedObject private(set) var viewStore: ViewStore<EmailVerificationState, EmailVerificationAction>
 
     init(store: Store<EmailVerificationState, EmailVerificationAction>) {
         self.store = store
@@ -54,7 +54,11 @@ struct EmailVerificationView: View {
                             action: EmailVerificationAction.verifyEmail
                         )
                     )
-                    .navigationBarHidden(true)
+                    .navigationBarTitle("", displayMode: .inline)
+                    .updateNavigationBarStyle()
+                    .trailingNavigationButton(.close) {
+                        viewStore.send(.closeButtonTapped)
+                    }
                 }
             }
             .onAppEnteredForeground {
@@ -63,6 +67,8 @@ struct EmailVerificationView: View {
             .background(Color.viewPrimaryBackground)
             .accessibility(identifier: "KYC.EmailVerification.container")
         }
+        .background(Color.viewPrimaryBackground)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -72,7 +78,7 @@ struct EmailVerificationHelpRoutingView: View {
     let store: Store<EmailVerificationState, EmailVerificationAction>
 
     var body: some View {
-        VStack {
+        WithViewStore(store) { viewStore in
             NavigationLink(
                 destination: (
                     EditEmailView(
@@ -82,6 +88,9 @@ struct EmailVerificationHelpRoutingView: View {
                         )
                     )
                     .navigationBarBackButtonHidden(true)
+                    .trailingNavigationButton(.close) {
+                        viewStore.send(.closeButtonTapped)
+                    }
                 ),
                 isActive: .constant(canShowEditAddressView),
                 label: EmptyView.init
@@ -93,6 +102,9 @@ struct EmailVerificationHelpRoutingView: View {
                 )
             )
             .navigationBarBackButtonHidden(true)
+            .trailingNavigationButton(.close) {
+                viewStore.send(.closeButtonTapped)
+            }
         }
     }
 }

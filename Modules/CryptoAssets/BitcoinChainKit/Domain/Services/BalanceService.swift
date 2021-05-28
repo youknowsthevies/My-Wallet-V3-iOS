@@ -33,8 +33,8 @@ final class BalanceService: BalanceServiceAPI {
 
     func balances(for wallets: [XPub]) -> Single<CryptoValue> {
         client.balances(for: wallets)
-            .map(weak: self) { (self, response) in
-                BitcoinChainBalances(response: response, coin: self.coin)
+            .map { [coin] response in
+                BitcoinChainBalances(response: response, coin: coin)
             }
             .map(\.total)
     }

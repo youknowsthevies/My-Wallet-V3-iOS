@@ -7,35 +7,34 @@ import PlatformKit
 
 /// Publishes analytics events
 protocol AnalyticsEventServiceAPI {
-    
+
     /// Publishes the analytics events
     /// - Parameter events: the events payload
     func publish(events: EventsWrapper) -> AnyPublisher<Void, AnalyticsEventsDataError>
 }
 
 final class AnalyticsEventService: AnalyticsEventServiceAPI {
-    
+
     // MARK: - Properties
-    
-    private let repository: AnalyticsEventsRepositoryAPI
-    private let tokenProvider: TokenProviding
+
+    private let eventsRepository: AnalyticsEventsRepositoryAPI
+    private let tokenRepository: TokenRepositoryAPI
 
     // MARK: - Setup
-    
+
     init(repository: AnalyticsEventsRepositoryAPI = resolve(),
-         tokenProvider: TokenProviding = resolve()) {
-        self.repository = repository
-        self.tokenProvider = tokenProvider
+         tokenProvider: TokenRepositoryAPI = resolve()) {
+        self.eventsRepository = repository
+        self.tokenRepository = tokenProvider
     }
-    
+
     // MARK: - AnalyticsEventServiceAPI
-    
+
     func publish(events: EventsWrapper) -> AnyPublisher<Void, AnalyticsEventsDataError> {
-        let repository = self.repository
-        return tokenProvider.token
+        tokenRepository.token
             .mapError()
-            .flatMap { [repository] token -> AnyPublisher<Void, AnalyticsEventsDataError> in
-                repository.publish(events: events, token: token)
+            .flatMap { [eventsRepository] token -> AnyPublisher<Void, AnalyticsEventsDataError> in
+                eventsRepository.publish(events: events, token: token)
             }
             .eraseToAnyPublisher()
     }

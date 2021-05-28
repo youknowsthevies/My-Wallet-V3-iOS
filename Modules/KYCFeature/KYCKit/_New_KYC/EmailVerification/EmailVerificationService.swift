@@ -1,31 +1,42 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import DIKit
 import NetworkKit
-import PlatformKit
-import ToolKit
 
 public enum EmailVerificationCheckError: Error, Equatable {
-    case nabuError(NabuNetworkError)
+    case unknown(Error)
+
+    public static func == (lhs: EmailVerificationCheckError, rhs: EmailVerificationCheckError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
 }
 
 public enum UpdateEmailAddressError: Error, Equatable {
     case missingCredentials
     case networkError(NetworkError)
+    case unknown(Error)
+
+    public static func == (lhs: UpdateEmailAddressError, rhs: UpdateEmailAddressError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
 }
 
 /// An type representing the email verification status of a user using a nomenclature that's semantically closer to the business domain
-public enum EmailVerificationStatus: Equatable {
-    case verified, unverified
+public struct EmailVerificationResponse: Equatable {
+    public enum Status {
+        case verified, unverified
+    }
+
+    public let emailAddress: String
+    public let status: Status
 }
 
-/// `EmainVerificationService` is the interface the UI should use to interface to the email verification APIs.
+/// `EmailVerificationServiceAPI` is the interface the UI should use to interface to the email verification APIs.
 public protocol EmailVerificationServiceAPI {
 
     /// Fetches the current user's email verification status
     /// - Returns: A Combine `Publisher` that emits an `EmailVerificationStatus` on success or a `ServiceError` on failure
-    func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationStatus, EmailVerificationCheckError>
+    func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationResponse, EmailVerificationCheckError>
 
     /// Re-sends a verification email to the passed-in `emailAddress
     /// - Parameter emailAddress: The email address of the user.
@@ -41,21 +52,21 @@ public protocol EmailVerificationServiceAPI {
 /// An implementation of `EmailVerificationServiceAPI`
 public class EmailVerificationService: EmailVerificationServiceAPI {
 
-    private let kycClient: KYCClientAPI
-    private let emailService: EmailSettingsServiceAPI
+    private let apiClient: EmailVerificationAPI
 
-    public init(
-        kycClient: KYCClientAPI = resolve(),
-        emailService: EmailSettingsServiceAPI = resolve()
-    ) {
-        self.kycClient = kycClient
-        self.emailService = emailService
+    public init(apiClient: EmailVerificationAPI) {
+        self.apiClient = apiClient
     }
 
-    public func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationStatus, EmailVerificationCheckError> {
-        kycClient.fetchUser()
-            .map { $0.email.verified ? .verified : .unverified }
-            .mapError(EmailVerificationCheckError.nabuError)
+    public func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationResponse, EmailVerificationCheckError> {
+        apiClient.fetchEmailVerificationStatus(force: true)
+            .map {
+                EmailVerificationResponse(
+                    emailAddress: $0.email,
+                    status: $0.isEmailVerified ? .verified : .unverified
+                )
+            }
+            .mapError(EmailVerificationCheckError.unknown)
             .eraseToAnyPublisher()
     }
 
@@ -65,14 +76,15 @@ public class EmailVerificationService: EmailVerificationServiceAPI {
     }
 
     public func updateEmailAddress(to emailAddress: String) -> AnyPublisher<Void, UpdateEmailAddressError> {
-        emailService.update(email: emailAddress)
-            .mapToVoid()
+        apiClient.update(email: emailAddress)
             .mapError { error in
                 switch error {
-                case .credentialsError:
-                    return .missingCredentials
                 case .networkError(let error):
                     return .networkError(error)
+                case .unauthenticated:
+                    return .missingCredentials
+                case .unknown(let error):
+                    return .unknown(error)
                 }
             }
             .eraseToAnyPublisher()

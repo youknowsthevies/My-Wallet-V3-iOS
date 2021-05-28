@@ -11,6 +11,7 @@ extension PlatformUIKit.Router {
             navigationRouter: NavigationRouter(),
             builder: builder,
             kycRouter: resolve(),
+            newKYCRouter: resolve(),
             currency: currency
         )
     }

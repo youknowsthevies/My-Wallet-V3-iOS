@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import ToolKit
 
 enum TargetSelectionPageStep: Equatable {
     // TODO: QR Scanning Step
@@ -29,7 +30,11 @@ struct TargetSelectionPageState: Equatable, StateType {
     var inputValidated: TargetSelectionInputValidation = .empty
     var sourceAccount: BlockchainAccount?
     var availableTargets: [TransactionTarget] = []
-    var destination: TransactionTarget?
+    var destination: TransactionTarget? {
+        didSet {
+            Logger.shared.debug("TransactionTarget: \(String(describing: destination))")
+        }
+    }
     var stepsBackStack: [TargetSelectionPageStep] = []
     var step: TargetSelectionPageStep = .initial {
         didSet {

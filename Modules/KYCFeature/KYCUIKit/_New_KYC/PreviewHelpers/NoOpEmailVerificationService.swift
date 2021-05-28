@@ -8,7 +8,7 @@ import ToolKit
 /// Intented for SwiftUI Previews and only available in DEBUG
 class NoOpEmailVerificationService: EmailVerificationServiceAPI {
 
-    func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationStatus, EmailVerificationCheckError> {
+    func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationResponse, EmailVerificationCheckError> {
         Future { (_) in
             // no-op
         }

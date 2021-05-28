@@ -1,11 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComposableArchitecture
 import KYCKit
-import PlatformUIKit
-import SharedPackagesKit
-import ToolKit
-import UIKit
 
 /// The `master` `State` for the Email Verification Flow
 struct EmailVerificationState: Equatable {
@@ -39,8 +36,9 @@ struct EmailVerificationState: Equatable {
 
 /// The `master` `Action`type  for the Email Verification Flow
 enum EmailVerificationAction: Equatable {
+    case closeButtonTapped
     case didEnterForeground
-    case didReceiveEmailVerficationResponse(Result<EmailVerificationStatus, EmailVerificationCheckError>)
+    case didReceiveEmailVerficationResponse(Result<EmailVerificationResponse, EmailVerificationCheckError>)
     case dismissEmailVerificationFailedAlert
     case loadVerificationState
     case presentStep(EmailVerificationState.FlowStep)
@@ -54,13 +52,13 @@ enum EmailVerificationAction: Equatable {
 struct EmailVerificationEnvironment {
 
     let emailVerificationService: EmailVerificationServiceAPI
-    let flowCompletionCallback: (() -> Void)?
+    let flowCompletionCallback: ((FlowResult) -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let openMailApp: () -> Effect<Bool, Never>
 
     init(
         emailVerificationService: EmailVerificationServiceAPI,
-        flowCompletionCallback: (() -> Void)?,
+        flowCompletionCallback: ((FlowResult) -> Void)?,
         mainQueue: AnySchedulerOf<DispatchQueue>,
         openMailApp: @escaping () -> Effect<Bool, Never>
     ) {
@@ -111,13 +109,17 @@ let emailVerificationReducer = Reducer.combine(
     ),
     Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> { state, action, environment in
         switch action {
+        case .closeButtonTapped:
+            environment.flowCompletionCallback?(.abandoned)
+            return .none
+
         case .didEnterForeground:
             return Effect(value: .loadVerificationState)
 
         case .didReceiveEmailVerficationResponse(let response):
             switch response {
-            case .success(let status):
-                return Effect(value: .presentStep(status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt))
+            case .success(let object):
+                return Effect(value: .presentStep(object.status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt))
 
             case .failure(let error):
                 state.emailVerificationFailedAlert = .init(
@@ -163,7 +165,7 @@ let emailVerificationReducer = Reducer.combine(
         case .emailVerified(let subaction):
             switch subaction {
             case .acknowledgeEmailVerification:
-                environment.flowCompletionCallback?()
+                environment.flowCompletionCallback?(.completed)
                 return .none
             }
 

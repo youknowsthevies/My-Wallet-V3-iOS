@@ -1,10 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import ComposableArchitecture
 import KYCKit
-import SharedPackagesKit
 import SwiftUI
-import ToolKit
 import UIComponentsKit
 
 struct EditEmailState: Equatable {
@@ -89,64 +88,62 @@ let editEmailReducer = Reducer<EditEmailState, EditEmailAction, EditEmailEnviron
 struct EditEmailView: View {
 
     let store: Store<EditEmailState, EditEmailAction>
-    let viewStore: ViewStore<EditEmailState, EditEmailAction>
-
-    init(store: Store<EditEmailState, EditEmailAction>) {
-        self.store = store
-        self.viewStore = ViewStore(store)
-    }
 
     var body: some View {
-        ActionableView(
-            content: {
-                VStack {
-                    VStack(alignment: .leading) {
-                        Text(L10n.EditEmail.title)
-                            .textStyle(.title)
-                        Text(L10n.EditEmail.message)
-                            .textStyle(.body)
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    Spacer()
-
-                    VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
-                        FormTextFieldGroup(
-                            title: L10n.EditEmail.editEmailFieldLabel,
-                            text: viewStore.binding(
-                                get: { $0.emailAddress },
-                                send: { .didChangeEmailAddress($0) }
-                            )
-                        )
-                        .accessibility(identifier: "KYC.EmailVerification.edit.email.group")
-
-                        if !viewStore.isEmailValid {
-                            BadgeView(
-                                title: L10n.EditEmail.invalidEmailInputMessage,
-                                style: .error
-                            )
-                            .accessibility(identifier: "KYC.EmailVerification.edit.email.invalidEmail")
+        WithViewStore(store) { viewStore in
+            ActionableView(
+                content: {
+                    VStack {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(L10n.EditEmail.title)
+                                .textStyle(.title)
+                            Text(L10n.EditEmail.message)
+                                .textStyle(.body)
                         }
-                    }
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Spacer()
-                }
-                .multilineTextAlignment(.leading)
-            },
-            buttons: [
-                .init(
-                    title: L10n.EditEmail.saveButtonTitle,
-                    action: {
-                        viewStore.send(.save)
-                    },
-                    loading: viewStore.savingEmailAddress,
-                    enabled: viewStore.isEmailValid
-                )
-            ]
-        )
-        .alert(store.scope(state: \.saveEmailFailureAlert), dismiss: .dismissSaveEmailFailureAlert)
-        .onAppear {
-            viewStore.send(.didAppear)
+                        Spacer()
+
+                        VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
+                            FormTextFieldGroup(
+                                title: L10n.EditEmail.editEmailFieldLabel,
+                                text: viewStore.binding(
+                                    get: { $0.emailAddress },
+                                    send: { .didChangeEmailAddress($0) }
+                                )
+                            )
+                            .accessibility(identifier: "KYC.EmailVerification.edit.email.group")
+
+                            if !viewStore.isEmailValid {
+                                BadgeView(
+                                    title: L10n.EditEmail.invalidEmailInputMessage,
+                                    style: .error
+                                )
+                                .accessibility(identifier: "KYC.EmailVerification.edit.email.invalidEmail")
+                            }
+                        }
+
+                        Spacer()
+                    }
+                },
+                buttons: [
+                    .init(
+                        title: L10n.EditEmail.saveButtonTitle,
+                        action: {
+                            viewStore.send(.save)
+                        },
+                        loading: viewStore.savingEmailAddress,
+                        enabled: viewStore.isEmailValid
+                    )
+                ]
+            )
+            .alert(
+                store.scope(state: \.saveEmailFailureAlert),
+                dismiss: .dismissSaveEmailFailureAlert
+            )
+            .onAppear {
+                viewStore.send(.didAppear)
+            }
         }
         .background(Color.viewPrimaryBackground)
         .accessibility(identifier: "KYC.EmailVerification.edit.container")

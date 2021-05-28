@@ -136,7 +136,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                 rawPayload: rawPayload
             )
             Logger.shared.error(errorMessage)
-            // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
+            // TODO: Fix decoding errors then uncomment this: IOS-4501
             // #if INTERNAL_BUILD
             // fatalError(errorMessage)
             // #endif
@@ -199,7 +199,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
                     rawPayload: rawPayload
                 )
                 Logger.shared.error(errorMessage)
-                // TODO: Fix decoding errors then uncomment this: https://blockchain.atlassian.net/browse/IOS-4501
+                // TODO: Fix decoding errors then uncomment this: IOS-4501
                 // #if INTERNAL_BUILD
                 // fatalError(errorMessage)
                 // #endif

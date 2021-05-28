@@ -3,9 +3,9 @@
 import SwiftUI
 import UIKit
 
-extension BaseScreenViewController {
+extension UIViewController {
 
-    /// A simple extension on `BaseScreenViewController` to be able to present `SwiftUI.View`s.
+    /// A simple extension on `UIViewController` to be able to present `SwiftUI.View`s.
     /// - Remark: See also `UIViewController.present(view:,inNavigationController:)`
     /// - Parameters:
     ///     - swiftUIView: The `SwiftUI.View` to be hosted by the controller.
@@ -15,19 +15,15 @@ extension BaseScreenViewController {
         view.addSubview(hostingController.view)
         hostingController.view.constraint(edgesTo: view)
     }
-}
 
-extension UIViewController {
-
-    /// Allows any `UIViewController` to present a `BaseScreenViewController` with an embedded `SwiftUI.View`, optionally wrapped in a `UINavigationController`
+    /// Allows any `UIViewController` to present a `UIViewController` with an embedded `SwiftUI.View`, optionally wrapped in a `UINavigationController`
     /// - Parameters:
     ///   - view: The `SwiftUI.View` to be presented.
-    ///   - inNavigationController: If `true` the `BaseScreenViewController` hosting the `view` is wrapped within a `UINavigationController`.
+    ///   - inNavigationController: If `true` the `UIViewController` hosting the `view` is wrapped within a `UINavigationController`.
     public func present<Content: View>(view: Content, inNavigationController: Bool = true) {
-        let hostViewController = BaseScreenViewController()
+        let hostViewController = UIViewController()
         hostViewController.configure(with: view)
-        hostViewController.barStyle = .darkContent(ignoresStatusBar: true, isTranslucent: false, background: .white)
-        hostViewController.trailingButtonStyle = .close
+        hostViewController.isModalInPresentation = true
         let destination: UIViewController
         if inNavigationController {
             let navigationController = UINavigationController(rootViewController: hostViewController)

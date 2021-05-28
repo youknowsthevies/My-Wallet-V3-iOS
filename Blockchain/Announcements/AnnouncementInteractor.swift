@@ -2,7 +2,6 @@
 
 import DIKit
 import ERC20Kit
-import EthereumKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -23,60 +22,69 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         let nabuUser = dataRepository.nabuUserSingle
         let tiers = tiersService.tiers
         let countries = infoService.countries
-        let simpleBuyOrderDetails = pendingOrderDetailsService
-            .pendingActionOrderDetails
+        let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
 
         let isSimpleBuyAvailable = supportedPairsInteractor.pairs
             .map { !$0.pairs.isEmpty }
             .take(1)
             .asSingle()
 
-        return Single
-            .zip(nabuUser,
+        let hasAnyWalletBalance = coincore.allAccounts
+            .map(\.accounts)
+            .flatMap { accounts -> Single<[Bool]> in
+                Single.zip(accounts.map { $0.isFunded.catchErrorJustReturn(false) })
+            }
+            .map { values in
+                values.contains(true)
+            }
+
+        return Single.zip(
+            nabuUser,
+            tiers,
+            countries,
+            repository.authenticatorType,
+            hasAnyWalletBalance,
+            Single.zip(
+                isSimpleBuyAvailable,
+                simpleBuyOrderDetails,
+                beneficiariesService.hasLinkedBank.take(1).asSingle(),
+                simpleBuyEligibilityService.isEligible
+            )
+        )
+        .map { payload -> AnnouncementPreliminaryData in
+            let (user,
                  tiers,
                  countries,
-                 repository.authenticatorType,
-                 Single.zip(
-                     isSimpleBuyAvailable,
-                     simpleBuyOrderDetails,
-                    beneficiariesService.hasLinkedBank.take(1).asSingle(),
-                    simpleBuyEligibilityService.isEligible
-                 )
+                 authenticatorType,
+                 hasAnyWalletBalance,
+                 (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)) = payload
+            return AnnouncementPreliminaryData(
+                user: user,
+                tiers: tiers,
+                hasLinkedBanks: hasLinkedBanks,
+                countries: countries,
+                authenticatorType: authenticatorType,
+                pendingOrderDetails: pendingOrderDetails,
+                isSimpleBuyAvailable: isSimpleBuyAvailable,
+                isSimpleBuyEligible: isSimpleBuyEligible,
+                hasAnyWalletBalance: hasAnyWalletBalance
             )
-            .observeOn(MainScheduler.instance)
-            .map { (arg) -> AnnouncementPreliminaryData in
-                let (user,
-                     tiers,
-                     countries,
-                     authenticatorType,
-                     (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)) = arg
-                return AnnouncementPreliminaryData(
-                    user: user,
-                    tiers: tiers,
-                    hasLinkedBanks: hasLinkedBanks,
-                    countries: countries,
-                    authenticatorType: authenticatorType,
-                    pendingOrderDetails: pendingOrderDetails,
-                    isSimpleBuyAvailable: isSimpleBuyAvailable,
-                    isSimpleBuyEligible: isSimpleBuyEligible
-                )
-            }
+        }
+        .observeOn(MainScheduler.instance)
     }
 
     // MARK: - Private properties
 
-    /// Dispatch queue
-    private let dispatchQueueName = "announcements-interaction-queue"
-
+    private let repository: AuthenticatorRepositoryAPI
     private let wallet: WalletProtocol
     private let dataRepository: BlockchainDataRepository
     private let tiersService: KYCTiersServiceAPI
     private let infoService: GeneralInformationServiceAPI
-    private let repository: AuthenticatorRepositoryAPI
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let simpleBuyEligibilityService: EligibilityServiceAPI
+    private let coincore: Coincore
 
     // MARK: - Setup
 
@@ -89,7 +97,8 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
          beneficiariesService: BeneficiariesServiceAPI = resolve(),
          pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
-         simpleBuyEligibilityService: EligibilityServiceAPI = resolve()) {
+         simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
+         coincore: Coincore = resolve()) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository
@@ -99,5 +108,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         self.beneficiariesService = beneficiariesService
         self.pendingOrderDetailsService = pendingOrderDetailsService
         self.simpleBuyEligibilityService = simpleBuyEligibilityService
+        self.coincore = coincore
     }
 }

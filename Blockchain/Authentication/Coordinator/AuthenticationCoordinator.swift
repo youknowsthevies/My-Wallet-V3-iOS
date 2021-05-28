@@ -1,11 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import BitcoinKit
 import Combine
 import DIKit
-import KYCKit
 import KYCUIKit
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -13,7 +12,6 @@ import RxRelay
 import RxSwift
 import SettingsKit
 import ToolKit
-import WalletPayloadKit
 
 protocol PairingWalletFetching: class {
     func authenticate(using password: String)
@@ -69,6 +67,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
     @LazyInject private var coincore: Coincore
+
+    @LazyInject private var analyticsRecoder: AnalyticsEventRecorderAPI
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
@@ -182,6 +182,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             .disposed(by: bag)
 
         NotificationCenter.default.post(name: .login, object: nil)
+        analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedIn)
 
         if isCreatingWallet {
             if featureFlagsService.isEnabled(.showEmailVerificationAtLogin) {
@@ -225,6 +226,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         WalletManager.shared.close()
 
         NotificationCenter.default.post(name: .logout, object: nil)
+        analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedOut)
 
         let sift: SiftServiceAPI = resolve()
         sift.removeUserId()
@@ -319,16 +321,15 @@ extension AuthenticationCoordinator: PairingWalletFetching {
                 guard let self = self, let viewController = viewController else {
                     fatalError("Check you're retaining this instances!")
                 }
-                let router = KYCUIKit.Router(
-                    emailVerificationService: resolve(),
-                    externalAppOpener: resolve()
-                )
+                let router: KYCUIKit.Routing = resolve()
                 router.routeToEmailVerification(
                     from: viewController,
                     emailAddress: emailAddress,
-                    flowCompletion: {
+                    flowCompletion: { [weak self] result in
                         viewController.dismiss(animated: true, completion: {
-                            self.presentSimpleBuyFlow()
+                            if result == .completed {
+                                self?.presentSimpleBuyFlow()
+                            }
                         })
                     }
                 )

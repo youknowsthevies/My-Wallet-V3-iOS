@@ -6,24 +6,17 @@ import RxSwift
 import ToolKit
 
 public protocol ExchangeAccountsProviderAPI {
-    var accounts: Single<[CryptoExchangeAccount]> { get }
-    func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount?>
+    func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount>
 }
 
 final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
 
-    // MARK: - Public (ExchangeAccountsProviderAPI)
-
-    var accounts: Single<[CryptoExchangeAccount]> {
-        exchangeAccountsCachedValue.valueSingle
-    }
-
     // MARK: - Private Properties
 
-    private let exchangeAccountsCachedValue: CachedValue<[CryptoExchangeAccount]>
     private let statusService: ExchangeAccountStatusServiceAPI
     private let client: ExchangeAccountsProviderClientAPI
     private let disposeBag = DisposeBag()
+    private let storage: Atomic<[CryptoCurrency: CryptoExchangeAccount]> = .init([:])
 
     // MARK: - Init
 
@@ -31,62 +24,50 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
          statusService: ExchangeAccountStatusServiceAPI = resolve()) {
         self.statusService = statusService
         self.client = client
-        exchangeAccountsCachedValue = CachedValue<[CryptoExchangeAccount]>(
-            configuration: CachedValueConfiguration(
-                refreshType: .onSubscription,
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
-            )
-        )
-
-        exchangeAccountsCachedValue.setFetch {
-            statusService.hasLinkedExchangeAccount
-                .map { hasLinkedExchangeAccount -> Void in
-                    guard hasLinkedExchangeAccount else {
-                        throw ExchangeAccountsNetworkError.missingAccount
-                    }
-                    return ()
-                }
-                .flatMap { .just(CryptoCurrency.allCases) }
-                .flatMap { currencies -> Single<[CryptoExchangeAccount]> in
-                    let elements = currencies.map { currency in
-                        client
-                            .exchangeAddress(with: currency)
-                            .map { response in
-                                CryptoExchangeAccount(response: response)
-                            }
-                    }
-
-                    return Single.zip(elements)
-                }
+        NotificationCenter.when(.login) { [weak self] _ in
+            guard let self = self else { return }
+            self.storage.mutate { cache in
+                cache.removeAll()
+            }
         }
-
-        setup()
+        NotificationCenter.when(.logout) { [weak self] _ in
+            guard let self = self else { return }
+            self.storage.mutate { cache in
+                cache.removeAll()
+            }
+        }
     }
 
     // MARK: - ExchangeAccountsProviderAPI
 
-    func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount?> {
-        exchangeAccountsCachedValue
-            .valueSingle
-            .map { accounts in
-                let account = accounts.filter { $0.asset == currency }.first
-                guard let value = account else {
-                    throw ExchangeAccountsNetworkError.missingAccount
-                }
-                return value
-            }
+    func account(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount> {
+        guard let account = storage.value[currency] else {
+            Logger.shared.debug("Cache Miss: \(currency.code)")
+            return fetchAccount(for: currency)
+        }
+        Logger.shared.debug("Cache Hit: \(currency.code)")
+        return .just(account)
     }
 
-    // MARK: - Private Functions
-
-    private func setup() {
-        /// Fetch the users accounts upon initialization.
-        /// Subsequent calls should be pulled from cache.
-        /// Logout purges cache. Login refreshes cache. 
-        accounts
-            .observeOn(MainScheduler.instance)
-            .subscribe()
-            .disposed(by: disposeBag)
+    private func fetchAccount(for currency: CryptoCurrency) -> Single<CryptoExchangeAccount> {
+        statusService.hasLinkedExchangeAccount
+            .flatMap(weak: self) { (self, hasLinkedExchangeAccount) -> Single<CryptoExchangeAccount> in
+                guard hasLinkedExchangeAccount else {
+                    return .error(ExchangeAccountsNetworkError.missingAccount)
+                }
+                return self.client.exchangeAddress(with: currency)
+                    .map { response in
+                        CryptoExchangeAccount(response: response)
+                    }
+                    .do(onSuccess: { [weak self] account in
+                        self?.storage.mutate { cache in
+                            cache[currency] = account
+                        }
+                    })
+                    .catchError { error -> Single<CryptoExchangeAccount> in
+                        Logger.shared.debug("Fetch Error: \(currency.code)")
+                        throw ExchangeAccountsNetworkError.missingAccount
+                    }
+            }
     }
 }

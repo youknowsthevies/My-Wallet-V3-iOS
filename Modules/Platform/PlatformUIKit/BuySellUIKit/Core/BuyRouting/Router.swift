@@ -1,12 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import Localization
 import PlatformKit
 import RxSwift
 import SafariServices
 import ToolKit
+
+public enum RouterError: Error {
+    case kyc(KYCRouterError)
+}
 
 public protocol RouterAPI: class {
     func setup(startImmediately: Bool)
@@ -15,6 +20,9 @@ public protocol RouterAPI: class {
     func previous(from state: StateService.State)
     func showCryptoSelectionScreen()
     func showFailureAlert()
+
+    func presentEmailVerificationIfNeeded() -> AnyPublisher<Void, RouterError>
+    func presentKYCIfNeeded() -> AnyPublisher<Void, RouterError>
 }
 
 /// This object is used as a router for Simple-Buy flow
@@ -28,6 +36,7 @@ public final class Router: RouterAPI {
 
     private let stateService: StateServiceAPI
     private let kycRouter: KYCRouterAPI
+    private let newKYCRouter: KYCRouting
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let settingsService: FiatCurrencySettingsServiceAPI
@@ -52,20 +61,24 @@ public final class Router: RouterAPI {
 
     // MARK: - Setup
 
-    public init(navigationRouter: NavigationRouterAPI,
-                paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-                settingsService: CompleteSettingsServiceAPI = resolve(),
-                supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                alertViewPresenter: AlertViewPresenterAPI = resolve(),
-                builder: Buildable,
-                kycRouter: KYCRouterAPI,
-                currency: CryptoCurrency) {
+    public init(
+        navigationRouter: NavigationRouterAPI,
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+        settingsService: CompleteSettingsServiceAPI = resolve(),
+        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        builder: Buildable,
+        kycRouter: KYCRouterAPI, // TODO: merge with the following or remove (IOS-4471)
+        newKYCRouter: KYCRouting,
+        currency: CryptoCurrency
+    ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
         self.stateService = builder.stateService
         self.kycRouter = kycRouter
+        self.newKYCRouter = newKYCRouter
         self.builder = builder
 
         let cryptoSelectionService = CryptoCurrencySelectionService(
@@ -340,6 +353,26 @@ public final class Router: RouterAPI {
                     }
                 })
             .disposed(by: disposeBag)
+    }
+
+    public func presentEmailVerificationIfNeeded() -> AnyPublisher<Void, RouterError> {
+        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+            fatalError("This is not supposed to be nil. It shouldn't even be optional, probably...")
+        }
+        return newKYCRouter
+            .presentEmailVerificationIfNeeded(from: viewController)
+            .mapError(RouterError.kyc)
+            .eraseToAnyPublisher()
+    }
+
+    public func presentKYCIfNeeded() -> AnyPublisher<Void, RouterError> {
+        guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
+            fatalError("This is not supposed to be nil. It shouldn't even be optional, probably...")
+        }
+        return newKYCRouter
+            .presentKYCIfNeeded(from: viewController)
+            .mapError(RouterError.kyc)
+            .eraseToAnyPublisher()
     }
 
     private func showPaymentMethodsScreen() {

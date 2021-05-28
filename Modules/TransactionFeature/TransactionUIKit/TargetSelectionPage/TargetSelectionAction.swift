@@ -55,10 +55,9 @@ enum TargetSelectionAction: MviAction {
         case .addressValidated(let inputValidation):
             switch inputValidation {
             case .valid(let address):
-                let destination = address as TransactionTarget
                 return oldState
                     .update(keyPath: \.inputValidated, value: .text(inputValidation))
-                    .update(keyPath: \.destination, value: destination)
+                    .update(keyPath: \.destination, value: address)
                     .update(keyPath: \.nextEnabled, value: true)
                     .withUpdatedBackstack(oldState: oldState)
             case .invalid, .inactive:
@@ -69,9 +68,8 @@ enum TargetSelectionAction: MviAction {
                     .withUpdatedBackstack(oldState: oldState)
             }
         case .validBitPayInvoiceTarget(let invoice):
-            let destination = invoice as TransactionTarget
             return oldState
-                .update(keyPath: \.destination, value: destination)
+                .update(keyPath: \.destination, value: invoice)
                 .update(keyPath: \.nextEnabled, value: true)
                 .withUpdatedBackstack(oldState: oldState)
         case .returnToPreviousStep:

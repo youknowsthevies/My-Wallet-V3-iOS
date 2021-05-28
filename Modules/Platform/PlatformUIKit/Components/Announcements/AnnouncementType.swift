@@ -21,6 +21,7 @@ public enum AnnouncementType: String, Codable {
     case fiatFundsNoKYC = "fiat_funds_no_kyc"
     case interestFunds = "interest_funds"
     case aaveYfiDot = "aave_yfi_dot_available"
+    case sendToDomains = "send_to_domain"
 
     /// The key indentifying the announcement in cache
     var key: AnnouncementRecord.Key {
@@ -63,6 +64,8 @@ public enum AnnouncementType: String, Codable {
             return .interestFunds
         case .aaveYfiDot:
             return .aaveYfiDot
+        case .sendToDomains:
+            return .sendToDomains
         }
     }
 }

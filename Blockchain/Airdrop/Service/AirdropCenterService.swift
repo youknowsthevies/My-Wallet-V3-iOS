@@ -21,7 +21,7 @@ protocol AirdropCenterServiceAPI: class {
     func refresh()
 }
 
-/// TODO: Move into `PlatformKit` when https://blockchain.atlassian.net/browse/IOS-2724 is merged
+/// TODO: Move into `PlatformKit` when IOS-2724 is merged
 final class AirdropCenterService: AirdropCenterServiceAPI {
 
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> {

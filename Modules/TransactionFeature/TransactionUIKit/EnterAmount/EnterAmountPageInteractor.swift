@@ -254,8 +254,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             sourceAccount: updater.source,
             destinationAccount: updater.destination as? BlockchainAccount,
             action: updater.action,
-            titleAccessibility: Accessibility(id: .value(topSelectionTitle), label: .value(topSelectionTitle)),
-            subtitleAccessibility: Accessibility(id: .value(topSelectionSubtitle), label: .value(topSelectionSubtitle))
+            titleAccessibility: .label(topSelectionTitle),
+            subtitleAccessibility: .label(topSelectionSubtitle)
         )
 
         return state
@@ -336,6 +336,8 @@ extension EnterAmountPageInteractor {
             self.trailingContent = trailingContent
             self.leadingContent = leadingContent
             self.accessibilityContent = accessibilityContent
+            self.titleAccessibility = titleAccessibility
+            self.subtitleAccessibility = subtitleAccessibility
         }
 
         init(sourceAccount: BlockchainAccount?,

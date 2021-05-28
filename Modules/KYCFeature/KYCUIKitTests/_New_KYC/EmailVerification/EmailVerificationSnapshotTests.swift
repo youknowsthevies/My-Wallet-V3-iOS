@@ -25,7 +25,7 @@ final class EmailVerificationSnapshotTests: XCTestCase {
         mockEmailVerificationService = MockEmailVerificationService()
         environment = EmailVerificationEnvironment(
             emailVerificationService: mockEmailVerificationService,
-            flowCompletionCallback: {},
+            flowCompletionCallback: { _ in },
             mainQueue: .immediate,
             openMailApp: { .none }
         )
@@ -41,319 +41,199 @@ final class EmailVerificationSnapshotTests: XCTestCase {
 
     func test_iPhoneSE_snapshot_step_verify_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = VerifyEmailView(
-            store: rootStore.scope(
-                state: \.verifyEmail,
-                action: EmailVerificationAction.verifyEmail
-            )
-        )
-        assert(view, on: .iPhoneSe, renderInWindow: true)
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.verifyEmailPrompt))
+        assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_verify_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = VerifyEmailView(
-            store: rootStore.scope(
-                state: \.verifyEmail,
-                action: EmailVerificationAction.verifyEmail
-            )
-        )
-        assert(view, on: .iPhone8, renderInWindow: true)
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.verifyEmailPrompt))
+        assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_verify_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = VerifyEmailView(
-            store: rootStore.scope(
-                state: \.verifyEmail,
-                action: EmailVerificationAction.verifyEmail
-            )
-        )
-        assert(view, on: .iPhoneX, renderInWindow: true)
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.verifyEmailPrompt))
+        assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_help() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_help() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_help() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_help_resending() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         mockEmailVerificationService.stubbedResults.sendVerificationEmail = .empty()
-        view.viewStore.send(.sendVerificationEmail)
+        view.viewStore.send(.emailVerificationHelp(.sendVerificationEmail))
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_help_resending() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         mockEmailVerificationService.stubbedResults.sendVerificationEmail = .empty()
-        view.viewStore.send(.sendVerificationEmail)
+        view.viewStore.send(.emailVerificationHelp(.sendVerificationEmail))
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_help_resending() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
         mockEmailVerificationService.stubbedResults.sendVerificationEmail = .empty()
-        view.viewStore.send(.sendVerificationEmail)
+        view.viewStore.send(.emailVerificationHelp(.sendVerificationEmail))
         assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_help_resend_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
-        view.viewStore.send(.didReceiveEmailSendingResponse(.failure(.missingCredentials)))
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
+        view.viewStore.send(.emailVerificationHelp(.didReceiveEmailSendingResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhoneSe, renderInWindow: true)
     }
 
     func test_iPhone8_snapshot_step_help_resend_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
-        view.viewStore.send(.didReceiveEmailSendingResponse(.failure(.missingCredentials)))
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
+        view.viewStore.send(.emailVerificationHelp(.didReceiveEmailSendingResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhone8, renderInWindow: true)
     }
 
     func test_iPhoneX_snapshot_step_help_resend_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerificationHelpView(
-            store: rootStore.scope(
-                state: \.emailVerificationHelp,
-                action: EmailVerificationAction.emailVerificationHelp
-            )
-        )
-        view.viewStore.send(.didReceiveEmailSendingResponse(.failure(.missingCredentials)))
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerificationHelp))
+        view.viewStore.send(.emailVerificationHelp(.didReceiveEmailSendingResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhoneX, renderInWindow: true)
     }
 
     func test_iPhoneSE_snapshot_step_edit_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_edit_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_edit_email() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_edit_email_invalid() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         rebuildRootStore(emailAddress: "test_example.com")
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_edit_email_invalid() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         rebuildRootStore(emailAddress: "test_example.com")
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_edit_email_invalid() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         rebuildRootStore(emailAddress: "test_example.com")
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
+        let view = presentEditEmailScreen()
         assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_edit_saving() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
         mockEmailVerificationService.stubbedResults.updateEmailAddress = .empty()
-        view.viewStore.send(.save)
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.save))
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_edit_saving() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
         mockEmailVerificationService.stubbedResults.updateEmailAddress = .empty()
-        view.viewStore.send(.save)
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.save))
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_edit_saving() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
         mockEmailVerificationService.stubbedResults.updateEmailAddress = .empty()
-        view.viewStore.send(.save)
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.save))
         assert(view, on: .iPhoneX)
     }
 
     func test_iPhoneSE_snapshot_step_edit_save_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
-        view.viewStore.send(.didReceiveSaveResponse(.failure(.missingCredentials)))
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.didReceiveSaveResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhoneSe, renderInWindow: true)
     }
 
     func test_iPhone8_snapshot_step_edit_save_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
-        view.viewStore.send(.didReceiveSaveResponse(.failure(.missingCredentials)))
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.didReceiveSaveResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhone8, renderInWindow: true)
     }
 
     func test_iPhoneX_snapshot_step_edit_save_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EditEmailView(
-            store: rootStore.scope(
-                state: \.editEmailAddress,
-                action: EmailVerificationAction.editEmailAddress
-            )
-        )
-        view.viewStore.send(.didReceiveSaveResponse(.failure(.missingCredentials)))
+        let view = presentEditEmailScreen()
+        ViewStore(rootStore).send(.editEmailAddress(.didReceiveSaveResponse(.failure(.missingCredentials))))
         assert(view, on: .iPhoneX, renderInWindow: true)
     }
 
     func test_iPhoneSE_snapshot_step_email_verified() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerifiedView(
-            store: rootStore.scope(
-                state: \.emailVerified,
-                action: EmailVerificationAction.emailVerified
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerifiedPrompt))
         assert(view, on: .iPhoneSe)
     }
 
     func test_iPhone8_snapshot_step_email_verified() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerifiedView(
-            store: rootStore.scope(
-                state: \.emailVerified,
-                action: EmailVerificationAction.emailVerified
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerifiedPrompt))
         assert(view, on: .iPhone8)
     }
 
     func test_iPhoneX_snapshot_step_email_verified() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
-        let view = EmailVerifiedView(
-            store: rootStore.scope(
-                state: \.emailVerified,
-                action: EmailVerificationAction.emailVerified
-            )
-        )
+        let view = EmailVerificationView(store: rootStore)
+        view.viewStore.send(.presentStep(.emailVerifiedPrompt))
         assert(view, on: .iPhoneX)
     }
 
@@ -381,21 +261,21 @@ final class EmailVerificationSnapshotTests: XCTestCase {
     func test_iPhoneSE_snapshot_step_loading_verification_status_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         let view = EmailVerificationView(store: rootStore)
-        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.nabuError(.mockError))))
+        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown))))
         assert(view, on: .iPhoneSe, renderInWindow: true)
     }
 
     func test_iPhone8_snapshot_step_loading_verification_status_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         let view = EmailVerificationView(store: rootStore)
-        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.nabuError(.mockError))))
+        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown))))
         assert(view, on: .iPhone8, renderInWindow: true)
     }
 
     func test_iPhoneX_snapshot_step_loading_verification_status_failed() throws {
         try XCTSkipUnless(UIDevice.current.systemVersion.contains(Config.minOSRequired))
         let view = EmailVerificationView(store: rootStore)
-        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.nabuError(.mockError))))
+        view.viewStore.send(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown))))
         assert(view, on: .iPhoneX, renderInWindow: true)
     }
 
@@ -407,5 +287,21 @@ final class EmailVerificationSnapshotTests: XCTestCase {
             reducer: emailVerificationReducer,
             environment: environment
         )
+    }
+
+    private func presentEditEmailScreen() -> some View {
+        // due to what seems a limitation on SwiftUI, trying to push twice programmatically from the root view doesn't work
+        NavigationView {
+            EditEmailView(
+                store: rootStore.scope(
+                    state: \.editEmailAddress,
+                    action: EmailVerificationAction.editEmailAddress
+                )
+            )
+            .trailingNavigationButton(.close, action: {})
+            .navigationBarTitle("", displayMode: .inline)
+            .updateNavigationBarStyle()
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

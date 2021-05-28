@@ -309,17 +309,26 @@ public class TextFieldViewModel {
     }
 
     func textFieldDidEndEditing() {
-        focusRelay.accept(.off(.endEditing))
-        showHintIfNeededRelay.accept(true)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async {
+            self.focusRelay.accept(.off(.endEditing))
+            self.showHintIfNeededRelay.accept(true)
+        }
     }
 
     func textFieldShouldReturn() -> Bool {
-        focusRelay.accept(.off(.returnTapped))
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async {
+            self.focusRelay.accept(.off(.returnTapped))
+        }
         return true
     }
 
     func textFieldShouldBeginEditing() -> Bool {
-        focusRelay.accept(.on)
+        ensureIsOnMainQueue()
+        DispatchQueue.main.async {
+            self.focusRelay.accept(.on)
+        }
         return true
     }
 

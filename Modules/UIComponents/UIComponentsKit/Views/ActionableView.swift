@@ -75,8 +75,6 @@ public struct ActionableView<Content: View>: View {
             }
         }
         .padding()
-        .multilineTextAlignment(.center)
-        .background(Color.viewPrimaryBackground)
     }
 }
 
@@ -103,6 +101,8 @@ extension ActionableView where Content == AnyView {
                         }
                         Spacer()
                     }
+                    .multilineTextAlignment(.center)
+                    .background(Color.viewPrimaryBackground)
                 )
             },
             buttons: buttons

@@ -2,7 +2,8 @@
 
 import Foundation
 
-protocol ContextProviding {
+protocol ContextProviderAPI {
+    
     var context: Context { get }
     var anonymousId: String? { get }
 }

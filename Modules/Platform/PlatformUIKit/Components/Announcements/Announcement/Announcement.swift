@@ -1,7 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
-import PlatformKit
 
 /// Protocol for an announcement that is shown to the user. These are typically
 /// used for new products and features that we launch in the wallet.

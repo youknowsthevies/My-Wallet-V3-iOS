@@ -5,12 +5,12 @@ import DIKit
 import Foundation
 import PlatformKit
 
-protocol TokenProviding {
+protocol TokenRepositoryAPI {
 
     var token: AnyPublisher<String?, Never> { get }
 }
 
-class TokenProvider: TokenProviding {
+final class TokenRepository: TokenRepositoryAPI {
 
     let token: AnyPublisher<String?, Never>
 

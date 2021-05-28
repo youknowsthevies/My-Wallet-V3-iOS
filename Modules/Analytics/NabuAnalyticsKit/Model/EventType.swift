@@ -2,6 +2,6 @@
 
 import Foundation
 
-enum EventType: String, Encodable {
+enum EventType: String, Codable, Equatable {
     case event = "EVENT"
 }

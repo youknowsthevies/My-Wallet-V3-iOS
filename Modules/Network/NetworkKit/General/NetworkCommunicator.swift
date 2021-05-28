@@ -61,7 +61,7 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private func execute(
         request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        session.erasedDataTaskPublisher(for: request.URLRequest)
+        session.erasedDataTaskPublisher(for: request.urlRequest)
             .mapError(NetworkError.urlError)
             .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
                 request.responseHandler.handle(elements: elements, for: request)

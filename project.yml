@@ -326,6 +326,7 @@ targets:
     - target: NetworkKit
     - target: AnalyticsKit
     - target: SettingsKit
+    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:
