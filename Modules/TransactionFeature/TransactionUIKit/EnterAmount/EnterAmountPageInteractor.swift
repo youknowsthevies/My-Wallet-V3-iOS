@@ -159,6 +159,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
+        auxiliaryViewInteractor.resetToMaxAmount
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: { [weak self] state in
+                self?.analyticsHook.onMaxSelected(state: state)
+            })
+            .disposeOnDeactivate(interactor: self)
+
         spendable
             .map { [weak listener] spendable in
                 spendable.errorState.toAmountInteractorState(

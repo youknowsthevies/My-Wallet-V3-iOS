@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -33,14 +34,17 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     private let sectionsRelay = BehaviorRelay<[WalletActionItemsSectionViewModel]>(value: [])
     private let interactor: WalletActionScreenInteracting
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(using interactor: WalletActionScreenInteracting,
          stateService: NonCustodialActionStateServiceAPI,
-         featureConfigurator: FeatureConfiguring = resolve()) {
+         featureConfigurator: FeatureConfiguring = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.interactor = interactor
+        self.analyticsRecorder = analyticsRecorder
         let currency = interactor.currency
         let descriptionValue: () -> Observable<String> = {
             .just(currency.name)
@@ -99,6 +103,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                     stateService.selectionRelay.accept(.next(.activity))
                 case .swap:
                     stateService.selectionRelay.accept(.next(.swap))
+                    analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .currencyPage))
                 case .send:
                     stateService.selectionRelay.accept(.next(.send))
                 case .receive:

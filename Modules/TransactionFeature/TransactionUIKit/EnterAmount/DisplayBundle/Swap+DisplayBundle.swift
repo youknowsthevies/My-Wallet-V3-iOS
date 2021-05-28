@@ -20,13 +20,16 @@ extension DisplayBundle {
             bottomAuxiliaryItemSeparator: .clear
         )
 
-        // TODO: Add correct Analytics Event
         let events = Events(
-            didAppear: SwapAnalyticsEvent(),
+            didAppear: AnalyticsEvents.New.Swap.swapViewed,
             confirmSuccess: SwapAnalyticsEvent(),
             confirmFailure: SwapAnalyticsEvent(),
-            confirmTapped: { _, _, _ in SwapAnalyticsEvent() },
-            sourceAccountChanged: { _ in SwapAnalyticsEvent() }
+            confirmTapped: { _, _, _ in
+                SwapAnalyticsEvent()
+            },
+            sourceAccountChanged: { _ in
+                SwapAnalyticsEvent()
+            }
         )
 
         let accessibilityIdentifiers = AccessibilityIdentifiers(

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -14,12 +15,16 @@ final class ReceiveRouter: ReceiveRouterAPI {
 
     private let webViewService: WebViewServiceAPI
 
+    private let analyticsRecorder: AnalyticsEventRecording
+
     private let disposeBag = DisposeBag()
 
     init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         webViewService: WebViewServiceAPI = resolve()) {
+         webViewService: WebViewServiceAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
         self.navigationRouter = navigationRouter
         self.webViewService = webViewService
+        self.analyticsRecorder = analyticsRecorder
     }
 
     func presentReceiveScreen(for account: BlockchainAccount) {
@@ -36,6 +41,7 @@ final class ReceiveRouter: ReceiveRouterAPI {
             }
             .disposed(by: disposeBag)
         navigationRouter.present(viewController: nav)
+        analyticsRecorder.record(event: AnalyticsEvents.New.Send.sendReceiveViewed(type: .receive))
     }
 
     func presentKYCScreen() {

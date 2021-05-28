@@ -138,7 +138,6 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     candidateOrderDetails.fiatValue.currency,
                     candidateOrderDetails.fiatValue.moneyValue,
                     candidateOrderDetails.cryptoCurrency,
-                    candidateOrderDetails.cryptoValue,
                     [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : (paymentMethod?.analyticsParameter.string) ?? ""]
                 )
             }
