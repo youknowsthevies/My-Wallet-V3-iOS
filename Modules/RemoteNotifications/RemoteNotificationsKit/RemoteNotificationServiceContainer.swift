@@ -5,7 +5,6 @@ import Foundation
 /// Remote notification service container provides maximum abstraction
 /// for notification authorization, registration, sending and emitting services.
 public protocol RemoteNotificationServiceContaining {
-    var emitter: RemoteNotificationEmitting { get }
     var authorizer: RemoteNotificationAuthorizing { get }
     var backgroundReceiver: RemoteNotificationBackgroundReceiving { get }
     var tokenSender: RemoteNotificationTokenSending { get }
