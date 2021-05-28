@@ -335,6 +335,9 @@ targets:
     dependencies:
     - target: NabuAnalyticsKit
     - target: NetworkKit
+    scheme:
+      testTargets:
+      - NabuAnalyticsDataKitTests
     templateAttributes:
       featureName: Analytics
     templates:
@@ -713,6 +716,7 @@ targets:
     platform: iOS
     deploymentTarget:
         iOS: '13.0'
+    scheme: {}
     sources:
     - createIntermediateGroups: true
       excludes:
@@ -966,6 +970,7 @@ targets:
   Localization:
     templateAttributes:
       featureName: Localization
+    scheme: {}
     templates:
     - Module
   NetworkKit:
@@ -1233,6 +1238,7 @@ targets:
     - carthage: DIKit
     - carthage: Differentiator
     platform: iOS
+    scheme: {}
     settings:
       configs:
         Debug Dev:
@@ -1311,6 +1317,9 @@ targets:
     templates:
     - ModuleTests
   TransactionUIKit:
+    scheme:
+      testTargets:
+      - TransactionUIKitTests
     dependencies:
     - carthage: BigInt
     - carthage: RxCocoa
@@ -1346,12 +1355,22 @@ targets:
     templates:
     - ModuleTests
   UIComponentsKit:
+    scheme:
+      testTargets:
+      - UIComponentsKitTests
     sources:
     - Blockchain/Resources/Fonts/Inter # required to properly render snapshot tests
     templateAttributes:
       featureName: UIComponents
     templates:
     - Module
+  UIComponentsKitTests:
+    dependencies:
+    - target: UIComponentsKit
+    templateAttributes:
+      featureName: UIComponents
+    templates:
+    - ModuleTests
   WalletPayloadKit:
     dependencies:
     - carthage: CryptoSwift

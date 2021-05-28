@@ -2,11 +2,6 @@ import SwiftUI
 
 extension Color {
 
-    fileprivate init(paletteColor: PaletteColor) {
-        let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(colorName, bundle: .current)
-    }
-
     // MARK: Borders
     public static let borderPrimary = Color(paletteColor: .grey100)
 

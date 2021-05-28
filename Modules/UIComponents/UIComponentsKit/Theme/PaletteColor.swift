@@ -1,7 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import SwiftUI
+import UIKit
+
+extension UIColor {
+    convenience init(paletteColor: PaletteColor) {
+        let colorName = paletteColor.rawValue.capitalizeFirstLetter
+        self.init(named: colorName, in: .current, compatibleWith: nil)!
+    }
+}
+
+extension Color {
+    init(paletteColor: PaletteColor) {
+        let colorName = paletteColor.rawValue.capitalizeFirstLetter
+        self.init(colorName, bundle: .current)
+    }
+}
 // Reference: https://www.figma.com/file/MWCxP6khQHkDZSLEew6mLqcQ/iOS-Visual-consistency-update?node-id=68%3A0
-enum PaletteColor: String {
+enum PaletteColor: String, CaseIterable {
 
     // MARK: Blue
     case blue000
@@ -104,9 +120,9 @@ enum PaletteColor: String {
     case whiteFade800
 
     // MARK: KYC Verification Tiers
-    case tiersSilver
-    case tiersGold
-    case tiersDiamond
+    case tierSilver
+    case tierGold
+    case tierDiamond
 
     // MARK: Cryptocurrencies
     case aave = "Aave"

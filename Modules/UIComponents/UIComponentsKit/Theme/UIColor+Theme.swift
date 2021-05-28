@@ -2,14 +2,6 @@
 
 import UIKit
 
-extension UIColor {
-
-    fileprivate convenience init(paletteColor: PaletteColor) {
-        let colorName = paletteColor.rawValue.capitalizeFirstLetter
-        self.init(named: colorName, in: .current, compatibleWith: nil)!
-    }
-}
-
 // LEGACY, for UIKit support
 extension UIColor {
 
@@ -27,9 +19,9 @@ extension UIColor {
     static let _yfi = UIColor(paletteColor: .yfi)
 
     // MARK: Tiers
-    static let tiersSilver = UIColor(paletteColor: .tiersSilver)
-    static let tiersGold = UIColor(paletteColor: .tiersGold)
-    static let tiersDiamond = UIColor(paletteColor: .tiersDiamond)
+    static let tiersSilver = UIColor(paletteColor: .tierSilver)
+    static let tiersGold = UIColor(paletteColor: .tierGold)
+    static let tiersDiamond = UIColor(paletteColor: .tierDiamond)
 
     // MARK: Grey Fade
     static let greyFade100 = UIColor(paletteColor: .greyFade100)
