@@ -6,7 +6,7 @@ public enum LoggedIn {
     public enum Action: Equatable {
         case none
     }
-    
+
     public struct State: Equatable {
 
     }
@@ -16,10 +16,9 @@ public enum LoggedIn {
     }
 }
 
-let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environment> { state, action, environment in
+let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environment> { _, action, _ in
     switch action {
     case .none:
         return .none
     }
 }
-

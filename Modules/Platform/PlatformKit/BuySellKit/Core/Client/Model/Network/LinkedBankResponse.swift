@@ -5,7 +5,7 @@ public struct LinkedBankResponse: Decodable {
         case savings = "SAVINGS"
         case checking = "CHECKING"
     }
-    
+
     let id: String
     let currency: String
     let partner: String

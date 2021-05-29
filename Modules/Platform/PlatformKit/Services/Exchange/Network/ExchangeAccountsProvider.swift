@@ -64,7 +64,7 @@ final class ExchangeAccountsProvider: ExchangeAccountsProviderAPI {
                             cache[currency] = account
                         }
                     })
-                    .catchError { error -> Single<CryptoExchangeAccount> in
+                    .catchError { _ -> Single<CryptoExchangeAccount> in
                         Logger.shared.debug("Fetch Error: \(currency.code)")
                         throw ExchangeAccountsNetworkError.missingAccount
                     }

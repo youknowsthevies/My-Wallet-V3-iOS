@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import UIKit
 import RxRelay
 import RxSwift
+import UIKit
 
 @testable import RemoteNotificationsKit
 
