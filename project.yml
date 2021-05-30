@@ -86,6 +86,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
+      - name: SingleSignOnKitTests
+        randomExecutionOrder: true
 schemes:
   Blockchain:
     templateAttributes:
@@ -526,6 +528,7 @@ targets:
     - target: SharedPackagesKit
     - target: UIComponentsKit
     - target: RemoteNotificationsKit
+    - target: SingleSignOnKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
@@ -1424,5 +1427,23 @@ targets:
       path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: RemoteNotifications
+    templates:
+    - ModuleTests
+  SingleSignOnKit:
+    dependencies:
+    - target: SharedPackagesKit
+    - target: UIComponentsKit
+    scheme:
+      testTargets:
+      - SingleSignOnKitTests
+    templateAttributes:
+      featureName: SingleSignOnFeature
+    templates:
+    - Module
+  SingleSignOnKitTests:
+    dependencies:
+    - target: SingleSignOnKit
+    templateAttributes:
+      featureName: SingleSignOnFeature
     templates:
     - ModuleTests

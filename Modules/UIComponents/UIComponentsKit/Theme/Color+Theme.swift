@@ -21,6 +21,7 @@ extension Color {
     public static let textHeading = Color(paletteColor: .grey900)
     public static let textSubheading = Color(paletteColor: .grey600)
     public static let textBody = Color(paletteColor: .grey900)
+    public static let textMuted = Color(paletteColor: .grey400)
     public static let formField = Color(paletteColor: .greyFade800)
 
     // MARK: Badge
