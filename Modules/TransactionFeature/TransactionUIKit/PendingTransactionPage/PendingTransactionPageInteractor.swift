@@ -49,7 +49,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
         let transactionState = transactionModel.state
             .share(replay: 1)
-
+        
         let sent: Observable<MoneyValue> = transactionState
             .map { [crashOnError] state -> MoneyValue in
                 switch state.moneyValueFromSource() {

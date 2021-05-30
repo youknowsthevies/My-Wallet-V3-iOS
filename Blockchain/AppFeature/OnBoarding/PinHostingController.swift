@@ -28,14 +28,14 @@ final class PinHostingController: UIViewController {
 
         viewStore.publisher.creating
             .filter { $0 }
-            .sink { _ in
+            .sink { shouldCreatePin in
                 // TODO:
             }
             .store(in: &cancellables)
 
         viewStore.publisher.authenticate
             .filter { $0 }
-            .sink { [weak self] _ in
+            .sink { [weak self] shouldAuthenticate in
                 self?.authenticatePin()
             }
             .store(in: &cancellables)

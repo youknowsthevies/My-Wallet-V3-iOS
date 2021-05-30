@@ -11,7 +11,7 @@ public enum Onboarding {
         case passwordScreen
         case welcomeScreen
     }
-
+    
     public struct State: Equatable {
         var pinState: PinCore.State? = .init()
     }
@@ -34,7 +34,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 )
             }
         ),
-    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { _, action, environment in
+    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
         case .start:
             return decideFlow(

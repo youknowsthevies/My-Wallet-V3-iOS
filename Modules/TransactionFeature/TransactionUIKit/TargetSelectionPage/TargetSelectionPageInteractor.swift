@@ -151,7 +151,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         // As soon as something is inputted, we want to disable the 'next' action.
         textWhileTyping
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] text in
                 self?.targetSelectionPageModel.process(action: .destinationDeselected)
             })
             .disposeOnDeactivate(interactor: self)

@@ -18,8 +18,8 @@ final class RemoteNotificationNetworkServiceTests: XCTestCase {
 
     override class func setUp() {
         DependencyContainer.defined(by: modules {
-            DependencyContainer.toolKit
-            DependencyContainer.networkKit
+            DependencyContainer.toolKit;
+            DependencyContainer.networkKit;
         })
     }
 

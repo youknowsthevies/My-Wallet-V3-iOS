@@ -30,7 +30,7 @@ final class AppHostingController: UINavigationController {
 
         self.store
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
-            .ifLet(then: { _ in
+            .ifLet(then: { loggedInScore in
                 //
             })
             .store(in: &cancellables)

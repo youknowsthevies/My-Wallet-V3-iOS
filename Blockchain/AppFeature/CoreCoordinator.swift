@@ -39,7 +39,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
         .pullback(
             state: \.loggedIn,
             action: /CoreAppAction.loggedIn,
-            environment: { _ -> LoggedIn.Environment in
+            environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment()
             }),
     mainAppReducerCore

@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import RemoteNotificationsKit
 import XCTest
+@testable import RemoteNotificationsKit
 
 final class MockRemoteNotificationsRegistry: UIApplicationRemoteNotificationsAPI {
 

@@ -11,7 +11,7 @@ public enum PinCore {
         case logout
         case handleAuthentication(_ password: String)
     }
-
+    
     public struct State: Equatable {
         var creating: Bool = false
         var authenticate: Bool = false
@@ -22,7 +22,7 @@ public enum PinCore {
     }
 }
 
-let pinReducer = Reducer<PinCore.State, PinCore.Action, PinCore.Environment> { state, action, _ in
+let pinReducer = Reducer<PinCore.State, PinCore.Action, PinCore.Environment> { state, action, environment in
     switch action {
     case .authenticate:
         state.creating = false
