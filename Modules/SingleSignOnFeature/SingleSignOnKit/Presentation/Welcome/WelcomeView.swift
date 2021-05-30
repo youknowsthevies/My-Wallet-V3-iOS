@@ -7,15 +7,36 @@ import UIComponentsKit
 
 typealias WelcomeViewString = LocalizationConstants.Onboarding.WelcomeScreen
 
+struct ViewState: Equatable {
+    var isLoginVisible: Bool
+    init(state: SingleSignOnState) {
+        isLoginVisible = state.isLoginVisible
+    }
+}
+
 struct WelcomeView: View {
+    let store: Store<SingleSignOnState, SingleSignOnAction>
+    @ObservedObject var viewStore: ViewStore<ViewState, SingleSignOnAction>
+
     var body: some View {
         VStack {
             WelcomeMessageSection()
                 .padding(EdgeInsets(top: 173, leading: 0, bottom: 0, trailing: 0))
             Spacer()
-            WelcomeActionSection()
+            WelcomeActionSection(store: store, viewStore: viewStore)
                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 58, trailing: 0))
         }
+        .sheet(isPresented: viewStore.binding(
+            get: \.isLoginVisible,
+            send: SingleSignOnAction.setLoginVisible(_:))
+        ) {
+            // WelcomeView(store: store)
+        }
+    }
+
+    public init(store: Store<SingleSignOnState, SingleSignOnAction>) {
+        self.store = store
+        self.viewStore = ViewStore(self.store.scope(state: ViewState.init))
     }
 }
 
@@ -61,6 +82,9 @@ struct WelcomeMessageDescription: View {
 }
 
 struct WelcomeActionSection: View {
+    let store: Store<SingleSignOnState, SingleSignOnAction>
+    @ObservedObject var viewStore: ViewStore<ViewState, SingleSignOnAction>
+
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createWallet) {
@@ -71,7 +95,7 @@ struct WelcomeActionSection: View {
                 .cornerRadius(8.0)
                 .padding(10)
             SecondaryButton(title: WelcomeViewString.Button.login) {
-                // Add Action here
+                viewStore.send(.setLoginVisible(true))
             }
                 .frame(width: 327, height: 48)
             HStack {
@@ -92,7 +116,12 @@ struct WelcomeActionSection: View {
 #if DEBUG
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView()
+        WelcomeView(
+            store:Store(initialState: SingleSignOnState(),
+                        reducer: singleSignOnReducer,
+                        environment: .init(mainQueue: DispatchQueue.main.eraseToAnyScheduler())
+            )
+        )
     }
 }
 #endif

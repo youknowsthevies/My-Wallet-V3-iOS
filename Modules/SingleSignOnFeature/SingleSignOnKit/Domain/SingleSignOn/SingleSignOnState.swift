@@ -2,4 +2,6 @@
 
 struct SingleSignOnState: Equatable {
     init() {}
+
+    var isLoginVisible: Bool = false
 }

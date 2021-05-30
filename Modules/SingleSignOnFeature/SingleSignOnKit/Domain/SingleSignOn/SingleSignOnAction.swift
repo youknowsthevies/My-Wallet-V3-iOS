@@ -4,4 +4,6 @@ enum SingleSignOnAction: Equatable {
     case createWallet
     case login
     case recoverFunds
+
+    case setLoginVisible(Bool)
 }
