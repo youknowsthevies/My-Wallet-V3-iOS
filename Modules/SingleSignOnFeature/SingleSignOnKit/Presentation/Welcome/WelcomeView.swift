@@ -30,7 +30,7 @@ struct WelcomeView: View {
             get: \.isLoginVisible,
             send: SingleSignOnAction.setLoginVisible(_:))
         ) {
-            // WelcomeView(store: store)
+            LoginView(store: store)
         }
     }
 

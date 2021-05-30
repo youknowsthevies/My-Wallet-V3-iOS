@@ -3,5 +3,6 @@
 struct SingleSignOnState: Equatable {
     init() {}
 
-    var isLoginVisible: Bool = false
+    public var email: String = ""
+    public var isLoginVisible: Bool = false
 }
