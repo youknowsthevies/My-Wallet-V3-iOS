@@ -1,5 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinCashKit
+import BitcoinChainKit
+import DIKit
 import PlatformKit
 import RxCocoa
 import RxSwift
@@ -13,30 +16,30 @@ final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
     }
 
     var balance: Single<CryptoValue> {
-        Single
-            .just(CryptoValue.bitcoinCash(satoshis: Int(wallet.getBchBalance())))
-    }
-
-    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
-        pendingBalanceMoney
-            .asObservable()
-    }
-
-    var pendingBalanceMoney: Single<MoneyValue> {
-        Single.just(MoneyValue.zero(currency: .bitcoinCash))
-    }
-
-    var balanceMoney: Single<MoneyValue> {
-        Single.just(CryptoValue.bitcoinCash(satoshis: Int(wallet.getBchBalance())))
-            .map { .init(cryptoValue: $0) }
+        activeAccountAddresses
+            .flatMap(weak: self) { (self, activeAccounts) -> Single<CryptoValue> in
+                self.balanceService.balances(for: activeAccounts)
+            }
     }
 
     var balanceObservable: Observable<CryptoValue> {
         balanceRelay.asObservable()
     }
 
+    var balanceMoney: Single<MoneyValue> {
+        balance.moneyValue
+    }
+
     var balanceMoneyObservable: Observable<MoneyValue> {
         balanceObservable.moneyValue
+    }
+
+    var pendingBalanceMoney: Single<MoneyValue> {
+        .just(.zero(currency: .bitcoinCash))
+    }
+
+    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
+        pendingBalanceMoney.asObservable()
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
@@ -48,12 +51,25 @@ final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
 
     // MARK: - Injected
 
-    private let wallet: Wallet
+    private let balanceService: BalanceServiceAPI
+    private let bridge: BitcoinCashWalletBridgeAPI
+
+    private var activeAccountAddresses: Single<[XPub]> {
+        bridge.wallets
+            .map { accounts in
+                accounts.map(\.publicKey)
+            }
+    }
 
     // MARK: - Setup
 
-    init(wallet: Wallet = WalletManager.shared.wallet) {
-        self.wallet = wallet
+    convenience init() {
+        self.init(bridge: resolve(), balanceService: resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoinCash))
+    }
+
+    init(bridge: BitcoinCashWalletBridgeAPI, balanceService: BalanceServiceAPI) {
+        self.bridge = bridge
+        self.balanceService = balanceService
         balanceFetchTriggerRelay
             .throttle(
                 .milliseconds(100),
