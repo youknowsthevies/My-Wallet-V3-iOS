@@ -49,16 +49,40 @@ final class TransactionAnalyticsHook {
         }
     }
 
-    func onReceiveAccountSelected(_ source: CurrencyType, target: CryptoAccount, action: AssetAction) {
+    func onReceiveAccountSelected(_ source: CryptoAccount, target: CryptoAccount, action: AssetAction) {
         switch action {
         case .swap:
             analyticsRecorder.record(events: [
-                SwapAnalyticsEvent.swapConfirmPair(asset: source, target: target.label),
+                SwapAnalyticsEvent.swapConfirmPair(asset: source.currencyType, target: target.label),
                 NewSwapAnalyticsEvent.swapReceiveSelected(outputCurrency: target.currencyType.code,
-                                                          outputType: .init(target))
+                                                          outputType: .init(target)),
+                NewSwapAnalyticsEvent.swapAccountsSelected(inputCurrency: source.currencyType.code,
+                                                           inputType: .init(source),
+                                                           outputCurrency: target.currencyType.code,
+                                                           outputType: .init(target),
+                                                           wasSuggested: false)
             ])
         default:
             return
+        }
+    }
+
+    func onFeeSelected(state: TransactionState) {
+        switch state.action {
+        case .send:
+            guard let target = state.destination as? CryptoAccount,
+                  let source = state.source as? CryptoAccount,
+                  let feeSelectionAsset = state.feeSelection.asset else {
+                return
+            }
+            analyticsRecorder.record(event:
+                NewSendAnalyticsEvent.sendFeeRateSelected(currency: feeSelectionAsset.code,
+                                                          feeRate: .init(state.feeSelection.selectedLevel),
+                                                          fromAccountType: .init(source),
+                                                          toAccountType: .init(target))
+            )
+        default:
+            break
         }
     }
 
@@ -79,7 +103,7 @@ final class TransactionAnalyticsHook {
                 return
             }
             analyticsRecorder.record(events: [
-                NewSwapAnalyticsEvent.swapAmountMaxClicked(amountCurrency: nil,
+                NewSwapAnalyticsEvent.swapAmountMaxClicked(amountCurrency: state.maxSpendable.currencyCode,
                                                            inputCurrency: source.currencyType.code,
                                                            inputType: .init(source),
                                                            outputCurrency: target.currencyType.code,

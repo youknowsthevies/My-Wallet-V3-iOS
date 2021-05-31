@@ -7,6 +7,8 @@ import TransactionKit
 
 extension AnalyticsEvents.New {
     public enum Send: AnalyticsEvent {
+        public var type: AnalyticsEventType { .new }
+        
         case sendReceiveClicked(origin: Origin = .navigation,
                                 type: Type)
         case sendReceiveViewed(type: Type)
@@ -80,18 +82,15 @@ extension AnalyticsEvents.New {
             case custom = "CUSTOM"
             case normal = "NORMAL"
             case priority = "PRIORITY"
-            case unknown = "UNKNOWN"
 
             init(_ feeLevel: FeeLevel) {
                 switch feeLevel {
-                case .regular:
-                    self = .normal
                 case .priority:
                     self = .priority
                 case .custom:
                     self = .custom
-                case .none:
-                    self = .unknown
+                default:
+                    self = .normal
                 }
             }
         }

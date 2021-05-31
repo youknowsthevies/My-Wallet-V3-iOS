@@ -138,9 +138,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     self?.didSelectSourceAccount(account: target as! CryptoAccount)
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
-                    if let selectedSource = state.source,
+                    if let selectedSource = state.source as? CryptoAccount,
                        let target = target as? CryptoAccount {
-                        self?.analyticsHook.onReceiveAccountSelected(selectedSource.currencyType,
+                        self?.analyticsHook.onReceiveAccountSelected(selectedSource,
                                                                      target: target,
                                                                      action: state.action)
                     }

@@ -6,6 +6,8 @@ import PlatformKit
 
 extension AnalyticsEvents.New {
     public enum Receive: AnalyticsEvent {
+        public var type: AnalyticsEventType { .new }
+
         case receiveCurrencySelected(accountType: AccountType, currency: String)
         case receiveDetailsCopied(accountType: AccountType, currency: String)
 

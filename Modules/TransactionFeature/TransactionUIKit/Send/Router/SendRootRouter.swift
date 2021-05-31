@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import Localization
 import PlatformKit
 import PlatformUIKit
@@ -19,10 +20,14 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
     // MARK: - Private Properties
 
     private var transactionRouter: ViewableRouting?
+    private let analyticsHook: TransactionAnalyticsHook
 
     // MARK: - Init
 
-    override init(interactor: SendRootInteractable, viewController: SendRootViewControllable) {
+    init(interactor: SendRootInteractable,
+         viewController: SendRootViewControllable,
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
+        self.analyticsHook = analyticsHook
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -54,6 +59,7 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             guard let cryptoAccount = account as? CryptoAccount else {
                 fatalError("Expected a CryptoAccount: \(account)")
             }
+            self?.analyticsHook.onFromAccountSelected(cryptoAccount, action: .send)
             self?.routeToSend(sourceAccount: cryptoAccount)
         }
         let sendAccountPickerRouter = builder.build(

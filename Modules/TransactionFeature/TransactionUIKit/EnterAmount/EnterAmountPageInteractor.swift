@@ -138,9 +138,19 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .share(scope: .whileConnected)
 
-        let fee = transactionState
+        let pendingTransaction = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
+
+        transactionState.map(\.feeSelection)
+            .distinctUntilChanged()
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: { [analyticsHook] state in
+                analyticsHook.onFeeSelected(state: state)
+            })
+            .disposeOnDeactivate(interactor: self)
+
+        let fee = pendingTransaction
             .map(\.feeAmount)
             .share(scope: .whileConnected)
 
