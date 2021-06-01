@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "Veriff",
+        "repositoryURL": "https://github.com/Veriff/veriff-ios-spm/",
+        "state": {
+          "branch": null,
+          "revision": "ed0d3cae6b7851365f4f5d433cbe40b1686cd24d",
+          "version": "4.8.0"
+        }
+      },
+      {
         "package": "xctest-dynamic-overlay",
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {

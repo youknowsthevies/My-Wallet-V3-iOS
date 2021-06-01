@@ -214,6 +214,9 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
+  Veriff:
+    url: https://github.com/Veriff/veriff-ios-spm/
+    version: 4.8.0
 targets:
   ActivityKit:
     dependencies:
@@ -483,7 +486,6 @@ targets:
     - carthage: RxDataSources
     - carthage: Differentiator
     - carthage: stellarsdk
-    - carthage: Veriff
     - carthage: Zxcvbn
     - carthage: Sift
     - carthage: SwiftProtobuf
@@ -924,7 +926,7 @@ targets:
     - ModuleTests
   KYCUIKit:
     dependencies:
-    - carthage: Veriff
+    - package: Veriff
     - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
