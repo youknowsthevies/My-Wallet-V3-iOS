@@ -40,7 +40,7 @@ public final class AnalyticsProvider: AnalyticsServiceProviding {
             .receive(on: queue)
             .withLatestFrom($events)
 
-        updateRateTimer 
+        updateRateTimer
             .merge(with: batchFull)
             .merge(with: enteredBackground)
             .filter { !$0.isEmpty }

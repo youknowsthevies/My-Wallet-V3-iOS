@@ -19,7 +19,6 @@ extension AnalyticsEvents.New {
                               maxCardLimit: Double?,
                               outputCurrency: String)
 
-
         public enum PaymentType: String, StringRawRepresentable {
             case bankAccount = "BANK_ACCOUNT"
             case bankTransfer = "BANK_TRANSFER"

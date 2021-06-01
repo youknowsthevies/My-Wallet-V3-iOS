@@ -159,8 +159,8 @@ final class ReceiveScreenPresenter {
         // MARK: - Copy
 
         copyButton.tapRelay
-            .bind { [unowned self] in
-                self.eventsRecorder.record(event:
+            .bind { [eventsRecorder] in
+                eventsRecorder.record(event:
                     AnalyticsEvents.New.Receive.receiveDetailsCopied(accountType: .init(self.interactor.account as? CryptoAccount),
                                                                      currency: self.interactor.account.currencyType.code)
                 )
