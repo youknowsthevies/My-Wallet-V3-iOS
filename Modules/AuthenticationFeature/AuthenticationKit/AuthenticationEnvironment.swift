@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 
-public struct SingleSignOnEnvironment {
+public struct AuthenticationEnvironment {
 
     var mainQueue: AnySchedulerOf<DispatchQueue>
 

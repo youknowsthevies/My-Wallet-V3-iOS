@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
@@ -8,8 +9,8 @@ import UIComponentsKit
 typealias WelcomeViewString = LocalizationConstants.Onboarding.WelcomeScreen
 
 public struct WelcomeView: View {
-    let store: Store<SingleSignOnState, SingleSignOnAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, SingleSignOnAction>
+    let store: Store<AuthenticationState, AuthenticationAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
 
     public var body: some View {
         VStack {
@@ -21,13 +22,13 @@ public struct WelcomeView: View {
         }
         .sheet(isPresented: viewStore.binding(
             get: \.isLoginVisible,
-            send: SingleSignOnAction.setLoginVisible(_:))
+            send: AuthenticationAction.setLoginVisible(_:))
         ) {
             LoginView(store: store)
         }
     }
 
-    public init(store: Store<SingleSignOnState, SingleSignOnAction>) {
+    public init(store: Store<AuthenticationState, AuthenticationAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store.scope(state: WelcomeViewState.init))
     }
@@ -35,7 +36,7 @@ public struct WelcomeView: View {
 
 struct WelcomeViewState: Equatable {
     var isLoginVisible: Bool
-    init(state: SingleSignOnState) {
+    init(state: AuthenticationState) {
         isLoginVisible = state.isLoginVisible
     }
 }
@@ -82,8 +83,8 @@ struct WelcomeMessageDescription: View {
 }
 
 struct WelcomeActionSection: View {
-    let store: Store<SingleSignOnState, SingleSignOnAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, SingleSignOnAction>
+    let store: Store<AuthenticationState, AuthenticationAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
 
     var body: some View {
         VStack {
@@ -120,8 +121,8 @@ struct WelcomeActionSection: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         WelcomeView(
-            store:Store(initialState: SingleSignOnState(),
-                        reducer: singleSignOnReducer,
+            store:Store(initialState: AuthenticationState(),
+                        reducer: authenticationReducer,
                         environment: .init(mainQueue: DispatchQueue.main.eraseToAnyScheduler())
             )
         )

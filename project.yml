@@ -86,7 +86,9 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
-      - name: SingleSignOnKitTests
+      - name: AuthenticationUIKitTests
+        randomExecutionOrder: true
+      - name: AuthenticationDataKitTests
         randomExecutionOrder: true
 schemes:
   Blockchain:
@@ -528,7 +530,9 @@ targets:
     - target: SharedPackagesKit
     - target: UIComponentsKit
     - target: RemoteNotificationsKit
-    - target: SingleSignOnKit
+    - target: AuthenticationKit
+    - target: AuthenticationUIKit
+    - target: AuthenticationDataKit
     - carthage: FIRAnalyticsConnector
       findFrameworks: false
       linkType: static
@@ -1429,21 +1433,47 @@ targets:
       featureName: RemoteNotifications
     templates:
     - ModuleTests
-  SingleSignOnKit:
+  AuthenticationKit:
     dependencies:
+    - target: SharedPackagesKit
+    templateAttributes:
+      featureName: AuthenticationFeature
+    templates:
+    - Module
+  AuthenticationUIKit:
+    dependencies:
+    - target: AuthenticationKit
     - target: SharedPackagesKit
     - target: UIComponentsKit
     scheme:
       testTargets:
-      - SingleSignOnKitTests
+      - AuthenticationUIKitTests
     templateAttributes:
-      featureName: SingleSignOnFeature
+      featureName: AuthenticationFeature
     templates:
-    - Module
-  SingleSignOnKitTests:
+      - Module
+  AuthenticationUIKitTests:
     dependencies:
-    - target: SingleSignOnKit
+    - target: AuthenticationUIKit
     templateAttributes:
-      featureName: SingleSignOnFeature
+      featureName: AuthenticationFeature
     templates:
-    - ModuleTests
+      - ModuleTests
+  AuthenticationDataKit:
+    dependencies:
+    - target: AuthenticationKit
+    - target: SharedPackagesKit
+    scheme:
+      testTargets:
+      - AuthenticationDataKitTests
+    templateAttributes:
+      featureName: AuthenticationFeature
+    templates:
+      - Module
+  AuthenticationDataKitTests:
+    dependencies:
+    - target: AuthenticationDataKit
+    templateAttributes:
+      featureName: AuthenticationFeature
+    templates:
+      - ModuleTests
