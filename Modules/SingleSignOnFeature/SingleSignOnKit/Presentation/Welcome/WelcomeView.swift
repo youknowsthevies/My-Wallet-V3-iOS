@@ -7,18 +7,11 @@ import UIComponentsKit
 
 typealias WelcomeViewString = LocalizationConstants.Onboarding.WelcomeScreen
 
-struct ViewState: Equatable {
-    var isLoginVisible: Bool
-    init(state: SingleSignOnState) {
-        isLoginVisible = state.isLoginVisible
-    }
-}
-
-struct WelcomeView: View {
+public struct WelcomeView: View {
     let store: Store<SingleSignOnState, SingleSignOnAction>
-    @ObservedObject var viewStore: ViewStore<ViewState, SingleSignOnAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, SingleSignOnAction>
 
-    var body: some View {
+    public var body: some View {
         VStack {
             WelcomeMessageSection()
                 .padding(EdgeInsets(top: 173, leading: 0, bottom: 0, trailing: 0))
@@ -36,22 +29,29 @@ struct WelcomeView: View {
 
     public init(store: Store<SingleSignOnState, SingleSignOnAction>) {
         self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: ViewState.init))
+        self.viewStore = ViewStore(self.store.scope(state: WelcomeViewState.init))
+    }
+}
+
+struct WelcomeViewState: Equatable {
+    var isLoginVisible: Bool
+    init(state: SingleSignOnState) {
+        isLoginVisible = state.isLoginVisible
     }
 }
 
 struct WelcomeMessageSection: View {
     var body: some View {
         VStack {
-            Image("logo_large")
+            Image.Logo.blockchain
                 .frame(width: 64, height: 64)
                 .padding(40)
             Text(WelcomeViewString.title)
-                .font(.custom("Inter-SemiBold", size: 24))
+                .font(Font(weight: .semibold, size: 24))
                 .foregroundColor(.textHeading)
                 .padding(16)
             WelcomeMessageDescription()
-                .font(.custom("Inter-Medium", size: 16))
+                .font(Font(weight: .medium, size: 16))
                 .lineSpacing(4)
         }
         .multilineTextAlignment(.center)
@@ -83,12 +83,12 @@ struct WelcomeMessageDescription: View {
 
 struct WelcomeActionSection: View {
     let store: Store<SingleSignOnState, SingleSignOnAction>
-    @ObservedObject var viewStore: ViewStore<ViewState, SingleSignOnAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, SingleSignOnAction>
 
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createWallet) {
-                // Add Action here
+                // TODO: add login action here
             }
                 .frame(width: 327, height: 48)
                 .border(Color.black)
@@ -100,12 +100,13 @@ struct WelcomeActionSection: View {
                 .frame(width: 327, height: 48)
             HStack {
                 Button(WelcomeViewString.Button.recoverFunds) {
-                    // Add Action here
+                    // TODO: add recover funds action here
                 }
-                    .font(.custom("Inter-SemiBold", size: 12))
+                .font(Font(weight: .semibold, size: 12))
                 Spacer()
+                // TODO: replace test version with actual number later
                 Text("Test Version")
-                    .font(.custom("Inter-Medium", size: 12))
+                    .font(Font(weight: .medium, size: 12))
             }
             .padding()
             .frame(width: 327, height: 28)

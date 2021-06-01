@@ -2,8 +2,8 @@
 
 import ComposableArchitecture
 
-struct SingleSignOnEnvironment {
-    init(mainQueue: AnySchedulerOf<DispatchQueue>) {
+public struct SingleSignOnEnvironment {
+    public init(mainQueue: AnySchedulerOf<DispatchQueue>) {
         self.mainQueue = mainQueue
     }
 
