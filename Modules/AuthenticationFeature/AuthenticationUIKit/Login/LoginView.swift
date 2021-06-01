@@ -6,6 +6,8 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
+typealias LoginViewString = LocalizationConstants.AuthenticationKit.Login
+
 public struct LoginView: View {
     let store: Store<AuthenticationState, AuthenticationAction>
     @ObservedObject var viewStore: ViewStore<LoginViewState, AuthenticationAction>
@@ -19,18 +21,22 @@ public struct LoginView: View {
         NavigationView {
             VStack {
                 FormTextFieldGroup(
-                    title: "Email",
-                    text: .constant(""),
-                    textPlaceholder: "your@email.com"
+                    title: LoginViewString.TextFieldTitle.email,
+                    text: viewStore.binding(
+                        get: { $0.emailAddress },
+                        send: { .didChangeEmailAddress($0) }
+                    ),
+                    textPlaceholder: LoginViewString.TextFieldPlaceholder.email,
+                    footnote: LoginViewString.TextFieldFootnote.wallet
                 )
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 0, trailing: 24))
                 Spacer()
-                PrimaryButton(title: "Continue") {
+                PrimaryButton(title: LoginViewString.Button._continue) {
                     // TODO: add continue action here
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
             }
-            .navigationBarTitle("Log In", displayMode: .inline)
+            .navigationBarTitle(LoginViewString.navigationTitle)
             .updateNavigationBarStyle()
             .trailingNavigationButton(.close) {
                 viewStore.send(.setLoginVisible(false))
@@ -40,10 +46,10 @@ public struct LoginView: View {
 }
 
 struct LoginViewState: Equatable {
-    var email: String
+    var emailAddress: String
 
     init(state: AuthenticationState) {
-        self.email = state.email
+        self.emailAddress = state.emailAddress
     }
 }
 

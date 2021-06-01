@@ -2,7 +2,8 @@
 
 public struct AuthenticationState: Equatable {
 
-    public var email: String = ""
+    // MARK: - Login Screen
+    public var emailAddress: String = ""
     public var isLoginVisible: Bool = false
 
     public init() {}

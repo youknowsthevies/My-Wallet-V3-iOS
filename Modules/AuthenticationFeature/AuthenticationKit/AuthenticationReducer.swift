@@ -13,5 +13,8 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
     case .setLoginVisible(let isVisible):
         state.isLoginVisible = isVisible
         return .none
+    case .didChangeEmailAddress(let emailAddress):
+        state.emailAddress = emailAddress
+        return .none
     }
 }

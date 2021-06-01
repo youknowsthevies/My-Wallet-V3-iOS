@@ -6,7 +6,7 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-typealias WelcomeViewString = LocalizationConstants.Onboarding.WelcomeScreen
+typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
 public struct WelcomeView: View {
     let store: Store<AuthenticationState, AuthenticationAction>
@@ -88,7 +88,7 @@ struct WelcomeActionSection: View {
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+            PrimaryButton(title: WelcomeViewString.Button.createAccount) {
                 // add login action here
             }
             .frame(width: .infinity, height: 48)
