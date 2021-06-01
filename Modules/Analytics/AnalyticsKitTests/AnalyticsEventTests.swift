@@ -24,15 +24,13 @@ class AnalyticsEventTests: XCTestCase {
     func test_NewAnalyticsEventReflection_simpleEventTitleAndParams() throws {
         let event: NewAnalyticsEvent = .simpleEventWithoutParams
         XCTAssertEqual(event.name, "Simple Event Without Params")
-        XCTAssertEqual(event.params?.count, 1)
-        XCTAssertEqual(event.params?["platform"] as? String, "WALLET")
+        XCTAssertEqual(event.params?.count, 0)
     }
 
     func test_NewAnalyticsEventReflection_advancedEventTitleAndParams() throws {
         let event: NewAnalyticsEvent = .eventWithParams(nameOfTheParam: "The Name", valueOfTheParam: 3)
         XCTAssertEqual(event.name, "Event With Params")
-        XCTAssertEqual(event.params?.count, 3)
-        XCTAssertEqual(event.params?["platform"] as? String, "WALLET")
+        XCTAssertEqual(event.params?.count, 2)
         XCTAssertEqual(event.params?["name_of_the_param"] as? String, "The Name")
         XCTAssertEqual(event.params?["value_of_the_param"] as? Double, 3)
     }
@@ -40,8 +38,7 @@ class AnalyticsEventTests: XCTestCase {
     func test_NewAnalyticsEventReflection_advancedEventCustomEnum() throws {
         let event: NewAnalyticsEvent = .eventWithCustom(custom: .type)
         XCTAssertEqual(event.name, "Event With Custom")
-        XCTAssertEqual(event.params?.count, 2)
-        XCTAssertEqual(event.params?["platform"] as? String, "WALLET")
+        XCTAssertEqual(event.params?.count, 1)
         XCTAssertEqual(event.params?["custom"] as? String, "TYPE")
     }
 

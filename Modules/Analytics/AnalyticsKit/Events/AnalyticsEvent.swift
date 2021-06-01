@@ -26,7 +26,7 @@ public extension AnalyticsEvent {
         guard type == .new else {
             return nil
         }
-        var params: [String: Any] = ["platform": "WALLET"]
+        var params = [String: Any]()
         let reflection = Mirror(reflecting: self)
         guard reflection.displayStyle == .enum, let associated = reflection.children.first else {
             return params
