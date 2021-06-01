@@ -2,7 +2,7 @@
 
 import ComposableArchitecture
 
-public let singleSignOnReducer = Reducer<SingleSignOnState, SingleSignOnAction, SingleSignOnEnvironment> { state, action, environment in
+public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAction, AuthenticationEnvironment> { state, action, environment in
     switch action {
     case .createWallet:
         return .none
