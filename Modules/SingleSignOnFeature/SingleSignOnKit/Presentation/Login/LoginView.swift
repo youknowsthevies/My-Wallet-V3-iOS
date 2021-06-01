@@ -5,15 +5,7 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-struct LoginViewState: Equatable {
-    var email: String
-
-    init(state: SingleSignOnState) {
-        self.email = state.email
-    }
-}
-
-struct LoginView: View {
+public struct LoginView: View {
     let store: Store<SingleSignOnState, SingleSignOnAction>
     @ObservedObject var viewStore: ViewStore<LoginViewState, SingleSignOnAction>
 
@@ -22,7 +14,7 @@ struct LoginView: View {
         self.viewStore = ViewStore(self.store.scope(state: LoginViewState.init))
     }
 
-    var body: some View {
+    public var body: some View {
         NavigationView {
             VStack {
                 FormTextFieldGroup(
@@ -30,16 +22,28 @@ struct LoginView: View {
                     text: .constant(""),
                     textPlaceholder: "your@email.com"
                 )
+                .padding(EdgeInsets(top: 32, leading: 0, bottom: 0, trailing: 0))
+                Spacer()
                 PrimaryButton(title: "Continue") {
-                    // Action here
+                    // TODO: add continue action here
                 }
+                .padding(EdgeInsets(top: 0, leading: 0, bottom: 34, trailing: 0))
             }
             .frame(width: 380, alignment: .center)
             .navigationBarTitle("Log In", displayMode: .inline)
+            .updateNavigationBarStyle()
             .trailingNavigationButton(.close) {
                 viewStore.send(.setLoginVisible(false))
             }
         }
+    }
+}
+
+struct LoginViewState: Equatable {
+    var email: String
+
+    init(state: SingleSignOnState) {
+        self.email = state.email
     }
 }
 
