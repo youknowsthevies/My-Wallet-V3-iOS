@@ -1,15 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
 import UIComponentsKit
 
 public struct LoginView: View {
-    let store: Store<SingleSignOnState, SingleSignOnAction>
-    @ObservedObject var viewStore: ViewStore<LoginViewState, SingleSignOnAction>
+    let store: Store<AuthenticationState, AuthenticationAction>
+    @ObservedObject var viewStore: ViewStore<LoginViewState, AuthenticationAction>
 
-    public init(store: Store<SingleSignOnState, SingleSignOnAction>) {
+    public init(store: Store<AuthenticationState, AuthenticationAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store.scope(state: LoginViewState.init))
     }
@@ -41,7 +42,7 @@ public struct LoginView: View {
 struct LoginViewState: Equatable {
     var email: String
 
-    init(state: SingleSignOnState) {
+    init(state: AuthenticationState) {
         self.email = state.email
     }
 }
@@ -50,8 +51,8 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(
             store:
-                Store(initialState: SingleSignOnState(),
-                      reducer: singleSignOnReducer,
+                Store(initialState: AuthenticationState(),
+                      reducer: authenticationReducer,
                       environment: .init(
                         mainQueue: DispatchQueue.main.eraseToAnyScheduler()
                       )
