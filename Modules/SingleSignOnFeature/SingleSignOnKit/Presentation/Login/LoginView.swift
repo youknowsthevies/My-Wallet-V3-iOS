@@ -22,14 +22,13 @@ public struct LoginView: View {
                     text: .constant(""),
                     textPlaceholder: "your@email.com"
                 )
-                .padding(EdgeInsets(top: 32, leading: 0, bottom: 0, trailing: 0))
+                .padding(EdgeInsets(top: 34, leading: 24, bottom: 0, trailing: 24))
                 Spacer()
                 PrimaryButton(title: "Continue") {
                     // TODO: add continue action here
                 }
-                .padding(EdgeInsets(top: 0, leading: 0, bottom: 34, trailing: 0))
+                .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
             }
-            .frame(width: 380, alignment: .center)
             .navigationBarTitle("Log In", displayMode: .inline)
             .updateNavigationBarStyle()
             .trailingNavigationButton(.close) {
