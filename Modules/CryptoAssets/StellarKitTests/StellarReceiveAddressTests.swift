@@ -4,37 +4,24 @@
 import XCTest
 
 class StellarReceiveAddressTests: XCTestCase {
-    struct TestData {
-        let address = "1234567890"
-        let label = "abcdef"
-        let memo = "memo-memo"
-
-        let urlString = "web+stellar:pay?destination=1234567890&memo=memo-memo"
-        let urlStringWithMemoType = "web+stellar:pay?destination=1234567890&memo=memo-memo&memo_type=MEMO_TEXT"
-        let urlStringWithAmount = "web+stellar:pay?destination=1234567890&amount=123456&memo=memo-memo"
-    }
 
     func testStellarReceiveAddressAbsoluteURLIsCorrect() throws {
-        let data = TestData()
-        let address = StellarReceiveAddress(address: data.address, label: data.label, memo: data.memo)
-        XCTAssertEqual(address.metadata.absoluteString, data.urlString)
+        let address = StellarReceiveAddress(address: StellarTestData.address, label: StellarTestData.label, memo: StellarTestData.memo)
+        XCTAssertEqual(address.metadata.absoluteString, StellarTestData.urlStringWithMemo)
     }
     func testStellarURLPayloadWithMemoTypeText() throws {
-        let data = TestData()
-        let url = URL(string: data.urlStringWithMemoType)!
+        let url = URL(string: StellarTestData.urlStringWithMemoType)!
         let address = StellarURLPayload(url: url)
-        XCTAssertEqual(address?.absoluteString, data.urlString)
+        XCTAssertEqual(address?.absoluteString, StellarTestData.urlStringWithMemo)
     }
     func testStellarURLPayloadWithoutMemoType() throws {
-        let data = TestData()
-        let url = URL(string: data.urlString)!
+        let url = URL(string: StellarTestData.urlStringWithMemo)!
         let address = StellarURLPayload(url: url)
-        XCTAssertEqual(address?.absoluteString, data.urlString)
+        XCTAssertEqual(address?.absoluteString, StellarTestData.urlStringWithMemo)
     }
     func testStellarURLPayloadWithMemoTypeTextAmount() throws {
-        let data = TestData()
-        let url = URL(string: data.urlStringWithAmount)!
+        let url = URL(string: StellarTestData.urlStringWithMemoAndAmount)!
         let address = StellarURLPayload(url: url)
-        XCTAssertEqual(address?.absoluteString, data.urlStringWithAmount)
+        XCTAssertEqual(address?.absoluteString, StellarTestData.urlStringWithMemoAndAmount)
     }
 }

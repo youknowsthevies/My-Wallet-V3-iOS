@@ -140,7 +140,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         transferService
             .transfer(
                 moneyValue: pendingTransaction.amount,
-                destination: target.address
+                destination: target.address,
+                memo: target.memo
             )
             .map { identifier -> TransactionResult in
                 TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
