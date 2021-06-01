@@ -3,9 +3,10 @@
 import ComposableArchitecture
 
 public struct SingleSignOnEnvironment {
+
+    var mainQueue: AnySchedulerOf<DispatchQueue>
+
     public init(mainQueue: AnySchedulerOf<DispatchQueue>) {
         self.mainQueue = mainQueue
     }
-
-    var mainQueue: AnySchedulerOf<DispatchQueue>
 }
