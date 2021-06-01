@@ -78,6 +78,9 @@ final class BitcoinCashAssetBalanceFetcher: CryptoAccountBalanceFetching {
             .observeOn(MainScheduler.asyncInstance)
             .flatMapLatest(weak: self) { (self, _) in
                 self.balance.asObservable()
+                    .materialize()
+                    .filter { !$0.isStopEvent }
+                    .dematerialize()
             }
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
