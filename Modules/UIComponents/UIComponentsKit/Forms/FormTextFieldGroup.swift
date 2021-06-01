@@ -5,8 +5,12 @@ public struct FormTextFieldGroup: View {
     public let title: String
     public let text: Binding<String>
     public let textPlaceholder: String
+    @State public var textFieldStyle: FormTextFieldStyle = FormTextFieldStyle()
 
-    public init(title: String, text: Binding<String>, textPlaceholder: String = "") {
+    public init(title: String,
+                text: Binding<String>,
+                textPlaceholder: String = ""
+    ) {
         self.title = title
         self.text = text
         self.textPlaceholder = textPlaceholder
@@ -19,8 +23,14 @@ public struct FormTextFieldGroup: View {
         ) {
             Text(title)
                 .textStyle(.body)
-            TextField(textPlaceholder, text: text)
-                .textFieldStyle(FormTextFieldStyle())
+            TextField(textPlaceholder, text: text) { isEditing in
+                if isEditing {
+                    textFieldStyle = FormTextFieldStyle(isEditing: true)
+                } else {
+                    textFieldStyle = FormTextFieldStyle()
+                }
+            }
+            .textFieldStyle(textFieldStyle)
         }
     }
 }

@@ -91,13 +91,15 @@ struct WelcomeActionSection: View {
                 // add login action here
             }
             .frame(width: .infinity, height: 48)
-                .cornerRadius(8.0)
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+            .cornerRadius(8.0)
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
             .frame(width: .infinity, height: 48)
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+
             HStack {
                 Button(WelcomeViewString.Button.recoverFunds) {
                     // add recover funds action here
