@@ -86,6 +86,8 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
+      - name: AuthenticationKitTests
+        randomExecutionOrder: true
       - name: AuthenticationUIKitTests
         randomExecutionOrder: true
       - name: AuthenticationDataKitTests
@@ -1436,10 +1438,20 @@ targets:
   AuthenticationKit:
     dependencies:
     - target: SharedPackagesKit
+    scheme:
+      testTargets:
+      - AuthenticationKitTests
     templateAttributes:
       featureName: AuthenticationFeature
     templates:
     - Module
+  AuthenticationKitTests:
+    dependencies:
+    - target: AuthenticationKit
+    templateAttributes:
+      featureName: AuthenticationFeature
+    templates:
+      - ModuleTests
   AuthenticationUIKit:
     dependencies:
     - target: AuthenticationKit
