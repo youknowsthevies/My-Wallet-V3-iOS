@@ -88,28 +88,28 @@ struct WelcomeActionSection: View {
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createWallet) {
-                // TODO: add login action here
+                // add login action here
             }
-                .frame(width: 327, height: 48)
-                .border(Color.black)
+            .frame(width: .infinity, height: 48)
                 .cornerRadius(8.0)
-                .padding(10)
+                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
-                .frame(width: 327, height: 48)
+            .frame(width: .infinity, height: 48)
+                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
             HStack {
                 Button(WelcomeViewString.Button.recoverFunds) {
-                    // TODO: add recover funds action here
+                    // add recover funds action here
                 }
                 .font(Font(weight: .semibold, size: 12))
                 Spacer()
-                // TODO: replace test version with actual number later
+                // replace test version with actual number later
                 Text("Test Version")
                     .font(Font(weight: .medium, size: 12))
             }
-            .padding()
-            .frame(width: 327, height: 28)
+            .frame(width: .infinity, height: 28)
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
         }
     }
 }
