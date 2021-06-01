@@ -88,7 +88,7 @@ struct WelcomeActionSection: View {
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createWallet) {
-                // Add Action here
+                // TODO: add login action here
             }
                 .frame(width: 327, height: 48)
                 .border(Color.black)
@@ -100,10 +100,11 @@ struct WelcomeActionSection: View {
                 .frame(width: 327, height: 48)
             HStack {
                 Button(WelcomeViewString.Button.recoverFunds) {
-                    // Add Action here
+                    // TODO: add recover funds action here
                 }
                 .font(Font(weight: .semibold, size: 12))
                 Spacer()
+                // TODO: replace test version with actual number later
                 Text("Test Version")
                     .font(Font(weight: .medium, size: 12))
             }
