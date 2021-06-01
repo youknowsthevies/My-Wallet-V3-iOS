@@ -9,4 +9,6 @@ public enum AuthenticationAction: Equatable {
     // MARK: - Login Screen
     case setLoginVisible(Bool)
     case didChangeEmailAddress(String)
+    case emailVerified(Bool)
+    case didRetrievedWalletAddress(String)
 }

@@ -6,11 +6,13 @@ import SwiftUI
 public struct LoadingButton: View {
 
     let title: String
+    let icon: Image?
     let action: () -> Void
     @Binding var loading: Bool
 
-    public init(title: String, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
+    public init(title: String, icon: Image? = nil, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
+        self.icon = icon
         self._loading = loading
         self.action = action
     }
@@ -20,7 +22,18 @@ public struct LoadingButton: View {
             ActivityIndicatorView()
                 .frame(minHeight: LayoutConstants.buttonMinHeight)
         } else {
-            Button(title, action: action)
+            if icon != nil {
+                Button(action: action, label: {
+                    HStack(spacing: 12) {
+                        icon?
+                            .renderingMode(.template)
+                            .frame(width: 15, height: 15)
+                        Text(title)
+                    }
+                })
+            } else {
+                Button(title, action: action)
+            }
         }
     }
 }

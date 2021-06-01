@@ -26,15 +26,22 @@ public struct LoginView: View {
                         get: { $0.emailAddress },
                         send: { .didChangeEmailAddress($0) }
                     ),
-                    textPlaceholder: LoginViewString.TextFieldPlaceholder.email,
-                    footnote: LoginViewString.TextFieldFootnote.wallet
+                    textPlaceholder: LoginViewString.TextFieldPlaceholder.email
                 )
-                .padding(EdgeInsets(top: 34, leading: 24, bottom: 0, trailing: 24))
+                .padding(EdgeInsets(top: 34, leading: 24, bottom: 2, trailing: 24))
+                LabelledDivider(label: LoginViewString.Divider.or)
+                IconButton(title: LoginViewString.Button.scanPairingCode,
+                           icon: Image.ButtonIcon.qrCode) {
+                    // TODO: add scan pairing code action here
+                }
+                .foregroundColor(.buttonPrimaryBackground)
+                .padding(EdgeInsets(top: 22, leading: 24, bottom: 34, trailing: 24))
                 Spacer()
                 PrimaryButton(title: LoginViewString.Button._continue) {
                     // TODO: add continue action here
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
+                .disabled(viewStore.state.emailAddress.isEmpty)
             }
             .navigationBarTitle(LoginViewString.navigationTitle)
             .updateNavigationBarStyle()

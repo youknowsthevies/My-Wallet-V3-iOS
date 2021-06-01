@@ -119,6 +119,11 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Login screen: wrong hardware key"
             )
         }
+        public enum Divider {
+            public static let or = NSLocalizedString(
+                "or",
+                comment: "Login screen: Divider OR label")
+        }
         public enum Button {
             public static let scanPairingCode = NSLocalizedString(
                 "Scan Pairing Code",

@@ -17,6 +17,9 @@ extension Color {
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
 
+    // MARK: Divider
+    public static let dividerLine = Color(paletteColor: .grey100)
+
     // MARK: Text
     public static let textTitle = Color(paletteColor: .grey900)
     public static let textHeading = Color(paletteColor: .grey900)
