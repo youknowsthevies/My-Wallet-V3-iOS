@@ -11,7 +11,7 @@ public enum FontWeight {
 
 extension Font {
 
-    init(weight: FontWeight, size: CGFloat) {
+    public init(weight: FontWeight, size: CGFloat) {
         self.init(UIFont.main(weight, size))
     }
 }

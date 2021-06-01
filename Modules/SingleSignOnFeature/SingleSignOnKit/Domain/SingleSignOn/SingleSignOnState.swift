@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-struct SingleSignOnState: Equatable {
-    init() {}
+public struct SingleSignOnState: Equatable {
+    public init() {}
 
-    var isLoginVisible: Bool = false
+    public var isLoginVisible: Bool = false
 }
