@@ -33,11 +33,6 @@ public struct Accessibility {
         }
     }
 
-    /// `.none` represents an inaccessible element
-    public static var none: Accessibility {
-        Accessibility(isAccessible: false)
-    }
-
     /// The accessibility identifier
     public let id: Value<String>
 
@@ -93,6 +88,11 @@ extension Accessibility {
 
     public static func label(_ rawValue: String) -> Accessibility {
         .init(label: .value(rawValue))
+    }
+
+    /// `.none` represents an inaccessible element
+    public static var none: Accessibility {
+        Accessibility(isAccessible: false)
     }
 }
 

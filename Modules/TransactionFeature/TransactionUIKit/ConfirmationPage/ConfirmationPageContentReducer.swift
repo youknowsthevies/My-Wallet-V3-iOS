@@ -115,7 +115,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                         fontWeight: .semibold,
                         contentColor: .destructive,
                         fontSize: 14.0,
-                        accessibilityId: ""
+                        accessibility: .none
                     )
                 )
             }
