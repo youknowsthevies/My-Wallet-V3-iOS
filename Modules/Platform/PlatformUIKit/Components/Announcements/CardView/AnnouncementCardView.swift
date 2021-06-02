@@ -82,10 +82,10 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
 
     private func setupAccessibility() {
         typealias Identifier = Accessibility.Identifier.Dashboard.Announcement
-        titleLabel.accessibility = .init(id: .value(Identifier.titleLabel))
-        descriptionLabel.accessibility = .init(id: .value(Identifier.descriptionLabel))
-        thumbImageView.accessibility = .init(id: .value(Identifier.imageView))
-        dismissButton.accessibility = .init(id: .value(Identifier.dismissButton))
+        titleLabel.accessibility = .id(Identifier.titleLabel)
+        descriptionLabel.accessibility = .id(Identifier.descriptionLabel)
+        thumbImageView.accessibility = .id(Identifier.imageView)
+        dismissButton.accessibility = .id(Identifier.dismissButton)
     }
 
     private func setupButtons() {
@@ -106,7 +106,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         NSLayoutConstraint.activate([
             button.heightAnchor.constraint(equalToConstant: 50)
             ])
-        button.accessibility = .init(id: .value(Accessibility.Identifier.Dashboard.Announcement.confirmButton))
+        button.accessibility = .id(Accessibility.Identifier.Dashboard.Announcement.confirmButton)
         buttonsStackView.addArrangedSubview(button)
     }
 

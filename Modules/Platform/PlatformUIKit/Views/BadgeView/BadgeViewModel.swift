@@ -95,7 +95,7 @@ extension BadgeViewModel {
         accessibilityId: String = Accessibility.Identifier.General.destructiveBadgeView
         ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .destructiveBackground,
@@ -111,7 +111,7 @@ extension BadgeViewModel {
         accessibilityId: String = Accessibility.Identifier.General.affirmativeBadgeView
         ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .affirmativeBackground,
@@ -129,7 +129,7 @@ extension BadgeViewModel {
         ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
             accessory: .progress(model),
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .white,
@@ -149,7 +149,7 @@ extension BadgeViewModel {
         var viewModel = BadgeViewModel(
             font: font,
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .defaultBadgeBackground,

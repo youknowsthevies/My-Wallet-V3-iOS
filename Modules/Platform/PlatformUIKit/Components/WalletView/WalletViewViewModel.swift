@@ -73,7 +73,7 @@ final class WalletViewViewModel {
             font: .main(.semibold, 16.0),
             color: .textFieldText,
             alignment: .left,
-            accessibility: .init(id: .value("\(descriptor.accessibilityPrefix).wallet.name"))
+            accessibility: .id("\(descriptor.accessibilityPrefix).wallet.name")
         )
         guard !(account is CryptoExchangeAccount) else {
             /// Exchange accounts don't have a balance
@@ -91,7 +91,7 @@ final class WalletViewViewModel {
                             font: .main(.medium, 14.0),
                             color: .descriptionText,
                             alignment: .left,
-                            accessibility: .init(id: .value("\(descriptor.accessibilityPrefix).wallet.balance"))
+                            accessibility: .id("\(descriptor.accessibilityPrefix).wallet.balance")
                         )
                     }
                     .asDriver(onErrorJustReturn: .empty)

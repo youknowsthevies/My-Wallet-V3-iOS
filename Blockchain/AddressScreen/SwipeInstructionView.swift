@@ -26,8 +26,8 @@ final class SwipeInstructionView: UIView {
             addSubview(view)
             view.fillSuperview()
         }
-        accessibility = Accessibility(id: .value(AccessibilityIdentifiers.PinScreen.swipeLabel),
-                                      hint: .value(LocalizationConstants.Pin.Accessibility.swipeHint))
+        accessibility = Accessibility(id: AccessibilityIdentifiers.PinScreen.swipeLabel,
+                                      hint: LocalizationConstants.Pin.Accessibility.swipeHint)
     }
 
     func setup(text: String,

@@ -13,8 +13,8 @@ final class AddressPresenter {
 
     /// The asset name label accessibility
     var titleAccessibility: Accessibility {
-        Accessibility(id: .value(AccessibilityIdentifiers.Address.assetNameLabel),
-                            traits: .value(.header))
+        Accessibility(id: AccessibilityIdentifiers.Address.assetNameLabel,
+                      traits: .header)
     }
 
     /// Relay that accepts and streams the address status
@@ -31,9 +31,9 @@ final class AddressPresenter {
     let copyViewModel = ButtonViewModel(
         font: Font(.branded(.montserratRegular), size: .custom(20)).result,
         accessibility: Accessibility(
-            id: .value(AccessibilityIdentifiers.Address.copyButton),
-            label: .value(LocalizationConstants.Address.Accessibility.copyButton),
-            traits: .value(.button)
+            id: AccessibilityIdentifiers.Address.copyButton,
+            label: LocalizationConstants.Address.Accessibility.copyButton,
+            traits: .button
         )
     )
 
@@ -41,9 +41,9 @@ final class AddressPresenter {
     let shareViewModel = ButtonViewModel(
         font: Font(.branded(.montserratRegular), size: .custom(20)).result,
         accessibility: Accessibility(
-            id: .value(AccessibilityIdentifiers.Address.shareButton),
-            label: .value(LocalizationConstants.Address.Accessibility.shareButton),
-            traits: .value(.button)
+            id: AccessibilityIdentifiers.Address.shareButton,
+            label: LocalizationConstants.Address.Accessibility.shareButton,
+            traits: .button
         )
     )
 

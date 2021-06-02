@@ -49,8 +49,8 @@ public final class IntroductionSheetViewController: UIViewController {
     }
 
     private func applyAccessibility() {
-        button.accessibility = .init(id: .value(AccessibilityIdentifiers.doneButton))
-        titleLabel.accessibility = .init(id: .value(AccessibilityIdentifiers.titleLabel))
-        subtitleLabel.accessibility = .init(id: .value(AccessibilityIdentifiers.subtitleLabel))
+        button.accessibility = .id(AccessibilityIdentifiers.doneButton)
+        titleLabel.accessibility = .id(AccessibilityIdentifiers.titleLabel)
+        subtitleLabel.accessibility = .id(AccessibilityIdentifiers.subtitleLabel)
     }
 }

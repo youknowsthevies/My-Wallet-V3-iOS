@@ -136,9 +136,7 @@ public struct DashboardAsset {
                         text: fiatPrice,
                         font: descriptors.priceFont,
                         color: .dashboardAssetTitle,
-                        accessibility: .init(
-                            id: .value("\(AccessibilityId.marketFiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
-                        )
+                        accessibility: .id("\(AccessibilityId.marketFiatBalanceLabelFormat)\(descriptors.accessibilityIdSuffix)")
                     )
 
                     let fiatTintColor: UIColor
@@ -204,8 +202,7 @@ public struct DashboardAsset {
                         )
                     )
                     change = fiatChange + percentageChange + period
-                    changeAccessibility = .init(id: .value("\(AccessibilityId.changeLabelFormat)\(descriptors.accessibilityIdSuffix)"
-                    ))
+                    changeAccessibility = .id("\(AccessibilityId.changeLabelFormat)\(descriptors.accessibilityIdSuffix)")
                 }
             }
         }

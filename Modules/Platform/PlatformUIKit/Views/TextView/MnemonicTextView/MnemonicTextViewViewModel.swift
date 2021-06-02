@@ -81,7 +81,7 @@ public struct MnemonicTextViewViewModel {
         borderColorRelay.asDriver()
     }
 
-    let accessibility: Accessibility = .init(id: .value(Accessibility.Identifier.MnemonicTextView.recoveryPhrase))
+    let accessibility: Accessibility = .id(Accessibility.Identifier.MnemonicTextView.recoveryPhrase)
 
     let attributedPlaceholder = NSAttributedString(
         string: LocalizationConstants.TextField.Title.recoveryPhrase,
