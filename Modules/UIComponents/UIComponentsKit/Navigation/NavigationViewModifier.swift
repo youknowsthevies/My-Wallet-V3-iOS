@@ -32,6 +32,8 @@ extension View {
             leading: HStack {
                 Button(action: action) {
                     Image(button.iconName, bundle: .current)
+                        .renderingMode(.template)
+                        .foregroundColor(Color.buttonPrimaryBackground)
                 }
             }
         )

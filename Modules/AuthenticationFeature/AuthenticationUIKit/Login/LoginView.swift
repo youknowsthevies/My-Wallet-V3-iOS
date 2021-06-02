@@ -38,10 +38,19 @@ public struct LoginView: View {
                 .padding(EdgeInsets(top: 22, leading: 24, bottom: 34, trailing: 24))
                 Spacer()
                 PrimaryButton(title: LoginViewString.Button._continue) {
-                    // TODO: add continue action here
+                    viewStore.send(.setVerifyDeviceVisible(true))
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(viewStore.state.emailAddress.isEmpty)
+                NavigationLink(
+                    "",
+                    destination: VerifyDeviceView(store: store),
+                    isActive: viewStore.binding(
+                        get: \.isVerifyDeviceVisible,
+                        send:  AuthenticationAction.setVerifyDeviceVisible(_:)
+                    )
+                )
+
             }
             .navigationBarTitle(LoginViewString.navigationTitle)
             .updateNavigationBarStyle()
@@ -54,9 +63,11 @@ public struct LoginView: View {
 
 struct LoginViewState: Equatable {
     var emailAddress: String
+    var isVerifyDeviceVisible: Bool
 
     init(state: AuthenticationState) {
         self.emailAddress = state.emailAddress
+        self.isVerifyDeviceVisible = state.isVerifyDeviceVisible
     }
 }
 

@@ -10,4 +10,8 @@ extension Image {
     public enum ButtonIcon {
         public static let qrCode = Image("qr-code-icon")
     }
+
+    public enum CircleIcon {
+        public static let verifyDevice = Image("verify_device")
+    }
 }
