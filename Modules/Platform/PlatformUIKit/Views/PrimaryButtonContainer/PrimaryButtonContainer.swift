@@ -62,7 +62,7 @@ public class PrimaryButtonContainer: NibBasedView {
 
     private func setup() {
         primaryButton.layer.cornerRadius = 4.0
-        primaryButton.accessibilityIdentifier = Accessibility.Identifier.General.mainCTAButton
+        primaryButton.accessibility = .id(Accessibility.Identifier.General.mainCTAButton)
     }
 
     public var activityIndicatorStyle: UIActivityIndicatorView.Style = .whiteLarge {

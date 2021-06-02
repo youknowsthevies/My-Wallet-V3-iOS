@@ -59,9 +59,9 @@ public final class PendingStateViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupAccessibility() {
-        titleLabel.accessibilityIdentifier = AccessibilityId.titleLabel
-        subtitleTextView.accessibilityIdentifier = AccessibilityId.subtitleLabel
-        actionButton.accessibilityIdentifier = AccessibilityId.button
+        titleLabel.accessibility = .id(AccessibilityId.titleLabel)
+        subtitleTextView.accessibility = .id(AccessibilityId.subtitleLabel)
+        actionButton.accessibility = .id(AccessibilityId.button)
     }
 
     private func setupNavigationBar() {

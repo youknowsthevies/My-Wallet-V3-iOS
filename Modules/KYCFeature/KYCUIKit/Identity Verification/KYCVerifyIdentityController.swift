@@ -140,16 +140,16 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     }
 
     private func addAccessibilityIds() {
-        headline.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.headerText
-        subheadline.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.subheaderText
-        passport.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.passportText
-        nationalIDCard.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.nationalIDCardText
-        residenceCard.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.residenceCardText
-        driversLicense.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.driversLicenseText
-        enableCamera.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraHeaderText
-        enableCameraDescription.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraSubheaderText
-        countrySupportedHeader.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedHeaderText
-        countrySupportedDescription.accessibilityIdentifier = Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedSubheaderText
+        headline.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.headerText)
+        subheadline.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.subheaderText)
+        passport.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.passportText)
+        nationalIDCard.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.nationalIDCardText)
+        residenceCard.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.residenceCardText)
+        driversLicense.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.driversLicenseText)
+        enableCamera.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraHeaderText)
+        enableCameraDescription.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.enableCameraSubheaderText)
+        countrySupportedHeader.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedHeaderText)
+        countrySupportedDescription.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedSubheaderText)
     }
 
     private func actionAttributes() -> [NSAttributedString.Key: Any] {[
