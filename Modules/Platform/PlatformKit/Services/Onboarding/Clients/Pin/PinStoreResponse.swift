@@ -8,6 +8,7 @@ public struct PinStoreResponse: Decodable & Error {
         case success = 0 // Pin retry succeeded
         case deleted = 1 // Pin retry failed and data was deleted from store
         case incorrect = 2 // Incorrect pin
+        case tooManyAttempts = 5 // Wallet locked after too many retries
     }
 
     private enum CodingKeys: String, CodingKey {

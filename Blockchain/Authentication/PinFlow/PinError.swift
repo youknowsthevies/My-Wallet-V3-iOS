@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import PlatformKit
 
 /// Represents any error that might occur during the pin flow
 enum PinError: Error {
@@ -51,5 +52,25 @@ enum PinError: Error {
             return error
         }
         return .custom(LocalizationConstants.Errors.genericError)
+    }
+
+    static func map(from pinStoreErrorResponse: PinStoreResponse) -> PinError {
+        // First verify that the status code was received
+        guard let statusCode = pinStoreErrorResponse.statusCode else {
+            return PinError.serverError(LocalizationConstants.Errors.genericError)
+        }
+
+        switch statusCode {
+        case .deleted:
+            return PinError.tooManyAttempts
+        case .incorrect:
+            let message = pinStoreErrorResponse.error ?? LocalizationConstants.Pin.incorrect
+            return PinError.incorrectPin(message)
+        case .tooManyAttempts:
+            return PinError.tooManyAttempts
+        case .success:
+            // Should not happen because this is an error response
+            return PinError.serverError(LocalizationConstants.Errors.genericError)
+        }
     }
 }
