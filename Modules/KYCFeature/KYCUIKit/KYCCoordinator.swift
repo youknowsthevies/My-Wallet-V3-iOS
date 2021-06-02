@@ -83,6 +83,9 @@ final class KYCCoordinator: KYCRouterAPI {
 
     private var parentFlow = KYCParentFlow.none
 
+    private var errorRecorder: ErrorRecording
+    private var alertPresenter: AlertViewPresenterAPI
+
     /// KYC finsihed with `tier1` in-progress / approved
     var tier1Finished: Observable<Void> {
         kycFinishedRelay
@@ -101,17 +104,22 @@ final class KYCCoordinator: KYCRouterAPI {
         kycFinishedRelay.asObservable()
     }
 
-    init(requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
-         webViewServiceAPI: WebViewServiceAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve(),
-         appSettings: AppSettingsAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         dataRepository: DataRepositoryAPI = resolve(),
-         kycSettings: KYCSettingsAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
+    init(
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
+        webViewServiceAPI: WebViewServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        appSettings: AppSettingsAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecording = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        alertPresenter: AlertViewPresenterAPI = resolve(),
+        dataRepository: DataRepositoryAPI = resolve(),
+        kycSettings: KYCSettingsAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)
     ) {
         self.requestBuilder = requestBuilder
+        self.errorRecorder = errorRecorder
+        self.alertPresenter = alertPresenter
         self.analyticsRecorder = analyticsRecorder
         self.dataRepository = dataRepository
         self.webViewServiceAPI = webViewServiceAPI
@@ -183,9 +191,16 @@ final class KYCCoordinator: KYCRouterAPI {
 
                 strongSelf.initializeNavigationStack(viewController, user: user, tier: tier)
                 strongSelf.restoreToMostRecentPageIfNeeded(tier: tier)
-            }, onError: { error in
+            }, onError: { [alertPresenter, errorRecorder] error in
                 Logger.shared.error("Failed to get user: \(error.localizedDescription)")
-                AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                errorRecorder.error(error)
+                alertPresenter.notify(
+                    content: .init(
+                        title: LocalizationConstants.KYC.Errors.cannotFetchUserAlertTitle,
+                        message: error.localizedDescription
+                    ),
+                    in: viewController
+                )
             })
         disposables.insertWithDiscardableResult(disposable)
     }
