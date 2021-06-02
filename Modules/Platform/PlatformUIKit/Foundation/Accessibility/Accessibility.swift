@@ -34,12 +34,24 @@ public struct Accessibility {
     }
 
     func with(idSuffix: String) -> Accessibility {
-        return Accessibility(
+        Accessibility(
             id: id == nil ? nil : "\(id.printable)\(idSuffix)",
             label: label,
             hint: hint,
             traits: traits,
             isAccessible: isAccessible
+        )
+    }
+
+    func copy(id: String? = nil,
+              label: String? = nil,
+              hint: String? = nil,
+              traits: UIAccessibilityTraits? = nil) -> Accessibility {
+        Accessibility(
+            id: id != nil ? id : self.id,
+            label: label != nil ? label : self.label,
+            hint: hint != nil ? hint : self.hint,
+            traits: traits != nil ? traits ?? .none : self.traits
         )
     }
 }

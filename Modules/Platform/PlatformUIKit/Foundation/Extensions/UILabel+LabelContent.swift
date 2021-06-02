@@ -19,7 +19,7 @@ public extension UILabel {
             font = newValue.font
             textColor = newValue.color
             textAlignment = newValue.alignment
-            accessibility = newValue.accessibility
+            accessibility = newValue.accessibility.copy(label: newValue.text)
         }
     }
 }
