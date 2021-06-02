@@ -83,17 +83,17 @@ final class WalletViewViewModel {
         }
 
         balanceLabelContent = account
-                    .balance
-                    .map(\.displayString)
-                    .map { value in
-                        .init(
-                            text: value,
-                            font: .main(.medium, 14.0),
-                            color: .descriptionText,
-                            alignment: .left,
-                            accessibility: .id("\(descriptor.accessibilityPrefix).wallet.balance")
-                        )
-                    }
-                    .asDriver(onErrorJustReturn: .empty)
+            .balance
+            .map(\.displayString)
+            .map { value in
+                .init(
+                    text: value,
+                    font: .main(.medium, 14.0),
+                    color: .descriptionText,
+                    alignment: .left,
+                    accessibility: .id("\(descriptor.accessibilityPrefix).wallet.balance")
+                )
+            }
+            .asDriver(onErrorJustReturn: .empty)
     }
 }
