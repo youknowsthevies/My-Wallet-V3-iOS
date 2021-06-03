@@ -109,7 +109,7 @@ final class PinInteractor: PinInteracting {
             }
             .catchError { error in
                 if let response = error as? PinStoreResponse {
-                    throw PinError.map(from: response)
+                    throw response.toPinError()
                 } else {
                     throw PinError.map(from: error)
                 }

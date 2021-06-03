@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import NetworkKit
 
 public struct PinStoreResponse: Decodable & Error {
@@ -49,6 +50,26 @@ extension PinStoreResponse {
         key = try values.decodeIfPresent(String.self, forKey: .key)
         value = try values.decodeIfPresent(String.self, forKey: .value)
         error = try values.decodeIfPresent(String.self, forKey: .error)
+    }
+
+    public func toPinError() -> PinError {
+        // First verify that the status code was received
+        guard let code = statusCode else {
+            return PinError.serverError(LocalizationConstants.Errors.genericError)
+        }
+
+        switch code {
+        case .deleted:
+            return PinError.tooManyAttempts
+        case .incorrect:
+            let message = error ?? LocalizationConstants.Pin.incorrect
+            return PinError.incorrectPin(message)
+        case .tooManyAttempts:
+            return PinError.tooManyAttempts
+        case .success:
+            // Should not happen because this is an error response
+            return PinError.serverError(LocalizationConstants.Errors.genericError)
+        }
     }
 }
 
