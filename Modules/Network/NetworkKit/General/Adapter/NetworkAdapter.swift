@@ -9,9 +9,12 @@ import ToolKit
 final class NetworkAdapter: NetworkAdapterAPI {
 
     private let communicator: NetworkCommunicatorAPI
+    private let queue: DispatchQueue
 
-    init(communicator: NetworkCommunicatorAPI = resolve()) {
+    init(communicator: NetworkCommunicatorAPI = resolve(),
+         queue: DispatchQueue = DispatchQueue.global(qos: .background)) {
         self.communicator = communicator
+        self.queue = queue
     }
 
     func performOptional<ResponseType: Decodable>(
@@ -20,6 +23,8 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
+            .subscribe(on: queue)
+            .eraseToAnyPublisher()
     }
 
     func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -28,6 +33,8 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
+            .subscribe(on: queue)
+            .eraseToAnyPublisher()
     }
 
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -35,6 +42,8 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
+            .subscribe(on: queue)
+            .eraseToAnyPublisher()
     }
 
     func perform<ResponseType: Decodable>(
@@ -42,6 +51,8 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
+            .subscribe(on: queue)
+            .eraseToAnyPublisher()
     }
 }
 
