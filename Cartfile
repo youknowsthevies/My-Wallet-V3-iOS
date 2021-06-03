@@ -5,16 +5,15 @@ binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseMessagingBinary.j
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseProtobufBinary.json" == 7.4.0
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseRemoteConfigBinary.json" == 7.4.0
 github "attaswift/BigInt" ~> 5.2
-github "blockchain/libwally-swift" == 0.0.1
 github "danielgindi/Charts" ~> 3.5
 github "dropbox/zxcvbn-ios" ~> 1.0
-github "marmelroy/PhoneNumberKit" ~> 3.2
-github "paulo-bc/RxSwift" ~> 5.1
-github "paulo-bc/RIBs" "e426c5a746fa3d80fc6a7da2a9d82cd466eac7ad"
-github "paulo-bc/RxDataSources" ~> 4.0
-github "thisisalexmcgregor/stellar-ios-mac-sdk" "1.9.7-podspec-fix-2"
 github "jackpooleybc/CryptoSwift" "jack/iso10126padding-1.4.0"
 github "jackpooleybc/DIKit" "safe-property-wrappers"
-github "SiftScience/sift-ios" "v2.0.1"
-github "paulo-bc/wallet-core-carthage" "29fcaf7547f80f3fbf0598445a9e3d3be9dd07d5"
 github "jackpooleybc/RxCombine" "xcode-12.5"
+github "marmelroy/PhoneNumberKit" ~> 3.2
+github "paulo-bc/RIBs" "cf5a87bc5f7dc268378f9d38377fcb29a7d988dd"
+github "paulo-bc/RxDataSources" ~> 4.0
+github "paulo-bc/RxSwift" ~> 5.1
+github "paulo-bc/wallet-core-carthage" "459c4cf69b1824efef39ef82a829ef79c4510088"
+github "SiftScience/sift-ios" "v2.0.1"
+github "Soneso/stellar-ios-mac-sdk" ~> 1.9

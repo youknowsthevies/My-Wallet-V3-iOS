@@ -1,34 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import LibWally
-
-public protocol CoinType {
+protocol CoinType {
     static var coinType: UInt32 { get }
 }
 
 // TODO:
 // * Move to BitcoinKit
 // * Is this the right design???
-public struct Bitcoin: CoinType {
-    public static let coinType: UInt32 = 0
+struct Bitcoin: CoinType {
+    static let coinType: UInt32 = 0
 }
 
-public struct Blockstack: CoinType {
-    public static let coinType: UInt32 = 5757
+struct Blockstack: CoinType {
+    static let coinType: UInt32 = 5757
 }
 
 // TODO
 // * For now `CoinType` is not supported by LibWally-Swift,
-public enum Network {
+enum Network {
     case main(CoinType.Type)
     case test
-
-    var libWallyNetwork: LibWally.Network {
-        switch self {
-        case .main:
-            return LibWally.Network.mainnet
-        case .test:
-            return LibWally.Network.testnet
-        }
-    }
 }

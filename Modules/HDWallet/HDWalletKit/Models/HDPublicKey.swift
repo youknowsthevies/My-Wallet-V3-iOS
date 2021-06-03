@@ -2,11 +2,11 @@
 
 import CommonCryptoKit
 
-public struct HDPublicKey: HexRepresentable {
+struct HDPublicKey: HexRepresentable {
 
-    public let data: Data
+    let data: Data
 
-    public init(data: Data) {
+    init(data: Data) {
         self.data = data
     }
 

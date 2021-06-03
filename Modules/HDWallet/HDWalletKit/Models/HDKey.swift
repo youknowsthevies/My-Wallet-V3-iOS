@@ -1,8 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import LibWally
-
-internal struct ExtendedKey {
+struct ExtendedKey {
     let raw: Data
     let privateKey: UInt32
     let publicKey: UInt32
@@ -12,10 +10,6 @@ internal struct ExtendedKey {
     let chainCode: Data
 }
 
-internal struct HDKey {
-    internal let extendedKey: ExtendedKey
-
-    internal init(libWallyHDKey: LibWally.HDKey) {
-        fatalError("Not yet implemented, LibWally.HDKey.ext_key is private")
-    }
+struct HDKey {
+    let extendedKey: ExtendedKey
 }

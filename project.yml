@@ -74,10 +74,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: KYCKitTests
         randomExecutionOrder: true
-      - name: KYCUIKitTests
-        randomExecutionOrder: true
-      - name: BlockchainTests
-        randomExecutionOrder: true
       - name: SettingsKitTests
         randomExecutionOrder: true
       - name: SettingsUIKitTests
@@ -86,11 +82,15 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
+      - name: KYCUIKitTests
+        randomExecutionOrder: true
       - name: AuthenticationKitTests
         randomExecutionOrder: true
       - name: AuthenticationUIKitTests
         randomExecutionOrder: true
       - name: AuthenticationDataKitTests
+        randomExecutionOrder: true
+      - name: BlockchainTests
         randomExecutionOrder: true
 schemes:
   Blockchain:
@@ -181,8 +181,8 @@ settings:
 targetTemplates:
   Module:
     dependencies:
-    - carthage: DIKit
-    - carthage: RxSwift
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
     platform: iOS
     schemes:
       gatherCoverageData: true
@@ -195,11 +195,11 @@ targetTemplates:
     type: framework
   ModuleTests:
     dependencies:
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxBlocking
-    - carthage: RxTest
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxBlocking.xcframework
+    - framework: Carthage/Build/RxTest.xcframework
     - target: SharedPackagesKit
     platform: iOS
     sources:
@@ -226,7 +226,7 @@ packages:
 targets:
   ActivityKit:
     dependencies:
-    - carthage: BigInt
+    - framework: Carthage/Build/BigInt.xcframework
     - target: AlgorandKit
     - target: BitcoinCashKit
     - target: BitcoinKit
@@ -260,9 +260,9 @@ targets:
     - ModuleTests
   ActivityUIKit:
     dependencies:
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxDataSources
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxDataSources.xcframework
     - sdk: LinkPresentation.framework
     - sdk: SafariServices.framework
     - target: ActivityKit
@@ -295,10 +295,10 @@ targets:
     - ModuleTests
   AlgorandKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -365,13 +365,11 @@ targets:
     - ModuleTests
   BitcoinCashKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: LibWally
-    - carthage: RxRelay
-    - carthage: RxSwift
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
     - target: BitcoinChainKit
-    - target: HDWalletKit
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -388,8 +386,6 @@ targets:
     - target: BitcoinCashKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BitcoinKit
-    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
@@ -401,12 +397,11 @@ targets:
     - ModuleTests
   BitcoinChainKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: LibWally
-    - carthage: RxCocoa
-    - carthage: RxCombine
-    - carthage: RxRelay
-    - target: HDWalletKit
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxCombine.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/SwiftProtobuf.xcframework
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -424,8 +419,6 @@ targets:
     - target: BitcoinChainKit
     sources:
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/BitcoinKit
-    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
@@ -437,12 +430,11 @@ targets:
     - ModuleTests
   BitcoinKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: LibWally
-    - carthage: RxCocoa
-    - carthage: RxRelay
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/WalletCore.xcframework
     - target: BitcoinChainKit
-    - target: HDWalletKit
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -481,21 +473,24 @@ targets:
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
-    - carthage: BigInt
-    - carthage: Charts
-    - carthage: DIKit
-    - carthage: LibWally
-    - carthage: PhoneNumberKit
-    - carthage: RxCocoa
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxDataSources
-    - carthage: Differentiator
-    - carthage: stellarsdk
-    - carthage: Zxcvbn
-    - carthage: Sift
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/Charts.xcframework
+    - framework: Carthage/Build/CryptoSwift.xcframework
+    - framework: Carthage/Build/Differentiator.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/Differentiator.xcframework
+    - framework: Carthage/Build/PhoneNumberKit.xcframework
+    - framework: Carthage/Build/RIBs.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxCombine.xcframework
+    - framework: Carthage/Build/RxDataSources.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/Sift.xcframework
+    - framework: Carthage/Build/stellarsdk.xcframework
+    - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/WalletCore.xcframework
+    - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
@@ -610,6 +605,10 @@ targets:
       base:
         COMMIT_HASH: ${COMMIT_HASH}
         GCC_PREFIX_HEADER: Blockchain/Blockchain-Prefix.pch
+        FRAMEWORK_SEARCH_PATHS:
+        - $(PROJECT_DIR)/Carthage/Build/iOS/
+        - $(PROJECT_DIR)/Carthage/Build/
+        - Submodules/OpenSSL-for-iPhone/lib
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
         - $(PROJECT_DIR)/Submodules/SocketRocket
@@ -670,19 +669,33 @@ targets:
     type: application
   BlockchainTests:
     dependencies:
-    - carthage: RxBlocking
-    - carthage: RxRelay
-    - carthage: RxSwift
-    - carthage: RxTest
+    - framework: Carthage/Build/RxBlocking.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxTest.xcframework
     - target: SharedPackagesKit
     - target: Blockchain
     platform: iOS
     sources:
     - path: BlockchainTests
     - createIntermediateGroups: true
-      excludes:
-      - Helpers/SnapshotTesting
-      path: TestKit/TestKit
+      path: TestKit/TestKit/Utilities
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/RemoteNotificationsKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/KYCKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/KYCUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     type: bundle.unit-test
   DashboardKit:
     scheme:
@@ -701,8 +714,8 @@ targets:
       featureName: DashboardFeature
   DashboardUIKit:
     dependencies:
-    - carthage: RxCocoa
-    - carthage: RxRelay
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
     - target: DashboardKit
     - target: PlatformUIKit
     - target: TransactionUIKit
@@ -736,9 +749,9 @@ targets:
     type: framework
   CommonCryptoKit:
     dependencies:
-    - carthage: CryptoSwift
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
+    - framework: Carthage/Build/CryptoSwift.xcframework
+    - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/WalletCore.xcframework
     scheme:
       testTargets:
       - CommonCryptoKitTests
@@ -764,9 +777,9 @@ targets:
     - Module
   ERC20Kit:
     dependencies:
-    - carthage: BigInt
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/WalletCore.xcframework
     - target: EthereumKit
     - target: NetworkKit
     - target: PlatformKit
@@ -799,9 +812,9 @@ targets:
     - ModuleTests
   EthereumKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: SwiftProtobuf
-    - carthage: WalletCore
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/WalletCore.xcframework
     - target: NetworkKit
     - target: PlatformKit
     - target: ToolKit
@@ -832,7 +845,7 @@ targets:
   HDWalletKit:
     dependencies:
     - target: CommonCryptoKit
-    - carthage: LibWally
+    - target: ToolKit
     scheme:
       testTargets:
       - HDWalletKitTests
@@ -993,9 +1006,9 @@ targets:
       Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
     dependencies:
-    - carthage: RxSwift
-    - carthage: RxCombine
-    - carthage: DIKit
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxCombine.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
     - target: AnalyticsKit
     - target: SharedPackagesKit
     - target: ToolKit
@@ -1052,9 +1065,8 @@ targets:
     - ModuleTests
   PlatformKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: CryptoSwift
-    - carthage: LibWally
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/CryptoSwift.xcframework
     - target: CommonCryptoKit
     - target: Localization
     - target: NetworkKit
@@ -1086,15 +1098,15 @@ targets:
     - ModuleTests
   PlatformUIKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: Charts
-    - carthage: Differentiator
-    - carthage: PhoneNumberKit
-    - carthage: RIBs
-    - carthage: RxCocoa
-    - carthage: RxDataSources
-    - carthage: RxRelay
-    - carthage: Zxcvbn
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/Charts.xcframework
+    - framework: Carthage/Build/Differentiator.xcframework
+    - framework: Carthage/Build/PhoneNumberKit.xcframework
+    - framework: Carthage/Build/RIBs.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxDataSources.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/Zxcvbn.xcframework
     - target: AnalyticsKit
     - target: Localization
     - target: PlatformKit
@@ -1125,7 +1137,7 @@ targets:
     - ModuleTests
   PolkadotKit:
     dependencies:
-    - carthage: BigInt
+    - framework: Carthage/Build/BigInt.xcframework
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -1163,8 +1175,8 @@ targets:
     - target: NetworkKit
     - target: WalletPayloadKit
     - target: KYCKit
-    - carthage: RxRelay
-    - carthage: RxCocoa
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
     templateAttributes:
       featureName: SettingsFeature
     templates:
@@ -1185,8 +1197,8 @@ targets:
       - target: PlatformUIKit
       - target: Localization
       - target: SettingsKit
-      - carthage: RxRelay
-      - carthage: RxCocoa
+      - framework: Carthage/Build/RxRelay.xcframework
+      - framework: Carthage/Build/RxCocoa.xcframework
     scheme:
       testTargets:
         - SettingsUIKitTests
@@ -1212,7 +1224,7 @@ targets:
     - target: Localization
     - target: ToolKit
     - target: TransactionKit
-    - carthage: stellarsdk
+    - framework: Carthage/Build/stellarsdk.xcframework
     scheme:
       testTargets:
       - StellarKitTests
@@ -1242,12 +1254,12 @@ targets:
     - target: ToolKit
     - target: NetworkKit
     - target: Localization
-    - carthage: RxCocoa
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxDataSources
-    - carthage: DIKit
-    - carthage: Differentiator
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxDataSources.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/Differentiator.xcframework
     platform: iOS
     scheme: {}
     settings:
@@ -1275,12 +1287,12 @@ targets:
     type: app-extension
   ToolKit:
     dependencies:
-    - carthage: BigInt
-    - carthage: DIKit
-    - carthage: RxSwift
-    - carthage: RxRelay
-    - carthage: RxCocoa
-    - carthage: RxCombine
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/DIKit.xcframework
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxCombine.xcframework
     scheme:
       testTargets:
       - ToolKitTests
@@ -1300,7 +1312,7 @@ targets:
     - ModuleTests
   TransactionKit:
     dependencies:
-    - carthage: BigInt
+    - framework: Carthage/Build/BigInt.xcframework
     - target: Localization
     - target: NetworkKit
     - target: PlatformKit
@@ -1332,9 +1344,9 @@ targets:
       testTargets:
       - TransactionUIKitTests
     dependencies:
-    - carthage: BigInt
-    - carthage: RxCocoa
-    - carthage: RxRelay
+    - framework: Carthage/Build/BigInt.xcframework
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
     - target: KYCKit
     - target: KYCUIKit
     - target: Localization
@@ -1384,7 +1396,7 @@ targets:
     - ModuleTests
   WalletPayloadKit:
     dependencies:
-    - carthage: CryptoSwift
+    - framework: Carthage/Build/CryptoSwift.xcframework
     - target: CommonCryptoKit
     - target: Localization
     - target: ToolKit
@@ -1407,8 +1419,8 @@ targets:
     - ModuleTests
   RemoteNotificationsKit:
     dependencies:
-    - carthage: RxCocoa
-    - carthage: RxRelay
+    - framework: Carthage/Build/RxCocoa.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
     - target: PlatformKit
     - target: PlatformUIKit
     - target: ToolKit
