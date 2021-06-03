@@ -64,6 +64,7 @@ final class TabControllerManager: NSObject {
     }
 
     @objc func showTransactions() {
+        AppCoordinator.shared.closeSideMenu()
         if activityNavigationController == nil {
             activityNavigationController = UINavigationController(rootViewController: ActivityScreenViewController())
         }

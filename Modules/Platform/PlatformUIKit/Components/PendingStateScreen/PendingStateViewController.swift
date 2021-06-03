@@ -97,7 +97,7 @@ public final class PendingStateViewController: BaseScreenViewController {
 
         actionButton.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        let stackView = UIStackView(arrangedSubviews: [actionButton, cancelButton])
+        let stackView = UIStackView(arrangedSubviews: [cancelButton, actionButton])
         stackView.axis = .vertical
         stackView.spacing = Spacing.inner
 

@@ -545,7 +545,7 @@ extension AppCoordinator: TabSwapping {
         tabControllerManager?.showReceive()
     }
 
-    func switchToActivity(currency: CryptoCurrency) {
+    func switchToActivity() {
         tabControllerManager?.showTransactions()
     }
 }

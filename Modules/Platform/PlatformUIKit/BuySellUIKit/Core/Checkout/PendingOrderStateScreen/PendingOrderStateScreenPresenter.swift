@@ -26,6 +26,8 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     private let routingInteractor: PendingOrderRoutingInteracting
     private let interactor: PendingOrderStateScreenInteractor
     private let analyticsRecorder: AnalyticsEventRecording
+    private let tabSwapping: TabSwapping
+    private let topMostViewControllerProviding: TopMostViewControllerProviding
     private let disposeBag = DisposeBag()
 
     private var amount: String {
@@ -39,8 +41,12 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     // MARK: - Setup
 
     init(routingInteractor: PendingOrderRoutingInteracting,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
-         interactor: PendingOrderStateScreenInteractor) {
+         interactor: PendingOrderStateScreenInteractor,
+         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
+         tabSwapping: TabSwapping = resolve(),
+         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+        self.topMostViewControllerProviding = topMostViewControllerProviding
+        self.tabSwapping = tabSwapping
         self.analyticsRecorder = analyticsRecorder
         self.routingInteractor = routingInteractor
         self.interactor = interactor
@@ -80,14 +86,63 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 onSuccess: { [weak self] state in
                     self?.handle(state: state)
                 },
-                onError: { [weak self] _ in
-                    self?.showError()
+                onError: { [weak self] error in
+                    /// In the event of an `RxError` we don't have a completion
+                    /// state that indicates success or failure. Sometimes we get an
+                    /// RxError of type `.noElements`. So far, in all instances of this
+                    /// the order has gone to `inProgress`.
+                    /// In the event that this happens, we show the error as a timeout error
+                    /// and route the user to `Activity` if they tap the `View Activity`
+                    /// button.
+                    if let _ = error as? RxError {
+                        self?.showRxFailureError(isBuy: isBuy)
+                    } else {
+                        self?.showError(localizedDescription: error.localizedDescription)
+                    }
                 }
             )
             .disposed(by: disposeBag)
     }
 
-    private func showError() {
+    /// This is different from the other timeout screen.
+    /// This is only called when Rx throws an error which
+    /// we cannot gracefully handle. We tell the user their order
+    /// has been submitted and to check `Activity`.
+    private func showRxFailureError(isBuy: Bool) {
+        let button = ButtonViewModel.primary(with: LocalizedString.button)
+        let supplementary = ButtonViewModel.secondary(with: LocalizationConstants.TimeoutScreen.supplementaryButton)
+
+        supplementary
+            .tapRelay
+            .bindAndCatch(weak: self) { (self) in
+                self.routeToActivity()
+            }
+            .disposed(by: disposeBag)
+
+        button
+            .tapRelay
+            .map { .completed }
+            .bindAndCatch(to: routingInteractor.stateRelay)
+            .disposed(by: disposeBag)
+
+        let title = isBuy ? LocalizationConstants.TimeoutScreen.Buy.title : LocalizationConstants.TimeoutScreen.Sell.title
+
+        let viewModel = PendingStateViewModel(
+            compositeStatusViewType: .composite(
+                .init(
+                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                    sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
+                )
+            ),
+            title: title,
+            subtitle: LocalizationConstants.TimeoutScreen.subtitle,
+            button: button,
+            supplementaryButton: supplementary
+        )
+        viewModelRelay.accept(viewModel)
+    }
+
+    private func showError(localizedDescription: String) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
             .map { .completed }
@@ -102,7 +157,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 )
             ),
             title: LocalizationConstants.ErrorScreen.title,
-            subtitle: LocalizationConstants.ErrorScreen.subtitle,
+            subtitle: "\(LocalizationConstants.ErrorScreen.subtitle) \n\(localizedDescription)",
             button: button
         )
         viewModelRelay.accept(viewModel)
@@ -182,7 +237,8 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             switch order.state {
             case .cancelled, .failed, .expired:
                 analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbCheckoutCompleted(status: .failure))
-                showError()
+                /// There's no error here.
+                showError(localizedDescription: "")
             case .finished:
                 analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbCheckoutCompleted(status: .success))
                 handleSuccess()
@@ -198,6 +254,22 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             break
         }
     }
+
+    private func routeToActivity() {
+        dismissTopMost(weak: self) { presenter in
+            presenter.tabSwapping.switchToActivity()
+        }
+    }
+
+    private func dismissTopMost(weak object: PendingOrderStateScreenPresenter, _ selector: @escaping (PendingOrderStateScreenPresenter) -> Void) {
+            guard let viewController = topMostViewControllerProviding.topMostViewController else {
+                selector(object)
+                return
+            }
+            viewController.dismiss(animated: true, completion: {
+                selector(object)
+            })
+        }
 
     private func getEstimateTransactionCompletionTime() -> String {
         guard let fiveDaysFromNow = Calendar.current.date(byAdding: .day, value: 5, to: Date()) else {

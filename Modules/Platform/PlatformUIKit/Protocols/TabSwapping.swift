@@ -2,10 +2,10 @@
 
 import PlatformKit
 
-public protocol TabSwapping: class {
+public protocol TabSwapping: AnyObject {
     func send(from account: BlockchainAccount)
     func switchToSend()
     func switchTabToSwap()
     func switchTabToReceive()
-    func switchToActivity(currency: CryptoCurrency)
+    func switchToActivity()
 }

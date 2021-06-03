@@ -483,6 +483,33 @@ public enum LocalizationConstants {
         )
     }
 
+    public enum TimeoutScreen {
+        public enum Buy {
+            public static let title = NSLocalizedString(
+                "Your Buy Order Has Started.",
+                comment: "Your Buy Order Has Started."
+            )
+        }
+        public enum Sell {
+            public static let title = NSLocalizedString(
+                "Your Sell Order Has Started.",
+                comment: "Your Sell Order Has Started."
+            )
+        }
+        public static let subtitle = NSLocalizedString(
+            "We’re completing your transaction now. We’ll contact you when it has finished.",
+            comment: "We’re completing your transaction now. We’ll contact you when it has finished."
+        )
+        public static let supplementaryButton = NSLocalizedString(
+            "View Transaction",
+            comment: "View Transaction"
+        )
+        public static let button = NSLocalizedString(
+            "OK",
+            comment: "Pending active card error screen: ok button"
+        )
+    }
+
     public struct DashboardScreen {
         public static let title = NSLocalizedString(
             "Home",
