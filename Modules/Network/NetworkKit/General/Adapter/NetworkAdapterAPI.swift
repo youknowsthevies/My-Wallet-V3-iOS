@@ -151,6 +151,7 @@ extension NetworkAdapterAPI {
         )
         .asObservable()
         .ignoreElements()
+        .probabilisticallyCrashOnRxError()
     }
 
     func perform<ErrorResponseType: FromNetworkErrorConvertible>(
@@ -164,10 +165,12 @@ extension NetworkAdapterAPI {
         )
         .asObservable()
         .ignoreElements()
+        .probabilisticallyCrashOnRxError()
     }
 
     func perform<ResponseType: Decodable>(request: NetworkRequest) -> Single<ResponseType> {
         perform(request: request, responseType: ResponseType.self)
+            .probabilisticallyCrashOnRxError()
     }
 
     func perform<ResponseType: Decodable>(
@@ -185,6 +188,7 @@ extension NetworkAdapterAPI {
             .asObservable()
             .take(1)
             .asSingle()
+            .probabilisticallyCrashOnRxError()
     }
 
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -196,6 +200,7 @@ extension NetworkAdapterAPI {
             responseType: ResponseType.self,
             errorResponseType: errorResponseType
         )
+        .probabilisticallyCrashOnRxError()
     }
 
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -214,6 +219,7 @@ extension NetworkAdapterAPI {
             .asObservable()
             .take(1)
             .asSingle()
+            .probabilisticallyCrashOnRxError()
     }
 
     func performOptional<ResponseType: Decodable>(
@@ -231,6 +237,7 @@ extension NetworkAdapterAPI {
             .asObservable()
             .take(1)
             .asSingle()
+            .probabilisticallyCrashOnRxError()
     }
 
     func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -249,6 +256,7 @@ extension NetworkAdapterAPI {
             .asObservable()
             .take(1)
             .asSingle()
+            .probabilisticallyCrashOnRxError()
     }
 }
 
@@ -296,5 +304,31 @@ extension NetworkAdapterAPI {
     ) -> AnyPublisher<Void, NetworkError> {
         perform(request: request, responseType: EmptyNetworkResponse.self)
             .mapToVoid()
+    }
+}
+
+private extension PrimitiveSequence {
+
+    func probabilisticallyCrashOnRxError() -> PrimitiveSequence {
+        catchError { error in
+            func crashOnError(_ error: Error) {
+                switch error as? RxError {
+                case .noElements:
+                    fatalError("No elements received")
+                case .moreThanOneElement:
+                    fatalError("More than one element received")
+                default:
+                    break
+                }
+            }
+            #if INTERNAL_BUILD
+            crashOnError(error)
+            #else
+            ProbabilisticRunner.run(for: .pointZeroOnePercent) {
+                crashOnError(error)
+            }
+            #endif
+            throw error
+        }
     }
 }

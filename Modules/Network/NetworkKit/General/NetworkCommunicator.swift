@@ -73,7 +73,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                 }
             }
             .subscribe(on: queue)
-            .receive(on: queue)
             .eraseToAnyPublisher()
     }
 }
