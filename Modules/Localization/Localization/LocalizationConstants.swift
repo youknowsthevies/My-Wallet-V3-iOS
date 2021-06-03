@@ -328,6 +328,10 @@ public enum LocalizationConstants {
             "Incorrect PIN",
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
+        public static let backoff = NSLocalizedString(
+            "Please try again later",
+            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff"
+        )
         public static let pinsDoNotMatch = NSLocalizedString(
             "PINs don't match",
             comment: "Message presented to user when they enter an incorrect PIN when confirming a PIN."

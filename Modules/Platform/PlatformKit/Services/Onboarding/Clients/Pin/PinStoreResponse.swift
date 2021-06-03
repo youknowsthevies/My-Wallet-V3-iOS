@@ -9,7 +9,7 @@ public struct PinStoreResponse: Decodable & Error {
         case success = 0 // Pin retry succeeded
         case deleted = 1 // Pin retry failed and data was deleted from store
         case incorrect = 2 // Incorrect pin
-        case tooManyAttempts = 5 // Wallet locked after too many retries
+        case backoff = 5 // PIN is locked due to exponential backoff
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -64,8 +64,9 @@ extension PinStoreResponse {
         case .incorrect:
             let message = error ?? LocalizationConstants.Pin.incorrect
             return PinError.incorrectPin(message)
-        case .tooManyAttempts:
-            return PinError.tooManyAttempts
+        case .backoff:
+            let message = error ?? LocalizationConstants.Pin.backoff
+            return PinError.backoff(message)
         case .success:
             // Should not happen because this is an error response
             return PinError.serverError(LocalizationConstants.Errors.genericError)
