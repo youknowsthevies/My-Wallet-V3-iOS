@@ -78,7 +78,11 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: SettingsUIKitTests
         randomExecutionOrder: true
+      - name: AnalyticsKitTests
+        randomExecutionOrder: true
       - name: NabuAnalyticsDataKitTests
+        randomExecutionOrder: true
+      - name: NabuAnalyticsKitTests
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
@@ -329,6 +333,13 @@ targets:
       featureName: Analytics
     templates:
     - Module
+  AnalyticsKitTests:
+    dependencies:
+    - target: AnalyticsKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - ModuleTests
   NabuAnalyticsKit:
     dependencies:
     - target: PlatformKit
@@ -340,10 +351,18 @@ targets:
       featureName: Analytics
     templates:
     - Module
+  NabuAnalyticsKitTests:
+    dependencies:
+    - target: NabuAnalyticsKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - ModuleTests
   NabuAnalyticsDataKit:
     dependencies:
     - target: NabuAnalyticsKit
     - target: NetworkKit
+    - target: ToolKit
     scheme:
       testTargets:
       - NabuAnalyticsDataKitTests
@@ -354,11 +373,6 @@ targets:
   NabuAnalyticsDataKitTests:
     dependencies:
     - target: NabuAnalyticsDataKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: Analytics
     templates:

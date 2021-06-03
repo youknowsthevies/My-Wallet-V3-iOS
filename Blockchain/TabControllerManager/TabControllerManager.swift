@@ -193,10 +193,16 @@ extension TabControllerManager: TabViewControllerDelegate {
 
     func sendClicked() {
         showSend()
+        analyticsEventRecorder.record(event:
+            AnalyticsEvents.New.Send.sendReceiveClicked(origin: .navigation, type: .send)
+        )
     }
 
     func receiveClicked() {
         showReceive()
+        analyticsEventRecorder.record(event:
+            AnalyticsEvents.New.Send.sendReceiveClicked(origin: .navigation, type: .receive)
+        )
     }
 
     func transactionsClicked() {
@@ -213,7 +219,7 @@ extension TabControllerManager: TabViewControllerDelegate {
     func swapClicked() {
         analyticsEventRecorder.record(events: [
             AnalyticsEvents.Swap.swapTabItemClick,
-            AnalyticsEvents.New.SimpleBuy.swapClicked(origin: .navigation)
+            AnalyticsEvents.New.Swap.swapClicked(origin: .navigation)
         ])
         showSwap()
     }

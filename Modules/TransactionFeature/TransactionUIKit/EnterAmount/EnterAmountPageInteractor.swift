@@ -138,6 +138,14 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             }
             .share(scope: .whileConnected)
 
+        transactionState
+            .distinctUntilChanged(\.feeSelection, comparer: { $0 == $1 })
+            .filter { $0.feeSelection.selectedLevel != .none }
+            .subscribe(onNext: { [analyticsHook] state in
+                analyticsHook.onFeeSelected(state: state)
+            })
+            .disposeOnDeactivate(interactor: self)
+
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
@@ -156,6 +164,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .withLatestFrom(spendable.map(\.max))
             .subscribe(onNext: { [weak self] maxSpendable in
                 self?.amountInteractor.set(amount: maxSpendable)
+            })
+            .disposeOnDeactivate(interactor: self)
+
+        auxiliaryViewInteractor.resetToMaxAmount
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: { [analyticsHook] state in
+                analyticsHook.onMaxSelected(state: state)
             })
             .disposeOnDeactivate(interactor: self)
 

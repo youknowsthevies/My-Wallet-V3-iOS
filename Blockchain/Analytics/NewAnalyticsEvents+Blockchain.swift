@@ -3,28 +3,12 @@
 import AnalyticsKit
 import Foundation
 
-extension AnalyticsEvents {
-    enum New {
-        enum Navigation: AnalyticsEvent {
-            var type: AnalyticsEventType { .new }
+extension AnalyticsEvents.New {
+    enum Navigation: AnalyticsEvent {
 
-            case signedIn
-            case signedOut
+        var type: AnalyticsEventType { .new }
 
-            var name: String {
-                switch self {
-                case .signedIn:
-                    return "Signed In"
-                case .signedOut:
-                    return "Signed Out"
-                }
-            }
-
-            var params: [String : Any]? {
-                [
-                    "platform": "WALLET"
-                ]
-            }
-        }
+        case signedIn
+        case signedOut
     }
 }

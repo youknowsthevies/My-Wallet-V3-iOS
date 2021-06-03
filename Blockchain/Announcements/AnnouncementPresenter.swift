@@ -437,7 +437,7 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 self?.appCoordinator.switchTabToSwap()
-                self?.analyticsRecorder.record(event: AnalyticsEvents.New.SimpleBuy.swapClicked(origin: .dashboardPromo))
+                self?.analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .dashboardPromo))
             }
         )
     }

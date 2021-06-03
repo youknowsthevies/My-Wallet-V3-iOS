@@ -28,7 +28,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                 didAppear: [AnalyticsEvent.sbBuyFormShown, NewAnalyticsEvent.buySellViewed(type: .buy)],
                 confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
                 confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
-                confirmTapped: { (currencyType, amount, cryptoType, cryptoAmount, additionalParameters) in
+                confirmTapped: { (currencyType, amount, cryptoType, additionalParameters) in
                     [
                         AnalyticsEvent.sbBuyFormConfirmClick(
                             currencyCode: currencyType.code,
@@ -38,7 +38,7 @@ extension EnterAmountScreenPresenter.DisplayBundle {
                         NewAnalyticsEvent.buyAmountEntered(
                             inputAmount: amount.displayMajorValue.doubleValue,
                             inputCurrency: currencyType.code,
-                            outputAmount: cryptoAmount.displayMajorValue.doubleValue,
+                            maxCardLimit: nil,
                             outputCurrency: cryptoType.code
                         )
                     ]

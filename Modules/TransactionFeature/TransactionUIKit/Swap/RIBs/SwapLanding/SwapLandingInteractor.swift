@@ -39,6 +39,7 @@ protocol SwapLandingListener: AnyObject {
 final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>, SwapLandingInteractable, SwapLandingPresentableListener {
 
     typealias AnalyticsEvent = AnalyticsEvents.Swap
+    typealias NewSwapAnalyticsEvent = AnalyticsEvents.New.Swap
     typealias LocalizationId = LocalizationConstants.Swap.Trending
 
     weak var router: SwapLandingRouting?
@@ -154,7 +155,14 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
     func handleEffects(_ effect: SwapLandingSelectionEffects) {
         switch effect {
         case .swap(let pair):
-            analyticsRecorder.record(event: AnalyticsEvent.trendingPairClicked)
+            analyticsRecorder.record(events: [
+                AnalyticsEvent.trendingPairClicked,
+                NewSwapAnalyticsEvent.swapAccountsSelected(inputCurrency: pair.sourceAccount.currencyType.code,
+                                                           inputType: .init(pair.sourceAccount),
+                                                           outputCurrency: pair.destinationAccount.currencyType.code,
+                                                           outputType: .init(pair.destinationAccount),
+                                                           wasSuggested: true)
+            ])
             listener?.routeToSwap(with: pair)
         case .newSwap:
             analyticsRecorder.record(event: AnalyticsEvent.newSwapClicked)
