@@ -18,7 +18,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     // MARK: - Private properties
 
     private let session: NetworkSession
-    private let queue: DispatchQueue
     private let authenticator: AuthenticatorAPI?
     private let eventRecorder: AnalyticsEventRecording?
 
@@ -27,11 +26,9 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     init(session: NetworkSession = resolve(),
          sessionDelegate: SessionDelegateAPI = resolve(),
          sessionHandler: NetworkSessionDelegateAPI = resolve(),
-         queue: DispatchQueue = DispatchQueue.global(qos: .background),
          authenticator: AuthenticatorAPI? = nil,
          eventRecorder: AnalyticsEventRecording? = nil) {
         self.session = session
-        self.queue = queue
         self.authenticator = authenticator
         self.eventRecorder = eventRecorder
 
@@ -72,7 +69,6 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
                     request.decoder.decodeFailureToString(errorResponse: serverErrorResponse)
                 }
             }
-            .subscribe(on: queue)
             .eraseToAnyPublisher()
     }
 }
