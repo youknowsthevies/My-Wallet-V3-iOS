@@ -14,8 +14,8 @@ final class ActivityIndicatorLoadingContainerView: UIView {
         super.init(frame: UIScreen.main.bounds)
         fromNib()
         messageLabel.font = Font(.branded(.montserratRegular), size: .standard(.medium(.h3))).result
-        messageLabel.accessibility = Accessibility(id: .value(Accessibility.Identifier.LoadingView.statusLabel),
-                                                   traits: .value(.updatesFrequently))
+        messageLabel.accessibility = Accessibility(id: Accessibility.Identifier.LoadingView.statusLabel,
+                                                   traits: .updatesFrequently)
         containerView.layer.cornerRadius = 5
     }
 

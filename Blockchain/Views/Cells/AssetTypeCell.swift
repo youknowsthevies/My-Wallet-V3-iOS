@@ -31,7 +31,7 @@ import ToolKit
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        chevronButton.accessibilityIdentifier = AccessibilityIdentifiers.AssetSelection.toggleButton
+        chevronButton.accessibility = .id(AccessibilityIdentifiers.AssetSelection.toggleButton)
         contentView.backgroundColor = UIColor.NavigationBar.LightContent.background
     }
 

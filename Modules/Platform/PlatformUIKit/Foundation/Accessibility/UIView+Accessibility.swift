@@ -7,29 +7,21 @@ extension UIView {
 
     /// Represents a `UIView` accessibility.
     /// In case one of `Accessibility`'s properties are `.none`, the value won't be assigned at all
-    /// To nullify a value just pass an `empty` value, like this: `value(nil)` for id,
-    /// or `value(UIAccessibilityTraits.none)` for traits.
+    /// To nullify a value just pass an `empty` value, like this: `nil` for id,
+    /// or `.none)` for traits.
     public var accessibility: Accessibility {
         get {
-            Accessibility(id: accessibilityIdentifier != nil ? .value(accessibilityIdentifier!) : .none,
-                                 label: accessibilityLabel != nil ? .value(accessibilityLabel!) : .none,
-                                 hint: accessibilityHint != nil ? .value(accessibilityHint!) : .none,
-                                 traits: accessibilityTraits != .none ? .value(accessibilityTraits) : .none,
-                                 isAccessible: isAccessibilityElement)
+            Accessibility(id: accessibilityIdentifier,
+                          label: accessibilityLabel,
+                          hint: accessibilityHint,
+                          traits: accessibilityTraits,
+                          isAccessible: isAccessibilityElement)
         }
         set {
-            if case .value(let id) = newValue.id {
-                accessibilityIdentifier = id
-            }
-            if case .value(let label) = newValue.label {
-                accessibilityLabel = label
-            }
-            if case .value(let hint) = newValue.hint {
-                accessibilityHint = hint
-            }
-            if case .value(let traits) = newValue.traits {
-                accessibilityTraits = traits
-            }
+            accessibilityIdentifier = newValue.id
+            accessibilityLabel = newValue.label
+            accessibilityHint = newValue.hint
+            accessibilityTraits = newValue.traits
             isAccessibilityElement = newValue.isAccessible
         }
     }

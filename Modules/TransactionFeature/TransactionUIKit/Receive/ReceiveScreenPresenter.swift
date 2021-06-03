@@ -74,7 +74,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .semibold,
                 contentColor: .textFieldText,
                 fontSize: 16,
-                accessibilityId: AccessibilityID.walletNameLabel
+                accessibility: .id(AccessibilityID.walletNameLabel)
             )
         )
         balanceLabelContentPresenting = DefaultLabelContentPresenter(
@@ -83,7 +83,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .descriptionText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.balanceLabel
+                accessibility: .id(AccessibilityID.balanceLabel)
             )
         )
         addressLabelContentPresenting = DefaultLabelContentPresenter(
@@ -92,7 +92,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .darkTitleText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.addressLabel
+                accessibility: .id(AccessibilityID.addressLabel)
             )
         )
         memoLabelContentPresenting = DefaultLabelContentPresenter(
@@ -101,8 +101,8 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .darkTitleText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.memoLabel
-                )
+                accessibility: .id(AccessibilityID.memoLabel)
+            )
         )
         copyButton = .secondary(with: LocalizedString.Button.copy)
         shareButton = .primary(with: LocalizedString.Button.share)

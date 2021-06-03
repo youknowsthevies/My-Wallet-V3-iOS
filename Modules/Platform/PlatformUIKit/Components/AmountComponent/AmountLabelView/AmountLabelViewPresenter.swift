@@ -175,8 +175,8 @@ extension AmountLabelViewPresenter {
             )
 
             accessibility = .init(
-                id: .value(AccessibilityId.amountLabel),
-                label: .value(amount)
+                id: AccessibilityId.amountLabel,
+                label: amount
             )
 
             guard let padding = input.padding else {

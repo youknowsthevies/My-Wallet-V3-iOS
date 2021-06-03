@@ -72,11 +72,11 @@ import ToolKit
         menuSwipeRecognizerView.addGestureRecognizer(sideMenu.panGesture)
         view.addSubview(menuSwipeRecognizerView)
 
-        self.receiveTabBarItem.accessibilityIdentifier = AccessibilityIdentifiers.TabViewContainerScreen.request
-        self.activityTabBarItem.accessibilityIdentifier = AccessibilityIdentifiers.TabViewContainerScreen.activity
-        self.swapTabBarItem.accessibilityIdentifier = AccessibilityIdentifiers.TabViewContainerScreen.swap
-        self.homeTabBarItem.accessibilityIdentifier = AccessibilityIdentifiers.TabViewContainerScreen.home
-        self.sendTabBarItem.accessibilityIdentifier = AccessibilityIdentifiers.TabViewContainerScreen.send
+        self.receiveTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.request)
+        self.activityTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.activity)
+        self.swapTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.swap)
+        self.homeTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.home)
+        self.sendTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.send)
         delegate?.tabViewControllerViewDidLoad(self)
     }
 

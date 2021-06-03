@@ -186,16 +186,12 @@ extension Screen.Style.TrailingButton {
         case .qrCode:
             return Screen.NavigationBarContent(
                 image: UIImage(named: "qr-code-icon"),
-                accessibility: .init(
-                    id: .value(Accessibility.Identifier.NavigationBar.qrCodeButton)
-                )
+                accessibility: .id(Accessibility.Identifier.NavigationBar.qrCodeButton)
             )
         case .close:
             return Screen.NavigationBarContent(
                 image: UIImage(named: "Icon-Close-Circle"),
-                accessibility: .init(
-                    id: .value(Accessibility.Identifier.NavigationBar.dismissButton)
-                )
+                accessibility: .id(Accessibility.Identifier.NavigationBar.dismissButton)
             )
         default:
             return nil
@@ -214,23 +210,17 @@ extension Screen.Style.LeadingButton {
         case .drawer:
             return Screen.NavigationBarContent(
                 image: UIImage(named: "drawer-icon"),
-                accessibility: .init(
-                    id: .value(Accessibility.Identifier.NavigationBar.drawerButton)
-                )
+                accessibility: .id(Accessibility.Identifier.NavigationBar.drawerButton)
             )
         case .close:
             return Screen.NavigationBarContent(
                 image: UIImage(named: "navigation-close-icon"),
-                accessibility: .init(
-                    id: .value(Accessibility.Identifier.NavigationBar.dismissButton)
-                )
+                accessibility: .id(Accessibility.Identifier.NavigationBar.dismissButton)
             )
         case .back:
             return Screen.NavigationBarContent(
                 image: UIImage(named: "back_icon"),
-                accessibility: .init(
-                    id: .value(Accessibility.Identifier.NavigationBar.backButton)
-                )
+                accessibility: .id(Accessibility.Identifier.NavigationBar.backButton)
             )
         case .none:
             return nil

@@ -37,18 +37,18 @@ public struct DigitPadButtonViewModel {
                 switch self {
                 case .backspace:
                     accessibility = Accessibility(
-                        id: .value(AccessibilityId.backspaceButton),
-                        label: .value(LocalizedString.backspace)
+                        id: AccessibilityId.backspaceButton,
+                        label: LocalizedString.backspace
                     )
                 case .faceId:
                     accessibility = Accessibility(
-                        id: .value(AccessibilityId.faceIdButton),
-                        label: .value(LocalizedString.faceId)
+                        id: AccessibilityId.faceIdButton,
+                        label: LocalizedString.faceId
                     )
                 case .touchId:
                     accessibility = Accessibility(
-                        id: .value(AccessibilityId.touchIdButton),
-                        label: .value(LocalizedString.touchId)
+                        id: AccessibilityId.touchIdButton,
+                        label: LocalizedString.touchId
                     )
                 }
                 return accessibility

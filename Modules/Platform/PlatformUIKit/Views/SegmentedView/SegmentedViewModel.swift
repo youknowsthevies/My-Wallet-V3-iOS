@@ -236,7 +236,7 @@ extension SegmentedViewModel {
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
             defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
-            accessibility: .init(id: .value(accessibilityId)),
+            accessibility: .id(accessibilityId),
             items: items
         )
         viewModel.theme = Theme(
@@ -263,7 +263,7 @@ extension SegmentedViewModel {
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
             defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
-            accessibility: .init(id: .value(accessibilityId)),
+            accessibility: .id(accessibilityId),
             items: items
         )
         viewModel.theme = Theme(
@@ -288,7 +288,7 @@ extension SegmentedViewModel {
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
             defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
-            accessibility: .init(id: .value(accessibilityId)),
+            accessibility: .id(accessibilityId),
             items: items
         )
         viewModel.theme = Theme(
@@ -314,7 +314,7 @@ extension SegmentedViewModel {
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
             defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
-            accessibility: .init(id: .value(accessibilityId)),
+            accessibility: .id(accessibilityId),
             items: items
         )
         viewModel.theme = Theme(

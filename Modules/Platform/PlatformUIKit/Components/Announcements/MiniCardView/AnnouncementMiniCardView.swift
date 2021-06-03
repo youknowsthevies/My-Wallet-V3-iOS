@@ -190,9 +190,9 @@ public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConform
 
     private func setupAccessibility() {
         typealias Identifier = Accessibility.Identifier.Dashboard.Announcement
-        titleLabel.accessibility = .init(id: .value(Identifier.titleLabel))
-        descriptionLabel.accessibility = .init(id: .value(Identifier.descriptionLabel))
-        thumbImageView.accessibility = .init(id: .value(Identifier.imageView))
+        titleLabel.accessibility = .id(Identifier.titleLabel)
+        descriptionLabel.accessibility = .id(Identifier.descriptionLabel)
+        thumbImageView.accessibility = .id(Identifier.imageView)
         backgroundButton.accessibility = .id(Identifier.backgroundButton)
     }
 

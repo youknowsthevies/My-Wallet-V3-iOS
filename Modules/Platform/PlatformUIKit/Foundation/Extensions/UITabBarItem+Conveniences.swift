@@ -26,6 +26,6 @@ extension UITabBarItem {
             image: UIImage(named: content.image),
             selectedImage: UIImage(named: content.selectedImage)
         )
-        accessibilityIdentifier = content.accessibility.id.rawValue
+        accessibilityIdentifier = content.accessibility.id
     }
 }

@@ -71,8 +71,8 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
             border: style.border,
             cornerRadius: style.cornerRadius,
             accessibility: .init(
-                id: .value("\(AccessibilityId.buttonPrefix)\(accessibilityId)"),
-                label: .value(amountString)
+                id: "\(AccessibilityId.buttonPrefix)\(accessibilityId)",
+                label: amountString
             )
         )
     }

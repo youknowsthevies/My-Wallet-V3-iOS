@@ -104,7 +104,7 @@ final class WelcomeScreenPresenter {
         recoverFundsButtonViewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(AccessibilityId.Button.recoverFunds))
+            accessibility: .id(AccessibilityId.Button.recoverFunds)
         )
         recoverFundsButtonViewModel.theme = .init(
             backgroundColor: .white,

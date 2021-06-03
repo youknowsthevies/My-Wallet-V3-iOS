@@ -47,18 +47,18 @@ extension LabelContent.Value.Presentation {
             let fontWeight: FontWeight
             let contentColor: UIColor
             let fontSize: CGFloat
-            let accessibilityId: String
+            let accessibility: Accessibility
 
             public init(
                 fontWeight: FontWeight = .medium,
                 contentColor: UIColor = .titleText,
                 fontSize: CGFloat,
-                accessibilityId: String
+                accessibility: Accessibility
             ) {
                 self.fontWeight = fontWeight
                 self.contentColor = contentColor
                 self.fontSize = fontSize
-                self.accessibilityId = accessibilityId
+                self.accessibility = accessibility
             }
         }
 
@@ -69,7 +69,7 @@ extension LabelContent.Value.Presentation {
                 text: value.text,
                 font: .main(descriptors.fontWeight, descriptors.fontSize),
                 color: descriptors.contentColor,
-                accessibility: .init(id: .value(descriptors.accessibilityId))
+                accessibility: descriptors.accessibility
             )
         }
     }
@@ -80,7 +80,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
     public static func disclaimer(accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontSize: 12,
-            accessibilityId: accessibilityId
+            accessibility: .id(accessibilityId)
         )
     }
 
@@ -89,7 +89,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             fontWeight: .medium,
             contentColor: .descriptionText,
             fontSize: 14,
-            accessibilityId: "\(accessibilityIdPrefix).title"
+            accessibility: .id("\(accessibilityIdPrefix).title")
         )
     }
 
@@ -98,7 +98,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
             fontWeight: .semibold,
             contentColor: .textFieldText,
             fontSize: 16,
-            accessibilityId: "\(accessibilityIdPrefix).description"
+            accessibility: .id("\(accessibilityIdPrefix).description")
         )
     }
 
@@ -106,15 +106,15 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontWeight: .semibold,
             fontSize: 32,
-            accessibilityId: "\(accessibilityIdPrefix).title"
+            accessibility: .id("\(accessibilityIdPrefix).title")
         )
     }
 
-    public static func success(fontSize: CGFloat, accessibilityId: String) -> LabelContent.Value.Presentation.Content.Descriptors {
+    public static func success(fontSize: CGFloat, accessibility: Accessibility) -> LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             contentColor: .positivePrice,
             fontSize: fontSize,
-            accessibilityId: accessibilityId
+            accessibility: accessibility
         )
     }
 }
