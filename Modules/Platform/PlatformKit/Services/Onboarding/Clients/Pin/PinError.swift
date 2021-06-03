@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Foundation
+import Localization
 
 /// Represents any error that might occur during the pin flow
-enum PinError: Error {
+public enum PinError: Error {
 
     /// Signifies that the selected pin is invalid. See `Pin` for more info about it.
     case invalid
@@ -16,6 +17,9 @@ enum PinError: Error {
 
     /// Signifies that the user has entered an incorrect pin code. Has an associated message with the numbers of retries left.
     case incorrectPin(String)
+
+    /// Signifies that the PIN auth is locked due to exponential backoff
+    case backoff(String)
 
     /// Signifies that the user tried to authenticate with the wrong pin too many times
     case tooManyAttempts
@@ -46,7 +50,7 @@ enum PinError: Error {
     case decryptedPasswordWithZeroLength
 
     /// Converts any type of error into a presentable pin error
-    static func map(from error: Error) -> PinError {
+    public static func map(from error: Error) -> PinError {
         if let error = error as? PinError {
             return error
         }

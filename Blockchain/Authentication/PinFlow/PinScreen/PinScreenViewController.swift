@@ -223,6 +223,8 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
         case .incorrectPin(let message):
             showInlineError(with: message)
+        case .backoff(let message):
+            showInlineError(with: message)
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
