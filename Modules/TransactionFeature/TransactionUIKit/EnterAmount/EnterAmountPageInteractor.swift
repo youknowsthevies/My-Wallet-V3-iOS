@@ -444,7 +444,9 @@ extension TransactionErrorState {
              .optionInvalid,
              .transactionInFlight,
              .pendingOrdersLimitReached,
-             .unknownError:
+             .unknownError,
+             .nabuError,
+             .fatalError:
             return .empty
         }
     }
@@ -467,7 +469,7 @@ extension TransactionErrorState {
             }
             return result
         case (.fiat, .crypto):
-            fatalError("Shouldn't happen for the implemented paths (Swap).")
+            Swift.fatalError("Shouldn't happen for the implemented paths (Swap).")
         }
     }
 }

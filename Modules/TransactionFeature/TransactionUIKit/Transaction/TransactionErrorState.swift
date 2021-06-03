@@ -1,17 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
 import PlatformKit
 
-public enum TransactionValidationState: Equatable {
-    case uninitialized
+enum TransactionErrorState: Equatable {
+    case none
     case addressIsContract
     case belowMinimumLimit
-    case canExecute
     case insufficientFunds
     case insufficientGas
+    case insufficientFundsForFees
     case invalidAddress
     case invalidAmount
-    case insufficientFundsForFees
-    case invoiceExpired
+    case invalidPassword
     case optionInvalid
     case overGoldTierLimit
     case overMaximumLimit
@@ -19,6 +19,17 @@ public enum TransactionValidationState: Equatable {
     case pendingOrdersLimitReached
     case transactionInFlight
     case unknownError
-    /// represents a raw error from backend
+    case fatalError(FatalTransactionError)
     case nabuError(NabuError)
+}
+
+extension TransactionErrorState {
+    var fatalError: FatalTransactionError? {
+        switch self {
+        case .fatalError(let error):
+            return error
+        default:
+            return nil
+        }
+    }
 }

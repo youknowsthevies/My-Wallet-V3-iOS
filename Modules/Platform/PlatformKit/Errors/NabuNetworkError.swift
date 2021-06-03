@@ -97,7 +97,7 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 }
 
 /// Describes an error returned by Nabu
-public struct NabuError: Error, Codable {
+public struct NabuError: Error, Codable, Equatable {
 
     public let code: NabuErrorCode
     public let type: NabuErrorType
@@ -112,7 +112,7 @@ public struct NabuError: Error, Codable {
     }
 }
 
-public enum NabuErrorCode: Int, Codable {
+public enum NabuErrorCode: Int, Codable, Equatable {
 
     // Unknown code
     case unknown = 0
@@ -266,7 +266,7 @@ public enum NabuErrorCode: Int, Codable {
     case documentDataRequired = 160
 }
 
-public enum NabuErrorType: String, Codable {
+public enum NabuErrorType: String, Codable, Equatable {
 
     // Unknown
     case unknown
