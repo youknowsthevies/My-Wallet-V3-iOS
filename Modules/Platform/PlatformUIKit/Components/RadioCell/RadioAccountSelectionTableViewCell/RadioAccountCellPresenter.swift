@@ -40,7 +40,7 @@ public final class RadioAccountCellPresenter: IdentifiableType {
                 }
                 return ImageViewContent(
                     imageName: name,
-                    accessibility: .id("\(accessibilityPrefix).\(name)"),
+                    accessibility: .id("\(accessibilityPrefix)\(name)"),
                     renderingMode: .normal,
                     bundle: .platformUIKit)
             }

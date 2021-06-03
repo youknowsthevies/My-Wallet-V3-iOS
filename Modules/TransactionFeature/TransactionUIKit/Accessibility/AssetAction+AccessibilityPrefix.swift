@@ -9,19 +9,19 @@ extension AssetAction {
     var accessibilityPrefix: String {
         switch self {
         case .deposit:
-            return "Deposit"
+            return "Deposit."
         case .receive:
-            return "Receive"
+            return "Receive."
         case .sell:
-            return "Sell"
+            return "Sell."
         case .send:
-            return "Send"
+            return "Send."
         case .swap:
-            return "Swap"
+            return "Swap."
         case .viewActivity:
-            return "ViewActivity"
+            return "ViewActivity."
         case .withdraw:
-            return "Withdraw"
+            return "Withdraw."
         }
     }
 }

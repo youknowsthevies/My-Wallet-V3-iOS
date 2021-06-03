@@ -10,7 +10,7 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier.LineItem.Base {
-    private static let prefix = "LineItem"
+    private static let prefix = "LineItem."
 
     public static let titleLabel = "\(prefix)titleLabel"
     public static let descriptionLabel = "\(prefix)descriptionLabel"
@@ -19,7 +19,7 @@ extension Accessibility.Identifier.LineItem.Base {
 }
 
 extension Accessibility.Identifier.LineItem.Transactional {
-    private static let prefix = "LineItem"
+    private static let prefix = "LineItem."
 
     public static let themeBackgroundImageView = "\(prefix)themeBackgroundImageView"
     public static let bankName = "\(prefix)bankName"
