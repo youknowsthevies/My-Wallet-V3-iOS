@@ -56,9 +56,9 @@ extension PinStoreResponse {
             return 4
         case 10000: // 10s back off, 3 attemtps left
             return 3
-        case 60000: // 60s back off, 2 attempts left
+        case 300000: // 5m back off, 2 attempts left
             return 2
-        case 500000: // 50m back off, 1 attempts left
+        case 3000000: // 50m back off, 1 attempts left
             return 1
         default: // any other higher back off, 0 attempts left
             return 0
@@ -90,11 +90,15 @@ extension PinStoreResponse {
         case .deleted:
             return PinError.tooManyAttempts
         case .incorrect:
-            let message = String(
-                format: LocalizationConstants.Pin.incorrect,
-                attemptsRemaining ?? 9999
-            )
-            return PinError.incorrectPin(message)
+            if attemptsRemaining == 0 {
+                return PinError.tooManyAttempts
+            } else {
+                let message = String(
+                    format: LocalizationConstants.Pin.incorrect,
+                    attemptsRemaining ?? 9999
+                )
+                return PinError.incorrectPin(message)
+            }
         case .backoff:
             let message = String(
                 format: LocalizationConstants.Pin.backoff,
