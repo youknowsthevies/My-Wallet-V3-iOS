@@ -163,7 +163,7 @@ final class PinScreenViewController: BaseScreenViewController {
 
     private func setupErrorLabel() {
         errorLabel.accessibility = .id(AccessibilityIdentifiers.PinScreen.errorLabel)
-        errorLabel.font = Font(.branded(.montserratLight), size: .standard(.small(.h2))).result
+        errorLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
         errorLabel.textColor = presenter.contentColor
     }
 
