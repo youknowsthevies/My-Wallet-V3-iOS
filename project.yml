@@ -963,7 +963,6 @@ targets:
     - ModuleTests
   KYCUIKit:
     dependencies:
-    - package: Veriff
     - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
