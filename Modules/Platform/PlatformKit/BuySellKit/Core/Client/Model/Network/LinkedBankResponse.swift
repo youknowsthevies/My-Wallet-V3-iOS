@@ -5,7 +5,7 @@ public struct LinkedBankResponse: Decodable {
         case savings = "SAVINGS"
         case checking = "CHECKING"
     }
-    
+
     let id: String
     let currency: String
     let partner: String
@@ -43,9 +43,13 @@ public struct LinkedBankResponse: Decodable {
         currency = try container.decode(String.self, forKey: .currency)
         partner = try container.decode(String.self, forKey: .partner)
         state = try container.decode(State.self, forKey: .state)
-        isBankAccount = try container.decode(Bool.self, forKey: .isBankAccount)
-        isBankTransferAccount = try container.decode(Bool.self, forKey: .isBankTransferAccount)
-        name = try container.decode(String.self, forKey: .name)
+        /// The `updateBankLinkage` call in `APIClient` does not return a model that
+        /// matches `LinkedBankResponse`. We can set the below properties to a default value
+        /// as the caller of `updateBankLinkage` does not use any part of the `LinkedBankResponse`
+        /// object except for `state`.
+        isBankAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankAccount) ?? false)
+        isBankTransferAccount = (try container.decodeIfPresent(Bool.self, forKey: .isBankTransferAccount) ?? false)
+        name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
         attributes = try? container.decodeIfPresent(Attributes.self, forKey: .attributes)
         error = try container.decodeIfPresent(Error.self, forKey: .error)
         bankAccountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
