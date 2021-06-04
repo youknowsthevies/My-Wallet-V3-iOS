@@ -441,10 +441,6 @@ public extension LocalizationConstants.Transaction.Confirmation.Error {
         "An unexpected error has occurred. Please try again.",
         comment: ""
     )
-    static let errorCode = NSLocalizedString(
-        "Error Code: %@",
-        comment: ""
-    )
     static let overMaximumLimit = NSLocalizedString(
         "Maximum limit exceeded",
         comment: ""

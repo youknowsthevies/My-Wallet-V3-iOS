@@ -77,6 +77,7 @@ public enum LocalizationConstants {
             comment: "Generic error message displayed when an error occurs."
         )
         public static let error = NSLocalizedString("Error", comment: "")
+        public static let errorCode = NSLocalizedString("Error code", comment: "")
         public static let pleaseTryAgain = NSLocalizedString("Please try again", comment: "message shown when an error occurs and the user should attempt the last action again")
         public static let loadingSettings = NSLocalizedString("loading Settings", comment: "")
         public static let errorLoadingWallet = NSLocalizedString("Unable to load wallet due to no server response. You may be offline or Blockchain is experiencing difficulties. Please try again later.", comment: "")
