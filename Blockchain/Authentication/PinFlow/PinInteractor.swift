@@ -225,7 +225,8 @@ final class PinInteractor: PinInteracting {
             throw PinError.tooManyAttempts
         case .incorrect:
             let message = response.error ?? LocalizationConstants.Pin.incorrect
-            throw PinError.incorrectPin(message)
+            let remaining = response.remaining ?? 0
+            throw PinError.incorrectPin(message, Int(remaining/1000))
         case .backoff:
             let message = response.error ?? LocalizationConstants.Pin.backoff
             throw PinError.backoff(message)

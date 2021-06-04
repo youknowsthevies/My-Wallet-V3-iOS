@@ -131,6 +131,12 @@ final class PinScreenPresenter {
 
     let serverStatusTitle = LocalizationConstants.ServerStatus.mainTitle
 
+    private let digitPadIsEnabledRelay = BehaviorRelay<Bool>(value: true)
+    var digitPadIsEnabled: Observable<Bool> {
+        digitPadIsEnabledRelay
+            .observeOn(MainScheduler.instance)
+    }
+
     // MARK: Routing
 
     private let performEffect: PinRouting.RoutingType.Effect
@@ -276,6 +282,19 @@ final class PinScreenPresenter {
             .bind { [unowned self] in
                 self.authenticateUsingBiometricsIfNeeded()
             }
+            .disposed(by: disposeBag)
+
+        // Bind the digit pad lock time to the visibility of the digit pad
+        digitPadViewModel.remainingLockTimeObservable
+            .flatMapLatest { remaining -> Observable<Int> in
+                // Create a count down timer that counts for `remaining` seconds
+                return Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
+                    .take(remaining) // takes the first `remaining` seconds
+                    .map { $0 + 1 } // timer increment by 1 every time
+                    .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
+            }
+            .map { $0 == 0 } // check if seconds remaining is 0
+            .bindAndCatch(to: digitPadIsEnabledRelay)
             .disposed(by: disposeBag)
 
         learnMoreServerStatusTap

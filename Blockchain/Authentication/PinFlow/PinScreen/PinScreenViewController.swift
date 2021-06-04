@@ -73,6 +73,21 @@ final class PinScreenViewController: BaseScreenViewController {
 
         serverStatusContainerView.isHidden = true
 
+        // Subscribe to digit pad visibility state
+        presenter
+            .digitPadIsEnabled
+            .distinctUntilChanged()
+            .subscribe(onNext: { isEnabled in
+                if isEnabled {
+                    self.digitPadView.isUserInteractionEnabled = true
+                    self.digitPadView.alpha = 1
+                } else {
+                    self.digitPadView.isUserInteractionEnabled = false
+                    self.digitPadView.alpha = 0.3
+                }
+            })
+            .disposed(by: disposeBag)
+
         // TODO: Re-enable this once we have isolated the source of the crash
 //        presenter.serverStatus
 //            .drive(onNext: { [weak self] serverStatus in
@@ -221,7 +236,8 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.newPinMustBeDifferent)
         case .invalid:
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
-        case .incorrectPin(let message):
+        case .incorrectPin(let message, let remaining):
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
             showInlineError(with: message)
         case .backoff(let message):
             showInlineError(with: message)
