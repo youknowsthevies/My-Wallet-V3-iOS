@@ -604,7 +604,7 @@ extension PinScreenPresenter {
         let okButton = AlertAction(style: .confirm(LocalizationConstants.okString))
         let image = UIImage(named: "lock_icon")!
         return AlertModel(headline: LocalizationConstants.Pin.tooManyAttemptsTitle,
-                          body: LocalizationConstants.Pin.tooManyAttemptsMessage,
+                          body: LocalizationConstants.Pin.tooManyAttemptsLogoutMessage,
                           actions: [okButton],
                           image: image,
                           style: .sheet)

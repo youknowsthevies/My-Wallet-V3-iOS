@@ -299,10 +299,15 @@ public enum LocalizationConstants {
             "Too Many PIN Attempts",
             comment: "Title for alert that tells the user he had too many PIN attempts"
         )
+
+        public static let tooManyAttemptsWarningMessage = NSLocalizedString(
+            "You've made too many failed attempts to log in with your PIN. Please try again in 60 seconds.",
+            comment: "Warning essage for alert that tells the user he had too many PIN attempts"
+        )
         
-        public static let tooManyAttemptsMessage = NSLocalizedString(
-            "Please enter your wallet password.",
-            comment: "Message for alert that tells the user he had too many PIN attempts"
+        public static let tooManyAttemptsLogoutMessage = NSLocalizedString(
+            "Please log in with your Wallet ID and password.",
+            comment: "Message for alert that tells the user he had too many PIN attempts, and his account is now logged out"
         )
         
         public static let revealAddress = NSLocalizedString(
@@ -326,12 +331,12 @@ public enum LocalizationConstants {
         )
 
         public static let incorrect = NSLocalizedString(
-            "Incorrect PIN",
+            "PIN Incorrect. %d attempts remaining.",
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
         public static let backoff = NSLocalizedString(
-            "Please try again later",
-            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff"
+            "Try again in %ds",
+            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff retry algorithm."
         )
         public static let pinsDoNotMatch = NSLocalizedString(
             "PINs don't match",
