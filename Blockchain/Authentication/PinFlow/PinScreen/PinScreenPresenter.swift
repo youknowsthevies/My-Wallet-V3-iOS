@@ -293,7 +293,7 @@ final class PinScreenPresenter {
                     .map { $0 + 1 } // timer increment by 1 every time
                     .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
             }
-            .map { $0 == 0 } // check if seconds remaining is 0
+            .map { $0 == 0 } // check if seconds remaining is 0, if yes, enable keypad, otherwise disable
             .bindAndCatch(to: digitPadIsEnabledRelay)
             .disposed(by: disposeBag)
 
