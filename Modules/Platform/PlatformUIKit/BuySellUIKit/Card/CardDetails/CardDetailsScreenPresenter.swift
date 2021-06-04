@@ -22,6 +22,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     enum CellType {
         case textField(TextFieldType)
         case doubleTextField(TextFieldType, TextFieldType)
+        case button
         case privacyNotice
 
         var row: Int {
@@ -32,8 +33,10 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
                 return 1
             case .doubleTextField(.expirationDate, .cardCVV):
                 return 2
-            case .privacyNotice:
+            case .button:
                 return 3
+            case .privacyNotice:
+                return 4
             default:
                 fatalError("No such cell type for cell type \(self)")
             }
@@ -48,6 +51,8 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
             case 2:
                 self = .doubleTextField(.expirationDate, .cardCVV)
             case 3:
+                self = .button
+            case 4:
                 self = .privacyNotice
             default:
                 fatalError("No such cell type for row \(row)")
@@ -71,7 +76,7 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
     let title = LocalizedString.title
 
-    let rowCount = 4
+    let rowCount = 5
     let textFieldViewModelByType: [TextFieldType: TextFieldViewModel]
     let textFieldViewModels: [TextFieldViewModel]
     let noticeViewModel: NoticeViewModel
