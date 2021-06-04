@@ -95,14 +95,14 @@ extension PinStoreResponse {
             } else {
                 let message = String(
                     format: LocalizationConstants.Pin.incorrect,
-                    attemptsRemaining ?? 9999
+                    attemptsRemaining ?? 9999999
                 )
-                return PinError.incorrectPin(message)
+                return PinError.incorrectPin(message, Int((remaining ?? 0)/1000))
             }
         case .backoff:
             let message = String(
                 format: LocalizationConstants.Pin.backoff,
-                Int((remaining ?? 9999)/1000)
+                Int((remaining ?? 9999999)/1000)
             )
             return PinError.backoff(message)
         case .success:
