@@ -4,7 +4,7 @@ import SwiftUI
 
 public struct IconButtonStyle: ButtonStyle {
 
-    let isEnabled: Bool
+    private let isEnabled: Bool
 
     public init(isEnabled: Bool = true) {
         self.isEnabled = isEnabled

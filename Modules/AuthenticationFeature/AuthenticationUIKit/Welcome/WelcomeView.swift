@@ -123,7 +123,9 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(
             store:Store(initialState: AuthenticationState(),
                         reducer: authenticationReducer,
-                        environment: .init(mainQueue: DispatchQueue.main.eraseToAnyScheduler())
+                        environment: .init(
+                            mainQueue: .main
+                        )
             )
         )
     }

@@ -5,13 +5,13 @@ public struct FormTextFieldGroup: View {
     public let title: String
     public let text: Binding<String>
     public let textPlaceholder: String
-    public let footnote: String
-    @State public var textFieldStyle: FormTextFieldStyle = FormTextFieldStyle()
+    public let footnote: String?
+    @State private var isEditing: Bool = false
 
     public init(title: String,
                 text: Binding<String>,
                 textPlaceholder: String = "",
-                footnote: String = ""
+                footnote: String? = nil
     ) {
         self.title = title
         self.text = text
@@ -27,15 +27,13 @@ public struct FormTextFieldGroup: View {
             Text(title)
                 .textStyle(.body)
             TextField(textPlaceholder, text: text) { isEditing in
-                if isEditing {
-                    textFieldStyle = FormTextFieldStyle(isEditing: true)
-                } else {
-                    textFieldStyle = FormTextFieldStyle()
-                }
+                self.isEditing = isEditing
             }
-            .textFieldStyle(textFieldStyle)
-            Text(footnote)
-                .textStyle(.subheading)
+            .textFieldStyle(FormTextFieldStyle(isEditing: isEditing))
+            if let footnote = self.footnote {
+                Text(footnote)
+                    .textStyle(.subheading)
+            }
         }
     }
 }
@@ -47,8 +45,7 @@ struct FormTextFieldGroupDemoView: View {
         VStack {
             FormTextFieldGroup(
                 title: "My Text Field",
-                text: .constant(""),
-                footnote: "My Footnote"
+                text: .constant("")
             )
             .padding()
             FormTextFieldGroup(

@@ -17,7 +17,6 @@ public struct LabelledDivider: View {
         HStack {
             line
             Text(label)
-                .foregroundColor(.textBody)
                 .textStyle(.body)
             line
         }
