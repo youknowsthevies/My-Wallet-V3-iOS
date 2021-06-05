@@ -487,7 +487,6 @@ targets:
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
-    - package: Veriff
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/CryptoSwift.xcframework
@@ -750,6 +749,7 @@ targets:
       featureName: DashboardFeature
   SharedPackagesKit:
     dependencies:
+    - package: Veriff
     - package: ComposableArchitecture
     - package: CombineExt
     platform: iOS
