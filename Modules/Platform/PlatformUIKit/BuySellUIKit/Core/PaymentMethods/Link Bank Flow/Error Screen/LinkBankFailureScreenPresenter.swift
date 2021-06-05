@@ -11,9 +11,11 @@ final class LinkBankFailureScreenPresenter: RibBridgePresenter, PendingStatePres
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.LinkBankScreen
 
     // MARK: - Properties
+
     var viewModel: Driver<PendingStateViewModel> = .empty()
 
     // MARK: - Private Properties
+
     private let interactor: LinkBankFailureScreenInteractor
     private let disposeBag = DisposeBag()
 

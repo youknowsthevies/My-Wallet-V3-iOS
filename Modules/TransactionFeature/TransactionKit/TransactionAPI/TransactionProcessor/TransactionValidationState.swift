@@ -1,4 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
+import PlatformKit
 
 public enum TransactionValidationState: Equatable {
     case uninitialized
@@ -18,4 +19,6 @@ public enum TransactionValidationState: Equatable {
     case pendingOrdersLimitReached
     case transactionInFlight
     case unknownError
+    /// represents a raw error from backend
+    case nabuError(NabuError)
 }

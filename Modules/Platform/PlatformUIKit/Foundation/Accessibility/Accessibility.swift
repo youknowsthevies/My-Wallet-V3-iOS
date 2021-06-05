@@ -5,59 +5,26 @@ import UIKit
 /// Accessibility construct that to support multiple accessibility assignments at once
 public struct Accessibility {
 
-    /// A generic value
-    public enum Value<T: Equatable>: Equatable, CustomStringConvertible {
-
-        /// Contains a value of type `T`
-        case value(T)
-
-        /// Doesn't contain any value
-        case none
-
-        var rawValue: T? {
-            switch self {
-            case .value(let rawValue):
-                return rawValue
-            case .none:
-                return nil
-            }
-        }
-
-        public var description: String {
-            switch self {
-            case .value(let rawValue):
-                return String(describing: rawValue)
-            default:
-                return ""
-            }
-        }
-    }
-
-    /// `.none` represents an inaccessible element
-    public static var none: Accessibility {
-        Accessibility(isAccessible: false)
-    }
-
     /// The accessibility identifier
-    public let id: Value<String>
+    public let id: String?
 
     /// The accessibility label
-    public let label: Value<String>
+    public let label: String?
 
     /// The accessibility hint
-    public let hint: Value<String>
+    public let hint: String?
 
     /// The accessibility traits of the view
-    public let traits: Value<UIAccessibilityTraits>
+    public let traits: UIAccessibilityTraits
 
     /// Is accessibility element
     public let isAccessible: Bool
 
-    /// Initializes inner properties by defaulting all parameters to `.none`.
-    public init(id: Value<String> = .none,
-                label: Value<String> = .none,
-                hint: Value<String> = .none,
-                traits: Value<UIAccessibilityTraits> = .none,
+    /// Initializes inner properties by defaulting all parameters to `nil`.
+    public init(id: String? = .none,
+                label: String? = .none,
+                hint: String? = .none,
+                traits: UIAccessibilityTraits = .none,
                 isAccessible: Bool = true) {
         self.id = id
         self.label = label
@@ -67,19 +34,24 @@ public struct Accessibility {
     }
 
     func with(idSuffix: String) -> Accessibility {
-        let id: Value<String>
-        switch self.id {
-        case .none:
-            id = .none
-        case .value(let string):
-            id = .value("\(string)\(idSuffix)")
-        }
-        return Accessibility(
-            id: id,
+        Accessibility(
+            id: id == nil ? nil : "\(id.printable)\(idSuffix)",
             label: label,
             hint: hint,
             traits: traits,
             isAccessible: isAccessible
+        )
+    }
+
+    func copy(id: String? = nil,
+              label: String? = nil,
+              hint: String? = nil,
+              traits: UIAccessibilityTraits? = nil) -> Accessibility {
+        Accessibility(
+            id: id != nil ? id : self.id,
+            label: label != nil ? label : self.label,
+            hint: hint != nil ? hint : self.hint,
+            traits: traits != nil ? traits ?? .none : self.traits
         )
     }
 }
@@ -88,16 +60,32 @@ public struct Accessibility {
 
 extension Accessibility {
     public static func id(_ rawValue: String) -> Accessibility {
-        .init(id: .value(rawValue))
+        .init(id: rawValue)
     }
 
     public static func label(_ rawValue: String) -> Accessibility {
-        .init(label: .value(rawValue))
+        .init(label: rawValue)
+    }
+
+    /// `.none` represents an inaccessible element
+    public static var none: Accessibility {
+        Accessibility(isAccessible: false)
     }
 }
 
 extension Accessibility: Equatable {
     public static func == (lhs: Accessibility, rhs: Accessibility) -> Bool {
         lhs.id == rhs.id
+    }
+}
+
+extension Optional {
+    var printable: Any {
+        switch self {
+        case .none:
+            return ""
+        case let .some(value):
+            return value
+        }
     }
 }

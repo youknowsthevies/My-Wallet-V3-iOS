@@ -34,10 +34,9 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         super.viewDidLoad()
         presenter.viewDidLoad()
         setupNavigationBar()
-        addButton(with: presenter.buttonViewModel)
         keyboardInteractionController = KeyboardInteractionController(
             in: scrollView,
-            disablesToolBar: true
+            disablesToolBar: false
         )
         setupTableView()
         setupKeyboardObserver()
@@ -91,7 +90,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
             .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.contentBottomConstraint.constant = -(state.payload.height + self.view.safeAreaInsets.bottom)
+                    self.contentBottomConstraint.constant = -(state.payload.height - self.view.safeAreaInsets.bottom)
                 case .hidden:
                     self.contentBottomConstraint.constant = 0
                 }
@@ -108,6 +107,7 @@ final class CardDetailsScreenViewController: BaseTableViewController {
         tableView.register(TextFieldTableViewCell.self)
         tableView.register(DoubleTextFieldTableViewCell.self)
         tableView.register(NoticeTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self)
         tableView.separatorColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
@@ -155,14 +155,22 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         return cell
     }
 
+    private func buttonTableViewCell(for row: Int,
+                                     viewModel: ButtonViewModel) -> UITableViewCell {
+        let cell = tableView.dequeue(
+            ButtonsTableViewCell.self,
+            for: IndexPath(row: row, section: 0)
+        )
+        cell.models = [viewModel]
+        return cell
+    }
+
     private func privacyNoticeCell(for type: CardDetailsScreenPresenter.CellType) -> UITableViewCell {
         let cell = tableView.dequeue(
             NoticeTableViewCell.self,
             for: IndexPath(row: type.row, section: 0)
         )
         cell.viewModel = presenter.noticeViewModel
-        cell.topOffset = 20
-        cell.bottomOffset = 48
         return cell
     }
 
@@ -173,6 +181,11 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellType = CardDetailsScreenPresenter.CellType(indexPath.row)
         switch cellType {
+        case .button:
+            return buttonTableViewCell(
+                for: cellType.row,
+                viewModel: presenter.buttonViewModel
+            )
         case .textField(let type):
             return textFieldCell(for: cellType.row, type: type)
         case .doubleTextField(let leadingType, let trailingType):

@@ -25,7 +25,7 @@ final class PlainTableViewCell: UITableViewCell {
     var viewModel: ViewModel! {
         didSet {
             titleLabel.text = viewModel.title
-            titleLabel.accessibilityIdentifier = viewModel.titleAccessibilityID
+            titleLabel.accessibility = .id(viewModel.titleAccessibilityID)
             accessibility = .id(viewModel.accessibilityID)
         }
     }

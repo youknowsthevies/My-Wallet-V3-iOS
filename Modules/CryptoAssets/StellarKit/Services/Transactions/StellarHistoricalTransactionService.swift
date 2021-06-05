@@ -163,7 +163,10 @@ fileprivate extension OperationResponse {
              .claimClaimableBalance,
              .endSponsoringFutureReserves,
              .revokeSponsorship,
-             .beginSponsoringFutureReserves:
+             .beginSponsoringFutureReserves,
+             .clawback,
+             .clawbackClaimableBalance,
+             .setTrustLineFlags:
             return nil
         }
     }

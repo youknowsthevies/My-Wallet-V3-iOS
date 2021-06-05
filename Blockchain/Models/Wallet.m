@@ -3,7 +3,6 @@
 
 @import CommonCryptoKit;
 @import WalletPayloadKit;
-@import FirebaseAnalytics;
 @import NetworkKit;
 @import ToolKit;
 #import <CommonCrypto/CommonKeyDerivation.h>
@@ -509,7 +508,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     };
 
     self.context[@"objc_on_fetch_bch_history_error"] = ^(JSValue *error) {
-        [FIRAnalytics logEventWithName:@"bch_history_error" parameters:@{@"error": [error toString]}];
         [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge balancesErrorGeneric] in:nil handler: nil];
     };
     

@@ -36,7 +36,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
 
     enum Effect {
-        case failure
+        case failure(Error)
         case none
     }
 
@@ -224,9 +224,9 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     }
                     .asObservable()
             }
-            .do(onError: { [effectRelay] _ in
-                if effectRelay.value == .none {
-                    effectRelay.accept(.failure)
+            .do(onError: { [effectRelay] error in
+                if case .none = effectRelay.value {
+                    effectRelay.accept(.failure(error))
                 }
             })
             .catchError { error -> Observable<AmountTranslationInteractor.State> in
@@ -359,8 +359,8 @@ extension SelectionItemViewModel {
 extension AmountTranslationInteractor.Effect {
     var toBuyCryptoInteractorEffect: BuyCryptoScreenInteractor.Effect {
         switch self {
-        case .failure:
-            return .failure
+        case .failure(let error):
+            return .failure(error)
         case .none:
             return .none
         }

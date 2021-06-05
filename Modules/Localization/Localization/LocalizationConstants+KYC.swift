@@ -379,6 +379,10 @@ extension LocalizationConstants {
         
         public struct Errors {
             public static let genericErrorMessage = NSLocalizedString("Please check the information you provided and try again.", comment: "A message shown when something goes wrong on the backend, normally address validation.")
+            public static let cannotFetchUserAlertTitle = NSLocalizedString(
+                "Failed to get user",
+                comment: "The title for an alert shown if the logged in user cannot be fetched."
+            )
         }
     }
 }

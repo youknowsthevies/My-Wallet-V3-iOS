@@ -20,9 +20,9 @@ public final class SelectionButtonViewModel: IdentifiableType {
 
         fileprivate var accessibility: Accessibility {
             Accessibility(
-                id: .value(id),
-                label: .value(label),
-                traits: .value(.button),
+                id: id,
+                label: label,
+                traits: .button,
                 isAccessible: !id.isEmpty
             )
         }

@@ -34,6 +34,7 @@ extension LocalizationConstants {
                 public enum LimitView { }
             }
         }
+        public enum Error {}
     }
 }
 
@@ -315,6 +316,26 @@ public extension LocalizationConstants.Transaction.Send.Completion.Failure {
         "OK",
         comment: "OK"
     )
+
+    static let insufficientFundsForFees = NSLocalizedString(
+        "Not enough %@ in your wallet to send with current network fees.",
+        comment: ""
+    )
+
+    static let underMinLimit = NSLocalizedString(
+        "Minimum send of %@ required.",
+        comment: ""
+    )
+
+    static let overGoldTierLimit = NSLocalizedString(
+        "You can send up to %1$s today.",
+        comment: ""
+    )
+
+    static let overSilverTierLimit = NSLocalizedString(
+        "Please upgrade your profile to send this amount.",
+        comment: ""
+    )
 }
 
 public extension LocalizationConstants.Transaction.Swap.Completion.Pending {
@@ -356,6 +377,26 @@ public extension LocalizationConstants.Transaction.Swap.Completion.Failure {
         "OK",
         comment: "OK"
     )
+
+    static let insufficientFundsForFees = NSLocalizedString(
+        "Not enough %@ in your wallet to swap with current network fees.",
+        comment: ""
+    )
+
+    static let underMinLimit = NSLocalizedString(
+        "Minimum swap of %@ required.",
+        comment: ""
+    )
+
+    static let overGoldTierLimit = NSLocalizedString(
+        "You can swap up to %1$s today.",
+        comment: ""
+    )
+
+    static let overSilverTierLimit = NSLocalizedString(
+        "Please upgrade your profile to swap this amount.",
+        comment: ""
+    )
 }
 
 public extension LocalizationConstants.Transaction.Confirmation.Error {
@@ -392,8 +433,16 @@ public extension LocalizationConstants.Transaction.Confirmation.Error {
         "A transaction is already in progress",
         comment: ""
     )
+    static let pendingOrderLimitReached = NSLocalizedString(
+        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
+        comment: ""
+    )
     static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
+        comment: ""
+    )
+    static let overMaximumLimit = NSLocalizedString(
+        "Maximum limit exceeded",
         comment: ""
     )
 }
@@ -449,5 +498,73 @@ public extension LocalizationConstants.Transaction.Confirmation {
     static let remainingTime = NSLocalizedString(
         "Remaining Time",
         comment: "Remaining Time"
+    )
+}
+
+public extension LocalizationConstants.Transaction.Error {
+    static let title = NSLocalizedString("Error", comment: "Error")
+    static let insufficientFunds = NSLocalizedString(
+        "You have insufficient funds in this account to process this transaction",
+        comment: ""
+    )
+    static let insufficientGas = NSLocalizedString(
+        "You do not have enough ETH to process this transaction.",
+        comment: ""
+    )
+    static let addressIsContract = NSLocalizedString(
+        "Address is not a user address",
+        comment: ""
+    )
+    static let optionInvalid = NSLocalizedString(
+        "Please ensure you've agreed to our Terms.",
+        comment: ""
+    )
+    static let invoiceExpired = NSLocalizedString(
+        "BitPay Invoice Expired",
+        comment: ""
+    )
+    static let underMinLimitGeneric = NSLocalizedString(
+        "Minimum amount required.",
+        comment: ""
+    )
+    static let underMinBitcoinFee = NSLocalizedString(
+        "Minimum 1 sat/byte required",
+        comment: ""
+    )
+    static let invalidAmount = NSLocalizedString(
+        "Invalid fee",
+        comment: ""
+    )
+    static let transactionInFlight = NSLocalizedString(
+        "A transaction is already in progress",
+        comment: ""
+    )
+    static let pendingOrderLimitReached = NSLocalizedString(
+        "You have 1 Swap in-progress. Once that completes, create a New Swap.",
+        comment: ""
+    )
+    static let generic = NSLocalizedString(
+        "An unexpected error has occurred. Please try again.",
+        comment: ""
+    )
+    static let errorCode = NSLocalizedString(
+        "Error Code: %@",
+        comment: ""
+    )
+    static let overMaximumLimit = NSLocalizedString(
+        "Maximum limit exceeded",
+        comment: ""
+    )
+    static let invalidPassword = NSLocalizedString(
+        "Password is incorrect.",
+        comment: ""
+    )
+    static let invalidAddress = NSLocalizedString(
+        "Not a valid address.",
+        comment: ""
+    )
+    static let insufficientFundsForFees = NSLocalizedString(
+        "Not enough %@ in your wallet to send with current network fees.",
+        comment: ""
     )
 }

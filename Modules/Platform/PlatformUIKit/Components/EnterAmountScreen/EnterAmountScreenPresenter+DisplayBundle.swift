@@ -25,13 +25,13 @@ extension EnterAmountScreenPresenter {
             public let didAppear: [AnalyticsEvent]
             public let confirmSuccess: AnalyticsEvent
             public let confirmFailure: AnalyticsEvent
-            public let confirmTapped: (CurrencyType, MoneyValue, CryptoCurrency, CryptoValue, [String: String]) -> [AnalyticsEvent]
+            public let confirmTapped: (CurrencyType, MoneyValue, CryptoCurrency, [String: String]) -> [AnalyticsEvent]
             public let sourceAccountChanged: (String) -> AnalyticsEvent
 
             public init(didAppear: [AnalyticsEvent],
                         confirmSuccess: AnalyticsEvent,
                         confirmFailure: AnalyticsEvent,
-                        confirmTapped: @escaping (CurrencyType, MoneyValue, CryptoCurrency, CryptoValue, [String: String]) -> [AnalyticsEvent],
+                        confirmTapped: @escaping (CurrencyType, MoneyValue, CryptoCurrency, [String: String]) -> [AnalyticsEvent],
                         sourceAccountChanged: @escaping (String) -> AnalyticsEvent) {
                 self.didAppear = didAppear
                 self.confirmSuccess = confirmSuccess

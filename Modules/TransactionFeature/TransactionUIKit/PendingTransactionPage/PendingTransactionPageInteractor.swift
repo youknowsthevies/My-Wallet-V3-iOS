@@ -49,7 +49,6 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
 
         let transactionState = transactionModel.state
             .share(replay: 1)
-        
         let sent: Observable<MoneyValue> = transactionState
             .map { [crashOnError] state -> MoneyValue in
                 switch state.moneyValueFromSource() {
@@ -88,19 +87,19 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                 }
             }
 
-        let action = transactionState.map(\.action)
         let destination = transactionState.compactMap(\.destination)
         let executionStatus = transactionState.map(\.executionStatus)
 
         let interactorState = Observable
-            .combineLatest(sent, received, destination, executionStatus, action)
+            .combineLatest(sent, received, destination, transactionState)
             .map { (values) -> State in
-                let (sent, received, destination, status, action) = values
-                switch status {
+                let (sent, received, destination, transactionState) = values
+                let action = transactionState.action
+                switch transactionState.executionStatus {
                 case .completed:
                     return .complete(amount: sent, destination: destination, action: action)
                 case .error:
-                    return .failed(amount: sent, action: action)
+                    return .failed(transactionState: transactionState, action: action)
                 case .inProgress, .notStarted:
                     return .pending(action: action, sent: sent, received: received)
                 }
@@ -269,11 +268,16 @@ extension PendingTransactionPageInteractor {
             }
         }
 
-        static func failed(amount: MoneyValue, action: AssetAction) -> State {
+        static func failed(transactionState: TransactionState, action: AssetAction) -> State {
+            let amount = transactionState.amount
+            let errorTitle = transactionState.errorState.localizedDescription(
+                transactionState: transactionState,
+                action: action
+            )
             switch action {
             case .send:
                 return .init(
-                    title: SendLocalizationIds.Failure.title,
+                    title: errorTitle,
                     subtitle: SendLocalizationIds.Failure.description,
                     compositeViewType: .composite(
                         .init(
@@ -287,7 +291,7 @@ extension PendingTransactionPageInteractor {
                 )
             case .swap:
                 return .init(
-                    title: SwapLocalizationIds.Failure.title,
+                    title: errorTitle,
                     subtitle: SwapLocalizationIds.Failure.description,
                     compositeViewType: .composite(
                         .init(
@@ -388,5 +392,122 @@ extension PendingTransactionPageInteractor {
     enum Effects {
         case close
         case none
+    }
+}
+
+private extension TransactionErrorState {
+    func localizedDescription(transactionState: TransactionState, action: AssetAction) -> String {
+        switch self {
+        case .none:
+            return LocalizationConstants.Transaction.Error.generic
+        case .addressIsContract:
+            return LocalizationConstants.Transaction.Error.addressIsContract
+        case .belowMinimumLimit:
+            return minimumLimitErrorProvider(state: transactionState)
+        case .insufficientFunds:
+            return LocalizationConstants.Transaction.Error.insufficientFunds
+        case .insufficientGas:
+            return LocalizationConstants.Transaction.Error.insufficientGas
+        case .insufficientFundsForFees:
+            switch action {
+            case .send:
+                return LocalizationConstants.Transaction.Send.Completion.Failure.insufficientFundsForFees
+            case .swap:
+                return LocalizationConstants.Transaction.Swap.Completion.Failure.insufficientFundsForFees
+            case .deposit,
+                 .receive,
+                 .sell,
+                 .viewActivity,
+                 .withdraw:
+                Swift.fatalError("Copy not supported for AssetAction: \(action)")
+            }
+        case .invalidAddress:
+            return LocalizationConstants.Transaction.Error.invalidAddress
+        case .invalidAmount:
+            return LocalizationConstants.Transaction.Error.invalidAmount
+        case .invalidPassword:
+            return LocalizationConstants.Transaction.Error.invalidPassword
+        case .optionInvalid:
+            return LocalizationConstants.Transaction.Error.optionInvalid
+        case .overGoldTierLimit:
+            return overGoldTierLimitProvider(state: transactionState)
+        case .overMaximumLimit:
+            return LocalizationConstants.Transaction.Error.overMaximumLimit
+        case .overSilverTierLimit:
+            return overSilverTierLimitProvider(state: transactionState)
+        case .pendingOrdersLimitReached:
+            return LocalizationConstants.Transaction.Error.pendingOrderLimitReached
+        case .transactionInFlight:
+            return LocalizationConstants.Transaction.Error.transactionInFlight
+        case .unknownError:
+            return LocalizationConstants.Transaction.Error.generic
+        case .fatalError(let error):
+            return error.localizedDescription
+        case .nabuError(let error):
+            return error.localizedDescription
+        }
+    }
+
+    private func minimumLimitErrorProvider(state: TransactionState) -> String {
+        guard let value = state.pendingTransaction?.minimumLimit else {
+            return LocalizationConstants.Transaction.Error.underMinLimitGeneric
+        }
+        switch state.action {
+        case .swap:
+            return String(
+                format: LocalizationConstants.Transaction.Swap.Completion.Failure.underMinLimit,
+                value.toDisplayString(includeSymbol: true)
+            )
+        case .send:
+            return String(
+                format: LocalizationConstants.Transaction.Send.Completion.Failure.underMinLimit,
+                value.toDisplayString(includeSymbol: true)
+            )
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            return ""
+        }
+    }
+
+    private func overGoldTierLimitProvider(state: TransactionState) -> String {
+        guard let value = state.pendingTransaction?.maximumLimit else {
+            return LocalizationConstants.Transaction.Error.generic
+        }
+        switch state.action {
+        case .swap:
+            return String(
+                format: LocalizationConstants.Transaction.Swap.Completion.Failure.overGoldTierLimit,
+                value.toDisplayString(includeSymbol: true)
+            )
+        case .send:
+            return String(
+                format: LocalizationConstants.Transaction.Send.Completion.Failure.overGoldTierLimit,
+                value.toDisplayString(includeSymbol: true)
+            )
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            return ""
+        }
+    }
+
+    private func overSilverTierLimitProvider(state: TransactionState) -> String {
+        switch state.action {
+        case .swap:
+            return LocalizationConstants.Transaction.Swap.Completion.Failure.overGoldTierLimit
+        case .send:
+            return LocalizationConstants.Transaction.Send.Completion.Failure.overGoldTierLimit
+        case .deposit,
+             .receive,
+             .sell,
+             .viewActivity,
+             .withdraw:
+            return ""
+        }
     }
 }

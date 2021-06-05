@@ -12,9 +12,7 @@ final class TotalBalanceViewPresenter {
         text: LocalizationConstants.Dashboard.Balance.totalBalance,
         font: .main(.medium, 16),
         color: .mutedText,
-        accessibility: .init(
-            id: .value(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)
-        )
+        accessibility: .id(Accessibility.Identifier.Dashboard.TotalBalanceCell.titleLabel)
     )
 
     // MARK: - Services

@@ -45,7 +45,10 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
         )
         .with(supportForCameraRoll: true)
 
-        guard let viewController = builder.build() else { return }
+        guard let viewController = builder.build() else {
+            // No camera access, an alert will be displayed automatically.
+            return
+        }
 
         DispatchQueue.main.async { [weak self] in
             self?.viewController.uiviewController.present(viewController, animated: true, completion: nil)

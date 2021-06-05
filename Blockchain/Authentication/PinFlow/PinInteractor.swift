@@ -80,8 +80,8 @@ final class PinInteractor: PinInteracting {
             .flatMapCompletable(weak: self, { (self, response) in
                 self.handleCreatePinResponse(response: response, payload: payload)
             })
-                .catchError { error in
-                    throw PinError.map(from: error)
+            .catchError { error in
+                throw PinError.map(from: error)
             }
             .observeOn(MainScheduler.instance)
     }
@@ -94,19 +94,25 @@ final class PinInteractor: PinInteracting {
     /// - Returns: Single warpping the pin decryption key
     func validate(using payload: PinPayload) -> Single<String> {
         maintenanceService.serverUnderMaintenanceMessage
-            .flatMap(weak: self) { (self, message) -> Single<String> in
+            .flatMap(weak: self) { (self, message) -> Single<PinStoreResponse> in
                 if let message = message { throw PinError.serverMaintenance(message: message) }
                 return self.pinClient.validate(pinPayload: payload)
-                    .do(onSuccess: { [weak self] response in
-                        try self?.updateCacheIfNeeded(response: response, pinPayload: payload)
-                    })
-                    .map { [weak self] response -> String in
-                        guard let self = self else { throw PinError.unretainedSelf }
-                        return try self.pinValidationStatus(from: response)
-                    }
+            }
+            .do(
+                onSuccess: { [weak self] response in
+                    try self?.updateCacheIfNeeded(response: response, pinPayload: payload)
+                }
+            )
+            .map { [weak self] response -> String in
+                guard let self = self else { throw PinError.unretainedSelf }
+                return try self.pinValidationStatus(from: response)
             }
             .catchError { error in
-                throw PinError.map(from: error)
+                if let response = error as? PinStoreResponse {
+                    throw response.toPinError()
+                } else {
+                    throw PinError.map(from: error)
+                }
             }
             .observeOn(MainScheduler.instance)
     }
@@ -220,6 +226,9 @@ final class PinInteractor: PinInteracting {
         case .incorrect:
             let message = response.error ?? LocalizationConstants.Pin.incorrect
             throw PinError.incorrectPin(message)
+        case .backoff:
+            let message = response.error ?? LocalizationConstants.Pin.backoff
+            throw PinError.backoff(message)
         case .success:
             guard let pinDecryptionKey = response.pinDecryptionValue, !pinDecryptionKey.isEmpty else {
                 throw PinError.custom(LocalizationConstants.Errors.genericError)

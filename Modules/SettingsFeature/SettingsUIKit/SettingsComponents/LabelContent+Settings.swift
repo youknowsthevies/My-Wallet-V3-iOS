@@ -9,7 +9,7 @@ extension LabelContent.Value.Presentation.Content.Descriptors {
     static var settings: LabelContent.Value.Presentation.Content.Descriptors {
         .init(
             fontSize: 16,
-            accessibilityId: Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat
+            accessibility: .id(Accessibility.Identifier.Settings.SettingsCell.titleLabelFormat)
         )
     }
 }

@@ -77,6 +77,7 @@ public enum LocalizationConstants {
             comment: "Generic error message displayed when an error occurs."
         )
         public static let error = NSLocalizedString("Error", comment: "")
+        public static let errorCode = NSLocalizedString("Error code", comment: "")
         public static let pleaseTryAgain = NSLocalizedString("Please try again", comment: "message shown when an error occurs and the user should attempt the last action again")
         public static let loadingSettings = NSLocalizedString("loading Settings", comment: "")
         public static let errorLoadingWallet = NSLocalizedString("Unable to load wallet due to no server response. You may be offline or Blockchain is experiencing difficulties. Please try again later.", comment: "")
@@ -328,6 +329,10 @@ public enum LocalizationConstants {
             "Incorrect PIN",
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
+        public static let backoff = NSLocalizedString(
+            "Please try again later",
+            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff"
+        )
         public static let pinsDoNotMatch = NSLocalizedString(
             "PINs don't match",
             comment: "Message presented to user when they enter an incorrect PIN when confirming a PIN."
@@ -472,6 +477,33 @@ public enum LocalizationConstants {
         public static let subtitle = NSLocalizedString(
             "Please go back and try again.",
             comment: "Pending active card error screen: subtitle"
+        )
+        public static let button = NSLocalizedString(
+            "OK",
+            comment: "Pending active card error screen: ok button"
+        )
+    }
+
+    public enum TimeoutScreen {
+        public enum Buy {
+            public static let title = NSLocalizedString(
+                "Your Buy Order Has Started.",
+                comment: "Your Buy Order Has Started."
+            )
+        }
+        public enum Sell {
+            public static let title = NSLocalizedString(
+                "Your Sell Order Has Started.",
+                comment: "Your Sell Order Has Started."
+            )
+        }
+        public static let subtitle = NSLocalizedString(
+            "We’re completing your transaction now. We’ll contact you when it has finished.",
+            comment: "We’re completing your transaction now. We’ll contact you when it has finished."
+        )
+        public static let supplementaryButton = NSLocalizedString(
+            "View Transaction",
+            comment: "View Transaction"
         )
         public static let button = NSLocalizedString(
             "OK",

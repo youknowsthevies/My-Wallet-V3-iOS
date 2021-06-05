@@ -77,7 +77,7 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
 
 extension BeneficiaryLinkedBankViewModel: IdentifiableType {
     public var identity: String {
-        data.identifier
+        "\(data.identifier)-\(data.name)-\(data.account)"
     }
 }
 

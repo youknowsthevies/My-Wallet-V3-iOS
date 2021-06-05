@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
+import RxSwift
 import ToolKit
 import TransactionKit
 
@@ -162,6 +164,7 @@ enum TransactionAction: MviAction {
             var newState = oldState
             newState.nextEnabled = true
             newState.step = .inProgress
+            newState.errorState = .fatalError(FatalTransactionError(error: error))
             newState.executionStatus = .error
             return newState.withUpdatedBackstack(oldState: oldState)
         case .validateTransaction:
@@ -193,6 +196,50 @@ enum TransactionAction: MviAction {
         switch self {
         default:
             return true
+        }
+    }
+}
+
+enum FatalTransactionError: Error, Equatable {
+    case rxError(RxError)
+    case generic(Error)
+
+    /// Initializes the enum with the given error, this check if it's an RxError and assigns correctly
+    /// - Parameter error: An `Error` to be assigned
+    init(error: Error) {
+        guard let error = error as? RxError else {
+            self = .generic(error)
+            return
+        }
+        self = .rxError(error)
+    }
+
+    var rxError: RxError? {
+        switch self {
+        case .rxError(let error):
+            return error
+        case .generic:
+            return nil
+        }
+    }
+
+    var localizedDescription: String? {
+        switch self {
+        case .rxError(let error):
+            return "\(LocalizationConstants.Errors.genericError) \n\(error.debugDescription)"
+        case .generic(let error):
+            return error.localizedDescription
+        }
+    }
+
+    static func == (lhs: FatalTransactionError, rhs: FatalTransactionError) -> Bool {
+        switch (lhs, rhs) {
+        case (.rxError(let left), .rxError(let right)):
+            return left.debugDescription == right.localizedDescription
+        case (.generic(let left), .generic(let right)):
+            return left.localizedDescription == right.localizedDescription
+        default:
+            return false
         }
     }
 }
@@ -247,6 +294,8 @@ extension TransactionValidationState {
             return .overSilverTierLimit
         case .pendingOrdersLimitReached:
             return .pendingOrdersLimitReached
+        case .nabuError(let error):
+            return .nabuError(error)
         }
     }
 }

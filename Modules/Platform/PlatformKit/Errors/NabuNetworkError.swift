@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import NetworkKit
 import ToolKit
 
@@ -97,11 +98,21 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 }
 
 /// Describes an error returned by Nabu
-public struct NabuError: Error, Codable {
+public struct NabuError: Error, Codable, Equatable {
 
     public let code: NabuErrorCode
     public let type: NabuErrorType
     public let description: String?
+
+    /// Provides the error description that backend sent back,
+    /// if no description is provided or in case it is empty the error code will be displayed
+    /// otherwise the error will be in the form of "{error-description} - Error code: {code}"
+    public var localizedDescription: String? {
+        guard let description = description, !description.isEmpty else {
+            return "\(LocalizationConstants.Errors.errorCode): \(code)"
+        }
+        return "\(description) - \(LocalizationConstants.Errors.errorCode): \(code)"
+    }
 
     public init(code: NabuErrorCode,
                 type: NabuErrorType,
@@ -112,7 +123,7 @@ public struct NabuError: Error, Codable {
     }
 }
 
-public enum NabuErrorCode: Int, Codable {
+public enum NabuErrorCode: Int, Codable, Equatable {
 
     // Unknown code
     case unknown = 0
@@ -266,7 +277,7 @@ public enum NabuErrorCode: Int, Codable {
     case documentDataRequired = 160
 }
 
-public enum NabuErrorType: String, Codable {
+public enum NabuErrorType: String, Codable, Equatable {
 
     // Unknown
     case unknown

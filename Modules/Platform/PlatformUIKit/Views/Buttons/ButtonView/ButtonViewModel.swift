@@ -212,7 +212,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: background,
@@ -236,7 +236,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: font,
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: background,
@@ -256,7 +256,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .destructiveButton,
@@ -275,7 +275,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 16),
             cornerRadius: cornerRadius,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .white,
@@ -294,7 +294,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 14),
             cornerRadius: 8,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .lightBlueBackground,
@@ -313,7 +313,7 @@ extension ButtonViewModel {
         var viewModel = ButtonViewModel(
             font: .main(.semibold, 14),
             cornerRadius: 8,
-            accessibility: .init(id: .value(accessibilityId))
+            accessibility: .id(accessibilityId)
         )
         viewModel.theme = Theme(
             backgroundColor: .lightRedBackground,

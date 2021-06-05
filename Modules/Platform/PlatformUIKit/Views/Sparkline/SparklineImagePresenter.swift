@@ -41,7 +41,7 @@ public class SparklineImagePresenter {
         self.scale = scale
         self.calculator = calculator
         self.interactor = interactor
-        self.accessibility = Accessibility(id: .value(Accessibility.Identifier.SparklineView.prefix))
+        self.accessibility = .id(Accessibility.Identifier.SparklineView.prefix)
 
         self.interactor.calculationState.map(weak: self, { (self, calculationState) -> State in
             switch calculationState {

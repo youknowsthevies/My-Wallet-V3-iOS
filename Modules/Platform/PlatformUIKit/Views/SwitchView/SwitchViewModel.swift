@@ -92,7 +92,7 @@ extension SwitchViewModel {
         isEnabled: Bool = true
         ) -> SwitchViewModel {
         var viewModel = SwitchViewModel(
-            accessibility: .init(id: .value(accessibilityId)),
+            accessibility: .id(accessibilityId),
             isOn: isOn,
             isEnabled: isEnabled
         )
