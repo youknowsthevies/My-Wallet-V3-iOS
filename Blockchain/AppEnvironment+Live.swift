@@ -20,6 +20,9 @@ extension AppEnvironment {
             backgroundAppHandler: .init(),
             dataProvider: .default,
             internalFeatureService: resolve(),
+            walletManager: .shared,
+            walletUpgradeService: resolve(),
+            exchangeRepository: ExchangeAccountRepository(),
             appFeatureConfigurator: resolve(),
             blockchainSettings: .shared,
             credentialsStore: resolve()

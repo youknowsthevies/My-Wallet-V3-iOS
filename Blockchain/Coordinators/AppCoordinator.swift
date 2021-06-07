@@ -243,6 +243,7 @@ import WalletPayloadKit
         viewController.underLeftViewController = self.sideMenuViewController
         viewController.topViewController = self.tabControllerManager?.tabViewController
         self.slidingViewController = viewController
+        self.tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
         self.tabControllerManager?.tabViewController.loadViewIfNeeded()
         self.tabControllerManager?.showDashboard()
         return viewController

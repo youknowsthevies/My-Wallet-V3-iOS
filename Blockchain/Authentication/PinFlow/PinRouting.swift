@@ -26,6 +26,8 @@ struct PinRouting {
 
             /// Background app state that requires the user's authentication to access the app
             case background
+
+            case attachedOn(controller: UnretainedContentBox<UIViewController>)
         }
 
         /// Change old pin code to a new one
@@ -67,6 +69,8 @@ struct PinRouting {
                 switch origin {
                 case .background:
                     return true
+                case .attachedOn:
+                    return false
                 case .foreground:
                     return false
                 }
@@ -114,6 +118,8 @@ struct PinRouting {
                     return parent.value
                 case .background: // Only case when there is no parent as the login is the root
                     return nil
+                case .attachedOn(controller: let controller):
+                    return controller.value
                 }
             case .change(parent: let parent, logoutRouting: _):
                 return parent.value
@@ -173,6 +179,8 @@ extension PinRouting.Flow: CustomDebugStringConvertible {
                 return "authentication from foreground"
             case .background:
                 return "authentication from background"
+            case .attachedOn:
+                return "authentication attached to pin hosting controller"
             }
         case .change:
             return "change pin"

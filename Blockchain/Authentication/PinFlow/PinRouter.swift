@@ -224,6 +224,8 @@ extension PinRouter {
             let navigationController = UINavigationController(rootViewController: viewController)
             navigationController.delegate = self
             switch flow.origin {
+            case .attachedOn(controller: let controller):
+                controller.value?.add(child: navigationController)
             case .background:
                 // Sets view controller as rootViewController of the window
                 UIApplication.shared.keyWindow!.rootViewController = navigationController
@@ -267,6 +269,8 @@ extension PinRouter {
             }
             controller.dismiss(animated: animated, completion: cleanup)
         case .background:
+            cleanup()
+        case .attachedOn:
             cleanup()
         }
     }

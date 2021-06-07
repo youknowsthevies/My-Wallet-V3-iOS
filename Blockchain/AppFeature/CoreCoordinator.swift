@@ -1,9 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import ComposableArchitecture
+import DIKit
 import PlatformKit
+import PlatformUIKit
+import RemoteNotificationsKit
 import SettingsKit
 import UIKit
+import WalletPayloadKit
 
 struct CoreAppState: Equatable {
     var window: UIWindow?
@@ -15,12 +20,22 @@ public enum CoreAppAction: Equatable {
     case start(window: UIWindow)
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
+    case walletInitialized
+    case walletNeedsUpgrade(Bool)
+    case proceedToLoggedIn
+    case none
 }
 
 struct CoreAppEnvironment {
+    var walletManager: WalletManager
     var appFeatureConfigurator: AppFeatureConfigurator
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
+    var alertPresenter: AlertViewPresenterAPI
+    var walletUpgradeService: WalletUpgradeServicing
+    var exchangeRepository: ExchangeAccountRepositoryAPI
+    var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
+    var coincore: Coincore
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -31,7 +46,9 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.onboarding,
             environment: { environment -> Onboarding.Environment in
                 Onboarding.Environment(
-                    blockchainSettings: environment.blockchainSettings
+                    blockchainSettings: environment.blockchainSettings,
+                    walletManager: environment.walletManager,
+                    alertPresenter: environment.alertPresenter
                 )
             }),
     loggedInReducer
@@ -40,7 +57,12 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             state: \.loggedIn,
             action: /CoreAppAction.loggedIn,
             environment: { environment -> LoggedIn.Environment in
-                LoggedIn.Environment()
+                LoggedIn.Environment(
+                    exchangeRepository: environment.exchangeRepository,
+                    remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
+                    remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
+                    walletManager: environment.walletManager,
+                    coincore: environment.coincore)
             }),
     mainAppReducerCore
 )
@@ -58,9 +80,46 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 credentialsStore: environment.credentialsStore
             )
         )
+    case .onboarding(.pin(.authenticated(.success))):
+        return environment.walletManager
+            .reactiveWallet
+            .waitUntilInitializedSinglePublisher
+            .catchToEffect()
+            .map { _ in CoreAppAction.walletInitialized }
+    case .walletInitialized:
+        // TODO: Handle second password as well
+        return environment.walletUpgradeService
+            .needsWalletUpgradePublisher
+            .catchToEffect()
+            .map { result -> CoreAppAction in
+                guard case .success(let shouldUpgrade) = result else {
+                    // impossible with current `WalletUpgradeServicing` implementation
+                    return CoreAppAction.none
+                }
+                return CoreAppAction.walletNeedsUpgrade(shouldUpgrade)
+            }
+    case .walletNeedsUpgrade(let shouldUpgrade):
+        // check if we need the wallet needs an upgade otherwise proceeed to logged in state
+        guard shouldUpgrade else {
+            return Effect(value: CoreAppAction.proceedToLoggedIn)
+        }
+        let window = state.window
+        return Effect<CoreAppAction, Never>.run { effect -> Cancellable in
+            window?.rootViewController = setupWalletUpgrade {
+                effect.send(.proceedToLoggedIn)
+                effect.send(completion: .finished)
+            }
+            return AnyCancellable { }
+        }
+    case .proceedToLoggedIn:
+        state.loggedIn = LoggedIn.State()
+        state.onboarding = nil
+        return .init(value: CoreAppAction.loggedIn(.start(window: state.window)))
     case .onboarding:
         return .none
     case .loggedIn:
+        return .none
+    case .none:
         return .none
     }
 }
@@ -101,4 +160,12 @@ private func syncPinKeyWithICloud(blockchainSettings: BlockchainSettings.App,
             }
         }
     }
+}
+
+// Provides the view controller that displays the wallet upgrade
+private func setupWalletUpgrade(completion: @escaping () -> Void) -> UIViewController {
+    let interactor = WalletUpgradeInteractor(completion: completion)
+    let presenter = WalletUpgradePresenter(interactor: interactor)
+    let viewController = WalletUpgradeViewController(presenter: presenter)
+    return viewController
 }

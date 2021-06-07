@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
@@ -134,5 +135,20 @@ public final class Coincore {
              .withdraw:
             return false
         }
+    }
+}
+
+// MARK: - Combine Related Methods
+
+extension Coincore {
+    /// Gives a chance for all assets to initialize themselves.
+    /// - Note: Uses the `initialize` method and converts it to a publisher.
+    public func initializePublisher() -> AnyPublisher<Never, Never> {
+        initialize()
+            .asPublisher()
+            .catch { error -> AnyPublisher<Never, Never> in
+                impossible()
+            }
+            .ignoreFailure()
     }
 }

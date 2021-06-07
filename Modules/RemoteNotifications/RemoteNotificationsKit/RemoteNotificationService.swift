@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import RxCocoa
@@ -69,6 +70,12 @@ extension RemoteNotificationService: RemoteNotificationTokenSending {
                                              sharedKeyProvider: self.sharedKeyRepository,
                                              guidProvider: self.guidRepository)
             }
+    }
+
+    func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error> {
+        sendTokenIfNeeded()
+            .asCompletable()
+            .asPublisher()
     }
 }
 

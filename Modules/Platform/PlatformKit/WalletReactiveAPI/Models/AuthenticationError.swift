@@ -1,14 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-
 /**
  Represents an authentication error.
 
  Set **description** to `nil` to indicate that the error should be handled silently.
  */
-struct AuthenticationError: Error {
-    enum ErrorCode: Int {
+public struct AuthenticationError: Error, Equatable {
+    public enum ErrorCode: Int {
         case noInternet = 300
         case errorDecryptingWallet
         case invalidSharedKey
@@ -16,15 +14,15 @@ struct AuthenticationError: Error {
         case unknown
     }
 
-    let code: Int
-    let description: String?
+    public let code: Int
+    public let description: String?
 
     /**
      - Parameters:
         - code: The code associated with the error object.
         - description: The description associated with the error object.
      */
-    init(code: Int, description: String? = nil) {
+    public init(code: Int, description: String? = nil) {
         self.code = code
         self.description = description
     }

@@ -2,6 +2,7 @@
 
 import BitcoinCashKit
 import BitcoinKit
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
@@ -12,6 +13,7 @@ protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }
     func syncDepositAddresses() -> Completable
     func syncDepositAddressesIfLinked() -> Completable
+    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error>
 }
 
 enum ExchangeLinkingAPIError: Error {
@@ -49,6 +51,12 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
                 return Completable.empty()
             }
         })
+    }
+
+    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error> {
+        syncDepositAddressesIfLinked()
+            .asPublisher()
+            .mapToVoid()
     }
 
     func syncDepositAddresses() -> Completable {

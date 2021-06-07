@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import PlatformUIKit
 import SettingsKit
 
 public enum Onboarding {
@@ -11,17 +12,19 @@ public enum Onboarding {
         case passwordScreen
         case welcomeScreen
     }
-    
+
     public struct State: Equatable {
         var pinState: PinCore.State? = .init()
     }
 
     public struct Environment {
         var blockchainSettings: BlockchainSettings.App
-        var walletMananager: WalletManager = .shared
+        var walletManager: WalletManager
+        var alertPresenter: AlertViewPresenterAPI
     }
 }
 
+/// The reducer responsible for handing Pin screen and Login/Onboarding screen related action and state.
 let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment>.combine(
     pinReducer
         .optional()
@@ -30,7 +33,9 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             action: /Onboarding.Action.pin,
             environment: {
                 PinCore.Environment(
-                    walletManager: $0.walletMananager
+                    walletManager: $0.walletManager,
+                    appSettings: $0.blockchainSettings,
+                    alertPresenter: $0.alertPresenter
                 )
             }
         ),
@@ -52,6 +57,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         }
     }
 )
+
 
 private func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
     if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {

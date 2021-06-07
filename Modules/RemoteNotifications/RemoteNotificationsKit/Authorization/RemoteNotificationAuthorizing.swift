@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import RxSwift
 import UserNotifications
 
@@ -19,6 +20,7 @@ public protocol RemoteNotificationRegistering: class {
 public protocol RemoteNotificationAuthorizationRequesting: class {
     /// Request authorization for remote notifications if the status is not yet determined.
     func requestAuthorizationIfNeeded() -> Single<Void>
+    func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error>
 }
 
 /// A protocol that defines remote-notification auth-status reading abilities

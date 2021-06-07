@@ -166,6 +166,11 @@ extension DependencyContainer {
 
         single { WalletManager() }
 
+        factory { () -> WalletManagerReactiveAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return manager
+        }
+
         factory { () -> ReactiveWalletAPI in
             let manager: WalletManager = DIKit.resolve()
             return manager.reactiveWallet

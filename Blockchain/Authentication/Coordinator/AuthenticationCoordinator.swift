@@ -72,7 +72,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
-    var temporaryAuthHandler: WalletAuthHandler!
+    var temporaryAuthHandler: WalletAuthHandler?
 
     /// TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
@@ -435,11 +435,11 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
     }
 
     func authenticationCompleted() {
-        temporaryAuthHandler(true, nil, nil)
+        temporaryAuthHandler?(true, nil, nil)
     }
 
     private func failAuth(withError error: AuthenticationError? = nil) {
-        temporaryAuthHandler(false, nil, error)
+        temporaryAuthHandler?(false, nil, error)
     }
 }
 

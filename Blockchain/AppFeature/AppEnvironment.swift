@@ -8,6 +8,7 @@ import PlatformUIKit
 import RemoteNotificationsKit
 import SettingsKit
 import ToolKit
+import WalletPayloadKit
 
 public struct AppEnvironment {
     public var debugCoordinator: DebugCoordinating
@@ -25,6 +26,10 @@ public struct AppEnvironment {
     var backgroundAppHandler: BackgroundAppHandler
     var dataProvider: DataProvider
     var internalFeatureService: InternalFeatureFlagServiceAPI
+
+    var walletManager: WalletManager
+    var walletUpgradeService: WalletUpgradeServicing
+    var exchangeRepository: ExchangeAccountRepositoryAPI
 
     var appFeatureConfigurator: AppFeatureConfigurator
     var blockchainSettings: BlockchainSettings.App
