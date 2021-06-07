@@ -224,9 +224,6 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
-  Veriff:
-    url: https://github.com/Veriff/veriff-ios-spm/
-    version: 4.8.0
 targets:
   ActivityKit:
     dependencies:
@@ -503,6 +500,7 @@ targets:
     - framework: Carthage/Build/Sift.xcframework
     - framework: Carthage/Build/stellarsdk.xcframework
     - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/Veriff.xcframework
     - framework: Carthage/Build/WalletCore.xcframework
     - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
@@ -749,7 +747,6 @@ targets:
       featureName: DashboardFeature
   SharedPackagesKit:
     dependencies:
-    - package: Veriff
     - package: ComposableArchitecture
     - package: CombineExt
     platform: iOS
@@ -963,6 +960,7 @@ targets:
     - ModuleTests
   KYCUIKit:
     dependencies:
+    - framework: Carthage/Build/Veriff.xcframework
     - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
