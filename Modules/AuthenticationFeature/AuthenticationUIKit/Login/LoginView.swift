@@ -43,12 +43,12 @@ public struct LoginView: View {
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(viewStore.state.emailAddress.isEmpty)
                 NavigationLink(
-                    "",
                     destination: VerifyDeviceView(store: store),
                     isActive: viewStore.binding(
                         get: \.isVerifyDeviceVisible,
                         send:  AuthenticationAction.setVerifyDeviceVisible(_:)
-                    )
+                    ),
+                    label: EmptyView.init
                 )
 
             }
