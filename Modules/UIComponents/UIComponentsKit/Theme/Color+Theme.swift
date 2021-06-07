@@ -4,6 +4,7 @@ extension Color {
 
     // MARK: Borders
     public static let borderPrimary = Color(paletteColor: .grey100)
+    public static let borderFocused = Color(paletteColor: .blue600)
 
     // MARK: Backgrounds
     public static let viewPrimaryBackground = Color(paletteColor: .white)
@@ -15,6 +16,9 @@ extension Color {
     // MARK: SecondaryButton
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
+
+    // MARK: Divider
+    public static let dividerLine = Color(paletteColor: .grey100)
 
     // MARK: Text
     public static let textTitle = Color(paletteColor: .grey900)

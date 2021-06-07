@@ -1465,8 +1465,6 @@ targets:
     templates:
     - ModuleTests
   AuthenticationKit:
-    dependencies:
-    - target: SharedPackagesKit
     scheme:
       testTargets:
       - AuthenticationKitTests
@@ -1503,7 +1501,6 @@ targets:
   AuthenticationDataKit:
     dependencies:
     - target: AuthenticationKit
-    - target: SharedPackagesKit
     scheme:
       testTargets:
       - AuthenticationDataKitTests

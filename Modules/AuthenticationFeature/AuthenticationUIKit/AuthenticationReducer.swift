@@ -4,7 +4,7 @@ import ComposableArchitecture
 
 public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAction, AuthenticationEnvironment> { state, action, environment in
     switch action {
-    case .createWallet:
+    case .createAccount:
         return .none
     case .login:
         return .none
@@ -12,6 +12,15 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
         return .none
     case .setLoginVisible(let isVisible):
         state.isLoginVisible = isVisible
+        return .none
+    case .didChangeEmailAddress(let emailAddress):
+        state.emailAddress = emailAddress
+        return .none
+    case .emailVerified(let isVerified):
+        state.isEmailVerified = isVerified
+        return .none
+    case .didRetrievedWalletAddress(let walletAddress):
+        state.walletAddress = walletAddress
         return .none
     }
 }
