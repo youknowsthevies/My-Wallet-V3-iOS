@@ -305,16 +305,17 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
+            ethereumExchangeRatePair,
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.assetType)),
             .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: Token.assetType))
         )
-        .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
-        .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
-            let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
-            let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
+        .map { sourceExchange, ethereumExchange, amount, feeAmount -> (FiatValue, FiatValue) in
+            let erc20Quote = sourceExchange.quote.fiatValue!
+            let ethereumQuote = ethereumExchange.quote.fiatValue!
+            let fiatAmount = amount.convertToFiatValue(exchangeRate: erc20Quote)
+            let fiatFees = feeAmount.convertToFiatValue(exchangeRate: ethereumQuote)
             return (fiatAmount, fiatFees)
         }
-        .map { (amount: $0.0, fees: $0.1) }
     }
 
     private func absoluteFee(with feeLevel: FeeLevel) -> Single<CryptoValue> {
@@ -340,6 +341,7 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
         balanceFetching.balance
     }
 
+    /// Streams `MoneyValuePair` for the exchange rate of the source ERC20 Asset in the current fiat currency.
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency
@@ -348,6 +350,18 @@ final class ERC20OnChainTransactionEngine<Token: ERC20Token>: OnChainTransaction
                     .price(for: self.sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
                     .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+            }
+    }
+
+    /// Streams `MoneyValuePair` for the exchange rate of Ethereum in the current fiat currency.
+    private var ethereumExchangeRatePair: Single<MoneyValuePair> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
+                self.priceService
+                    .price(for: CryptoCurrency.ethereum.currency, in: fiatCurrency)
+                    .map(\.moneyValue)
+                    .map { MoneyValuePair(base: .one(currency: CryptoCurrency.ethereum.currency), quote: $0) }
             }
     }
 }
