@@ -12,6 +12,6 @@ extension Image {
     }
 
     public enum CircleIcon {
-        public static let verifyDevice = Image("verify_device")
+        public static let verifyDevice = Image("icon_verify_device")
     }
 }

@@ -22,7 +22,6 @@ public struct VerifyDeviceView: View {
         NavigationView {
             VStack {
                 Image.CircleIcon.verifyDevice
-                    .renderingMode(.template)
                     .frame(width: 72, height: 72)
                 Text(VerifyDeviceViewString.title)
                     .font(Font(weight: .semibold, size: 20))
@@ -37,15 +36,15 @@ public struct VerifyDeviceView: View {
                 }
                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
                 SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
-                    viewStore.send(.setVerifyDeviceVisible(false))
+                    // TODO: add send again action here
                 }
             }
             .multilineTextAlignment(.center)
             .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
             .navigationBarTitle(LoginViewString.navigationTitle)
-            .updateNavigationBarStyle()
+            updateNavigationBarStyle()
             .leadingNavigationButton(.back) {
-
+                viewStore.send(.setVerifyDeviceVisible(false))
             }
         }
     }
