@@ -52,6 +52,9 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
         return self
     }
 
+    /// Builds a `UIViewController`.
+    /// - Returns: A `UIViewController` or `nil` if the app don't have access to the camera,
+    /// an alert will show up automatically asking the user to change the app settings
     public func build() -> UIViewController? {
         guard let scanner = scanner else { return nil }
 

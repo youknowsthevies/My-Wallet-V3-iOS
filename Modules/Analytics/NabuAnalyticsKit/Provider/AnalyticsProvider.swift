@@ -45,6 +45,7 @@ public final class AnalyticsProvider: AnalyticsServiceProviding {
             .merge(with: enteredBackground)
             .filter { !$0.isEmpty }
             .removeDuplicates()
+            .receive(on: queue)
             .sink(receiveValue: send)
             .store(in: &cancellables)
 
@@ -54,7 +55,14 @@ public final class AnalyticsProvider: AnalyticsServiceProviding {
             .compactMap { [fileCache] _ in fileCache.read() }
             .filter { !$0.isEmpty }
             .removeDuplicates()
+            .receive(on: queue)
             .sink(receiveValue: send)
+            .store(in: &cancellables)
+
+        NotificationCenter.default
+            .publisher(for: UIApplication.willTerminateNotification)
+            .withLatestFrom($events)
+            .sink(receiveValue: fileCache.save)
             .store(in: &cancellables)
     }
 
@@ -66,11 +74,8 @@ public final class AnalyticsProvider: AnalyticsServiceProviding {
         self.events = self.events.filter { !events.contains($0) }
         nabuAnalyticsService.publish(events: EventsWrapper(contextProvider: contextProvider, events: events))
             .sink() { [fileCache] completion in
-                switch completion {
-                case .failure:
+                if case .failure = completion {
                     fileCache.save(events: events)
-                case .finished:
-                    break
                 }
             } receiveValue: { _ in /* NOOP */ }
             .store(in: &cancellables)

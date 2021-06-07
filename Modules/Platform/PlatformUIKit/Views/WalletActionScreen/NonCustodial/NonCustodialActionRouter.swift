@@ -89,7 +89,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.switchToActivity(currency: self.currency)
+            self.routing.switchToActivity()
         }
     }
 

@@ -162,7 +162,7 @@ final class PinScreenViewController: BaseScreenViewController {
     }
 
     private func setupErrorLabel() {
-        errorLabel.accessibility = Accessibility(id: .value(AccessibilityIdentifiers.PinScreen.errorLabel))
+        errorLabel.accessibility = .id(AccessibilityIdentifiers.PinScreen.errorLabel)
         errorLabel.font = Font(.branded(.montserratLight), size: .standard(.small(.h2))).result
         errorLabel.textColor = presenter.contentColor
     }
@@ -222,6 +222,8 @@ extension PinScreenViewController {
         case .invalid:
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
         case .incorrectPin(let message):
+            showInlineError(with: message)
+        case .backoff(let message):
             showInlineError(with: message)
         case .tooManyAttempts:
             displayLogoutAlert()

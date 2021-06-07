@@ -61,7 +61,7 @@ public final class LoadingAnimatingView: LoadingCircleView {
             fillColor: fillColor,
             strokeWidth: strokeWidth
         )
-        accessibility = Accessibility(id: .value(Accessibility.Identifier.LoadingView.loadingView))
+        accessibility = .id(Accessibility.Identifier.LoadingView.loadingView)
     }
 
     required init?(coder aDecoder: NSCoder) {

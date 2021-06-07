@@ -22,7 +22,7 @@ extension DisplayBundle {
 
         // TODO: Add correct Analytics Event
         let events = Events(
-            didAppear: SendAnalyticsEvent(),
+            didAppear: AnalyticsEvents.New.Send.sendReceiveViewed(type: .send),
             confirmSuccess: SendAnalyticsEvent(),
             confirmFailure: SendAnalyticsEvent(),
             confirmTapped: { _, _, _ in SendAnalyticsEvent() },

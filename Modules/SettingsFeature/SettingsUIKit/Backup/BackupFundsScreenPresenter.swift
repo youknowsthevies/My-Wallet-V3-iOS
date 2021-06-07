@@ -131,11 +131,11 @@ extension BackupFundsScreenPresenter {
             """
             let body = DefaultLabelContentPresenter(
                 knownValue: bodyText,
-                descriptors: .init(fontWeight: .medium, contentColor: .descriptionText, fontSize: 14, accessibilityId: AccessibilityId.body)
+                descriptors: .init(fontWeight: .medium, contentColor: .descriptionText, fontSize: 14, accessibility: .id(AccessibilityId.body))
             )
             let bodyWarning = DefaultLabelContentPresenter(
                 knownValue: LocalizedString.Body.partB,
-                descriptors: .init(fontWeight: .semibold, contentColor: .textFieldText, fontSize: 14, accessibilityId: AccessibilityId.bodyWarning)
+                descriptors: .init(fontWeight: .semibold, contentColor: .textFieldText, fontSize: 14, accessibility: .id(AccessibilityId.bodyWarning))
             )
 
             let noticeLabel = LabelContent(

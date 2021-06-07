@@ -33,15 +33,19 @@ final class StellarAsset: CryptoAsset {
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let accountRepository: StellarWalletAccountRepository
     private let errorRecorder: ErrorRecording
-
-    init(accountRepository: StellarWalletAccountRepository = resolve(),
-         errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    private let addressFactory: StellarCryptoReceiveAddressFactory
+    init(
+        accountRepository: StellarWalletAccountRepository = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        addressFactory: StellarCryptoReceiveAddressFactory = .init()
+    ) {
         self.exchangeAccountProvider = exchangeAccountProvider
         self.accountRepository = accountRepository
         self.errorRecorder = errorRecorder
         self.kycTiersService = kycTiersService
+        self.addressFactory = addressFactory
     }
 
     func initialize() -> Completable {
@@ -54,16 +58,9 @@ final class StellarAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        guard address.count == 56 else { return .just(nil) }
-        guard let pair = try? KeyPair(accountId: address) else { return .just(nil) }
-        return .just(
-            StellarReceiveAddress(
-                address: pair.accountId,
-                label: pair.accountId,
-                memo: nil,
-                onTxCompleted: { _ in Completable.empty() }
-            )
-        )
+        let result = try? addressFactory
+            .makeExternalAssetAddress(address: address, label: address, onTxCompleted: { _ in Completable.empty() })
+        return .just(result)
     }
 
     func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {

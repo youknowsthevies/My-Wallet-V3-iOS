@@ -2,6 +2,7 @@
 
 import PlatformKit
 import RxSwift
+import stellarsdk
 import TransactionKit
 
 final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
@@ -11,15 +12,80 @@ final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) throws -> CryptoReceiveAddress {
-        let items = address.split(separator: ":")
-        guard let address = items.first else {
+        guard !address.isEmpty else {
             throw TransactionValidationFailure(state: .invalidAddress)
         }
-        let memo = String(items.last ?? "")
-        return StellarReceiveAddress(
-            address: String(address),
+        if let fromSimpleAddress = parseFromSimpleAddress(address: address, label: label, onTxCompleted: onTxCompleted) {
+            return fromSimpleAddress
+        }
+        if let fromStellarURL = parseFromStellarURL(address: address, label: label, onTxCompleted: onTxCompleted) {
+            return fromStellarURL
+        }
+        throw TransactionValidationFailure(state: .invalidAddress)
+    }
+
+    /// Try parsing address in format 'web+stellar:pay?destination=<address>&memo=<memo>'
+    private func parseFromStellarURL(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) -> CryptoReceiveAddress? {
+        guard let url = URL(string: address) else {
+            return nil
+        }
+        guard let urlPayload = StellarURLPayload(url: url) else {
+            return nil
+        }
+        return validateAndCreate(
+            address: urlPayload.address,
             label: label,
-            memo: memo.count > 0 ? memo : nil,
+            memo: urlPayload.memo ?? "",
+            onTxCompleted: onTxCompleted
+        )
+    }
+
+    /// Try parsing address in format '<address>:<memo>'
+    private func parseFromSimpleAddress(
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) -> CryptoReceiveAddress? {
+        let components = address.split(separator: ":")
+        // If must have one or two components.
+        guard components.count == 1 || components.count == 2 else {
+            return nil
+        }
+        // The first component is the address.
+        guard let addressComponent = components.first else {
+            return nil
+        }
+        // If we have two components, the second one will be the memo.
+        let memo: String = components.count == 2 ? String(components.last ?? "") : ""
+        return validateAndCreate(
+            address: String(addressComponent),
+            label: label,
+            memo: memo,
+            onTxCompleted: onTxCompleted
+        )
+    }
+
+    private func validateAndCreate(
+        address: String,
+        label: String,
+        memo: String,
+        onTxCompleted: @escaping TxCompleted
+    ) -> CryptoReceiveAddress? {
+        guard address.count == 56 else {
+            return nil
+        }
+        guard let pair = try? stellarsdk.KeyPair(accountId: address) else {
+            return nil
+        }
+        let accountID = pair.accountId
+        return StellarReceiveAddress(
+            address: accountID,
+            label: label,
+            memo: memo.isEmpty ? nil : memo,
             onTxCompleted: onTxCompleted
         )
     }

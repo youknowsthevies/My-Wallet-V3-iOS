@@ -40,7 +40,7 @@ final class AddressViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         assetImageView.image = presenter.assetImage
-        assetImageView.accessibilityIdentifier = AccessibilityIdentifiers.Address.assetImageView
+        assetImageView.accessibility = .id(AccessibilityIdentifiers.Address.assetImageView)
 
         assetNameLabel.accessibility = presenter.titleAccessibility
         assetNameLabel.text = presenter.assetName

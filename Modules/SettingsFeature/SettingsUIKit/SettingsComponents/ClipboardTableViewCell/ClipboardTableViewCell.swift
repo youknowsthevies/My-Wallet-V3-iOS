@@ -4,9 +4,9 @@ import PlatformUIKit
 
 struct ClipboardCellViewModel {
     let title: String
-    let accessibilityID: String?
+    let accessibilityID: String
 
-    init(title: String, accessibilityID: String? = nil) {
+    init(title: String, accessibilityID: String) {
         self.title = title
         self.accessibilityID = accessibilityID
     }
@@ -21,7 +21,7 @@ final class ClipboardTableViewCell: UITableViewCell {
     var viewModel: ViewModel! {
         didSet {
             titleLabel.text = viewModel.title
-            titleLabel.accessibilityIdentifier = viewModel.accessibilityID
+            titleLabel.accessibility = .id(viewModel.accessibilityID)
         }
     }
 

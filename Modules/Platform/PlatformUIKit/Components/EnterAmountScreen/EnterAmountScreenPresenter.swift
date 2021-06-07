@@ -3,6 +3,7 @@
 import AnalyticsKit
 import DIKit
 import PlatformKit
+import Localization
 import RIBs
 import RxCocoa
 import RxRelay
@@ -61,6 +62,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     public let displayBundle: DisplayBundle
     public let inputTypeToggleVisiblity: Visibility
 
+    private let errorRecorder: ErrorRecording
     private let interactor: EnterAmountScreenInteractor
     private let backwardsNavigation: () -> Void
 
@@ -70,15 +72,19 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     // MARK: - Setup
 
-    public init(loader: LoadingViewPresenting = resolve(),
-                alert: AlertViewPresenterAPI = resolve(),
-                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-                inputTypeToggleVisibility: Visibility,
-                backwardsNavigation: @escaping () -> Void,
-                displayBundle: DisplayBundle,
-                interactor: EnterAmountScreenInteractor) {
+    public init(
+        loader: LoadingViewPresenting = resolve(),
+        alert: AlertViewPresenterAPI = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        inputTypeToggleVisibility: Visibility,
+        backwardsNavigation: @escaping () -> Void,
+        displayBundle: DisplayBundle,
+        interactor: EnterAmountScreenInteractor
+    ) {
         self.loader = loader
         self.alert = alert
+        self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.backwardsNavigation = backwardsNavigation
@@ -168,9 +174,16 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
     public func handle(_ error: Error) {
         Logger.shared.error(error)
+        errorRecorder.error(error)
         analyticsRecorder.record(event: displayBundle.events.confirmFailure)
         loader.hide()
-        alert.error(in: nil, action: nil)
+        alert.notify(
+            content: AlertViewContent(
+                title: LocalizationConstants.Errors.genericError,
+                message: error.localizedDescription
+            ),
+            in: nil
+        )
     }
 
     private static func digitPadViewModel() -> DigitPadViewModel {

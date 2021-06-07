@@ -63,8 +63,8 @@ final class LoadingContainerView: UIView {
         statusLabel.numberOfLines = 0
         statusLabel.font = Font(.branded(.montserratRegular), size: .custom(15)).result
         statusLabel.accessibility = Accessibility(
-            id: .value(Accessibility.Identifier.LoadingView.statusLabel),
-            traits: .value(.updatesFrequently)
+            id: Accessibility.Identifier.LoadingView.statusLabel,
+            traits: .updatesFrequently
         )
         addSubview(statusLabel)
         statusLabel.layoutToSuperview(axis: .horizontal, offset: 50)

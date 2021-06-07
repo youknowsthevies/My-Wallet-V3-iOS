@@ -99,7 +99,7 @@ class EthereumWalletTests: XCTestCase {
         // Arrange
         let expectedAccount = EthereumAssetAccount(
             walletIndex: 0,
-            accountAddress: MockEthereumWalletTestData.account,
+            accountAddress: "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e",
             name: "My ETH Wallet"
         )
 

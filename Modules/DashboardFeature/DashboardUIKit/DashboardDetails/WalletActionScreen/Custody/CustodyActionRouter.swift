@@ -219,11 +219,10 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showActivityScreen() {
-        guard case let .crypto(currency) = currency else { return }
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.tabSwapping.switchToActivity(currency: currency)
+            self.tabSwapping.switchToActivity()
         }
     }
 

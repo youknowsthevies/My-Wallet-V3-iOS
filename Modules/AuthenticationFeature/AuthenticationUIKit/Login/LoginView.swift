@@ -78,7 +78,7 @@ struct LoginView_Previews: PreviewProvider {
                 Store(initialState: AuthenticationState(),
                       reducer: authenticationReducer,
                       environment: .init(
-                        mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+                        mainQueue: .main
                       )
                 )
         )

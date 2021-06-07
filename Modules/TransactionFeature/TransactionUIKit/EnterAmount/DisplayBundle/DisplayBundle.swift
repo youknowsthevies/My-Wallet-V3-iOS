@@ -72,9 +72,9 @@ struct DisplayBundle {
     static func bundle(for action: AssetAction, sourceAccount: SingleAccount) -> DisplayBundle {
         switch action {
         case .swap:
-            return DisplayBundle.swap(sourceAccount: sourceAccount)
+            return .swap(sourceAccount: sourceAccount)
         case .send:
-            return DisplayBundle.send(sourceAccount: sourceAccount)
+            return .send(sourceAccount: sourceAccount)
         case .deposit,
              .receive,
              .sell,

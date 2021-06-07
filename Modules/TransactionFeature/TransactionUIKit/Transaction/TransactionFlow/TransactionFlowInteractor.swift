@@ -74,7 +74,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
         requireSecondPassword
             .observeOn(MainScheduler.asyncInstance)
-            .map(weak: self) { [sourceAccount, target, action] (_, passwordRequired) -> TransactionAction in
+            .map { [sourceAccount, target, action] passwordRequired -> TransactionAction in
                 guard let sourceAccount = sourceAccount else {
                     return .initialiseWithNoSourceOrTargetAccount(
                         action: action,
@@ -137,9 +137,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 case .selectSource:
                     self?.didSelectSourceAccount(account: target as! CryptoAccount)
                 case .selectTarget:
-                    let selectedSource = state.source!
                     self?.didSelectDestinationAccount(target: target)
-                    self?.analyticsHook.onPairConfirmed(selectedSource.currencyType, target: target, action: state.action)
+                    if let selectedSource = state.source as? CryptoAccount,
+                       let target = target as? CryptoAccount {
+                        self?.analyticsHook.onReceiveAccountSelected(selectedSource,
+                                                                     target: target,
+                                                                     action: state.action)
+                    }
+
                 default:
                     break
                 }
@@ -171,7 +176,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didSelectSourceAccount(account: CryptoAccount) {
-        analyticsHook.onAccountSelected(account.currencyType, action: action)
+        analyticsHook.onFromAccountSelected(account, action: action)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
 

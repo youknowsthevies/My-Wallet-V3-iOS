@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -44,6 +45,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let eligiblePaymentService: PaymentMethodsServiceAPI
     private let interactor: WalletActionScreenInteracting
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -51,10 +53,12 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
     public init(using interactor: WalletActionScreenInteracting,
                 enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
                 stateService: CustodyActionStateServiceAPI,
-                eligiblePaymentService: PaymentMethodsServiceAPI = resolve()) {
+                eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
+                analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
         self.eligiblePaymentService = eligiblePaymentService
+        self.analyticsRecorder = analyticsRecorder
 
         let currency = interactor.currency
         let descriptionValue: () -> Observable<String> = {
@@ -116,6 +120,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     stateService.withdrawRelay.accept(())
                 case .swap:
                     stateService.swapRelay.accept(())
+                    analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .currencyPage))
                 default:
                     break
                 }

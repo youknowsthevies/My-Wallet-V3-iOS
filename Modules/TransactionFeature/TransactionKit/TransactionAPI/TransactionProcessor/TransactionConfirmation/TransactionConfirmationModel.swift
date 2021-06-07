@@ -156,8 +156,10 @@ extension TransactionConfirmation.Model {
             self.moneyValue = moneyValue
         }
 
-        // By the time we are on the confirmation screen most of these possible error should have been
-        // filtered out. A few remain possible, because BE failures or BitPay invoices, thus:
+        /// By the time we are on the confirmation screen most of these possible error should have been
+        /// filtered out. A few remain possible, because BE failures or BitPay invoices, thus:
+        /// - Note: At the UI level the title is ignored,
+        /// check the `errorModels` in `ConfirmationPageContentReducer` in `TransactionUIKit`.
         public var formatted: (title: String, subtitle: String)? {
             switch validationState {
             case .canExecute, .uninitialized:
@@ -183,16 +185,26 @@ extension TransactionConfirmation.Model {
                 return (LocalizedString.Error.title, LocalizedString.Error.invoiceExpired)
             case .transactionInFlight:
                 return (LocalizedString.Error.title, LocalizedString.Error.transactionInFlight)
-            case .addressIsContract,
-                 .invalidAddress,
-                 .insufficientFundsForFees,
-                 .optionInvalid,
+            case .overMaximumLimit:
+                return (LocalizedString.Error.title, LocalizedString.Error.overMaximumLimit)
+            // these should be filtered out by now
+            case .addressIsContract:
+                return (LocalizedString.Error.title, LocalizationConstants.Transaction.Error.addressIsContract)
+            case .invalidAddress:
+                return (LocalizedString.Error.title, LocalizationConstants.Transaction.Error.invalidAddress)
+            case .optionInvalid:
+                return (LocalizedString.Error.title, LocalizationConstants.Transaction.Error.optionInvalid)
+            case .insufficientFundsForFees,
                  .overGoldTierLimit,
-                 .overMaximumLimit,
                  .overSilverTierLimit,
-                 .pendingOrdersLimitReached,
                  .unknownError:
                 return (LocalizedString.Error.title, LocalizedString.Error.generic)
+            case .pendingOrdersLimitReached:
+                return (LocalizedString.Error.title, LocalizedString.Error.pendingOrderLimitReached)
+            case .nabuError(let error):
+                let errorCode = String(format: LocalizationConstants.Errors.errorCode, error.code.rawValue)
+                let rawNabuDescription = error.description ?? "\(LocalizedString.Error.generic). \(errorCode)"
+                return (LocalizedString.Error.title, rawNabuDescription)
             }
         }
     }

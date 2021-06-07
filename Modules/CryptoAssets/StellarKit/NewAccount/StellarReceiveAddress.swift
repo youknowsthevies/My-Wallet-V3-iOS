@@ -15,10 +15,11 @@ struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvidi
         StellarURLPayload(address: address, amount: nil, memo: memo)
     }
 
-    init(address: String,
-         label: String,
-         memo: String? = nil,
-         onTxCompleted: @escaping TxCompleted = { _ in .empty() }
+    init(
+        address: String,
+        label: String,
+        memo: String? = nil,
+        onTxCompleted: @escaping TxCompleted = { _ in .empty() }
     ) {
         self.address = address
         self.label = label

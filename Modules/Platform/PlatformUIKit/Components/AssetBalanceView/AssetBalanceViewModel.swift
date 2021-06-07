@@ -140,14 +140,10 @@ public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         Descriptors(
             fiatFont: .main(.semibold, 16.0),
             fiatTextColor: .dashboardFiatPriceTitle,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
+            fiatAccessibility: .id(fiatAccessiblitySuffix),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
+            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 
@@ -158,14 +154,10 @@ public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         Descriptors(
             fiatFont: .main(.medium, 16.0),
             fiatTextColor: .mutedText,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
+            fiatAccessibility: .id(fiatAccessiblitySuffix),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .mutedText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
+            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 
@@ -176,14 +168,10 @@ public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         Descriptors(
             fiatFont: .main(.semibold, 16.0),
             fiatTextColor: .textFieldText,
-            fiatAccessibility: .init(
-                id: .value(fiatAccessiblitySuffix)
-            ),
+            fiatAccessibility: .id(fiatAccessiblitySuffix),
             cryptoFont: .main(.medium, 14.0),
             cryptoTextColor: .descriptionText,
-            cryptoAccessibility: .init(
-                id: .value(cryptoAccessiblitySuffix)
-            )
+            cryptoAccessibility: .id(cryptoAccessiblitySuffix)
         )
     }
 }

@@ -57,8 +57,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] effect in
                 switch effect {
-                case .failure:
-                    self?.router.showFailureAlert()
+                case .failure(let error):
+                    self?.handle(error)
                 case .none:
                     break
                 }
@@ -79,8 +79,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 interactor.paymentMethodTypes.map { $0.count }
             )
             .observeOn(MainScheduler.asyncInstance)
-            .do(onError: { [weak self] _ in
-                self?.router.showFailureAlert()
+            .do(onError: { [weak self] error in
+                self?.handle(error)
             })
             .catchError { _ -> Observable<(PaymentMethodType?, Int)> in
                 .empty()
@@ -119,8 +119,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     }
             }
             .observeOn(MainScheduler.asyncInstance)
-            .do(onError: { [weak self] _ in
-                self?.router.showFailureAlert()
+            .do(onError: { [weak self] error in
+                self?.handle(error)
             })
             .catchError { error -> Observable<Result<CTAData, Error>> in
                 .just(.failure(error))
@@ -138,7 +138,6 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     candidateOrderDetails.fiatValue.currency,
                     candidateOrderDetails.fiatValue.moneyValue,
                     candidateOrderDetails.cryptoCurrency,
-                    candidateOrderDetails.cryptoValue,
                     [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : (paymentMethod?.analyticsParameter.string) ?? ""]
                 )
             }
@@ -203,8 +202,8 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 self.subtitleForCryptoCurrencyPicker(cryptoCurrency: cryptoCurrency)
             }
             .observeOn(MainScheduler.asyncInstance)
-            .do(onError: { [weak self] _ in
-                self?.router.showFailureAlert()
+            .do(onError: { [weak self] error in
+                self?.handle(error)
             })
             .catchError { _ -> Observable<String?> in
                 .just(nil)

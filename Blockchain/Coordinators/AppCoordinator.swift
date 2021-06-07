@@ -329,7 +329,8 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             }
         )
         guard let viewController = builder.build() else {
-            fatalError("Something went wrong.")
+            // No camera access, an alert will be displayed automatically.
+            return
         }
         UIApplication.shared.topMostViewController?.present(
             viewController,
@@ -545,7 +546,7 @@ extension AppCoordinator: TabSwapping {
         tabControllerManager?.showReceive()
     }
 
-    func switchToActivity(currency: CryptoCurrency) {
+    func switchToActivity() {
         tabControllerManager?.showTransactions()
     }
 }

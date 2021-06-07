@@ -16,7 +16,13 @@ extension Color {
         self.init(colorName, bundle: .current)
     }
 }
-// Reference: https://www.figma.com/file/MWCxP6khQHkDZSLEew6mLqcQ/iOS-Visual-consistency-update?node-id=68%3A0
+
+/// A enum defining the color as define by Blockchain's Design System
+///
+/// - Note: When adding a new color in `Colors.xcassets` its first letter should be capitized, eg `TierSilver`,
+/// this does not apply for the name of the case in the enum.
+///
+/// Reference: https://www.figma.com/file/MWCxP6khQHkDZSLEew6mLqcQ/iOS-Visual-consistency-update?node-id=68%3A0
 enum PaletteColor: String, CaseIterable {
 
     // MARK: Blue
@@ -133,7 +139,7 @@ enum PaletteColor: String, CaseIterable {
     case eth = "Ethereum"
     case pax = "Pax"
     case usdt = "Tether"
-    case wDGLD = "wDGLD"
+    case wDGLD = "WDGLD"
     case xlm = "Stellar"
     case yfi = "YearnFinance"
 }

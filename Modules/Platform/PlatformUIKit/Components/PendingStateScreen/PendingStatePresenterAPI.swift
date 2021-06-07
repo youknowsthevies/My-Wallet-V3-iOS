@@ -3,7 +3,7 @@
 import RxCocoa
 import RxSwift
 
-public protocol PendingStatePresenterAPI: class {
+public protocol PendingStatePresenterAPI: AnyObject {
     var title: String { get }
     var viewModel: Driver<PendingStateViewModel> { get }
     var pendingStatusViewEdgeSize: CGFloat { get }

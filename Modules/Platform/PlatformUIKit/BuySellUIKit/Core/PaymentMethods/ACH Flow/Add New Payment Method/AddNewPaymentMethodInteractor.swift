@@ -176,7 +176,9 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
                     self.eventRecorder.record(
                         events: [
                             AnalyticsEvent.sbPaymentMethodSelected(selection: event),
-                            NewAnalyticsEvent.buyPaymentMethodSelected(paymentType: AnalyticsEvents.New.PaymentType(paymentMethod: method))
+                            NewAnalyticsEvent.buyPaymentMethodSelected(
+                                paymentType: NewAnalyticsEvent.PaymentType(paymentMethod: method)
+                            )
                         ]
                     )
                 }

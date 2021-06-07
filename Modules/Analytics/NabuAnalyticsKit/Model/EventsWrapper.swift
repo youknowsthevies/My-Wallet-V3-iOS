@@ -4,6 +4,7 @@ import Foundation
 
 struct EventsWrapper: Encodable {
     let id: String?
+    let platform: String = "WALLET"
     let context: Context
     let events: [Event]
 

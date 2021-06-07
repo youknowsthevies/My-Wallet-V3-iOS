@@ -11,9 +11,11 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
     private typealias LocalizedString = LocalizationConstants.FiatWithdrawal.Checkout.ConfirmationScreen
 
     // MARK: - Properties
+
     var viewModel: Driver<PendingStateViewModel> = .empty()
 
     // MARK: - Private Properties
+
     private weak var routing: WithdrawalConfirmationRouting?
     private let interactor: WithdrawalConfirmationInteractor
     private let disposeBag = DisposeBag()

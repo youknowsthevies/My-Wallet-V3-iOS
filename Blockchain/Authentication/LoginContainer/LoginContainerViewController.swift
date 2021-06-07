@@ -99,7 +99,7 @@ final class LoginContainerViewController: UIViewController {
         pageControl.currentPage = 0
         pageControl.numberOfPages = inputs.count - 1
         pageControl.alpha = 0
-        pageControl.accessibilityIdentifier = AccessibilityIdentifiers.Address.pageControl
+        pageControl.accessibility = .id(AccessibilityIdentifiers.Address.pageControl)
         translationAnimator.pausesOnCompletion = true
         view.layoutIfNeeded()
     }

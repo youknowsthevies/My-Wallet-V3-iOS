@@ -37,7 +37,7 @@ fileprivate extension NavigationCTAType {
 }
 
 extension NavigationCTAType {
-    var accessibilityIdentifier: String? {
+    var accessibilityIdentifier: String {
         switch self {
         case .qrCode:
             return AccessibilityIdentifiers.Navigation.Button.qrCode
@@ -54,7 +54,7 @@ extension NavigationCTAType {
         case .activityIndicator:
             return AccessibilityIdentifiers.Navigation.Button.activityIndicator
         case .none:
-            return nil
+            return ""
         }
     }
 }
@@ -141,7 +141,7 @@ extension NavigatableView where Self: UIViewController {
                 action: #selector(rightBarButtonTapped)
             )
         }
-        controller.navigationItem.rightBarButtonItem?.accessibilityIdentifier = navigatableView.rightNavControllerCTAType.accessibilityIdentifier
+        controller.navigationItem.rightBarButtonItem?.accessibility = .id(navigatableView.rightNavControllerCTAType.accessibilityIdentifier)
 
         if navigatableView.leftNavControllerCTAType == .activityIndicator {
             assertionFailure("You should put the activity indicator in the right CTA.")
@@ -152,7 +152,7 @@ extension NavigatableView where Self: UIViewController {
                 target: self,
                 action: #selector(leftBarButtonTapped)
             )
-            controller.navigationItem.leftBarButtonItem?.accessibilityIdentifier = navigatableView.leftNavControllerCTAType.accessibilityIdentifier
+            controller.navigationItem.leftBarButtonItem?.accessibility = .id(navigatableView.leftNavControllerCTAType.accessibilityIdentifier)
         }
 
         controller.navigationItem.rightBarButtonItem?.tintColor = navigatableView.rightCTATintColor

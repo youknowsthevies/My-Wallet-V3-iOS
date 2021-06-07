@@ -42,10 +42,10 @@ final class SecurePinView: UIView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        titleLabel.accessibility = Accessibility(id: .value(AccessibilityIdentifiers.PinScreen.pinSecureViewTitle),
-                                                traits: .value(.header))
+        titleLabel.accessibility = Accessibility(id: AccessibilityIdentifiers.PinScreen.pinSecureViewTitle,
+                                                 traits: .header)
         for (index, view) in pinViewsArray.enumerated() {
-            view.accessibilityIdentifier = "\(AccessibilityIdentifiers.PinScreen.pinIndicatorFormat)\(index)"
+            view.accessibility = .id("\(AccessibilityIdentifiers.PinScreen.pinIndicatorFormat)\(index)")
         }
     }
 

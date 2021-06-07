@@ -355,6 +355,12 @@ extension PendingTransaction {
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransaction {
 
+    /// Checks if `pendingOrdersLimitReached` error occured and passes that down the stream, otherwise
+    ///  - in case the error is not a `NabuNetworkError` it throws the erro
+    ///  - if the error is a `NabuNetworkError` and it is not a `pendingOrdersLimitReached`,
+    ///    it passes a `nabuError` which contains the raw nabu error
+    /// - Parameter initialValue: The current `PendingTransaction` to be updated
+    /// - Returns: An `Single<PendingTransaction>` with updated `validationState`
     func handleSwapPendingOrdersError(initialValue: PendingTransaction) -> Single<PendingTransaction> {
         catchError { error -> Single<PendingTransaction> in
             guard let networkError = error as? NabuNetworkError else {
@@ -364,7 +370,9 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == PendingTransa
                 throw error
             }
             guard nabuError.code == .pendingOrdersLimitReached else {
-                throw error
+                var initialValue = initialValue
+                initialValue.validationState = .nabuError(nabuError)
+                return .just(initialValue)
             }
             var initialValue = initialValue
             initialValue.validationState = .pendingOrdersLimitReached

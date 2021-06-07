@@ -62,6 +62,7 @@ final class AutoPairingViewController: BaseScreenViewController {
 
     fileprivate func start() {
         guard let scanner = presenter.scannerBuilder.build() else {
+            // No camera access, an alert will be displayed automatically.
             return
         }
         viewFinderViewController = scanner

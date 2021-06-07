@@ -26,20 +26,20 @@ final class QRAddressViewModel {
 
     // Address label accessibility
     var addressLabelAccessibility: Accessibility {
-        Accessibility(id: .value(AccessibilityIdentifiers.Address.addressLabel),
-                             hint: .value(LocalizationConstants.Address.Accessibility.addressLabel))
+        Accessibility(id: AccessibilityIdentifiers.Address.addressLabel,
+                      hint: LocalizationConstants.Address.Accessibility.addressLabel)
     }
 
     // Address QR image view accessibility
     var addressImageViewAccessibility: Accessibility {
-        Accessibility(id: .value(AccessibilityIdentifiers.Address.qrImageView),
-                             hint: .value(LocalizationConstants.Address.Accessibility.addressImageView))
+        Accessibility(id: AccessibilityIdentifiers.Address.qrImageView,
+                      hint: LocalizationConstants.Address.Accessibility.addressImageView)
     }
 
     // Copy button accessibility
     var copyButtonAcessibility: Accessibility {
-        Accessibility(id: .value(AccessibilityIdentifiers.Address.copyButton),
-                             hint: .value(LocalizationConstants.Address.Accessibility.copyButton))
+        Accessibility(id: AccessibilityIdentifiers.Address.copyButton,
+                      hint: LocalizationConstants.Address.Accessibility.copyButton)
     }
 
     // MARK: - Setup

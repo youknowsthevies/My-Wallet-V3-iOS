@@ -37,12 +37,12 @@ class NavigationBarButtonItem: UIBarButtonItem {
             setTitleTextAttributes(attributes, for: .disabled)
             title = content.title
             image = content.image
-            accessibilityIdentifier = content.accessibility?.id.rawValue
+            accessibilityIdentifier = content.accessibility?.id
             rx.tap
                 .bind { tap() }
                 .disposed(by: disposeBag)
         case .processing:
-            let activityIndicator = UIActivityIndicatorView(style: .white)
+            let activityIndicator = UIActivityIndicatorView(style: .medium)
             customView = activityIndicator
             activityIndicator.startAnimating()
         case .none:

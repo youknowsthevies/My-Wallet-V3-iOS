@@ -89,9 +89,7 @@ public struct FiatBalanceViewAsset {
                             font: descriptors.quoteFiatFont,
                             color: descriptors.quoteFiatTextColor,
                             alignment: .right,
-                            accessibility: .init(
-                                id: .value("\(descriptors.quoteFiatAccessibility.id)\(value.quote.currency.code)")
-                            )
+                            accessibility: .id("\(descriptors.quoteFiatAccessibility.id!)\(value.quote.currency.code)")
                         )
                     )
                     baseFont = descriptors.baseFiatFont
@@ -107,9 +105,7 @@ public struct FiatBalanceViewAsset {
                     font: baseFont,
                     color: baseColor,
                     alignment: .right,
-                    accessibility: .init(
-                        id: .value("\(descriptors.baseFiatAccessibility.id)\(value.base.currency.code)")
-                    )
+                    accessibility: .id("\(descriptors.baseFiatAccessibility.id.printable)\(value.base.currency.code)")
                 )
             }
         }
@@ -126,14 +122,12 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
     ) -> Descriptors {
         var baseAccessibility: Accessibility = .none
         if let base = baseFiatAccessibilitySuffix {
-            baseAccessibility = .init(id: .value("\(base)"))
+            baseAccessibility = .id(base)
         }
         return Descriptors(
             baseFiatFont: .main(.medium, 14.0),
             baseFiatTextColor: .descriptionText,
-            baseFiatAccessibility: .init(
-                id: .value("\(fiatAccessiblitySuffix)")
-            ),
+            baseFiatAccessibility: .id("\(fiatAccessiblitySuffix)"),
             quoteFiatFont: .main(.semibold, 16.0),
             quoteFiatTextColor: .titleText,
             quoteFiatAccessibility: baseAccessibility
@@ -148,10 +142,10 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,
-            baseFiatAccessibility: .init(id: .value("\(DashboardAccessibility.baseFiatBalance).\(baseAccessibilitySuffix)")),
+            baseFiatAccessibility: .id("\(DashboardAccessibility.baseFiatBalance).\(baseAccessibilitySuffix)"),
             quoteFiatFont: .main(.semibold, 20),
             quoteFiatTextColor: .textFieldText,
-            quoteFiatAccessibility: .init(id: .value("\(DashboardAccessibility.quoteFiatBalance).\(quoteAccessibilitySuffix)"))
+            quoteFiatAccessibility: .id("\(DashboardAccessibility.quoteFiatBalance).\(quoteAccessibilitySuffix)")
         )
     }
 
@@ -159,10 +153,10 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,
-            baseFiatAccessibility: .init(id: .value("\(DashboardAccessibility.baseFiatBalance).\(baseAccessibilitySuffix)")),
+            baseFiatAccessibility: .id("\(DashboardAccessibility.baseFiatBalance).\(baseAccessibilitySuffix)"),
             quoteFiatFont: .main(.semibold, 16),
             quoteFiatTextColor: .textFieldText,
-            quoteFiatAccessibility: .init(id: .value("\(DashboardAccessibility.quoteFiatBalance).\(quoteAccessibilitySuffix)"))
+            quoteFiatAccessibility: .id("\(DashboardAccessibility.quoteFiatBalance).\(quoteAccessibilitySuffix)")
         )
     }
 }

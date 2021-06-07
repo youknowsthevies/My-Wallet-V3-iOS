@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -41,6 +42,7 @@ final class ReceiveScreenPresenter {
 
     // MARK: Private Properties
 
+    private var eventsRecorder: AnalyticsEventRecording
     private let qrCodeRelay = BehaviorRelay<UIImage?>(value: nil)
     private let interactor: ReceiveScreenInteractor
     private let disposeBag = DisposeBag()
@@ -48,8 +50,10 @@ final class ReceiveScreenPresenter {
     // MARK: Setup
 
     init(pasteboard: Pasteboarding = resolve(),
+         eventsRecorder: AnalyticsEventRecording = resolve(),
          interactor: ReceiveScreenInteractor) {
         self.interactor = interactor
+        self.eventsRecorder = eventsRecorder
         walletAddressLabelContent = LabelContent(
             text: LocalizedString.Text.walletAddress,
             font: .main(.semibold, 12),
@@ -74,7 +78,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .semibold,
                 contentColor: .textFieldText,
                 fontSize: 16,
-                accessibilityId: AccessibilityID.walletNameLabel
+                accessibility: .id(AccessibilityID.walletNameLabel)
             )
         )
         balanceLabelContentPresenting = DefaultLabelContentPresenter(
@@ -83,7 +87,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .descriptionText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.balanceLabel
+                accessibility: .id(AccessibilityID.balanceLabel)
             )
         )
         addressLabelContentPresenting = DefaultLabelContentPresenter(
@@ -92,7 +96,7 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .darkTitleText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.addressLabel
+                accessibility: .id(AccessibilityID.addressLabel)
             )
         )
         memoLabelContentPresenting = DefaultLabelContentPresenter(
@@ -101,8 +105,8 @@ final class ReceiveScreenPresenter {
                 fontWeight: .medium,
                 contentColor: .darkTitleText,
                 fontSize: 14,
-                accessibilityId: AccessibilityID.memoLabel
-                )
+                accessibility: .id(AccessibilityID.memoLabel)
+            )
         )
         copyButton = .secondary(with: LocalizedString.Button.copy)
         shareButton = .primary(with: LocalizedString.Button.share)
@@ -153,6 +157,15 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         // MARK: - Copy
+
+        copyButton.tapRelay
+            .bind { [eventsRecorder] in
+                eventsRecorder.record(event:
+                    AnalyticsEvents.New.Receive.receiveDetailsCopied(accountType: .init(self.interactor.account as? CryptoAccount),
+                                                                     currency: self.interactor.account.currencyType.code)
+                )
+            }
+            .disposed(by: disposeBag)
 
         copyButton.tapRelay
             .withLatestFrom(qrCodeMetadata.map(\.absoluteString))

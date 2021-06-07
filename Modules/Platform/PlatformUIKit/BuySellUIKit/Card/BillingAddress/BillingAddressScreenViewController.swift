@@ -41,7 +41,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
         addButton(with: presenter.buttonViewModel)
         keyboardInteractionController = KeyboardInteractionController(
             in: scrollView,
-            disablesToolBar: true
+            disablesToolBar: false
         )
         setupTableView()
         setupKeyboardObserver()
@@ -86,7 +86,7 @@ final class BillingAddressScreenViewController: BaseTableViewController {
             .bindAndCatch(weak: self) { (self, state) in
                 switch state.visibility {
                 case .visible:
-                    self.contentBottomConstraint.constant = -(state.payload.height + self.view.safeAreaInsets.bottom)
+                    self.contentBottomConstraint.constant = -(state.payload.height - self.view.safeAreaInsets.bottom)
                 case .hidden:
                     self.contentBottomConstraint.constant = 0
                 }

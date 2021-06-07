@@ -1,86 +1,66 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinKit
-import HDWalletKit
-import RxSwift
-import RxTest
 import XCTest
 
 class BitcoinKeyPairDeriverTests: XCTestCase {
 
-    var scheduler: TestScheduler!
-    var disposeBag: DisposeBag!
     var subject: AnyBitcoinKeyPairDeriver!
 
     override func setUp() {
         super.setUp()
-
-        scheduler = TestScheduler(initialClock: 0)
-        disposeBag = DisposeBag()
         subject = AnyBitcoinKeyPairDeriver()
     }
 
     override func tearDown() {
         subject = nil
-        scheduler = nil
-        disposeBag = nil
-
         super.tearDown()
     }
 
-    func test_expected_privateKey() throws {
 
-        let expectedPrivateKey = "xprv9s21ZrQH143K3fSXNaonDA6T8ZmP8JUMhTCZKhrFtZCxZX9DddfQ4wsUTWd7HgUPQB7TKg6eicuwWMdpC7TimacYb464NE4YdaaNnCya6e6"
-        let expectedPublicKey = "xpub661MyMwAqRbcG9WzUcLnaJ3BgbbsXmCD4g8A86FsStjwSKUNBAyeckBxJoSQUaBe286hzUU7vtDku75jrvVcZ8JMMZfLqDZQV8dzbEDCYeL"
-
-        let password = MockWalletTestData.Bip39.passphrase
-        let mnemonic =  MockWalletTestData.Bip39.mnemonic
-        let passphrase = Passphrase(rawValue: password)
-        let words = try Words(words: mnemonic)
-        let mnemonics = try Mnemonic(words: words, passphrase: passphrase)
-        let wallet = try HDWallet(mnemonic: mnemonics, network: .main(Bitcoin.self))
-        let key = wallet.privateKey
-
-        XCTAssertEqual(key.xpriv!, expectedPrivateKey)
-        XCTAssertEqual(key.xpub, expectedPublicKey)
-    }
-
-    func test_derive() throws {
+    func test_derive_passphrase() throws {
         // Arrange
-        let password = MockWalletTestData.Bip39.emptyPassphrase
-        let mnemonic =  MockWalletTestData.Bip39.mnemonic
-        let passphrase = Passphrase(rawValue: password)
-        let words = try Words(words: mnemonic.components(separatedBy: " "))
-        let mnemonics = try Mnemonic(words: words, passphrase: passphrase)
-        let wallet = try HDWallet(mnemonic: mnemonics, network: .main(Bitcoin.self))
-        let privateKey = BitcoinPrivateKey(
-            key: wallet.privateKey
+        let expectedKeyPair = BitcoinKeyPair(
+            privateKey: BitcoinPrivateKey(
+                xpriv: "xprv9yiFNv3Esk6JkJH1xDggWsRVp37cNbd92qEsRVMRC2Z9eJXnCDjUmmwqL6CDMc7iQjdDibUw433staJVz6RENGEeWkciWQ4kYGV5vLgv1PE"
+            ),
+            xpub: "xpub6ChbnRa8i7ebxnMV4FDgt1NEN4x6n4LzQ4AUDsm2kN68X6rvjm3jKaGKBQCSF4ZQ4T2ctoTtgME3uYb76ZhZ7BLNrtSQM9FXTja2cZMF8Xr"
         )
-
-        let expectedKeyPair = BitcoinKeyPair(privateKey: privateKey)
-
         let keyDerivationInput = BitcoinKeyDerivationInput(
-            mnemonic: mnemonic,
-            password: password
+            mnemonic: MockWalletTestData.Bip39.mnemonic,
+            passphrase: MockWalletTestData.Bip39.passphrase
         )
-
-        let deriveObservable = subject
-            .derive(input: keyDerivationInput)
-            .single
-            .asObservable()
 
         // Act
-        let result: TestableObserver<BitcoinKeyPair> = scheduler
-            .start { deriveObservable }
+        guard let result = try? subject.derive(input: keyDerivationInput).get() else {
+            XCTFail("Derivation failed")
+            return
+        }
 
         // Assert
-        let expectedEvents: [Recorded<Event<BitcoinKeyPair>>] = Recorded.events(
-            .next(
-                200,
-                expectedKeyPair
+        XCTAssertEqual(result, expectedKeyPair)
+    }
+
+    func test_derive_empty_passphrase() throws {
+        // Arrange
+        let expectedKeyPair = BitcoinKeyPair(
+            privateKey: BitcoinPrivateKey(
+                xpriv: "xprv9zDrURuhy9arxJ4tWiwnBXvcyNT88wvnSitdTnu3x6571yWTfqgyjY6TqVqhG26fy39JPdzb1VX6zXinGQtHi3Wys3qPwdkatg1KSWM2uHs"
             ),
-            .completed(200)
+            xpub: "xpub6DDCswSboX9AAn9MckUnYfsMXQHcYQedowpEGBJfWRc5tmqcDP1EHLQwgmXFmkYvfhNigZqUHdWJUpf6t3ufdYrdUCHUrZUhgKj3diWoSm6"
         )
-        XCTAssertEqual(result.events, expectedEvents)
+        let keyDerivationInput = BitcoinKeyDerivationInput(
+            mnemonic: MockWalletTestData.Bip39.mnemonic,
+            passphrase: MockWalletTestData.Bip39.emptyPassphrase
+        )
+
+        // Act
+        guard let result = try? subject.derive(input: keyDerivationInput).get() else {
+            XCTFail("Derivation failed")
+            return
+        }
+
+        // Assert
+        XCTAssertEqual(result, expectedKeyPair)
     }
 }

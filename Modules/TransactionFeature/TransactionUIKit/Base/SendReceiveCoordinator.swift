@@ -24,15 +24,18 @@ public class ReceiveCoordinator {
 
     private let receiveRouter: ReceiveRouterAPI
     private let kycStatusChecker: KYCStatusChecking
+    private let analyticsHook: TransactionAnalyticsHook
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
     init(receiveRouter: ReceiveRouterAPI = resolve(),
          receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
-         kycStatusChecker: KYCStatusChecking = resolve()) {
+         kycStatusChecker: KYCStatusChecking = resolve(),
+         analyticsHook: TransactionAnalyticsHook = resolve()) {
         self.receiveRouter = receiveRouter
         self.kycStatusChecker = kycStatusChecker
+        self.analyticsHook = analyticsHook
         builder = ReceiveBuilder(
             receiveSelectionService: receiveSelectionService
         )
@@ -51,6 +54,9 @@ public class ReceiveCoordinator {
                 switch action {
                 case .presentReceiveScreen(let account):
                     self?.receiveRouter.presentReceiveScreen(for: account)
+                    if let account = account as? CryptoAccount {
+                        self?.analyticsHook.onFromAccountSelected(account, action: .receive)
+                    }
                 case .presentKYCScreen:
                     self?.receiveRouter.presentKYCScreen()
                 case .presentError:

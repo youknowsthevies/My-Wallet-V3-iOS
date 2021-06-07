@@ -24,7 +24,7 @@ protocol CustodialTransferServiceAPI {
 
     // MARK: - Methods
 
-    func transfer(moneyValue: MoneyValue, destination: String) -> Single<CustodialWithdrawalIdentifier>
+    func transfer(moneyValue: MoneyValue, destination: String, memo: String?) -> Single<CustodialWithdrawalIdentifier>
     func fees() -> Single<CustodialTransferFee>
 }
 
@@ -42,9 +42,14 @@ final class CustodialTransferService: CustodialTransferServiceAPI {
 
     // MARK: - CustodialTransferServiceAPI
 
-    func transfer(moneyValue: MoneyValue, destination: String) -> Single<CustodialWithdrawalIdentifier> {
+    func transfer(moneyValue: MoneyValue, destination: String, memo: String?) -> Single<CustodialWithdrawalIdentifier> {
         client
-            .send(transferRequest: .init(address: destination, moneyValue: moneyValue))
+            .send(
+                transferRequest: CustodialTransferRequest(
+                    address: destinationAddress(with: destination, memo: memo),
+                    moneyValue: moneyValue
+                )
+            )
             .map(\.identifier)
     }
 
@@ -57,5 +62,12 @@ final class CustodialTransferService: CustodialTransferServiceAPI {
                     minimumAmount: response.minAmounts
                 )
             }
+    }
+
+    private func destinationAddress(with destination: String, memo: String?) -> String {
+        guard let memo = memo, !memo.isEmpty else {
+            return destination
+        }
+        return destination + ":" + memo
     }
 }

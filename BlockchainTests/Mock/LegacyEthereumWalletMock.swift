@@ -1,12 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
-import RxSwift
-
 @testable import Blockchain
 import EthereumKit
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
 
@@ -79,7 +77,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
 
     static let legacyAccount = LegacyEthereumWalletAccount(
-        addr: MockEthereumWalletTestData.account,
+        addr: "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e",
         label: "My ETH Wallet"
     )
     static let ethereumAccounts: [[String : Any]] = [

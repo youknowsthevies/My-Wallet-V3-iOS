@@ -3,6 +3,7 @@
 import Combine
 import DIKit
 import NetworkKit
+import ToolKit
 
 protocol EventSendingAPI {
 
@@ -18,7 +19,7 @@ final class APIClient: EventSendingAPI {
 
     private enum Path {
 
-        static let transactions = [ "events", "publish" ]
+        static let publishEvents = [ "events", "publish" ]
     }
 
     // MARK: - Properties
@@ -51,10 +52,12 @@ final class APIClient: EventSendingAPI {
         if let token = token {
             headers[HttpHeaderField.authorization] = "Bearer \(token)"
         }
-        // swiftlint:disable:next force_try
-        let body = try! jsonEncoder.encode(events)
+        guard let body = try? jsonEncoder.encode(events) else {
+            Logger.shared.error("⚠️ Error parsing body for \(events)")
+            return .empty()
+        }
         let request = requestBuilder.post(
-            path: Path.transactions,
+            path: Path.publishEvents,
             body: body,
             headers: headers
         )!

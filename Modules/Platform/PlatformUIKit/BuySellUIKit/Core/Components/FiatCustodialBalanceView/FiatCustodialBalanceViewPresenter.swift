@@ -137,10 +137,10 @@ public extension FiatCustodialBalanceViewPresenter.Descriptors {
         Descriptors(
             currencyNameFont: .main(.semibold, 20.0),
             currencyNameFontColor: .textFieldText,
-            currencyNameAccessibilityId: .init(id: .value(DashboardAccessibility.currencyName)),
+            currencyNameAccessibilityId: .id(DashboardAccessibility.currencyName),
             currencyCodeFont: .main(.medium, 14.0),
             currencyCodeFontColor: .descriptionText,
-            currencyCodeAccessibilityId: .init(id: .value(DashboardAccessibility.currencyCode)),
+            currencyCodeAccessibilityId: .id(DashboardAccessibility.currencyCode),
             badgeImageAccessibilitySuffix: DashboardAccessibility.currencyBadgeView,
             balanceViewDescriptors: .dashboard(
                 baseAccessibilitySuffix: baseAccessibilitySuffix,
@@ -154,10 +154,10 @@ public extension FiatCustodialBalanceViewPresenter.Descriptors {
         Descriptors(
             currencyNameFont: .main(.semibold, 16),
             currencyNameFontColor: .textFieldText,
-            currencyNameAccessibilityId: .init(id: .value(DashboardAccessibility.currencyName)),
+            currencyNameAccessibilityId: .id(DashboardAccessibility.currencyName),
             currencyCodeFont: .main(.medium, 14),
             currencyCodeFontColor: .descriptionText,
-            currencyCodeAccessibilityId: .init(id: .value(DashboardAccessibility.currencyCode)),
+            currencyCodeAccessibilityId: .id(DashboardAccessibility.currencyCode),
             badgeImageAccessibilitySuffix: DashboardAccessibility.currencyBadgeView,
             balanceViewDescriptors: .paymentMethods(
                 baseAccessibilitySuffix: baseAccessibilitySuffix,

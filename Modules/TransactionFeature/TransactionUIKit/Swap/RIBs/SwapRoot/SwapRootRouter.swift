@@ -29,9 +29,6 @@ protocol SwapRootRouting: ViewableRouting {
 
 final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewControllable>, SwapRootRouting {
 
-    @LazyInject
-    private var analyticsRecoder: AnalyticsEventRecorderAPI
-
     private var transactionFlowRouting: TransactionFlowRouting? {
         children
             .first(where: { $0 is TransactionFlowRouting })
@@ -90,7 +87,6 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.present(viewController: viewControllable)
-        analyticsRecoder.record(event: AnalyticsEvents.New.SimpleBuy.swapViewed)
     }
 
     func dismissTransactionFlow() {
