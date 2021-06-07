@@ -63,7 +63,7 @@ public final class SingleAmountPresenter {
         case .underMinLimit(let minValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: minValue.value,
-                suffix: LocalizedString.Withdraw.Min.useMin,
+                format: LocalizedString.Withdraw.Min.useMin,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.min
             )
@@ -78,7 +78,7 @@ public final class SingleAmountPresenter {
         case .overMaxLimit(let maxValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: maxValue.value,
-                suffix: LocalizedString.Withdraw.Max.useMax,
+                format: LocalizedString.Withdraw.Max.useMax,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.max
             )
