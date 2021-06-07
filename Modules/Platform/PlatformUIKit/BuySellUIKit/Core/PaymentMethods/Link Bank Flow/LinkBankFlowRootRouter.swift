@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import RIBs
 import RxCocoa
@@ -12,8 +13,6 @@ public enum LinkBankFlowEffect: Equatable {
     /// Close of the flow should occur,
     /// `true` if the close event occured from a "pull down" to close event, otherwise `false`
     case closeFlow(_ isInteractive: Bool)
-    /// No action required
-    case none
 
     /// Helper variable to check if self is `closeFlow`
     public var isCloseEffect: Bool {
@@ -29,7 +28,7 @@ public enum LinkBankFlowEffect: Equatable {
         switch self {
         case .closeFlow:
             return false
-        case .bankLinked, .none:
+        case .bankLinked:
             return true
         }
     }
@@ -54,7 +53,10 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
 
     private var dismissFlow: (() -> Void)?
 
-    private let presentingController: NavigationControllerAPI?
+    private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private var presentingController: UIViewController? {
+        topMostViewControllerProvider.topMostViewController
+    }
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
@@ -62,11 +64,11 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private var navigationController: UINavigationController?
 
     init(interactor: LinkBankFlowRootInteractable,
-         presentingController: NavigationControllerAPI?,
+         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
          splashScreenBuilder: LinkBankSplashScreenBuildable,
          yodleeScreenBuilder: YodleeScreenBuildable,
          failureScreenBuilder: LinkBankFailureScreenBuildable) {
-        self.presentingController = presentingController
+        self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
         self.failureScreenBuilder = failureScreenBuilder

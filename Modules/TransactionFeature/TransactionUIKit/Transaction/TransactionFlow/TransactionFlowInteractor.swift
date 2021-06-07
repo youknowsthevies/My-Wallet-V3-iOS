@@ -18,7 +18,7 @@ protocol TransactionFlowRouting: Routing {
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToInProgress(transactionModel: TransactionModel)
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
-    func routeToSourceAccountPicker(action: AssetAction)
+    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 }
 
 protocol TransactionFlowListener: AnyObject {
@@ -34,6 +34,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
+    private var initialStep: Bool = true
     private let transactionModel: TransactionModel
     private let action: AssetAction
     private let sourceAccount: BlockchainAccount?
@@ -75,6 +76,13 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         requireSecondPassword
             .observeOn(MainScheduler.asyncInstance)
             .map { [sourceAccount, target, action] passwordRequired -> TransactionAction in
+                if action == .deposit {
+                    return self.handleFiatDeposit(
+                        sourceAccount: sourceAccount,
+                        target: target,
+                        passwordRequired: passwordRequired
+                    )
+                }
                 guard let sourceAccount = sourceAccount else {
                     return .initialiseWithNoSourceOrTargetAccount(
                         action: action,
@@ -135,7 +143,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             .subscribe(onSuccess: { [weak self] state in
                 switch state.step {
                 case .selectSource:
-                    self?.didSelectSourceAccount(account: target as! CryptoAccount)
+                    self?.didSelectSourceAccount(account: target as! BlockchainAccount)
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
                     if let selectedSource = state.source as? CryptoAccount,
@@ -175,7 +183,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel.process(action: .returnToPreviousStep)
     }
 
-    func didSelectSourceAccount(account: CryptoAccount) {
+    func didSelectSourceAccount(account: BlockchainAccount) {
         analyticsHook.onFromAccountSelected(account, action: action)
         transactionModel.process(action: .sourceAccountSelected(account))
     }
@@ -196,7 +204,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         router?.showFailure()
     }
 
-    private var initialStep: Bool = true
+    // MARK: - Private Functions
+
     private func handleStateChange(newState: TransactionState) {
         if !initialStep, newState.step == TransactionStep.initial {
             finishFlow()
@@ -237,11 +246,25 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .inProgress:
             router?.routeToInProgress(transactionModel: transactionModel)
         case .selectSource:
-            router?.routeToSourceAccountPicker(action: action)
+            router?.routeToSourceAccountPicker(transactionModel: transactionModel, action: action)
         case .enterAddress:
             router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
         case .closed:
             transactionModel.destroy()
+        }
+    }
+
+    private func handleFiatDeposit(sourceAccount: BlockchainAccount?, target: TransactionTarget?, passwordRequired: Bool) -> TransactionAction {
+        if let source = sourceAccount, let target = target {
+            return .initialiseWithSourceAndTargetAccount(action: .deposit, sourceAccount: source, target: target, passwordRequired: passwordRequired)
+        }
+        if let source = sourceAccount {
+            return .initialiseWithSourceAccount(action: .deposit, sourceAccount: source, passwordRequired: passwordRequired)
+        }
+        if let target = target {
+            return .initialiseWithTargetAndNoSource(action: .deposit, target: target, passwordRequired: passwordRequired)
+        } else {
+            return .initialiseWithNoSourceOrTargetAccount(action: .deposit, passwordRequired: passwordRequired)
         }
     }
 }

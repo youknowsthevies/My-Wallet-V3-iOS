@@ -83,8 +83,16 @@ class MultiBadgeView: UIView {
         stackView.spacing = 8
         stackView.alignment = .center
         addSubview(stackView)
-        heightConstraint = stackView.layout(dimension: .height, to: 32)
+        heightConstraint = stackView.layout(dimension: .height, to: 32, priority: .defaultLow)
         horizontalConstraints = stackView.layoutToSuperview(axis: .horizontal)
         verticalConstraints = stackView.layoutToSuperview(axis: .vertical)
+    }
+}
+
+extension Reactive where Base: MultiBadgeView {
+    var viewModel: Binder<MultiBadgeViewModel> {
+        Binder(base) { (view, model) in
+            view.model = model
+        }
     }
 }

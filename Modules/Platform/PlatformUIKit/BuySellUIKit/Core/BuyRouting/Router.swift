@@ -390,7 +390,7 @@ public final class Router: RouterAPI {
     private func showLinkBankFlow() {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
-        let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
+        let router = builder.build()
         self.linkBankFlowRouter = router
         let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }

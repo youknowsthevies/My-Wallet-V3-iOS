@@ -7,6 +7,9 @@ import RxSwift
 /// a `BadgeImageView` showing the currency. This is typically used as a
 /// subview in a `UITableViewCell` for when the user needs to select
 /// a wallet for a specific action (e.g. `send`).
+/// `LinkedBankAccount` is different. A `LinkedBankAccount` shows
+/// additional information such as the minimum withdraw amount and the
+/// fee associated. There is no balance information on a `LinkedBankAccount`
 final class WalletView: UIView {
 
     let badgeImageView = BadgeImageView()
@@ -23,8 +26,6 @@ final class WalletView: UIView {
         }
         didSet {
             guard let viewModel = viewModel else { return }
-            badgeImageView.viewModel = viewModel.badgeImageViewModel
-            nameLabel.content = viewModel.nameLabelContent
             Driver.just(viewModel.badgeImageViewModel)
                 .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
@@ -38,7 +39,7 @@ final class WalletView: UIView {
                 .disposed(by: disposeBag)
 
             viewModel
-                .balanceLabelContent
+                .descriptionLabelContent
                 .drive(balanceLabel.rx.content)
                 .disposed(by: disposeBag)
         }

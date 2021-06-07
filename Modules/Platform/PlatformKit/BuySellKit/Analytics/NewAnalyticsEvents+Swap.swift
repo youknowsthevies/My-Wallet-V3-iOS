@@ -61,13 +61,17 @@ extension AnalyticsEvents.New {
         case userKey = "USERKEY"
         case unknown = "UNKNOWN"
 
-        public init(_ cryptoAccount: CryptoAccount) {
-            switch cryptoAccount.accountType {
-            case .nonCustodial:
-                self = .userKey
-            case .custodial(.trading):
-                self = .trading
-            default:
+        public init(_ account: BlockchainAccount) {
+            if let cryptoAccount = account as? CryptoAccount {
+                switch cryptoAccount.accountType {
+                case .nonCustodial:
+                    self = .userKey
+                case .custodial(.trading):
+                    self = .trading
+                default:
+                    self = .unknown
+                }
+            } else {
                 self = .unknown
             }
         }

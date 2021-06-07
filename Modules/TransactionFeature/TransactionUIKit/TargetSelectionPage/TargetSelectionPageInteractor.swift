@@ -93,7 +93,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
 
         /// Fetch the source account provided.
         let sourceAccount = accountProvider.sourceAccount
-            .map { account -> CryptoAccount in
+            .map { account -> BlockchainAccount in
                 guard let crypto = account else {
                     fatalError("Expected a source account")
                 }
@@ -151,7 +151,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         // As soon as something is inputted, we want to disable the 'next' action.
         textWhileTyping
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] text in
+            .subscribe(onNext: { [weak self] _ in
                 self?.targetSelectionPageModel.process(action: .destinationDeselected)
             })
             .disposeOnDeactivate(interactor: self)
@@ -281,8 +281,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 .update(keyPath: \.destinationInteractors, value: destinations)
         }
 
-        let tradingAccountExternalSend = featureConfigurator.configuration(for: .tradingAccountExternalSend).isEnabled
-        if sourceAccount is NonCustodialAccount || tradingAccountExternalSend {
+        if sourceAccount is NonCustodialAccount {
             if state.inputFieldInteractor == nil {
                 state = state
                     .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
@@ -312,7 +311,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     }
 
     private var initialStep: Bool = true
-    private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: CryptoAccount) {
+    private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
             // no-op
         } else {
@@ -325,7 +324,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         targetSelectionPageModel.process(action: .resetFlow)
     }
 
-    private func showFlowStep(newState: TargetSelectionPageState, sourceAccount: CryptoAccount) {
+    private func showFlowStep(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
         guard !newState.isGoingBack else {
             listener?.didTapBack()
             return
@@ -340,7 +339,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             guard let account = newState.destination else {
                 fatalError("Expected a destination acount.")
             }
-            didSelect?(account as! BlockchainAccount)
+            didSelect?(account as! SingleAccount)
             listener?.didSelect(target: account)
         case .qrScanner:
             guard let source = newState.sourceAccount else {
@@ -351,7 +350,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             }
             router?.presentQRScanner(
                 for: crypto.asset,
-                sourceAccount: sourceAccount,
+                sourceAccount: sourceAccount as! CryptoAccount,
                 model: targetSelectionPageModel
             )
         }

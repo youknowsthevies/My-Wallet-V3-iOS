@@ -73,13 +73,13 @@ struct DisplayBundle {
         switch action {
         case .swap:
             return .swap(sourceAccount: sourceAccount)
-        case .send:
+        case .send,
+             .withdraw:
             return .send(sourceAccount: sourceAccount)
         case .deposit,
              .receive,
              .sell,
-             .viewActivity,
-             .withdraw:
+             .viewActivity:
             unimplemented()
         }
     }

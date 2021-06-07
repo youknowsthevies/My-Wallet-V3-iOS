@@ -82,8 +82,9 @@ final class TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.Swap.swap
-            case .deposit,
-                 .receive,
+            case .deposit:
+                return LocalizedString.Deposit.linkedBanks
+            case .receive,
                  .sell,
                  .send,
                  .viewActivity,
@@ -96,12 +97,12 @@ final class TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.Swap.sourceAccountPicketSubtitle
-            case .deposit,
+            case .withdraw,
+                 .deposit,
                  .receive,
                  .sell,
                  .send,
-                 .viewActivity,
-                 .withdraw:
+                 .viewActivity:
                 return ""
             }
         }
@@ -110,12 +111,13 @@ final class TransactionFlowDescriptor {
             switch action {
             case .swap:
                 return LocalizedString.receive
+            case .withdraw:
+                return LocalizedString.Withdraw.withdrawTo
             case .deposit,
                  .receive,
                  .sell,
                  .send,
-                 .viewActivity,
-                 .withdraw:
+                 .viewActivity:
                 return ""
             }
         }
@@ -142,11 +144,12 @@ final class TransactionFlowDescriptor {
                 return LocalizedString.newSwap
             case .send:
                 return LocalizedString.Send.send
+            case .withdraw:
+                return LocalizedString.Withdraw.withdraw
             case .deposit,
                  .receive,
                  .sell,
-                 .viewActivity,
-                 .withdraw:
+                 .viewActivity:
                 unimplemented()
             }
         }

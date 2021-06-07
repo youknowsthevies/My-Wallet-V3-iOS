@@ -531,6 +531,14 @@ extension AppCoordinator: WalletHistoryDelegate {
 
 extension AppCoordinator: TabSwapping {
 
+    func deposit(into account: BlockchainAccount) {
+        tabControllerManager?.deposit(into: account)
+    }
+
+    func withdraw(from account: BlockchainAccount) {
+        tabControllerManager?.withdraw(from: account)
+    }
+
     func send(from account: BlockchainAccount) {
         tabControllerManager?.send(from: account)
     }

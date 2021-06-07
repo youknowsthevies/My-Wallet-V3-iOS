@@ -41,15 +41,19 @@ extension AnalyticsEvents.New {
             case userKey = "USERKEY"
             case unknown = "UNKNOWN"
 
-            public init(_ cryptoAccount: CryptoAccount) {
-                switch cryptoAccount.accountType {
-                case .nonCustodial:
-                    self = .userKey
-                case .custodial(.savings):
-                    self = .savings
-                case .custodial(.trading):
-                    self = .trading
-                default:
+            public init(_ account: BlockchainAccount) {
+                if let cryptoAccount = account as? CryptoAccount {
+                    switch cryptoAccount.accountType {
+                    case .nonCustodial:
+                        self = .userKey
+                    case .custodial(.savings):
+                        self = .savings
+                    case .custodial(.trading):
+                        self = .trading
+                    default:
+                        self = .unknown
+                    }
+                } else {
                     self = .unknown
                 }
             }
@@ -62,17 +66,23 @@ extension AnalyticsEvents.New {
             case userKey = "USERKEY"
             case unknown = "UNKNOWN"
 
-            public init(_ cryptoAccount: CryptoAccount?) {
-                switch cryptoAccount?.accountType {
-                case .nonCustodial:
-                    self = .userKey
-                case .custodial(.savings):
-                    self = .savings
-                case .custodial(.trading):
-                    self = .trading
-                case .none:
+            public init(_ account: BlockchainAccount?) {
+                guard let account = account else {
                     self = .external
-                default:
+                    return
+                }
+                if let cryptoAccount = account as? CryptoAccount {
+                    switch cryptoAccount.accountType {
+                    case .nonCustodial:
+                        self = .userKey
+                    case .custodial(.savings):
+                        self = .savings
+                    case .custodial(.trading):
+                        self = .trading
+                    default:
+                        self = .unknown
+                    }
+                } else {
                     self = .unknown
                 }
             }

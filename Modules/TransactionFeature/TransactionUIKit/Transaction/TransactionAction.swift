@@ -18,6 +18,7 @@ enum TransactionAction: MviAction {
                                               sourceAccount: BlockchainAccount,
                                               target: TransactionTarget,
                                               passwordRequired: Bool)
+    case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -72,6 +73,15 @@ enum TransactionAction: MviAction {
                 passwordRequired: passwordRequired,
                 source: sourceAccount,
                 step: .enterAmount
+            ).withUpdatedBackstack(oldState: oldState)
+        case let .initialiseWithTargetAndNoSource(action, target, passwordRequired):
+            return TransactionState(
+                action: action,
+                destination: target,
+                errorState: .none,
+                passwordRequired: passwordRequired,
+                source: nil,
+                step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
         case let .initialiseWithNoSourceOrTargetAccount(action, passwordRequired):
             return TransactionState(
@@ -133,7 +143,6 @@ enum TransactionAction: MviAction {
         case .availableDestinationAccountsListUpdated(let targets):
             let newStep: TransactionStep = oldState.passwordRequired ? .enterPassword : .selectTarget
             var newState = oldState
-            // FIXME:
             newState.availableTargets = targets as! [TransactionTarget]
             newState.step = oldState.step == .enterAmount ? .enterAmount : newStep
             return newState.withUpdatedBackstack(oldState: oldState)

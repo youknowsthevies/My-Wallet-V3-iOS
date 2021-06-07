@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-@testable import RemoteNotificationsKit
 import PlatformKit
+@testable import RemoteNotificationsKit
 import XCTest
 
 final class RemoteNotificationQueryBuilderTests: XCTestCase {

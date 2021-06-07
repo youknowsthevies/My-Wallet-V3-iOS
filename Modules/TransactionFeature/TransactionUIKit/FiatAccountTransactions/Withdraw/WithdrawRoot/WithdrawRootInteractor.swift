@@ -5,27 +5,17 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import RxCocoa
 import RxSwift
 import ToolKit
 
-public protocol DepositRootRouting: AnyObject {
-    /// Routes to the `Select a Funding Method` screen
-    func routeToDepositLanding()
-
-    /// Routes to the TransactonFlow with a given `FiatAccount`
-    func routeToDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?)
-
-    /// Routes to the TransactonFlow with a given `FiatAccount`
-    /// The user already has at least one linked bank.
-    /// Does not execute dismissal of top most screen (Link Bank Flow)
-    func startDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?)
-
-    /// Routes to the wire details flow
-    func routeToWireInstructions(currency: FiatCurrency)
-
+public protocol WithdrawRootRouting: class {
     /// Routes to the wire details flow.
     /// Does not execute dismissal of top most screen (Payment Method Selector)
     func startWithWireInstructions(currency: FiatCurrency)
+
+    /// Routes to the wire details flow
+    func routeToWireInstructions(currency: FiatCurrency)
 
     /// Routes to the `Link a Bank Account` flow.
     /// Does not execute dismissal of top most screen (Payment Method Selector)
@@ -34,8 +24,23 @@ public protocol DepositRootRouting: AnyObject {
     /// Routes to the `Link a Bank Account` flow
     func routeToLinkABank()
 
+    /// Routes to the `Add a Bank Account` screen
+    func routeToAddABank()
+
+    /// Routes to the withdraw flow.
+    /// The user already has at least one linked bank.
+    /// Does not execute dismissal of top most screen (Link Bank Flow)
+    func startWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?)
+
+    /// Routes to the TransactonFlow with a given `FiatAccount`
+    /// and a `LinkedBankAccount`
+    func routeToWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?)
+
     /// Exits the bank linking flow
     func dismissBankLinkingFlow()
+
+    /// Exits the TransactonFlow
+    func dismissTransactionFlow()
 
     /// Exits the wire instruction flow
     func dismissWireInstructionFlow()
@@ -43,35 +48,34 @@ public protocol DepositRootRouting: AnyObject {
     /// Exits the payment method selection flow
     func dismissPaymentMethodFlow()
 
-    /// Exits the TransactonFlow
-    func dismissTransactionFlow()
-
-    /// Starts the deposit flow. This is available as the `DepositRootRIB`
-    /// does not own a view and we do not want to expose the entire `DepositRootRouter`
-    /// but rather only `DepositRootRouting`
+    /// Starts the withdraw flow. This is available as the `WithdrawRootRIB`
+    /// does not own a view and we do not want to expose the entire `WithdrawRootRouter`
+    /// but rather only `WithdrawRootRouting`
     func start()
 }
 
-extension DepositRootRouting where Self: RIBs.Router<DepositRootInteractable> {
+extension WithdrawRootRouting where Self: RIBs.Router<WithdrawRootInteractable> {
     func start() {
         self.load()
     }
 }
 
-protocol DepositRootListener: ViewListener { }
+protocol WithdrawRootListener: ViewListener { }
 
-final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositRootListener {
+final class WithdrawRootInteractor: Interactor,
+                                    WithdrawRootInteractable,
+                                    WithdrawRootListener {
 
-    weak var router: DepositRootRouting?
-    weak var listener: DepositRootListener?
+    weak var router: WithdrawRootRouting?
+    weak var listener: WithdrawRootListener?
 
     // MARK: - Private Properties
 
     private var paymentMethodTypes: Single<[PaymentMethodPayloadType]> {
         fiatCurrencyService
             .fiatCurrency
-            .flatMap { [linkedBanksFactory] fiatCurrency -> Single<[PaymentMethodType]> in
-                linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[PaymentMethodType]> in
+                self.linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
             }
             .map { $0.map(\.method) }
             .map { $0.map(\.rawType) }
@@ -80,13 +84,13 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let targetAccount: FiatAccount
+    private let sourceAccount: FiatAccount
 
-    init(targetAccount: FiatAccount,
+    init(sourceAccount: FiatAccount,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
-        self.targetAccount = targetAccount
+        self.sourceAccount = sourceAccount
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
@@ -109,9 +113,9 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
                         fiatCurrency: fiatCurrency
                     )
                 } else {
-                    self.router?.routeToDeposit(
-                        target: self.targetAccount,
-                        sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
+                    self.router?.startWithdraw(
+                        sourceAccount: self.sourceAccount,
+                        destination: linkedBanks.count > 1 ? nil : linkedBanks.first
                     )
                 }
             })
@@ -125,9 +129,9 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
             .observeOn(MainScheduler.asyncInstance)
             .subscribe(onSuccess: { [weak self] linkedBankAccount in
                 guard let self = self else { return }
-                self.router?.routeToDeposit(
-                    target: self.targetAccount,
-                    sourceAccount: linkedBankAccount
+                self.router?.routeToWithdraw(
+                    sourceAccount: self.sourceAccount,
+                    destination: linkedBankAccount
                 )
             })
             .disposeOnDeactivate(interactor: self)
@@ -141,6 +145,10 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         router?.dismissPaymentMethodFlow()
     }
 
+    func routeToLinkedBanks() {
+        router?.routeToLinkABank()
+    }
+
     func routeToWireTransfer() {
         fiatCurrencyService
             .fiatCurrency
@@ -151,14 +159,6 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
             .disposeOnDeactivate(interactor: self)
     }
 
-    func routeToLinkedBanks() {
-        router?.routeToLinkABank()
-    }
-
-    func dismissTransactionFlow() {
-        router?.dismissTransactionFlow()
-    }
-
     func presentKYCTiersScreen() {
         unimplemented()
     }
@@ -167,17 +167,21 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         router?.dismissWireInstructionFlow()
     }
 
+    func dismissTransactionFlow() {
+        router?.dismissTransactionFlow()
+    }
+
     // MARK: - Private Functions
 
     private func handleNoLinkedBanks(_ paymentMethodTypes: [PaymentMethodPayloadType], fiatCurrency: FiatCurrency) {
         if paymentMethodTypes.contains(.bankAccount) && paymentMethodTypes.contains(.bankTransfer) {
-            self.router?.routeToDepositLanding()
+            self.router?.routeToAddABank()
         } else if paymentMethodTypes.contains(.bankTransfer) {
             self.router?.startWithLinkABank()
         } else if paymentMethodTypes.contains(.bankAccount) {
             self.router?.startWithWireInstructions(currency: fiatCurrency)
         } else {
-            // TODO: Show that deposit is not supported
+            // TODO: Show that withdraw is not supported
         }
     }
 }

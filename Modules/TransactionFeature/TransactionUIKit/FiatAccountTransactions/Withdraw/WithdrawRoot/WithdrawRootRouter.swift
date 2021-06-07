@@ -4,22 +4,22 @@ import DIKit
 import PlatformKit
 import PlatformUIKit
 import RIBs
+import RxCocoa
 import RxSwift
 import ToolKit
 
-protocol DepositRootInteractable: Interactable,
-                                  TransactionFlowListener,
-                                  PaymentMethodListener,
-                                  AddNewBankAccountListener {
-
-    var router: DepositRootRouting? { get set }
-    var listener: DepositRootListener? { get set }
+protocol WithdrawRootInteractable: Interactable,
+                                   TransactionFlowListener,
+                                   AddNewBankAccountListener,
+                                   PaymentMethodListener {
+    var router: WithdrawRootRouting? { get set }
+    var listener: WithdrawRootListener? { get set }
 
     func bankLinkingComplete()
     func bankLinkingClosed(isInteractive: Bool)
 }
 
-final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRootRouting {
+final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawRootRouting {
 
     // MARK: - Private Properties
 
@@ -31,7 +31,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     // MARK: - Init
 
-    init(interactor: DepositRootInteractable,
+    init(interactor: WithdrawRootInteractable,
          topMostViewControllerProviding: TopMostViewControllerProviding = resolve()) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
         super.init(interactor: interactor)
@@ -45,11 +45,35 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
         interactor.activate()
     }
 
-    // MARK: - DepositRootRouting
+    // MARK: - WithdrawRootRouting
+
+    func startWithLinkABank() {
+        showLinkABankFlow()
+    }
 
     func routeToLinkABank() {
         dismissTopMost(weak: self) { (self) in
             self.showLinkABankFlow()
+        }
+    }
+
+    func startWithWireInstructions(currency: FiatCurrency) {
+        showWireTransferScreen(fiatCurrency: currency)
+    }
+
+    func routeToWireInstructions(currency: FiatCurrency) {
+        dismissTopMost(weak: self) { (self) in
+            self.showWireTransferScreen(fiatCurrency: currency)
+        }
+    }
+
+    func routeToAddABank() {
+        let builder = PaymentMethodBuilder()
+        paymentMethodRouter = builder.build(withListener: interactor)
+        if let router = paymentMethodRouter {
+            let viewControllable = router.viewControllable.uiviewController
+            attachChild(router)
+            present(viewController: viewControllable)
         }
     }
 
@@ -67,6 +91,12 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
             .dismiss(animated: true, completion: nil)
     }
 
+    func dismissTransactionFlow() {
+        guard let router = transactionRouter else { return }
+        detachChild(router)
+        transactionRouter = nil
+    }
+
     func dismissPaymentMethodFlow() {
         if let router = paymentMethodRouter {
             detachChild(router)
@@ -77,68 +107,48 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
         }
     }
 
-    func startWithLinkABank() {
-        showLinkABankFlow()
+    func startWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
+        showWithdrawFlow(sourceAccount: sourceAccount, destination: destination)
     }
 
-    func startWithWireInstructions(currency: FiatCurrency) {
-        showWireTransferScreen(fiatCurrency: currency)
-    }
-
-    func routeToWireInstructions(currency: FiatCurrency) {
+    func routeToWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
         dismissTopMost(weak: self) { (self) in
-            self.showWireTransferScreen(fiatCurrency: currency)
+            self.showWithdrawFlow(sourceAccount: sourceAccount, destination: destination)
         }
-    }
-
-    func routeToDepositLanding() {
-        let builder = PaymentMethodBuilder()
-        paymentMethodRouter = builder.build(withListener: interactor)
-        if let router = paymentMethodRouter {
-            let viewControllable = router.viewControllable.uiviewController
-            attachChild(router)
-            present(viewController: viewControllable)
-        }
-    }
-
-    func startDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?) {
-        dismissTopMost(weak: self) { (self) in
-            self.showDepositFlow(target: target, sourceAccount: sourceAccount)
-        }
-    }
-
-    func routeToDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?) {
-        showDepositFlow(target: target, sourceAccount: sourceAccount)
-    }
-
-    func dismissTransactionFlow() {
-        guard let router = transactionRouter else { return }
-        detachChild(router)
-        transactionRouter = nil
     }
 
     // MARK: - Private Functions
 
-    private func detachCurrentChild() {
-        guard let currentRouter = children.last else {
-            return
-        }
-        detachChild(currentRouter)
-    }
-
-    private func showDepositFlow(target: FiatAccount, sourceAccount: LinkedBankAccount?) {
+    private func showWithdrawFlow(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
         let builder = TransactionFlowBuilder()
         transactionRouter = builder.build(
             withListener: interactor,
-            action: .deposit,
+            action: .withdraw,
             sourceAccount: sourceAccount,
-            target: target
+            target: destination
         )
         if let router = transactionRouter {
             let viewControllable = router.viewControllable.uiviewController
             attachChild(router)
             present(viewController: viewControllable)
         }
+    }
+
+    private func showWireTransferScreen(fiatCurrency: FiatCurrency) {
+        let builder = AddNewBankAccountBuilder(currency: fiatCurrency, isOriginDeposit: false)
+        let addNewBankRouter = builder.build(listener: interactor)
+        let viewControllable = addNewBankRouter.viewControllable.uiviewController
+        attachChild(addNewBankRouter)
+        present(viewController: viewControllable)
+    }
+
+    // MARK: - Private methods
+
+    private func detachCurrentChild() {
+        guard let currentRouter = children.last else {
+            return
+        }
+        detachChild(currentRouter)
     }
 
     private func showLinkABankFlow() {
@@ -159,14 +169,6 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
             .disposed(by: disposeBag)
     }
 
-    private func showWireTransferScreen(fiatCurrency: FiatCurrency) {
-        let builder = AddNewBankAccountBuilder(currency: fiatCurrency, isOriginDeposit: false)
-        let addNewBankRouter = builder.build(listener: interactor)
-        let viewControllable = addNewBankRouter.viewControllable.uiviewController
-        attachChild(addNewBankRouter)
-        present(viewController: viewControllable)
-    }
-
     private func present(viewController: UIViewController) {
         guard let topViewController = topMostViewControllerProviding.topMostViewController else {
             fatalError("Expected a ViewController")
@@ -182,7 +184,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
         topViewController.present(navController, animated: true, completion: nil)
     }
 
-    private func dismissTopMost(weak object: DepositRootRouter, _ selector: @escaping (DepositRootRouter) -> Void) {
+    private func dismissTopMost(weak object: WithdrawRootRouter, _ selector: @escaping (WithdrawRootRouter) -> Void) {
         guard let viewController = topMostViewControllerProviding.topMostViewController else {
             selector(object)
             return

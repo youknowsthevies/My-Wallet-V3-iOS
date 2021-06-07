@@ -140,6 +140,26 @@ extension BadgeViewModel {
     }
 
     /// Returns a default badgeViewModel with text only
+    public static func warning(
+        with text: String,
+        font: UIFont = .main(.semibold, 14),
+        cornerRadius: CGFloat = 4,
+        accessibilityId: String = Accessibility.Identifier.General.warningBadgeView
+    ) -> BadgeViewModel {
+        var viewModel = BadgeViewModel(
+            font: font,
+            cornerRadius: cornerRadius,
+            accessibility: .id(accessibilityId)
+        )
+        viewModel.theme = Theme(
+            backgroundColor: .badgeBackgroundWarning,
+            contentColor: .warningBadge,
+            text: text
+        )
+        return viewModel
+    }
+
+    /// Returns a default badgeViewModel with text only
     public static func `default`(
         with text: String,
         font: UIFont = .main(.semibold, 14),

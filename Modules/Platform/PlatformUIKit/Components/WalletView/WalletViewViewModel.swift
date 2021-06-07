@@ -1,10 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
 import RxCocoa
 import RxSwift
 
 final class WalletViewViewModel {
+
+    private typealias LocalizationIds = LocalizationConstants.Transaction.TargetSource.Radio
 
     struct Descriptors {
         let accessibilityPrefix: String
@@ -14,22 +17,31 @@ final class WalletViewViewModel {
     let accountTypeBadge: BadgeImageViewModel
     let badgeImageViewModel: BadgeImageViewModel
     let nameLabelContent: LabelContent
-    let balanceLabelContent: Driver<LabelContent>
+    let descriptionLabelContent: Driver<LabelContent>
 
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
         identifier = account.id
         let localImage = currency.logoResource.local
         badgeImageViewModel = .default(
-            with: localImage.name,
-            bundle: localImage.bundle,
+            with: account is LinkedBankAccount ? "icon-bank" : localImage.name,
+            bundle: account is LinkedBankAccount ? .platformUIKit : localImage.bundle,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
+        )
+        nameLabelContent = .init(
+            text: account.label,
+            font: .main(.semibold, 16.0),
+            color: .textFieldText,
+            alignment: .left,
+            accessibility: .id("\(descriptor.accessibilityPrefix).wallet.name")
         )
 
         switch (account, currency) {
         case (is NonCustodialAccount, .fiat),
              (is TradingAccount, .fiat):
+            accountTypeBadge = .empty
+        case (is LinkedBankAccount, .fiat):
             accountTypeBadge = .empty
         case (is ExchangeAccount, .crypto):
             accountTypeBadge = .template(
@@ -70,21 +82,13 @@ final class WalletViewViewModel {
         badgeImageViewModel.marginOffsetRelay.accept(0.0)
         accountTypeBadge.marginOffsetRelay.accept(1.0)
 
-        nameLabelContent = .init(
-            text: account.label,
-            font: .main(.semibold, 16.0),
-            color: .textFieldText,
-            alignment: .left,
-            accessibility: .id("\(descriptor.accessibilityPrefix).wallet.name")
-        )
         guard !(account is CryptoExchangeAccount) else {
             /// Exchange accounts don't have a balance
             /// that we can readily access at this time.
-            balanceLabelContent = .empty()
+            descriptionLabelContent = .empty()
             return
         }
-
-        balanceLabelContent = account
+        descriptionLabelContent = account
             .balance
             .map(\.displayString)
             .map { value in

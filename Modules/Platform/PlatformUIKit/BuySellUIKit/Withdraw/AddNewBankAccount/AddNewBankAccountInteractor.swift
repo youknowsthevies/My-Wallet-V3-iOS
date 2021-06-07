@@ -13,16 +13,16 @@ enum AddNewBankAccountAction {
     case details(AddNewBankAccountDetailsInteractionState)
 }
 
-enum AddNewBankAccountEffects {
+public enum AddNewBankAccountEffects {
     case termsTapped(TitledLink)
     case close
 }
 
-protocol AddNewBankAccountRouting: AnyObject {
+public protocol AddNewBankAccountRouting: AnyObject {
     func showTermsScreen(link: TitledLink)
 }
 
-protocol AddNewBankAccountListener: AnyObject {
+public protocol AddNewBankAccountListener: AnyObject {
     func dismissAddNewBankAccount()
 }
 

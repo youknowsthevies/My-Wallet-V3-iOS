@@ -17,7 +17,11 @@ public struct MultiBadgeViewModel {
 
     public let heightRelay: BehaviorRelay<CGFloat>
     public var height: Driver<CGFloat> {
-        heightRelay.asDriver()
+        Driver
+            .zip(badges.map(\.isEmpty), heightRelay.asDriver())
+            .map { (isEmpty, height) -> CGFloat in
+                isEmpty ? 0.0 : height
+            }
     }
 
     public var visibility: Driver<Visibility> {
@@ -28,8 +32,10 @@ public struct MultiBadgeViewModel {
     }
 
     public init(layoutMargins: UIEdgeInsets = .init(horizontal: 24.0, vertical: 24.0),
-                height: CGFloat = 32) {
+                height: CGFloat = 32,
+                badges: [BadgeAssetPresenting] = []) {
         layoutMarginsRelay = BehaviorRelay<UIEdgeInsets>(value: layoutMargins)
         heightRelay = BehaviorRelay<CGFloat>(value: height)
+        badgesRelay.accept(badges)
     }
 }

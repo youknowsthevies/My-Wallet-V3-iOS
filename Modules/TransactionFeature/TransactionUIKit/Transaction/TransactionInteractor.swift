@@ -75,7 +75,7 @@ final class TransactionInteractor {
         return transactionProcessor.updateFeeLevel(level, customFeeAmount: amount)
     }
 
-    func getAvailableSourceAccounts(action: AssetAction) -> Single<[CryptoAccount]> {
+    func getAvailableSourceAccounts(action: AssetAction) -> Single<[SingleAccount]> {
         switch action {
         case .swap:
             let tradingPairs = availablePairsService.availableTradingPairs
@@ -93,6 +93,8 @@ final class TransactionInteractor {
                         account.isAvailableToSwapFrom(tradingPairs: tradingPairs)
                     }
                 }
+        case .deposit:
+            return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         default:
             preconditionFailure("Source account should be preselected for action \(action)")
         }

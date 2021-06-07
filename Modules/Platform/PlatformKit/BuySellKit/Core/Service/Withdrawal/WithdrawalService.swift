@@ -5,6 +5,7 @@ import DIKit
 import RxSwift
 
 public protocol WithdrawalServiceAPI {
+    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit>
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>>
     func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue>
 }
@@ -15,6 +16,26 @@ final class WithdrawalService: WithdrawalServiceAPI {
 
     init(client: WithdrawalClientAPI = resolve()) {
         self.client = client
+    }
+
+    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit> {
+        client.withdrawFee(currency: currency)
+            .map { response -> (CurrencyFeeResponse, CurrencyFeeResponse) in
+                guard let fees = response.fees.first(where: { $0.symbol == currency.code }) else {
+                    fatalError("Expected fees for currency: \(currency)")
+                }
+                guard let mins = response.minAmounts.first(where: { $0.symbol == currency.code }) else {
+                    fatalError("Expected minimum values for currency: \(currency)")
+                }
+                return (fees, mins)
+            }
+            .map { feeResponse, minResponse -> WithdrawalFeeAndLimit in
+                let zero: FiatValue = .zero(currency: currency)
+                return .init(
+                    minLimit: FiatValue.create(minor: minResponse.minorValue, currency: currency) ?? zero,
+                    fee: FiatValue.create(minor: feeResponse.minorValue, currency: currency) ?? zero
+                )
+            }
     }
 
     func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue> {

@@ -124,7 +124,8 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                     )
                 )
             )
-        case .send:
+        case .send,
+             .withdraw:
             return TargetSelectionHeaderBuilder(
                 headerType: .section(
                     .init(

@@ -118,6 +118,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
         let model: BadgeImageViewModel
         switch account {
+        case is BankAccount:
+            model = .template(
+                with: "ic-trading-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .red,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         case is TradingAccount:
             model = .template(
                 with: "ic-trading-account",

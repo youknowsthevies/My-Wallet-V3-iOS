@@ -72,14 +72,11 @@ public final class Coincore {
         sourceAccount: BlockchainAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
-        guard let cryptoAccount = sourceAccount as? CryptoAccount else {
-            fatalError("Expected CryptoAccount: \(sourceAccount)")
-        }
-        guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
-            fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
-        }
         switch action {
         case .swap:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected CryptoAccount: \(sourceAccount)")
+            }
             return allAccounts
                 .map(\.accounts)
                 .map { (accounts) -> [SingleAccount] in
@@ -92,6 +89,12 @@ public final class Coincore {
                     }
                 }
         case .send:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected CryptoAccount: \(sourceAccount)")
+            }
+            guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
+                fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
+            }
             return Single
                 .zip(
                     sourceCryptoAsset.transactionTargets(account: cryptoAccount),
