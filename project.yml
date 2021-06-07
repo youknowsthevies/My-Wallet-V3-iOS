@@ -1492,7 +1492,7 @@ targets:
     templates:
       - Module
   AuthenticationUIKitTests:
-    dependencies: 
+    dependencies:
     - target: AuthenticationUIKit
     templateAttributes:
       featureName: AuthenticationFeature
