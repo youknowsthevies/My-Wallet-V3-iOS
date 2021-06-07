@@ -11,6 +11,7 @@ disabled_rules:
   - discarded_notification_center_observer
   - function_body_length
   - orphaned_doc_comment
+  - opening_brace
 excluded:
   - Submodules/
   - Carthage/
