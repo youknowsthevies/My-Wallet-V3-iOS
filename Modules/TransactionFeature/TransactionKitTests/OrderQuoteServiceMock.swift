@@ -5,10 +5,11 @@ import RxSwift
 @testable import TransactionKit
 
 final class OrderQuoteServiceMock: TransactionKit.OrderQuoteServiceAPI {
+
+    var underlying: EnabledCurrenciesServiceAPI!
+
     var latestQuote: Single<OrderQuoteResponse> {
-        // swiftlint:disable:next force_try
-        let response = try! JSONDecoder().decode(OrderQuoteResponse.self, from: btc_eth_quote_response)
-        return .just(response)
+        .just(OrderQuoteResponse.btc_eth_quote_response)
     }
 
     func fetchQuote(direction: OrderDirection,
@@ -50,7 +51,7 @@ final class OrderQuoteServiceMock: TransactionKit.OrderQuoteServiceAPI {
 extension OrderQuoteResponse {
     static let btc_eth_quote_response: OrderQuoteResponse = .init(
         identifier: "",
-        pair: OrderPair(rawValue: "BTC-ETH")!,
+        pair: OrderPair.btc_eth,
         quote: .btc_eth_quote,
         networkFee: .zero(currency: .crypto(.bitcoin)),
         staticFee: .zero(currency: .crypto(.bitcoin)),
@@ -62,9 +63,18 @@ extension OrderQuoteResponse {
 }
 
 extension OrderPair {
-    static let btc_eth = OrderPair(rawValue: "BTC-ETH")!
+    static let btc_eth = OrderPair(
+        sourceCurrencyType: .crypto(.bitcoin),
+        destinationCurrencyType: .crypto(.ethereum)
+    )
 }
 
 extension OrderQuote {
-    static let btc_eth_quote: OrderQuote = .init(pair: .btc_eth, priceTiers: [])
+    static let btc_eth_quote: OrderQuote = .init(
+        pair: .init(sourceCurrencyType: .crypto(.bitcoin), destinationCurrencyType: .crypto(.ethereum)),
+        priceTiers: [
+            .init(volume: "286", price: "34936084430000000000", marginPrice: "34936084430000000000"),
+            .init(volume: "2862782", price: "34931056570000000000", marginPrice: "34931056570000000000")
+        ])
+    static let btc_eth_quote_empty: OrderQuote = .init(pair: .btc_eth, priceTiers: [])
 }

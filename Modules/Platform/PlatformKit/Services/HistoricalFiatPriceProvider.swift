@@ -32,18 +32,17 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
         wDGLD: HistoricalFiatPriceServiceAPI,
         yearnFinance: HistoricalFiatPriceServiceAPI
     ) {
-        services[.aave] = aave
         services[.algorand] = algorand
         services[.bitcoin] = bitcoin
         services[.bitcoinCash] = bitcoinCash
         services[.ethereum] = ether
-        services[.pax] = pax
         services[.polkadot] = polkadot
         services[.stellar] = stellar
-        services[.tether] = tether
-        services[.wDGLD] = wDGLD
-        services[.yearnFinance] = yearnFinance
-
+        services[.erc20(.aave)] = aave
+        services[.erc20(.pax)] = pax
+        services[.erc20(.tether)] = tether
+        services[.erc20(.wdgld)] = wDGLD
+        services[.erc20(.yearnFinance)] = yearnFinance
         refresh()
     }
 

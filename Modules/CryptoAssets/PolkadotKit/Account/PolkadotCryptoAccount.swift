@@ -14,6 +14,10 @@ final class PolkadotCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .polkadot
     let isDefault: Bool = false
 
+    func createTransactionEngine() -> Any {
+        unimplemented()
+    }
+
     var pendingBalance: Single<MoneyValue> {
         unimplemented()
     }

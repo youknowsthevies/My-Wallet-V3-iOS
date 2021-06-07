@@ -10,9 +10,10 @@ extension DependencyContainer {
 
     public static var ethereumKit = module {
 
-        factory { APIClient() as APIClientAPI }
-
-        factory { CryptoFeeService<EthereumTransactionFee>() }
+        factory { APIClient() as TransactionPushClientAPI }
+        factory { APIClient() as TransactionClientAPI }
+        factory { APIClient() as TransactionFeeClientAPI }
+        factory { APIClient() as BalanceClientAPI }
 
         factory(tag: CryptoCurrency.ethereum) { EthereumExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
@@ -20,9 +21,7 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.ethereum) { EthereumOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
 
-        single { EthereumAssetAccountRepository() }
-
-        factory { EthereumAssetAccountDetailsService() }
+        factory { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
 
         factory { EthereumWalletAccountRepository() }
 
@@ -30,8 +29,6 @@ extension DependencyContainer {
             let repository: EthereumWalletAccountRepository = DIKit.resolve()
             return repository as EthereumWalletAccountRepositoryAPI
         }
-
-        factory { EthereumAccountBalanceService() as EthereumAccountBalanceServiceAPI }
 
         factory(tag: CryptoCurrency.ethereum) {
             EthereumAssetBalanceFetcher() as CryptoAccountBalanceFetching
@@ -43,15 +40,11 @@ extension DependencyContainer {
 
         factory { EthereumActivityItemEventDetailsFetcher() }
 
-        factory { EthereumWalletService() as EthereumWalletServiceAPI }
-
         factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
 
         factory { EthereumTransactionSendingService() as EthereumTransactionSendingServiceAPI }
 
-        factory { EthereumTransactionValidationService() }
-
-        factory { AnyCryptoFeeService<EthereumTransactionFee>.ethereum() }
+        factory { EthereumFeeService() as EthereumFeeServiceAPI }
 
         factory { AnyKeyPairProvider<EthereumKeyPair>.ethereum() }
 
@@ -60,15 +53,8 @@ extension DependencyContainer {
         factory { EthereumTransactionSigner() as EthereumTransactionSignerAPI }
 
         factory { EthereumTransactionEncoder() as EthereumTransactionEncoderAPI }
-    }
-}
 
-extension AnyCryptoFeeService where FeeType == EthereumTransactionFee {
-
-    fileprivate static func ethereum(
-        service: CryptoFeeService<EthereumTransactionFee> = resolve()
-    ) -> AnyCryptoFeeService<FeeType> {
-        AnyCryptoFeeService<FeeType>(service: service)
+        factory { EthereumTransactionDispatcher() as EthereumTransactionDispatcherAPI }
     }
 }
 

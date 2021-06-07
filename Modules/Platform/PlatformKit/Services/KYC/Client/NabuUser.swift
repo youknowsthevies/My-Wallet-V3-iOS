@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
+
 public struct NabuUser: Decodable {
 
     // MARK: - Types
@@ -276,8 +278,15 @@ public struct DepositAddress {
     public let type: CryptoCurrency
     public let address: String
 
-    public init?(stringType: String, address: String) {
-        guard let type = CryptoCurrency(rawValue: stringType.uppercased()) else { return nil }
+    public init?(
+        stringType: String,
+        address: String,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+    ) {
+        guard let type = enabledCurrenciesService.allEnabledCryptoCurrencies
+                .first(where: { $0.code == stringType.uppercased() }) else {
+            return nil
+        }
         self.init(type: type, address: address)
     }
 

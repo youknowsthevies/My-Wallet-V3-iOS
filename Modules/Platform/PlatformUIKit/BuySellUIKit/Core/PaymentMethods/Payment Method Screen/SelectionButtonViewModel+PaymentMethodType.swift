@@ -79,9 +79,11 @@ extension SelectionButtonViewModel {
             let limit = "\(data.topLimitDisplayValue) \(LocalizedString.Types.limitSubtitle)"
             subtitleRelay.accept(limit)
         case .some(.account(let data)):
+            let localImage = data.balance.baseCurrency.logoResource.local
             leadingContent = .image(
                 .init(
-                    name: data.balance.baseCurrency.logoImageName,
+                    name: localImage.name,
+                    bundle: localImage.bundle,
                     background: .fiat,
                     offset: 4,
                     cornerRadius: .value(8),

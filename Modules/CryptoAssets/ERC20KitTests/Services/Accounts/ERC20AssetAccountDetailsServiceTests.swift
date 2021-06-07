@@ -7,22 +7,23 @@ import RxSwift
 import RxTest
 import XCTest
 
-class ERC20AssetAccountDetailsServiceTests: XCTestCase {
+class ERC20AccountDetailsServiceAPITests: XCTestCase {
 
-    var subject: ERC20AssetAccountDetailsService<PaxToken>!
+    var subject: ERC20AccountDetailsService!
     var scheduler: TestScheduler!
     var bridge: ERC20EthereumWalletBridgeMock!
     var accountClient: ERC20AccountAPIClientMock!
     var disposeBag: DisposeBag!
+    let pax = CryptoCurrency.erc20(.pax)
 
     override func setUp() {
         super.setUp()
 
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-        bridge = ERC20EthereumWalletBridgeMock()
-        accountClient = ERC20AccountAPIClientMock()
-        subject = ERC20AssetAccountDetailsService<PaxToken>(
+        bridge = ERC20EthereumWalletBridgeMock(cryptoCurrency: pax)
+        accountClient = ERC20AccountAPIClientMock(cryptoCurrency: pax)
+        subject = ERC20AccountDetailsService(
             with: bridge,
             service: ERC20BalanceService(with: bridge, accountClient: accountClient)
         )
@@ -41,7 +42,7 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
     func test_fetch_asset_account_details() {
         // Arrange
         let accountDetailsObservable = subject
-            .accountDetails(for: "IOS-3217")
+            .accountDetails(cryptoCurrency: pax)
             .asObservable()
 
         // Act
@@ -54,11 +55,10 @@ class ERC20AssetAccountDetailsServiceTests: XCTestCase {
                 200,
                 ERC20AssetAccountDetails(
                     account: ERC20AssetAccount(
-                        walletIndex: 0,
                         accountAddress: "0x0000000000000000000000000000000000000000",
-                        name: "My \(CryptoCurrency.pax.name) Wallet"
+                        name: "My \(pax.name) Wallet"
                     ),
-                    balance: CryptoValue.pax(major: "2.0")!
+                    balance: CryptoValue.create(major: "2.0", currency: pax)!
                 )
             ),
             .completed(200)

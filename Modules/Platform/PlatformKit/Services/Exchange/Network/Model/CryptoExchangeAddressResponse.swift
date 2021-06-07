@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Foundation
+import DIKit
 
 struct CryptoExchangeAddressResponse: Decodable {
 
@@ -55,7 +55,8 @@ struct CryptoExchangeAddressResponse: Decodable {
         }
 
         let currency = try values.decode(String.self, forKey: .currency)
-        if let assetType = CryptoCurrency(code: currency) {
+        let provider: EnabledCurrenciesServiceAPI = resolve()
+        if let assetType = provider.allEnabledCryptoCurrencies.first(where: { $0.code == currency }) {
             self.assetType = assetType
         } else {
             throw ResponseError.assetType

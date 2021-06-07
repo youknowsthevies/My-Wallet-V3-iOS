@@ -42,7 +42,7 @@ final class YodleeScreenContentReducer {
         }
         return YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("large-bank-icon"),
+                .init(baseViewType: .image("large-bank-icon", .platformUIKit),
                       sideViewAttributes: .init(type: .image("v-success-icon"), position: .rightCorner))
             ),
             mainTitleContent: .init(text: LocalizedStrings.WebViewSuccessContent.title,
@@ -59,7 +59,7 @@ final class YodleeScreenContentReducer {
     func webviewPendingContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_yodlee_logo"),
+                .init(baseViewType: .image("filled_yodlee_logo", .platformUIKit),
                       sideViewAttributes: .init(type: .loader, position: .rightCorner))
             ),
             mainTitleContent: .init(text: LocalizedStrings.WebViewPendingContent.title,
@@ -76,7 +76,7 @@ final class YodleeScreenContentReducer {
     func webviewFailureContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo"),
+                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
                       sideViewAttributes: .init(type: .image("circular-error-icon"), position: .rightCorner))
             ),
             mainTitleContent: .init(text: LocalizedStrings.FailurePendingContent.Generic.title,
@@ -98,7 +98,7 @@ final class YodleeScreenContentReducer {
     func linkingBankPendingContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo"),
+                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
                       sideViewAttributes: .init(type: .loader, position: .rightCorner))
             ),
             mainTitleContent: .init(text: LocalizedStrings.LinkingPendingContent.title,
@@ -115,7 +115,7 @@ final class YodleeScreenContentReducer {
         let buttonContent = linkingBankFailureButtonContent(from: error)
         return YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo"),
+                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
                       sideViewAttributes: .init(type: .image("circular-error-icon"), position: .rightCorner))
             ),
             mainTitleContent: .init(text: failureTitles.title,

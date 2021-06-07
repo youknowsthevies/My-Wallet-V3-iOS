@@ -20,11 +20,11 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     }
 
     var balanceMoney: Single<MoneyValue> {
-        Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
+        Single.just(.init(cryptoValue: CryptoValue.create(major: "2.0", currency: .ethereum)!))
     }
 
     var pendingBalanceMoney: Single<MoneyValue> {
-        Single.just(.init(cryptoValue: CryptoValue.ether(major: "2.0")!))
+        Single.just(.init(cryptoValue: CryptoValue.create(major: "2.0", currency: .ethereum)!))
     }
 
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
@@ -58,12 +58,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         history
     }
 
-    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.ether(major: "2.0")!)
+    var fetchBalanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .ethereum)!)
     var fetchBalance: Single<CryptoValue> {
         fetchBalanceValue
     }
 
-    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.ether(major: "2.0")!)
+    var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .ethereum)!)
 
     var balanceObservable: Observable<CryptoValue> {
         balance.asObservable()
@@ -99,11 +99,6 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
     )
     var account: Single<EthereumAssetAccount> {
         accountValue
-    }
-
-    var nonceValue = Single.just(BigUInt(9))
-    var nonce: Single<BigUInt> {
-        nonceValue
     }
 
     var recordLastTransactionValue: Single<EthereumTransactionPublished> = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)

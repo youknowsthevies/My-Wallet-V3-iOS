@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import PlatformKit
 
 public struct StellarLedger: Equatable {
@@ -17,12 +18,12 @@ public struct StellarLedger: Equatable {
 
     public var baseFeeInXlm: CryptoValue? {
         guard let baseFeeInStroops = baseFeeInStroops else { return nil }
-        return CryptoValue.stellar(minor: baseFeeInStroops)
+        return CryptoValue(amount: BigInt(baseFeeInStroops), currency: .stellar)
     }
 
     public var baseReserveInXlm: CryptoValue? {
         guard let baseReserveInStroops = baseReserveInStroops else { return nil }
-        return CryptoValue.stellar(minor: baseReserveInStroops)
+        return CryptoValue(amount: BigInt(baseReserveInStroops), currency: .stellar)
     }
 
     func apply(baseFeeInStroops: Int) -> StellarLedger {

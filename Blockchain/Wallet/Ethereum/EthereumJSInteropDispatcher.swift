@@ -16,12 +16,6 @@ public enum EthereumJSInteropDispatcherError: Error {
     func didGetAddress(_ address: JSValue)
     func didFailToGetAddress(errorMessage: JSValue)
 
-    func didGetERC20Tokens(_ tokens: JSValue)
-    func didFailToGetERC20Tokens(errorMessage: JSValue)
-
-    func didSaveERC20Tokens()
-    func didFailToSaveERC20Tokens(errorMessage: JSValue)
-
     func didRecordLastTransaction()
     func didFailToRecordLastTransaction(errorMessage: JSValue)
 }
@@ -34,7 +28,6 @@ public protocol EthereumJSInteropDispatcherAPI {
     var saveERC20Tokens: Dispatcher<Void> { get }
 
     var recordLastTransaction: Dispatcher<Void> { get }
-    var getIsWaitingOnTransaction: Dispatcher<Bool> { get }
 }
 
 public class EthereumJSInteropDispatcher: EthereumJSInteropDispatcherAPI {
@@ -43,7 +36,6 @@ public class EthereumJSInteropDispatcher: EthereumJSInteropDispatcherAPI {
     public let getAccounts = Dispatcher<[[String: Any]]>()
 
     public let recordLastTransaction = Dispatcher<Void>()
-    public let getIsWaitingOnTransaction = Dispatcher<Bool>()
 
     public let getAddress = Dispatcher<String>()
 

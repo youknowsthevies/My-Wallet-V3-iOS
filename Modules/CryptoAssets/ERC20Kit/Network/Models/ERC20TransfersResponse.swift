@@ -2,13 +2,13 @@
 
 import Foundation
 
-struct ERC20TransfersResponse<Token: ERC20Token>: Decodable {
-
-    let transactions: [ERC20HistoricalTransaction<Token>]
-
-    // MARK: Decodable
-
-    private enum CodingKeys: String, CodingKey {
-        case transactions = "transfers"
+struct ERC20TransfersResponse: Decodable {
+    struct Transfer: Decodable {
+        let from: String
+        let timestamp: String
+        let to: String
+        let transactionHash: String
+        let value: String
     }
+    let transfers: [Transfer]
 }

@@ -39,7 +39,7 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
             let values = try decoder.container(keyedBy: CodingKeys.self)
             spent = try values.decode(Bool.self, forKey: .spent)
             let satoshis = try values.decode(Int.self, forKey: .amount)
-            amount = CryptoValue.bitcoin(satoshis: satoshis)
+            amount = CryptoValue(amount: BigInt(satoshis), currency: .bitcoin)
             address = try values.decode(String.self, forKey: .address)
             let xpub = try values.decodeIfPresent(Xpub.self, forKey: .xpub)
             change = xpub != nil
@@ -100,15 +100,17 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
     required public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
-        let value = BigInt(integerLiteral: amount)
-        self.amount = CryptoValue.bitcoin(satoshis: abs(value))
-        direction = value.sign == .minus ? .credit : .debit
+        let originalValue = BigInt(amount)
+        var absoluteValue = originalValue
+        absoluteValue.sign = .plus
+        self.amount = CryptoValue(amount: absoluteValue, currency: .bitcoin)
+        direction = originalValue.sign == .minus ? .credit : .debit
         transactionHash = try values.decode(String.self, forKey: .identifier)
         blockHeight = try values.decodeIfPresent(Int.self, forKey: .blockHeight)
         createdAt = try values.decode(Date.self, forKey: .time)
         inputs = try values.decode([Input].self, forKey: .inputs)
         let feeValue = try values.decode(Int.self, forKey: .fee)
-        fee = CryptoValue.bitcoin(satoshis: feeValue)
+        fee = CryptoValue(amount: BigInt(feeValue), currency: .bitcoin)
         outputs = try values.decode([Output].self, forKey: .outputs)
 
         guard let destinationOutput = outputs.first else {

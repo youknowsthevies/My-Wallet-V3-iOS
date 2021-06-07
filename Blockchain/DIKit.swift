@@ -307,11 +307,6 @@ extension DependencyContainer {
             return manager.wallet.ethereum
         }
 
-        factory { () -> ERC20BridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
-        }
-
         factory { () -> EthereumWalletBridgeAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum

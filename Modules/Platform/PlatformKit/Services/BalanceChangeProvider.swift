@@ -48,17 +48,17 @@ public final class BalanceChangeProvider: BalanceChangeProviding {
     ) {
         self.currencies = currencies.map { $0.currency }
         services = [
-            .crypto(.aave): aave,
+            .crypto(.erc20(.aave)): aave,
             .crypto(.algorand): algorand,
             .crypto(.bitcoin): bitcoin,
             .crypto(.bitcoinCash): bitcoinCash,
             .crypto(.ethereum): ether,
-            .crypto(.pax): pax,
+            .crypto(.erc20(.pax)): pax,
             .crypto(.polkadot): polkadot,
             .crypto(.stellar): stellar,
-            .crypto(.tether): tether,
-            .crypto(.wDGLD): wDGLD,
-            .crypto(.yearnFinance): yearnFinance
+            .crypto(.erc20(.tether)): tether,
+            .crypto(.erc20(.wdgld)): wDGLD,
+            .crypto(.erc20(.yearnFinance)): yearnFinance
         ]
     }
 

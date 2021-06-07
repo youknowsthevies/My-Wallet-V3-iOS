@@ -7,8 +7,24 @@ import XCTest
 
 class ExchangeAddressFetchingTests: XCTestCase {
 
+    var assets: [CryptoCurrency] {
+        [
+            .bitcoin,
+            .ethereum,
+            .bitcoinCash,
+            .stellar,
+            .algorand,
+            .polkadot,
+            .erc20(.aave),
+            .erc20(.yearnFinance),
+            .erc20(.wdgld),
+            .erc20(.pax),
+            .erc20(.tether)
+        ]
+    }
+
     func testFetchingAddressForAllAssetsForActiveState() {
-        for asset in CryptoCurrency.allCases {
+        for asset in assets {
             let fetcher = MockExchangeAddressFetcher(expectedResult: .success(.active))
             do {
                 _ = try fetcher.fetchAddress(for: asset).toBlocking().first()
@@ -24,7 +40,7 @@ class ExchangeAddressFetchingTests: XCTestCase {
             .blocked
         ]
 
-        for asset in CryptoCurrency.allCases {
+        for asset in assets {
             for state in states {
                 let fetcher = MockExchangeAddressFetcher(expectedResult: .success(state))
                 do {

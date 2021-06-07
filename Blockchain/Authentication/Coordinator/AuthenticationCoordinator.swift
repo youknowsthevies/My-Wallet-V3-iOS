@@ -62,9 +62,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let settingsAPIClient: SettingsServiceAPI
     private let featureFlagsService: InternalFeatureFlagServiceAPI
 
-    /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
-    /// the wallet is initialized during the wallet creation - which generate a crash.
-    private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
+    private var exchangeRepository: ExchangeAccountRepositoryAPI!
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
     @LazyInject private var coincore: Coincore
 
@@ -167,6 +165,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private func handlePostAuthenticationLogic() {
 
         /// If the user has linked to the Exchange, we sync their addresses on authentication.
+        exchangeRepository = ExchangeAccountRepository()
         exchangeRepository.syncDepositAddressesIfLinked()
             .subscribe()
             .disposed(by: bag)
@@ -176,7 +175,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         remoteNotificationAuthorizer.requestAuthorizationIfNeeded()
             .subscribe()
             .disposed(by: bag)
-        walletManager.wallet.ethereum.walletDidLoad()
         coincore.initialize()
             .subscribe()
             .disposed(by: bag)

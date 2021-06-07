@@ -45,11 +45,12 @@ final class SelectionItemViewPresenter {
         let item = interactor.item
         accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
         switch item.thumb {
-        case .name(let name):
+        case let .name(name, bundle):
             thumb = .image(
                 ImageViewContent(
                     imageName: name,
-                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
+                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)"),
+                    bundle: bundle
                 )
             )
         case .emoji(let value):

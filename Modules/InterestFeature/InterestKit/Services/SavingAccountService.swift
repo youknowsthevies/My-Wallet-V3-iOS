@@ -96,7 +96,7 @@ class SavingAccountService: SavingAccountServiceAPI {
     }
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
-        client.rate(for: currency.rawValue)
+        client.rate(for: currency.code)
             .map { $0.rate }
     }
 }

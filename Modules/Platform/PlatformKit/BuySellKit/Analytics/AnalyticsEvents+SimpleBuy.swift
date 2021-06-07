@@ -363,7 +363,7 @@ extension AnalyticsEvents {
                  .sbTradingWalletClicked(asset: let currency),
                  .sbWithdrawalScreenShown(asset: let currency),
                  .sbWithdrawalScreenClicked(asset: let currency):
-                return ["asset": currency.rawValue]
+                return ["asset": currency.code]
             case .sbBuyFormConfirmClick(currencyCode: let currencyCode, amount: let amount, additionalParameters: let additionalParameters):
                 let parameters =  [
                     ParameterName.currency : currencyCode,

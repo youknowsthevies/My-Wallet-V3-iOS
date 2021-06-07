@@ -189,7 +189,7 @@ final class APIClient: TransactionKitClientAPI {
     // MARK: - BitPayClientAPI
 
     func bitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
-        let payload = ["chain": currency.rawValue]
+        let payload = ["chain": currency.code]
         let headers = [
             HttpHeaderField.xPayProVersion: HttpHeaderValue.xPayProVersion,
             HttpHeaderField.contentType: HttpHeaderValue.bitpayPaymentRequest,
@@ -216,7 +216,7 @@ final class APIClient: TransactionKitClientAPI {
             weightedSize: transactionSize
         )
         let payload = BitPayPayment(
-            chain: currency.rawValue,
+            chain: currency.code,
             transactions: [transaction]
         )
         let headers = [
@@ -244,7 +244,7 @@ final class APIClient: TransactionKitClientAPI {
             weightedSize: transactionSize
         )
         let payload = BitPayPayment(
-            chain: currency.rawValue,
+            chain: currency.code,
             transactions: [transaction]
         )
         let headers = [

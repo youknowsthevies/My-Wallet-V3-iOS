@@ -102,8 +102,6 @@ public extension PriceWindow.TimelineInterval {
 public extension CryptoCurrency {
     var maxStartDate: TimeInterval {
         switch self {
-        case .aave:
-            return 1615831200
         case .algorand:
             return 1560211225
         case .bitcoin:
@@ -112,18 +110,12 @@ public extension CryptoCurrency {
             return 1500854400
         case .ethereum:
             return 1438992000
-        case .pax:
-            return 1555060318
         case .polkadot:
             return 1615831200
         case .stellar:
             return 1525716000
-        case .tether:
-            return 1511829681
-        case .wDGLD:
-            return 1605636000
-        case .yearnFinance:
-            return 1615831200
+        case .erc20(let model):
+            return model.maxStartDate
         }
     }
 }

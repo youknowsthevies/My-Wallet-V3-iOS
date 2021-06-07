@@ -7,68 +7,54 @@ import RxSwift
 import RxTest
 import XCTest
 
+// swiftlint:disable all
 class EthereumTransactionSendingServiceTests: XCTestCase {
 
     var scheduler: TestScheduler!
     var disposeBag: DisposeBag!
 
-    var bridge: EthereumWalletBridgeMock!
-    var client: EthereumAPIClientMock!
-    var feeService: AnyCryptoFeeService<EthereumTransactionFee>!
-
-    var transactionBuilder: EthereumTransactionBuilder!
-    var transactionSigner: EthereumTransactionSigner!
-    var transactionEncoder: EthereumTransactionEncoder!
-
+    var accountDetailsService: EthereumAccountDetailsServiceAPIMock!
+    var client: TransactionPushClientAPIMock!
+    var feeService: EthereumFeeServiceMock!
     var subject: EthereumTransactionSendingService!
 
     override func setUp() {
         super.setUp()
-
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
-
-        bridge = EthereumWalletBridgeMock()
-        client = EthereumAPIClientMock()
-        feeService = AnyCryptoFeeService(
-            service: CryptoFeeServiceMock<EthereumTransactionFee>(underlyingFees: .default)
-        )
-
-        transactionBuilder = EthereumTransactionBuilder()
-        transactionSigner = EthereumTransactionSigner()
-        transactionEncoder = EthereumTransactionEncoder()
-
+        accountDetailsService = EthereumAccountDetailsServiceAPIMock()
+        client = TransactionPushClientAPIMock()
+        feeService = EthereumFeeServiceMock(underlyingFees: .default)
         subject = EthereumTransactionSendingService(
-            with: bridge,
+            accountDetailsService: accountDetailsService,
             client: client,
             feeService: feeService,
-            transactionBuilder: transactionBuilder,
-            transactionSigner: transactionSigner,
-            transactionEncoder: transactionEncoder
+            transactionBuilder: EthereumTransactionBuilder(),
+            transactionSigner: EthereumTransactionSigner(),
+            transactionEncoder: EthereumTransactionEncoder()
         )
     }
 
     override func tearDown() {
         scheduler = nil
         disposeBag = nil
-        bridge = nil
+        accountDetailsService = nil
         client = nil
         feeService = nil
-        transactionBuilder = nil
-        transactionSigner = nil
-        transactionEncoder = nil
         subject = nil
-
         super.tearDown()
     }
 
     func test_send() {
-        // Arrange
-        let candidate = EthereumTransactionCandidateBuilder().build()!
+        let finalised = EthereumTransactionFinalised(
+            transactionHash: "0x3a69218edf483724d398223eab78fa4de66df7aa737f137f2914fc371506af90",
+            rawTransaction: "0xf8640985028fa6ae00825208943535353535353535353535353535353535353535018026a059cd94b103938e5a072957427a72536a255bb48f5a5d2928631793e616d13823a024538cf2a58f0e3b54436a59b001e87a54f98a9dbfc2483a311762fc6bc4ea9d"
+        )
 
-        let expectedPublished = EthereumTransactionPublishedBuilder()
-            .with(candidate: candidate)
-            .build()!
+        let expectedPublished = EthereumTransactionPublished(
+            finalisedTransaction: finalised,
+            transactionHash: finalised.transactionHash
+        )
 
         client.pushTransactionValue = Single.just(
             EthereumPushTxResponse(txHash: expectedPublished.transactionHash)
@@ -77,7 +63,7 @@ class EthereumTransactionSendingServiceTests: XCTestCase {
         let keyPair = MockEthereumWalletTestData.keyPair
 
         let sendObservable: Observable<EthereumTransactionPublished> = subject
-            .send(transaction: candidate, keyPair: keyPair)
+            .send(transaction: .defaultMock, keyPair: keyPair)
             .asObservable()
 
         // Act

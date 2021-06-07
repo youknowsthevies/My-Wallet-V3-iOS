@@ -3,14 +3,15 @@
 import PlatformKit
 
 extension FiatCurrency {
-    public var logoImageName: String {
+
+    public var logoResource: ImageResource {
         switch self {
         case .GBP:
-            return "icon-gbp"
+            return .local(name: "icon-gbp", bundle: .platformUIKit)
         case .EUR:
-            return "icon-eur"
+            return .local(name: "icon-eur", bundle: .platformUIKit)
         case .USD:
-            return "icon-usd"
+            return .local(name: "icon-usd", bundle: .platformUIKit)
         default:
             fatalError("Currency \(self.code) does not have a logo image")
         }

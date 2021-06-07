@@ -70,7 +70,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .map { accounts -> [SwapTrendingPairViewModel] in
                 var pairs: [(CryptoCurrency, CryptoCurrency)] = [
                     (.bitcoin, .ethereum),
-                    (.bitcoin, .pax),
+                    (.bitcoin, .erc20(.pax)),
                     (.bitcoin, .stellar)
                 ]
                 switch DevicePresenter.type {
@@ -80,7 +80,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
                     pairs.append((.bitcoin, .bitcoinCash))
                 case .max:
                     pairs.append((.bitcoin, .bitcoinCash))
-                    pairs.append((.ethereum, .pax))
+                    pairs.append((.ethereum, .erc20(.pax)))
                 }
                 return pairs
                     .compactMap { pair -> SwapTrendingPair? in

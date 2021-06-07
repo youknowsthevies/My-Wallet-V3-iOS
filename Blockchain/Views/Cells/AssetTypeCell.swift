@@ -87,7 +87,7 @@ fileprivate extension CryptoCurrency {
             return "white_bch_small"
         case .ethereum:
             return "white_eth_small"
-        case .aave, .algorand, .pax, .stellar, .tether, .wDGLD, .yearnFinance, .polkadot:
+        default:
             return nil
         }
     }

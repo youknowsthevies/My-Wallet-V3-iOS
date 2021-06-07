@@ -19,8 +19,10 @@ final class WalletViewViewModel {
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
         identifier = account.id
+        let localImage = currency.logoResource.local
         badgeImageViewModel = .default(
-            with: currency.logoImageName,
+            with: localImage.name,
+            bundle: localImage.bundle,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )

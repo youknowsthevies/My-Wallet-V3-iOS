@@ -4,12 +4,12 @@ import PlatformKit
 
 extension CurrencyType {
 
-    public var logoImageName: String {
+    public var logoResource: ImageResource {
         switch self {
         case .crypto(let currency):
-            return currency.logoImageName
+            return currency.logoResource
         case .fiat(let currency):
-            return currency.logoImageName
+            return currency.logoResource
         }
     }
 

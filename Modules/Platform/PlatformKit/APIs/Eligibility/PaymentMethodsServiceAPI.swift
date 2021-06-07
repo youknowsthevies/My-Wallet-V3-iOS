@@ -10,7 +10,6 @@ public protocol PaymentMethodsServiceAPI: class {
     var paymentMethodsSingle: Single<[PaymentMethod]> { get }
     /// Returns the available card types that the user can add
     var supportedCardTypes: Single<Set<CardType>> { get }
-
     /// Refreshes the stream of `paymentMethods`
     func refresh()
 }

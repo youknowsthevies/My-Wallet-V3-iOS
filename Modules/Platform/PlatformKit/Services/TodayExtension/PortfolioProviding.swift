@@ -31,11 +31,11 @@ public final class PortfolioProvider: PortfolioProviding {
     public var portfolio: Observable<Portfolio> {
         let balancesObservable = Observable.combineLatest(
             balance(for: .ethereum),
-            balance(for: .pax),
+            balance(for: .erc20(.pax)),
             balance(for: .stellar),
             balance(for: .bitcoin),
             balance(for: .bitcoinCash),
-            balance(for: .tether)
+            balance(for: .erc20(.tether))
         )
         return Observable.combineLatest(
             balancesObservable,

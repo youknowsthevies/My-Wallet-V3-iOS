@@ -34,3 +34,36 @@ struct MockEthereumWalletTestData {
         static let data: Data? = Data()
     }
 }
+
+extension EthereumTransactionCandidate {
+    static var defaultMock: EthereumTransactionCandidate {
+        EthereumTransactionCandidate(
+            to: EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to),
+            gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
+            gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
+            value: MockEthereumWalletTestData.Transaction.value,
+            data: nil,
+            transferType: .transfer
+        )
+    }
+}
+
+extension EthereumAssetAccountDetails {
+    static var defaultMock: EthereumAssetAccountDetails {
+        .init(
+            account: .defaultMock,
+            balance: .zero(currency: .ethereum),
+            nonce: UInt64(MockEthereumWalletTestData.Transaction.nonce)
+        )
+    }
+}
+
+extension EthereumAssetAccount {
+    static var defaultMock: EthereumAssetAccount {
+        .init(
+            walletIndex: 0,
+            accountAddress: MockEthereumWalletTestData.account,
+            name: ""
+        )
+    }
+}

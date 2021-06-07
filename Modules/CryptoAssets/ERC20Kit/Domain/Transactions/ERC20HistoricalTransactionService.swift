@@ -6,53 +6,48 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-public protocol ERC20WalletTranscationsBridgeAPI: class {
-    associatedtype Token
-    var transactions: Single<[EthereumHistoricalTransaction]> { get }
+public protocol ERC20HistoricalTransactionServiceAPI {
+    func transactions(cryptoCurrency: CryptoCurrency, token: String?, size: Int) -> Single<PageResult<ERC20HistoricalTransaction>>
 }
 
-public class AnyERC20HistoricalTransactionService<Token: ERC20Token>: TokenizedHistoricalTransactionAPI {
+final class ERC20HistoricalTransactionService: ERC20HistoricalTransactionServiceAPI {
 
-    public typealias Model = ERC20HistoricalTransaction<Token>
-    public typealias Bridge = ERC20WalletTranscationsBridgeAPI
-    public typealias PageModel = PageResult<Model>
-
-    /// Streams `true` in case the account has at least one transaction
-    public var hasTransactions: Single<Bool> {
-        fetchTransactions().map { !$0.isEmpty }
-    }
-
-    private let accountClient: ERC20AccountAPIClient<Token>
+    private let accountClient: ERC20AccountAPIClientAPI
     private let bridge: EthereumWalletBridgeAPI
 
     init(bridge: EthereumWalletBridgeAPI = resolve(),
-         accountClient: ERC20AccountAPIClient<Token> = ERC20AccountAPIClient<Token>()) {
+         accountClient: ERC20AccountAPIClientAPI = resolve()) {
         self.bridge = bridge
         self.accountClient = accountClient
     }
 
-    public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
+    func transactions(cryptoCurrency: CryptoCurrency, token: String?, size: Int) -> Single<PageResult<ERC20HistoricalTransaction>> {
         bridge.address
             .flatMap(weak: self) { (self, address) in
-                self.fetchTransactions(from: address, page: token ?? "0")
+                self.fetchTransactions(cryptoCurrency: cryptoCurrency, address: address, page: token ?? "0")
             }
-            .map { PageModel(hasNextPage: $0.count >= size, items: $0) }
-    }
-
-    public func fetchTransactions() -> Single<[ERC20HistoricalTransaction<Token>]> {
-        bridge.address
-            .flatMap(weak: self) { (self, address) in
-                self.fetchTransactions(from: address, page: "0")
+            .map { transactions in
+                PageResult<ERC20HistoricalTransaction>(
+                    hasNextPage: transactions.count >= size,
+                    items: transactions
+                )
             }
     }
 
-    private func fetchTransactions(from address: EthereumAddress, page: String) -> Single<[ERC20HistoricalTransaction<Token>]> {
-        accountClient
-            .fetchTransactions(from: address.publicKey, page: page)
-            .map {
-                $0.transactions.map {
-                    let direction: Direction = $0.fromAddress == address ? .credit : .debit
-                    return $0.make(from: direction)
+    private func fetchTransactions(cryptoCurrency: CryptoCurrency, address: EthereumAddress, page: String) -> Single<[ERC20HistoricalTransaction]> {
+        guard let contractAddress = cryptoCurrency.contractAddress else {
+            fatalError("Not an ERC20 coin.")
+        }
+        return accountClient
+            .fetchTransactions(from: address.publicKey, page: page, contractAddress: contractAddress)
+            .map(\.transfers)
+            .map { transfers -> [ERC20HistoricalTransaction] in
+                transfers.map { item in
+                    ERC20HistoricalTransaction(
+                        response: item,
+                        cryptoCurrency: cryptoCurrency,
+                        source: address
+                    )
                 }
             }
     }

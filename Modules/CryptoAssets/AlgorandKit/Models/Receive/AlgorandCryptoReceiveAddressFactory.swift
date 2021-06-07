@@ -6,6 +6,7 @@ import RxSwift
 final class AlgorandCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
 
     func makeExternalAssetAddress(
+        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

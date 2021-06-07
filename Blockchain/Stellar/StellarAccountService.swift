@@ -17,14 +17,8 @@ class StellarAccountService: StellarAccountAPI {
         .nonCustodial
     }
 
-    var balance: Single<CryptoValue> {
-        currentStellarAccount(fromCache: false)
-            .map(\.assetAccount.balance)
-    }
-
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
-        pendingBalanceMoney
-            .asObservable()
+        pendingBalanceMoney.asObservable()
     }
 
     var pendingBalanceMoney: Single<MoneyValue> {
@@ -32,35 +26,28 @@ class StellarAccountService: StellarAccountAPI {
     }
 
     var balanceMoney: Single<MoneyValue> {
-        balance.moneyValue
-    }
-
-    var balanceObservable: Observable<CryptoValue> {
-        balanceRelay.asObservable()
+        fetchStellarAccount.map(\.balance).moneyValue
     }
 
     var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map { MoneyValue(cryptoValue: $0) }
+        balanceRelay.asObservable()
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
 
-    private let configurationService: StellarConfigurationAPI
     private let repository: StellarWalletAccountRepositoryAPI
-    private let privateAccountCache: CachedValue<StellarAccount>
-    private let balanceRelay = PublishRelay<CryptoValue>()
+    private let privateAccountCache: CachedValue<StellarAccountDetails>
+    private let detailsService: StellarAccountDetailsServiceAPI
+    private let balanceRelay = PublishRelay<MoneyValue>()
     private var disposeBag = DisposeBag()
-    private var service: Single<AccountService> {
-        configurationService.configuration.map(\.sdk.accounts)
-    }
 
     init(
-        configurationService: StellarConfigurationAPI,
+        detailsService: StellarAccountDetailsServiceAPI = resolve(),
         repository: StellarWalletAccountRepositoryAPI
     ) {
-        self.configurationService = configurationService
         self.repository = repository
-        privateAccountCache = CachedValue<StellarAccount>(
+        self.detailsService = detailsService
+        privateAccountCache = CachedValue<StellarAccountDetails>(
             configuration: CachedValueConfiguration(
                 refreshType: .periodic(seconds: 60),
                 flushNotificationName: .logout,
@@ -68,90 +55,25 @@ class StellarAccountService: StellarAccountAPI {
             )
         )
 
-        privateAccountCache.setFetch(weak: self) { (self) -> Single<StellarAccount> in
+        privateAccountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
             guard let defaultXLMAccount = self.repository.defaultAccount else {
                 return Single.error(StellarAccountError.noXLMAccount)
             }
-            return self.accountDetails(for: defaultXLMAccount.publicKey)
+            return self.detailsService.accountDetails(for: defaultXLMAccount.publicKey)
         }
 
         balanceFetchTriggerRelay
             .flatMapLatest(weak: self) { (self, _) in
-                self.balance.asObservable()
+                self.balanceMoney.asObservable()
             }
-            .catchErrorJustReturn(CryptoValue.stellarZero)
+            .catchErrorJustReturn(CryptoValue.stellarZero.moneyValue)
             .bindAndCatch(to: balanceRelay)
             .disposed(by: disposeBag)
     }
 
     // MARK: Public Functions
 
-    func clear() {
-        self.disposeBag = DisposeBag()
-        privateAccountCache
-            .invalidate
-            .subscribe()
-            .disposed(by: disposeBag)
-    }
-
-    func currentStellarAccount(fromCache: Bool) -> Single<StellarAccount> {
-        fromCache ? privateAccountCache.valueSingle : privateAccountCache.fetchValue
-    }
-
-    private func accountResponse(for accountID: String) -> Single<AccountResponse> {
-        service.flatMap(weak: self) { (_, service) -> Single<AccountResponse> in
-            Single<AccountResponse>.create { event -> Disposable in
-                service.getAccountDetails(accountId: accountID, response: { response -> Void in
-                    switch response {
-                    case .success(details: let details):
-                        event(.success(details))
-                    case .failure(error: let error):
-                        event(.error(error.toStellarServiceError()))
-                    }
-                })
-                return Disposables.create()
-            }
-        }
-    }
-
-    private func accountDetails(for accountID: String) -> Single<StellarAccount> {
-        accountResponse(for: accountID)
-            .map(\.stellarAccount)
-            .catchError { error in
-                switch error {
-                case StellarAccountError.noDefaultAccount:
-                    // If the network call to Horizon fails due to there not being a default account (i.e. account is not yet
-                    // funded), catch that error and return a StellarAccount with 0 balance
-                    return Single.just(StellarAccount.unfundedAccount(accountId: accountID))
-                default:
-                    throw error
-                }
-            }
-    }
-}
-
-// MARK: - Extension
-
-extension AccountResponse {
-    fileprivate var stellarAccount: StellarAccount {
-        let totalBalanceDecimal = balances.reduce(Decimal(0)) { $0 + (Decimal(string: $1.balance) ?? 0) }
-        let majorString = (totalBalanceDecimal as NSDecimalNumber).description(withLocale: Locale.Posix)
-        let totalBalance = CryptoValue.stellar(major: majorString) ?? CryptoValue.stellarZero
-        let assetAddress = AssetAddressFactory.create(
-            fromAddressString: accountId,
-            assetType: .stellar
-        )
-        let assetAccount = AssetAccount(
-            index: 0,
-            address: assetAddress,
-            balance: totalBalance,
-            name: CryptoCurrency.stellar.defaultWalletName
-        )
-        return StellarAccount(
-            identifier: accountId,
-            assetAccount: assetAccount,
-            sequence: sequenceNumber,
-            subentryCount: subentryCount
-        )
+    var fetchStellarAccount: Single<StellarAccountDetails> {
+        privateAccountCache.fetchValue
     }
 }

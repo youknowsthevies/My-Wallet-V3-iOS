@@ -40,10 +40,6 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
 
 private func handlePostAuthenticationLogic(environment: LoggedIn.Environment) -> Effect<LoggedIn.Action, Never> {
     Effect<LoggedIn.Action, Never>.merge(
-        .fireAndForget {
-            environment.walletManager.wallet.ethereum
-                .walletDidLoad()
-        },
         /// If the user has linked to the Exchange, we sync their addresses on authentication.
         environment.exchangeRepository
             .syncDepositAddressesIfLinkedPublisher()

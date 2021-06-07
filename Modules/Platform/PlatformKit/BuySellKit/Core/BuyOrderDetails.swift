@@ -32,7 +32,7 @@ public struct BuyOrderDetails {
         guard let fiatCurrency = FiatCurrency(code: response.inputCurrency) else {
             return nil
         }
-        guard let cryptoCurrency = CryptoCurrency(rawValue: response.outputCurrency) else {
+        guard let cryptoCurrency = CryptoCurrency(code: response.outputCurrency) else {
             return nil
         }
 

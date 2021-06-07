@@ -44,11 +44,11 @@ public struct Portfolio: Codable {
                 balanceChange: PortfolioBalanceChange,
                 fiatCurrency: FiatCurrency) {
         accounts[.ethereum] = Account(currency: .ethereum, balance: ether)
-        accounts[.pax] = Account(currency: .pax, balance: pax)
+        accounts[.erc20(.pax)] = Account(currency: .erc20(.pax), balance: pax)
         accounts[.stellar] = Account(currency: .stellar, balance: stellar)
         accounts[.bitcoin] = Account(currency: .bitcoin, balance: bitcoin)
         accounts[.bitcoinCash] = Account(currency: .bitcoinCash, balance: bitcoinCash)
-        accounts[.tether] = Account(currency: .tether, balance: tether)
+        accounts[.erc20(.tether)] = Account(currency: .erc20(.tether), balance: tether)
         self.balanceChange = balanceChange
         self.fiatCurrency = fiatCurrency
     }

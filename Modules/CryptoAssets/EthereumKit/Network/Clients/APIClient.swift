@@ -6,17 +6,22 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-public protocol APIClientAPI: class {
-
-    var latestBlock: Single<LatestBlockResponse> { get }
-
+protocol TransactionPushClientAPI: AnyObject {
     func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse>
-    func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]>
+}
+protocol TransactionClientAPI {
+    var latestBlock: Single<LatestBlockResponse> { get }
     func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse>
+    func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]>
+}
+protocol BalanceClientAPI {
     func balanceDetails(from address: String) -> Single<BalanceDetailsResponse>
 }
+protocol TransactionFeeClientAPI {
+    func fees(cryptoCurrency: CryptoCurrency) -> Single<TransactionFeeResponse>
+}
 
-final class APIClient: APIClientAPI {
+final class APIClient: TransactionPushClientAPI, TransactionClientAPI, BalanceClientAPI, TransactionFeeClientAPI {
 
     // MARK: - Types
 
@@ -35,8 +40,8 @@ final class APIClient: APIClientAPI {
 
     /// Privately used endpoint data
     private struct Endpoint {
+        static let fees: [String] = ["mempool", "fees", "eth"]
         static let base: [String] = [ "eth" ]
-
         static let pushTx: [String] = base + [ "pushtx" ]
 
         static func balance(for address: String) -> [String] {
@@ -89,6 +94,23 @@ final class APIClient: APIClientAPI {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
         self.apiCode = apiCode
+    }
+
+    func fees(cryptoCurrency: CryptoCurrency) -> Single<TransactionFeeResponse> {
+        guard cryptoCurrency == .ethereum || cryptoCurrency.isERC20 else {
+            fatalError("Using Ethereum APIClient for incompatible CryptoCurrency")
+        }
+        var parameters: [URLQueryItem] = []
+        if let contractAddress = cryptoCurrency.erc20ContractAddress {
+            parameters.append(URLQueryItem(name: "contractAddress", value: contractAddress))
+        }
+        guard let request = requestBuilder.get(
+            path: Endpoint.fees,
+            parameters: parameters
+        ) else {
+            return .error(RequestBuilder.Error.buildingRequest)
+        }
+        return networkAdapter.perform(request: request)
     }
 
     /// Pushes a transaction
@@ -146,5 +168,17 @@ final class APIClient: APIClientAPI {
                 }
                 return details
             }
+    }
+}
+
+fileprivate extension CryptoCurrency {
+    var erc20ContractAddress: String? {
+        guard case .erc20(let model) = self else {
+            return nil
+        }
+        guard case .erc20(let contractAddress, _) = model.kind else {
+            return nil
+        }
+        return contractAddress
     }
 }

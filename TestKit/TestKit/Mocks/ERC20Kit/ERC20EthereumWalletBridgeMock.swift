@@ -8,6 +8,23 @@ import RxRelay
 import RxSwift
 
 class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
+
+    let cryptoCurrency: CryptoCurrency
+
+    var balanceValue: CryptoValue
+    var isWaitingOnTransactionValue = Single.just(true)
+    var historyValue = Single.just(())
+    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: "0x0000000000000000000000000000000000000000"))
+    var nameValue: Single<String> = Single.just("")
+    var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
+    var accountValue: EthereumAssetAccount = EthereumAssetAccount(walletIndex: 0, accountAddress: "", name: "")
+    var nonceValue = Single.just(BigUInt(1))
+
+    init(cryptoCurrency: CryptoCurrency) {
+        self.cryptoCurrency = cryptoCurrency
+        balanceValue = .create(major: 2, currency: cryptoCurrency)
+    }
+
     func update(accountIndex: Int, label: String) -> Completable {
         .empty()
     }
@@ -20,7 +37,9 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         .just(nil)
     }
 
-    var pendingBalanceMoney: Single<MoneyValue> = Single.just(CryptoValue.pax(major: "1.0")!.moneyValue)
+    var pendingBalanceMoney: Single<MoneyValue> {
+        .just(CryptoValue.create(major: "1.0", currency: cryptoCurrency)!.moneyValue)
+    }
 
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
         pendingBalanceMoney
@@ -36,12 +55,10 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         .nonCustodial
     }
 
-    var isWaitingOnTransactionValue = Single.just(true)
     var isWaitingOnTransaction: Single<Bool> {
         isWaitingOnTransactionValue
     }
 
-    var historyValue = Single.just(())
     var history: Single<Void> {
         historyValue
     }
@@ -50,9 +67,8 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         history
     }
 
-    var balanceValue = Single.just(CryptoValue.pax(major: "2.0")!)
     var balance: Single<CryptoValue> {
-        balanceValue
+        .just(balanceValue)
     }
 
     var balanceObservable: Observable<CryptoValue> {
@@ -65,28 +81,22 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()
 
-    var nameValue: Single<String> = Single.just("")
     var name: Single<String> {
         nameValue
     }
 
-    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: "0x0000000000000000000000000000000000000000"))
     var address: Single<EthereumAddress> {
         addressValue
     }
 
-    var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
     var transactions: Single<[EthereumHistoricalTransaction]> {
         transactionsValue
     }
 
-    static let assetAccount = EthereumAssetAccount(walletIndex: 0, accountAddress: "", name: "")
-    var accountValue: Single<EthereumAssetAccount> = Single.just(assetAccount)
     var account: Single<EthereumAssetAccount> {
-        accountValue
+        .just(accountValue)
     }
 
-    var nonceValue = Single.just(BigUInt(1))
     var nonce: Single<BigUInt> {
         nonceValue
     }

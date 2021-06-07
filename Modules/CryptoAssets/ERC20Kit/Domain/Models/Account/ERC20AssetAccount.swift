@@ -2,15 +2,11 @@
 
 import PlatformKit
 
-public struct ERC20AssetAccount: AssetAccount, Equatable {
-    public var walletIndex: Int
+public struct ERC20AssetAccount: Equatable {
     public let accountAddress: String
-    public var name: String
+    public let name: String
 
-    public init(walletIndex: Int,
-                accountAddress: String,
-                name: String) {
-        self.walletIndex = walletIndex
+    init(accountAddress: String, name: String) {
         self.accountAddress = accountAddress
         self.name = name
     }

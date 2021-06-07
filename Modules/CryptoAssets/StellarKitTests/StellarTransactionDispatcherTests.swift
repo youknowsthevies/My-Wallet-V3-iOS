@@ -63,8 +63,8 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
-        let sendDetails = SendDetails.valid(value: .stellar(minor: 10_000_000))
-        horizonProxy.underlyingMinimumBalance = .stellar(major: 5)
+        let sendDetails = SendDetails.valid(value: .init(amount: 10_000_000, currency: .stellar))
+        horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .stellar)
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
 
@@ -72,7 +72,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 
     func testDryRunTransaction_BelowMinimumSend() throws {
-        let sendDetails = SendDetails.valid(value: .stellar(minor: 1))
+        let sendDetails = SendDetails.valid(value: .init(amount: 1, currency: .stellar))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
@@ -96,14 +96,14 @@ class StellarTransactionDispatcherTests: XCTestCase {
 
 fileprivate extension SendDetails {
     static func valid(toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",
-                      value: CryptoValue = .stellar(major: 50)) -> SendDetails {
+                      value: CryptoValue = .create(major: 50, currency: .stellar)) -> SendDetails {
         SendDetails(
             fromAddress: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
             fromLabel: "From Label",
             toAddress: toAddress,
             toLabel: "To Label",
             value: value,
-            fee: .stellar(major: 1),
+            fee: .create(major: 1, currency: .stellar),
             memo: .text("1234567890")
         )
     }

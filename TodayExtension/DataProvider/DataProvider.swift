@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import RxSwift
 
@@ -31,15 +32,19 @@ final class DataProvider {
     /// Exchange service for any asset
     let exchange: ExchangeProviding
 
-    init(fiatCurrencyService: FiatCurrencyServiceAPI = UserInformationService()) {
+    init(
+        fiatCurrencyService: FiatCurrencyServiceAPI = UserInformationService(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+    ) {
 
         var cryptoExchangeServices: [CryptoCurrency: PairExchangeServiceAPI] = [:]
-        for cryptoCurrency in CryptoCurrency.allCases {
-            cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
-                currency: cryptoCurrency,
-                fiatCurrencyService: fiatCurrencyService
-            )
-        }
+        enabledCurrenciesService.allEnabledCryptoCurrencies
+            .forEach { cryptoCurrency in
+                cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
+                    currency: cryptoCurrency,
+                    fiatCurrencyService: fiatCurrencyService
+                )
+            }
         var fiatExchangeServices: [FiatCurrency: PairExchangeServiceAPI] = [:]
         for fiatCurrency in [FiatCurrency.GBP, FiatCurrency.EUR] {
             fiatExchangeServices[fiatCurrency] = PairExchangeService(
@@ -54,8 +59,8 @@ final class DataProvider {
         )
 
         let aaveHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .aave,
-            exchangeAPI: exchange[CryptoCurrency.aave],
+            cryptoCurrency: .erc20(.aave),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.aave)],
             fiatCurrencyService: fiatCurrencyService
         )
         let algorandHistoricalFiatService = HistoricalFiatPriceService(
@@ -79,8 +84,8 @@ final class DataProvider {
             fiatCurrencyService: fiatCurrencyService
         )
         let paxHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .pax,
-            exchangeAPI: exchange[CryptoCurrency.pax],
+            cryptoCurrency: .erc20(.pax),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.pax)],
             fiatCurrencyService: fiatCurrencyService
         )
         let polkadotHistoricalFiatService = HistoricalFiatPriceService(
@@ -94,18 +99,18 @@ final class DataProvider {
             fiatCurrencyService: fiatCurrencyService
         )
         let tetherHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .tether,
-            exchangeAPI: exchange[CryptoCurrency.tether],
+            cryptoCurrency: .erc20(.tether),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.tether)],
             fiatCurrencyService: fiatCurrencyService
         )
         let wDGLDHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .wDGLD,
-            exchangeAPI: exchange[CryptoCurrency.wDGLD],
+            cryptoCurrency: .erc20(.wdgld),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.wdgld)],
             fiatCurrencyService: fiatCurrencyService
         )
         let yearnFinanceHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .yearnFinance,
-            exchangeAPI: exchange[CryptoCurrency.yearnFinance],
+            cryptoCurrency: .erc20(.yearnFinance),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.yearnFinance)],
             fiatCurrencyService: fiatCurrencyService
         )
 

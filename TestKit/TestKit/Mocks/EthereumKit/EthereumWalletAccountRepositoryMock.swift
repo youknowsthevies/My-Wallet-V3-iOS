@@ -36,39 +36,3 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, K
         accounts
     }
 }
-
-enum EthereumAPIClientMockError: Error {
-    case mockError
-}
-
-class EthereumAPIClientMock: APIClientAPI {
-
-    var transaction = Single<EthereumHistoricalTransactionResponse>.error(EthereumAPIClientMockError.mockError)
-    func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
-        transaction
-    }
-
-    var balanceDetailsValue = Single<BalanceDetailsResponse>.error(EthereumAPIClientMockError.mockError)
-    func balanceDetails(from address: String) -> Single<BalanceDetailsResponse> {
-        balanceDetailsValue
-    }
-
-    var latestBlockValue: Single<LatestBlockResponse> = Single.error(EthereumAPIClientMockError.mockError)
-    var latestBlock: Single<LatestBlockResponse> {
-        latestBlockValue
-    }
-
-    var lastTransactionsForAccount: String?
-    var transactionsForAccountValue: Single<[EthereumHistoricalTransactionResponse]> = Single.just([])
-    func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
-        lastTransactionsForAccount = account
-        return transactionsForAccountValue
-    }
-
-    var lastPushedTransaction: EthereumTransactionFinalised?
-    var pushTransactionValue = Single.just(EthereumPushTxResponse(txHash: "txHash"))
-    func push(transaction: EthereumTransactionFinalised) -> Single<EthereumPushTxResponse> {
-        lastPushedTransaction = transaction
-        return pushTransactionValue
-    }
-}

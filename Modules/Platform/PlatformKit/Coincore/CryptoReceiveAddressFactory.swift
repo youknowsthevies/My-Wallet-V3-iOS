@@ -9,6 +9,7 @@ public protocol CryptoReceiveAddressFactory {
     typealias TxCompleted = (TransactionResult) -> Completable
 
     func makeExternalAssetAddress(
+        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
@@ -25,7 +26,12 @@ public final class CryptoReceiveAddressFactoryService {
     ) -> Result<CryptoReceiveAddress, Error> {
         let factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset) }()
         do {
-            let address = try factory.makeExternalAssetAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+            let address = try factory.makeExternalAssetAddress(
+                asset: asset,
+                address: address,
+                label: label,
+                onTxCompleted: onTxCompleted
+            )
             return .success(address)
         } catch {
             return .failure(error)

@@ -120,11 +120,15 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
-        interactor.selectedCurrencyType
-            .map {
+        interactor
+            .selectedCurrencyType
+            .map(\.logoResource)
+            .map(\.local)
+            .map { localResource in
                 .image(
                     .init(
-                        name: $0.logoImageName,
+                        name: localResource.name,
+                        bundle: localResource.bundle,
                         background: .clear,
                         offset: 0,
                         cornerRadius: .round,

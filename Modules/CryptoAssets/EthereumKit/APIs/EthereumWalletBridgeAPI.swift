@@ -17,7 +17,6 @@ public protocol EthereumWalletBridgeAPI {
     var name: Single<String> { get }
     var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }
-    var nonce: Single<BigUInt> { get }
 
     /// Streams a boolean value indicating whether if there is transaction that should complete
     var isWaitingOnTransaction: Single<Bool> { get }

@@ -5,21 +5,25 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-internal struct BadgeImageAttributes {
-    let logoImageName: String
+struct BadgeImageAttributes {
+    let imageResource: ImageResource
     let brandColor: UIColor
     let isFiat: Bool
 
-    static let empty = BadgeImageAttributes(logoImageName: "", brandColor: .white, isFiat: false)
+    static let empty = BadgeImageAttributes(
+        imageResource: .local(name: "", bundle: .platformUIKit),
+        brandColor: .white,
+        isFiat: false
+    )
 
     init(_ currencyType: CurrencyType) {
-        logoImageName = currencyType.logoImageName
+        imageResource = currencyType.logoResource
         brandColor = currencyType.brandColor
         isFiat = currencyType.isFiatCurrency
     }
 
-    init(logoImageName: String, brandColor: UIColor, isFiat: Bool) {
-        self.logoImageName = logoImageName
+    init(imageResource: ImageResource, brandColor: UIColor, isFiat: Bool) {
+        self.imageResource = imageResource
         self.brandColor = brandColor
         self.isFiat = isFiat
     }
@@ -60,16 +64,20 @@ public struct TransactionDescriptorViewModel {
                 var model: BadgeImageViewModel
                 switch attributes.isFiat {
                 case true:
+                    let localImage = attributes.imageResource.local
                     model = BadgeImageViewModel.primary(
-                        with: attributes.logoImageName,
+                        with: localImage.name,
+                        bundle: localImage.bundle,
                         contentColor: .white,
                         backgroundColor: attributes.brandColor,
                         cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                         accessibilityIdSuffix: ""
                     )
                 case false:
+                    let localImage = attributes.imageResource.local
                     model = BadgeImageViewModel.default(
-                        with: attributes.logoImageName,
+                        with: localImage.name,
+                        bundle: localImage.bundle,
                         cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                         accessibilityIdSuffix: ""
                     )
@@ -87,8 +95,10 @@ public struct TransactionDescriptorViewModel {
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
             .map { (attributes) -> BadgeImageViewModel in
+                let localImage = attributes.imageResource.local
                 let model = BadgeImageViewModel.default(
-                    with: attributes.logoImageName,
+                    with: localImage.name,
+                    bundle: localImage.bundle,
                     cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                     accessibilityIdSuffix: ""
                 )

@@ -41,11 +41,11 @@ public final class EthereumHistoricalTransactionService: HistoricalTransactionAP
     private let cachedLatestBlock: CachedValue<Int>
 
     private let bridge: Bridge
-    private let client: APIClientAPI
+    private let client: TransactionClientAPI
 
     // MARK: - Init
 
-    init(with bridge: Bridge = resolve(), client: APIClientAPI = resolve()) {
+    init(with bridge: Bridge = resolve(), client: TransactionClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
         self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())

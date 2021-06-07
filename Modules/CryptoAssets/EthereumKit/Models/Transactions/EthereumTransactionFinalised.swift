@@ -6,7 +6,14 @@ public struct EthereumTransactionFinalised: Equatable {
     public let rawTransaction: String
 
     init(transaction: EthereumTransactionCandidateSigned) {
-        transactionHash = transaction.transactionHash
-        rawTransaction = transaction.encodedTransaction.hexValue.withHex.lowercased()
+        self.init(
+            transactionHash: transaction.transactionHash,
+            rawTransaction: transaction.encodedTransaction.hexValue.withHex.lowercased()
+        )
+    }
+
+    init(transactionHash: String, rawTransaction: String) {
+        self.transactionHash = transactionHash
+        self.rawTransaction = rawTransaction
     }
 }
