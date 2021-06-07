@@ -19,34 +19,27 @@ public struct VerifyDeviceView: View {
     }
 
     public var body: some View {
-        NavigationView {
-            VStack {
-                Image.CircleIcon.verifyDevice
-                    .frame(width: 72, height: 72)
-                Text(VerifyDeviceViewString.title)
-                    .font(Font(weight: .semibold, size: 20))
-                    .textStyle(.title)
-                    .padding(EdgeInsets(top: 24, leading: 0, bottom: 8, trailing: 0))
-                Text(VerifyDeviceViewString.description)
-                    .font(Font(weight: .medium, size: 16))
-                    .textStyle(.subheading)
-                Spacer()
-                PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
-                    // TODO: add open email action here
-                }
-                .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
-                SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
-                    // TODO: add send again action here
-                }
+        VStack {
+            Image.CircleIcon.verifyDevice
+                .frame(width: 72, height: 72)
+            Text(VerifyDeviceViewString.title)
+                .font(Font(weight: .semibold, size: 20))
+                .textStyle(.title)
+                .padding(EdgeInsets(top: 24, leading: 0, bottom: 8, trailing: 0))
+            Text(VerifyDeviceViewString.description)
+                .font(Font(weight: .medium, size: 16))
+                .textStyle(.subheading)
+            Spacer()
+            PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
+                // TODO: add open email action here
             }
-            .multilineTextAlignment(.center)
-            .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
-            .navigationBarTitle(LoginViewString.navigationTitle)
-            updateNavigationBarStyle()
-            .leadingNavigationButton(.back) {
-                viewStore.send(.setVerifyDeviceVisible(false))
+            .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+            SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
+                // TODO: add send again action here
             }
         }
+        .multilineTextAlignment(.center)
+        .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
     }
 }
 
