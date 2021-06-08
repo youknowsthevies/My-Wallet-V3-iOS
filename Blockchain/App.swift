@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                     action: AppAction.core
                 )
             )
-            window.rootViewController = hostingController
+            window.setRootViewController(hostingController)
         }
         window.makeKeyAndVisible()
         eraseWalletForUITestsIfNeeded()

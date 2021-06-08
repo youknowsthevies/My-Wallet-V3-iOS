@@ -105,10 +105,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         let window = state.window
         return Effect<CoreAppAction, Never>.run { effect -> Cancellable in
-            window?.rootViewController = setupWalletUpgrade {
+            let viewController = setupWalletUpgrade {
                 effect.send(.proceedToLoggedIn)
                 effect.send(completion: .finished)
             }
+            window?.setRootViewController(viewController)
             return AnyCancellable { }
         }
     case .proceedToLoggedIn:
