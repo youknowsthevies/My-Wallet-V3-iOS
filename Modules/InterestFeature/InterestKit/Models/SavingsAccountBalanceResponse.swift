@@ -24,6 +24,6 @@ public struct SavingsAccountBalanceResponse: Decodable {
     // MARK: - Subscript
 
     subscript(currency: CryptoCurrency) -> SavingsAccountBalanceDetails? {
-        balances[currency.rawValue]
+        balances[currency.code]
     }
 }

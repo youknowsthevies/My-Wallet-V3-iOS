@@ -8,15 +8,54 @@ import RIBs
 import RxSwift
 import ToolKit
 
-public protocol DepositRootRouting: ViewableRouting {
+public protocol DepositRootRouting: AnyObject {
     /// Routes to the `Select a Funding Method` screen
     func routeToDepositLanding()
 
     /// Routes to the TransactonFlow with a given `FiatAccount`
-    func routeToDeposit(sourceAccount: FiatAccount)
+    func routeToDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?)
+
+    /// Routes to the TransactonFlow with a given `FiatAccount`
+    /// The user already has at least one linked bank.
+    /// Does not execute dismissal of top most screen (Link Bank Flow)
+    func startDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?)
+
+    /// Routes to the wire details flow
+    func routeToWireInstructions(currency: FiatCurrency)
+
+    /// Routes to the wire details flow.
+    /// Does not execute dismissal of top most screen (Payment Method Selector)
+    func startWithWireInstructions(currency: FiatCurrency)
+
+    /// Routes to the `Link a Bank Account` flow.
+    /// Does not execute dismissal of top most screen (Payment Method Selector)
+    func startWithLinkABank()
+
+    /// Routes to the `Link a Bank Account` flow
+    func routeToLinkABank()
+
+    /// Exits the bank linking flow
+    func dismissBankLinkingFlow()
+
+    /// Exits the wire instruction flow
+    func dismissWireInstructionFlow()
+
+    /// Exits the payment method selection flow
+    func dismissPaymentMethodFlow()
 
     /// Exits the TransactonFlow
     func dismissTransactionFlow()
+
+    /// Starts the deposit flow. This is available as the `DepositRootRIB`
+    /// does not own a view and we do not want to expose the entire `DepositRootRouter`
+    /// but rather only `DepositRootRouting`
+    func start()
+}
+
+extension DepositRootRouting where Self: RIBs.Router<DepositRootInteractable> {
+    func start() {
+        self.load()
+    }
 }
 
 protocol DepositRootListener: ViewListener { }
@@ -26,53 +65,119 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     weak var router: DepositRootRouting?
     weak var listener: DepositRootListener?
 
-    private let analyticsRecorder: AnalyticsEventRecorderAPI
+    // MARK: - Private Properties
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    private var paymentMethodTypes: Single<[PaymentMethodPayloadType]> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap { [linkedBanksFactory] fiatCurrency -> Single<[PaymentMethodType]> in
+                linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
+            }
+            .map { $0.map(\.method) }
+            .map { $0.map(\.rawType) }
+    }
+
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let targetAccount: FiatAccount
+
+    init(targetAccount: FiatAccount,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+        self.targetAccount = targetAccount
         self.analyticsRecorder = analyticsRecorder
+        self.linkedBanksFactory = linkedBanksFactory
+        self.fiatCurrencyService = fiatCurrencyService
         super.init()
     }
 
     override func didBecomeActive() {
         super.didBecomeActive()
-        // TODO: Implement business logic here.
+
+        Single.zip(linkedBanksFactory.linkedBanks,
+                   paymentMethodTypes,
+                   fiatCurrencyService.fiatCurrency)
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onSuccess: { [weak self] values in
+                guard let self = self else { return }
+                let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
+                if linkedBanks.isEmpty {
+                    self.handleNoLinkedBanks(
+                        paymentMethodTypes,
+                        fiatCurrency: fiatCurrency
+                    )
+                } else {
+                    self.router?.routeToDeposit(
+                        target: self.targetAccount,
+                        sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
+                    )
+                }
+            })
+            .disposeOnDeactivate(interactor: self)
     }
 
-    override func willResignActive() {
-        super.willResignActive()
-        // TODO: Pause any business logic.
+    func bankLinkingComplete() {
+        linkedBanksFactory
+            .linkedBanks
+            .compactMap(\.first)
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onSuccess: { [weak self] linkedBankAccount in
+                guard let self = self else { return }
+                self.router?.routeToDeposit(
+                    target: self.targetAccount,
+                    sourceAccount: linkedBankAccount
+                )
+            })
+            .disposeOnDeactivate(interactor: self)
+    }
+
+    func bankLinkingClosed(isInteractive: Bool) {
+        router?.dismissBankLinkingFlow()
+    }
+
+    func closePaymentMethodScreen() {
+        router?.dismissPaymentMethodFlow()
     }
 
     func routeToWireTransfer() {
-        unimplemented()
+        fiatCurrencyService
+            .fiatCurrency
+            .observeOn(MainScheduler.asyncInstance)
+            .subscribe(onSuccess: { [weak self] fiatCurrency in
+                self?.router?.routeToWireInstructions(currency: fiatCurrency)
+            })
+            .disposeOnDeactivate(interactor: self)
     }
 
     func routeToLinkedBanks() {
-        unimplemented()
+        router?.routeToLinkABank()
     }
 
-    func routeToAddABank() {
-        unimplemented()
-    }
-
-    func routeToTransactionFlow(sourceAccount: LinkedBankAccount) {
-        unimplemented()
+    func dismissTransactionFlow() {
+        router?.dismissTransactionFlow()
     }
 
     func presentKYCTiersScreen() {
         unimplemented()
     }
 
-    func dismissTransactionFlow() {
-        unimplemented()
+    func dismissAddNewBankAccount() {
+        router?.dismissWireInstructionFlow()
     }
 
-    private lazy var routeViewDidAppear: Void = {
-        router?.routeToDepositLanding()
-    }()
+    // MARK: - Private Functions
 
-    func viewDidAppear() {
-        // if first time, got to variant router
-        _ = routeViewDidAppear
+    private func handleNoLinkedBanks(_ paymentMethodTypes: [PaymentMethodPayloadType], fiatCurrency: FiatCurrency) {
+        if paymentMethodTypes.contains(.bankAccount) && paymentMethodTypes.contains(.bankTransfer) {
+            self.router?.routeToDepositLanding()
+        } else if paymentMethodTypes.contains(.bankTransfer) {
+            self.router?.startWithLinkABank()
+        } else if paymentMethodTypes.contains(.bankAccount) {
+            self.router?.startWithWireInstructions(currency: fiatCurrency)
+        } else {
+            // TODO: Show that deposit is not supported
+        }
     }
 }

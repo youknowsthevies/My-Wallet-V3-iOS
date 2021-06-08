@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import RxSwift
 import UIKit
 
@@ -9,6 +10,7 @@ public protocol RemoteNotificationTokenSending: AnyObject {
     /// Typically called after the user has identified himself with his PIN since the
     /// user credentials are known at that time
     func sendTokenIfNeeded() -> Single<Void>
+    func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error>
 }
 
 /// A protocol defining an object that reacts to the registration, or failure, of remote notifications.

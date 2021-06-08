@@ -59,7 +59,12 @@ final class StellarAsset: CryptoAsset {
 
     func parse(address: String) -> Single<ReceiveAddress?> {
         let result = try? addressFactory
-            .makeExternalAssetAddress(address: address, label: address, onTxCompleted: { _ in Completable.empty() })
+            .makeExternalAssetAddress(
+                asset: .stellar,
+                address: address,
+                label: address,
+                onTxCompleted: { _ in Completable.empty() }
+            )
         return .just(result)
     }
 

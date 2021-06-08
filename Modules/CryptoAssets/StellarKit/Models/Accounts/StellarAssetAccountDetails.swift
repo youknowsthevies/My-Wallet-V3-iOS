@@ -3,17 +3,15 @@
 import PlatformKit
 import stellarsdk
 
-public struct StellarAssetAccountDetails: AssetAccountDetails {
-    public typealias Account = StellarAssetAccount
-
-    public var account: StellarAssetAccount
-    public var balance: CryptoValue
+public struct StellarAccountDetails {
+    public let account: StellarAssetAccount
+    public let balance: CryptoValue
 }
 
 // MARK: Extension
 
-public extension StellarAssetAccountDetails {
-    static func unfunded(accountID: String) -> StellarAssetAccountDetails {
+public extension StellarAccountDetails {
+    static func unfunded(accountID: String) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountID,
             name: CryptoCurrency.stellar.defaultWalletName,
@@ -22,9 +20,9 @@ public extension StellarAssetAccountDetails {
             subentryCount: 0
         )
 
-        return StellarAssetAccountDetails(
+        return StellarAccountDetails(
             account: account,
-            balance: CryptoValue.stellar(major: 0)
+            balance: CryptoValue.stellarZero
         )
     }
 }

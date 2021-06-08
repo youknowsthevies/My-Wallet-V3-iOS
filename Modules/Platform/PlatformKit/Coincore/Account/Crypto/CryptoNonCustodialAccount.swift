@@ -4,6 +4,8 @@ import RxSwift
 
 public protocol CryptoNonCustodialAccount: CryptoAccount, NonCustodialAccount {
     func updateLabel(_ newLabel: String) -> Completable
+    /// Creates and return a On Chain `TransactionEngine` for this account `CryptoCurrency`.
+    func createTransactionEngine() -> Any
 }
 
 extension CryptoNonCustodialAccount {

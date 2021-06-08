@@ -6,40 +6,36 @@ import PlatformKit
 import RxSwift
 
 public protocol ERC20BalanceServiceAPI {
-    associatedtype Token: ERC20Token
-
-    var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> { get }
-    func balance(for address: EthereumAddress) -> Single<ERC20TokenValue<Token>>
+    func accountBalance(cryptoCurrency: CryptoCurrency) -> Single<CryptoValue>
+    func balance(for address: EthereumAddress, cryptoCurrency: CryptoCurrency) -> Single<CryptoValue>
 }
 
-public class ERC20BalanceService<Token: ERC20Token>: ERC20BalanceServiceAPI {
+class ERC20BalanceService: ERC20BalanceServiceAPI {
     private let bridge: EthereumWalletBridgeAPI
-    private let accountClient: AnyERC20AccountAPIClient<Token>
-
-    init<APIClient: ERC20AccountAPIClientAPI>(
-        with bridge: EthereumWalletBridgeAPI = resolve(),
-        accountClient: APIClient = resolve()) where APIClient.Token == Token {
-        self.bridge = bridge
-        self.accountClient = AnyERC20AccountAPIClient(accountAPIClient: accountClient)
-    }
+    private let accountClient: ERC20AccountAPIClientAPI
 
     init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         accountClient: AnyERC20AccountAPIClient<Token> = resolve()) {
+         accountClient: ERC20AccountAPIClientAPI = resolve()) {
         self.bridge = bridge
         self.accountClient = accountClient
     }
 
-    public var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> {
+    func accountBalance(cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
         bridge.address
-            .flatMap(weak: self) { (self, address) -> Single<ERC20TokenValue<Token>> in
-                self.balance(for: address)
+            .flatMap(weak: self) { (self, address) -> Single<CryptoValue> in
+                self.balance(for: address, cryptoCurrency: cryptoCurrency)
             }
     }
 
-    public func balance(for address: EthereumAddress) -> Single<ERC20TokenValue<Token>> {
-        accountClient
-            .fetchAccountSummary(from: address.publicKey)
+    func balance(for address: EthereumAddress, cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
+        guard let contractAddress = cryptoCurrency.contractAddress else {
+            fatalError("Using ERC20BalanceService with \(cryptoCurrency.code)")
+        }
+        return accountClient
+            .fetchAccountSummary(from: address.publicKey, contractAddress: contractAddress)
             .map { $0.balance }
-            .map { Token.cryptoValueFrom(minorValue: $0) ?? Token.zeroValue }
+            .map { stringValue -> CryptoValue in
+                CryptoValue.create(minor: stringValue, currency: cryptoCurrency) ?? CryptoValue.zero(currency: cryptoCurrency)
+            }
     }
 }

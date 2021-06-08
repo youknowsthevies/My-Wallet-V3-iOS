@@ -32,11 +32,12 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Private Properties
 
     private let feeCache: CachedValue<EthereumTransactionFee>
-    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
+    private let feeService: EthereumFeeServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-    private let ethereumWalletService: EthereumWalletServiceAPI
     private let priceService: PriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
+    private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
+    private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
     private var receiveAddress: Single<ReceiveAddress> {
         switch transactionTarget {
@@ -51,21 +52,25 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     // MARK: - Init
 
-    init(requireSecondPassword: Bool,
-         priceService: PriceServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
-         ethereumWalletService: EthereumWalletServiceAPI = resolve(),
-         ethereumWalletBridgeAPI: EthereumWalletBridgeAPI = resolve()) {
+    init(
+        requireSecondPassword: Bool,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        feeService: EthereumFeeServiceAPI = resolve(),
+        ethereumWalletBridgeAPI: EthereumWalletBridgeAPI = resolve(),
+        transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
+        ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
+    ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.feeService = feeService
-        self.ethereumWalletService = ethereumWalletService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
+        self.transactionBuildingService = transactionBuildingService
+        self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         self.bridge = ethereumWalletBridgeAPI
-        feeCache = CachedValue(configuration: .init(refreshType: .periodic(seconds: 20)))
+        feeCache = CachedValue(configuration: .init(refreshType: .onSubscription))
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees
+            self.feeService.fees(cryptoCurrency: .ethereum)
         }
     }
 
@@ -201,26 +206,33 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        guard let crypto = pendingTransaction.amount.cryptoValue else {
-            preconditionFailure("Not a `CryptoValue`")
-        }
-        guard let ethereumValue = try? EthereumValue(crypto: crypto) else {
+        guard pendingTransaction.amount.currencyType == .crypto(.ethereum) else {
             preconditionFailure("Not an ethereum value")
         }
 
-        return receiveAddress
+        let address = receiveAddress
             .map(\.address)
             .map { try EthereumAccountAddress(string: $0) }
             .map { $0.ethereumAddress }
-            .flatMap(weak: self) { (self, address) -> Single<EthereumTransactionCandidate> in
-                self.ethereumWalletService
-                    .buildTransaction(with: ethereumValue, to: address, feeLevel: pendingTransaction.feeLevel)
+        return Single.zip(feeCache.valueSingle, address)
+            .flatMap(weak: self) { (self, values) -> Single<EthereumTransactionCandidate> in
+                let (fee, address) = values
+                return self.transactionBuildingService.buildTransaction(
+                    amount: pendingTransaction.amount,
+                    to: address,
+                    feeLevel: pendingTransaction.feeLevel,
+                    fee: fee,
+                    contractAddress: nil
+                )
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in
-                self.ethereumWalletService
+                self.ethereumTransactionDispatcher
                     .send(transaction: candidate, secondPassword: secondPassword)
             }
-            .map { TransactionResult.hashed(txHash: $0.transactionHash, amount: pendingTransaction.amount) }
+            .map(\.transactionHash)
+            .map { transactionHash -> TransactionResult in
+                .hashed(txHash: transactionHash, amount: pendingTransaction.amount)
+            }
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {

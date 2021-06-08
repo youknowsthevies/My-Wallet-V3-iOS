@@ -9,11 +9,9 @@ struct StellarServices: StellarDependenciesAPI {
     let accounts: StellarAccountAPI
 
     init(
-        configurationService: StellarConfigurationAPI = resolve(),
         repository: StellarWalletAccountRepositoryAPI = resolve()
     ) {
         accounts = StellarAccountService(
-            configurationService: configurationService,
             repository: repository
         )
     }

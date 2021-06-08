@@ -4,7 +4,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-final class SelectPaymentMethodService {
+public final class SelectPaymentMethodService {
 
     // MARK: - Properties
 
@@ -56,9 +56,9 @@ final class SelectPaymentMethodService {
 
     // MARK: - Setup
 
-    init(paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         kycTiers: KYCTiersServiceAPI = resolve()) {
+    public init(paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+                fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+                kycTiers: KYCTiersServiceAPI = resolve()) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiers = kycTiers

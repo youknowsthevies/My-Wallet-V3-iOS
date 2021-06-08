@@ -90,7 +90,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
         switch verificationState {
         case .ineligible:
             return PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.region.name),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.region.name, .platformUIKit),
                 title: LocalizedString.Ineligible.title,
                 subtitle: LocalizedString.Ineligible.subtitle,
                 button: actionButton(title: LocalizedString.Ineligible.button)
@@ -105,14 +105,14 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
             )
         case .manualReview:
             return PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.triangleError.name),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.triangleError.name, .platformUIKit),
                 title: LocalizedString.ManualReview.title,
                 subtitle: LocalizedString.ManualReview.subtitle,
                 button: actionButton(title: LocalizedString.button)
             )
         case .pending:
             return PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.clock.name),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.clock.name, .platformUIKit),
                 title: LocalizedString.PendingReview.title,
                 subtitle: LocalizedString.PendingReview.subtitle,
                 button: actionButton(title: LocalizedString.button)

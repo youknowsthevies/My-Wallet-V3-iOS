@@ -1,0 +1,196 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import DIKit
+import PlatformKit
+import PlatformUIKit
+import RIBs
+import RxCocoa
+import RxSwift
+import ToolKit
+
+protocol WithdrawRootInteractable: Interactable,
+                                   TransactionFlowListener,
+                                   AddNewBankAccountListener,
+                                   PaymentMethodListener {
+    var router: WithdrawRootRouting? { get set }
+    var listener: WithdrawRootListener? { get set }
+
+    func bankLinkingComplete()
+    func bankLinkingClosed(isInteractive: Bool)
+}
+
+final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawRootRouting {
+
+    // MARK: - Private Properties
+
+    private var transactionRouter: ViewableRouting?
+    private var paymentMethodRouter: ViewableRouting?
+    private var linkBankFlowRouter: LinkBankFlowStarter?
+    private let topMostViewControllerProviding: TopMostViewControllerProviding
+    private let disposeBag = DisposeBag()
+
+    // MARK: - Init
+
+    init(interactor: WithdrawRootInteractable,
+         topMostViewControllerProviding: TopMostViewControllerProviding = resolve()) {
+        self.topMostViewControllerProviding = topMostViewControllerProviding
+        super.init(interactor: interactor)
+        interactor.router = self
+    }
+
+    // MARK: - Overrides
+
+    public override func didLoad() {
+        super.didLoad()
+        interactor.activate()
+    }
+
+    // MARK: - WithdrawRootRouting
+
+    func startWithLinkABank() {
+        showLinkABankFlow()
+    }
+
+    func routeToLinkABank() {
+        dismissTopMost(weak: self) { (self) in
+            self.showLinkABankFlow()
+        }
+    }
+
+    func startWithWireInstructions(currency: FiatCurrency) {
+        showWireTransferScreen(fiatCurrency: currency)
+    }
+
+    func routeToWireInstructions(currency: FiatCurrency) {
+        dismissTopMost(weak: self) { (self) in
+            self.showWireTransferScreen(fiatCurrency: currency)
+        }
+    }
+
+    func routeToAddABank() {
+        let builder = PaymentMethodBuilder()
+        paymentMethodRouter = builder.build(withListener: interactor)
+        if let router = paymentMethodRouter {
+            let viewControllable = router.viewControllable.uiviewController
+            attachChild(router)
+            present(viewController: viewControllable)
+        }
+    }
+
+    func dismissBankLinkingFlow() {
+        topMostViewControllerProviding
+            .topMostViewController?
+            .dismiss(animated: true, completion: nil)
+        linkBankFlowRouter = nil
+    }
+
+    func dismissWireInstructionFlow() {
+        detachCurrentChild()
+        topMostViewControllerProviding
+            .topMostViewController?
+            .dismiss(animated: true, completion: nil)
+    }
+
+    func dismissTransactionFlow() {
+        guard let router = transactionRouter else { return }
+        detachChild(router)
+        transactionRouter = nil
+    }
+
+    func dismissPaymentMethodFlow() {
+        if let router = paymentMethodRouter {
+            detachChild(router)
+            topMostViewControllerProviding
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
+            paymentMethodRouter = nil
+        }
+    }
+
+    func startWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
+        showWithdrawFlow(sourceAccount: sourceAccount, destination: destination)
+    }
+
+    func routeToWithdraw(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
+        dismissTopMost(weak: self) { (self) in
+            self.showWithdrawFlow(sourceAccount: sourceAccount, destination: destination)
+        }
+    }
+
+    // MARK: - Private Functions
+
+    private func showWithdrawFlow(sourceAccount: FiatAccount, destination: LinkedBankAccount?) {
+        let builder = TransactionFlowBuilder()
+        transactionRouter = builder.build(
+            withListener: interactor,
+            action: .withdraw,
+            sourceAccount: sourceAccount,
+            target: destination
+        )
+        if let router = transactionRouter {
+            let viewControllable = router.viewControllable.uiviewController
+            attachChild(router)
+            present(viewController: viewControllable)
+        }
+    }
+
+    private func showWireTransferScreen(fiatCurrency: FiatCurrency) {
+        let builder = AddNewBankAccountBuilder(currency: fiatCurrency, isOriginDeposit: false)
+        let addNewBankRouter = builder.build(listener: interactor)
+        let viewControllable = addNewBankRouter.viewControllable.uiviewController
+        attachChild(addNewBankRouter)
+        present(viewController: viewControllable)
+    }
+
+    // MARK: - Private methods
+
+    private func detachCurrentChild() {
+        guard let currentRouter = children.last else {
+            return
+        }
+        detachChild(currentRouter)
+    }
+
+    private func showLinkABankFlow() {
+        let builder = LinkBankFlowRootBuilder()
+        let router = builder.build()
+        linkBankFlowRouter = router
+
+        router.startFlow()
+            .subscribe(onNext: { [weak self] effect in
+                guard let self = self else { return }
+                switch effect {
+                case .closeFlow(let isInteractive):
+                    self.interactor.bankLinkingClosed(isInteractive: isInteractive)
+                case .bankLinked:
+                    self.interactor.bankLinkingComplete()
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func present(viewController: UIViewController) {
+        guard let topViewController = topMostViewControllerProviding.topMostViewController else {
+            fatalError("Expected a ViewController")
+        }
+        guard topViewController is UINavigationController == false else {
+            fatalError("Cannot present a `UINavigationController` over another.")
+        }
+        guard viewController is UINavigationController == false else {
+            topViewController.present(viewController, animated: true, completion: nil)
+            return
+        }
+        let navController = UINavigationController(rootViewController: viewController)
+        topViewController.present(navController, animated: true, completion: nil)
+    }
+
+    private func dismissTopMost(weak object: WithdrawRootRouter, _ selector: @escaping (WithdrawRootRouter) -> Void) {
+        guard let viewController = topMostViewControllerProviding.topMostViewController else {
+            selector(object)
+            return
+        }
+        viewController.dismiss(animated: true, completion: {
+            selector(object)
+        })
+    }
+}

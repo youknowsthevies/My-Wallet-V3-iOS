@@ -5,7 +5,13 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
+public protocol EthereumAccountDetailsServiceAPI {
+
+    /// Streams the default account details.
+    func accountDetails() -> Single<EthereumAssetAccountDetails>
+}
+
+class EthereumAccountDetailsService: EthereumAccountDetailsServiceAPI {
 
     // MARK: - Properties
 
@@ -20,18 +26,16 @@ public class EthereumAssetAccountDetailsService: AssetAccountDetailsAPI {
     // MARK: - Injected
 
     private let bridge: EthereumWalletBridgeAPI
-    private let client: APIClientAPI
+    private let client: BalanceClientAPI
 
     // MARK: - Setup
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(), client: APIClientAPI = resolve()) {
+    init(with bridge: EthereumWalletBridgeAPI = resolve(), client: BalanceClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
     }
 
-    // TODO: IOS-3217 Method should use accountID parameter.
-    /// Streams the account details
-    public func accountDetails(for accountID: String) -> Single<EthereumAssetAccountDetails> {
+    func accountDetails() -> Single<EthereumAssetAccountDetails> {
         Single
             .zip(bridge.account, balanceDetails)
             .map { accountAndDetails -> EthereumAssetAccountDetails in

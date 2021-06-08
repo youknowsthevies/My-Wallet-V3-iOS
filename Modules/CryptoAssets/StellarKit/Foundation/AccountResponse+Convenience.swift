@@ -11,7 +11,7 @@ extension AccountResponse {
         return CryptoValue.create(major: value, currency: .stellar)
     }
 
-    func toAssetAccountDetails() -> StellarAssetAccountDetails {
+    func toAssetAccountDetails() -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountId,
             name: CryptoCurrency.stellar.defaultWalletName,
@@ -20,7 +20,7 @@ extension AccountResponse {
             subentryCount: Int(subentryCount)
         )
 
-        return StellarAssetAccountDetails(
+        return StellarAccountDetails(
             account: account,
             balance: totalBalance
         )

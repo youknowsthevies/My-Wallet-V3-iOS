@@ -183,17 +183,17 @@ final class AirdropStatusScreenPresenter {
 
         let title: String
         let description: String
-        let imageName: String
+        let imageResource: ImageResource
 
         switch campaignName {
         case .blockstack:
             title = LocalizedString.Blockstack.title
             description = LocalizedString.Blockstack.description
-            imageName = TriageCryptoCurrency.blockstack.logoImageName
+            imageResource = TriageCryptoCurrency.blockstack.logoResource
         case .sunriver:
             title = LocalizedString.Stellar.title
             description = LocalizedString.Stellar.description
-            imageName = CryptoCurrency.stellar.logoImageName
+            imageResource = CryptoCurrency.stellar.logoResource
         }
 
         titleRelay.accept(
@@ -214,10 +214,12 @@ final class AirdropStatusScreenPresenter {
             )
         )
 
+        let localImage = imageResource.local
         imageRelay.accept(
             ImageViewContent(
-                imageName: imageName,
-                accessibility: .id(AccessibilityId.thumbImageView)
+                imageName: localImage.name,
+                accessibility: .id(AccessibilityId.thumbImageView),
+                bundle: localImage.bundle
             )
         )
     }

@@ -16,7 +16,19 @@ public protocol EnabledCurrenciesServiceAPI {
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
-    let allEnabledCryptoCurrencies: [CryptoCurrency] = CryptoCurrency.allCases
+    let allEnabledCryptoCurrencies: [CryptoCurrency] = [
+        .bitcoin,
+        .ethereum,
+        .bitcoinCash,
+        .stellar,
+        .algorand,
+        .polkadot,
+        .erc20(.aave),
+        .erc20(.yearnFinance),
+        .erc20(.wdgld),
+        .erc20(.pax),
+        .erc20(.tether)
+    ]
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
 
     var depositEnabledFiatCurrencies: [FiatCurrency] {

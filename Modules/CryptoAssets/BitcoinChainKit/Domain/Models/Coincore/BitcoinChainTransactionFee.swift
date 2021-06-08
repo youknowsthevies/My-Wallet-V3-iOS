@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import PlatformKit
 import RxSwift
 import TransactionKit
@@ -43,12 +44,12 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
         let priorityFee = try values.decode(Int.self, forKey: .priority)
         switch Token.coin {
         case .bitcoin:
-            regular = CryptoValue.bitcoin(satoshis: regularFee)
-            priority = CryptoValue.bitcoin(satoshis: priorityFee)
+            regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoin)
+            priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoin)
             limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
         case .bitcoinCash:
-            regular = CryptoValue.bitcoinCash(satoshis: regularFee)
-            priority = CryptoValue.bitcoinCash(satoshis: priorityFee)
+            regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoinCash)
+            priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoinCash)
             limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
         }
     }
@@ -57,11 +58,11 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
         self.limits = limits
         switch Token.coin {
         case .bitcoin:
-            self.regular = CryptoValue.bitcoin(satoshis: regular)
-            self.priority = CryptoValue.bitcoin(satoshis: priority)
+            self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoin)
+            self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoin)
         case .bitcoinCash:
-            self.regular = CryptoValue.bitcoinCash(satoshis: regular)
-            self.priority = CryptoValue.bitcoinCash(satoshis: priority)
+            self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoinCash)
+            self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoinCash)
         }
     }
 }

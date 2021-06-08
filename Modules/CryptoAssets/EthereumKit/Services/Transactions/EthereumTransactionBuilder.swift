@@ -5,6 +5,12 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
+public enum EthereumKitValidationError: TransactionValidationError {
+    case noGasPrice
+    case noGasLimit
+    case unknown
+}
+
 protocol EthereumTransactionBuilderAPI {
 
     func build(transaction: EthereumTransactionCandidate, nonce: BigUInt) -> Result<EthereumTransactionCandidateCosted, EthereumKitValidationError>

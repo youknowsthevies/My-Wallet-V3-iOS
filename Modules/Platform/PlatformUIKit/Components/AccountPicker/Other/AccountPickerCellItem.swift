@@ -8,11 +8,13 @@ struct AccountPickerCellItem: IdentifiableType {
     // MARK: - Properties
 
     enum Presenter {
+        case linkedBankAccount(LinkedBankAccountCellPresenter)
         case accountGroup(AccountGroupBalanceCellPresenter)
         case singleAccount(AccountCurrentBalanceCellPresenter)
     }
 
     enum Interactor {
+        case linkedBankAccount(LinkedBankAccount)
         case accountGroup(AccountGroup, AccountGroupBalanceCellInteractor)
         case singleAccount(SingleAccount, AssetBalanceViewInteracting)
     }
@@ -26,6 +28,11 @@ struct AccountPickerCellItem: IdentifiableType {
 
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
+        case .linkedBankAccount(let account):
+            self.account = account
+            presenter = .linkedBankAccount(
+                .init(account: account, action: assetAction)
+            )
         case .singleAccount(let account, let interactor):
             self.account = account
             presenter = .singleAccount(

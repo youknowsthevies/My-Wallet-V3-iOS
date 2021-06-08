@@ -67,7 +67,7 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
             from: response.from,
             accountAddress: accountAddress
         )
-        self.amount = CryptoValue.ether(minor: response.value) ?? .etherZero
+        self.amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .ethereum)
         self.transactionHash = response.hash
         self.createdAt = response.createdAt
         self.fee = EthereumHistoricalTransaction.fee(

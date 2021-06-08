@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import PlatformKit
 
 public struct BitcoinTransactionFee: TransactionFee, Decodable {
@@ -26,14 +27,14 @@ public struct BitcoinTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        regular = CryptoValue.bitcoin(satoshis: regularFee)
-        priority = CryptoValue.bitcoin(satoshis: priorityFee)
+        regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoin)
+        priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoin)
         limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
     }
 
     init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue.bitcoin(satoshis: regular)
-        self.priority = CryptoValue.bitcoin(satoshis: priority)
+        self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoin)
+        self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoin)
     }
 }

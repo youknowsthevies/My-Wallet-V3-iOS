@@ -95,9 +95,6 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
     func sections(interactors: [TargetSelectionPageCellItem.Interactor],
                   action: AssetAction) -> [TargetSelectionPageSectionModel] {
-        guard action == .send else {
-            fatalError("given action: \(action) is not supported")
-        }
 
         let additionalWallets = interactors.compactMap { interactor -> TargetSelectionPageCellItem? in
             if !interactor.isWalletInputField {
@@ -109,7 +106,12 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         var sections: [TargetSelectionPageSectionModel] = []
         if !additionalWallets.isEmpty {
             sections.append(
-                .destination(header: provideSectionHeader(action: action, title: .orSelect), items: additionalWallets)
+                .destination(
+                    header: provideSectionHeader(
+                                action: action,
+                                title: sourceAccount is NonCustodialAccount ? .orSelect : .to),
+                    items: additionalWallets
+                )
             )
         }
         return sections
@@ -120,15 +122,9 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
 private func provideSectionHeader(action: AssetAction, title: TargetDestinationTitle) -> TargetSelectionHeaderBuilder {
     switch action {
-    case .swap:
-        return TargetSelectionHeaderBuilder(
-            headerType: .section(
-                .init(
-                    sectionTitle: title.text
-                )
-            )
-        )
-    case .send:
+    case .swap,
+         .send,
+         .withdraw:
         return TargetSelectionHeaderBuilder(
             headerType: .section(
                 .init(
@@ -139,8 +135,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
     case .deposit,
          .receive,
          .sell,
-         .viewActivity,
-         .withdraw:
+         .viewActivity:
         unimplemented()
     }
 }

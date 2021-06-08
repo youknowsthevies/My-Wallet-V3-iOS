@@ -109,8 +109,10 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
         switch currency {
         case .fiat(let fiatCurrency):
+            let image = fiatCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .primary(
-                with: fiatCurrency.logoImageName,
+                with: image.name,
+                bundle: image.bundle,
                 contentColor: .white,
                 backgroundColor: .fiat,
                 accessibilityIdSuffix: ""
@@ -118,8 +120,10 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             badgeImageViewModel.marginOffsetRelay.accept(0)
             badgeRelay.accept(badgeImageViewModel)
         case .crypto(let cryptoCurrency):
+            let image = cryptoCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .default(
-                with: cryptoCurrency.logoImageName,
+                with: image.name,
+                bundle: image.bundle,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )

@@ -20,9 +20,10 @@ final class AssetPriceCellPresenter {
             interactor: interactor.priceViewInteractor,
             alignment: .trailing
         )
-        thumbnailContent = .init(
-            imageName: currency.filledImageSmallName,
-            bundle: .platformUIKit
+        let localImage = currency.logoResource.local
+        thumbnailContent = ImageViewContent(
+            imageName: localImage.name,
+            bundle: localImage.bundle
         )
         titleLabelContent = .init(
             text: currency.name,

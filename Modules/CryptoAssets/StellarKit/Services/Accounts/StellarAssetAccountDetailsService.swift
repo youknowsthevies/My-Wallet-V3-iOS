@@ -6,18 +6,20 @@ import RxSwift
 import stellarsdk
 import ToolKit
 
-final class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
-    typealias AccountDetails = StellarAssetAccountDetails
+public protocol StellarAccountDetailsServiceAPI {
+    func accountDetails(for accountID: String) -> Single<StellarAccountDetails>
+}
 
+final class StellarAccountDetailsService: StellarAccountDetailsServiceAPI {
     private let horizonProxy: HorizonProxyAPI
 
     init(horizonProxy: HorizonProxyAPI = resolve()) {
         self.horizonProxy = horizonProxy
     }
 
-    func accountDetails(for accountID: String) -> Single<AccountDetails> {
+    func accountDetails(for accountID: String) -> Single<StellarAccountDetails> {
         horizonProxy.accountResponse(for: accountID)
-            .map { response -> AccountDetails in
+            .map { response -> StellarAccountDetails in
                 response.toAssetAccountDetails()
             }
             .catchError { error in
@@ -25,7 +27,7 @@ final class StellarAssetAccountDetailsService: AssetAccountDetailsAPI {
                 // funded), catch that error and return a StellarAccount with 0 balance
                 switch error {
                 case StellarAccountError.noDefaultAccount:
-                    return Single.just(AccountDetails.unfunded(accountID: accountID))
+                    return Single.just(StellarAccountDetails.unfunded(accountID: accountID))
                 default:
                     throw error
                 }

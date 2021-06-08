@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 @testable import PlatformKit
 import RxBlocking
 import RxRelay
 import RxSwift
 import RxTest
+import ToolKit
 import XCTest
 
 class CustodialMoneyBalanceFetcherTests: XCTestCase {
@@ -16,6 +18,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
     var scheduler: TestScheduler!
 
     override func setUp() {
+
         disposeBag = DisposeBag()
         /// TestScheduler with `0.001` resolution (milliseconds)
         scheduler = TestScheduler(initialClock: 0, resolution: 0.001, simulateProcessingDelay: false)
@@ -37,7 +40,8 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
                 balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "2", withdrawable: "2")]
-            )
+            ),
+            enabledCurrenciesService: EnabledCurrenciesService(featureFlagService: InternalFeatureFlagServiceMock())
         )
 
         let events = obervedIsFundedEvents(times: [50, 100, 150, 200])
@@ -65,7 +69,8 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
                 balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "0", withdrawable: "0")]
-            )
+            ),
+            enabledCurrenciesService: EnabledCurrenciesService(featureFlagService: InternalFeatureFlagServiceMock())
         )
 
         let events = obervedIsFundedEvents(times: [20, 30, 40])
@@ -87,7 +92,8 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         api.underlyingCustodialBalance = CustodialAccountBalanceStates(
             response: CustodialBalanceResponse(
                 balances: [currency.code : .init(pending: "0", pendingDeposit: "0", pendingWithdrawal: "0", available: "1", withdrawable: "1")]
-            )
+            ),
+            enabledCurrenciesService: EnabledCurrenciesService(featureFlagService: InternalFeatureFlagServiceMock())
         )
 
         let events = obervedIsFundedEvents(times: [20, 30, 40])
@@ -145,7 +151,7 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
     func testNilResponseBalance() {
         api.underlyingCustodialBalance = .absent
         let response = CustodialBalanceResponse(balances: [:])
-        let events = obervedBalanceEvents(
+        let events = observedBalanceEvents(
             data: [(20, response)]
         )
         let expectedStates = CustodialAccountBalanceStates()
@@ -164,14 +170,20 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testZeroedResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [
-                                                currency.code: .init(pending: "0",
-                                                                     pendingDeposit: "0",
-                                                                     pendingWithdrawal: "0",
-                                                                     available: "0",
-                                                                     withdrawable: "0")
-        ])
-        let events = obervedBalanceEvents(
+
+        let response = CustodialBalanceResponse(
+            balances: [
+                currency.code : .init(
+                    pending: "0",
+                    pendingDeposit: "0",
+                    pendingWithdrawal: "0",
+                    available: "0",
+                    withdrawable: "0"
+                )
+            ]
+        )
+
+        let events = observedBalanceEvents(
             data: [(20, response)]
         )
         var expectedStates = CustodialAccountBalanceStates()
@@ -194,15 +206,19 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
 
     func testValidResponse() {
         api.underlyingCustodialBalance = .absent
-        let response = CustodialBalanceResponse(balances: [
-            currency.code: .init(pending: "0",
-                                 pendingDeposit: "0",
-                                 pendingWithdrawal: "0",
-                                 available: "10",
-                                 withdrawable: "10")
-        ])
-        let events = obervedBalanceEvents(data: [(40, response)])
 
+        let response = CustodialBalanceResponse(balances: [
+            currency.code: .init(
+                pending: "0",
+                pendingDeposit: "0",
+                pendingWithdrawal: "0",
+                available: "10",
+                withdrawable: "10"
+            )
+        ]
+        )
+
+        let events = observedBalanceEvents(data: [(40, response)])
         var expectedStates = CustodialAccountBalanceStates()
         expectedStates[.crypto(currency)] = CustodialAccountBalanceState.present(
             CustodialAccountBalance(currency: .crypto(currency), response: response[.crypto(currency)]!)
@@ -221,13 +237,25 @@ class CustodialMoneyBalanceFetcherTests: XCTestCase {
         XCTAssertEqual(value, expectedStates)
     }
 
-    private func obervedBalanceEvents(data: [(refresh: Int,
+    class InternalFeatureFlagServiceMock: InternalFeatureFlagServiceAPI {
+        func isEnabled(_ feature: InternalFeature) -> Bool {
+            false
+        }
+        func enable(_ feature: InternalFeature) { }
+        func enable(_ features: [InternalFeature]) { }
+        func disable(_ feature: InternalFeature) { }
+    }
+
+    private func observedBalanceEvents(data: [(refresh: Int,
                                               response: CustodialBalanceResponse)]) -> [Recorded<Event<CustodialAccountBalanceStates>>] {
         let observer = scheduler.createObserver(CustodialAccountBalanceStates.self)
 
         for item in data {
             scheduler.scheduleAt(item.refresh - 1) { [unowned self] in
-                self.api.underlyingCustodialBalance = .init(response: item.response)
+                self.api.underlyingCustodialBalance = CustodialAccountBalanceStates(
+                    response: item.response,
+                    enabledCurrenciesService: EnabledCurrenciesService(featureFlagService: InternalFeatureFlagServiceMock())
+                )
             }
         }
 

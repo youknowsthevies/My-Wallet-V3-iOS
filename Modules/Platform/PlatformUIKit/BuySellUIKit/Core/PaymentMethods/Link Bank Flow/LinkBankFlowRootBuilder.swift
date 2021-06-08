@@ -7,7 +7,7 @@ import RIBs
 public protocol LinkBankFlowRootBuildable {
     /// Builds the flow for linking a new bank
     /// - Parameter presentingController: A `NavigationControllerAPI` object that acts as a presenting controller
-    func build(presentingController: NavigationControllerAPI?) -> LinkBankFlowStarter
+    func build() -> LinkBankFlowStarter
 }
 
 public final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
@@ -15,13 +15,12 @@ public final class LinkBankFlowRootBuilder: LinkBankFlowRootBuildable {
     public init() {
     }
 
-    public func build(presentingController: NavigationControllerAPI?) -> LinkBankFlowStarter {
+    public func build() -> LinkBankFlowStarter {
         let splashScreenBuilder = LinkBankSplashScreenBuilder()
         let yodleeScreenBuilder = YodleeScreenBuilder()
         let failureScreenBuilder = LinkBankFailureScreenBuilder()
         let interactor = LinkBankFlowRootInteractor()
         return LinkBankFlowRootRouter(interactor: interactor,
-                                      presentingController: presentingController,
                                       splashScreenBuilder: splashScreenBuilder,
                                       yodleeScreenBuilder: yodleeScreenBuilder,
                                       failureScreenBuilder: failureScreenBuilder)

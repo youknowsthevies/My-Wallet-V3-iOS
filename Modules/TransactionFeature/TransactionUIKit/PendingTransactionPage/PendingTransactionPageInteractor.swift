@@ -222,6 +222,7 @@ extension PendingTransactionPageInteractor {
             }
             switch action {
             case .send:
+                let localImage = asset.logoResource.local
                 return .init(
                     title: String(
                         format: SendLocalizationIds.Success.title,
@@ -233,7 +234,7 @@ extension PendingTransactionPageInteractor {
                     ),
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .image(asset.logoImageName),
+                            baseViewType: .image(localImage.name, localImage.bundle),
                             sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
                             cornerRadiusRatio: 0.5
                         )
@@ -250,7 +251,7 @@ extension PendingTransactionPageInteractor {
                     ),
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),
                             sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
                             backgroundColor: .primaryButton,
                             cornerRadiusRatio: 0.5
@@ -276,12 +277,13 @@ extension PendingTransactionPageInteractor {
             )
             switch action {
             case .send:
+                let localImage = amount.currency.logoResource.local
                 return .init(
                     title: errorTitle,
                     subtitle: SendLocalizationIds.Failure.description,
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .image(amount.currency.logoImageName),
+                            baseViewType: .image(localImage.name, localImage.bundle),
                             sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
                             cornerRadiusRatio: 0.5
                         )
@@ -295,7 +297,7 @@ extension PendingTransactionPageInteractor {
                     subtitle: SwapLocalizationIds.Failure.description,
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),
                             sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
                             backgroundColor: .primaryButton,
                             cornerRadiusRatio: 0.5
@@ -329,12 +331,13 @@ extension PendingTransactionPageInteractor {
                         sent.displayCode
                     )
                 }
+                let localImage = sent.currency.logoResource.local
                 return .init(
                     title: title,
                     subtitle: SendLocalizationIds.Pending.description,
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .image(sent.currency.logoImageName),
+                            baseViewType: .image(localImage.name, localImage.bundle),
                             sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                             cornerRadiusRatio: 0.5
                         )
@@ -369,7 +372,7 @@ extension PendingTransactionPageInteractor {
                     subtitle: SwapLocalizationIds.Pending.description,
                     compositeViewType: .composite(
                         .init(
-                            baseViewType: .templateImage(name: "swap-icon", templateColor: .white),
+                            baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),
                             sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                             backgroundColor: .primaryButton,
                             cornerRadiusRatio: 0.5

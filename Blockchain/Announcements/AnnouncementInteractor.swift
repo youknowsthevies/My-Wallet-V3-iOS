@@ -93,7 +93,6 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          dataRepository: BlockchainDataRepository = .shared,
          tiersService: KYCTiersServiceAPI = resolve(),
          infoService: GeneralInformationServiceAPI = resolve(),
-         paxAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
          supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
          beneficiariesService: BeneficiariesServiceAPI = resolve(),
          pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),

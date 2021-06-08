@@ -2,6 +2,6 @@
 
 import Foundation
 
-struct ERC20AccountSummaryResponse<Token: ERC20Token>: Decodable {
+struct ERC20AccountSummaryResponse: Decodable {
     let balance: String
 }

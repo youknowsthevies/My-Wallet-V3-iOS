@@ -15,6 +15,10 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency = .bitcoinCash
     let isDefault: Bool
 
+    func createTransactionEngine() -> Any {
+        BitcoinOnChainTransactionEngineFactory<BitcoinCashToken>()
+    }
+
     var pendingBalance: Single<MoneyValue> {
         Single.just(MoneyValue.zero(currency: .bitcoinCash))
     }

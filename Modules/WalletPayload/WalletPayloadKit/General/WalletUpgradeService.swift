@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import RxCombine
 import RxSwift
 import ToolKit
 
@@ -8,6 +10,10 @@ public protocol WalletUpgradeServicing {
     /// Indicates if the wallet needs any payload upgrade.
     /// Crashes if the wallet is not initalized.
     var needsWalletUpgrade: Single<Bool> { get }
+
+    /// Indicates if the wallet needs any payload upgrade.
+    /// Crashes if the wallet is not initalized.
+    var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> { get }
 
     /// Upgrades the user wallet to the most recent version.
     /// Emits the current version being upgrade.
@@ -45,6 +51,16 @@ final class WalletUpgradeService: WalletUpgradeServicing {
             fatalError("Wallet is not initialized yet.")
         }
         return necessaryUpgrades.map(\.isEmpty).map(!)
+    }
+
+    var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> {
+        guard wallet.isInitialized else {
+            fatalError("Wallet is not initialized yet.")
+        }
+        return necessaryUpgrades
+            .map(\.isEmpty)
+            .map(!)
+            .asPublisher()
     }
 
     func upgradeWallet() -> Observable<String> {

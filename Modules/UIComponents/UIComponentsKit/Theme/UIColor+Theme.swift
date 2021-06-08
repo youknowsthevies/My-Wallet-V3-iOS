@@ -170,6 +170,7 @@ extension UIColor {
     public static let affirmativeBackground = green000
     public static let defaultBadgeBackground = blue100
     public static let lightBadgeBackground = blue000
+    public static let badgeBackgroundWarning = orange000
 
     public static let lightShimmering = grey000
     public static let darkShimmering = grey200
@@ -181,6 +182,7 @@ extension UIColor {
 
     // MARK: Texts
     public static let defaultBadge = blue600
+    public static let warningBadge = orange600
     public static let affirmativeBadgeText = green500
 
     public static let normalPassword = green600

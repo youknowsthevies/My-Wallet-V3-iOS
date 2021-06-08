@@ -2,9 +2,7 @@
 
 import PlatformKit
 
-public struct ERC20AssetAccountDetails: AssetAccountDetails, Equatable {
-    public typealias Account = ERC20AssetAccount
-
-    public var account: Account
-    public var balance: CryptoValue
+public struct ERC20AssetAccountDetails: Equatable {
+    public let account: ERC20AssetAccount
+    public let balance: CryptoValue
 }

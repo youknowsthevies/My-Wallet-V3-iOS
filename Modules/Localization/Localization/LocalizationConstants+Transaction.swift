@@ -5,6 +5,7 @@ import Foundation
 extension LocalizationConstants {
     public enum Transaction {
         public enum TargetSource {
+            public enum Radio { }
             public enum Card { }
         }
         public enum Confirmation {
@@ -23,6 +24,8 @@ extension LocalizationConstants {
                 public enum Failure { }
             }
         }
+        public enum Withdraw { }
+        public enum Deposit { }
         public enum Swap {
             public enum KYC { }
             public enum Completion {
@@ -36,6 +39,13 @@ extension LocalizationConstants {
         }
         public enum Error {}
     }
+}
+
+extension LocalizationConstants.Transaction.TargetSource.Radio {
+    public static let accountEndingIn = NSLocalizedString("Account Ending in", comment: "Account Ending in")
+    public static let minimum = NSLocalizedString("Minimum", comment: "Minimum")
+    public static let free = NSLocalizedString("Free", comment: "Free")
+    public static let fee = NSLocalizedString("Fee", comment: "Fee")
 }
 
 extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
@@ -167,6 +177,24 @@ public extension LocalizationConstants.Transaction {
     static let orSelectAWallet = NSLocalizedString(
         "or Select a Wallet",
         comment: "Select a Wallet"
+    )
+}
+
+public extension LocalizationConstants.Transaction.Withdraw {
+    static let withdraw = NSLocalizedString(
+        "Withdraw",
+        comment: "Withdraw"
+    )
+    static let withdrawTo = NSLocalizedString(
+        "Withdraw to...",
+        comment: "Withdraw to..."
+    )
+}
+
+public extension LocalizationConstants.Transaction.Deposit {
+    static let linkedBanks = NSLocalizedString(
+        "Linked Banks",
+        comment: "Linked Banks"
     )
 }
 

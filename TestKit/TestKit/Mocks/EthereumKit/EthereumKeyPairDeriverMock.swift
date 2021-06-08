@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
-@testable import EthereumKit
-@testable import PlatformKit
+import EthereumKit
+import PlatformKit
 import RxSwift
 
 class EthereumKeyPairDeriverMock: KeyPairDeriverAPI {

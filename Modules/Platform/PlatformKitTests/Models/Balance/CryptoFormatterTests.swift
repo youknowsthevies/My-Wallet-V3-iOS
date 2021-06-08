@@ -3,6 +3,7 @@
 @testable import PlatformKit
 import XCTest
 
+// swiftlint:disable all
 class CryptoFormatterTests: XCTestCase {
     private var englishLocale: Locale!
     private var btcFormatter: CryptoFormatter!
@@ -22,7 +23,7 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatWithoutSymbolBtc() {
         XCTAssertEqual(
             "0.00000001",
-            btcFormatter.format(value: CryptoValue.bitcoin(satoshis: 1))
+            btcFormatter.format(value: CryptoValue(amount: 1, currency: .bitcoin))
         )
         XCTAssertEqual(
             "0.1",
@@ -49,7 +50,7 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatWithSymbolBtc() {
         XCTAssertEqual(
             "0.00000001 BTC",
-            btcFormatter.format(value: CryptoValue.bitcoin(satoshis: 1), withPrecision: .short, includeSymbol: true)
+            btcFormatter.format(value: CryptoValue(amount: 1, currency: .bitcoin), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.1 BTC",
@@ -76,111 +77,111 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatEthShortPrecision() {
         XCTAssertEqual(
             "0.0 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1, currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000, currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000000, currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000000000, currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
     }
 
     func testFormatEthLongPrecision() {
         XCTAssertEqual(
             "0.000000000000000001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1")!, withPrecision: .long, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1, currency: .ethereum), withPrecision: .long, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.000000000000001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000")!, withPrecision: .long, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000, currency: .ethereum), withPrecision: .long, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.000000000001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000")!, withPrecision: .long, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000000, currency: .ethereum), withPrecision: .long, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.000000001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000000")!, withPrecision: .long, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue(amount: 1000000000, currency: .ethereum), withPrecision: .long, includeSymbol: true)
         )
     }
 
     func testFormatWithoutSymbolEth() {
         XCTAssertEqual(
             "0.00000001",
-            ethFormatter.format(value: CryptoValue.ether(minor: "10000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "10000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "0.00001",
-            ethFormatter.format(value: CryptoValue.ether(minor: "10000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "10000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "0.1",
-            ethFormatter.format(value: CryptoValue.ether(minor: "100000000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "100000000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "1.0",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "1000000000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "10.0",
-            ethFormatter.format(value: CryptoValue.ether(minor: "10000000000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "10000000000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "100.0",
-            ethFormatter.format(value: CryptoValue.ether(minor: "100000000000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "100000000000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "1,000.0",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1000000000000000000000")!)
+            ethFormatter.format(value: CryptoValue.create(minor: "1000000000000000000000", currency: .ethereum))
         )
         XCTAssertEqual(
             "1.213333",
-            ethFormatter.format(value: CryptoValue.ether(major: "1.213333")!)
+            ethFormatter.format(value: CryptoValue.create(major: "1.213333", currency: .ethereum)!)
         )
         XCTAssertEqual(
             "1.12345678",
-            ethFormatter.format(value: CryptoValue.ether(major: "1.123456789")!)
+            ethFormatter.format(value: CryptoValue.create(major: "1.123456789", currency: .ethereum)!)
         )
     }
 
     func testFormatWithSymbolEth() {
         XCTAssertEqual(
             "0.00000001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "10000000000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(minor: "10000000000", currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.00001 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "10000000000000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(minor: "10000000000000", currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.1 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "100000000000000000")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(minor: "100000000000000000", currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1.213333 ETH",
-            ethFormatter.format(value: CryptoValue.ether(major: "1.213333")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(major: "1.213333", currency: .ethereum)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1.12345678 ETH",
-            ethFormatter.format(value: CryptoValue.ether(major: "1.123456789")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(major: "1.123456789", currency: .ethereum)!, withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "1.12345678 ETH",
-            ethFormatter.format(value: CryptoValue.ether(minor: "1123456789333222111")!, withPrecision: .short, includeSymbol: true)
+            ethFormatter.format(value: CryptoValue.create(minor: "1123456789333222111", currency: .ethereum), withPrecision: .short, includeSymbol: true)
         )
     }
 
     func testFormatWithoutSymbolBch() {
         XCTAssertEqual(
             "0.00000001",
-            bchFormatter.format(value: CryptoValue.bitcoin(satoshis: 1))
+            bchFormatter.format(value: CryptoValue(amount: 1, currency: .bitcoin))
         )
         XCTAssertEqual(
             "0.1",
@@ -207,7 +208,7 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatWithSymbolBch() {
         XCTAssertEqual(
             "0.00000001 BCH",
-            bchFormatter.format(value: CryptoValue.bitcoinCash(satoshis: 1), withPrecision: .short, includeSymbol: true)
+            bchFormatter.format(value: CryptoValue(amount: 1, currency: .bitcoinCash), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.1 BCH",
@@ -234,60 +235,64 @@ class CryptoFormatterTests: XCTestCase {
     func testFormatWithoutSymbolXlm() {
         XCTAssertEqual(
             "0.0000001",
-            xlmFormatter.format(value: CryptoValue.stellar(minor: 1))
+            xlmFormatter.format(value: CryptoValue(amount: 1, currency: .stellar))
         )
         XCTAssertEqual(
             "0.1",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(0.1))")!)
+            xlmFormatter.format(value: CryptoValue.create(major: "0.1", currency: .stellar)!)
         )
         XCTAssertEqual(
             "0.0",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(0))")!)
+            xlmFormatter.format(value: CryptoValue.create(major: "0", currency: .stellar)!)
         )
         XCTAssertEqual(
             "1.0",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(1))")!)
+            xlmFormatter.format(value: CryptoValue.create(major: "1", currency: .stellar)!)
         )
         XCTAssertEqual(
             "1,000.0",
-            xlmFormatter.format(value: CryptoValue.stellar(major: 1_000))
+            xlmFormatter.format(value: CryptoValue.create(major: 1000, currency: .stellar))
         )
         XCTAssertEqual(
             "1,000,000.0",
-            xlmFormatter.format(value: CryptoValue.stellar(major: 1_000_000))
+            xlmFormatter.format(value: CryptoValue.create(major: 1_000_000, currency: .stellar))
         )
     }
 
     func testFormatWithSymbolXlm() {
         XCTAssertEqual(
             "0.0000001 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(minor: 1), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue(amount: 1, currency: .stellar), withPrecision: .short, includeSymbol: true)
         )
         XCTAssertEqual(
             "0.1 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(0.1))")!,
+            xlmFormatter.format(value: CryptoValue.create(major: "0.1", currency: .stellar)!,
                                 withPrecision: .short,
                                 includeSymbol: true)
         )
         XCTAssertEqual(
             "0.0 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(0))")!,
+            xlmFormatter.format(value: CryptoValue.create(major: "0", currency: .stellar)!,
                                 withPrecision: .short,
                                 includeSymbol: true)
         )
         XCTAssertEqual(
             "1.0 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(major: "\(Decimal(1))")!,
+            xlmFormatter.format(value: CryptoValue.create(major: "1", currency: .stellar)!,
                                 withPrecision: .short,
                                 includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000.0 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(major: 1_000), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue.create(major: 1000, currency: .stellar),
+                                withPrecision: .short,
+                                includeSymbol: true)
         )
         XCTAssertEqual(
             "1,000,000.0 XLM",
-            xlmFormatter.format(value: CryptoValue.stellar(major: 1_000_000), withPrecision: .short, includeSymbol: true)
+            xlmFormatter.format(value: CryptoValue.create(major: 1_000_000, currency: .stellar),
+                                withPrecision: .short,
+                                includeSymbol: true)
         )
     }
 
@@ -296,7 +301,7 @@ class CryptoFormatterTests: XCTestCase {
         let formatter = CryptoFormatter(locale: italyLocale, cryptoCurrency: .bitcoin, minFractionDigits: 1)
         XCTAssertEqual(
             "0,00000001",
-            formatter.format(value: CryptoValue.bitcoin(satoshis: 1))
+            formatter.format(value: CryptoValue(amount: 1, currency: .bitcoin))
         )
         XCTAssertEqual(
             "0,1",

@@ -31,7 +31,8 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil
+            data: nil,
+            transferType: .transfer
         )
 
         let result = subject.build(
@@ -66,7 +67,8 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil
+            data: nil,
+            transferType: .transfer
         )
 
         let result = subject.build(
@@ -93,7 +95,8 @@ class EthereumTransactionBuilderTests: XCTestCase {
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             value: value,
-            data: nil
+            data: nil,
+            transferType: .transfer
         )
 
         let result = subject.build(

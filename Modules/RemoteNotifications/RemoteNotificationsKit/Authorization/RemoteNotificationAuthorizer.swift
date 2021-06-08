@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import AnalyticsKit
 import DIKit
 import PlatformKit
@@ -140,5 +141,11 @@ extension RemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequestin
                     Logger.shared.error("Remote notification authorization failed with error: \(error)")
                 }
             )
+    }
+
+    func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error> {
+        requestAuthorizationIfNeeded()
+            .asCompletable()
+            .asPublisher()
     }
 }

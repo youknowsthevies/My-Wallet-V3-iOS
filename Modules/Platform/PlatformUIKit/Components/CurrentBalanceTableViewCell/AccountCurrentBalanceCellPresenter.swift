@@ -94,8 +94,10 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
         switch account.currencyType {
         case .fiat(let fiatCurrency):
+            let image = fiatCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .primary(
-                with: fiatCurrency.logoImageName,
+                with: image.name,
+                bundle: image.bundle,
                 contentColor: .white,
                 backgroundColor: .fiat,
                 accessibilityIdSuffix: "\(AccessibilityId.badgeImageView)"
@@ -103,8 +105,10 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             badgeImageViewModel.marginOffsetRelay.accept(0)
             badgeRelay.accept(badgeImageViewModel)
         case .crypto(let cryptoCurrency):
+            let image = cryptoCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .default(
-                with: cryptoCurrency.logoImageName,
+                with: image.name,
+                bundle: image.bundle,
                 cornerRadius: .round,
                 accessibilityIdSuffix: "\(AccessibilityId.badgeImageView)"
             )
@@ -114,6 +118,14 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
         let model: BadgeImageViewModel
         switch account {
+        case is BankAccount:
+            model = .template(
+                with: "ic-trading-account",
+                templateColor: account.currencyType.brandColor,
+                backgroundColor: .red,
+                cornerRadius: .round,
+                accessibilityIdSuffix: ""
+            )
         case is TradingAccount:
             model = .template(
                 with: "ic-trading-account",

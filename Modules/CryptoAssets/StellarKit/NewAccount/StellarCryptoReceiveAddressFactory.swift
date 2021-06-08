@@ -8,6 +8,7 @@ import TransactionKit
 final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
 
     func makeExternalAssetAddress(
+        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

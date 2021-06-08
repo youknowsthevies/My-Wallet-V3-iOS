@@ -129,11 +129,12 @@ extension DependencyContainer {
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
         single { () -> Coincore in
-            Coincore(
-                cryptoAssets: CryptoCurrency.allCases.reduce(into: [CryptoCurrency: CryptoAsset](), { (result, tag) in
+            let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
+            return Coincore(
+                cryptoAssets: provider.allEnabledCryptoCurrencies.reduce(into: [CryptoCurrency: CryptoAsset]()) { (result, tag) in
                     let asset: CryptoAsset = DIKit.resolve(tag: tag)
                     result[tag] = asset
-                })
+                }
             )
         }
 

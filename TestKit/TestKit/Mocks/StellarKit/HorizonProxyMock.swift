@@ -24,7 +24,7 @@ final class HorizonProxyMock: HorizonProxyAPI {
         }
     }
 
-    var underlyingMinimumBalance: CryptoValue = .stellar(major: 1)
+    var underlyingMinimumBalance: CryptoValue = .init(amount: 1, currency: .stellar)
     func minimumBalance(subentryCount: Int) -> CryptoValue {
         underlyingMinimumBalance
     }

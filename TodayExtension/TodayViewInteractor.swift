@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import LocalAuthentication
 import PlatformKit
 import PlatformUIKit
@@ -18,8 +19,7 @@ final class TodayViewInteractor {
     }
 
     var assetInteractors: Observable<[TodayExtensionCellInteractor]> {
-        let values: [TodayExtensionCellInteractor] = CryptoCurrency
-            .allCases
+        let values: [TodayExtensionCellInteractor] = enabledCurrenciesService.allEnabledCryptoCurrencies
             .map {
                 AssetPriceCellInteractor(
                     cryptoCurrency: $0,
@@ -38,12 +38,15 @@ final class TodayViewInteractor {
             }
     }
 
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let disposeBag = DisposeBag()
 
     init(historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
-         container: SharedContainerUserDefaults = .default) {
+         container: SharedContainerUserDefaults = .default,
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         self.container = container
         self.historicalProvider = historicalProvider
+        self.enabledCurrenciesService = enabledCurrenciesService
     }
 
     /// Returns the supported device biometrics, regardless if currently configured in app

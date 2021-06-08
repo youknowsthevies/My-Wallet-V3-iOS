@@ -166,6 +166,11 @@ extension DependencyContainer {
 
         single { WalletManager() }
 
+        factory { () -> WalletManagerReactiveAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return manager
+        }
+
         factory { () -> ReactiveWalletAPI in
             let manager: WalletManager = DIKit.resolve()
             return manager.reactiveWallet
@@ -300,11 +305,6 @@ extension DependencyContainer {
         factory { () -> EthereumWallet in
             let manager: WalletManager = DIKit.resolve()
             return manager.wallet.ethereum
-        }
-
-        factory { () -> ERC20BridgeAPI in
-            let ethereum: EthereumWallet = DIKit.resolve()
-            return ethereum
         }
 
         factory { () -> EthereumWalletBridgeAPI in

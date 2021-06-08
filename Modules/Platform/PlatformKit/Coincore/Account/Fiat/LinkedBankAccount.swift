@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import RxSwift
 import ToolKit
 
@@ -8,7 +9,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     // MARK: - Public
 
     public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
-        unimplemented()
+        withdrawService
+            .withdrawFeeAndLimit(for: fiatCurrency)
     }
 
     // MARK: - BlockchainAccount
@@ -52,16 +54,24 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let accountNumber: String
     public let paymentType: PaymentMethodPayloadType
 
+    // MARK: - Private Properties
+
+    private let withdrawService: WithdrawalServiceAPI
+
+    // MARK: - Init
+
     public init(label: String,
                 accountNumber: String,
                 accountId: String,
                 currency: FiatCurrency,
-                paymentType: PaymentMethodPayloadType) {
+                paymentType: PaymentMethodPayloadType,
+                withdrawServiceAPI: WithdrawalServiceAPI = resolve()) {
         self.label = label
         self.accountNumber = accountNumber
         self.fiatCurrency = currency
         self.id = accountId
         self.paymentType = paymentType
+        self.withdrawService = withdrawServiceAPI
     }
 
     // MARK: - BlockchainAccount

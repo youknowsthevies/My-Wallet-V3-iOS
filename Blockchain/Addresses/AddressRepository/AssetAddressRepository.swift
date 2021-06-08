@@ -64,23 +64,16 @@ enum AssetAddressType {
     /// Accessor for obj-c compatibility
     @objc class func sharedInstance() -> AssetAddressRepository { shared }
 
-    private let walletManager: WalletManager
-    private let stellarWalletAccountRepository: StellarWalletAccountRepository
-    private let paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken>
-    private let tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken>
+    private let stellarWalletRepository: StellarWalletAccountRepository
     private let urlSession: URLSession
-
+    private let walletManager: WalletManager
     private let disposeBag = DisposeBag()
 
     init(walletManager: WalletManager = WalletManager.shared,
          stellarWalletRepository: StellarWalletAccountRepository = resolve(),
-         paxAssetAccountRepository: ERC20AssetAccountRepository<PaxToken> = resolve(),
-         tetherAssetAccountRepository: ERC20AssetAccountRepository<TetherToken> = resolve(),
          urlSession: URLSession = resolve()) {
         self.walletManager = walletManager
-        self.stellarWalletAccountRepository = stellarWalletRepository
-        self.paxAssetAccountRepository = paxAssetAccountRepository
-        self.tetherAssetAccountRepository = tetherAssetAccountRepository
+        self.stellarWalletRepository = stellarWalletRepository
         self.urlSession = urlSession
         super.init()
         self.walletManager.swipeAddressDelegate = self
@@ -109,17 +102,11 @@ enum AssetAddressType {
             fatalError("Wallet upgrade is not optional.")
         }
 
-        // Only one address for Ethereum and all other ERC20 coins.
-        let etherAddress = wallet.getEtherAddress()
-        appSettings.swipeAddressForEther = etherAddress
-        appSettings.swipeAddressForPax = etherAddress
-        appSettings.swipeAddressForAave = etherAddress
-        appSettings.swipeAddressForWDGLD = etherAddress
-        appSettings.swipeAddressForYearnFinance = etherAddress
-        appSettings.swipeAddressForTether = etherAddress
+        // Only one address for Ethereum.
+        appSettings.swipeAddressForEthereum = wallet.getEtherAddress()
 
         // Only one address for Stellar.
-        appSettings.swipeAddressForStellar = self.stellarWalletAccountRepository.defaultAccount?.publicKey
+        appSettings.swipeAddressForStellar = stellarWalletRepository.defaultAccount?.publicKey
 
         // Retrieve swipe addresses for bitcoin and bitcoin cash
         [CryptoCurrency.bitcoin, CryptoCurrency.bitcoinCash].forEach {
@@ -149,51 +136,29 @@ enum AssetAddressType {
     /// - Returns: the asset address
     func swipeAddresses(for asset: CryptoCurrency) -> [AssetAddress] {
         let appSettings = BlockchainSettings.App.shared
-
-        // TODO: In `BlockchainSettings.App`, create a method that receives an enum and returns a swipe address
         switch asset {
-        case .aave:
-            guard let address = appSettings.swipeAddressForAave else {
-                return []
-            }
-            return [AnyERC20AssetAddress<AaveToken>(publicKey: address)]
         case .algorand:
             return []
+        case .bitcoin, .bitcoinCash:
+            let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
+            return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)
+        case .erc20:
+            guard let address = appSettings.swipeAddressForEthereum else {
+                return []
+            }
+            return [ERC20AssetAddress(publicKey: address, cryptoCurrency: asset)]
         case .ethereum:
-            guard let address = appSettings.swipeAddressForEther else {
+            guard let address = appSettings.swipeAddressForEthereum else {
                 return []
             }
             return [EthereumAddress(stringLiteral: address)]
+        case .polkadot:
+            return []
         case .stellar:
             guard let address = appSettings.swipeAddressForStellar else {
                 return []
             }
             return [StellarAssetAddress(publicKey: address)]
-        case .pax:
-            guard let address = appSettings.swipeAddressForPax else {
-                return []
-            }
-            return [AnyERC20AssetAddress<PaxToken>(publicKey: address)]
-        case .polkadot:
-            return []
-        case .tether:
-            guard let address = appSettings.swipeAddressForTether else {
-                return []
-            }
-            return [AnyERC20AssetAddress<TetherToken>(publicKey: address)]
-        case .wDGLD:
-            guard let address = appSettings.swipeAddressForWDGLD else {
-                return []
-            }
-            return [AnyERC20AssetAddress<WDGLDToken>(publicKey: address)]
-        case .yearnFinance:
-            guard let address = appSettings.swipeAddressForYearnFinance else {
-                return []
-            }
-            return [AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)]
-        case .bitcoinCash, .bitcoin:
-            let swipeAddresses = KeychainItemWrapper.getSwipeAddresses(for: asset.legacy) as? [String] ?? []
-            return AssetAddressFactory.create(fromAddressStringArray: swipeAddresses, assetType: asset)
         }
     }
 

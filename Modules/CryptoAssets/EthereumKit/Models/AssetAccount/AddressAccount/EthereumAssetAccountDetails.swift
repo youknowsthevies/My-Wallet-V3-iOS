@@ -2,14 +2,13 @@
 
 import PlatformKit
 
-public struct EthereumAssetAccountDetails: AssetAccountDetails, Equatable {
-    public typealias Account = EthereumAssetAccount
+public struct EthereumAssetAccountDetails: Equatable {
 
-    public var account: Account
-    public var balance: CryptoValue
-    public var nonce: UInt64
+    public let account: EthereumAssetAccount
+    public let balance: CryptoValue
+    public let nonce: UInt64
 
-    public init(account: Account, balance: CryptoValue, nonce: UInt64) {
+    public init(account: EthereumAssetAccount, balance: CryptoValue, nonce: UInt64) {
         self.account = account
         self.balance = balance
         self.nonce = nonce

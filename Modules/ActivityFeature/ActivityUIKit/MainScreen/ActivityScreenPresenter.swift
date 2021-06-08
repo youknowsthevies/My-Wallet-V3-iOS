@@ -210,27 +210,32 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
                       size: .init(
                         width: 32,
                         height: 32
-                    )
+                      )
                 )
             )
         case .nonCustodial(let cryptoCurrency):
+            let localImage = cryptoCurrency.logoResource.local
             return .image(
-                .init(name: cryptoCurrency.logoImageName,
-                      background: .clear,
-                      offset: 0,
-                      cornerRadius: .round,
-                      size: .init(
+                .init(
+                    name: localImage.name,
+                    bundle: localImage.bundle,
+                    background: .clear,
+                    offset: 0,
+                    cornerRadius: .round,
+                    size: .init(
                         width: 32,
                         height: 32
                     )
                 )
             )
         case .custodial(let currencyType):
+            let localImage = currencyType.logoResource.local
             switch currencyType {
             case .crypto:
                 return .image(
                     .init(
-                        name: currencyType.logoImageName,
+                        name: localImage.name,
+                        bundle: localImage.bundle,
                         background: .clear,
                         offset: 0,
                         cornerRadius: .round,
@@ -243,7 +248,8 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
             case .fiat:
                 return .image(
                     .init(
-                        name: currencyType.logoImageName,
+                        name: localImage.name,
+                        bundle: localImage.bundle,
                         background: .fiat,
                         offset: 0,
                         cornerRadius: .value(8.0),

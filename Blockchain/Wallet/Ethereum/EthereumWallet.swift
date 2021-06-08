@@ -20,7 +20,6 @@ class EthereumWallet: NSObject {
         case erc20TokensFailed
         case getLabelForEthereumAccountFailed
         case ethereumAccountsFailed
-        case encodingERC20TokenAccountsFailed
     }
 
     typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
@@ -50,19 +49,11 @@ class EthereumWallet: NSObject {
 
     /// These are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
     /// overflows the function stack with initializers that call one another
-    @LazyInject private var assetAccountRepository: EthereumAssetAccountRepository
+    @LazyInject private var accountDetailsService: EthereumAccountDetailsServiceAPI
     @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
 
     /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler
     private let schedulerType: SchedulerType
-
-    private static let defaultPAXAccount = ERC20TokenAccount(
-        label: LocalizationConstants.Account.myWallet,
-        contractAddress: PaxToken.contractAddress.publicKey,
-        hasSeen: false,
-        transactionNotes: [String: String]()
-    )
-
     private let dispatcher: Dispatcher
 
     @objc convenience init(legacyWallet: Wallet) {
@@ -87,20 +78,6 @@ class EthereumWallet: NSObject {
     }
 
     @objc func setup(with context: JSContext) {
-        context.setJsFunction(named: "objc_on_didGetERC20TokensAsync" as NSString) { [weak self] erc20TokenAccounts in
-            self?.delegate.didGetERC20Tokens(erc20TokenAccounts)
-        }
-        context.setJsFunction(named: "objc_on_error_gettingERC20TokensAsync" as NSString) { [weak self] errorMessage in
-            self?.delegate.didFailToGetERC20Tokens(errorMessage: errorMessage)
-        }
-
-        context.setJsFunction(named: "objc_on_didSetERC20TokensAsync" as NSString) { [weak self] _ in
-            self?.delegate.didSaveERC20Tokens()
-        }
-        context.setJsFunction(named: "objc_on_error_settingERC20TokensAsync" as NSString) { [weak self] errorMessage in
-            self?.delegate.didFailToSaveERC20Tokens(errorMessage: errorMessage)
-        }
-
         context.setJsFunction(named: "objc_on_get_ether_address_success" as NSString) { [weak self] address in
             self?.delegate.didGetAddress(address)
         }
@@ -121,136 +98,6 @@ class EthereumWallet: NSObject {
         context.setJsFunction(named: "objc_on_recordLastTransactionAsync_error" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToRecordLastTransaction(errorMessage: errorMessage)
         }
-    }
-
-    @objc func walletDidLoad() {
-        reactiveWallet.waitUntilInitialized
-            .flatMap {
-                self.walletLoaded()
-            }
-            .subscribe()
-            .disposed(by: disposeBag)
-    }
-
-    func walletLoaded() -> Completable {
-        guard let wallet = wallet else {
-            return .error(WalletError.notInitialized)
-        }
-        return saveDefaultPAXAccountIfNeeded()
-            .subscribeOn(MainScheduler.asyncInstance)
-    }
-
-    private func saveDefaultPAXAccountIfNeeded() -> Completable {
-        erc20TokenAccounts
-            .flatMapCompletable(weak: self) { (self, tokenAccounts) -> Completable in
-                guard tokenAccounts[PaxToken.metadataKey] == nil else {
-                    return Completable.empty()
-                }
-                return self.saveDefaultPAXAccount().asCompletable()
-            }
-    }
-
-    private func saveDefaultPAXAccount() -> Single<ERC20TokenAccount> {
-        let paxAccount = EthereumWallet.defaultPAXAccount
-        return save(erc20TokenAccounts: [ PaxToken.metadataKey : paxAccount ])
-            .flatMap { .just(paxAccount) }
-    }
-}
-
-extension EthereumWallet: ERC20BridgeAPI {
-    func tokenAccount(for key: String) -> Single<ERC20TokenAccount?> {
-        erc20TokenAccounts.map { accounts in
-            accounts[key]
-        }
-    }
-
-    func save(erc20TokenAccounts: [String: ERC20TokenAccount]) -> Single<Void> {
-        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
-            .flatMap(weak: self) { (self, secondPassword) -> Single<Void> in
-                self.save(
-                    erc20TokenAccounts: erc20TokenAccounts,
-                    secondPassword: secondPassword
-                )
-            }
-    }
-
-    var erc20TokenAccounts: Single<[String: ERC20TokenAccount]> {
-        secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
-            .flatMap(weak: self) { (self, secondPassword) -> Single<[String: ERC20TokenAccount]> in
-                self.erc20TokenAccounts(secondPassword: secondPassword)
-            }
-    }
-
-    func memo(for transactionHash: String, tokenKey: String) -> Single<String?> {
-        tokenAccount(for: tokenKey)
-            .map { account in
-                account?.transactionNotes[transactionHash]
-            }
-    }
-
-    func save(transactionMemo: String, for transactionHash: String, tokenKey: String) -> Single<Void> {
-        erc20TokenAccounts
-            .map { tokenAccounts -> ([String: ERC20TokenAccount], ERC20TokenAccount) in
-                guard let tokenAccount = tokenAccounts[tokenKey] else {
-                    throw WalletError.failedToSaveMemo
-                }
-                return (tokenAccounts, tokenAccount)
-            }
-            .flatMap(weak: self) { (self, tuple) -> Single<Void> in
-                var (tokenAccounts, tokenAccount) = tuple
-                _ = tokenAccounts.removeValue(forKey: tokenKey)
-                tokenAccount.update(memo: transactionMemo, for: transactionHash)
-                tokenAccounts[tokenKey] = tokenAccount
-                return self.save(erc20TokenAccounts: tokenAccounts)
-            }
-    }
-
-    private func save(erc20TokenAccounts: [String: ERC20TokenAccount], secondPassword: String?) -> Single<Void> {
-        Single.create { [weak self] observer -> Disposable in
-            guard let wallet = self?.wallet else {
-                observer(.error(WalletError.notInitialized))
-                return Disposables.create()
-            }
-            guard let data = try? JSONEncoder().encode(erc20TokenAccounts) else {
-                observer(.error(EthereumWalletError.encodingERC20TokenAccountsFailed))
-                return Disposables.create()
-            }
-            guard let dataSring = String(data: data, encoding: .utf8) else {
-                observer(.error(EthereumWalletError.encodingERC20TokenAccountsFailed))
-                return Disposables.create()
-            }
-            wallet.saveERC20Tokens(
-                with: nil,
-                tokensJSONString: dataSring,
-                success: {
-                    observer(.success(()))
-                },
-                error: { _ in
-                    observer(.error(EthereumWalletError.saveERC20TokensFailed))
-                }
-            )
-            return Disposables.create()
-        }
-    }
-
-    private func erc20TokenAccounts(secondPassword: String? = nil) -> Single<[String: ERC20TokenAccount]> {
-        Single<[String: [String: Any]]>.create { [weak self] observer -> Disposable in
-            guard let wallet = self?.wallet else {
-                observer(.error(WalletError.notInitialized))
-                return Disposables.create()
-            }
-            wallet.erc20Tokens(
-                with: secondPassword,
-                success: { erc20Tokens in
-                    observer(.success(erc20Tokens))
-                },
-                error: { _ in
-                    observer(.error(EthereumWalletError.erc20TokensFailed))
-                }
-            )
-            return Disposables.create()
-        }
-        .map { $0.decodeJSONObjects(type: ERC20TokenAccount.self) }
     }
 }
 
@@ -337,13 +184,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                     name: defaultAccount.label ?? ""
                 )
             }
-    }
-
-    /// Streams the nonce of the address
-    var nonce: Single<BigUInt> {
-        assetAccountRepository
-            .assetAccountDetails
-            .map { BigUInt(integerLiteral: $0.nonce) }
     }
 
     /// Streams `true` if there is a prending transaction

@@ -169,6 +169,15 @@ extension AddNewBankAccountPagePresenter {
             let processingTimeNoticeDescription: String
 
             switch account.currency {
+            case .USD:
+                processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.USD
+                termsTextViewModel = InteractableTextViewModel(
+                    inputs: [
+                        .text(string: FundsString.Notice.recipientNameUSD)
+                    ],
+                    textStyle: .init(color: .descriptionText, font: font),
+                    linkStyle: .init(color: .linkableText, font: font)
+                )
             case .GBP:
                 processingTimeNoticeDescription = FundsString.Notice.ProcessingTime.Description.GBP
                 termsTextViewModel = InteractableTextViewModel(

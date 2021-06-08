@@ -12,6 +12,10 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency
     let isDefault: Bool = true
 
+    func createTransactionEngine() -> Any {
+        StellarOnChainTransactionEngineFactory()
+    }
+
     var balance: Single<MoneyValue> {
         horizonProxy
             .accountResponse(for: id)

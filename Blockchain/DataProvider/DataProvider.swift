@@ -45,7 +45,7 @@ final class DataProvider: DataProviding {
         }
 
         var cryptoExchangeServices: [CryptoCurrency: PairExchangeServiceAPI] = [:]
-        for cryptoCurrency in CryptoCurrency.allCases {
+        for cryptoCurrency in enabledCurrencies.allEnabledCryptoCurrencies {
             cryptoExchangeServices[cryptoCurrency] = PairExchangeService(
                 currency: cryptoCurrency,
                 fiatCurrencyService: fiatCurrencyService
@@ -58,8 +58,8 @@ final class DataProvider: DataProviding {
         )
 
         let aaveHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .aave,
-            exchangeAPI: exchange[CryptoCurrency.aave],
+            cryptoCurrency: .erc20(.aave),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.aave)],
             fiatCurrencyService: fiatCurrencyService
         )
         let algorandHistoricalFiatService = HistoricalFiatPriceService(
@@ -83,8 +83,8 @@ final class DataProvider: DataProviding {
             fiatCurrencyService: fiatCurrencyService
         )
         let paxHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .pax,
-            exchangeAPI: exchange[CryptoCurrency.pax],
+            cryptoCurrency: .erc20(.pax),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.pax)],
             fiatCurrencyService: fiatCurrencyService
         )
         let polkadotHistoricalFiatService = HistoricalFiatPriceService(
@@ -98,18 +98,18 @@ final class DataProvider: DataProviding {
             fiatCurrencyService: fiatCurrencyService
         )
         let tetherHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .tether,
-            exchangeAPI: exchange[CryptoCurrency.tether],
+            cryptoCurrency: .erc20(.tether),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.tether)],
             fiatCurrencyService: fiatCurrencyService
         )
         let wDGLDHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .wDGLD,
-            exchangeAPI: exchange[CryptoCurrency.wDGLD],
+            cryptoCurrency: .erc20(.wdgld),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.wdgld)],
             fiatCurrencyService: fiatCurrencyService
         )
         let yearnFinanceHistoricalFiatService = HistoricalFiatPriceService(
-            cryptoCurrency: .yearnFinance,
-            exchangeAPI: exchange[CryptoCurrency.yearnFinance],
+            cryptoCurrency: .erc20(.yearnFinance),
+            exchangeAPI: exchange[CryptoCurrency.erc20(.yearnFinance)],
             fiatCurrencyService: fiatCurrencyService
         )
 
@@ -204,69 +204,69 @@ final class DataProvider: DataProviding {
         )
 
         let paxBalanceFetcher = AssetBalanceFetcher(
-            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.pax)),
-            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.pax) }(),
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.erc20(.pax))),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.erc20(.pax)) }(),
             trading: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.pax.currency,
+                currencyType: CryptoCurrency.erc20(.pax).currency,
                 fetcher: tradingBalanceStatesFetcher
             ),
             savings: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.pax.currency,
+                currencyType: CryptoCurrency.erc20(.pax).currency,
                 fetcher: savingsBalanceStatesFetcher
             ),
-            exchange: exchange[CurrencyType.crypto(.pax)]
+            exchange: exchange[CurrencyType.crypto(.erc20(.pax))]
         )
         let tetherBalanceFetcher = AssetBalanceFetcher(
-            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.tether)),
-            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.tether) }(),
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.erc20(.tether))),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.erc20(.tether)) }(),
             trading: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.tether.currency,
+                currencyType: CryptoCurrency.erc20(.tether).currency,
                 fetcher: tradingBalanceStatesFetcher
             ),
             savings: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.tether.currency,
+                currencyType: CryptoCurrency.erc20(.tether).currency,
                 fetcher: savingsBalanceStatesFetcher
             ),
-            exchange: exchange[CurrencyType.crypto(.tether)]
+            exchange: exchange[CurrencyType.crypto(.erc20(.tether))]
         )
         let wDGLDBalanceFetcher = AssetBalanceFetcher(
-            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.wDGLD)),
-            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.wDGLD) }(),
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.erc20(.wdgld))),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.erc20(.wdgld)) }(),
             trading: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.wDGLD.currency,
+                currencyType: CryptoCurrency.erc20(.wdgld).currency,
                 fetcher: tradingBalanceStatesFetcher
             ),
             savings: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.wDGLD.currency,
+                currencyType: CryptoCurrency.erc20(.wdgld).currency,
                 fetcher: savingsBalanceStatesFetcher
             ),
-            exchange: exchange[CurrencyType.crypto(.wDGLD)]
+            exchange: exchange[CurrencyType.crypto(.erc20(.wdgld))]
         )
         let yearnFinanceBalanceFetcher = AssetBalanceFetcher(
-            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.yearnFinance)),
-            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.yearnFinance) }(),
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.erc20(.yearnFinance))),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.erc20(.yearnFinance)) }(),
             trading: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.yearnFinance.currency,
+                currencyType: CryptoCurrency.erc20(.yearnFinance).currency,
                 fetcher: tradingBalanceStatesFetcher
             ),
             savings: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.yearnFinance.currency,
+                currencyType: CryptoCurrency.erc20(.yearnFinance).currency,
                 fetcher: savingsBalanceStatesFetcher
             ),
-            exchange: exchange[CurrencyType.crypto(.yearnFinance)]
+            exchange: exchange[CurrencyType.crypto(.erc20(.yearnFinance))]
         )
         let aaveBalanceFetcher = AssetBalanceFetcher(
-            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.aave)),
-            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.aave) }(),
+            blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.erc20(.aave))),
+            wallet: { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.erc20(.aave)) }(),
             trading: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.aave.currency,
+                currencyType: CryptoCurrency.erc20(.aave).currency,
                 fetcher: tradingBalanceStatesFetcher
             ),
             savings: CustodialMoneyBalanceFetcher(
-                currencyType: CryptoCurrency.aave.currency,
+                currencyType: CryptoCurrency.erc20(.aave).currency,
                 fetcher: savingsBalanceStatesFetcher
             ),
-            exchange: exchange[CurrencyType.crypto(.aave)]
+            exchange: exchange[CurrencyType.crypto(.erc20(.aave))]
         )
         let stellarBalanceFetcher = AssetBalanceFetcher(
             blockchainAccountFetcher: BlockchainAccountFetchingFactory.make(for: .crypto(.stellar)),
@@ -309,17 +309,17 @@ final class DataProvider: DataProviding {
         )
 
         let cryptoBalanceFetchers: [CryptoCurrency: AssetBalanceFetching] = [
-            .aave: aaveBalanceFetcher,
+            .erc20(.aave): aaveBalanceFetcher,
             .algorand: algorandBalanceFetcher,
             .bitcoin: bitcoinBalanceFetcher,
             .bitcoinCash: bitcoinCashBalanceFetcher,
             .ethereum: etherBalanceFetcher,
-            .pax: paxBalanceFetcher,
+            .erc20(.pax): paxBalanceFetcher,
             .polkadot: polkadotBalanceFetcher,
             .stellar: stellarBalanceFetcher,
-            .tether: tetherBalanceFetcher,
-            .wDGLD: wDGLDBalanceFetcher,
-            .yearnFinance: yearnFinanceBalanceFetcher
+            .erc20(.tether): tetherBalanceFetcher,
+            .erc20(.wdgld): wDGLDBalanceFetcher,
+            .erc20(.yearnFinance): yearnFinanceBalanceFetcher
         ]
 
         let balance = BalanceProvider(
@@ -333,8 +333,8 @@ final class DataProvider: DataProviding {
             currencies: enabledCurrencies.allEnabledCryptoCurrencies,
             aave: AssetBalanceChangeProvider(
                 balance: aaveBalanceFetcher,
-                prices: historicalPrices[.aave],
-                cryptoCurrency: .aave
+                prices: historicalPrices[.erc20(.aave)],
+                cryptoCurrency: .erc20(.aave)
             ),
             algorand: AssetBalanceChangeProvider(
                 balance: algorandBalanceFetcher,
@@ -358,8 +358,8 @@ final class DataProvider: DataProviding {
             ),
             pax: AssetBalanceChangeProvider(
                 balance: paxBalanceFetcher,
-                prices: historicalPrices[.pax],
-                cryptoCurrency: .pax
+                prices: historicalPrices[.erc20(.pax)],
+                cryptoCurrency: .erc20(.pax)
             ),
             polkadot: AssetBalanceChangeProvider(
                 balance: polkadotBalanceFetcher,
@@ -373,18 +373,18 @@ final class DataProvider: DataProviding {
             ),
             tether: AssetBalanceChangeProvider(
                 balance: tetherBalanceFetcher,
-                prices: historicalPrices[.tether],
-                cryptoCurrency: .tether
+                prices: historicalPrices[.erc20(.tether)],
+                cryptoCurrency: .erc20(.tether)
             ),
             wDGLD: AssetBalanceChangeProvider(
                 balance: wDGLDBalanceFetcher,
-                prices: historicalPrices[.wDGLD],
-                cryptoCurrency: .wDGLD
+                prices: historicalPrices[.erc20(.wdgld)],
+                cryptoCurrency: .erc20(.wdgld)
             ),
             yearnFinance: AssetBalanceChangeProvider(
                 balance: yearnFinanceBalanceFetcher,
-                prices: historicalPrices[.yearnFinance],
-                cryptoCurrency: .yearnFinance
+                prices: historicalPrices[.erc20(.yearnFinance)],
+                cryptoCurrency: .erc20(.yearnFinance)
             )
         )
 

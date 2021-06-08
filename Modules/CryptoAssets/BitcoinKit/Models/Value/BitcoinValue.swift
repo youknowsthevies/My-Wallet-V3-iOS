@@ -35,7 +35,7 @@ public struct BitcoinValue: CryptoMoney {
     }
 
     public init(satoshis: BigInt) throws {
-        self.crypto = CryptoValue.bitcoin(satoshis: satoshis)
+        self.crypto = CryptoValue(amount: satoshis, currency: .bitcoin)
     }
 }
 

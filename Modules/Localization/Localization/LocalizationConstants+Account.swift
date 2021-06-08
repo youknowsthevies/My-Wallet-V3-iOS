@@ -49,6 +49,21 @@ extension LocalizationConstants {
             "My Bitcoin Wallet",
             comment: "My Bitcoin Wallet"
         )
+        
+        public static let noFees = NSLocalizedString(
+            "No Fees",
+            comment: "No Fees"
+        )
+        
+        public static let wireFee = NSLocalizedString(
+            "Wire Fee",
+            comment: "Wire Fee"
+        )
+        
+        public static let minWithdraw = NSLocalizedString(
+            "Min Withdraw",
+            comment: "Min Withdraw"
+        )
     }
 
     public enum AccountGroup {

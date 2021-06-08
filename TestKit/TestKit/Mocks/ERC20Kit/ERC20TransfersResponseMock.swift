@@ -4,8 +4,8 @@
 import EthereumKit
 import PlatformKit
 
-extension ERC20TransfersResponse where Token == PaxToken {
+extension ERC20TransfersResponse {
     static var transfersResponse: ERC20TransfersResponse {
-        ERC20TransfersResponse(transactions: [])
+        ERC20TransfersResponse(transfers: [])
     }
 }

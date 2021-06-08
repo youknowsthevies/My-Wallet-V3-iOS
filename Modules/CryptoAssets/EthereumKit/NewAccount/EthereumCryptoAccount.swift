@@ -11,6 +11,10 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency
     let isDefault: Bool = true
 
+    func createTransactionEngine() -> Any {
+        EthereumOnChainTransactionEngineFactory()
+    }
+
     var actionableBalance: Single<MoneyValue> {
         balance
     }

@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
+
 public typealias CustodialAccountBalanceState = AccountBalanceState<CustodialAccountBalance>
 
 public struct CustodialAccountBalanceStates: Equatable {
@@ -34,11 +36,16 @@ extension CustodialAccountBalanceStates {
 
     // MARK: - Init
 
-    init(response: CustodialBalanceResponse) {
-        for balanceResponse in response.balances {
-            guard let currencyType = try? CurrencyType(code: balanceResponse.key) else { continue }
-            let accountBalance = CustodialAccountBalance(currency: currencyType, response: balanceResponse.value)
-            balances[currencyType] = .present(accountBalance)
-        }
+    init(response: CustodialBalanceResponse, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
+        balances = response.balances
+            .reduce(into: [CurrencyType: CustodialAccountBalanceState]()) { (result, item) in
+                guard let currencyType = try? CurrencyType(
+                        code: item.key,
+                        enabledCurrenciesService: enabledCurrenciesService) else {
+                    return
+                }
+                let accountBalance = CustodialAccountBalance(currency: currencyType, response: item.value)
+                result[currencyType] = .present(accountBalance)
+            }
     }
 }

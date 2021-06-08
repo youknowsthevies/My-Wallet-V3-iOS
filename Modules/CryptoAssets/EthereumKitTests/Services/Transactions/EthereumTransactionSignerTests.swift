@@ -31,7 +31,8 @@ class EthereumTransactionSignerTests: XCTestCase {
             gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: amount,
-            data: Data()
+            data: Data(),
+            transferType: .transfer
         )
         guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
             XCTFail("Transaction building failed")

@@ -12,11 +12,7 @@ extension DependencyContainer {
 
         factory { HorizonProxy() as HorizonProxyAPI }
 
-        factory {
-            AnyAssetAccountDetailsAPI<StellarAssetAccountDetails>(
-                service: StellarAssetAccountDetailsService()
-            )
-        }
+        factory { StellarAccountDetailsService() as StellarAccountDetailsServiceAPI }
 
         single { () -> StellarConfigurationAPI in
             StellarConfigurationService()

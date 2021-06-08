@@ -13,11 +13,9 @@ final class EthereumAssetBalanceFetcher: CryptoAccountBalanceFetching {
     let accountType: SingleAccountType = .nonCustodial
 
     var balance: Single<CryptoValue> {
-        assetAccountRepository
-            .currentAssetAccountDetails(fromCache: true)
-            .asObservable()
-            .asSingle()
-            .map { $0.balance }
+        accountDetailsService
+            .accountDetails()
+            .map(\.balance)
     }
 
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
@@ -69,16 +67,16 @@ final class EthereumAssetBalanceFetcher: CryptoAccountBalanceFetching {
 
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
-    private let assetAccountRepository: EthereumAssetAccountRepository
+    private let accountDetailsService: EthereumAccountDetailsServiceAPI
 
     private unowned let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Setup
 
-    init(assetAccountRepository: EthereumAssetAccountRepository = resolve(),
+    init(accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve()) {
 
         self.reactiveWallet = reactiveWallet
-        self.assetAccountRepository = assetAccountRepository
+        self.accountDetailsService = accountDetailsService
     }
 }

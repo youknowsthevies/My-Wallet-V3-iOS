@@ -394,6 +394,10 @@ extension LocalizationConstants.SimpleBuy {
                     )
                     
                     public enum Description {
+                        public static let USD = NSLocalizedString(
+                            "Processing Time Funds will be credited to your USD wallet as soon as we receive them. Funds are generally available within one business day.",
+                            comment: "Processing Time Funds will be credited to your USD wallet as soon as we receive them. Funds are generally available within one business day."
+                        )
                         public static let EUR = NSLocalizedString(
                             "Funds will be credited to your EUR wallet as soon as we receive them. SEPA transfers usually take around 1 business day to reach us.",
                             comment: "Funds will be credited to your EUR wallet as soon as we receive them. SEPA transfers usually take around 1 business day to reach us."
@@ -405,6 +409,11 @@ extension LocalizationConstants.SimpleBuy {
                     }
 
                 }
+                
+                public static let recipientNameUSD = NSLocalizedString(
+                    "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",
+                    comment: "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
+                )
                 
                 public static let recipientNameEUR = NSLocalizedString(
                     "Your Recipient name above must match the account holder's name on your bank account for your transfer to be successful. Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.",

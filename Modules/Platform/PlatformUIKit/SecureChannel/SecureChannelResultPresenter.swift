@@ -75,7 +75,7 @@ extension SecureChannelResultPresenter {
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
                     .init(
-                        baseViewType: .image("icon-laptop"),
+                        baseViewType: .image("icon-laptop", .platformUIKit),
                         sideViewAttributes: .init(type: .image(sideImage), position: .rightCorner)
                     )
                 ),

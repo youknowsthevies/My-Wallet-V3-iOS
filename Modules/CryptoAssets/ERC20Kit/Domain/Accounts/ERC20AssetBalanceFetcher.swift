@@ -6,7 +6,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFetching {
+final class ERC20AssetBalanceFetcher: CryptoAccountBalanceFetching {
 
     // MARK: - Exposed Properties
 
@@ -15,11 +15,8 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
     }
 
     var balance: Single<CryptoValue> {
-        assetAccountRepository
-            .currentAssetAccountDetails(fromCache: true)
-            .asObservable()
-            .asSingle()
-            .map { $0.balance }
+        balanceService
+            .accountBalance(cryptoCurrency: cryptoCurrency)
     }
 
     var pendingBalanceMoneyObservable: Observable<MoneyValue> {
@@ -71,16 +68,19 @@ final class ERC20AssetBalanceFetcher<Token: ERC20Token>: CryptoAccountBalanceFet
 
     private let balanceRelay = PublishRelay<CryptoValue>()
     private let disposeBag = DisposeBag()
-    private let assetAccountRepository: ERC20AssetAccountRepository<Token>
-
+    private let balanceService: ERC20BalanceServiceAPI
+    private let cryptoCurrency: CryptoCurrency
     private unowned let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Setup
 
-    init(assetAccountRepository: ERC20AssetAccountRepository<Token> = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve()) {
-
+    init(
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        balanceService: ERC20BalanceServiceAPI = resolve(),
+        cryptoCurrency: CryptoCurrency
+    ) {
         self.reactiveWallet = reactiveWallet
-        self.assetAccountRepository = assetAccountRepository
+        self.balanceService = balanceService
+        self.cryptoCurrency = cryptoCurrency
     }
 }

@@ -51,7 +51,7 @@ final class PinScreenPresenter {
             return .content(Screen.NavigationBarContent(title: title))
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
-            case .background:
+            case .background, .attachedOn:
                 return .content(Screen.NavigationBarContent(title: title))
             case .foreground:
                 return .none
@@ -65,7 +65,7 @@ final class PinScreenPresenter {
         switch flow {
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
-            case .background:
+            case .background, .attachedOn:
                 return .text(value: LocalizationConstants.Pin.logoutButton)
             case .foreground:
                 return .none

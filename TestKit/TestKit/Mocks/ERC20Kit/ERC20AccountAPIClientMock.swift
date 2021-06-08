@@ -7,19 +7,24 @@ import PlatformKit
 import RxSwift
 
 class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
-    typealias Token = PaxToken
 
-    var fetchTransactionsResponse: Single<ERC20TransfersResponse<PaxToken>> = .just(.transfersResponse)
-    func fetchTransactions(from address: String, page: String) -> Single<ERC20TransfersResponse<PaxToken>> {
+    var isContractResponse: Single<ERC20IsContractResponse> = .just(ERC20IsContractResponse(contract: false))
+    var fetchTransactionsResponse: Single<ERC20TransfersResponse> = .just(.transfersResponse)
+    var fetchAccountSummaryResponse: Single<ERC20AccountSummaryResponse>
+
+    init(cryptoCurrency: CryptoCurrency) {
+        fetchAccountSummaryResponse = .just(.accountResponseMock(cryptoCurrency: cryptoCurrency))
+    }
+
+    func fetchTransactions(from address: String, page: String, contractAddress: String) -> Single<ERC20TransfersResponse> {
         fetchTransactionsResponse
     }
 
-    func isContract(address: String) -> Single<ERC20IsContractResponse<Token>> {
-        .just(ERC20IsContractResponse<Token>(contract: false))
+    func isContract(address: String) -> Single<ERC20IsContractResponse> {
+        isContractResponse
     }
 
-    var fetchAccountSummaryResponse: Single<ERC20AccountSummaryResponse<PaxToken>> = .just(.accountResponseMock)
-    func fetchAccountSummary(from address: String) -> Single<ERC20AccountSummaryResponse<PaxToken>> {
+    func fetchAccountSummary(from address: String, contractAddress: String) -> Single<ERC20AccountSummaryResponse> {
         fetchAccountSummaryResponse
     }
 }

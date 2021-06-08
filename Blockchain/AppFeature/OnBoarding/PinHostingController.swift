@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import ToolKit
 import UIKit
 
 /// Acts as a container for `PinRouter` wireframing actions
@@ -28,14 +29,14 @@ final class PinHostingController: UIViewController {
 
         viewStore.publisher.creating
             .filter { $0 }
-            .sink { shouldCreatePin in
-                // TODO:
+            .sink { [weak self] _ in
+                self?.createPin()
             }
             .store(in: &cancellables)
 
         viewStore.publisher.authenticate
             .filter { $0 }
-            .sink { [weak self] shouldAuthenticate in
+            .sink { [weak self] _ in
                 self?.authenticatePin()
             }
             .store(in: &cancellables)
@@ -48,12 +49,33 @@ final class PinHostingController: UIViewController {
             return
         }
         let flow = PinRouting.Flow.authenticate(
-            from: .background,
+            from: .attachedOn(controller: UnretainedContentBox<UIViewController>(self)),
             logoutRouting: logout
         )
         pinRouter = PinRouter(flow: flow) { [weak self] input in
             guard let password = input.password else { return }
             self?.viewStore.send(.handleAuthentication(password))
+        }
+        pinRouter?.execute()
+    }
+
+    /// Create a new pin code. Used during onboarding, when the user is required to define a pin code before entering his wallet.
+    func createPin() {
+        let parentViewController = UIApplication.shared.topMostViewController!
+        let boxedParent = UnretainedContentBox(parentViewController)
+        let flow = PinRouting.Flow.create(parent: boxedParent)
+        pinRouter = PinRouter(flow: flow) { [weak self] _ in
+            guard let self = self else { return }
+//            self.alertPresenter.showMobileNoticeIfNeeded()
+//            /// TODO: Inject app coordinator instead - currently there is
+//            /// a crash related to circle-dependency between `AuthenticationCoordinator`
+//            /// and `AppCoordinator`.
+//            AppCoordinator.shared.startAfterWalletAuthentication(
+//                completion: { [weak self] in
+//                    // Handle any necessary routing after authentication
+//                    self?.handlePostAuthenticationLogic()
+//                }
+//            )
         }
         pinRouter?.execute()
     }

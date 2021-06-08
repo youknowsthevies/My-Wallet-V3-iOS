@@ -24,10 +24,11 @@ class PaymentPresenter {
     private func displayAlert(with payment: ReceivedPaymentDetails) {
         let button = AlertAction(style: .confirm(LocalizationConstants.close))
         let title = "\(payment.asset.name) \(LocalizationConstants.PaymentReceivedAlert.titleSuffix)"
+        let localImage = payment.asset.logoResource.localImage
         let alert = AlertModel(headline: title,
                                body: payment.amount,
                                actions: [button],
-                               image: payment.asset.logo,
+                               image: localImage,
                                style: .sheet)
         let alertView = AlertView.make(with: alert, completion: nil)
         alertView.show()

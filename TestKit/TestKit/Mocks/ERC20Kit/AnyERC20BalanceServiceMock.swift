@@ -6,13 +6,17 @@ import EthereumKit
 import PlatformKit
 import RxSwift
 
-public class ERC20BalanceServiceMock<Token: ERC20Token>: ERC20BalanceServiceAPI {
-    var balanceResponse: Single<ERC20TokenValue<Token>> = Single.just(.zero())
+class ERC20BalanceServiceMock: ERC20BalanceServiceAPI {
+    var balanceResponse: Single<CryptoValue>
 
-    public var balanceForDefaultAccount: Single<ERC20TokenValue<Token>> {
+    init(cryptoCurrency: CryptoCurrency) {
+        balanceResponse = .just(.zero(currency: cryptoCurrency))
+    }
+
+    func accountBalance(cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
         balanceResponse
     }
-    public func balance(for address: EthereumAddress) -> Single<ERC20TokenValue<Token>> {
+    func balance(for address: EthereumAddress, cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
         balanceResponse
     }
 }
