@@ -22,5 +22,8 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
     case .didRetrievedWalletAddress(let walletAddress):
         state.walletAddress = walletAddress
         return .none
+    case .setVerifyDeviceVisible(let isVisible):
+        state.isVerifyDeviceVisible = isVisible
+        return .none
     }
 }

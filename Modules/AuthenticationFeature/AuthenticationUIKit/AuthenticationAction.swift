@@ -11,4 +11,7 @@ public enum AuthenticationAction: Equatable {
     case didChangeEmailAddress(String)
     case emailVerified(Bool)
     case didRetrievedWalletAddress(String)
+
+    // MARK: - Verify Device Screen
+    case setVerifyDeviceVisible(Bool)
 }

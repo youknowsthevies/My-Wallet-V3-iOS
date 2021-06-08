@@ -8,5 +8,8 @@ public struct AuthenticationState: Equatable {
     public var isEmailVerified: Bool = false
     public var walletAddress: String = ""
 
+    // MARK: - Verify Device Screen
+    public var isVerifyDeviceVisible: Bool = false
+
     public init() {}
 }
