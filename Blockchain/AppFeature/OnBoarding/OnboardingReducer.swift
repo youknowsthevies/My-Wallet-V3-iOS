@@ -58,8 +58,9 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
     }
 )
 
+// MARK: - Internal Methods
 
-private func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
+func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
     if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
         // Original flow
         if blockchainSettings.isPinSet {

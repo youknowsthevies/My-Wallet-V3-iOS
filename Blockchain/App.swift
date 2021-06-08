@@ -38,6 +38,13 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window = windowProvider(screen: .main)
         self.window = window
+        window.makeKeyAndVisible()
+        eraseWalletForUITestsIfNeeded()
+        if shouldStopProcessOnDebugAndTestingMode() {
+            // set an empty root view controller to window to avoid app nitpicking
+            window.rootViewController = UIViewController()
+            return true
+        }
         if useNewOnboarding() {
             let hostingController = AppHostingController(
                 store: store.scope(
@@ -46,11 +53,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
                 )
             )
             window.setRootViewController(hostingController)
-        }
-        window.makeKeyAndVisible()
-        eraseWalletForUITestsIfNeeded()
-        if shouldStopProccessOnDebugAndTestingMode() {
-            return true
         }
         viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
         return true
@@ -67,7 +69,7 @@ private func bootstrap() {
     defineDependencies()
 }
 
-/// Registers the depencencies from each module in the `DependencyContainer` of `DIKit`
+/// Registers the dependencies from each module in the `DependencyContainer` of `DIKit`
 private func defineDependencies() {
     // swiftlint:disable trailing_semicolon
     DependencyContainer.defined(by: modules {
@@ -92,10 +94,12 @@ private func defineDependencies() {
         DependencyContainer.activityUIKit;
         DependencyContainer.kycKit;
         DependencyContainer.kycUIKit;
+        DependencyContainer.blockchain;
+        DependencyContainer.settingsKit;
+        DependencyContainer.settingsUIKit;
         DependencyContainer.analyticsKit;
         DependencyContainer.nabuAnalyticsDataKit;
         DependencyContainer.nabuAnalyticsKit;
-        DependencyContainer.blockchain;
         DependencyContainer.remoteNotificationsKit;
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit;
@@ -119,7 +123,7 @@ private func eraseWalletForUITestsIfNeeded() {
     }
 }
 
-private func shouldStopProccessOnDebugAndTestingMode() -> Bool {
+private func shouldStopProcessOnDebugAndTestingMode() -> Bool {
     #if DEBUG
         return ProcessInfo.processInfo.isUnitTesting
     #else

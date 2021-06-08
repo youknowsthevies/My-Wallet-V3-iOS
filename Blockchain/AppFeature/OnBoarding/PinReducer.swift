@@ -43,10 +43,12 @@ let pinReducer = Reducer<PinCore.State, PinCore.Action, PinCore.Environment> { s
     case .authenticate:
         state.creating = false
         state.authenticate = true
+        state.changing = false
         return .none
     case .create:
         state.creating = true
         state.authenticate = false
+        state.changing = false
         return .none
     case .change:
         state.creating = false
@@ -65,7 +67,7 @@ let pinReducer = Reducer<PinCore.State, PinCore.Action, PinCore.Environment> { s
                     guard case let .success(value) = result else {
                         return .none
                     }
-                    return handleWalletDecryption(decryption: value)
+                    return handleWalletDecryption(value)
                 },
             environment.walletManager.didCompleteAuthentication
                 .catchToEffect()
@@ -99,9 +101,9 @@ let pinReducer = Reducer<PinCore.State, PinCore.Action, PinCore.Environment> { s
     }
 }
 
-// MARK: Private methods
+// MARK: Internal methods
 
-private func handleWalletDecryption(decryption: WalletDecryption) -> PinCore.Action {
+func handleWalletDecryption(_ decryption: WalletDecryption) -> PinCore.Action {
 
     //// Verify valid GUID and sharedKey
     guard let guid = decryption.guid, guid.count == 36 else {
@@ -125,7 +127,7 @@ private func handleWalletDecryption(decryption: WalletDecryption) -> PinCore.Act
     return .didDecryptWallet(decryption)
 }
 
-private func clearPinIfNeeded(for passwordPartHash: String?, appSettings: BlockchainSettings.App) {
+func clearPinIfNeeded(for passwordPartHash: String?, appSettings: BlockchainSettings.App) {
     // Because we are not storing the password on the device. We record the first few letters of the hashed password.
     // With the hash prefix we can then figure out if the password changed. If so, clear the pin
     // so that the user can reset it

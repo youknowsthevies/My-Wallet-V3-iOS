@@ -5,7 +5,7 @@ import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
 
-@objc class AppFeatureConfigurator: NSObject, FeatureConfiguring {
+@objc class AppFeatureConfigurator: NSObject, FeatureConfiguratorAPI {
 
     enum ConfigurationError: Error {
         case missingKeyRawValue

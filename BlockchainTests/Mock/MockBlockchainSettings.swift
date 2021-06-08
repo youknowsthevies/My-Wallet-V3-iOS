@@ -10,11 +10,46 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockDidTapOnAirdropDeepLink: Bool = false
     var mockGuid: String?
     var mockSharedKey: String?
+    var mockIsPinSet: Bool = false
+    var mockIsPairedWithWallet: Bool = false
+    var mockEncryptedPinPassword: String?
+    var mockPinKey: String?
 
     override init(enabledCurrenciesService: EnabledCurrenciesServiceAPI,
                   keychainItemWrapper: KeychainItemWrapping,
                   legacyPasswordProvider: LegacyPasswordProviding) {
         super.init()
+    }
+
+    override var isPairedWithWallet: Bool {
+        mockIsPairedWithWallet
+    }
+
+    override var encryptedPinPassword: String? {
+        get {
+            mockEncryptedPinPassword
+        }
+        set {
+            mockEncryptedPinPassword = newValue
+        }
+    }
+
+    override var pinKey: String? {
+        get {
+            mockPinKey
+        }
+        set {
+            mockPinKey = newValue
+        }
+    }
+
+    override var isPinSet: Bool {
+        get {
+            mockIsPinSet
+        }
+        set {
+            mockIsPinSet = newValue
+        }
     }
 
     override var guid: String? {
@@ -51,5 +86,10 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
         set {
             mockDidAttemptToRouteForAirdrop = newValue
         }
+    }
+
+    var clearPinCalled = false
+    override func clearPin() {
+        clearPinCalled = true
     }
 }

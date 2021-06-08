@@ -138,7 +138,13 @@ extension DependencyContainer {
             )
         }
 
-        single { ReactiveWallet() }
+        // TODO: Change usages of "Coincore = resolve()" to "CoincoreAPI = resolve()"
+        single { () -> CoincoreAPI in
+            let service: Coincore = DIKit.resolve()
+            return service as CoincoreAPI
+        }
+
+        single { ReactiveWallet() as ReactiveWalletAPI }
 
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 

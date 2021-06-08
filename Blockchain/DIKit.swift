@@ -171,11 +171,6 @@ extension DependencyContainer {
             return manager
         }
 
-        factory { () -> ReactiveWalletAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return manager.reactiveWallet
-        }
-
         factory { () -> MnemonicAccessAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as MnemonicAccessAPI
@@ -249,6 +244,11 @@ extension DependencyContainer {
         // MARK: - AppFeatureConfigurator
 
         single { AppFeatureConfigurator() }
+
+        factory { () -> FeatureConfiguratorAPI in
+            let configurator: AppFeatureConfigurator = DIKit.resolve()
+            return configurator
+        }
 
         factory { () -> FeatureConfiguring in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
