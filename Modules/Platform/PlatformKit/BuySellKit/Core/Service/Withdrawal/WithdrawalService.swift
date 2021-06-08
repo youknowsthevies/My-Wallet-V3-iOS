@@ -8,6 +8,7 @@ public protocol WithdrawalServiceAPI {
     func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit>
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>>
     func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue>
+    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue>
 }
 
 final class WithdrawalService: WithdrawalServiceAPI {
@@ -42,6 +43,20 @@ final class WithdrawalService: WithdrawalServiceAPI {
         client.withdrawFee(currency: currency)
             .map { response -> CurrencyFeeResponse? in
                 response.fees.first(where: { $0.symbol == currency.code })
+            }
+            .map { feeResponse -> FiatValue in
+                guard let feeResponse = feeResponse,
+                      let minorValue = BigInt(feeResponse.minorValue) else {
+                    return .zero(currency: currency)
+                }
+                return FiatValue(amount: minorValue, currency: currency)
+            }
+    }
+
+    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue> {
+        client.withdrawFee(currency: currency)
+            .map { response -> CurrencyFeeResponse? in
+                response.minAmounts.first(where: { $0.symbol == currency.code })
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
