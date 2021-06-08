@@ -224,9 +224,6 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
-  Veriff:
-    url: https://github.com/Veriff/veriff-ios-spm/
-    version: 4.8.0
 targets:
   ActivityKit:
     dependencies:
@@ -487,7 +484,6 @@ targets:
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
     dependencies:
     - sdk: libicucore.tbd
-    - package: Veriff
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/Charts.xcframework
     - framework: Carthage/Build/CryptoSwift.xcframework
@@ -504,6 +500,7 @@ targets:
     - framework: Carthage/Build/Sift.xcframework
     - framework: Carthage/Build/stellarsdk.xcframework
     - framework: Carthage/Build/SwiftProtobuf.xcframework
+    - framework: Carthage/Build/Veriff.xcframework
     - framework: Carthage/Build/WalletCore.xcframework
     - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
@@ -963,7 +960,7 @@ targets:
     - ModuleTests
   KYCUIKit:
     dependencies:
-    - package: Veriff
+    - framework: Carthage/Build/Veriff.xcframework
     - target: AnalyticsKit
     - target: KYCKit
     - target: Localization
