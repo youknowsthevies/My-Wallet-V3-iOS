@@ -82,6 +82,7 @@ final class WithdrawAmountValidationService {
             .asObservable()
             .map(\.moneyValue)
             .startWith(.zero(currency: fiatCurrency))
+            .share(replay: 1, scope: .whileConnected)
 
     }
 
