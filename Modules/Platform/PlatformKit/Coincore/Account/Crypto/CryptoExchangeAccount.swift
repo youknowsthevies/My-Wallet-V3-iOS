@@ -38,10 +38,14 @@ public protocol ExchangeAccount: CryptoAccount {
     var state: ExchangeAccountState { get }
 }
 
-public class CryptoExchangeAccount: ExchangeAccount {
+public final class CryptoExchangeAccount: ExchangeAccount {
 
     public var requireSecondPassword: Single<Bool> {
         .just(false)
+    }
+
+    public var actionableBalance: Single<MoneyValue> {
+        balance
     }
 
     public var balance: Single<MoneyValue> {
@@ -75,7 +79,6 @@ public class CryptoExchangeAccount: ExchangeAccount {
     }
 
     public lazy var id: String = "CryptoExchangeAccount." + asset.code
-    public let accountType: SingleAccountType = .custodial(.exchange)
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
     public let label: String

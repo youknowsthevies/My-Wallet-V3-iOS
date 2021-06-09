@@ -5,18 +5,19 @@ import Localization
 import RxSwift
 import ToolKit
 
-public class FiatCustodialAccount: FiatAccount {
+final class FiatCustodialAccount: FiatAccount {
 
-    private typealias LocalizedString = LocalizationConstants.Account
+    let id: String
+    let actions: Single<AvailableActions> = .just([.deposit, .viewActivity])
+    let isDefault: Bool = true
+    let label: String
+    let fiatCurrency: FiatCurrency
 
-    public let id: String
-    public let actions: Single<AvailableActions> = .just([.deposit, .viewActivity])
-    public let isDefault: Bool = true
-    public let label: String
-    public let fiatCurrency: FiatCurrency
-    public let accountType: SingleAccountType = .custodial(.trading)
+    var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
+    }
 
-    public var canWithdrawFunds: Single<Bool> {
+    var canWithdrawFunds: Single<Bool> {
         /// TODO: Fetch transaction history and filer
         /// for transactions that are `withdrawals` and have a
         /// transactionState of `.pending`.
@@ -24,43 +25,49 @@ public class FiatCustodialAccount: FiatAccount {
         unimplemented()
     }
 
-    public var pendingBalance: Single<MoneyValue> {
-        balanceProviding[currencyType]
-            .trading
-            .pendingBalanceMoney
+    var pendingBalance: Single<MoneyValue> {
+        balances
+            .map(\.balance?.pending)
+            .onNilJustReturn(.zero(currency: currencyType))
     }
 
-    public var isFunded: Single<Bool> {
-        balanceProviding[currencyType]
-            .trading
-            .balanceMoney
-            .map { $0.isPositive }
+    var balance: Single<MoneyValue> {
+        balances
+            .map(\.balance?.available)
+            .onNilJustReturn(.zero(currency: currencyType))
     }
 
-    public var balance: Single<MoneyValue> {
-        balanceProviding[currencyType]
-            .trading
-            .balanceMoney
+    var actionableBalance: Single<MoneyValue> {
+        balance
     }
 
-    private let balanceProviding: BalanceProviding
+    var isFunded: Single<Bool> {
+        balance.map(\.isPositive)
+    }
+
+    private let balanceService: TradingBalanceServiceAPI
     private let exchange: PairExchangeServiceAPI
-
-    init(fiatCurrency: FiatCurrency,
-         exchangeProviding: ExchangeProviding = resolve(),
-         balanceProviding: BalanceProviding = resolve()) {
-        self.balanceProviding = balanceProviding
-        self.exchange = exchangeProviding[fiatCurrency]
-        self.fiatCurrency = fiatCurrency
-        label = fiatCurrency.defaultWalletName
-        id = "FiatCustodialAccount." + fiatCurrency.code
+    private var balances: Single<CustodialAccountBalanceState> {
+        balanceService.balance(for: currencyType)
     }
 
-    public func can(perform action: AssetAction) -> Single<Bool> {
+    init(
+        fiatCurrency: FiatCurrency,
+        balanceService: TradingBalanceServiceAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve()
+    ) {
+        id = "FiatCustodialAccount." + fiatCurrency.code
+        label = fiatCurrency.defaultWalletName
+        self.fiatCurrency = fiatCurrency
+        self.balanceService = balanceService
+        self.exchange = exchangeProviding[fiatCurrency]
+    }
+
+    func can(perform action: AssetAction) -> Single<Bool> {
         actions.map { $0.contains(action) }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
         guard self.fiatCurrency != fiatCurrency else {
             return balance
                 .map { balance in

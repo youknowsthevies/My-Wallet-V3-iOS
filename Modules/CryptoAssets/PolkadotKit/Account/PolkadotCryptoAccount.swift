@@ -22,8 +22,16 @@ final class PolkadotCryptoAccount: CryptoNonCustodialAccount {
         unimplemented()
     }
 
+    var actionableBalance: Single<MoneyValue> {
+        balance
+    }
+
     var balance: Single<MoneyValue> {
         unimplemented()
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        .error(ReceiveAddressError.notSupported)
     }
 
     var actions: Single<AvailableActions> { .just([]) }

@@ -10,12 +10,6 @@ public protocol SingleAccount: BlockchainAccount, TransactionTarget {
 }
 
 public extension SingleAccount {
-    var actionableBalance: Single<MoneyValue> {
-        balance
-    }
-    var receiveAddress: Single<ReceiveAddress> {
-        .error(ReceiveAddressError.notSupported)
-    }
 
     var sourceState: Single<SourceState> {
         .just(.notSupported)

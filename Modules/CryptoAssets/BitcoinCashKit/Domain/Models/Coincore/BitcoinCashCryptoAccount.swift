@@ -7,7 +7,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
+final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
     let id: String
@@ -20,13 +20,17 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var pendingBalance: Single<MoneyValue> {
-        Single.just(MoneyValue.zero(currency: .bitcoinCash))
+        .just(.zero(currency: .bitcoinCash))
     }
 
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: xPub)
             .moneyValue
+    }
+
+    var actionableBalance: Single<MoneyValue> {
+        balance
     }
 
     var actions: Single<AvailableActions> {
