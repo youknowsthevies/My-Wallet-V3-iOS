@@ -6,7 +6,7 @@ import RIBs
 enum CheckoutRoute {
     case loading(amount: FiatValue)
     case confirmation(amount: FiatValue)
-    case failure(CurrencyType)
+    case failure(CurrencyType, Error)
 }
 
 protocol CheckoutPageInteractable: Interactable, WithdrawalConfirmationRouting {
@@ -38,8 +38,8 @@ final class CheckoutPageRouter: ViewableRouter<CheckoutPageInteractable, Content
             return confirmationPageBuilder.build(for: .loading(amount), routing: interactor)
         case .confirmation(let data):
             return confirmationPageBuilder.build(for: .success(data), routing: interactor)
-        case .failure(let currencyType):
-            return confirmationPageBuilder.build(for: .failure(currencyType), routing: interactor)
+        case let .failure(currencyType, error):
+            return confirmationPageBuilder.build(for: .failure(currencyType, error), routing: interactor)
         }
     }
 }

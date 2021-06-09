@@ -32,10 +32,21 @@ final class WithdrawalConfirmationInteractor: Interactor {
         switch type {
         case .success(let value):
             return value.currency
-        case .failure(let currencyType):
+        case .failure(let currencyType, _):
             return currencyType
         case .loading(let value):
             return value.currency
+        }
+    }
+
+    var errorDescription: String? {
+        switch type {
+        case let .failure(_, NabuNetworkError.nabuError(error)):
+            return error.localizedDescription
+        case let .failure(_, error):
+            return error.localizedDescription
+        default:
+            return nil
         }
     }
 
