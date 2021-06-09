@@ -68,7 +68,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionBuildingService = transactionBuildingService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         self.bridge = ethereumWalletBridgeAPI
-        feeCache = CachedValue(configuration: .init(refreshType: .onSubscription))
+        feeCache = CachedValue(configuration: .periodic(90))
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService.fees(cryptoCurrency: .ethereum)
         }

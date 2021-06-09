@@ -48,11 +48,7 @@ class StellarAccountService: StellarAccountAPI {
         self.repository = repository
         self.detailsService = detailsService
         privateAccountCache = CachedValue<StellarAccountDetails>(
-            configuration: CachedValueConfiguration(
-                refreshType: .periodic(seconds: 60),
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
-            )
+            configuration: .periodic(60)
         )
 
         privateAccountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
