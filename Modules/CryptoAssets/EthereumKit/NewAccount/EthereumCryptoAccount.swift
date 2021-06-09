@@ -20,13 +20,13 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
-        balanceFetching
-            .balanceMoney
+        accountDetailsService.accountDetails()
+            .map(\.balance)
+            .moneyValue
     }
 
     var pendingBalance: Single<MoneyValue> {
-        balanceFetching
-            .pendingBalanceMoney
+        .just(.zero(currency: asset))
     }
 
     var actions: Single<AvailableActions> {
@@ -45,7 +45,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     private let hdAccountIndex: Int
-    private let balanceFetching: SingleAccountBalanceFetching
+    private let accountDetailsService: EthereumAccountDetailsServiceAPI
     private let bridge: EthereumWalletBridgeAPI
     private let exchangeService: PairExchangeServiceAPI
 
@@ -53,14 +53,14 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
          label: String? = nil,
          hdAccountIndex: Int,
          bridge: EthereumWalletBridgeAPI = resolve(),
-         balanceProviding: BalanceProviding = resolve(),
+         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
          exchangeProviding: ExchangeProviding = resolve()) {
         let asset = CryptoCurrency.ethereum
         self.asset = asset
         self.id = id
         self.hdAccountIndex = hdAccountIndex
         self.exchangeService = exchangeProviding[asset]
-        self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.accountDetailsService = accountDetailsService
         self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
     }

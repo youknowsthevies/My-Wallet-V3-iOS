@@ -9,7 +9,6 @@ import ToolKit
 public protocol ActivityServiceContaining {
     var asset: Observable<CurrencyType> { get }
     var activityProviding: ActivityProviding { get }
-    var balanceProviding: BalanceProviding { get }
     var exchangeProviding: ExchangeProviding { get }
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     var activity: Observable<ActivityItemEventServiceAPI> { get }
@@ -36,7 +35,6 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     }
 
     public let activityProviding: ActivityProviding
-    public let balanceProviding: BalanceProviding
     public let fiatCurrency: FiatCurrencySettingsServiceAPI
     public let selectionService: WalletPickerSelectionServiceAPI
     public let accountSelectionService: AccountSelectionServiceAPI
@@ -103,13 +101,11 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     }()
 
     public init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
-                balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve(),
                 activityProviding: ActivityProviding = resolve()) {
         self.selectionService = WalletPickerSelectionService()
         self.accountSelectionService = AccountSelectionService()
         self.fiatCurrency = fiatCurrency
-        self.balanceProviding = balanceProviding
         self.exchangeProviding = exchangeProviding
         self.activityProviding = activityProviding
     }

@@ -11,6 +11,7 @@ public protocol StellarAccountDetailsServiceAPI {
 }
 
 final class StellarAccountDetailsService: StellarAccountDetailsServiceAPI {
+
     private let horizonProxy: HorizonProxyAPI
 
     init(horizonProxy: HorizonProxyAPI = resolve()) {
@@ -19,8 +20,9 @@ final class StellarAccountDetailsService: StellarAccountDetailsServiceAPI {
 
     func accountDetails(for accountID: String) -> Single<StellarAccountDetails> {
         horizonProxy.accountResponse(for: accountID)
-            .map { response -> StellarAccountDetails in
-                response.toAssetAccountDetails()
+            .map(weak: self) { (self, response) -> StellarAccountDetails in
+                let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
+                return response.toAssetAccountDetails(minimumBalance: minBalance)
             }
             .catchError { error in
                 // If the network call to Horizon fails due to there not being a default account (i.e. account is not yet

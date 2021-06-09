@@ -9,14 +9,28 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-/// A container for common crypto services.
-/// Rule of thumb: If a service may be used by multiple clients,
-/// and if there should be a single service per asset, it makes sense to place
-/// that it inside a specialized container.
-final class DataProvider: DataProviding {
+protocol DataProviding: AnyObject {
 
-    /// The default container
-    @Inject static var `default`: DataProvider
+    /// Returns all the exchange providers
+    var exchange: ExchangeProviding { get }
+
+    /// Returns all the asset balance providers
+    var balance: BalanceProviding { get }
+
+    /// Returns all the asset balance change providers
+    /// Typically used to receive a change in balance over a certain time
+    /// period
+    var balanceChange: BalanceChangeProviding { get }
+
+    /// Returns all the historical asset price providers
+    /// This service is wallet agnostic and provides the
+    /// market prices over a given duration
+    var historicalPrices: HistoricalFiatPriceProviding { get }
+}
+
+/// A container for common crypto services.
+/// Rule of thumb: You shouldn't add any more code here.
+final class DataProvider: DataProviding {
 
     /// Historical service that provides past prices for a given asset type
     let historicalPrices: HistoricalFiatPriceProviding
@@ -29,8 +43,6 @@ final class DataProvider: DataProviding {
 
     /// Balance service for any asset
     let balance: BalanceProviding
-
-    let syncing: PortfolioSyncingService
 
     init(featureFetching: FeatureFetchingConfiguring = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
@@ -374,12 +386,6 @@ final class DataProvider: DataProviding {
                 prices: historicalPrices[.erc20(.yearnFinance)],
                 cryptoCurrency: .erc20(.yearnFinance)
             )
-        )
-
-        syncing = .init(
-            balanceProviding: balance,
-            balanceChangeProviding: balanceChange,
-            fiatCurrencyProviding: fiatCurrencyService
         )
     }
 }

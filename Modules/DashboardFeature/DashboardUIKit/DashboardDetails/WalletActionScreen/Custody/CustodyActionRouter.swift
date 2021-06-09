@@ -34,7 +34,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let backupRouterAPI: BackupRouterAPI
     private let custodyWithdrawalRouter: CustodyWithdrawalRouterAPI
     private var depositRouter: DepositRootRouting!
-    private let dataProviding: DataProviding
 
     private let navigationRouter: NavigationRouterAPI
 
@@ -66,7 +65,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         tabSwapping: TabSwapping,
         custodyWithdrawalRouter: CustodyWithdrawalRouterAPI,
         navigationRouter: NavigationRouterAPI = resolve(),
-        dataProviding: DataProviding = resolve(),
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
@@ -77,7 +75,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
         self.custodyWithdrawalRouter = custodyWithdrawalRouter
         self.walletOperationsRouter = walletOperationsRouter
-        self.dataProviding = dataProviding
         self.backupRouterAPI = backupRouterAPI
 
         self.analyticsService = analyticsService

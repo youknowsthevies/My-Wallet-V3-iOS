@@ -69,7 +69,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         }
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {
-            environment.dataProvider.syncing.sync()
+            environment.portfolioSyncingService.sync()
         }
     case .appDelegate(.willEnterForeground):
         guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {

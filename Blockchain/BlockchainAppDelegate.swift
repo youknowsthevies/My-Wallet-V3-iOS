@@ -238,7 +238,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
             identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
-        DataProvider.default.syncing.sync()
+        let portfolioSyncingService: BalanceSharingSettingsServiceAPI = resolve()
+        portfolioSyncingService.sync()
         backgroundTaskTimer.begin(application) { [weak self] in
             self?.delayedApplicationDidEnterBackground(application)
         }

@@ -11,18 +11,22 @@ extension AccountResponse {
         return CryptoValue.create(major: value, currency: .stellar)
     }
 
-    func toAssetAccountDetails() -> StellarAccountDetails {
+    func toAssetAccountDetails(minimumBalance: CryptoValue) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountId,
             name: CryptoCurrency.stellar.defaultWalletName,
             description: CryptoCurrency.stellar.defaultWalletName,
             sequence: Int(sequenceNumber),
-            subentryCount: Int(subentryCount)
+            subentryCount: subentryCount
         )
-
+        var actionableBalance: CryptoValue = .stellarZero
+        if let balanceMinusReserve = try? totalBalance - minimumBalance, balanceMinusReserve.isPositive {
+            actionableBalance = balanceMinusReserve
+        }
         return StellarAccountDetails(
             account: account,
-            balance: totalBalance
+            balance: totalBalance,
+            actionableBalance: actionableBalance
         )
     }
 }

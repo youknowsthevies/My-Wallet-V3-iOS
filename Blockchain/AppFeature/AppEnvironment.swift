@@ -24,7 +24,7 @@ public struct AppEnvironment {
     var userActivityHandler: UserActivityHandler
     var deeplinkAppHandler: DeeplinkAppHandler
     var backgroundAppHandler: BackgroundAppHandler
-    var dataProvider: DataProvider
+    var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI
 
     var coincore: CoincoreAPI

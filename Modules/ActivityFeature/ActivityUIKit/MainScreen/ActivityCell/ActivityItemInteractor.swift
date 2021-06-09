@@ -9,7 +9,6 @@ final class ActivityItemInteractor {
     let event: ActivityItemEvent
 
     init(exchangeAPI: PairExchangeServiceAPI,
-         assetBalanceFetcher: AssetBalanceFetching,
          activityItemEvent: ActivityItemEvent) {
         self.event = activityItemEvent
         balanceViewInteractor = ActivityItemBalanceViewInteractor.init(

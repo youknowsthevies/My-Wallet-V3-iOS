@@ -4,9 +4,17 @@ import PlatformKit
 
 extension CustodialAccountBalance {
 
-    init?(currency: CryptoCurrency,
-          response: SavingsAccountBalanceDetails) {
+    init?(
+        currency: CurrencyType,
+        response: SavingsAccountBalanceDetails
+    ) {
         guard let balance = response.balance else { return nil }
-        self = .init(minorValue: balance, currencyType: .crypto(currency))
+        let zero: MoneyValue = .zero(currency: currency)
+        self.init(
+            currency: currency,
+            available: MoneyValue.create(minor: balance, currency: currency) ?? zero,
+            withdrawable: zero,
+            pending: zero
+        )
     }
 }

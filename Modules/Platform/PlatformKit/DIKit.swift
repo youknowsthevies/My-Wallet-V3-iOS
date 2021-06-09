@@ -10,17 +10,9 @@ extension DependencyContainer {
 
     public static var platformKit = module {
 
-        // MARK: - BalanceProviding
+        // MARK: - Today Extension
 
-        factory { () -> BalanceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balance
-        }
-
-        factory { () -> ExchangeProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.exchange
-        }
+        single { PortfolioSyncingService() as BalanceSharingSettingsServiceAPI }
 
         // MARK: - Clients
 

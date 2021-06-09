@@ -87,10 +87,6 @@ extension DependencyContainer {
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
-        factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
-
-        factory { DataProvider.default.balanceChange as BalanceChangeProviding }
-
         single { TradeLimitsService() as TradeLimitsAPI }
 
         factory { SiftService() as SiftServiceAPI }
@@ -289,11 +285,26 @@ extension DependencyContainer {
 
         // MARK: - DataProvider
 
-        single { DataProvider() }
+        single { DataProvider() as DataProviding }
 
-        factory { () -> DataProviding in
-            let provider: DataProvider = DIKit.resolve()
-            return provider as DataProviding
+        factory { () -> BalanceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balance
+        }
+
+        factory { () -> ExchangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.exchange
+        }
+
+        factory { () -> BalanceChangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balanceChange
+        }
+
+        factory { () -> HistoricalFiatPriceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.historicalPrices
         }
 
         // MARK: - BlockchainDataRepository

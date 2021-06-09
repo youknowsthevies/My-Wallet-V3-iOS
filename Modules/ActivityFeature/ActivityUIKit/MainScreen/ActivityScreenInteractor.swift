@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ActivityKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -51,7 +52,7 @@ final class ActivityScreenInteractor {
                 case .calculating:
                     return false
                 }
-        }
+            }
     }
 
     // MARK: - Private Properties
@@ -72,8 +73,7 @@ final class ActivityScreenInteractor {
             .map {
                 State(
                     with: $0,
-                    exchangeProviding: serviceContainer.exchangeProviding,
-                    balanceProviding: serviceContainer.balanceProviding
+                    exchangeProviding: serviceContainer.exchangeProviding
                 )
             }
             .startWith(.calculating)
@@ -92,8 +92,7 @@ fileprivate extension ActivityScreenInteractor.State {
     /// Initializer that receives the loading state and
     /// maps it to `self`
     init(with state: ActivityItemEventsLoadingState,
-         exchangeProviding: ExchangeProviding,
-         balanceProviding: BalanceProviding) {
+         exchangeProviding: ExchangeProviding) {
         switch state {
         case .loading:
             self = .calculating
@@ -102,7 +101,6 @@ fileprivate extension ActivityScreenInteractor.State {
             let interactors: [ActivityItemInteractor] = sorted.map {
                 ActivityItemInteractor(
                     exchangeAPI: exchangeProviding[$0.amount.currencyType],
-                    assetBalanceFetcher: balanceProviding[$0.amount.currencyType],
                     activityItemEvent: $0
                 )
             }

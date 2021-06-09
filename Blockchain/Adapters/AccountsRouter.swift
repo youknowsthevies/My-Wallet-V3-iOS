@@ -15,17 +15,14 @@ final class AccountsRouter: AccountsRouting {
 
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
-    private let balanceProvider: BalanceProviding
     private let disposeBag = DisposeBag()
 
     init(
         routing: CurrencyRouting & TabSwapping,
-        balanceProvider: BalanceProviding = resolve(),
         backupRouter: DashboardUIKit.BackupRouterAPI = resolve()
     ) {
         self.nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
         self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
-        self.balanceProvider = balanceProvider
     }
 
     private func routeToInterestAccount(for account: BlockchainAccount) {

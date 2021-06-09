@@ -15,8 +15,9 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     // MARK: - Properties
 
     var balances: Single<CustodialAccountBalanceStates> {
-        _ = setup
-        return cachedValue.valueSingle
+        cachedValue
+            .valueSingle
+            .catchErrorJustReturn(.absent)
     }
 
     // MARK: - Private Properties
@@ -24,11 +25,11 @@ class TradingBalanceService: TradingBalanceServiceAPI {
     private let client: TradingBalanceClientAPI
     private let cachedValue: CachedValue<CustodialAccountBalanceStates>
 
-    private let lock = NSLock()
+    // MARK: - Setup
 
-    private lazy var setup: Void = {
-        lock.lock()
-        defer { lock.unlock() }
+    init(client: TradingBalanceClientAPI = resolve()) {
+        self.client = client
+        cachedValue = CachedValue(configuration: .periodic(90))
         cachedValue.setFetch(weak: self) { (self) in
             self.client.balance
                 .map { response in
@@ -38,32 +39,18 @@ class TradingBalanceService: TradingBalanceServiceAPI {
                     return CustodialAccountBalanceStates(response: response)
                 }
         }
-    }()
-
-    // MARK: - Setup
-
-    init(client: TradingBalanceClientAPI = resolve()) {
-        self.client = client
-        cachedValue = CachedValue(configuration: .onSubscription())
     }
 
     // MARK: - Methods
 
     func balance(for currencyType: CurrencyType) -> Single<CustodialAccountBalanceState> {
-        client
-            .balance(for: currencyType)
+        balances
             .map { response -> CustodialAccountBalanceState in
-                guard let balance = response?[currencyType] else {
-                    return .absent
-                }
-                let accountBalance = CustodialAccountBalance(currency: currencyType, response: balance)
-                return .present(accountBalance)
+                response[currencyType]
             }
-            .catchErrorJustReturn(.absent)
     }
 
     func fetchBalances() -> Single<CustodialAccountBalanceStates> {
-        _ = setup
-        return cachedValue.fetchValue
+        cachedValue.fetchValue
     }
 }

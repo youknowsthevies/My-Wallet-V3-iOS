@@ -2,10 +2,23 @@
 
 import RxSwift
 
-public extension Single where Element: OptionalType {
+public extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalType {
     func onNil(error: Error) -> Single<Element.Wrapped> {
-        // TODO: figure out how to implement this the right way
-        return asObservable().onNil(error: error).asSingle()
+        map { element -> Element.Wrapped in
+            guard let value = element.value else {
+                throw error
+            }
+            return value
+        }
+    }
+
+    func onNilJustReturn(_ fallback: Element.Wrapped) -> Single<Element.Wrapped> {
+        map { element -> Element.Wrapped in
+            guard let value = element.value else {
+                return fallback
+            }
+            return value
+        }
     }
 }
 

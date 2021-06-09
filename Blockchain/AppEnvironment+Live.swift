@@ -18,7 +18,7 @@ extension AppEnvironment {
             userActivityHandler: .init(),
             deeplinkAppHandler: .init(),
             backgroundAppHandler: .init(),
-            dataProvider: .default,
+            portfolioSyncingService: resolve(),
             internalFeatureService: resolve(),
             coincore: resolve(),
             walletManager: .shared,

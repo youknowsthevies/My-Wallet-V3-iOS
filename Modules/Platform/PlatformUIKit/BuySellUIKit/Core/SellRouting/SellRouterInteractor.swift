@@ -151,7 +151,6 @@ public final class SellRouterInteractor: Interactor {
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let accountSelectionService: AccountSelectionServiceAPI
-    private let balanceProvider: BalanceProviding
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
 
@@ -164,13 +163,11 @@ public final class SellRouterInteractor: Interactor {
     public init(accountSelectionService: AccountSelectionServiceAPI,
                 eligibilityService: EligibilityServiceAPI = resolve(),
                 kycTiersService: KYCTiersServiceAPI = resolve(),
-                balanceProvider: BalanceProviding = resolve(),
                 loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve()) {
         self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
         self.accountSelectionService = accountSelectionService
-        self.balanceProvider = balanceProvider
         self.loader = loader
         self.alert = alert
         super.init()
@@ -181,8 +178,6 @@ public final class SellRouterInteractor: Interactor {
 
     public override func didBecomeActive() {
         super.didBecomeActive()
-
-        balanceProvider.refresh()
 
         previousRelay
             .observeOn(MainScheduler.instance)
