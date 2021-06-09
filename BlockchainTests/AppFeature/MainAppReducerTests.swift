@@ -158,8 +158,22 @@ class MainAppReducerTests: XCTestCase {
 
     func test_sending_walletInitialized_should_check_if_wallet_upgrade_is_needed() {
         mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(true))
+
         testStore.send(.walletInitialized)
-        testStore.receive(.walletNeedsUpgrade(true))
+        testStore.receive(.walletNeedsUpgrade(true)) { state in
+            state.onboarding?.pinState = nil
+            state.onboarding?.walletUpgradeState = WalletUpgrade.State()
+            state.loggedIn = nil
+        }
+
+        testStore.receive(.onboarding(.walletUpgrade(.begin)))
+
+        testStore.send(.onboarding(.walletUpgrade(.completed)))
+        testStore.receive(.proceedToLoggedIn) { state in
+            state.loggedIn = LoggedIn.State()
+            state.onboarding = nil
+        }
+        testStore.receive(.loggedIn(.start(window: nil)))
     }
 
     func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {

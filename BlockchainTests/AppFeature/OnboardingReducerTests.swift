@@ -34,6 +34,7 @@ class OnboardingReducerTests: XCTestCase {
     func test_verify_initial_state_is_correct() {
         let state = Onboarding.State()
         XCTAssertNotNil(state.pinState)
+        XCTAssertNil(state.walletUpgradeState)
     }
 
     func test_should_authenticate_when_pinIsSet_and_guidSharedKey_are_set() {

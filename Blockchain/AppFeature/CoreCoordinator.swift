@@ -106,19 +106,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         guard shouldUpgrade else {
             return Effect(value: CoreAppAction.proceedToLoggedIn)
         }
-        let window = state.window
-        return Effect<CoreAppAction, Never>.run { effect -> Cancellable in
-            let viewController = setupWalletUpgrade {
-                effect.send(.proceedToLoggedIn)
-                effect.send(completion: .finished)
-            }
-            window?.setRootViewController(viewController)
-            return AnyCancellable { }
-        }
+        state.onboarding?.pinState = nil
+        state.onboarding?.walletUpgradeState = WalletUpgrade.State()
+        return Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
     case .proceedToLoggedIn:
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
-        return .init(value: CoreAppAction.loggedIn(.start(window: state.window)))
+        return Effect(value: CoreAppAction.loggedIn(.start(window: state.window)))
+    case .onboarding(.walletUpgrade(.completed)):
+        return Effect(value: CoreAppAction.proceedToLoggedIn)
     case .onboarding:
         return .none
     case .loggedIn:
@@ -165,12 +161,4 @@ internal func syncPinKeyWithICloud(blockchainSettings: BlockchainSettings.App,
             blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
         }
     }
-}
-
-// Provides the view controller that displays the wallet upgrade
-private func setupWalletUpgrade(completion: @escaping () -> Void) -> UIViewController {
-    let interactor = WalletUpgradeInteractor(completion: completion)
-    let presenter = WalletUpgradePresenter(interactor: interactor)
-    let viewController = WalletUpgradeViewController(presenter: presenter)
-    return viewController
 }
