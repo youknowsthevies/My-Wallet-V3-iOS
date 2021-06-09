@@ -68,10 +68,8 @@ public final class SingleAmountPresenter {
                 accessibilityId: AccessibilityId.min
             )
             viewModel.elementOnTap
-                .map { "\($0)" }
                 .emit(onNext: { [weak self] amount in
-                    guard let self = self else { return }
-                    self.interactor.set(amount: amount)
+                    self?.interactor.set(amount: amount)
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
@@ -83,10 +81,8 @@ public final class SingleAmountPresenter {
                 accessibilityId: AccessibilityId.max
             )
             viewModel.elementOnTap
-                .map { "\($0)" }
                 .emit(onNext: { [weak self] amount in
-                    guard let self = self else { return }
-                    self.interactor.set(amount: amount)
+                    self?.interactor.set(amount: amount)
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
