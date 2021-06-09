@@ -41,10 +41,8 @@ final class WithdrawalConfirmationInteractor: Interactor {
 
     var errorDescription: String? {
         switch type {
-        case let .failure(_, NabuNetworkError.nabuError(error)):
-            return error.localizedDescription
         case let .failure(_, error):
-            return error.localizedDescription
+            return (error as? NabuNetworkError)?.localizedDescription ?? error.localizedDescription
         default:
             return nil
         }
