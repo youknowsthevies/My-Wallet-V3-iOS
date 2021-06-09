@@ -102,10 +102,6 @@ extension LocalizationConstants.AuthenticationKit {
                 "Incorrect Password",
                 comment: "Login screen: wrong password footnote"
             )
-            public static let troubleLogInPrompt = NSLocalizedString(
-                "Trouble logging in?",
-                comment: "Login screen: prompt for forgot password"
-            )
             public static let incorrectTwoFactorAuthCode = NSLocalizedString(
                 "Incorrect 2FA Code",
                 comment: "Login screen: wrong 2FA code footnote"
@@ -117,6 +113,20 @@ extension LocalizationConstants.AuthenticationKit {
             public static let incorrectHardwareKey = NSLocalizedString(
                 "Incorrect |HARDWARE KEY| code",
                 comment: "Login screen: wrong hardware key"
+            )
+            public static let lostTwoFactorAuthCodePrompt = NSLocalizedString(
+                "Lost access to your 2FA device?",
+                comment: "Login screen: a prompt for user to reset their 2FA if they lost their 2FA device"
+            )
+        }
+        public enum Link {
+            public static let troubleLogInLink = NSLocalizedString(
+                "Trouble logging in?",
+                comment: "Login screen: link for forgot password"
+            )
+            public static let resetTwoFactorAuthLink = NSLocalizedString(
+                "Reset your 2FA",
+                comment: "Login screen: link for resetting 2FA"
             )
         }
         public enum Divider {

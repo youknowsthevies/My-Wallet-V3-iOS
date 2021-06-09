@@ -8,6 +8,9 @@ extension Color {
 
     // MARK: Backgrounds
     public static let viewPrimaryBackground = Color(paletteColor: .white)
+    public static let textFieldActiveBackground = Color(paletteColor: .white)
+    public static let textFieldInactiveBackground = Color(paletteColor: .grey100)
+    public static let passwordPeekEyeColor = Color(paletteColor: .grey400)
 
     // MARK: PrimaryButton
     public static let buttonPrimaryBackground = Color(paletteColor: .blue600)

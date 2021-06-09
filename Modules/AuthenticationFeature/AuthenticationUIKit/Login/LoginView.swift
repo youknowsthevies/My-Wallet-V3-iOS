@@ -50,7 +50,6 @@ public struct LoginView: View {
                     ),
                     label: EmptyView.init
                 )
-
             }
             .navigationBarTitle(LoginViewString.navigationTitle)
             .updateNavigationBarStyle()
