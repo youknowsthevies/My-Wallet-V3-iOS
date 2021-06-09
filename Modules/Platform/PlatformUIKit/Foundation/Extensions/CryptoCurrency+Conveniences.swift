@@ -37,8 +37,7 @@ extension CryptoCurrency {
         case .erc20(.yearnFinance):
             return .yearnFinance
         case .erc20:
-            // TODO: (paulo)
-            return .blue
+            return .ethereum
         }
     }
 

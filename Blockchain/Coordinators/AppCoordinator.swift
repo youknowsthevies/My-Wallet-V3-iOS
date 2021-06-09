@@ -531,7 +531,6 @@ extension AppCoordinator: WalletHistoryDelegate {
 // MARK: - TabSwapping
 
 extension AppCoordinator: TabSwapping {
-
     func deposit(into account: BlockchainAccount) {
         tabControllerManager?.deposit(into: account)
     }
@@ -559,14 +558,18 @@ extension AppCoordinator: TabSwapping {
     func switchToActivity() {
         tabControllerManager?.showTransactions()
     }
+
+    func switchToActivity(for currencyType: CurrencyType) {
+        tabControllerManager?.showTransactions()
+    }
 }
 
 extension AppCoordinator: CurrencyRouting {
-    func toSend(_ currency: CryptoCurrency) {
-        tabControllerManager?.showSend(cryptoCurrency: currency)
+    func toSend(_ currency: CurrencyType) {
+        tabControllerManager?.showSend(cryptoCurrency: currency.cryptoCurrency!)
     }
 
-    func toReceive(_ currency: CryptoCurrency) {
+    func toReceive(_ currency: CurrencyType) {
         tabControllerManager?.showReceive()
     }
 }

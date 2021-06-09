@@ -19,37 +19,19 @@ final class ActivityScreenInteractor {
             .fiatCurrencyObservable
     }
 
-    var selectedData: Observable<WalletPickerSelection> {
+    var selectedData: Observable<BlockchainAccount> {
         selectionService
             .selectedData
     }
 
     var activityBalance: Observable<FiatValue> {
-        selectionService
-            .selectedData
-            .flatMap(weak: self) { (self, selection) -> Observable<FiatValue> in
-                switch selection {
-                case .all:
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalance
-                        .compactMap { $0.value }
-                case .custodial(let currency):
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalances
-                        .map { $0[currency.currency] }
-                        .compactMap { $0.value }
-                        .compactMap { $0[.custodial(.trading)].quote.fiatValue }
-                case .nonCustodial(let currency):
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalances
-                        .map { $0[currency.currency] }
-                        .compactMap { $0.value }
-                        .compactMap { $0[.nonCustodial].quote.fiatValue }
-                }
-        }
+        fiatCurrency
+            .withLatestFrom(selectionService.selectedData) { (fiatCurrency: $0, account: $1) }
+            .flatMapLatest { (fiatCurrency: FiatCurrency, account: BlockchainAccount) in
+                account.fiatBalance(fiatCurrency: fiatCurrency)
+                    .compactMap(\.fiatValue)
+                    .catchErrorJustReturn(.zero(currency: fiatCurrency))
+            }
     }
 
     var state: Observable<State> {
@@ -88,7 +70,7 @@ final class ActivityScreenInteractor {
         serviceContainer
             .activityEventsLoadingState
             .map {
-                .init(
+                State(
                     with: $0,
                     exchangeProviding: serviceContainer.exchangeProviding,
                     balanceProviding: serviceContainer.balanceProviding

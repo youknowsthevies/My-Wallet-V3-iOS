@@ -9,20 +9,18 @@ public protocol WalletActionScreenInteracting: class {
 }
 
 public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
-    public let accountType: SingleAccountType
+    public var accountType: SingleAccountType {
+        balanceCellInteractor.accountType
+    }
     public let currency: CurrencyType
     public let balanceCellInteractor: CurrentBalanceCellInteracting
 
     // MARK: - Init
 
-    public init(accountType: SingleAccountType,
-                currency: CurrencyType,
-                service: AssetBalanceFetching) {
-        self.currency = currency
-        self.accountType = accountType
+    public init(account: BlockchainAccount) {
+        currency = account.currencyType
         self.balanceCellInteractor = CurrentBalanceCellInteractor(
-            balanceFetching: service,
-            accountType: accountType
+            account: account
         )
     }
 }

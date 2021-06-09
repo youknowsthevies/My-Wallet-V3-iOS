@@ -25,24 +25,20 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
     // MARK: - Setup
 
     private lazy var setup: Void = {
-        fiatCurrencyService.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) in
-                Single.zip(
-                    self.account.fiatBalance(fiatCurrency: fiatCurrency),
-                    self.account.balance
-                )
+        fiatCurrencyService.fiatCurrencyObservable
+            .flatMap(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
+                self.account.balancePair(fiatCurrency: fiatCurrency)
             }
-            .map { (fiatBalance: $0, cryptoBalance: $1) }
-            .map { data -> InteractionState in
+            .map { moneyValuePair -> InteractionState in
                 InteractionState.loaded(
                     next: AssetBalanceViewModel.Value.Interaction.init(
-                        fiatValue: data.fiatBalance,
-                        cryptoValue: data.cryptoBalance,
-                        pendingValue: .zero(currency: data.cryptoBalance.currency)
+                        fiatValue: moneyValuePair.quote,
+                        cryptoValue: moneyValuePair.base,
+                        pendingValue: .zero(currency: moneyValuePair.base.currency)
                     )
                 )
             }
-            .subscribe(onSuccess: { [weak self] state in
+            .subscribe(onNext: { [weak self] state in
                 self?.stateRelay.accept(state)
             })
             .disposed(by: disposeBag)

@@ -37,7 +37,10 @@ public protocol BlockchainAccount {
     var isFunded: Single<Bool> { get }
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue>
+
+    /// The balance of this account exchanged to the given fiat currency.
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair>
 
     /// Checks if this account can execute the given action.
     func can(perform action: AssetAction) -> Single<Bool>
@@ -54,6 +57,13 @@ public protocol BlockchainAccount {
 
     /// The `CurrencyType` of the account
     var currencyType: CurrencyType { get }
+}
+
+extension BlockchainAccount {
+
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
+        balancePair(fiatCurrency: fiatCurrency).map(\.quote)
+    }
 }
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {

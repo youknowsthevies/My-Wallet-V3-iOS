@@ -14,6 +14,19 @@ public protocol AnnouncementPresenting {
     func refresh()
 }
 
+/// A wrapper for `BlockchainAccount` so we can use it with `DashboardItemDisplayAction`.
+struct BlockchainAccountWrapper: Equatable {
+    let account: BlockchainAccount
+
+    init(account: BlockchainAccount) {
+        self.account = account
+    }
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.account.id == rhs.account.id
+    }
+}
+
 /// This enum aggregates possible action types that can be done in the dashboard
 enum DashboardCollectionAction {
 
@@ -26,7 +39,7 @@ enum DashboardCollectionAction {
     /// Any action related to the custodial fiat balances
     case fiatBalance(DashboardItemDisplayAction<CurrencyViewPresenter>)
 
-    case actionScreen(DashboardItemDisplayAction<CurrencyType>)
+    case actionScreen(DashboardItemDisplayAction<BlockchainAccountWrapper>)
 }
 
 enum DashboardItemState {
@@ -142,7 +155,7 @@ final class DashboardScreenPresenter {
 
     var cardState = DashboardItemState.hidden
     private(set) var announcementCardViewModel: AnnouncementCardViewModel!
-    private let announcmentPresenter: AnnouncementPresenting
+    private let announcementPresenter: AnnouncementPresenting
 
     // MARK: - Balances
 
@@ -179,17 +192,22 @@ final class DashboardScreenPresenter {
 
     // MARK: - Accessors
 
+    private let accountFetcher: BlockchainAccountFetching
     private let actionRelay = PublishRelay<DashboardCollectionAction>()
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
-         drawerRouter: DrawerRouting = resolve(),
-         announcmentPresenter: AnnouncementPresenting = resolve()) {
+    init(
+        interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
+        accountFetcher: BlockchainAccountFetching = resolve(),
+        drawerRouter: DrawerRouting = resolve(),
+        announcementPresenter: AnnouncementPresenting = resolve()
+    ) {
+        self.accountFetcher = accountFetcher
         self.interactor = interactor
         self.drawerRouter = drawerRouter
-        self.announcmentPresenter = announcmentPresenter
+        self.announcementPresenter = announcementPresenter
         totalBalancePresenter = TotalBalanceViewPresenter(
             balanceProvider: interactor.balanceProvider,
             balanceChangeProvider: interactor.balanceChangeProvider,
@@ -207,7 +225,7 @@ final class DashboardScreenPresenter {
     /// Should be called once the view is loaded
     func setup() {
         // Bind announcements
-        announcmentPresenter.announcement
+        announcementPresenter.announcement
             .do(onNext: { action in
                 switch action {
                 case .hide:
@@ -254,8 +272,20 @@ final class DashboardScreenPresenter {
 
         fiatBalancePresenter
             .tap
-            .map { .actionScreen($0) }
             .asObservable()
+            .flatMapLatest(weak: self) { (self, item) in
+                switch item {
+                case .hide:
+                    return .just(.hide)
+                case .show(let currencyType):
+                    return self.accountFetcher.account(for: currencyType, accountType: .nonCustodial)
+                        .map { account -> DashboardItemDisplayAction<BlockchainAccountWrapper> in
+                            .show(.init(account: account))
+                        }
+                        .asObservable()
+                }
+            }
+            .map { .actionScreen($0) }
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }
@@ -264,7 +294,7 @@ final class DashboardScreenPresenter {
     /// to trigger dashboard re-render
     func refresh() {
         interactor.refresh()
-        announcmentPresenter.refresh()
+        announcementPresenter.refresh()
         noticePresenter.refresh()
         fiatBalancePresenter.refresh()
     }

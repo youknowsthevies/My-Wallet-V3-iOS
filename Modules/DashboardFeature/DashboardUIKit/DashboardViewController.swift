@@ -37,6 +37,7 @@ public final class DashboardViewController: BaseScreenViewController {
         super.init(nibName: DashboardViewController.objectName, bundle: DashboardViewController.bundle)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -182,9 +183,13 @@ public final class DashboardViewController: BaseScreenViewController {
         }
     }
 
-    private func execute(walletScreenAction: DashboardItemDisplayAction<CurrencyType>) {
-        guard case let .show(currencyType) = walletScreenAction else { return }
-        router.showWalletActionScreen(for: currencyType)
+    private func execute(walletScreenAction: DashboardItemDisplayAction<BlockchainAccountWrapper>) {
+        switch walletScreenAction {
+        case .hide:
+            return
+        case let .show(wrapper):
+            router.showWalletActionScreen(for: wrapper.account)
+        }
     }
 
     // MARK: - Navigation

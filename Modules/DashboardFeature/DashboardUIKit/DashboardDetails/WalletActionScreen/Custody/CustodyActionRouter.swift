@@ -38,12 +38,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private let navigationRouter: NavigationRouterAPI
 
-    private var currency: CurrencyType!
+    private var account: BlockchainAccount!
+    private var currency: CurrencyType! {
+        account?.currencyType
+    }
 
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
     /// - note: This is needed in order for the reference to be kept in memory,
@@ -102,10 +105,11 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             .disposed(by: disposeBag)
     }
 
-    public func start(with currency: CurrencyType) {
+    public func start(with account: BlockchainAccount) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
-        self.currency = currency
+        self.disposeBag = DisposeBag()
+        self.account = account
         self.stateService = CustodyActionStateService(recoveryStatusProviding: resolve())
 
         stateService.action
@@ -189,25 +193,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 .topMostViewControllerProvider
                 .topMostViewController?
                 .dismiss(animated: true, completion: nil)
-            self.accountProviding
-                .account(for: currency, accountType: .custodial(.trading))
-                .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [unowned self] account in
-                    self.tabSwapping.send(from: account)
-                })
-                .disposed(by: disposeBag)
+            self.tabSwapping.send(from: self.account)
         }
     }
 
     private func showSendCustody() {
-        if case let .crypto(cryptoCurrency) = currency {
+        if case let .crypto(cryptoCurrency) = account.currencyType {
             analyticsService.recordTradingWalletClicked(for: cryptoCurrency)
         }
-        let interactor = WalletActionScreenInteractor(
-            accountType: .custodial(.trading),
-            currency: currency,
-            service: dataProviding.balance[currency.currency]
-        )
+        let interactor = WalletActionScreenInteractor(account: account)
         let presenter = CustodialActionScreenPresenter(
             using: interactor,
             stateService: stateService

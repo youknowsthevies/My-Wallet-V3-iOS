@@ -81,9 +81,9 @@ public class CryptoExchangeAccount: ExchangeAccount {
     public let label: String
     public let state: ExchangeAccountState
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
+    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
         /// Exchange API does not return a balance.
-        .just(.zero(currency: fiatCurrency))
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {

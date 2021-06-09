@@ -65,7 +65,7 @@ public final class WalletBalanceViewInteractor {
         stateObservableProvider = {
             fiatCurrencyService.fiatCurrencyObservable
                 .flatMap { fiatCurrency in
-                    account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
+                    account.fiatBalance(fiatCurrency: fiatCurrency)
                 }
                 .map { moneyValue -> InteractionState in
                     .loaded(next: WalletBalance(fiatValue: moneyValue.fiatValue!))

@@ -42,7 +42,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         eraseWalletForUITestsIfNeeded()
         if shouldStopProcessOnDebugAndTestingMode() {
             // set an empty root view controller to window to avoid app nitpicking
-            window.rootViewController = UIViewController()
+            window.setRootViewController(UIViewController())
             return true
         }
         if useNewOnboarding() {

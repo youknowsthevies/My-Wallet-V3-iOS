@@ -6,12 +6,17 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
+public protocol ContentLabelViewInteractorAPI {
+    var contentCalculationState: Observable<ValueCalculationState<String>> { get }
+}
+
 public final class AvailableBalanceContentInteractor: ContentLabelViewInteractorAPI {
 
     public let contentCalculationState: Observable<ValueCalculationState<String>>
 
-    public init(currencyType: CurrencyType,
-                coincore: Coincore) {
+    /// Creates a `AvailableBalanceContentInteractor` that will stream the
+    /// balance (in the given `CurrencyType`) of the first account of the given `CurrencyType`.
+    public init(currencyType: CurrencyType, coincore: Coincore) {
 
         let balance = coincore.allAccounts
             .compactMap { group in
@@ -27,26 +32,11 @@ public final class AvailableBalanceContentInteractor: ContentLabelViewInteractor
             .share(replay: 1, scope: .whileConnected)
     }
 
-    init(account: BlockchainAccount,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
-        contentCalculationState = fiatCurrencyService
-            .fiatCurrencyObservable
-            .flatMap { fiatCurrency -> Observable<MoneyValue> in
-                account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
-            }
-            .map { .value($0.toDisplayString(includeSymbol: true)) }
-            .share(replay: 1, scope: .whileConnected)
-    }
-
-    init(account: Observable<BlockchainAccount>,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
-        contentCalculationState = fiatCurrencyService
-            .fiatCurrencyObservable
-            .flatMap { fiatCurrency -> Observable<MoneyValue> in
-                account.flatMap { account in
-                    account.fiatBalance(fiatCurrency: fiatCurrency)
-                }
-            }
+    /// Creates a `AvailableBalanceContentInteractor` that will stream the
+    /// balance of the given `BlockchainAccount` in its own `CurrencyType`.
+    init(account: BlockchainAccount) {
+        contentCalculationState = account.balance
+            .asObservable()
             .map { .value($0.toDisplayString(includeSymbol: true)) }
             .share(replay: 1, scope: .whileConnected)
     }

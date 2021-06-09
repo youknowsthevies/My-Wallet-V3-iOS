@@ -56,13 +56,14 @@ public class CryptoInterestAccount: CryptoAccount {
         .just(false)
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 }

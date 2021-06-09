@@ -169,6 +169,8 @@ extension DependencyContainer {
 
         factory { CryptoReceiveAddressFactoryService() }
 
+        factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
+
         // MARK: - Settings
 
         single { SettingsService() as CompleteSettingsServiceAPI }

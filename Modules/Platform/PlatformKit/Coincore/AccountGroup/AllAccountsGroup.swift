@@ -8,14 +8,6 @@ import ToolKit
 final class AllAccountsGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
-    var actionableBalance: Single<MoneyValue> {
-        unimplemented()
-    }
-
-    var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
-    }
-
     let accounts: [SingleAccount]
     let id: String = "AllAccountsGroup"
     let label: String = LocalizedString.allWallets
@@ -50,7 +42,32 @@ final class AllAccountsGroup: AccountGroup {
         .error(AccountGroupError.noBalance)
     }
 
+    var actionableBalance: Single<MoneyValue> {
+        unimplemented()
+    }
+
+    var receiveAddress: Single<ReceiveAddress> {
+        unimplemented()
+    }
+
     init(accounts: [SingleAccount]) {
         self.accounts = accounts
     }
+
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        unimplemented()
+    }
+
+    func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
+        let balances: [Observable<MoneyValue>] = accounts
+            .map { account in
+                account
+                    .fiatBalance(fiatCurrency: fiatCurrency)
+            }
+        return Observable.combineLatest(balances)
+            .map { balances in
+                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            }
+    }
+
 }

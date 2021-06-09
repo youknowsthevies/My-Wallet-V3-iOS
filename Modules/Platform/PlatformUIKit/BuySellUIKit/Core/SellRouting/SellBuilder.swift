@@ -129,7 +129,6 @@ public final class SellBuilder: SellBuilderAPI {
         let interactor = SellCryptoScreenInteractor(
             data: data,
             priceService: priceService,
-            balanceProvider: balanceProvider,
             cryptoCurrencySelectionService: cryptoSelectionService,
             initialActiveInput: .fiat
         )

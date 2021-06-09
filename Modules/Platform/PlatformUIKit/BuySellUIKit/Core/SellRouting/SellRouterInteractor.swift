@@ -113,39 +113,33 @@ public final class SellRouterInteractor: Interactor {
     }
 
     public let previousRelay = PublishRelay<Void>()
-    private let currencySelectionRelay = BehaviorRelay<CryptoCurrency?>(value: nil)
+    private let sourceSelectionRelay = BehaviorRelay<CryptoTradingAccount?>(value: nil)
 
     private lazy var setup: Void = {
-        accountSelectionService
+        let selection = accountSelectionService
             .selectedData
-            .flatMap(\.balance)
-            .map { $0.currencyType }
-            .compactMap { $0.cryptoCurrency }
-            .bindAndCatch(weak: self) { (self, selection) in
-                self.currencySelectionRelay.accept(selection)
+            .share(replay: 1)
+
+        selection
+            // Any `CryptoTradingAccount` selected should be set as 'source'.
+            .compactMap { $0 as? CryptoTradingAccount }
+            .bindAndCatch(weak: self) { (self, account) in
+                self.sourceSelectionRelay.accept(account)
                 let states = States(current: .fiatAccountSelector, previous: [.accountSelector])
                 self.apply(action: .next(to: states.current), states: states)
             }
             .disposed(by: disposeBag)
 
-        accountSelectionService
-            .selectedData
-            .flatMap(\.balance)
-            .map { $0.currencyType }
-            .compactMap { $0.fiatCurrency }
-            .compactMap { selection -> SellCryptoInteractionData? in
-                guard let crypto = self.currencySelectionRelay.value else { return nil }
-                let data = SellCryptoInteractionData(
-                    source: SellCryptoInteractionData.AnyAccount(
-                        id: crypto.code,
-                        currencyType: crypto.currency
-                    ),
-                    destination: SellCryptoInteractionData.AnyAccount(
-                        id: selection.code,
-                        currencyType: selection.currency
-                    )
+        selection
+            // Any `FiatAccount` selected should be set as 'target'.
+            .compactMap { $0 as? FiatAccount }
+            .withLatestFrom(sourceSelectionRelay) { (fiatAccount: $0, cryptoAccount: $1) }
+            .compactMap { accounts -> SellCryptoInteractionData? in
+                guard let cryptoAccount = accounts.cryptoAccount else { return nil }
+                return SellCryptoInteractionData(
+                    source: cryptoAccount,
+                    destination: accounts.fiatAccount
                 )
-                return data
             }
             .map { States(current: .enterAmount($0), previous: [.inactive]) }
             .bindAndCatch(weak: self) { (self, states) in
