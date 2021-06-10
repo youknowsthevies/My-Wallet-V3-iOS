@@ -278,10 +278,12 @@ extension TextFieldType {
             return LocalizedString.Card.cvv
         case .email:
             return LocalizedString.email
-        case .newPassword, .password:
-            return LocalizedString.password
+        case .password:
+            return LocalizedString.currentPassword
+        case .newPassword:
+            return LocalizedString.newPassword
         case .confirmNewPassword:
-            return LocalizedString.confirmPassword
+            return LocalizedString.confirmNewPassword
         case .mobile:
             return LocalizedString.mobile
         case .oneTimeCode:

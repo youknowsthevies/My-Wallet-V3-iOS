@@ -93,6 +93,18 @@ public extension LocalizationConstants {
                 "Your Email",
                 comment: "Title for email text field"
             )
+            public static let currentPassword = NSLocalizedString(
+                "Current Password",
+                comment: "Title for current password text field"
+            )
+            public static let newPassword = NSLocalizedString(
+                "New Password",
+                comment: "Title for new password text field"
+            )
+            public static let confirmNewPassword = NSLocalizedString(
+                "Confirm New Password",
+                comment: "Title for confirm new password text field"
+            )
             public static let password = NSLocalizedString(
                 "Password",
                 comment: "Title for password text field"
