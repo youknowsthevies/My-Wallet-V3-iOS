@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import DIKit
 
 /// This pattern is used to temporarily present new crypto-currencies in features like airdrops.
 /// When the currency is fully supported, the case should be removed from `TriageCryptoCurrency`
@@ -77,8 +78,8 @@ extension TriageCryptoCurrency {
         self = .supported(cryptoCurrency)
     }
 
-    public init(code: String) throws {
-        if let supportedCurrency = CryptoCurrency(code: code) {
+    public init(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) throws {
+        if let supportedCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies.first(where: { $0.code == code }) {
             self = .supported(supportedCurrency)
         } else {
             switch code {

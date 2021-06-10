@@ -62,7 +62,7 @@ public class PollService<Value> {
     private var retryScheduler: Single<Int> {
         Single<Int>
             .timer(
-                .seconds(1),
+                .seconds(5),
                 scheduler: ConcurrentDispatchQueueScheduler(qos: .background)
             )
     }

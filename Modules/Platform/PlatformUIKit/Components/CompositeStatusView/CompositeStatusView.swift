@@ -154,16 +154,16 @@ public final class CompositeStatusView: UIView {
                     self.mainContainerView.removeSubviews()
                     self.sideContainerView.removeSubviews()
                     switch type {
-                    case .image(let name):
-                        self.setupImageView(with: name)
+                    case let .image(name, bundle):
+                        self.setupImageView(with: name, bundle: bundle)
                     case .loader:
                         self.setupLoadingView()
                     case .composite(let composite):
                         switch composite.baseViewType {
-                        case .image(let image):
-                            self.setupImageView(with: image)
-                        case .templateImage(name: let image, templateColor: let color):
-                            self.setupTemplateImageView(with: image, templateColor: color)
+                        case let .image(name, bundle):
+                            self.setupImageView(with: name, bundle: bundle)
+                        case let .templateImage(name, bundle, color):
+                            self.setupTemplateImageView(with: name, bundle: bundle, templateColor: color)
                         case .text(let text):
                             self.setupLabel(with: text)
                         }
@@ -226,14 +226,14 @@ public final class CompositeStatusView: UIView {
         loadingView.animate()
     }
 
-    private func setupImageView(with name: String) {
-        let image = UIImage(named: name, in: .platformUIKit, compatibleWith: .none)!
+    private func setupImageView(with name: String, bundle: Bundle) {
+        let image = UIImage(named: name, in: bundle, compatibleWith: .none)!
         let imageView = UIImageView(image: image)
         add(view: imageView)
     }
 
-    private func setupTemplateImageView(with name: String, templateColor: UIColor) {
-        let image = UIImage(named: name, in: .platformUIKit, compatibleWith: .none)!
+    private func setupTemplateImageView(with name: String, bundle: Bundle, templateColor: UIColor) {
+        let image = UIImage(named: name, in: bundle, compatibleWith: .none)!
             .withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
         imageView.tintColor = templateColor

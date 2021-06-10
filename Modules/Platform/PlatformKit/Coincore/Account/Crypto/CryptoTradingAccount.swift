@@ -11,7 +11,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
-    public let accountType: SingleAccountType = .custodial(.trading)
 
     public var requireSecondPassword: Single<Bool> {
         .just(false)
@@ -33,28 +32,42 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var isFunded: Single<Bool> {
-        balanceFetching
-            .isFunded
-            .take(1)
-            .asSingle()
+        balances.map { $0 != .absent }
     }
 
     public var pendingBalance: Single<MoneyValue> {
-        balanceFetching
-            .pendingBalanceMoney
+        balances
+            .map(\.balance?.pending)
+            .onNilJustReturn(.zero(currency: currencyType))
+    }
+
+    public var balance: Single<MoneyValue> {
+        balances
+            .map(\.balance?.available)
+            .onNilJustReturn(.zero(currency: currencyType))
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        Single.zip(balance, pendingBalance)
-            .map { values -> MoneyValue in
-                let (balance, pending) = values
-                return try balance - pending
+        balances
+            .map(\.balance)
+            .map { [asset] balance -> (available: MoneyValue, pending: MoneyValue) in
+                guard let balance = balance else {
+                    return (.zero(currency: asset), .zero(currency: asset))
+                }
+                return (balance.available, balance.pending)
+            }
+            .map { [asset] values -> MoneyValue in
+                guard values.available.isPositive else {
+                    return .zero(currency: asset)
+                }
+                return try values.available - values.pending
             }
     }
 
     public var withdrawableBalance: Single<MoneyValue> {
-        balanceFetching
-            .withdrawableMoney
+        balances
+            .map(\.balance?.withdrawable)
+            .onNilJustReturn(.zero(currency: currencyType))
     }
 
     public var onTxCompleted: (TransactionResult) -> Completable {
@@ -80,11 +93,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
-    public var balance: Single<MoneyValue> {
-        balanceFetching
-            .balanceMoney
-    }
-
     public var actions: Single<AvailableActions> {
         Single.zip(balance, eligibilityService.isEligible, can(perform: .receive))
             .map { [asset] (balance, isEligible, canReceive) -> AvailableActions in
@@ -103,37 +111,42 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             }
     }
 
-    private let balanceFetching: CustodialAccountBalanceFetching
-    private let exchangeService: PairExchangeServiceAPI
+    private let balanceService: TradingBalanceServiceAPI
+    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
     private let custodialAddressService: CustodialAddressServiceAPI
-    private let eligibilityService: EligibilityServiceAPI
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
+    private let eligibilityService: EligibilityServiceAPI
+    private let exchangeService: PairExchangeServiceAPI
     private let featureFetcher: FeatureFetching
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService
+    private var balances: Single<CustodialAccountBalanceState> {
+        balanceService.balance(for: asset.currency)
+    }
 
-    public init(asset: CryptoCurrency,
-                balanceProviding: BalanceProviding = resolve(),
-                custodialAddressService: CustodialAddressServiceAPI = resolve(),
-                exchangeProviding: ExchangeProviding = resolve(),
-                custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
-                eligibilityService: EligibilityServiceAPI = resolve(),
-                featureFetcher: FeatureFetching = resolve(),
-                internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
-                kycTiersService: KYCTiersServiceAPI = resolve(),
-                cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
-        self.label = asset.defaultTradingWalletName
+    public init(
+        asset: CryptoCurrency,
+        balanceService: TradingBalanceServiceAPI = resolve(),
+        cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
+        custodialAddressService: CustodialAddressServiceAPI = resolve(),
+        custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve(),
+        featureFetcher: FeatureFetching = resolve(),
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.asset = asset
-        self.exchangeService = exchangeProviding[asset]
-        self.balanceFetching = balanceProviding[asset.currency].trading
-        self.eligibilityService = eligibilityService
+        self.label = asset.defaultTradingWalletName
+        self.balanceService = balanceService
+        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
+        self.eligibilityService = eligibilityService
+        self.exchangeService = exchangeProviding[asset]
         self.featureFetcher = featureFetcher
         self.internalFeatureFlagService = internalFeatureFlagService
         self.kycTiersService = kycTiersService
-        self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -170,13 +183,14 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 }

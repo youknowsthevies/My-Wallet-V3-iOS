@@ -25,6 +25,10 @@ class SideMenuViewController: UIViewController {
 
     weak var delegate: SideMenuViewControllerDelegate?
 
+    /// This value should be the same as the `anchorRightPeekAmount` from the `ECSlidingViewController`
+    /// It is then assigned to `SideMenuCell` for layout purposes
+    var peekPadding: CGFloat = 0
+
     // MARK: - Private Properties
 
     @IBOutlet private var tableViewBackgroundView: UIView!
@@ -199,6 +203,7 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
             Logger.shared.debug("Could not get SideMenuCell")
             return UITableViewCell()
         }
+        sideMenuCell.peekPadding = peekPadding
         sideMenuCell.item = sideMenuItems[indexPath.row]
         return sideMenuCell
     }

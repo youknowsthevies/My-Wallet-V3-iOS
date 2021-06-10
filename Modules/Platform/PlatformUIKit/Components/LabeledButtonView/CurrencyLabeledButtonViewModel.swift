@@ -42,11 +42,11 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
     // MARK: - Setup
 
     convenience init(amount: MoneyValue,
-                     suffix: String? = nil,
+                     format: String = "%@",
                      style: LabeledButtonViewStyle = .currency,
                      accessibilityId: String) {
         let amountString = amount.toDisplayString(includeSymbol: true)
-        let text = [amountString, suffix].compactMap { $0 }.joined(separator: " ")
+        let text = String(format: format, amountString)
         let buttonContent = Self.buttonContent(from: style, text: text, amountString: amountString, accessibilityId: accessibilityId)
         self.init(amount: amount, style: style, buttonContent: buttonContent)
     }

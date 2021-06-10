@@ -318,7 +318,7 @@ public final class BlockchainSettings: NSObject {
         }
 
         /// ETH address to be used for swipe to receive
-        public var swipeAddressForEther: String? {
+        public var swipeAddressForEthereum: String? {
             get { getSwipeAddress(for: .ethereum) }
             set { setSwipeAddress(newValue, for: .ethereum) }
         }
@@ -327,33 +327,6 @@ public final class BlockchainSettings: NSObject {
         public var swipeAddressForStellar: String? {
             get { getSwipeAddress(for: .stellar) }
             set { setSwipeAddress(newValue, for: .stellar) }
-        }
-
-        /// PAX address to be used for swipe to receive
-        public var swipeAddressForPax: String? {
-            get { getSwipeAddress(for: .pax) }
-            set { setSwipeAddress(newValue, for: .pax) }
-        }
-
-        /// USDT address to be used for swipe to receive
-        public var swipeAddressForTether: String? {
-            get { getSwipeAddress(for: .tether) }
-            set { setSwipeAddress(newValue, for: .tether) }
-        }
-
-        public var swipeAddressForWDGLD: String? {
-            get { getSwipeAddress(for: .wDGLD) }
-            set { setSwipeAddress(newValue, for: .wDGLD) }
-        }
-
-        public var swipeAddressForYearnFinance: String? {
-            get { getSwipeAddress(for: .yearnFinance) }
-            set { setSwipeAddress(newValue, for: .yearnFinance) }
-        }
-
-        public var swipeAddressForAave: String? {
-            get { getSwipeAddress(for: .aave) }
-            set { setSwipeAddress(newValue, for: .aave) }
         }
 
         /**

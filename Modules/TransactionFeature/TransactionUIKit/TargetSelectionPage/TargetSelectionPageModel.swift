@@ -38,7 +38,7 @@ final class TargetSelectionPageModel {
         case .sourceAccountSelected(let account, let action):
             return processTargetListUpdate(sourceAccount: account, action: action)
         case .validateAddress(let address, let account):
-            return validateCrypto(address: address, account: account)
+            return validateCrypto(address: address, account: account as! CryptoAccount)
         case .validateBitPayPayload(let value, let currency):
             return processBitPayValue(payload: value, currency: currency)
         case .destinationSelected,

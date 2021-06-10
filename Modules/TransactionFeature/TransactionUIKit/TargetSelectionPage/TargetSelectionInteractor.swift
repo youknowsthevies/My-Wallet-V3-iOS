@@ -9,15 +9,16 @@ import TransactionKit
 final class TargetSelectionInteractor {
 
     private let coincore: Coincore
+    private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServicing
 
-    init(
-        coincore: Coincore = resolve(),
-        nameResolutionService: BlockchainNameResolutionServicing = resolve(),
-        featureFetcher: FeatureFetching = resolve()
-    ) {
+    init(coincore: Coincore = resolve(),
+         nameResolutionService: BlockchainNameResolutionServicing = resolve(),
+         featureFetcher: FeatureFetching = resolve(),
+         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
         self.coincore = coincore
+        self.linkedBanksFactory = linkedBanksFactory
         self.featureFetcher = featureFetcher
         self.nameResolutionService = nameResolutionService
     }
@@ -28,27 +29,36 @@ final class TargetSelectionInteractor {
 
     func getAvailableTargetAccounts(sourceAccount: BlockchainAccount,
                                     action: AssetAction) -> Single<[SingleAccount]> {
-        Single.just(sourceAccount)
-            .map { (account) -> CryptoAccount in
-                guard let crypto = account as? CryptoAccount else {
-                    fatalError("Expected CryptoAccount: \(account)")
+        switch action {
+        case .swap,
+             .send:
+            return Single.just(sourceAccount)
+                .flatMap(weak: self) { (self, account) -> Single<[SingleAccount]> in
+                    self.coincore.getTransactionTargets(sourceAccount: account, action: action)
                 }
-                return crypto
-            }
-            .flatMap(weak: self) { (self, account) -> Single<[SingleAccount]> in
-                self.coincore.getTransactionTargets(sourceAccount: account, action: action)
-            }
+        case .deposit:
+            return linkedBanksFactory.nonWireTransferBanks.map { $0.map { $0 as SingleAccount } }
+        case .withdraw:
+            return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
+        case .receive,
+             .sell,
+             .viewActivity:
+            unimplemented()
+        }
     }
 
-    func validateCrypto(address: String, account: CryptoAccount) -> Single<Result<ReceiveAddress, Error>> {
-        guard let asset = coincore[account.asset] else {
+    func validateCrypto(address: String, account: BlockchainAccount) -> Single<Result<ReceiveAddress, Error>> {
+        guard let crypto = account as? CryptoAccount else {
+            fatalError("You cannot validate an address using this account type: \(account)")
+        }
+        guard let asset = coincore[crypto.asset] else {
             fatalError("asset for \(account) not found")
         }
         return asset
             .parse(address: address)
             .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in
                 guard let validatedAddress = validatedAddress else {
-                    return self.validate(domainName: address, currency: account.asset)
+                    return self.validate(domainName: address, currency: crypto.asset)
                 }
                 return .just(.success(validatedAddress))
             }

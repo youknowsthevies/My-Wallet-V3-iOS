@@ -63,30 +63,26 @@ public final class SingleAmountPresenter {
         case .underMinLimit(let minValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: minValue.value,
-                suffix: LocalizedString.Withdraw.Min.useMin,
+                format: LocalizedString.Withdraw.Min.useMin,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.min
             )
             viewModel.elementOnTap
-                .map { "\($0)" }
                 .emit(onNext: { [weak self] amount in
-                    guard let self = self else { return }
-                    self.interactor.set(amount: amount)
+                    self?.interactor.set(amount: amount)
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
         case .overMaxLimit(let maxValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: maxValue.value,
-                suffix: LocalizedString.Withdraw.Max.useMax,
+                format: LocalizedString.Withdraw.Max.useMax,
                 style: .currencyOutOfBounds,
                 accessibilityId: AccessibilityId.max
             )
             viewModel.elementOnTap
-                .map { "\($0)" }
                 .emit(onNext: { [weak self] amount in
-                    guard let self = self else { return }
-                    self.interactor.set(amount: amount)
+                    self?.interactor.set(amount: amount)
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)

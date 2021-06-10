@@ -3,14 +3,22 @@
 import Foundation
 import RxSwift
 
+/// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a
+/// remote based feature flag system
+public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring { }
+
+public protocol FeatureInitializer: AnyObject {
+    func initialize()
+}
+
 /// Any feature remote configuration protocol
 @objc
-public protocol FeatureConfiguring: class {
+public protocol FeatureConfiguring: AnyObject {
     @objc func configuration(for feature: AppFeature) -> AppFeatureConfiguration
 }
 
 /// - Tag: FeatureFetching
-public protocol FeatureFetching: class {
+public protocol FeatureFetching: AnyObject {
     func fetch<Feature: Decodable>(for key: AppFeature) -> Single<Feature>
     func fetchInteger(for key: AppFeature) -> Single<Int>
     func fetchString(for key: AppFeature) -> Single<String>
@@ -20,7 +28,7 @@ public protocol FeatureFetching: class {
 public typealias FeatureFetchingConfiguring = FeatureFetching & FeatureConfiguring
 
 /// This protocol is responsible for variant fetching
-public protocol FeatureVariantFetching: class {
+public protocol FeatureVariantFetching: AnyObject {
 
     /// Returns an expected variant for the provided feature key
     /// - Parameter feature: the feature key

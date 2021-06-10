@@ -22,6 +22,7 @@ final class WithdrawAmountValidationService {
     enum State {
         case valid(data: ValidatedData)
         case maxLimitExceeded(MoneyValue)
+        case minLimitNotReached(MoneyValue)
         case empty
 
         var isValid: Bool {
@@ -45,6 +46,7 @@ final class WithdrawAmountValidationService {
 
     let balance: Single<MoneyValue>
     let account: Observable<SingleAccount>
+    private let minValue: Observable<MoneyValue>
 
     // MARK: - Services
 
@@ -56,7 +58,8 @@ final class WithdrawAmountValidationService {
 
     init(fiatCurrency: FiatCurrency,
          beneficiary: Beneficiary,
-         coincore: Coincore = resolve()) {
+         coincore: Coincore = resolve(),
+         withdrawFeeService: WithdrawalServiceAPI = resolve()) {
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary
         self.coincore = coincore
@@ -75,12 +78,18 @@ final class WithdrawAmountValidationService {
             }
             .asSingle()
 
+        self.minValue = withdrawFeeService.withdrawalMinAmount(for: fiatCurrency)
+            .asObservable()
+            .map(\.moneyValue)
+            .startWith(.zero(currency: fiatCurrency))
+            .share(replay: 1, scope: .whileConnected)
+
     }
 
     func connect(inputs: Observable<Input>) -> Observable<State> {
-        inputs
-            .flatMap { action -> Observable<State> in
-                self.balance.map { (balance) -> State in
+        Observable.combineLatest(inputs, minValue)
+            .flatMap { [balance] action, minValue -> Observable<State> in
+                balance.map { balance -> State in
                     switch action {
                     case .withdrawMax:
                         guard !balance.isZero else { return .empty }
@@ -91,6 +100,9 @@ final class WithdrawAmountValidationService {
                         guard let fiatValue = value.fiatValue else { return .empty }
                         guard try value <= balance.value else {
                             return .maxLimitExceeded(balance.value)
+                        }
+                        guard try value >= minValue else {
+                            return .minLimitNotReached(minValue)
                         }
                         return .valid(data: self.data(from: fiatValue))
                     default:
@@ -126,8 +138,10 @@ extension WithdrawAmountValidationService.State {
         switch self {
         case .empty:
             return .empty
-        case .maxLimitExceeded(let value):
+        case let .maxLimitExceeded(value):
             return .overMaxLimit(value)
+        case let .minLimitNotReached(value):
+            return .underMinLimit(value)
         case .valid:
             return .inBounds
         }

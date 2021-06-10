@@ -31,6 +31,8 @@ public enum LocalizationConstants {
         comment: "Generic translation, may be used in multiple places."
     )
 
+    public static let accountEndingIn = NSLocalizedString("Account Ending in", comment: "Account Ending in")
+    public static let savingsAccount = NSLocalizedString("Savings Account", comment: "Savings Account")
     public static let more = NSLocalizedString("More", comment: "")
     public static let privacyPolicy = NSLocalizedString("Privacy Policy", comment: "")
     public static let information = NSLocalizedString("Information", comment: "")

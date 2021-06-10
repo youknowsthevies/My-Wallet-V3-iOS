@@ -43,9 +43,9 @@ extension Coincore {
     private func createOnChainProcessor(with account: CryptoNonCustodialAccount,
                                         target: TransactionTarget,
                                         action: AssetAction) -> Single<TransactionProcessor> {
+        let factory = account.createTransactionEngine() as! OnChainTransactionEngineFactory
         switch (target, action) {
         case (is BitPayInvoiceTarget, .send):
-            let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
             return account
                 .requireSecondPassword
                 .map { (requiresSecondPassword) -> TransactionProcessor in
@@ -57,7 +57,6 @@ extension Coincore {
                     )
                 }
         case (is CryptoAccount, .swap):
-            let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
             return account
                 .requireSecondPassword
                 .map { (requiresSecondPassword) -> TransactionProcessor in
@@ -71,7 +70,6 @@ extension Coincore {
                     )
                 }
         case (is CryptoReceiveAddress, .send):
-            let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
 
             /// `Target` must be a `CryptoReceiveAddress`
             guard let receiveAddress = target as? CryptoReceiveAddress else {
@@ -88,7 +86,6 @@ extension Coincore {
                 }
 
         case (is CryptoAccount, .send):
-            let factory = { () -> OnChainTransactionEngineFactory in resolve(tag: account.asset) }()
 
             /// `Target` must be a `CryptoReceiveAddress`
             guard let destination = target as? SingleAccount else {

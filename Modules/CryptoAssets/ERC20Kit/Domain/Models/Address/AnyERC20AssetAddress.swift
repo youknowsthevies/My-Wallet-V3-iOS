@@ -2,10 +2,12 @@
 
 import PlatformKit
 
-public final class AnyERC20AssetAddress<Token: ERC20Token>: AssetAddress {
+public struct ERC20AssetAddress: AssetAddress {
     public let publicKey: String
-    public let cryptoCurrency = Token.assetType
-    public init(publicKey: String) {
+    public let cryptoCurrency: CryptoCurrency
+
+    public init(publicKey: String, cryptoCurrency: CryptoCurrency) {
         self.publicKey = publicKey
+        self.cryptoCurrency = cryptoCurrency
     }
 }

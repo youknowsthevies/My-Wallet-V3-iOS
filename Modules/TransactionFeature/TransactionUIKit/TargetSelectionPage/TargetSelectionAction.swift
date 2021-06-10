@@ -8,7 +8,7 @@ enum TargetSelectionAction: MviAction {
     case availableTargets([BlockchainAccount])
     case destinationDeselected
     case validateQRScanner(String)
-    case validateAddress(String, CryptoAccount)
+    case validateAddress(String, BlockchainAccount)
     case destinationSelected(BlockchainAccount)
     case validateBitPayPayload(String, CryptoCurrency)
     case addressValidated(TargetSelectionInputValidation.TextInput)

@@ -36,7 +36,8 @@ class EthereumTransactionEncoderTests: XCTestCase {
             gasPrice: 23,
             gasLimit: 21_000,
             value: BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
-            data: nil
+            data: nil,
+            transferType: .transfer
         )
         guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
             XCTFail("Transaction building failed")

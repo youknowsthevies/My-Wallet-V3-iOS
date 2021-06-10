@@ -7,7 +7,7 @@ import RxSwift
 
 public protocol NonCustodialActionRouterAPI: class {
     func next(to state: NonCustodialActionState)
-    func start(with currency: CryptoCurrency)
+    func start(with account: BlockchainAccount)
 }
 
 public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
@@ -15,24 +15,22 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     // MARK: - `Router` Properties
 
     private var stateService: NonCustodialActionStateService!
-    private let balanceProviding: BalanceProviding
     private let navigationRouter: NavigationRouterAPI
     private let routing: CurrencyRouting & TabSwapping
-    private let disposeBag = DisposeBag()
-    private var currency: CryptoCurrency!
+    private var disposeBag = DisposeBag()
+    private var account: BlockchainAccount!
 
     public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-                balanceProvider: BalanceProviding,
                 routing: CurrencyRouting & TabSwapping) {
-        self.balanceProviding = balanceProvider
         self.navigationRouter = navigationRouter
         self.routing = routing
     }
 
-    public func start(with currency: CryptoCurrency) {
+    public func start(with account: BlockchainAccount) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
-        self.currency = currency
+        self.disposeBag = DisposeBag()
+        self.account = account
         self.stateService = NonCustodialActionStateService()
 
         stateService.action
@@ -65,11 +63,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     }
 
     private func showNonCustodialActionScreen() {
-        let interactor = WalletActionScreenInteractor(
-            accountType: .nonCustodial,
-            currency: .crypto(currency),
-            service: balanceProviding[currency.currency]
-        )
+        let interactor = WalletActionScreenInteractor(account: account)
         let presenter = NonCustodialActionScreenPresenter(using: interactor, stateService: stateService)
         let controller = WalletActionScreenViewController(using: presenter)
         controller.transitioningDelegate = sheetPresenter
@@ -89,7 +83,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.switchToActivity()
+            self.routing.switchToActivity(for: self.account.currencyType)
         }
     }
 
@@ -97,7 +91,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.toReceive(self.currency)
+            self.routing.toReceive(self.account.currencyType)
         }
     }
 
@@ -105,7 +99,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
         dismissTopMost { [weak self] in
             guard let self = self else { return }
             self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.toSend(self.currency)
+            self.routing.toSend(self.account.currencyType)
         }
     }
 

@@ -6,7 +6,7 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-typealias WelcomeViewString = LocalizationConstants.Onboarding.WelcomeScreen
+typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
 public struct WelcomeView: View {
     let store: Store<AuthenticationState, AuthenticationAction>
@@ -24,6 +24,7 @@ public struct WelcomeView: View {
             get: \.isLoginVisible,
             send: AuthenticationAction.setLoginVisible(_:))
         ) {
+            LoginView(store: store)
         }
     }
 
@@ -87,17 +88,19 @@ struct WelcomeActionSection: View {
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+            PrimaryButton(title: WelcomeViewString.Button.createAccount) {
                 // add login action here
             }
             .frame(width: .infinity, height: 48)
-                .cornerRadius(8.0)
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+            .cornerRadius(8.0)
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
             .frame(width: .infinity, height: 48)
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
+
             HStack {
                 Button(WelcomeViewString.Button.recoverFunds) {
                     // add recover funds action here
@@ -120,7 +123,9 @@ struct WelcomeView_Previews: PreviewProvider {
         WelcomeView(
             store:Store(initialState: AuthenticationState(),
                         reducer: authenticationReducer,
-                        environment: .init(mainQueue: DispatchQueue.main.eraseToAnyScheduler())
+                        environment: .init(
+                            mainQueue: .main
+                        )
             )
         )
     }

@@ -60,7 +60,9 @@ public enum PaymentMethodType: Equatable {
 
 public protocol PaymentMethodTypesServiceAPI {
 
-    /// Streams the current payment method types
+    var paymentMethodTypes: Single<[PaymentMethodType]> { get }
+
+    /// Streams the current payment method types for `Buy`
     var methodTypes: Observable<[PaymentMethodType]> { get }
 
     /// Streams any linked card
@@ -96,6 +98,12 @@ public protocol PaymentMethodTypesServiceAPI {
 final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
     // MARK: - Exposed
+
+    var paymentMethodTypes: Single<[PaymentMethodType]> {
+        paymentMethodsService
+            .paymentMethodsSingle
+            .map { $0.map { .suggested($0) } }
+    }
 
     var methodTypes: Observable<[PaymentMethodType]> {
         provideMethodTypes()

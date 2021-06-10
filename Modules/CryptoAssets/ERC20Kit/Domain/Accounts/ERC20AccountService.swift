@@ -11,27 +11,15 @@ protocol ERC20AccountServiceAPI {
     func isContract(address: String) -> Single<Bool>
 }
 
-final class ERC20AccountService<Token: ERC20Token>: ERC20AccountServiceAPI {
+final class ERC20AccountService: ERC20AccountServiceAPI {
+    private typealias Tag = DependencyContainer.Tags.ERC20AccountService
 
     private let addresses: Atomic<[String: Bool]>
-    private let accountClient: AnyERC20AccountAPIClient<Token>
+    private let accountClient: ERC20AccountAPIClientAPI
 
-    init<APIClient: ERC20AccountAPIClientAPI>(
-        accountClient: APIClient = resolve(),
-        addressLookupCache: Atomic<[String: Bool]> = resolve(
-            tag: DependencyContainer.Tags.ERC20AccountService.addressCache
-        )
-    ) where APIClient.Token == Token {
-        self.accountClient = AnyERC20AccountAPIClient(
-            accountAPIClient: accountClient
-        )
-        self.addresses = addressLookupCache
-    }
-
-    init(accountClient: AnyERC20AccountAPIClient<Token> = resolve(),
-         addressLookupCache: Atomic<[String: Bool]> = resolve(
-            tag: DependencyContainer.Tags.ERC20AccountService.addressCache
-         )
+    init(
+        accountClient: ERC20AccountAPIClientAPI = resolve(),
+        addressLookupCache: Atomic<[String: Bool]> = resolve(tag: Tag.isContractAddressCache)
     ) {
         self.accountClient = accountClient
         self.addresses = addressLookupCache

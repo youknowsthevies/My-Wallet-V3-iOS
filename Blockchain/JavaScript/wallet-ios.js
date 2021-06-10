@@ -796,6 +796,10 @@ MyWalletPhone.get_history = function(hideBusyView) {
     getHistory.then(success).catch(error);
 };
 
+MyWalletPhone.markMnemonicAsVerified = function() {
+  return MyWallet.wallet.hdwallet.verifyMnemonic(objc_wallet_mnemonic_verification_updated, objc_wallet_mnemonic_verification_error)
+};
+
 MyWalletPhone.getMnemonicPhrase = function(secondPassword) {
     return MyWallet.wallet.getMnemonic(secondPassword);
 };

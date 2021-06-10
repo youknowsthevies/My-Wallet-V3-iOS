@@ -35,10 +35,7 @@ final class OrdersService: OrdersServiceAPI {
     }
 
     private let ordersCachedValue = CachedValue<[OrderDetails]>(
-        configuration: .init(
-            refreshType: .onSubscription,
-            flushNotificationName: .logout
-        )
+        configuration: .onSubscription()
     )
 
     // MARK: - Injected

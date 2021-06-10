@@ -96,6 +96,9 @@ extension AccountPickerInteractor {
 fileprivate extension BlockchainAccount {
     var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
         switch self {
+        case is LinkedBankAccount:
+            let account = self as! LinkedBankAccount
+            return .linkedBankAccount(account)
         case is SingleAccount:
             let singleAccount = self as! SingleAccount
             return .singleAccount(singleAccount, AccountAssetBalanceViewInteractor(account: singleAccount))

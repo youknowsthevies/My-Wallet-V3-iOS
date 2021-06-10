@@ -20,7 +20,16 @@ extension View {
 
     public func updateNavigationBarStyle() -> some View {
         configureNavigationBar {
+            $0.navigationBar.prefersLargeTitles = false
             $0.navigationBar.barTintColor = .white
+            $0.navigationBar.backItem?.backBarButtonItem = UIBarButtonItem(
+                title: "",
+                style: .plain,
+                target: nil,
+                action: nil
+            )
+            $0.navigationBar.tintColor = UIColor.blue600
+            $0.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
             $0.navigationBar.shadowImage = UIImage() // remove shadow
         }
     }

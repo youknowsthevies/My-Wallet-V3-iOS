@@ -4,19 +4,19 @@ import RIBs
 
 // MARK: - Builder
 
-protocol AddNewPaymentMethodBuildable {
+public protocol AddNewPaymentMethodBuildable {
     func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting
 }
 
-final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
+public final class AddNewPaymentMethodBuilder: AddNewPaymentMethodBuildable {
 
     private let paymentMethodService: SelectPaymentMethodService
 
-    init(paymentMethodService: SelectPaymentMethodService) {
+    public init(paymentMethodService: SelectPaymentMethodService) {
         self.paymentMethodService = paymentMethodService
     }
 
-    func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
+    public func build(listener: AddNewPaymentMethodListener) -> AddNewPaymentMethodRouting {
         let viewController = AddNewPaymentMethodViewController()
         viewController.isModalInPresentation = true
         let interactor = AddNewPaymentMethodInteractor(presenter: viewController,

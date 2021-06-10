@@ -8,7 +8,8 @@ protocol PaymentMethodInteractable: Interactable {
     var listener: PaymentMethodListener? { get set }
 }
 
-protocol PaymentMethodViewControllable: ViewControllable {
+protocol PaymentMethodViewControllable: ViewControllable,
+                                        PaymentMethodPresentable {
     // TODO: Declare methods the router invokes to manipulate the view hierarchy.
 }
 

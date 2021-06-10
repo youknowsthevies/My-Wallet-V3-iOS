@@ -1,10 +1,29 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
 
-public final class Coincore {
+/// Types adopting the `CoincoreAPI` should provide a way to retrieve fiat and crypto accounts
+public protocol CoincoreAPI {
+    /// Provides access to fiat and crypto custodial and non custodial assets.
+    var allAccounts: Single<AccountGroup> { get }
+
+    /// Initialize any assets prior being available
+    func initialize() -> Completable
+    func initializePublisher() -> AnyPublisher<Never, Never>
+
+    /// Provides an array of `SingleAccount` instances for the specified source account and the given action.
+    /// - Parameters:
+    ///   - sourceAccount: A `BlockchainAccount` to be used as the source account
+    ///   - action: An `AssetAction` to determine the transaction targets
+    func getTransactionTargets(sourceAccount: BlockchainAccount, action: AssetAction) -> Single<[SingleAccount]>
+
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? { get }
+}
+
+public final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 
@@ -71,14 +90,11 @@ public final class Coincore {
         sourceAccount: BlockchainAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {
-        guard let cryptoAccount = sourceAccount as? CryptoAccount else {
-            fatalError("Expected CryptoAccount: \(sourceAccount)")
-        }
-        guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
-            fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
-        }
         switch action {
         case .swap:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected CryptoAccount: \(sourceAccount)")
+            }
             return allAccounts
                 .map(\.accounts)
                 .map { (accounts) -> [SingleAccount] in
@@ -91,6 +107,12 @@ public final class Coincore {
                     }
                 }
         case .send:
+            guard let cryptoAccount = sourceAccount as? CryptoAccount else {
+                fatalError("Expected CryptoAccount: \(sourceAccount)")
+            }
+            guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
+                fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
+            }
             return Single
                 .zip(
                     sourceCryptoAsset.transactionTargets(account: cryptoAccount),
@@ -134,5 +156,20 @@ public final class Coincore {
              .withdraw:
             return false
         }
+    }
+}
+
+// MARK: - Combine Related Methods
+
+extension Coincore {
+    /// Gives a chance for all assets to initialize themselves.
+    /// - Note: Uses the `initialize` method and converts it to a publisher.
+    public func initializePublisher() -> AnyPublisher<Never, Never> {
+        initialize()
+            .asPublisher()
+            .catch { error -> AnyPublisher<Never, Never> in
+                impossible()
+            }
+            .ignoreFailure()
     }
 }

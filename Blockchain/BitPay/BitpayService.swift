@@ -74,7 +74,7 @@ final class BitpayService: BitpayServiceProtocol {
 
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
-        let signed = Payment(chain: currency.rawValue, transactions: [transaction])
+        let signed = Payment(chain: currency.code, transactions: [transaction])
         let headers = [
             "x-paypro-version": "2",
             HttpHeaderField.contentType: "application/payment-verification",
@@ -89,7 +89,7 @@ final class BitpayService: BitpayServiceProtocol {
 
     func postPayment(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Single<BitPayMemo> {
         let transaction = Payment.Transaction(tx: transactionHex, weightedSize: transactionSize)
-        let signed = Payment(chain: currency.rawValue, transactions: [transaction])
+        let signed = Payment(chain: currency.code, transactions: [transaction])
         let headers = [
             "x-paypro-version": "2",
             HttpHeaderField.contentType: "application/payment",
@@ -109,7 +109,7 @@ final class BitpayService: BitpayServiceProtocol {
 
     private func buildBitpayPaymentRequest(invoiceID: String, currency: CryptoCurrency) -> Single<BitpayPaymentRequest> {
         let payload = [
-            "chain": currency.rawValue
+            "chain": currency.code
         ]
         let headers = [
             "x-paypro-version": "2",

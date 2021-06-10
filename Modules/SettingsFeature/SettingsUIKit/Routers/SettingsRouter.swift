@@ -67,7 +67,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let wallet: WalletRecoveryVerifing
     private let repository: DataRepositoryAPI
     private let pitConnectionAPI: PITConnectionStatusProviding
-    private let balanceProviding: BalanceProviding
     private let balanceChangeProviding: BalanceChangeProviding
 
     private let builder: SettingsBuilding
@@ -96,7 +95,6 @@ final class SettingsRouter: SettingsRouterAPI {
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
         repository: DataRepositoryAPI = resolve(),
-        balanceProviding: BalanceProviding = resolve(),
         balanceChangeProviding: BalanceChangeProviding = resolve()
     ) {
         self.wallet = wallet
@@ -115,7 +113,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.pitConnectionAPI = pitConnectionAPI
         self.passwordRepository = passwordRepository
         self.repository = repository
-        self.balanceProviding = balanceProviding
         self.balanceChangeProviding = balanceChangeProviding
 
         previousRelay
@@ -145,7 +142,6 @@ final class SettingsRouter: SettingsRouterAPI {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
-            balanceProviding: balanceProviding,
             balanceChangeProviding: balanceChangeProviding,
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
@@ -315,7 +311,7 @@ final class SettingsRouter: SettingsRouterAPI {
     private func showLinkBankFlow() {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
-        let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
+        let router = builder.build()
         self.linkBankFlowRouter = router
         let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }

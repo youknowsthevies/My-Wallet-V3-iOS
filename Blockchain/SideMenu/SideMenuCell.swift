@@ -6,12 +6,9 @@ final class SideMenuCell: UITableViewCell {
 
     fileprivate static let newContainerViewTrailingPadding: CGFloat = 16.0
 
-    /// You must take into accoun the `peekAmount` of `ECSlidingViewController`
+    /// You must take into account the `peekAmount` of `ECSlidingViewController`
     /// otherwise the `newContainer` will not be visible.
-    lazy var peekPadding: CGFloat = {
-        let controller = AppCoordinator.shared.slidingViewController
-        return controller?.anchorRightPeekAmount ?? 0
-    }()
+    var peekPadding: CGFloat = 0
 
     static let defaultHeight: CGFloat = DevicePresenter.type != .superCompact ? 54 : 45
 

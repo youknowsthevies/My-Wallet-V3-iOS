@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 public protocol AccountPickerAccountProviding: AnyObject {
-    var accounts: Single<[BlockchainAccount]> { get }
+    var accounts: Observable<[BlockchainAccount]> { get }
 }
 
 public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProviding {
@@ -34,7 +34,7 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
 
     // MARK: - Properties
 
-    public var accounts: Single<[BlockchainAccount]> {
+    public var accounts: Observable<[BlockchainAccount]> {
         coincore.allAccounts
             .map { [singleAccountsOnly] allAccountsGroup -> [BlockchainAccount] in
                 if singleAccountsOnly {
@@ -57,6 +57,7 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
                     self.errorRecorder.error(error)
                 }
             )
+            .asObservable()
     }
 
     // MARK: - Init

@@ -25,14 +25,10 @@ final class AssetURLPayloadFactory: AssetURLPayloadFactoryAPI {
                 return BitcoinCashURLPayload(address: string, amount: nil, paymentRequestUrl: nil)
             case .stellar:
                 return StellarURLPayload(address: string, amount: nil, memo: nil)
-            case .pax, .ethereum:
+            case .erc20, .ethereum:
                 return EthereumURLPayload(address: string, amount: nil)
-            case .aave,
-                 .algorand,
-                 .polkadot,
-                 .tether,
-                 .wDGLD,
-                 .yearnFinance:
+            case .algorand,
+                 .polkadot:
                 return nil
             }
         }

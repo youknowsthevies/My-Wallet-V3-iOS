@@ -29,39 +29,39 @@ public final class InterestAccountDetailsScreenInteractor {
     }
 
     private lazy var setup: Void = {
-        let rates: CellInteractor = .init(
+        let rates = CellInteractor(
             title: TitleLabelInteractor(knownValue: LocalizationId.Rate.title),
-            description: DescriptionLabelInteractor.Rates.init(
+            description: DescriptionLabelInteractor.Rates(
                 service: service,
                 cryptoCurrency: cryptoCurrency
             )
         )
 
-        let nextPayment: CellInteractor = .init(
+        let nextPayment = CellInteractor(
             title: TitleLabelInteractor(knownValue: LocalizationId.Next.title),
-            description: DescriptionLabelInteractor.NextPayment.init(
+            description: DescriptionLabelInteractor.NextPayment(
                 cryptoCurrency: cryptoCurrency)
         )
 
-        let limits: CellInteractor = .init(
+        let limits = CellInteractor(
             title: TitleLabelInteractor(knownValue: LocalizationId.Hold.title),
-            description: DescriptionLabelInteractor.LockUpDuration.init(
+            description: DescriptionLabelInteractor.LockUpDuration(
                 service: service,
                 cryptoCurrency: cryptoCurrency
             )
         )
 
-        let total: CellInteractor = .init(
+        let total = CellInteractor(
             title: TitleLabelInteractor(knownValue: LocalizationId.Total.title),
-            description: DescriptionLabelInteractor.TotalInterest.init(
+            description: DescriptionLabelInteractor.TotalInterest(
                 service: service,
                 cryptoCurrency: cryptoCurrency
             )
         )
 
-        let pending: CellInteractor = .init(
+        let pending = CellInteractor(
             title: TitleLabelInteractor(knownValue: LocalizationId.Accrued.title),
-            description: DescriptionLabelInteractor.PendingDeposit.init(
+            description: DescriptionLabelInteractor.PendingDeposit(
                 service: service,
                 cryptoCurrency: cryptoCurrency
             )
@@ -76,29 +76,24 @@ public final class InterestAccountDetailsScreenInteractor {
             ]
             .map { .default($0) }
             .map { .item($0) }
-
-        Observable.just(
-            interactors
-        )
-        .bindAndCatch(to: interactorsRelay)
-        .disposed(by: disposeBag)
+        interactorsRelay.accept(interactors)
     }()
 
     let cryptoCurrency: CryptoCurrency
-    let currentBalanceCellInteractor: CurrentBalanceCellInteractor
+    let currentBalanceCellInteractor: CurrentBalanceCellInteracting
 
     private let interactorsRelay = BehaviorRelay<[DetailCellInteractor]>(value: [])
     private let service: SavingAccountServiceAPI
     private let disposeBag = DisposeBag()
 
-    public init(service: SavingAccountServiceAPI = resolve(),
-                cryptoCurrency: CryptoCurrency,
-                assetBalanceFetching: AssetBalanceFetching) {
+    public init(
+        service: SavingAccountServiceAPI = resolve(),
+        account: BlockchainAccount
+    ) {
         self.service = service
-        self.cryptoCurrency = cryptoCurrency
-        self.currentBalanceCellInteractor = .init(
-            balanceFetching: assetBalanceFetching,
-            accountType: .custodial(.savings)
+        self.cryptoCurrency = account.currencyType.cryptoCurrency!
+        self.currentBalanceCellInteractor = CurrentBalanceCellInteractor(
+            account: account
         )
     }
 }

@@ -12,24 +12,24 @@ public protocol AccountGroup: BlockchainAccount {
 
 extension AccountGroup {
     public var currencyType: CurrencyType {
-        let types = accounts.map(\.currencyType)
-        guard let type = types.first else {
+        guard let type = accounts.first?.currencyType else {
             fatalError("AccountGroup should have at least one account")
         }
         return type
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        let balances: [Single<MoneyValue>] = accounts
+    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        let balances: [Observable<MoneyValuePair>] = accounts
             .map { account in
                 account
-                    .fiatBalance(fiatCurrency: fiatCurrency)
-                    .catchErrorJustReturn(.zero(currency: fiatCurrency))
+                    .balancePair(fiatCurrency: fiatCurrency)
+                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
             }
-        return Single.zip(balances)
-            .map { moneyValues -> MoneyValue in
-                try moneyValues.reduce(into: MoneyValue.zero(currency: fiatCurrency)) { (result, this) in
-                    try result += this
+        return Observable.combineLatest(balances)
+            .map { [currencyType] pairs -> MoneyValuePair in
+                let zero: MoneyValuePair = .zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency)
+                return try pairs.reduce(into: zero) { (result, this) in
+                    result = try result + this
                 }
             }
     }

@@ -26,7 +26,6 @@ final class GeneralInformationService: GeneralInformationServiceAPI {
 
         countriesCachedValue = .init(
             configuration: .init(
-                identifier: "fetch-countries",
                 refreshType: .periodic(seconds: 60 * 60)
             )
         )

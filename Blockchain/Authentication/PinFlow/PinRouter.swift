@@ -224,9 +224,14 @@ extension PinRouter {
             let navigationController = UINavigationController(rootViewController: viewController)
             navigationController.delegate = self
             switch flow.origin {
+            case .attachedOn(controller: let controller):
+                controller.value?.add(child: navigationController)
             case .background:
                 // Sets view controller as rootViewController of the window
-                UIApplication.shared.keyWindow!.rootViewController = navigationController
+                guard let keyWindow = UIApplication.shared.keyWindow else {
+                    fatalError("keyWindow not found")
+                }
+                keyWindow.setRootViewController(navigationController)
             case .foreground(parent: let boxedParent):
                 if let parent = boxedParent.value {
                     navigationController.modalPresentationStyle = .fullScreen
@@ -267,6 +272,8 @@ extension PinRouter {
             }
             controller.dismiss(animated: animated, completion: cleanup)
         case .background:
+            cleanup()
+        case .attachedOn:
             cleanup()
         }
     }

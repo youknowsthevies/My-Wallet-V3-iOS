@@ -53,6 +53,15 @@ public enum NabuNetworkError: Error, Decodable {
         self = .communicatorError(communicatorError)
     }
 
+    public var localizedDescription: String? {
+        switch self {
+        case let .nabuError(error):
+            return error.localizedDescription
+        case let .communicatorError(error):
+            return error.localizedDescription
+        }
+    }
+
     private static func crashOnUnknownCodeOrType(
         code: NabuErrorCode,
         type: NabuErrorType,

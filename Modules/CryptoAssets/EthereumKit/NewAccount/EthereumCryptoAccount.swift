@@ -11,18 +11,22 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency
     let isDefault: Bool = true
 
+    func createTransactionEngine() -> Any {
+        EthereumOnChainTransactionEngineFactory()
+    }
+
     var actionableBalance: Single<MoneyValue> {
         balance
     }
 
     var balance: Single<MoneyValue> {
-        balanceFetching
-            .balanceMoney
+        accountDetailsService.accountDetails()
+            .map(\.balance)
+            .moneyValue
     }
 
     var pendingBalance: Single<MoneyValue> {
-        balanceFetching
-            .pendingBalanceMoney
+        .just(.zero(currency: asset))
     }
 
     var actions: Single<AvailableActions> {
@@ -41,7 +45,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     private let hdAccountIndex: Int
-    private let balanceFetching: SingleAccountBalanceFetching
+    private let accountDetailsService: EthereumAccountDetailsServiceAPI
     private let bridge: EthereumWalletBridgeAPI
     private let exchangeService: PairExchangeServiceAPI
 
@@ -49,14 +53,14 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
          label: String? = nil,
          hdAccountIndex: Int,
          bridge: EthereumWalletBridgeAPI = resolve(),
-         balanceProviding: BalanceProviding = resolve(),
+         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
          exchangeProviding: ExchangeProviding = resolve()) {
         let asset = CryptoCurrency.ethereum
         self.asset = asset
         self.id = id
         self.hdAccountIndex = hdAccountIndex
         self.exchangeService = exchangeProviding[asset]
-        self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.accountDetailsService = accountDetailsService
         self.bridge = bridge
         self.label = label ?? asset.defaultWalletName
     }
@@ -76,14 +80,15 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

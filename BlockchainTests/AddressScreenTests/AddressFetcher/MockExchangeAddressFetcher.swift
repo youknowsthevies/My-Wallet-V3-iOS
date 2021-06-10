@@ -10,28 +10,30 @@ import PlatformKit
 class FakeAddress {
     static func address(for type: CryptoCurrency) -> String {
         switch type {
-        case .aave:
-            return "fake_aave_address"
         case .algorand:
             return "fake_algorand_address"
         case .bitcoin:
             return "3PRRj3H8WPgZLBaYQNrT5Bdw2Z7n12EXKs"
         case .bitcoinCash:
             return "qqaheqhs20u5pvva8d9avn9pr4zyvnfn6gmvuhw45y"
+        case .erc20(.aave):
+            return "fake_aave_address"
+        case .erc20(.pax):
+            return "0x4058a004DD718bABAb47e14dd0d744742E5B9903"
+        case .erc20(.tether):
+            return "fake_tether_address"
+        case .erc20(.wdgld):
+            return "fake_wDGLD_address"
+        case .erc20(.yearnFinance):
+            return "fake_YFI_address"
+        case .erc20:
+            return "fake_ERC20_address"
         case .ethereum:
             return "0x17836d05892AF892d3CC68C70563B10CFDed19DD"
-        case .pax:
-            return "0x4058a004DD718bABAb47e14dd0d744742E5B9903"
         case .polkadot:
             return "fake_polkadot_address"
         case .stellar:
             return "GAJBG6YTIVCJ62PYTFDMKIF3RFDRVWEOTX62OKWKNPN7NHBAWLEWKEFI"
-        case .tether:
-            return "fake_tether_address"
-        case .wDGLD:
-            return "fake_wDGLD_address"
-        case .yearnFinance:
-            return "fake_YFI_address"
         }
     }
 }

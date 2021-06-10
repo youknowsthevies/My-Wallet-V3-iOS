@@ -28,7 +28,7 @@ final class TransactionAnalyticsHook {
         }
     }
 
-    func onFromAccountSelected(_ account: CryptoAccount, action: AssetAction) {
+    func onFromAccountSelected(_ account: BlockchainAccount, action: AssetAction) {
         switch action {
         case .swap:
             analyticsRecorder.record(events: [

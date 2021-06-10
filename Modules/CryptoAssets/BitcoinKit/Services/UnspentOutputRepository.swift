@@ -38,7 +38,7 @@ final class UnspentOutputRepository: UnspentOutputRepositoryAPI {
         self.client = client
 
         self.cachedUnspentOutputs = CachedValue<UnspentOutputs>(
-            configuration: .periodicAndLogin(10, scheduler: scheduler)
+            configuration: .periodic(10, scheduler: scheduler)
         )
 
         cachedUnspentOutputs.setFetch { [weak self] () -> Single<UnspentOutputs> in

@@ -7,6 +7,7 @@ import TransactionKit
 final class EthereumExternalAssetAddressFactory: CryptoReceiveAddressFactory {
 
     func makeExternalAssetAddress(
+        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted

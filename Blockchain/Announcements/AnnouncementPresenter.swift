@@ -335,7 +335,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.handleBuyCrypto(currency: .aave)
+                self?.handleBuyCrypto(currency: .erc20(.aave))
             }
         )
     }

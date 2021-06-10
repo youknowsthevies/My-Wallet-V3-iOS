@@ -2,18 +2,14 @@
 
 import PlatformKit
 
-public extension TriageCryptoCurrency {
+extension TriageCryptoCurrency {
 
-    var logoImageName: String {
+    public var logoResource: ImageResource {
         switch self {
         case .blockstack:
-            return "filled_stx_large"
+            return .local(name: "filled_stx_large", bundle: .platformUIKit)
         case .supported(let currency):
-            return currency.logoImageName
+            return currency.logoResource
         }
-    }
-
-    var logoImage: UIImage {
-        UIImage(named: logoImageName)!
     }
 }

@@ -6,35 +6,19 @@ import RxSwift
 import ToolKit
 
 public protocol SavingAccountServiceAPI: AnyObject, SavingsOverviewAPI {
-    var balances: Single<CustodialAccountBalanceStates> { get }
-    func fetchBalances() -> Single<CustodialAccountBalanceStates>
+    func balances(fetch: Bool) -> Single<CustodialAccountBalanceStates>
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>>
-    func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState>
     func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?>
 }
 
-class SavingAccountService: SavingAccountServiceAPI {
-
-    // MARK: - Properties
-
-    var balances: Single<CustodialAccountBalanceStates> {
-        _ = setup
-        return cachedValue.valueSingle
-    }
+final class SavingAccountService: SavingAccountServiceAPI {
 
     // MARK: - Private Properties
 
     private let client: SavingsAccountClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
-    private let cachedValue: CachedValue<CustodialAccountBalanceStates>
-
-    private lazy var setup: Void = {
-        cachedValue.setFetch(weak: self) { (self) in
-            self.fetchBalancesResponse()
-                .map { CustodialAccountBalanceStates(response: $0) }
-        }
-    }()
+    private let cachedValue: CachedValue<SavingsAccountBalanceResponse>
 
     // MARK: - Setup
 
@@ -44,10 +28,13 @@ class SavingAccountService: SavingAccountServiceAPI {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
-        self.cachedValue = CachedValue(configuration: .onSubscription())
+        self.cachedValue = CachedValue(configuration: .periodic(60))
+        cachedValue.setFetch(weak: self) { (self) in
+            self.fetchBalancesResponse()
+        }
     }
 
-    // MARK: - Methods
+    // MARK: - SavingAccountServiceAPI
 
     func limits(for currency: CryptoCurrency) -> Single<SavingsAccountLimits?> {
         fiatCurrencyService
@@ -59,44 +46,48 @@ class SavingAccountService: SavingAccountServiceAPI {
     }
 
     func details(for currency: CryptoCurrency) -> Single<ValueCalculationState<SavingsAccountBalanceDetails>> {
-        fetchBalancesResponse()
-            .map { (response) -> ValueCalculationState<SavingsAccountBalanceDetails> in
-                guard let details = response[currency] else { return .invalid(.empty) }
-                return .value(details)
+        cachedValue.valueSingle
+            .map { response -> ValueCalculationState<SavingsAccountBalanceDetails> in
+                switch response[currency] {
+                case .none:
+                    return .invalid(.empty)
+                case .some(let details):
+                    return .value(details)
+                }
             }
     }
+
+    func balances(fetch: Bool) -> Single<CustodialAccountBalanceStates> {
+        (fetch ? cachedValue.fetchValue : cachedValue.valueSingle)
+            .map { CustodialAccountBalanceStates(response: $0) }
+    }
+
+    // MARK: - SavingsOverviewAPI
 
     func balance(for currency: CryptoCurrency) -> Single<CustodialAccountBalanceState> {
-        balances.map { $0[currency.currency] }
-    }
-
-    private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {
-        Single.zip(
-                kycTiersService.tiers.map(\.isTier2Approved),
-                fiatCurrencyService.fiatCurrency
-            )
-            .flatMap(weak: self) { (self, values) in
-                let (tier2Approved, fiatCurrency) = values
-                guard tier2Approved else {
-                    return Single.just(.empty)
-                }
-                return self.client.balance(with: fiatCurrency).map { balance in
-                    guard let balance = balance else {
-                        return .empty
-                    }
-                    return balance
-                }
-            }
-            .catchErrorJustReturn(.empty)
-    }
-
-    func fetchBalances() -> Single<CustodialAccountBalanceStates> {
-        _ = setup
-        return cachedValue.fetchValue
+        balances(fetch: false)
+            .map { $0[currency.currency] }
     }
 
     func rate(for currency: CryptoCurrency) -> Single<Double> {
-        client.rate(for: currency.rawValue)
+        client.rate(for: currency.code)
             .map { $0.rate }
+    }
+
+    private func fetchBalancesResponse() -> Single<SavingsAccountBalanceResponse> {
+        Single
+            .zip(
+                kycTiersService.tiers.map(\.isTier2Approved),
+                fiatCurrencyService.fiatCurrency
+            )
+            .flatMap(weak: self) { (self, values) -> Single<SavingsAccountBalanceResponse?> in
+                let (tier2Approved, fiatCurrency) = values
+                guard tier2Approved else {
+                    return .just(nil)
+                }
+                return self.client.balance(with: fiatCurrency)
+            }
+            .catchErrorJustReturn(nil)
+            .onNilJustReturn(SavingsAccountBalanceResponse.empty)
     }
 }

@@ -32,6 +32,8 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
+            case .linkedBankAccount(let presenter):
+                cell = self.linkedBankCell(for: indexPath, presenter: presenter)
             case .accountGroup(let presenter):
                 cell = self.totalBalanceCell(for: indexPath, presenter: presenter)
             case .singleAccount(let presenter):
@@ -48,6 +50,7 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
         tableView.estimatedRowHeight = UITableView.automaticDimension
         tableView.separatorColor = .clear
         tableView.alwaysBounceVertical = true
+        tableView.register(LinkedBankAccountTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
     }()
@@ -144,6 +147,12 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
     }
 
     // MARK: - Private Methods
+
+    private func linkedBankCell(for indexPath: IndexPath, presenter: LinkedBankAccountCellPresenter) -> UITableViewCell {
+        let cell = tableView.dequeue(LinkedBankAccountTableViewCell.self, for: indexPath)
+        cell.presenter = presenter
+        return cell
+    }
 
     private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenting) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)

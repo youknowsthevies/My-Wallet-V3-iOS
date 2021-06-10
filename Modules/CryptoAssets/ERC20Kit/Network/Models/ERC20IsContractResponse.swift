@@ -2,6 +2,6 @@
 
 import Foundation
 
-struct ERC20IsContractResponse<Token: ERC20Token>: Decodable {
+struct ERC20IsContractResponse: Decodable {
     let contract: Bool
 }

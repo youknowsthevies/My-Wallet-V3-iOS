@@ -60,11 +60,12 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         let isBuy = interactor.isBuy
         let prefix = isBuy ? LocalizedString.Loading.Buy.titlePrefix : LocalizedString.Loading.Sell.titlePrefix
         let subtitle = isBuy ? LocalizedString.Loading.Buy.subtitle : LocalizedString.Loading.Sell.subtitle
+        let localImage = currencyType.logoResource.local
         viewModelRelay.accept(
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
                     .init(
-                        baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                        baseViewType: .image(localImage.name, localImage.bundle),
                         sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter)
                     )
                 ),
@@ -126,11 +127,11 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             .disposed(by: disposeBag)
 
         let title = isBuy ? LocalizationConstants.TimeoutScreen.Buy.title : LocalizationConstants.TimeoutScreen.Sell.title
-
+        let logoResource = currencyType.logoResource.local
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                    baseViewType: .image(logoResource.name, logoResource.bundle),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -149,10 +150,11 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
 
+        let localImage = currencyType.logoResource.local
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                    baseViewType: .image(localImage.name, localImage.bundle),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -183,10 +185,11 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             title = LocalizedString.Timeout.Sell.titleSuffix
         }
 
+        let localImage = currencyType.logoResource.local
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                    baseViewType: .image(localImage.name, localImage.bundle),
                     sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.clock.name), position: .radiusDistanceFromCenter)
                 )
             ),
@@ -215,10 +218,11 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             interactibleText = "\n\(LocalizedString.Success.Buy.learnMore)"
             url = "https://support.blockchain.com/hc/en-us/articles/360048200392"
         }
+        let localImage = currencyType.logoResource.local
         let viewModel = PendingStateViewModel(
             compositeStatusViewType: .composite(
                 .init(
-                    baseViewType: .image(PendingStateViewModel.Image.custom(currencyType.logoImageName).name),
+                    baseViewType: .image(localImage.name, localImage.bundle),
                     sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter)
                 )
             ),

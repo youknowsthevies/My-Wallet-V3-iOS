@@ -61,9 +61,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
         self.bridge = bridge
         self.feeService = feeService
         self.feeCache = CachedValue<BitcoinChainTransactionFee<Token>>(
-            configuration: CachedValueConfiguration(
-                refreshType: .periodic(seconds: 90)
-            )
+            configuration: .periodic(90)
         )
         feeCache.setFetch(weak: self) { (self) in
             self.feeService.fees

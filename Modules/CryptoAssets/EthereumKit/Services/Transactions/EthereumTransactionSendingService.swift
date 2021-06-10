@@ -11,7 +11,6 @@ public enum EthereumTransactionCreationServiceError: Error {
 }
 
 protocol EthereumTransactionSendingServiceAPI {
-
     func send(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionPublished>
 }
 
@@ -19,21 +18,21 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
 
     typealias Bridge = EthereumWalletBridgeAPI
 
-    private let bridge: Bridge
-    private let client: APIClientAPI
-    private let feeService: AnyCryptoFeeService<EthereumTransactionFee>
+    private let accountDetailsService: EthereumAccountDetailsServiceAPI
+    private let client: TransactionPushClientAPI
+    private let feeService: EthereumFeeServiceAPI
     private let transactionBuilder: EthereumTransactionBuilderAPI
     private let transactionSigner: EthereumTransactionSignerAPI
     private let transactionEncoder: EthereumTransactionEncoderAPI
 
     init(
-        with bridge: Bridge = resolve(),
-        client: APIClientAPI = resolve(),
-        feeService: AnyCryptoFeeService<EthereumTransactionFee> = resolve(),
+        accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
+        client: TransactionPushClientAPI = resolve(),
+        feeService: EthereumFeeServiceAPI = resolve(),
         transactionBuilder: EthereumTransactionBuilderAPI = resolve(),
         transactionSigner: EthereumTransactionSignerAPI = resolve(),
         transactionEncoder: EthereumTransactionEncoderAPI = resolve()) {
-        self.bridge = bridge
+        self.accountDetailsService = accountDetailsService
         self.client = client
         self.feeService = feeService
         self.transactionBuilder = transactionBuilder
@@ -49,9 +48,10 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
     }
 
     private func finalise(transaction: EthereumTransactionCandidate, keyPair: EthereumKeyPair) -> Single<EthereumTransactionFinalised> {
-        bridge.nonce
+        accountDetailsService.accountDetails()
+            .map(\.nonce)
             .flatMap(weak: self) { (self, nonce) -> Single<EthereumTransactionCandidateCosted> in
-                self.transactionBuilder.build(transaction: transaction, nonce: nonce).single
+                self.transactionBuilder.build(transaction: transaction, nonce: BigUInt(nonce)).single
             }
             .flatMap(weak: self) { (self, costed) -> Single<EthereumTransactionCandidateSigned> in
                 self.transactionSigner.sign(transaction: costed, keyPair: keyPair).single

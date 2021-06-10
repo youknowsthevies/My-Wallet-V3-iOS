@@ -20,7 +20,7 @@ final class StellarTransactionDispatcher {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let horizonProxy: HorizonProxyAPI
 
-    private let minSend = CryptoValue.stellar(minor: 1)
+    private let minSend = CryptoValue(amount: 1, currency: .stellar)
     private var sendTimeOutSeconds: Single<Int> {
         walletOptions.walletOptions
             .map(\.xlmMetadata?.sendTimeOutSeconds)
@@ -111,7 +111,7 @@ final class StellarTransactionDispatcher {
         horizonProxy.accountResponse(for: sendDetails.fromAddress)
             .map(weak: self) {  (self, response) -> AccountResponse in
                 let total = try sendDetails.value + sendDetails.fee
-                let minBalance = self.horizonProxy.minimumBalance(subentryCount: Int(response.subentryCount))
+                let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 if try response.totalBalance < (total + minBalance) {
                     throw SendFailureReason.insufficientFunds
                 }
@@ -236,7 +236,10 @@ fileprivate extension stellarsdk.TransactionPostResponseEnum {
     func toSendConfirmationDetails(sendDetails: SendDetails) throws -> SendConfirmationDetails {
         switch self {
         case .success(let details):
-            let feeCharged = CryptoValue.stellar(minor: Int(details.transactionResult.feeCharged))
+            let feeCharged = CryptoValue(
+                amount: BigInt(details.transactionResult.feeCharged),
+                currency: .stellar
+            )
             return SendConfirmationDetails(
                 sendDetails: sendDetails,
                 fees: feeCharged,

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 @testable import RemoteNotificationsKit
 import RxSwift
 import UserNotifications
@@ -40,5 +41,11 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationRegistering {
 extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting {
     func requestAuthorizationIfNeeded() -> Single<Void> {
         authorizationRequestExpectedStatus.single
+    }
+
+    func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error> {
+        authorizationRequestExpectedStatus.single
+            .asCompletable()
+            .asPublisher()
     }
 }

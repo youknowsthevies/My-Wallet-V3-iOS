@@ -110,12 +110,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        if #available(iOS 13.0, *) {
-            // Do not disable LeakDetector  
-        } else {
-            LeakDetector.disableLeakDetectorOverride = true
-        }
-
         if ProcessInfo.processInfo.environmentBoolean(for: .eraseWallet) == true {
             // If ProcessInfo environment contains "automation_erase_data": true, erase wallet and settings.
             // This behaviour happens even on non-debug builds, this is necessary because our UI tests
@@ -131,7 +125,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         if isDebug, ProcessInfo.processInfo.isUnitTesting {
             // If isDebug build, and we are running unit test, skip rest of AppDelegate.
             // but avoid crashing the app for Unit Tests that need to run in a target requiring a host app
-            window?.rootViewController = UIViewController() // to avoid crashing unit tests that require, but don't set, a root VC
+            window?.setRootViewController(UIViewController()) // to avoid crashing unit tests that require, but don't set, a root VC
             return true
         }
 
@@ -244,7 +238,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
             identifier: UIBackgroundTaskIdentifier.invalid))
     func applicationDidEnterBackground(_ application: UIApplication) {
-        DataProvider.default.syncing.sync()
+        let portfolioSyncingService: BalanceSharingSettingsServiceAPI = resolve()
+        portfolioSyncingService.sync()
         backgroundTaskTimer.begin(application) { [weak self] in
             self?.delayedApplicationDidEnterBackground(application)
         }

@@ -21,6 +21,8 @@ import ToolKit
 
     // MARK: - Properties
 
+    var sideMenuGesture: UIPanGestureRecognizer?
+
     @objc weak var delegate: TabViewControllerDelegate?
     private(set) var menuSwipeRecognizerView: UIView!
     private(set) var activeViewController: UIViewController?
@@ -68,8 +70,9 @@ import ToolKit
         tabBar.delegate = self
         selectedIndex = Constants.Navigation.tabDashboard
         menuSwipeRecognizerView = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: UIScreen.main.bounds.size.height))
-        let sideMenu: ECSlidingViewController = AppCoordinator.shared.slidingViewController
-        menuSwipeRecognizerView.addGestureRecognizer(sideMenu.panGesture)
+        if let panGesture = sideMenuGesture {
+            menuSwipeRecognizerView.addGestureRecognizer(panGesture)
+        }
         view.addSubview(menuSwipeRecognizerView)
 
         self.receiveTabBarItem.accessibility = .id(AccessibilityIdentifiers.TabViewContainerScreen.request)

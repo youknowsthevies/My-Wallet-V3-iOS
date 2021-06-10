@@ -44,6 +44,7 @@ final class SettingsScreenInteractor {
     private let disposeBag = DisposeBag()
 
     init(
+        balanceSharingService: BalanceSharingSettingsServiceAPI = resolve(),
         credentialsStore: CredentialsStoreAPI = resolve(),
         featureConfigurator: FeatureFetchingConfiguring = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
@@ -55,7 +56,6 @@ final class SettingsScreenInteractor {
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
         wallet: WalletRecoveryVerifing,
-        balanceProviding: BalanceProviding,
         balanceChangeProviding: BalanceChangeProviding,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
         authenticationCoordinator: AuthenticationCoordinating
@@ -66,12 +66,7 @@ final class SettingsScreenInteractor {
         self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
-
-        self.balanceSharingService = PortfolioSyncingService(
-            balanceProviding: balanceProviding,
-            balanceChangeProviding: balanceChangeProviding,
-            fiatCurrencyProviding: fiatCurrencyService
-        )
+        self.balanceSharingService = balanceSharingService
 
         cardSectionInteractor = CardSettingsSectionInteractor(
             paymentMethodTypesService: paymentMethodTypesService,

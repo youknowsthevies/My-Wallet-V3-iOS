@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import ToolKit
 
@@ -45,7 +46,7 @@ public struct OrderPair: RawRepresentable {
         }
     }
 
-    init(string: String) throws {
+    init(string: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) throws {
         var components: [String] = []
         for value in ["-", "_"] {
             if string.contains(value) {
@@ -60,12 +61,12 @@ public struct OrderPair: RawRepresentable {
         guard let destination = components.last else {
             throw OrderPairDecodingError.decodingError
         }
-        let sourceType = try CurrencyType(code: source)
-        let destionationType = try CurrencyType(code: destination)
+        let sourceType = try CurrencyType(code: source, enabledCurrenciesService: enabledCurrenciesService)
+        let destinationType = try CurrencyType(code: destination, enabledCurrenciesService: enabledCurrenciesService)
 
         self.init(
             sourceCurrencyType: sourceType,
-            destinationCurrencyType: destionationType
+            destinationCurrencyType: destinationType
         )
     }
 }

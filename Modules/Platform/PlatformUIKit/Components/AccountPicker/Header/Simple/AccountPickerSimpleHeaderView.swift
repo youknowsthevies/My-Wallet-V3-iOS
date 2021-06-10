@@ -3,7 +3,6 @@
 import Foundation
 
 final class AccountPickerSimpleHeaderView: UIView {
-    static let defaultHeight: CGFloat = 64
     private let subtitleLabel: UILabel = UILabel()
     private let separator: UIView = UIView()
 

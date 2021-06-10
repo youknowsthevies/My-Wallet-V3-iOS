@@ -4,17 +4,13 @@ import RxSwift
 
 public protocol CryptoNonCustodialAccount: CryptoAccount, NonCustodialAccount {
     func updateLabel(_ newLabel: String) -> Completable
+    /// Creates and return a On Chain `TransactionEngine` for this account `CryptoCurrency`.
+    func createTransactionEngine() -> Any
 }
 
 extension CryptoNonCustodialAccount {
-
-    // TODO: Swap: Use new PayloadManager to check if it is double encrypted.
     public var requireSecondPassword: Single<Bool> {
         .just(false)
-    }
-
-    public var accountType: SingleAccountType {
-        .nonCustodial
     }
 
     public var isFunded: Single<Bool> {

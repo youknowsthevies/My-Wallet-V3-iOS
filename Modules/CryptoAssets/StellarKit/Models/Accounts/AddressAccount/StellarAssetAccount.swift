@@ -3,22 +3,22 @@
 import PlatformKit
 
 public struct StellarAssetAccount: SingleAddressAssetAccount {
-    public var walletIndex: Int
 
     public typealias Address = StellarAssetAddress
 
-    public var address: StellarAssetAddress
-    public var accountAddress: String
-    public var name: String
-    public var description: String
-    public var sequence: Int
-    public var subentryCount: Int
+    public let address: StellarAssetAddress
+    public let accountAddress: String
+    public let name: String
+    public let description: String
+    public let sequence: Int
+    public let subentryCount: UInt
+    public let walletIndex: Int
 
     public init(accountAddress: String,
                 name: String,
                 description: String,
                 sequence: Int,
-                subentryCount: Int) {
+                subentryCount: UInt) {
         self.walletIndex = 0
         self.accountAddress = accountAddress
         self.name = name

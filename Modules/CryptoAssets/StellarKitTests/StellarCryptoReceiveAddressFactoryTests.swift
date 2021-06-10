@@ -23,6 +23,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertThrowsError(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: "1234567890",
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -33,6 +34,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.address,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -48,6 +50,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.addressColonMemo,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -63,6 +66,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.addressColonMemo,
                     label: StellarTestData.addressColonMemo,
                     onTxCompleted: { _ in .empty() }
@@ -78,6 +82,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.urlString,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -93,6 +98,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.urlStringWithMemo,
                     label: StellarTestData.urlStringWithMemo,
                     onTxCompleted: { _ in .empty() }
@@ -108,6 +114,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.urlStringWithMemo,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -123,6 +130,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.urlStringWithMemoType,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
@@ -138,6 +146,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
         XCTAssertNoThrow(
             address = try sut
                 .makeExternalAssetAddress(
+                    asset: .stellar,
                     address: StellarTestData.urlStringWithMemoAndAmount,
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }

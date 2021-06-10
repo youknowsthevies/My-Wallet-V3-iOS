@@ -20,7 +20,8 @@ public final class RadioAccountCellPresenter: IdentifiableType {
     let viewModel: Driver<WalletViewViewModel>
 
     // MARK: - Init
-    public init(interactor: RadioAccountCellInteractor, accessibilityPrefix: String = "") {
+    public init(interactor: RadioAccountCellInteractor,
+                accessibilityPrefix: String = "") {
         let model = WalletViewViewModel(
             account: interactor.account,
             descriptor: .init(

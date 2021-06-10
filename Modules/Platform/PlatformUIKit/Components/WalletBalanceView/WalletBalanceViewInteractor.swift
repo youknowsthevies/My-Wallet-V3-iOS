@@ -43,29 +43,12 @@ public final class WalletBalanceViewInteractor {
 
     // MARK: - Setup
 
-    public init(balanceProviding: BalanceProviding) {
-        stateObservableProvider = {
-            balanceProviding
-                .fiatBalance
-                .map { state -> InteractionState in
-                    switch state {
-                    case .calculating, .invalid:
-                        return .loading
-                    case .value(let result):
-                        return .loaded(
-                            next: WalletBalance(fiatValue: result)
-                        )
-                    }
-                }
-        }
-    }
-
     public init(account: BlockchainAccount,
                 fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
         stateObservableProvider = {
             fiatCurrencyService.fiatCurrencyObservable
                 .flatMap { fiatCurrency in
-                    account.fiatBalance(fiatCurrency: fiatCurrency).asObservable()
+                    account.fiatBalance(fiatCurrency: fiatCurrency)
                 }
                 .map { moneyValue -> InteractionState in
                     .loaded(next: WalletBalance(fiatValue: moneyValue.fiatValue!))

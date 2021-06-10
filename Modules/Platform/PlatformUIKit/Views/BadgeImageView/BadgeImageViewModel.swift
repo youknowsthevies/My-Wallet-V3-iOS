@@ -91,6 +91,7 @@ extension BadgeImageViewModel {
     /// It has rounded corners.
     public static func `default`(
         with imageName: String,
+        bundle: Bundle = .platformUIKit,
         cornerRadius: CornerRadius = .value(8),
         accessibilityIdSuffix: String) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
@@ -101,7 +102,7 @@ extension BadgeImageViewModel {
                     imageName: imageName,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
                     renderingMode: .normal,
-                    bundle: .platformUIKit
+                    bundle: bundle
                 )
             )
         )
@@ -110,6 +111,7 @@ extension BadgeImageViewModel {
 
     public static func template(
         with imageName: String,
+        bundle: Bundle = .platformUIKit,
         templateColor: UIColor,
         backgroundColor: UIColor,
         cornerRadius: CornerRadius = .round,
@@ -122,7 +124,7 @@ extension BadgeImageViewModel {
                     imageName: imageName,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
                     renderingMode: .template(templateColor),
-                    bundle: .platformUIKit
+                    bundle: bundle
                 )
             )
         )
@@ -135,6 +137,7 @@ extension BadgeImageViewModel {
     /// It has rounded corners, though you can apply a `cornerRadius`
     public static func primary(
         with imageName: String,
+        bundle: Bundle = .platformUIKit,
         contentColor: UIColor = .defaultBadge,
         backgroundColor: UIColor = .lightBadgeBackground,
         cornerRadius: CornerRadius = .value(8),
@@ -147,7 +150,7 @@ extension BadgeImageViewModel {
                     imageName: imageName,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
                     renderingMode: .template(contentColor),
-                    bundle: .platformUIKit
+                    bundle: bundle
                 )
             )
         )

@@ -4,13 +4,14 @@ import PlatformKit
 import RxSwift
 import TransactionKit
 
-final class ERC20ExternalAssetAddressFactory<Token: ERC20Token>: CryptoReceiveAddressFactory {
+final class ERC20ExternalAssetAddressFactory: CryptoReceiveAddressFactory {
 
     func makeExternalAssetAddress(
+        asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
     ) throws -> CryptoReceiveAddress {
-        ERC20ReceiveAddress<Token>(asset: Token.assetType, address: address, label: label, onTxCompleted: onTxCompleted)
+        ERC20ReceiveAddress(asset: asset, address: address, label: label, onTxCompleted: onTxCompleted)
     }
 }

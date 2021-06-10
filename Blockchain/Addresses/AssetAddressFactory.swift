@@ -20,24 +20,16 @@ class AssetAddressFactory {
         case .algorand,
              .polkadot:
             fatalError("\(assetType.name) not supported.")
-        case .aave:
-            return AnyERC20AssetAddress<AaveToken>(publicKey: address)
         case .bitcoin:
             return BitcoinAssetAddress(publicKey: address)
         case .bitcoinCash:
             return BitcoinCashAssetAddress(publicKey: address)
+        case .erc20:
+            return ERC20AssetAddress(publicKey: address, cryptoCurrency: assetType)
         case .ethereum:
             return EthereumAddress(stringLiteral: address)
         case .stellar:
             return StellarAssetAddress(publicKey: address)
-        case .pax:
-            return AnyERC20AssetAddress<PaxToken>(publicKey: address)
-        case .tether:
-            return AnyERC20AssetAddress<TetherToken>(publicKey: address)
-        case .wDGLD:
-            return AnyERC20AssetAddress<WDGLDToken>(publicKey: address)
-        case .yearnFinance:
-            return AnyERC20AssetAddress<YearnFinanceToken>(publicKey: address)
         }
     }
 

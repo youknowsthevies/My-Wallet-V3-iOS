@@ -4,9 +4,13 @@ import Combine
 import ComposableArchitecture
 import UIKit
 
-final class AppHostingController: UINavigationController {
+/// Acts as the main controller for onboarding and logged in states
+final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
     private var cancellables: Set<AnyCancellable> = []
+
+    private var onboardingController: OnboardingHostingController?
+    private var loggedInController: LoggedInHostingController?
 
     init(store: Store<CoreAppState, CoreAppAction>) {
         self.store = store
@@ -24,14 +28,34 @@ final class AppHostingController: UINavigationController {
         self.store
             .scope(state: \.onboarding, action: CoreAppAction.onboarding)
             .ifLet(then: { [weak self] onboardingStore in
-                self?.setViewControllers([OnboardingHostingController(store: onboardingStore)], animated: true)
+                guard let self = self else { return }
+                let onboardingController = OnboardingHostingController(store: onboardingStore)
+                if let loggedInController = self.loggedInController {
+                    self.transition(from: loggedInController,
+                                    to: onboardingController,
+                                    animate: true)
+                } else {
+                    self.add(child: onboardingController)
+                }
+                self.onboardingController = onboardingController
+                self.loggedInController = nil
             })
             .store(in: &cancellables)
 
         self.store
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
-            .ifLet(then: { loggedInScore in
-                //
+            .ifLet(then: { [weak self] loggedInScope in
+                guard let self = self else { return }
+                let loggedInController = LoggedInHostingController(store: loggedInScope)
+                if let onboardingController = self.onboardingController {
+                    self.transition(from: onboardingController,
+                                    to: loggedInController,
+                                    animate: true)
+                } else {
+                    self.add(child: loggedInController)
+                }
+                self.loggedInController = loggedInController
+                self.onboardingController = nil
             })
             .store(in: &cancellables)
     }

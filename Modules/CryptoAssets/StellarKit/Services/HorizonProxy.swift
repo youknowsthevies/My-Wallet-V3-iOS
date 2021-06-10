@@ -10,7 +10,7 @@ import stellarsdk
 
 protocol HorizonProxyAPI {
     func accountResponse(for accountID: String) -> Single<AccountResponse>
-    func minimumBalance(subentryCount: Int) -> CryptoValue
+    func minimumBalance(subentryCount: UInt) -> CryptoValue
     func sign(transaction: stellarsdk.Transaction, keyPair: stellarsdk.KeyPair) -> Completable
     func submitTransaction(transaction: stellarsdk.Transaction) -> Single<TransactionPostResponseEnum>
 }
@@ -49,7 +49,7 @@ final class HorizonProxy: HorizonProxyAPI {
         }
     }
 
-    func minimumBalance(subentryCount: Int) -> CryptoValue {
+    func minimumBalance(subentryCount: UInt) -> CryptoValue {
         CryptoValue(amount: BigInt(2 + subentryCount) * minReserve, currency: .stellar)
     }
 

@@ -41,13 +41,13 @@ extension AnalyticsEvents.New {
             case userKey = "USERKEY"
             case unknown = "UNKNOWN"
 
-            public init(_ cryptoAccount: CryptoAccount) {
-                switch cryptoAccount.accountType {
-                case .nonCustodial:
+            public init(_ account: BlockchainAccount) {
+                switch account {
+                case is CryptoNonCustodialAccount:
                     self = .userKey
-                case .custodial(.savings):
+                case is CryptoInterestAccount:
                     self = .savings
-                case .custodial(.trading):
+                case is CryptoTradingAccount:
                     self = .trading
                 default:
                     self = .unknown
@@ -62,15 +62,15 @@ extension AnalyticsEvents.New {
             case userKey = "USERKEY"
             case unknown = "UNKNOWN"
 
-            public init(_ cryptoAccount: CryptoAccount?) {
-                switch cryptoAccount?.accountType {
-                case .nonCustodial:
+            public init(_ account: BlockchainAccount?) {
+                switch account {
+                case is CryptoNonCustodialAccount:
                     self = .userKey
-                case .custodial(.savings):
+                case is CryptoInterestAccount:
                     self = .savings
-                case .custodial(.trading):
+                case is CryptoTradingAccount:
                     self = .trading
-                case .none:
+                case nil:
                     self = .external
                 default:
                     self = .unknown

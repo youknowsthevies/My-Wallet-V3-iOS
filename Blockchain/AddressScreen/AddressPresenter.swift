@@ -52,7 +52,7 @@ final class AddressPresenter {
 
     /// Computed variable that returns the asset image.
     var assetImage: UIImage {
-        interactor.asset.logo
+        interactor.asset.logoResource.localImage!
     }
 
     /// Accepts and streams the raw address in order to share it

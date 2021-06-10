@@ -6,7 +6,6 @@ import RxSwift
 import stellarsdk
 
 final class HorizonProxyMock: HorizonProxyAPI {
-
     /// Add an entry for each account you want to mock:
     /// e.g. "<id>":  AccountResponse.JSON.valid(accountID: "1", balance: "10000")
     var underlyingAccountResponseJSONMap: [String: String] = [:]
@@ -24,8 +23,8 @@ final class HorizonProxyMock: HorizonProxyAPI {
         }
     }
 
-    var underlyingMinimumBalance: CryptoValue = .stellar(major: 1)
-    func minimumBalance(subentryCount: Int) -> CryptoValue {
+    var underlyingMinimumBalance: CryptoValue = .init(amount: 1, currency: .stellar)
+    func minimumBalance(subentryCount: UInt) -> CryptoValue {
         underlyingMinimumBalance
     }
 

@@ -3,7 +3,7 @@
 import Foundation
 
 public enum DetailCellInteractor {
-    case balance(CurrentBalanceCellInteractor)
+    case balance(CurrentBalanceCellInteracting)
     case item(LineItem)
 
     public enum LineItem {

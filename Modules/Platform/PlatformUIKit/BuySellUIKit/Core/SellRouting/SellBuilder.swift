@@ -62,7 +62,6 @@ public final class SellBuilder: SellBuilderAPI {
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let priceService: PriceServiceAPI
-    private let balanceProvider: BalanceProviding
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let accountSelectionService: AccountSelectionServiceAPI
 
@@ -72,13 +71,11 @@ public final class SellBuilder: SellBuilderAPI {
                 routerInteractor: SellRouterInteractor,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                priceService: PriceServiceAPI = resolve(),
-                balanceProvider: BalanceProviding = resolve()) {
+                priceService: PriceServiceAPI = resolve()) {
         self.accountSelectionService = accountSelectionService
         self.analyticsRecorder = analyticsRecorder
         self.supportedPairsInteractor = supportedPairsInteractor
         self.priceService = priceService
-        self.balanceProvider = balanceProvider
         self.routerInteractor = routerInteractor
     }
 
@@ -129,7 +126,6 @@ public final class SellBuilder: SellBuilderAPI {
         let interactor = SellCryptoScreenInteractor(
             data: data,
             priceService: priceService,
-            balanceProvider: balanceProvider,
             cryptoCurrencySelectionService: cryptoSelectionService,
             initialActiveInput: .fiat
         )

@@ -6,7 +6,6 @@ import RxSwift
 import StellarKit
 import stellarsdk
 
-protocol StellarAccountAPI: CryptoAccountBalanceFetching {
-    func currentStellarAccount(fromCache: Bool) -> Single<StellarAccount>
-    func clear()
+protocol StellarAccountAPI: SingleAccountBalanceFetching {
+    var fetchStellarAccount: Single<StellarAccountDetails> { get }
 }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ComposableArchitecture
+import DIKit
 import SettingsKit
 
 public struct AppState: Equatable {
@@ -42,9 +43,15 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.core,
             environment: {
                 CoreAppEnvironment(
+                    walletManager: $0.walletManager,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
-                    blockchainSettings: $0.blockchainSettings,
-                    credentialsStore: $0.credentialsStore
+                    blockchainSettings:  $0.blockchainSettings,
+                    credentialsStore: $0.credentialsStore,
+                    alertPresenter: resolve(),
+                    walletUpgradeService: $0.walletUpgradeService,
+                    exchangeRepository: $0.exchangeRepository,
+                    remoteNotificationServiceContainer: $0.remoteNotificationServiceContainer,
+                    coincore: resolve()
                 )
             }),
     appReducerCore
@@ -62,9 +69,13 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         }
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {
-            environment.dataProvider.syncing.sync()
+            environment.portfolioSyncingService.sync()
         }
     case .appDelegate(.willEnterForeground):
+        guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
+            // TODO: Handle coming back from background
+            return .none
+        }
         return .fireAndForget {
             handleWillEnterForeground(coordinator: environment.appCoordinator)
         }

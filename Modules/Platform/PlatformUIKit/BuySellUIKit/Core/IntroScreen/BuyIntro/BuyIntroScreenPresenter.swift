@@ -42,7 +42,7 @@ final class BuyIntroScreenPresenter {
         themeBackgroundImageViewContent = .init(
             imageName: "sb-intro-bg-theme",
             accessibility: .id(AccessibilityId.themeBackgroundImageView),
-            bundle: .bundle
+            bundle: .platformUIKit
         )
 
         // Card setup

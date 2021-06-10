@@ -6,15 +6,8 @@ import RxRelay
 import RxSwift
 
 public struct SellCryptoInteractionData {
-
-    // TODO: Daniel - Remove and replace with a real account
-    struct AnyAccount {
-        let id: String
-        let currencyType: CurrencyType
-    }
-
-    let source: AnyAccount
-    let destination: AnyAccount
+    let source: CryptoTradingAccount
+    let destination: FiatAccount
 }
 
 final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
@@ -94,7 +87,6 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     // MARK: - Injected
 
     let data: SellCryptoInteractionData
-    private let balanceProvider: BalanceProviding
     private let eligibilityService: EligibilityServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let orderCreationService: OrderCreationServiceAPI
@@ -122,7 +114,6 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
          eligibilityService: EligibilityServiceAPI = resolve(),
          data: SellCryptoInteractionData,
          priceService: PriceServiceAPI = resolve(),
-         balanceProvider: BalanceProviding,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
          initialActiveInput: ActiveAmountInput,
@@ -132,11 +123,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         self.kycTiersService = kycTiersService
         self.orderCreationService = orderCreationService
         self.data = data
-        self.balanceProvider = balanceProvider
         stateRelay = BehaviorRelay(value: .empty)
         auxiliaryViewInteractor = SendAuxiliaryViewInteractor(
-            balanceProvider: balanceProvider,
-            currencyType: data.source.currencyType
+            availableBalance: AvailableBalanceContentInteractor(account: data.source)
         )
 
         super.init(
@@ -148,21 +137,16 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
 
     override func didLoad() {
-        let sourceAccount = self.data.source
+        let sourceAccount = data.source
         let sourceAccountCurrency = sourceAccount.currencyType
         let destinationAccountCurrency = data.destination.currencyType
         let priceService = self.priceService
         let amountTranslationInteractor = self.amountTranslationInteractor
 
-        let balance = balanceProvider[sourceAccountCurrency]
-            .calculationState
-            .compactMap { state -> MoneyValuePair? in
-                switch state {
-                case .value(let pairs):
-                    return pairs[.custodial(.trading)]
-                case .calculating, .invalid:
-                    return nil
-                }
+        let balance: Observable<MoneyValuePair> = fiatCurrencyService
+            .fiatCurrencyObservable
+            .flatMap(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
+                self.data.source.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }
             .share(replay: 1)
 

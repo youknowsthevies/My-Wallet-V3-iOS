@@ -27,8 +27,7 @@ public struct SupportedPairs: Equatable {
 
     /// Array of supported unique crypto-currencies, sorted following `CryptoCurrency` default order.
     public var cryptoCurrencies: [CryptoCurrency] {
-        let set = cryptoCurrencySet
-        return CryptoCurrency.allCases.filter { set.contains($0) }
+        .init(cryptoCurrencySet)
     }
 
     var fiatCurrencySet: Set<FiatCurrency> {
@@ -79,7 +78,7 @@ extension SupportedPairs.Pair {
         guard components.count == 2 else { return nil }
         let rawCryptoCurrency = String(components[0])
 
-        guard let cryptoCurrency = CryptoCurrency(rawValue: rawCryptoCurrency) else {
+        guard let cryptoCurrency = CryptoCurrency(code: rawCryptoCurrency) else {
             return nil
         }
         guard let fiatCurrency = FiatCurrency(code: String(components[1])) else {

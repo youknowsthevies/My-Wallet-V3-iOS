@@ -57,7 +57,8 @@ final class TransactionModel {
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case let .initialiseWithNoSourceOrTargetAccount(action, _):
+        case let .initialiseWithTargetAndNoSource(action, _, _),
+             let .initialiseWithNoSourceOrTargetAccount(action, _):
             return processSourceAccountsListUpdate(action: action)
         case .availableSourceAccountsListUpdated:
             return nil
@@ -117,7 +118,20 @@ final class TransactionModel {
             }
             return processTransactionInvalidation(action: previousState.action)
         case .sourceAccountSelected(let sourceAccount):
-            return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
+            /// The user has already selected a destination
+            /// such as through `Deposit`. In this case we want to
+            /// go straight to the Enter Amount screen after they have
+            /// selected a `LinkedBankAccount` to deposit from.
+            if let target = previousState.destination {
+                return processTargetSelectionConfirmed(
+                    sourceAccount: sourceAccount,
+                    transactionTarget: target,
+                    amount: .zero(currency: sourceAccount.currencyType),
+                    action: previousState.action
+                )
+            } else {
+                return processAccountsListUpdate(fromAccount: sourceAccount, action: previousState.action)
+            }
         case .modifyTransactionConfirmation(let confirmation):
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .invalidateTransaction:

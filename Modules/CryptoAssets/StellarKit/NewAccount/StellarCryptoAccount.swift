@@ -12,28 +12,24 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     let asset: CryptoCurrency
     let isDefault: Bool = true
 
+    func createTransactionEngine() -> Any {
+        StellarOnChainTransactionEngineFactory()
+    }
+
     var balance: Single<MoneyValue> {
-        horizonProxy
-            .accountResponse(for: id)
-            .map(\.totalBalance)
+        accountCache.valueSingle
+            .map(\.balance)
             .moneyValue
-            .catchNonExistentAccount()
     }
 
     var actionableBalance: Single<MoneyValue> {
-        horizonProxy
-            .accountResponse(for: id)
-            .map(weak: self) { (self, account) -> MoneyValue in
-                let zero = CryptoValue.zero(currency: .stellar)
-                let value = try account.totalBalance - self.horizonProxy.minimumBalance(subentryCount: Int(account.subentryCount))
-                return try value < zero ? zero.moneyValue : value.moneyValue
-            }
-            .catchNonExistentAccount()
+        accountCache.valueSingle
+            .map(\.actionableBalance)
+            .moneyValue
     }
 
     var pendingBalance: Single<MoneyValue> {
-        balanceFetching
-            .pendingBalanceMoney
+        .just(.zero(currency: asset))
     }
 
     var actions: Single<AvailableActions> {
@@ -53,16 +49,15 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
 
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
-    private let balanceFetching: SingleAccountBalanceFetching
-    private let horizonProxy: HorizonProxyAPI
+    private let accountDetailsService: StellarAccountDetailsServiceAPI
     private let exchangeService: PairExchangeServiceAPI
+    private let accountCache: CachedValue<StellarAccountDetails>
 
     init(id: String,
          label: String? = nil,
          hdAccountIndex: Int,
-         horizonProxy: HorizonProxyAPI = resolve(),
          bridge: StellarWalletBridgeAPI = resolve(),
-         balanceProviding: BalanceProviding = resolve(),
+         accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
          exchangeProviding: ExchangeProviding = resolve()) {
         let asset = CryptoCurrency.stellar
         self.asset = asset
@@ -70,9 +65,12 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.id = id
         self.hdAccountIndex = hdAccountIndex
         self.label = label ?? asset.defaultWalletName
-        self.horizonProxy = horizonProxy
-        self.balanceFetching = balanceProviding[asset.currency].wallet
+        self.accountDetailsService = accountDetailsService
         self.exchangeService = exchangeProviding[asset]
+        accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
+        accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
+            self.accountDetailsService.accountDetails(for: self.id)
+        }
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -90,30 +88,18 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 
     func updateLabel(_ newLabel: String) -> Completable {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
-    }
-}
-
-extension PrimitiveSequence where Trait == SingleTrait, Element == MoneyValue {
-    fileprivate func catchNonExistentAccount() -> Single<MoneyValue> {
-        catchError { error -> Single<MoneyValue> in
-            switch error {
-            case is StellarAccountError:
-                return .just(CryptoValue.zero(currency: .stellar).moneyValue)
-            default:
-                throw error
-            }
-        }
     }
 }

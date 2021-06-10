@@ -28,6 +28,8 @@ final class TabControllerManager: NSObject {
     private var swapViewController: UIViewController!
     private var swapRouter: ViewableRouting!
     private var sendRouter: SendRootRouting!
+    private var depositRouter: DepositRootRouting!
+    private var withdrawRouter: WithdrawRootRouting!
 
     private var analyticsEventRecorder: AnalyticsEventRecording
     private let receiveCoordinator: ReceiveCoordinator
@@ -100,14 +102,30 @@ final class TabControllerManager: NSObject {
         sendRouter = router
         router.interactable.activate()
         router.load()
-
     }
+
     private func setSendAsActive() {
         tabViewController.setActiveViewController(
             sendP2ViewController,
             animated: true,
             index: Constants.Navigation.tabSend
         )
+    }
+
+    func deposit(into account: BlockchainAccount) {
+        let router = DepositRootBuilder().build(with: account as! FiatAccount)
+        depositRouter = router
+        depositRouter.start()
+    }
+
+    func withdraw(from account: BlockchainAccount) {
+        let router = WithdrawRootBuilder().build(sourceAccount: account as! FiatAccount)
+        withdrawRouter = router
+        withdrawRouter.start()
+    }
+
+    func withdraw(from account: BlockchainAccount, target: TransactionTarget) {
+        unimplemented()
     }
 
     func send(from account: BlockchainAccount) {

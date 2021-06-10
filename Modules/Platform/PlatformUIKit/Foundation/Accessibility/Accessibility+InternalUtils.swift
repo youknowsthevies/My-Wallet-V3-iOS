@@ -27,6 +27,7 @@ public extension Accessibility.Identifier {
         public static let destructiveBadgeView = "desctructiveBadgeView"
         public static let affirmativeBadgeView = "affirmativeBadgeView"
         public static let defaultBadgeView = "defaultBadgeView"
+        public static let warningBadgeView = "warningBadgeView"
 
         // Segmented Button
         public static let primarySegmentedControl = "primarySegmentedControl"

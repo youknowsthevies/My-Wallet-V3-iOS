@@ -209,4 +209,3 @@ let emailVerificationReducer = Reducer.combine(
         }
     }
 )
-.debug()

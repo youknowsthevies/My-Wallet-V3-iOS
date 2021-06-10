@@ -62,9 +62,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let settingsAPIClient: SettingsServiceAPI
     private let featureFlagsService: InternalFeatureFlagServiceAPI
 
-    /// PATCH: Don't change until ReactiveWallet is fixed. This is here because `ReactiveWallet` keeps checking if
-    /// the wallet is initialized during the wallet creation - which generate a crash.
-    private lazy var exchangeRepository: ExchangeAccountRepositoryAPI = ExchangeAccountRepository()
+    private var exchangeRepository: ExchangeAccountRepositoryAPI!
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
     @LazyInject private var coincore: Coincore
 
@@ -72,7 +70,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     /// TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
-    var temporaryAuthHandler: WalletAuthHandler!
+    var temporaryAuthHandler: WalletAuthHandler?
 
     /// TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
@@ -167,6 +165,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private func handlePostAuthenticationLogic() {
 
         /// If the user has linked to the Exchange, we sync their addresses on authentication.
+        exchangeRepository = ExchangeAccountRepository()
         exchangeRepository.syncDepositAddressesIfLinked()
             .subscribe()
             .disposed(by: bag)
@@ -176,7 +175,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         remoteNotificationAuthorizer.requestAuthorizationIfNeeded()
             .subscribe()
             .disposed(by: bag)
-        walletManager.wallet.ethereum.walletDidLoad()
         coincore.initialize()
             .subscribe()
             .disposed(by: bag)
@@ -256,7 +254,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         let viewController = PasswordRequiredViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window
-        window.rootViewController = navigationController
+        window.setRootViewController(navigationController)
     }
 
     ///   - type: The type of the screen
@@ -435,11 +433,11 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
     }
 
     func authenticationCompleted() {
-        temporaryAuthHandler(true, nil, nil)
+        temporaryAuthHandler?(true, nil, nil)
     }
 
     private func failAuth(withError error: AuthenticationError? = nil) {
-        temporaryAuthHandler(false, nil, error)
+        temporaryAuthHandler?(false, nil, error)
     }
 }
 

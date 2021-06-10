@@ -2,26 +2,31 @@
 
 import Combine
 import ComposableArchitecture
+import PlatformUIKit
 import SettingsKit
 
 public enum Onboarding {
     public enum Action: Equatable {
         case start
         case pin(PinCore.Action)
+        case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen
         case welcomeScreen
     }
-    
+
     public struct State: Equatable {
         var pinState: PinCore.State? = .init()
+        var walletUpgradeState: WalletUpgrade.State?
     }
 
     public struct Environment {
         var blockchainSettings: BlockchainSettings.App
-        var walletMananager: WalletManager = .shared
+        var walletManager: WalletManager
+        var alertPresenter: AlertViewPresenterAPI
     }
 }
 
+/// The reducer responsible for handing Pin screen and Login/Onboarding screen related action and state.
 let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment>.combine(
     pinReducer
         .optional()
@@ -30,10 +35,21 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             action: /Onboarding.Action.pin,
             environment: {
                 PinCore.Environment(
-                    walletManager: $0.walletMananager
+                    walletManager: $0.walletManager,
+                    appSettings: $0.blockchainSettings,
+                    alertPresenter: $0.alertPresenter
                 )
             }
         ),
+    walletUpgradeReducer
+            .optional()
+            .pullback(
+                state: \.walletUpgradeState,
+                action: /Onboarding.Action.walletUpgrade,
+                environment: { _ in
+                    WalletUpgrade.Environment()
+                }
+            ),
     Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
         case .start:
@@ -49,11 +65,15 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         case .welcomeScreen:
             return .none
+        case .walletUpgrade:
+            return .none
         }
     }
 )
 
-private func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
+// MARK: - Internal Methods
+
+func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
     if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
         // Original flow
         if blockchainSettings.isPinSet {

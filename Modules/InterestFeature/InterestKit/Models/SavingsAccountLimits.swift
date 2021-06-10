@@ -29,7 +29,7 @@ public struct SavingsAccountLimitsResponse: Decodable {
     // MARK: - Subscript
 
     subscript(currency: CryptoCurrency) -> SavingsAccountLimits? {
-        limits[currency.rawValue]
+        limits[currency.code]
     }
 }
 

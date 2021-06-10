@@ -7,14 +7,19 @@ extension CustodialAccountBalanceStates {
     // MARK: - Init
 
     init(response: SavingsAccountBalanceResponse) {
-        var values: [CurrencyType: CustodialAccountBalanceState] = [:]
-        for balanceResponse in response.balances {
-            guard let cryptoCurrency = CryptoCurrency(code: balanceResponse.key) else { continue }
-            guard let accountBalance = CustodialAccountBalance(currency: cryptoCurrency, response: balanceResponse.value) else {
-                continue
+        let balances = response.balances
+            .reduce(into: [CurrencyType: CustodialAccountBalanceState]()) { result, item in
+                guard let cryptoCurrency = CryptoCurrency(code: item.key) else {
+                    return
+                }
+                guard let accountBalance = CustodialAccountBalance(
+                    currency: cryptoCurrency.currency,
+                    response: item.value
+                ) else {
+                    return
+                }
+                result[cryptoCurrency.currency] = .present(accountBalance)
             }
-            values[cryptoCurrency.currency] = .present(accountBalance)
-        }
-        self = .init(balances: values)
+        self = .init(balances: balances)
     }
 }

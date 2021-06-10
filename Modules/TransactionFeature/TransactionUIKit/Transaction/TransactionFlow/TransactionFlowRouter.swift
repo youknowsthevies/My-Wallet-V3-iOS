@@ -17,7 +17,7 @@ protocol TransactionFlowInteractable: Interactable,
     var router: TransactionFlowRouting? { get set }
     var listener: TransactionFlowListener? { get set }
 
-    func didSelectSourceAccount(account: CryptoAccount)
+    func didSelectSourceAccount(account: BlockchainAccount)
     func didSelectDestinationAccount(target: TransactionTarget)
 }
 
@@ -79,12 +79,12 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         detachChild(child)
     }
 
-    func routeToSourceAccountPicker(action: AssetAction) {
+    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
         let header = AccountPickerSimpleHeaderModel(
             subtitle: TransactionFlowDescriptor.AccountPicker.sourceSubtitle(action: action)
         )
         let builder = AccountPickerBuilder(
-            singleAccountsOnly: true,
+            accountProvider: TransactionModelAccountProvider(transactionModel: transactionModel),
             action: action
         )
         let router = builder.build(
@@ -92,7 +92,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: .simple(header)
+            headerModel: action == .deposit ? .none : .simple(header)
         )
         let viewControllable = router.viewControllable
         attachChild(router)
@@ -112,7 +112,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             navigationModel: ScreenNavigationModel.AccountPicker.navigationClose(
                 title: TransactionFlowDescriptor.AccountPicker.destinationTitle(action: action)
             ),
-            headerModel: .simple(header)
+            headerModel: action == .withdraw ? .none : .simple(header)
         )
         let viewControllable = router.viewControllable
         attachChild(router)

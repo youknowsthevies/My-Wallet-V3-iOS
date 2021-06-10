@@ -123,16 +123,7 @@ final class ActivityScreenPresenter {
 
         let titleObservable: Observable<String> = interactor
             .selectedData
-            .map { selection in
-                switch selection {
-                case .all:
-                    return LocalizedString.Item.allWallets
-                case .custodial(let currency):
-                    return currency.displayCode + " " + LocalizedString.Item.tradeWallet
-                case .nonCustodial(let currency):
-                    return currency.displayCode + " " + LocalizedString.Item.wallet
-                }
-            }
+            .map(\.label)
 
         titleObservable
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
@@ -140,15 +131,14 @@ final class ActivityScreenPresenter {
 
         interactor
             .selectedData
-            .map { selection in
-                switch selection {
-                case .all:
+            .map { account in
+                switch account {
+                case is AccountGroup:
                     return .init(
                         imageName: "icon-disclosure-down-small",
                         renderingMode: .template(.descriptionText)
                     )
-                case .custodial,
-                     .nonCustodial:
+                default:
                     return .init(
                         imageName: "icon-disclosure-down-small",
                         accessibility: .none,
@@ -160,16 +150,15 @@ final class ActivityScreenPresenter {
             .bindAndCatch(to: selectionButtonViewModel.trailingContentRelay)
             .disposed(by: disposeBag)
 
-        let subtitleObservable: Observable<String> = Observable
+        Observable
             .combineLatest(
                 interactor.activityBalance,
-                interactor.fiatCurrency,
-                resultSelector: { (amount: $0, currency: $1) }
+                interactor.fiatCurrency
             )
-            .map { $0.amount.toDisplayString(includeSymbol: true) + " \($0.currency.code)" }
+            .map { balance, fiatCurrency in
+                balance.toDisplayString(includeSymbol: true) + " \(fiatCurrency.code)"
+            }
             .catchErrorJustReturn("")
-
-        subtitleObservable
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 
@@ -200,60 +189,40 @@ final class ActivityScreenPresenter {
 }
 
 fileprivate extension SelectionButtonViewModel.LeadingContent {
-    static func content(from selection: WalletPickerSelection) -> SelectionButtonViewModel.LeadingContentType {
-        switch selection {
-        case .all:
+    static func content(from account: BlockchainAccount) -> SelectionButtonViewModel.LeadingContentType {
+        switch account {
+        case is AccountGroup:
             return .image(
                 .init(name: "icon-card",
                       background: .lightBadgeBackground,
                       cornerRadius: .round,
-                      size: .init(
-                        width: 32,
-                        height: 32
-                    )
+                      size: .edge(32)
                 )
             )
-        case .nonCustodial(let cryptoCurrency):
+        case is FiatAccount:
+            let localImage = account.currencyType.logoResource.local
             return .image(
-                .init(name: cryptoCurrency.logoImageName,
-                      background: .clear,
-                      offset: 0,
-                      cornerRadius: .round,
-                      size: .init(
-                        width: 32,
-                        height: 32
-                    )
+                .init(
+                    name: localImage.name,
+                    bundle: localImage.bundle,
+                    background: .fiat,
+                    offset: 0,
+                    cornerRadius: .value(8.0),
+                    size: .edge(32)
                 )
             )
-        case .custodial(let currencyType):
-            switch currencyType {
-            case .crypto:
-                return .image(
-                    .init(
-                        name: currencyType.logoImageName,
-                        background: .clear,
-                        offset: 0,
-                        cornerRadius: .round,
-                        size: .init(
-                            width: 32,
-                            height: 32
-                        )
-                    )
+        default:
+            let localImage = account.currencyType.logoResource.local
+            return .image(
+                .init(
+                    name: localImage.name,
+                    bundle: localImage.bundle,
+                    background: .clear,
+                    offset: 0,
+                    cornerRadius: .round,
+                    size: .edge(32)
                 )
-            case .fiat:
-                return .image(
-                    .init(
-                        name: currencyType.logoImageName,
-                        background: .fiat,
-                        offset: 0,
-                        cornerRadius: .value(8.0),
-                        size: .init(
-                            width: 32,
-                            height: 32
-                        )
-                    )
-                )
-            }
+            )
         }
     }
 }

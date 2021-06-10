@@ -22,6 +22,7 @@ public enum BadgeAsset {
                 public enum BadgeType: Equatable {
                     case `default`(accessibilitySuffix: String)
                     case verified
+                    case warning
                     case destructive
                     case progress(BadgeCircleViewModel)
 
@@ -32,7 +33,8 @@ public enum BadgeAsset {
                         case (.default, .default),
                              (.verified, .verified),
                              (.destructive, .destructive),
-                             (.progress, .progress):
+                             (.progress, .progress),
+                             (.warning, .warning):
                             return true
                         default:
                             return false
@@ -67,6 +69,8 @@ public enum BadgeAsset {
                         viewModel = .affirmative(with: value.description)
                     case .progress(let model):
                         viewModel = .progress(with: value.description, model: model)
+                    case .warning:
+                        viewModel = .warning(with: value.description)
                     }
                 }
             }

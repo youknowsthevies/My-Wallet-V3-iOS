@@ -8,7 +8,7 @@ extension CustodialBalanceStatesFetcher {
                             scheduler: SchedulerType = ConcurrentDispatchQueueScheduler(qos: .background)) {
         self.init(
             custodialAccountType: .savings,
-            fetch: { savingAccountService.fetchBalances() },
+            fetch: { savingAccountService.balances(fetch: true) },
             scheduler: scheduler
         )
     }

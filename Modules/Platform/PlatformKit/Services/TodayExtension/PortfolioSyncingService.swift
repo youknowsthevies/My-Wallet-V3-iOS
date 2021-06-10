@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import RxRelay
 import RxSwift
 
-public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
+final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
 
     // MARK: - Setup
 
@@ -15,8 +16,8 @@ public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
             .flatMap(weak: self) { (self, value) -> Observable<Portfolio?> in
                 guard value else { return .just(nil) }
                 return self.portfolioProviding
-                        .portfolio
-                        .optional()
+                    .portfolio
+                    .optional()
             }
             .catchErrorJustReturn(nil)
             .bindAndCatch(to: container.portfolioRelay)
@@ -32,10 +33,12 @@ public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
 
     // MARK: - Init
 
-    public init(sharedContainerUserDefaults: SharedContainerUserDefaults = SharedContainerUserDefaults.default,
-                balanceProviding: BalanceProviding,
-                balanceChangeProviding: BalanceChangeProviding,
-                fiatCurrencyProviding: FiatCurrencyServiceAPI) {
+    init(
+        sharedContainerUserDefaults: SharedContainerUserDefaults = SharedContainerUserDefaults.default,
+        balanceProviding: BalanceProviding = resolve(),
+        balanceChangeProviding: BalanceChangeProviding = resolve(),
+        fiatCurrencyProviding: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.portfolioProviding = PortfolioProvider(
             balanceProviding: balanceProviding,
             balanceChangeProviding: balanceChangeProviding,
@@ -46,18 +49,18 @@ public final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
 
     // MARK: - BalanceSharingSettingsServiceAPI
 
-    public var isEnabled: Observable<Bool> {
+    var isEnabled: Observable<Bool> {
         container
             .portfolioSyncEnabled
             .distinctUntilChanged()
     }
 
-    public func sync() {
+    func sync() {
         _ = setup
         balanceSyncRelay.accept(())
     }
 
-    public func balanceSharing(enabled: Bool) -> Completable {
+    func balanceSharing(enabled: Bool) -> Completable {
         Completable.create { [weak self] observer -> Disposable in
             guard let self = self else {
                 observer(.completed)

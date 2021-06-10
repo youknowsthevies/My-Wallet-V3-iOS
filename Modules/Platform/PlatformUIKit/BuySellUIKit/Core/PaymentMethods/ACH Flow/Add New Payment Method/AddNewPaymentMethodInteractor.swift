@@ -19,14 +19,13 @@ enum AddNewPaymentMethodEffects {
     case navigate(method: PaymentMethod)
 }
 
-protocol AddNewPaymentMethodRouting: ViewableRouting {
-}
+public protocol AddNewPaymentMethodRouting: ViewableRouting { }
 
 protocol AddNewPaymentMethodPresentable: Presentable {
     func connect(action: Driver<AddNewPaymentMethodAction>) -> Driver<AddNewPaymentMethodEffects>
 }
 
-protocol AddNewPaymentMethodListener: class {
+public protocol AddNewPaymentMethodListener: class {
     func closeFlow()
     func navigate(with method: PaymentMethod)
 }
