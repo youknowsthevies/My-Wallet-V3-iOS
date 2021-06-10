@@ -279,7 +279,7 @@ extension TextFieldType {
         case .email:
             return LocalizedString.email
         case .password:
-            return LocalizedString.password
+            return LocalizedString.currentPassword
         case .newPassword:
             return LocalizedString.newPassword
         case .confirmNewPassword:
