@@ -12,14 +12,9 @@ public struct AuthenticationState: Equatable {
     public var isVerifyDeviceVisible: Bool = false
 
     // MARK: - Password Login Screen
+    public var isPasswordLoginVisible: Bool = false
     public var password: String = ""
-    public var twoFactorAuthCode: String = "" {
-        didSet {
-            if twoFactorAuthCode.count > 5 && oldValue.count <= 5 {
-                twoFactorAuthCode = oldValue
-            }
-        }
-    }
+    public var twoFactorAuthCode: String = ""
     public var hardwareKeyCode: String = ""
 
     public init() {}

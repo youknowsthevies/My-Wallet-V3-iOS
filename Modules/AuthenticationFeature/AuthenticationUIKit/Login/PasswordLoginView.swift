@@ -90,6 +90,8 @@ public struct PasswordLoginView: View {
             }
             .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
         }
+        .navigationBarTitle(LoginViewString.navigationTitle)
+        .updateNavigationBarStyle()
     }
 
 }

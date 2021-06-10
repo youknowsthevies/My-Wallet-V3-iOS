@@ -31,12 +31,20 @@ public struct VerifyDeviceView: View {
                 .textStyle(.subheading)
             Spacer()
             PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
-                // TODO: add open email action here
+                viewStore.send(.setPasswordLoginVisible(true))
             }
             .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
             SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
                 // TODO: add send again action here
             }
+            NavigationLink(
+                destination: PasswordLoginView(store: store),
+                isActive: viewStore.binding(
+                    get: \.isPasswordLoginVisible,
+                    send:  AuthenticationAction.setPasswordLoginVisible(_:)
+                ),
+                label: EmptyView.init
+            )
         }
         .multilineTextAlignment(.center)
         .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
@@ -44,7 +52,10 @@ public struct VerifyDeviceView: View {
 }
 
 struct VerifyDeviceViewState: Equatable {
+    var isPasswordLoginVisible: Bool
+
     init(state: AuthenticationState) {
+        isPasswordLoginVisible = state.isPasswordLoginVisible
     }
 }
 
