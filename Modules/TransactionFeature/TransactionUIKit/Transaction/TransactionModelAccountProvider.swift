@@ -14,7 +14,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
 
     private let transactionModel: TransactionModel
 
-    var accounts: Single<[BlockchainAccount]> {
+    var accounts: Observable<[BlockchainAccount]> {
         transactionModel.state
             .map { state -> [BlockchainAccount] in
                 switch state.source {
@@ -24,8 +24,6 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
                     return state.availableTargets as? [BlockchainAccount] ?? []
                 }
             }
-            .take(1)
-            .asSingle()
     }
 
     var sourceAccount: Single<BlockchainAccount?> {

@@ -28,7 +28,7 @@ final class SendAccountPickerAccountProvider: AccountPickerAccountProviding {
 
     // MARK: - Properties
 
-    public var accounts: Single<[BlockchainAccount]> {
+    public var accounts: Observable<[BlockchainAccount]> {
         coincore.allAccounts
             .map(\.accounts)
             .map { accounts in
@@ -49,6 +49,7 @@ final class SendAccountPickerAccountProvider: AccountPickerAccountProviding {
                     self.errorRecorder.error(error)
                 }
             )
+            .asObservable()
     }
 
     // MARK: - Init
