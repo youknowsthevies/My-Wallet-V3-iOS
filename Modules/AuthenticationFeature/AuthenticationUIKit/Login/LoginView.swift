@@ -53,6 +53,9 @@ public struct LoginView: View {
                 // Continue Button
                 PrimaryButton(title: LoginViewString.Button._continue) {
                     viewStore.send(.setVerifyDeviceVisible(true))
+
+                    // Add send email verification here
+
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.state.emailAddress.isEmail)
