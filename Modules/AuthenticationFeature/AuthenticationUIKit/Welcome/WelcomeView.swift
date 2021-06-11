@@ -15,10 +15,10 @@ public struct WelcomeView: View {
     public var body: some View {
         VStack {
             WelcomeMessageSection()
-                .padding(EdgeInsets(top: 173, leading: 0, bottom: 0, trailing: 0))
+                .padding(.top, 140)
             Spacer()
             WelcomeActionSection(store: store, viewStore: viewStore)
-                .padding(EdgeInsets(top: 0, leading: 0, bottom: 58, trailing: 0))
+                .padding(.bottom, 58)
         }
         .sheet(isPresented: viewStore.binding(
             get: \.isLoginVisible,
@@ -46,11 +46,11 @@ struct WelcomeMessageSection: View {
         VStack {
             Image.Logo.blockchain
                 .frame(width: 64, height: 64)
-                .padding(40)
+                .padding(.bottom, 40)
             Text(WelcomeViewString.title)
                 .font(Font(weight: .semibold, size: 24))
                 .foregroundColor(.textHeading)
-                .padding(16)
+                .padding(.bottom, 16)
             WelcomeMessageDescription()
                 .font(Font(weight: .medium, size: 16))
                 .lineSpacing(4)
@@ -89,31 +89,28 @@ struct WelcomeActionSection: View {
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createAccount) {
-                // add login action here
+                // Connect to Create Wallet Screen
             }
-            .frame(width: .infinity, height: 48)
-            .cornerRadius(8.0)
-            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
-
+            .padding(.bottom, 10)
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
-            .frame(width: .infinity, height: 48)
-            .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
-
+            .padding(.bottom, 20)
             HStack {
-                Button(WelcomeViewString.Button.recoverFunds) {
-                    // add recover funds action here
+                Button(WelcomeViewString.Button.restoreWallet) {
+                    // Connect to recover funds Screen
                 }
                 .font(Font(weight: .semibold, size: 12))
+                .foregroundColor(.buttonSecondaryText)
                 Spacer()
-                // replace test version with actual number later
+                // Replace test version with actual number later
                 Text("Test Version")
                     .font(Font(weight: .medium, size: 12))
+                    .foregroundColor(.textMuted)
             }
-            .frame(width: .infinity, height: 28)
-            .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
         }
+        .padding(.leading, 24)
+        .padding(.trailing, 24)
     }
 }
 

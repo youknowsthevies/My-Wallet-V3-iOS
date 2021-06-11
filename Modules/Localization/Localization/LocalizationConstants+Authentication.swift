@@ -53,9 +53,9 @@ extension LocalizationConstants.AuthenticationKit {
                 "Log In",
                 comment: "Welcome screen: login CTA button"
             )
-            public static let recoverFunds = NSLocalizedString(
-                "Recover Funds",
-                comment: "Welcome screen: recover funds CTA button"
+            public static let restoreWallet = NSLocalizedString(
+                "Restore Wallet",
+                comment: "Welcome screen: restore wallet CTA button"
             )
         }
         public static let title = NSLocalizedString(
