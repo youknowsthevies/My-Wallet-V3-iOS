@@ -46,17 +46,15 @@ public struct FormTextFieldGroup: View {
                     HStack {
                         if hideSecuredText {
                             SecureField(textPlaceholder, text: text)
-                            Button(action : { hideSecuredText.toggle() }) {
-                                Image(systemName: "eye.fill")
-                                    .foregroundColor(Color.passwordPeekEyeColor)
-                            }
                         } else {
                             TextField(textPlaceholder, text: text)
-                            Button(action: { hideSecuredText.toggle() }) {
-                                Image(systemName: "eye.slash.fill")
-                                    .foregroundColor(Color.passwordPeekEyeColor)
-                            }
                         }
+                        Button(action : { hideSecuredText.toggle() },
+                               label: {
+                                   Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
+                                       .foregroundColor(Color.passwordPeekEyeColor)
+                               }
+                        )
                     }
                 } else {
                     TextField(textPlaceholder, text: text) { isEditing in
@@ -69,7 +67,9 @@ public struct FormTextFieldGroup: View {
                     })
                 }
             }
-            .textFieldStyle(FormTextFieldStyle(isEditing: isEditing, isActive: !isDisabled, isError: isError))
+            .textFieldStyle(FormTextFieldStyle(isEditing: isEditing,
+                                               isActive: !isDisabled,
+                                               isError: isError))
             .disabled(isDisabled)
             if let footnote = self.footnote {
                 Text(footnote.wrappedValue)

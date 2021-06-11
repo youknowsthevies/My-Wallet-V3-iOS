@@ -6,20 +6,22 @@ import Localization
 import SwiftUI
 import UIComponentsKit
 
-public struct PasswordLoginView: View {
-
+public struct CredentialsView: View {
     let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<PasswordLoginViewState, AuthenticationAction>
+    @ObservedObject var viewStore: ViewStore<CredentialsViewState, AuthenticationAction>
 
     public init(store: Store<AuthenticationState, AuthenticationAction>) {
         self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: PasswordLoginViewState.init))
+        self.viewStore = ViewStore(self.store.scope(state: CredentialsViewState.init))
     }
 
     public var body: some View {
         VStack {
+            // Scroll View for smaller screen size
             ScrollView(.vertical) {
                 VStack(alignment: .leading) {
+
+                    // Email Text Field (pre-filled and disabled)
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.email,
                         text: viewStore.binding(
@@ -28,13 +30,15 @@ public struct PasswordLoginView: View {
                         ),
                         footnote: viewStore.binding(
                             get: {
-                                LoginViewString.TextFieldFootnote.wallet +  $0.walletAddress
+                                LoginViewString.TextFieldFootnote.wallet + $0.walletAddress
                             },
                             send: { .didRetrievedWalletAddress($0) }
                         ),
                         isDisabled: true
                     )
-                    .padding(EdgeInsets(top: 80, leading: 0, bottom: 20, trailing: 0))
+                    .padding(.bottom, 20)
+
+                    // Password Secure Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.password,
                         text: viewStore.binding(
@@ -43,18 +47,22 @@ public struct PasswordLoginView: View {
                         ),
                         isSecure: true
                     )
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 1, trailing: 0))
+                    .padding(.bottom, 1)
+
+                    // Trouble Logging in Link
                     Button(
                         action: {
-                            if let url = URL(string: "https://www.google.com") {
-                                UIApplication.shared.open(url)
-                            }
-                        }, label: {
+                            // Add link action here
+                        },
+                        label: {
                             Text(LoginViewString.Link.troubleLogInLink)
                                 .font(Font(weight: .medium, size: 14))
+                                .foregroundColor(.buttonLinkText)
                         }
                     )
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+                    .padding(.bottom, 16)
+
+                    // 2FA Text Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.twoFactorAuthCode,
                         text: viewStore.binding(
@@ -63,15 +71,25 @@ public struct PasswordLoginView: View {
                         ),
                         textPlaceholder: "-----"
                     )
+
+                    // Reset 2FA Prompt and Button
                     HStack {
                         Text(LoginViewString.TextFieldFootnote.lostTwoFactorAuthCodePrompt)
                             .textStyle(.subheading)
-                        Button(action: {}) {
-                            Text(LoginViewString.Link.resetTwoFactorAuthLink)
-                                .font(Font(weight: .medium, size: 14))
-                        }
+                        Button(
+                            action: {
+                                // Add reset 2FA action here
+                            },
+                            label: {
+                                Text(LoginViewString.Link.resetTwoFactorAuthLink)
+                                    .font(Font(weight: .medium, size: 14))
+                                    .foregroundColor(.buttonLinkText)
+                            }
+                        )
                     }
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+                    .padding(.bottom, 16)
+
+                    // Verify with hardware key Secure Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.hardwareKeyVerify,
                         text: viewStore.binding(
@@ -83,20 +101,22 @@ public struct PasswordLoginView: View {
                     Text(LoginViewString.TextFieldFootnote.hardwareKeyInstruction)
                         .textStyle(.subheading)
                 }
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
+                .padding(EdgeInsets(top: 80, leading: 24, bottom: 0, trailing: 24))
             }
+
+            // Continue Button
             PrimaryButton(title: LoginViewString.Button._continue) {
-                // TODO: Add continue action here
+                // Add Authentication actoin here
             }
-            .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
+            .padding(EdgeInsets(top: 0, leading: 24, bottom: 58, trailing: 24))
         }
-        .navigationBarTitle(LoginViewString.navigationTitle)
-        .updateNavigationBarStyle()
     }
 
 }
 
-struct PasswordLoginViewState: Equatable {
+struct CredentialsViewState: Equatable {
     var emailAddress: String
     var walletAddress: String
     var password: String
@@ -114,7 +134,7 @@ struct PasswordLoginViewState: Equatable {
 
 struct PasswordLoginView_Previews: PreviewProvider {
     static var previews: some View {
-        PasswordLoginView(
+        CredentialsView(
             store: Store(initialState: AuthenticationState(),
                          reducer: authenticationReducer,
                          environment: .init(mainQueue: .main)

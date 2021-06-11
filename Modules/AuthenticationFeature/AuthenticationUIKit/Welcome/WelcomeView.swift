@@ -101,7 +101,7 @@ struct WelcomeActionSection: View {
                     // Connect to recover funds Screen
                 }
                 .font(Font(weight: .semibold, size: 12))
-                .foregroundColor(.buttonSecondaryText)
+                .foregroundColor(.buttonLinkText)
                 Spacer()
                 // Replace test version with actual number later
                 Text("Test Version")

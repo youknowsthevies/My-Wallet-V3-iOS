@@ -47,7 +47,7 @@ public struct VerifyDeviceView: View {
             }
 
             NavigationLink(
-                destination: PasswordLoginView(store: store),
+                destination: CredentialsView(store: store),
                 isActive: viewStore.binding(
                     get: \.isPasswordLoginVisible,
                     send:  AuthenticationAction.setPasswordLoginVisible(_:)

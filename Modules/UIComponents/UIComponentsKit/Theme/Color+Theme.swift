@@ -21,6 +21,9 @@ extension Color {
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
 
+    // MAKR: Links
+    public static let buttonLinkText = Color(paletteColor: .blue600)
+
     // MARK: Divider
     public static let dividerLine = Color(paletteColor: .grey100)
 
