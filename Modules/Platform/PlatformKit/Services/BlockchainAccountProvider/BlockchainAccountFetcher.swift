@@ -4,35 +4,25 @@ import DIKit
 import RxSwift
 
 public protocol BlockchainAccountFetching {
-    var accounts: Single<[BlockchainAccount]> { get }
-    func account(accountType: SingleAccountType) -> Single<BlockchainAccount>
-}
-
-public final class BlockchainAccountFetchingFactory {
-
-    public static func make(for currencyType: CurrencyType) -> BlockchainAccountFetching {
-        BlockchainAccountFetcher(currencyType: currencyType)
-    }
+    func accounts(for currencyType: CurrencyType) -> Single<[BlockchainAccount]>
+    func account(for currencyType: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount>
 }
 
 final class BlockchainAccountFetcher: BlockchainAccountFetching {
 
     private let blockchainAccountProvider: BlockchainAccountProviding
-    private let currencyType: CurrencyType
 
-    init(currencyType: CurrencyType,
-         blockchainAccountProvider: BlockchainAccountProviding = resolve()) {
-        self.currencyType = currencyType
+    init(blockchainAccountProvider: BlockchainAccountProviding = resolve()) {
         self.blockchainAccountProvider = blockchainAccountProvider
     }
 
     // MARK: - BlockchainAccountFetching
 
-    var accounts: Single<[BlockchainAccount]> {
+    func accounts(for currencyType: CurrencyType) -> Single<[BlockchainAccount]> {
         blockchainAccountProvider.accounts(for: currencyType)
     }
 
-    func account(accountType: SingleAccountType) -> Single<BlockchainAccount> {
+    func account(for currencyType: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount> {
         blockchainAccountProvider
             .account(
                 for: currencyType,

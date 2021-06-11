@@ -8,9 +8,6 @@ import RxSwift
 @available(*, deprecated, message: "We need to shift to using models returned by Coincore.")
 public protocol AssetBalanceFetching {
 
-    /// Service for fetching `BlockchainAccounts`
-    var blockchainAccountFetcher: BlockchainAccountFetching { get }
-
     /// Non-Custodial balance service
     var wallet: SingleAccountBalanceFetching { get }
 
@@ -32,7 +29,6 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
 
     // MARK: - Properties
 
-    public let blockchainAccountFetcher: BlockchainAccountFetching
     public let wallet: SingleAccountBalanceFetching
     public let trading: CustodialAccountBalanceFetching
     public let savings: CustodialAccountBalanceFetching
@@ -91,13 +87,11 @@ public final class AssetBalanceFetcher: AssetBalanceFetching {
 
     // MARK: - Setup
 
-    public init(blockchainAccountFetcher: BlockchainAccountFetching,
-                wallet: SingleAccountBalanceFetching,
+    public init(wallet: SingleAccountBalanceFetching,
                 trading: CustodialAccountBalanceFetching,
                 savings: CustodialAccountBalanceFetching,
                 exchange: PairExchangeServiceAPI,
                 blockchainAccountProvider: BlockchainAccountProviding = resolve()) {
-        self.blockchainAccountFetcher = blockchainAccountFetcher
         self.trading = trading
         self.wallet = wallet
         self.savings = savings
@@ -117,7 +111,6 @@ public final class WithdrawableAssetBalanceFetcher: AssetBalanceFetching {
 
     // MARK: - Properties
 
-    public let blockchainAccountFetcher: BlockchainAccountFetching
     public let wallet: SingleAccountBalanceFetching
     public let trading: CustodialAccountBalanceFetching
     public let savings: CustodialAccountBalanceFetching
@@ -180,7 +173,6 @@ public final class WithdrawableAssetBalanceFetcher: AssetBalanceFetching {
                 trading: CustodialAccountBalanceFetching,
                 savings: CustodialAccountBalanceFetching,
                 exchange: PairExchangeServiceAPI) {
-        self.blockchainAccountFetcher = BlockchainAccountFetchingFactory.make(for: .crypto(cryptoCurrency))
         self.cryptoCurrency = cryptoCurrency
         // `wallet` doesn't support 'withdrawable'
         self.wallet = AbsentAccountBalanceFetching(currencyType: cryptoCurrency.currency, accountType: .nonCustodial)

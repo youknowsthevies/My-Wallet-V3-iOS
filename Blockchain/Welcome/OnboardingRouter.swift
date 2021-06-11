@@ -78,7 +78,7 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         /// Mount the navigation controller as the `rootViewController` of the window
         let navigationController = NavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window
-        window.rootViewController = navigationController
+        window.setRootViewController(navigationController)
         self.navigationController = navigationController
     }
 

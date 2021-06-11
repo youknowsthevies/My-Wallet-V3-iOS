@@ -26,11 +26,7 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
          fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
 
         cachedValue = .init(
-            configuration: .init(
-                identifier: "simple-buy-supported-currencies",
-                refreshType: .onSubscription,
-                flushNotificationName: .logout
-            )
+            configuration: .onSubscription()
         )
 
         cachedValue

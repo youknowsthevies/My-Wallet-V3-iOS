@@ -9,12 +9,14 @@ public enum Onboarding {
     public enum Action: Equatable {
         case start
         case pin(PinCore.Action)
+        case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen
         case welcomeScreen
     }
 
     public struct State: Equatable {
         var pinState: PinCore.State? = .init()
+        var walletUpgradeState: WalletUpgrade.State?
     }
 
     public struct Environment {
@@ -39,7 +41,16 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 )
             }
         ),
-    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { _, action, environment in
+    walletUpgradeReducer
+            .optional()
+            .pullback(
+                state: \.walletUpgradeState,
+                action: /Onboarding.Action.walletUpgrade,
+                environment: { _ in
+                    WalletUpgrade.Environment()
+                }
+            ),
+    Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
         case .start:
             return decideFlow(
@@ -54,12 +65,15 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         case .welcomeScreen:
             return .none
+        case .walletUpgrade:
+            return .none
         }
     }
 )
 
+// MARK: - Internal Methods
 
-private func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
+func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
     if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
         // Original flow
         if blockchainSettings.isPinSet {

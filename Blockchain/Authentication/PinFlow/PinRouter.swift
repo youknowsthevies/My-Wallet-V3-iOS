@@ -228,7 +228,10 @@ extension PinRouter {
                 controller.value?.add(child: navigationController)
             case .background:
                 // Sets view controller as rootViewController of the window
-                UIApplication.shared.keyWindow!.rootViewController = navigationController
+                guard let keyWindow = UIApplication.shared.keyWindow else {
+                    fatalError("keyWindow not found")
+                }
+                keyWindow.setRootViewController(navigationController)
             case .foreground(parent: let boxedParent):
                 if let parent = boxedParent.value {
                     navigationController.modalPresentationStyle = .fullScreen

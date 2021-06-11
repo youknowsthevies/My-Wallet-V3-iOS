@@ -5,25 +5,28 @@ import ToolKit
 
 extension CachedValueConfiguration {
 
+    /// Refresh `.onSubscription` (only when cache is empty) and
+    /// flushes the cached value on login and logout.
     public static func onSubscription(
         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
     ) -> CachedValueConfiguration {
         CachedValueConfiguration(
             refreshType: .onSubscription,
             scheduler: scheduler,
-            flushNotificationName: .logout
+            flushNotificationNames: [.login, .logout]
         )
     }
 
-    public static func periodicAndLogin(
+    /// Refresh `.periodic` by the given `TimeInterval` and
+    /// flushes the cached value on login and logout.
+    public static func periodic(
         _ time: TimeInterval,
         scheduler: SchedulerType = CachedValueConfiguration.generateScheduler()
     ) -> CachedValueConfiguration {
         CachedValueConfiguration(
             refreshType: .periodic(seconds: time),
             scheduler: scheduler,
-            flushNotificationName: .logout,
-            fetchNotificationName: .login
+            flushNotificationNames: [.login, .logout]
         )
     }
 }

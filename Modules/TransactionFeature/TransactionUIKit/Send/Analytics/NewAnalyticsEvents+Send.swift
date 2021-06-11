@@ -42,18 +42,14 @@ extension AnalyticsEvents.New {
             case unknown = "UNKNOWN"
 
             public init(_ account: BlockchainAccount) {
-                if let cryptoAccount = account as? CryptoAccount {
-                    switch cryptoAccount.accountType {
-                    case .nonCustodial:
-                        self = .userKey
-                    case .custodial(.savings):
-                        self = .savings
-                    case .custodial(.trading):
-                        self = .trading
-                    default:
-                        self = .unknown
-                    }
-                } else {
+                switch account {
+                case is CryptoNonCustodialAccount:
+                    self = .userKey
+                case is CryptoInterestAccount:
+                    self = .savings
+                case is CryptoTradingAccount:
+                    self = .trading
+                default:
                     self = .unknown
                 }
             }
@@ -67,22 +63,16 @@ extension AnalyticsEvents.New {
             case unknown = "UNKNOWN"
 
             public init(_ account: BlockchainAccount?) {
-                guard let account = account else {
+                switch account {
+                case is CryptoNonCustodialAccount:
+                    self = .userKey
+                case is CryptoInterestAccount:
+                    self = .savings
+                case is CryptoTradingAccount:
+                    self = .trading
+                case nil:
                     self = .external
-                    return
-                }
-                if let cryptoAccount = account as? CryptoAccount {
-                    switch cryptoAccount.accountType {
-                    case .nonCustodial:
-                        self = .userKey
-                    case .custodial(.savings):
-                        self = .savings
-                    case .custodial(.trading):
-                        self = .trading
-                    default:
-                        self = .unknown
-                    }
-                } else {
+                default:
                     self = .unknown
                 }
             }

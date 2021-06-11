@@ -9,8 +9,6 @@ import RxSwift
 
 final class DashboardFiatBalancesPresenter {
 
-    let fiatBalancePresenter: FiatBalanceCollectionViewPresenting
-
     // MARK: - Exposed Properties
 
     var tap: Driver<DashboardItemDisplayAction<CurrencyType>> {
@@ -31,14 +29,14 @@ final class DashboardFiatBalancesPresenter {
     private let selectionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyType>>(value: .hide)
     private let actionRelay = BehaviorRelay<DashboardItemDisplayAction<CurrencyViewPresenter>>(value: .hide)
 
-    private let fiatBalanceCollectionViewPresenter: CurrencyViewPresenter
+    private let fiatBalancePresenter: CurrencyViewPresenter
     private let interactor: DashboardFiatBalancesInteractor
     private let disposeBag = DisposeBag()
 
     private lazy var setup: Void = {
-        let fiatBalanceCollectionViewPresenter = self.fiatBalanceCollectionViewPresenter
+        let fiatBalancePresenter = self.fiatBalancePresenter
         interactor.shouldAppear
-            .map { $0 ? .show(fiatBalanceCollectionViewPresenter) : .hide }
+            .map { $0 ? .show(fiatBalancePresenter) : .hide }
             .bindAndCatch(to: actionRelay)
             .disposed(by: disposeBag)
     }()
@@ -46,14 +44,13 @@ final class DashboardFiatBalancesPresenter {
     // MARK: - Setup
 
     init(interactor: DashboardFiatBalancesInteractor, fiatBalancePresenter: FiatBalanceCollectionViewPresenting = resolve()) {
+        guard let fiatBalancePresenter = fiatBalancePresenter as? CurrencyViewPresenter else {
+            fatalError("fiatBalancePresenter must conform to CurrencyViewPresenter")
+        }
         self.interactor = interactor
         self.fiatBalancePresenter = fiatBalancePresenter
-        guard let viewPresenter = fiatBalancePresenter as? CurrencyViewPresenter else {
-            abort()
-        }
-        fiatBalanceCollectionViewPresenter = viewPresenter
 
-        viewPresenter
+        fiatBalancePresenter
             .tap?
             .emit(onNext: { [weak self] currencyType in
                 guard let self = self else { return }

@@ -6,7 +6,6 @@ import ToolKit
 public protocol CryptoAccount: SingleAccount {
     var asset: CryptoCurrency { get }
     var feeAsset: CryptoCurrency? { get }
-    var accountType: SingleAccountType { get }
 }
 
 public extension CryptoAccount {

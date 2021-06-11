@@ -87,10 +87,6 @@ extension DependencyContainer {
 
         factory { RecoveryPhraseStatusProvider() as RecoveryPhraseStatusProviding }
 
-        factory { DataProvider.default.historicalPrices as HistoricalFiatPriceProviding }
-
-        factory { DataProvider.default.balanceChange as BalanceChangeProviding }
-
         single { TradeLimitsService() as TradeLimitsAPI }
 
         factory { SiftService() as SiftServiceAPI }
@@ -171,11 +167,6 @@ extension DependencyContainer {
             return manager
         }
 
-        factory { () -> ReactiveWalletAPI in
-            let manager: WalletManager = DIKit.resolve()
-            return manager.reactiveWallet
-        }
-
         factory { () -> MnemonicAccessAPI in
             let walletManager: WalletManager = DIKit.resolve()
             return walletManager.wallet as MnemonicAccessAPI
@@ -250,6 +241,11 @@ extension DependencyContainer {
 
         single { AppFeatureConfigurator() }
 
+        factory { () -> FeatureConfiguratorAPI in
+            let configurator: AppFeatureConfigurator = DIKit.resolve()
+            return configurator
+        }
+
         factory { () -> FeatureConfiguring in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching
@@ -289,11 +285,26 @@ extension DependencyContainer {
 
         // MARK: - DataProvider
 
-        single { DataProvider() }
+        single { DataProvider() as DataProviding }
 
-        factory { () -> DataProviding in
-            let provider: DataProvider = DIKit.resolve()
-            return provider as DataProviding
+        factory { () -> BalanceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balance
+        }
+
+        factory { () -> ExchangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.exchange
+        }
+
+        factory { () -> BalanceChangeProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.balanceChange
+        }
+
+        factory { () -> HistoricalFiatPriceProviding in
+            let provider: DataProviding = DIKit.resolve()
+            return provider.historicalPrices
         }
 
         // MARK: - BlockchainDataRepository

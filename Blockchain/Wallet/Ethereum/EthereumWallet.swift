@@ -49,7 +49,6 @@ class EthereumWallet: NSObject {
 
     /// These are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
     /// overflows the function stack with initializers that call one another
-    @LazyInject private var accountDetailsService: EthereumAccountDetailsServiceAPI
     @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
 
     /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler

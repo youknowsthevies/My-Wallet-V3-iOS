@@ -24,14 +24,16 @@ public struct AppEnvironment {
     var userActivityHandler: UserActivityHandler
     var deeplinkAppHandler: DeeplinkAppHandler
     var backgroundAppHandler: BackgroundAppHandler
-    var dataProvider: DataProvider
+    var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI
+
+    var coincore: CoincoreAPI
 
     var walletManager: WalletManager
     var walletUpgradeService: WalletUpgradeServicing
     var exchangeRepository: ExchangeAccountRepositoryAPI
 
-    var appFeatureConfigurator: AppFeatureConfigurator
+    var appFeatureConfigurator: FeatureConfiguratorAPI
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
 }

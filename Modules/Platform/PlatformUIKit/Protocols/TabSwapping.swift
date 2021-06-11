@@ -10,4 +10,5 @@ public protocol TabSwapping: AnyObject {
     func switchTabToSwap()
     func switchTabToReceive()
     func switchToActivity()
+    func switchToActivity(for currencyType: CurrencyType)
 }

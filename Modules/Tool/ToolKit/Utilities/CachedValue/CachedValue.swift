@@ -54,7 +54,7 @@ public class CachedValue<Value> {
 
     /// Sets the fetch method. Must be called before any subscription.
     /// - Parameters:
-    ///   - object: Weakly refereced object
+    ///   - object: Weakly referenced object
     ///   - fetch: Fetch method
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
         self.fetchMethod = { [weak object] in
@@ -68,9 +68,7 @@ public class CachedValue<Value> {
     private lazy var setup: Void = {
         refreshControl.action
             .do(onNext: { [weak self] action in
-
                 guard let self = self else { return }
-
                 switch action {
                 case .fetch:
                     self.refresh()
@@ -83,19 +81,14 @@ public class CachedValue<Value> {
     }()
 
     private var fetchMethod: FetchMethod?
-
     private let atomicValue = Atomic<Value?>(nil)
-
     private let disposeBag = DisposeBag()
-
     private let configuration: CachedValueConfiguration
     private let refreshControl: CachedValueRefreshControl
 
-    public convenience init() {
-        self.init(configuration: CachedValueConfiguration())
-    }
-
-    public init(configuration: CachedValueConfiguration) {
+    public init(
+        configuration: CachedValueConfiguration
+    ) {
         self.configuration = configuration
         refreshControl = CachedValueRefreshControl(configuration: configuration)
     }
@@ -136,113 +129,5 @@ public class CachedValue<Value> {
             fatalError(CachedValueError.fetchMethodUndefined.localizedDescription)
         }
         return fetch()
-    }
-}
-
-struct CachedValueRefreshControl {
-
-    enum Action {
-
-        case flush
-        case fetch
-    }
-
-    var shouldRefresh: Bool {
-        switch configuration.refreshType {
-        case .onSubscription:
-            return false
-        case .periodic(let refreshInterval):
-            let lastRefreshInterval = Date(timeIntervalSinceNow: -refreshInterval)
-            let shouldRefresh = lastRefresh.value.compare(lastRefreshInterval) == .orderedAscending
-            return shouldRefresh
-        case .custom(let shouldRefresh):
-            return shouldRefresh()
-        }
-    }
-
-    var action: Observable<Action> {
-        actionRelay.asObservable()
-    }
-
-    let actionRelay = PublishRelay<Action>()
-
-    private let lastRefresh = Atomic<Date>(Date.distantPast)
-
-    private let configuration: CachedValueConfiguration
-
-    init() {
-        self.init(
-            configuration: CachedValueConfiguration()
-        )
-    }
-
-    init(configuration: CachedValueConfiguration) {
-        self.configuration = configuration
-
-        if let notification = configuration.flushNotificationName {
-            NotificationCenter.when(notification) { [weak actionRelay] _ in
-                actionRelay?.accept(.flush)
-            }
-        }
-
-        if let notification = configuration.fetchNotificationName {
-            NotificationCenter.when(notification) { [weak actionRelay] _ in
-                actionRelay?.accept(.fetch)
-            }
-        }
-    }
-
-    func update(refreshDate: Date) {
-        lastRefresh.mutate { $0 = refreshDate }
-    }
-
-}
-
-/// A configuration for cached value
-public struct CachedValueConfiguration {
-
-    /// A refresh type
-    public enum RefreshType {
-
-        /// Refresh once upon subscription
-        case onSubscription
-
-        /// Refresh periodically
-        case periodic(seconds: TimeInterval)
-
-        /// Custom configuration for refresh
-        case custom(() -> Bool)
-    }
-
-    private static let defaultRefreshInterval: TimeInterval = 60 * 1
-
-    let identifier: String?
-    let refreshType: RefreshType
-    let scheduler: SchedulerType
-    let flushNotificationName: Notification.Name?
-    let fetchNotificationName: Notification.Name?
-
-    public init() {
-        self.init(
-            refreshType: .periodic(seconds: Self.defaultRefreshInterval)
-        )
-    }
-
-    public init(identifier: String? = nil,
-                refreshType: RefreshType,
-                scheduler: SchedulerType = generateScheduler(),
-                flushNotificationName: Notification.Name? = nil,
-                fetchNotificationName: Notification.Name? = nil) {
-        self.identifier = identifier
-        self.refreshType = refreshType
-        self.scheduler = scheduler
-        self.flushNotificationName = flushNotificationName
-        self.fetchNotificationName = fetchNotificationName
-    }
-}
-
-extension CachedValueConfiguration {
-    public static func generateScheduler() -> SchedulerType {
-        SerialDispatchQueueScheduler(internalSerialQueueName: "internal-\(UUID().uuidString)")
     }
 }

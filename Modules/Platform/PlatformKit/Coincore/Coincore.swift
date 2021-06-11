@@ -5,7 +5,25 @@ import DIKit
 import RxSwift
 import ToolKit
 
-public final class Coincore {
+/// Types adopting the `CoincoreAPI` should provide a way to retrieve fiat and crypto accounts
+public protocol CoincoreAPI {
+    /// Provides access to fiat and crypto custodial and non custodial assets.
+    var allAccounts: Single<AccountGroup> { get }
+
+    /// Initialize any assets prior being available
+    func initialize() -> Completable
+    func initializePublisher() -> AnyPublisher<Never, Never>
+
+    /// Provides an array of `SingleAccount` instances for the specified source account and the given action.
+    /// - Parameters:
+    ///   - sourceAccount: A `BlockchainAccount` to be used as the source account
+    ///   - action: An `AssetAction` to determine the transaction targets
+    func getTransactionTargets(sourceAccount: BlockchainAccount, action: AssetAction) -> Single<[SingleAccount]>
+
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? { get }
+}
+
+public final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 

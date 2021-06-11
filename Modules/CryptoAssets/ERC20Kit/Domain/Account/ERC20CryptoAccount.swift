@@ -21,13 +21,13 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var balance: Single<MoneyValue> {
-        balanceFetching
-            .balanceMoney
+        balanceService
+            .balance(for: EthereumAddress(stringLiteral: id), cryptoCurrency: asset)
+            .moneyValue
     }
 
     var pendingBalance: Single<MoneyValue> {
-        balanceFetching
-            .pendingBalanceMoney
+        .just(.zero(currency: asset))
     }
 
     var actions: Single<AvailableActions> {
@@ -46,21 +46,23 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     private let erc20Token: ERC20Token
-    private let balanceFetching: SingleAccountBalanceFetching
+    private let balanceService: ERC20BalanceServiceAPI
     private let exchangeService: PairExchangeServiceAPI
     private let featureFetcher: FeatureFetching
 
-    init(id: String,
-         erc20Token: ERC20Token,
-         balanceProviding: BalanceProviding = resolve(),
-         exchangeProviding: ExchangeProviding = resolve(),
-         featureFetcher: FeatureFetching = resolve()) {
+    init(
+        id: String,
+        erc20Token: ERC20Token,
+        balanceService: ERC20BalanceServiceAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve(),
+        featureFetcher: FeatureFetching = resolve()
+    ) {
         self.id = id
         self.erc20Token = erc20Token
         self.asset = erc20Token.assetType
         self.label = erc20Token.assetType.defaultWalletName
         self.exchangeService = exchangeProviding[erc20Token.assetType]
-        self.balanceFetching = balanceProviding[erc20Token.assetType.currency].wallet
+        self.balanceService = balanceService
         self.featureFetcher = featureFetcher
     }
 
@@ -83,13 +85,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 }

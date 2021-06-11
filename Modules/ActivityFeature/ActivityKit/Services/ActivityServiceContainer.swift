@@ -4,11 +4,11 @@ import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
+import ToolKit
 
 public protocol ActivityServiceContaining {
     var asset: Observable<CurrencyType> { get }
     var activityProviding: ActivityProviding { get }
-    var balanceProviding: BalanceProviding { get }
     var exchangeProviding: ExchangeProviding { get }
     var fiatCurrency: FiatCurrencySettingsServiceAPI { get }
     var activity: Observable<ActivityItemEventServiceAPI> { get }
@@ -19,9 +19,8 @@ public protocol ActivityServiceContaining {
 
 final class ActivityServiceContainer: ActivityServiceContaining {
     public var asset: Observable<CurrencyType> {
-        selectionService
-            .selectedData
-            .compactMap { $0.currencyType }
+        selectionService.selectedData
+            .map(\.currencyType)
     }
 
     public var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
@@ -36,7 +35,6 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     }
 
     public let activityProviding: ActivityProviding
-    public let balanceProviding: BalanceProviding
     public let fiatCurrency: FiatCurrencySettingsServiceAPI
     public let selectionService: WalletPickerSelectionServiceAPI
     public let accountSelectionService: AccountSelectionServiceAPI
@@ -47,16 +45,6 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     private lazy var setup: Void = {
         accountSelectionService
             .selectedData
-            .map { account -> WalletPickerSelection in
-                guard let account = account as? SingleAccount else {
-                    return .all
-                }
-                if account is NonCustodialAccount {
-                    return .nonCustodial(account.currencyType)
-                } else {
-                    return .custodial(account.currencyType)
-                }
-            }
             .bind { [weak self] selection in
                 self?.selectionService.record(selection: selection)
             }
@@ -65,7 +53,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
         selectionService
             .selectedData
             .do(afterNext: { [weak self] _ in self?.activityProviding.refresh() })
-            .flatMapLatest(weak: self) { (self, selection) -> Observable<ActivityItemEventsLoadingState> in
+            .flatMapLatest(weak: self) { (self, account) -> Observable<ActivityItemEventsLoadingState> in
                 /// For non-custodial and custodial events there are swaps
                 /// specific to the non-custodial or custodial wallet.
                 /// In other words, you can swap from either type of wallet.
@@ -74,36 +62,38 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                 ///  `ActivityItemEventsLoadingState` for each of our services but, since we need to split
                 ///  custodial from non-custodial swaps, we need deviate from this in the `.nonCustodial`
                 ///  and `.custodial` state.
-                switch selection {
-                case .all:
+                switch account {
+                case is AccountGroup:
                     return self.activityProviding.activityItems
-                case .nonCustodial(let currency):
-                    let activityProvider = self.activityProviding[currency.cryptoCurrency!]
-                    let transactional = activityProvider.transactional
+                case let nonCustodial as CryptoNonCustodialAccount:
+                    let activityProvider = self.activityProviding[nonCustodial.asset]
                     /// We can't use the `activityProvider.swap.state` here since we want only the
                     /// noncustodial swaps.
-                    let swap = activityProvider.swap.nonCustodial
-                    return Observable.combineLatest(
-                            transactional.state,
-                            swap
-                        )
-                        .map { (states) -> ActivityItemEventsLoadingState in
-                            [states.1, states.0].reduce()
+                    return Observable
+                        .combineLatest(
+                            activityProvider.swap.nonCustodial,
+                            activityProvider.transactional.state
+                        ) { (swap: $0, transactional: $1) }
+                        .map { states -> ActivityItemEventsLoadingState in
+                            [states.swap, states.transactional].reduce()
                         }
-                case .custodial(let currency):
-                    switch currency {
-                    case .crypto(let crypto):
-                        /// We can't use the `self.activityProviding[crypto].swap.state`
-                        /// here since we want only the custodial swaps.
-                        let swap = self.activityProviding[crypto].swap.custodial
-                        let buySell = self.activityProviding[crypto].buySell.state
-                        return Observable.combineLatest(swap, buySell)
-                            .map { (states) -> ActivityItemEventsLoadingState in
-                                [states.1, states.0].reduce()
-                            }
-                    case .fiat(let fiat):
-                        return self.activityProviding[fiat].activityLoadingStateObservable
-                    }
+                case let fiatAccount as FiatAccount:
+                    return self.activityProviding[fiatAccount.fiatCurrency]
+                        .activityLoadingStateObservable
+                case let tradingAccount as CryptoTradingAccount:
+                    let activityProvider = self.activityProviding[tradingAccount.asset]
+                    /// We can't use the `self.activityProviding[crypto].swap.state`
+                    /// here since we want only the custodial swaps.
+                    return Observable
+                        .combineLatest(
+                            activityProvider.swap.custodial,
+                            activityProvider.buySell.state
+                        ) { (swap: $0, buySell: $1) }
+                        .map { states -> ActivityItemEventsLoadingState in
+                            [states.swap, states.buySell].reduce()
+                        }
+                default:
+                    impossible("Unsupported Account Type \(String(reflecting: account))")
                 }
             }
             .bindAndCatch(to: eventsRelay)
@@ -111,13 +101,11 @@ final class ActivityServiceContainer: ActivityServiceContaining {
     }()
 
     public init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
-                balanceProviding: BalanceProviding = resolve(),
                 exchangeProviding: ExchangeProviding = resolve(),
                 activityProviding: ActivityProviding = resolve()) {
-        self.selectionService = WalletPickerSelectionService(defaultSelection: .all)
+        self.selectionService = WalletPickerSelectionService()
         self.accountSelectionService = AccountSelectionService()
         self.fiatCurrency = fiatCurrency
-        self.balanceProviding = balanceProviding
         self.exchangeProviding = exchangeProviding
         self.activityProviding = activityProviding
     }

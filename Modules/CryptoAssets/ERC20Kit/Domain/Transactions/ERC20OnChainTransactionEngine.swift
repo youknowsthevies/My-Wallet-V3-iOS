@@ -73,7 +73,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.transactionBuildingService = transactionBuildingService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
 
-        feeCache = .init(configuration: .init(refreshType: .onSubscription))
+        feeCache = .init(configuration: .onSubscription())
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService.fees(cryptoCurrency: self.sourceCryptoCurrency)
         }

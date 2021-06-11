@@ -23,7 +23,7 @@ extension WalletManager: WalletManagerReactiveAPI {
             .asPublisher()
             .ignoreFailure()
     }
-    
+
     // MARK: WalletAccountInfoDelegate
 
     /// Reactive wrapper for delegate method `walletDidGetAccountInfo`

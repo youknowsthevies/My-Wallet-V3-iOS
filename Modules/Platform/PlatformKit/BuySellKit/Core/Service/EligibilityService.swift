@@ -27,11 +27,7 @@ final class EligibilityService: EligibilityServiceAPI {
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
         self.isEligibileValue = CachedValue(
-            configuration: CachedValueConfiguration(
-                refreshType: .periodic(seconds: TimeInterval(30)),
-                flushNotificationName: .logout,
-                fetchNotificationName: .login
-            )
+            configuration: .periodic(30)
         )
 
         isEligibileValue.setFetch(weak: self) { (self) in

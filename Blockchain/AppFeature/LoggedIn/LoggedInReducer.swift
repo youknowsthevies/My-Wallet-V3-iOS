@@ -21,7 +21,7 @@ public enum LoggedIn {
         var remoteNotificationTokenSender: RemoteNotificationTokenSending
         var remoteNotificationAuthorizer: RemoteNotificationAuthorizationRequesting
         var walletManager: WalletManager
-        var coincore: Coincore
+        var coincore: CoincoreAPI
     }
 }
 

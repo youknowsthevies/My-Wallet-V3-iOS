@@ -38,10 +38,7 @@ final class AvailableTradingPairsService: AvailableTradingPairsServiceAPI {
     // MARK: - Properties
 
     private let pairsCachedValue = CachedValue<[OrderPair]>(
-        configuration: .init(
-            refreshType: .onSubscription,
-            flushNotificationName: .logout
-        )
+        configuration: .onSubscription()
     )
 
     private let client: AvailablePairsClientAPI

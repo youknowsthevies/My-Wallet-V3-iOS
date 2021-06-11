@@ -74,6 +74,7 @@ import WalletPayloadKit
     func startAfterWalletAuthentication(completion: @escaping () -> Void) {
         // Sets view controller as rootViewController of the window
         setupMainFlow()
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe(
                 onSuccess: { [weak self] rootViewController in
                     self?.setRootViewController(rootViewController, animated: true, completion: completion)
@@ -149,7 +150,7 @@ import WalletPayloadKit
                 if needsWalletUpgrade {
                     return self.setupWalletUpgrade(completion: { [weak self] in
                         guard let self = self else { return }
-                        self.window.rootViewController = self.setupLoggedInFlow()
+                        self.window.setRootViewController(self.setupLoggedInFlow())
                     })
                 } else {
                     return self.setupLoggedInFlow()
@@ -212,7 +213,7 @@ import WalletPayloadKit
 
     private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         // Sets root view controller
-        window.rootViewController = rootViewController
+        window.setRootViewController(rootViewController)
         // Animate if needed
         if animated {
             // Animate with `completion` block.
@@ -530,7 +531,6 @@ extension AppCoordinator: WalletHistoryDelegate {
 // MARK: - TabSwapping
 
 extension AppCoordinator: TabSwapping {
-
     func deposit(into account: BlockchainAccount) {
         tabControllerManager?.deposit(into: account)
     }
@@ -558,14 +558,18 @@ extension AppCoordinator: TabSwapping {
     func switchToActivity() {
         tabControllerManager?.showTransactions()
     }
+
+    func switchToActivity(for currencyType: CurrencyType) {
+        tabControllerManager?.showTransactions()
+    }
 }
 
 extension AppCoordinator: CurrencyRouting {
-    func toSend(_ currency: CryptoCurrency) {
-        tabControllerManager?.showSend(cryptoCurrency: currency)
+    func toSend(_ currency: CurrencyType) {
+        tabControllerManager?.showSend(cryptoCurrency: currency.cryptoCurrency!)
     }
 
-    func toReceive(_ currency: CryptoCurrency) {
+    func toReceive(_ currency: CurrencyType) {
         tabControllerManager?.showReceive()
     }
 }

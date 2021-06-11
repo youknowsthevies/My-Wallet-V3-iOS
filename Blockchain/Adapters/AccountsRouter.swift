@@ -3,57 +3,48 @@
 //  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
 //
 
-import DashboardKit
 import DashboardUIKit
 import DIKit
-import InterestKit
 import InterestUIKit
 import PlatformKit
 import PlatformUIKit
-import RxRelay
 import RxSwift
+import ToolKit
 
 final class AccountsRouter: AccountsRouting {
 
     private let nonCustodialActionRouterAPI: NonCustodialActionRouterAPI
     private let custodyActionRouterAPI: CustodyActionRouterAPI
-    private let balanceProvider: BalanceProviding
     private let disposeBag = DisposeBag()
 
     init(
         routing: CurrencyRouting & TabSwapping,
-        balanceProvider: BalanceProviding = resolve(),
         backupRouter: DashboardUIKit.BackupRouterAPI = resolve()
     ) {
-        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(balanceProvider: balanceProvider, routing: routing)
+        self.nonCustodialActionRouterAPI = NonCustodialActionRouter(routing: routing)
         self.custodyActionRouterAPI = CustodyActionRouter(backupRouterAPI: backupRouter, tabSwapping: routing)
-        self.balanceProvider = balanceProvider
-
-        self.custodyActionRouterAPI
-            .completionRelay
-            .bindAndCatch(weak: self) { (_) in
-                balanceProvider.refresh()
-            }
-            .disposed(by: disposeBag)
     }
 
-    func routeToCustodialAccount(for currencyType: CurrencyType) {
-        custodyActionRouterAPI.start(with: currencyType)
-    }
-
-    func routeToNonCustodialAccount(for currency: CryptoCurrency) {
-        nonCustodialActionRouterAPI.start(with: currency)
-    }
-
-    func routeToInterestAccount(for currency: CryptoCurrency) {
-        let interactor = InterestAccountDetailsScreenInteractor(
-            cryptoCurrency: currency,
-            assetBalanceFetching: balanceProvider[.crypto(currency)]
-        )
+    private func routeToInterestAccount(for account: BlockchainAccount) {
+        let interactor = InterestAccountDetailsScreenInteractor(account: account)
         let presenter = InterestAccountDetailsScreenPresenter(interactor: interactor)
         let controller = InterestAccountDetailsViewController(presenter: presenter)
 
         let navigationRouter: NavigationRouterAPI = resolve()
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
+    }
+
+    func route(to account: BlockchainAccount) {
+        switch account {
+        case is CryptoInterestAccount:
+            routeToInterestAccount(for: account)
+        case is NonCustodialAccount:
+            nonCustodialActionRouterAPI.start(with: account)
+        case is TradingAccount,
+             is FiatAccount:
+            custodyActionRouterAPI.start(with: account)
+        default:
+            unimplemented("Unsupported account type \(String(reflecting: account))")
+        }
     }
 }

@@ -6,6 +6,7 @@ import stellarsdk
 public struct StellarAccountDetails {
     public let account: StellarAssetAccount
     public let balance: CryptoValue
+    public let actionableBalance: CryptoValue
 }
 
 // MARK: Extension
@@ -22,7 +23,8 @@ public extension StellarAccountDetails {
 
         return StellarAccountDetails(
             account: account,
-            balance: CryptoValue.stellarZero
+            balance: .stellarZero,
+            actionableBalance: .stellarZero
         )
     }
 }

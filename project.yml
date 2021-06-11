@@ -708,6 +708,10 @@ targets:
       path: TestKit/TestKit/Mocks/KYCUIKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/AnalyticsKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/SettingsKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/WalletPayloadKit
     type: bundle.unit-test
   DashboardKit:
     scheme:
@@ -1196,6 +1200,11 @@ targets:
   SettingsKitTests:
     dependencies:
       - target: SettingsKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/SettingsKit
     templates:
       - ModuleTests
     templateAttributes:

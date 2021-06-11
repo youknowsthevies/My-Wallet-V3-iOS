@@ -7,6 +7,6 @@ import RxSwift
 public protocol CustodyActionRouterAPI: class {
     func next(to state: CustodyActionStateService.State)
     func previous()
-    func start(with currency: CurrencyType)
+    func start(with account: BlockchainAccount)
     var completionRelay: PublishRelay<Void> { get }
 }

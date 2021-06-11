@@ -50,25 +50,27 @@ public final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     public let networkFeeContentViewInteractor: ContentLabelViewInteractorAPI
     public let imageRelay = PublishRelay<ImageViewContent>()
 
-    @available(*, deprecated, message: "Use `init(currencyType:coincore:)` method instead which uses the Coincore API")
-    public init(balanceProvider: BalanceProviding, currencyType: CurrencyType) {
-        availableBalanceContentViewInteractor = AvailableBalanceContentViewInteractor(
-            balanceProvider: balanceProvider,
-            currencyType: currencyType
+    /// Display all available balance for given `CurrencyType`.
+    public convenience init(
+        currencyType: CurrencyType,
+        coincore: Coincore = resolve()
+    ) {
+        self.init(
+            availableBalance: AvailableBalanceContentInteractor(
+                currencyType: currencyType,
+                coincore: coincore
+            ),
+            /// NOTE: Not used in `Withdraw` which is the only place
+            /// where this initializer is called
+            networkFee: EmptyNetworkFeeContentInteractor()
         )
-        /// NOTE: Not used in `Sell` which is the only place
-        /// where this initializer is called
-        networkFeeContentViewInteractor = EmptyNetworkFeeContentInteractor()
     }
 
-    public init(currencyType: CurrencyType,
-                coincore: Coincore = resolve()) {
-        availableBalanceContentViewInteractor = AvailableBalanceContentInteractor(
-            currencyType: currencyType,
-            coincore: coincore
-        )
-        /// NOTE: Not used in `Withdraw` which is the only place
-        /// where this initializer is called
-        networkFeeContentViewInteractor = EmptyNetworkFeeContentInteractor()
+    public init(
+        availableBalance: ContentLabelViewInteractorAPI,
+        networkFee: ContentLabelViewInteractorAPI = EmptyNetworkFeeContentInteractor()
+    ) {
+        availableBalanceContentViewInteractor = availableBalance
+        networkFeeContentViewInteractor = networkFee
     }
 }

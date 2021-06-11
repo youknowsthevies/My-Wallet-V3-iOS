@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 
 public protocol CurrentBalanceCellInteracting: AnyObject {
@@ -15,12 +16,17 @@ public final class CurrentBalanceCellInteractor: CurrentBalanceCellInteracting {
         assetBalanceViewInteractor.accountType
     }
 
+    public init(account: BlockchainAccount) {
+        assetBalanceViewInteractor = AccountBalanceTypeViewInteractor(
+            account: account
+        )
+    }
+
     public init(balanceFetching: AssetBalanceFetching,
                 accountType: SingleAccountType) {
-        self.assetBalanceViewInteractor = AssetBalanceTypeViewInteractor(
+        assetBalanceViewInteractor = AssetBalanceTypeViewInteractor(
             assetBalanceFetching: balanceFetching,
             accountType: accountType
         )
     }
-
 }

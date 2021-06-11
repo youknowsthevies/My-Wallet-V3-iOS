@@ -254,7 +254,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         let viewController = PasswordRequiredViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window
-        window.rootViewController = navigationController
+        window.setRootViewController(navigationController)
     }
 
     ///   - type: The type of the screen

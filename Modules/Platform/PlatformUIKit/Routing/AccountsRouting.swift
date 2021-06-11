@@ -5,9 +5,6 @@
 
 import PlatformKit
 
-public protocol AccountsRouting {
-
-    func routeToCustodialAccount(for currencyType: PlatformKit.CurrencyType)
-    func routeToNonCustodialAccount(for currency: CryptoCurrency)
-    func routeToInterestAccount(for currency: CryptoCurrency)
+public protocol AccountsRouting: AnyObject {
+    func route(to account: BlockchainAccount)
 }

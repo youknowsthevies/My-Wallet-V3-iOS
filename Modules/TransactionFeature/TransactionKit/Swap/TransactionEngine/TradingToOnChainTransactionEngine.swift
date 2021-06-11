@@ -55,7 +55,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
         self.transferService = transferService
-        feeCache = CachedValue(configuration: .init(refreshType: .periodic(seconds: 20)))
+        feeCache = CachedValue(configuration: .periodic(20))
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferService.fees()
         }

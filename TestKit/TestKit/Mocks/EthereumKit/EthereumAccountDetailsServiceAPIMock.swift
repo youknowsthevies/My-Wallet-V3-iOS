@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import EthereumKit
+@testable import EthereumKit
 import RxSwift
 
 class EthereumAccountDetailsServiceAPIMock: EthereumAccountDetailsServiceAPI {

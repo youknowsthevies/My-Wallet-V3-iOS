@@ -9,14 +9,8 @@ public protocol CryptoNonCustodialAccount: CryptoAccount, NonCustodialAccount {
 }
 
 extension CryptoNonCustodialAccount {
-
-    // TODO: Swap: Use new PayloadManager to check if it is double encrypted.
     public var requireSecondPassword: Single<Bool> {
         .just(false)
-    }
-
-    public var accountType: SingleAccountType {
-        .nonCustodial
     }
 
     public var isFunded: Single<Bool> {

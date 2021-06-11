@@ -9,17 +9,24 @@ final class DashboardDetailsScreenInteractor {
 
     // MARK: - Public Properties
 
-    var nonCustodialActivitySupported: Observable<Bool> {
-        Observable.just(currency.hasNonCustodialSupport)
+    var nonCustodialAccount: Single<BlockchainAccount> {
+        blockchainAccountFetcher
+            .account(for: currency.currency, accountType: .nonCustodial)
     }
 
-    var custodialSavingsFunded: Observable<Bool> {
+    var tradingAccount: Single<BlockchainAccount> {
         blockchainAccountFetcher
-            .account(accountType: .custodial(.savings))
-            .asObservable()
-            .take(1)
-            .flatMap { $0.isFunded }
-            .catchErrorJustReturn(false)
+            .account(for: currency.currency, accountType: .custodial(.trading))
+    }
+
+    var interestAccountIfFunded: Single<BlockchainAccount?> {
+        blockchainAccountFetcher
+            .account(for: currency.currency, accountType: .custodial(.savings))
+            .flatMap { account -> Single<BlockchainAccount?> in
+                account.isFunded.map { isFunded -> BlockchainAccount? in
+                    isFunded ? account : nil
+                }
+            }
     }
 
     var rate: Single<Double> {
@@ -28,7 +35,6 @@ final class DashboardDetailsScreenInteractor {
     }
 
     let priceServiceAPI: HistoricalFiatPriceServiceAPI
-    let balanceFetcher: AssetBalanceFetching
 
     // MARK: - Private Properties
 
@@ -38,15 +44,17 @@ final class DashboardDetailsScreenInteractor {
     private let savingsAccountService: SavingsOverviewAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let recoveryPhraseStatus: RecoveryPhraseStatusProviding
-
+    private let coincore: Coincore
     // MARK: - Setup
 
     init(currency: CryptoCurrency,
-         balanceFetcher: AssetBalanceFetching,
+         coincore: Coincore = resolve(),
          savingsAccountService: SavingsOverviewAPI = resolve(),
+         blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
          exchangeAPI: PairExchangeServiceAPI) {
-        self.blockchainAccountFetcher = BlockchainAccountFetchingFactory.make(for: .crypto(currency))
+        self.coincore = coincore
+        self.blockchainAccountFetcher = blockchainAccountFetcher
         self.currency = currency
         self.savingsAccountService = savingsAccountService
         self.priceServiceAPI = HistoricalFiatPriceService(
@@ -56,13 +64,11 @@ final class DashboardDetailsScreenInteractor {
         )
         self.recoveryPhraseStatus = resolve()
         self.fiatCurrencyService = fiatCurrencyService
-        self.balanceFetcher = balanceFetcher
 
         priceServiceAPI.fetchTriggerRelay.accept(.week(.oneHour))
     }
 
     func refresh() {
         recoveryPhraseStatus.fetchTriggerRelay.accept(())
-        balanceFetcher.refresh()
     }
 }

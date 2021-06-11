@@ -158,7 +158,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
-        case is FiatCustodialAccount:
+        case is FiatAccount:
             model = .template(
                 with: "ic-trading-account",
                 templateColor: account.currencyType.brandColor,

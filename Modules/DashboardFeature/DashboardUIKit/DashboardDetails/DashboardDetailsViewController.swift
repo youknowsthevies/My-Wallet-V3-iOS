@@ -3,6 +3,7 @@
 import PlatformKit
 import PlatformUIKit
 import RxSwift
+import ToolKit
 
 final class DashboardDetailsViewController: BaseScreenViewController {
 
@@ -82,8 +83,10 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     private func execute(action: DashboardDetailsScreenPresenter.PresentationAction) {
         switch action {
-        case .show(let balanceType):
-            let row = presenter.indexByCellType[.balance(balanceType)]!
+        case .show(let account):
+            guard let row = presenter.index(for: account) else {
+                return
+            }
             let indexPath = IndexPath(row: row, section: 0)
             tableView.insertRows(at: [indexPath], with: .automatic)
         }
@@ -105,8 +108,8 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         switch type {
         case .priceAlert:
             cell = priceAlertCell(for: indexPath)
-        case .balance(let balanceType):
-            cell = currentBalanceCell(for: indexPath, type: balanceType)
+        case .balance(let account):
+            cell = currentBalanceCell(for: indexPath, account: account)
         case .chart:
             cell = assetLineChartCell(for: indexPath, presenter: presenter.lineChartCellPresenter)
         }
@@ -130,15 +133,17 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
     }
 
     private func currentBalanceCell(for indexPath: IndexPath,
-                                    type: BalanceType) -> UITableViewCell {
+                                    account: BlockchainAccount) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
-        switch type {
-        case .nonCustodial:
-            cell.presenter = presenter.walletBalancePresenter
-        case .custodial(.trading):
-            cell.presenter = presenter.tradingBalancePresenter
-        case .custodial(.savings):
-            cell.presenter = presenter.savingsBalancePresenter
+        switch account {
+        case is NonCustodialAccount:
+            cell.presenter = presenter.walletBalance?.presenter
+        case is TradingAccount:
+            cell.presenter = presenter.tradingBalance?.presenter
+        case is CryptoInterestAccount:
+            cell.presenter = presenter.savingsBalance?.presenter
+        default:
+            unimplemented("Type \(type(of: account)) not supported.")
         }
         return cell
     }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import ActivityKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxRelay
@@ -19,37 +20,19 @@ final class ActivityScreenInteractor {
             .fiatCurrencyObservable
     }
 
-    var selectedData: Observable<WalletPickerSelection> {
+    var selectedData: Observable<BlockchainAccount> {
         selectionService
             .selectedData
     }
 
     var activityBalance: Observable<FiatValue> {
-        selectionService
-            .selectedData
-            .flatMap(weak: self) { (self, selection) -> Observable<FiatValue> in
-                switch selection {
-                case .all:
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalance
-                        .compactMap { $0.value }
-                case .custodial(let currency):
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalances
-                        .map { $0[currency.currency] }
-                        .compactMap { $0.value }
-                        .compactMap { $0[.custodial(.trading)].quote.fiatValue }
-                case .nonCustodial(let currency):
-                    return self.serviceContainer
-                        .balanceProviding
-                        .fiatBalances
-                        .map { $0[currency.currency] }
-                        .compactMap { $0.value }
-                        .compactMap { $0[.nonCustodial].quote.fiatValue }
-                }
-        }
+        fiatCurrency
+            .withLatestFrom(selectionService.selectedData) { (fiatCurrency: $0, account: $1) }
+            .flatMapLatest { (fiatCurrency: FiatCurrency, account: BlockchainAccount) in
+                account.fiatBalance(fiatCurrency: fiatCurrency)
+                    .compactMap(\.fiatValue)
+                    .catchErrorJustReturn(.zero(currency: fiatCurrency))
+            }
     }
 
     var state: Observable<State> {
@@ -69,7 +52,7 @@ final class ActivityScreenInteractor {
                 case .calculating:
                     return false
                 }
-        }
+            }
     }
 
     // MARK: - Private Properties
@@ -88,10 +71,9 @@ final class ActivityScreenInteractor {
         serviceContainer
             .activityEventsLoadingState
             .map {
-                .init(
+                State(
                     with: $0,
-                    exchangeProviding: serviceContainer.exchangeProviding,
-                    balanceProviding: serviceContainer.balanceProviding
+                    exchangeProviding: serviceContainer.exchangeProviding
                 )
             }
             .startWith(.calculating)
@@ -110,8 +92,7 @@ fileprivate extension ActivityScreenInteractor.State {
     /// Initializer that receives the loading state and
     /// maps it to `self`
     init(with state: ActivityItemEventsLoadingState,
-         exchangeProviding: ExchangeProviding,
-         balanceProviding: BalanceProviding) {
+         exchangeProviding: ExchangeProviding) {
         switch state {
         case .loading:
             self = .calculating
@@ -120,7 +101,6 @@ fileprivate extension ActivityScreenInteractor.State {
             let interactors: [ActivityItemInteractor] = sorted.map {
                 ActivityItemInteractor(
                     exchangeAPI: exchangeProviding[$0.amount.currencyType],
-                    assetBalanceFetcher: balanceProviding[$0.amount.currencyType],
                     activityItemEvent: $0
                 )
             }

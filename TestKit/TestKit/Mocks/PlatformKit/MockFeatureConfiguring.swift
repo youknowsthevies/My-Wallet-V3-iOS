@@ -3,15 +3,16 @@
 import Foundation
 import PlatformKit
 
-class MockFeatureConfigurator: FeatureConfiguring {
+class MockFeatureConfigurator: FeatureConfiguratorAPI {
 
-    private let isEnabled: Bool
+    var featureIsEnabled: Bool = false
 
-    init(isEnabled: Bool) {
-        self.isEnabled = isEnabled
+    var initializeCalled = false
+    func initialize() {
+        initializeCalled = true
     }
 
     func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
-        AppFeatureConfiguration(isEnabled: isEnabled)
+        AppFeatureConfiguration(isEnabled: featureIsEnabled)
     }
 }

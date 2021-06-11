@@ -76,8 +76,8 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - BlockchainAccount
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        .just(.zero(currency: fiatCurrency))
+    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {

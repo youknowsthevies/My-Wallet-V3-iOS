@@ -6,46 +6,62 @@ import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
+import ToolKit
 
 /// This enum aggregates possible action types that can be done in the dashboard
 enum DashboadDetailsAction {
-    case trading(CryptoCurrency)
-    case savings(CryptoCurrency)
-    case nonCustodial(CryptoCurrency)
+    case routeTo(BlockchainAccount)
 }
 
 final class DashboardDetailsScreenPresenter {
 
+    // MARK: - Types
+
     private typealias AccessilbityId = Accessibility.Identifier.DashboardDetails
     private typealias LocalizedString = LocalizationConstants.DashboardDetails.BalanceCell
 
-    enum BalancePresentationState {
-        case visible(CurrentBalanceCellPresenter)
+    enum CellType: Hashable {
+        case balance(BlockchainAccount)
+        case priceAlert
+        case chart
 
-        // TODO: Currently not handled
-        case hidden
-
-        var presenter: CurrentBalanceCellPresenter? {
+        private var id: String {
             switch self {
-            case .visible(let presenter):
-                return presenter
-            case .hidden:
-                return nil
+            case .balance(let account):
+                return account.id
+            case .priceAlert:
+                return "priceAlert"
+            case .chart:
+                return "chart"
             }
         }
 
-        var isVisible: Bool {
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.id == rhs.id
+        }
+    }
+
+    enum BalancePresentationState {
+        case visible(CurrentBalanceCellPresenter, BlockchainAccount)
+        case hidden
+
+        /// Returns presenter and account if `self` is visible.
+        var visible: (presenter: CurrentBalanceCellPresenter, account: BlockchainAccount)? {
             switch self {
-            case .visible:
-                return true
+            case .visible(let presenter, let account):
+                return (presenter, account)
             case .hidden:
-                return false
+                return nil
             }
         }
     }
 
     enum PresentationAction {
-        case show(BalanceType)
+        case show(BlockchainAccount)
     }
 
     // MARK: - Navigation Properties
@@ -66,14 +82,6 @@ final class DashboardDetailsScreenPresenter {
         .lightContent()
     }
 
-    // MARK: - Types
-
-    enum CellType: Hashable {
-        case balance(BalanceType)
-        case priceAlert
-        case chart
-    }
-
     // MARK: - Rx
 
     var isScrollEnabled: Driver<Bool> {
@@ -86,16 +94,16 @@ final class DashboardDetailsScreenPresenter {
 
     // MARK: - Exposed Properties
 
-    var walletBalancePresenter: CurrentBalanceCellPresenter? {
-        walletBalanceStateRelay.value.presenter
+    var walletBalance: (presenter: CurrentBalanceCellPresenter, account: BlockchainAccount)? {
+        walletBalanceStateRelay.value.visible
     }
 
-    var tradingBalancePresenter: CurrentBalanceCellPresenter? {
-        tradingBalanceStateRelay.value.presenter
+    var tradingBalance: (presenter: CurrentBalanceCellPresenter, account: BlockchainAccount)? {
+        tradingBalanceStateRelay.value.visible
     }
 
-    var savingsBalancePresenter: CurrentBalanceCellPresenter? {
-        savingsBalanceStateRelay.value.presenter
+    var savingsBalance: (presenter: CurrentBalanceCellPresenter, account: BlockchainAccount)? {
+        savingsBalanceStateRelay.value.visible
     }
 
     /// The dashboard action
@@ -113,24 +121,20 @@ final class DashboardDetailsScreenPresenter {
         var cellTypes: [CellType] = []
         cellTypes.append(.priceAlert)
         cellTypes.append(.chart)
-        if shouldShowNonCustodialBalance {
-            cellTypes.append(.balance(.nonCustodial))
+        if let walletBalance = self.walletBalance {
+            cellTypes.append(.balance(walletBalance.account))
         }
-        if shouldShowTradingBalance {
-            cellTypes.append(.balance(.custodial(.trading)))
+        if let tradingBalance = self.tradingBalance {
+            cellTypes.append(.balance(tradingBalance.account))
         }
-        if shouldShowSavingsBalance {
-            cellTypes.append(.balance(.custodial(.savings)))
+        if let savingsBalance = self.savingsBalance {
+            cellTypes.append(.balance(savingsBalance.account))
         }
         return cellTypes
     }
 
-    var indexByCellType: [CellType: Int] {
-        var indexByCellType: [CellType: Int] = [:]
-        for (index, cellType) in cellArrangement.enumerated() {
-            indexByCellType[cellType] = index
-        }
-        return indexByCellType
+    func index(for account: BlockchainAccount) -> Int? {
+        cellArrangement.firstIndex(of: .balance(account))
     }
 
     // MARK: - Public Properties (Presenters)
@@ -143,18 +147,6 @@ final class DashboardDetailsScreenPresenter {
     let presenterSelectionRelay = PublishRelay<CellType>()
 
     // MARK: - Private Properties
-
-    private var shouldShowNonCustodialBalance: Bool {
-        walletBalancePresenter != nil
-    }
-
-    private var shouldShowTradingBalance: Bool {
-        tradingBalancePresenter != nil
-    }
-
-    private var shouldShowSavingsBalance: Bool {
-        savingsBalancePresenter != nil
-    }
 
     private let presentationActionRelay = PublishRelay<PresentationAction>()
     private let walletBalanceStateRelay = BehaviorRelay<BalancePresentationState>(value: .hidden)
@@ -188,18 +180,12 @@ final class DashboardDetailsScreenPresenter {
             .disposed(by: disposeBag)
 
         presenterSelectionRelay
-            .compactMap { cellType -> BalanceType? in
-                guard case let .balance(balanceType) = cellType else { return nil }
-                return balanceType
-            }
-            .map { balanceType in
-                switch balanceType {
-                case .nonCustodial:
-                    return .nonCustodial(currency)
-                case .custodial(.trading):
-                    return .trading(currency)
-                case .custodial(.savings):
-                    return .savings(currency)
+            .compactMap { cellType -> DashboadDetailsAction? in
+                switch cellType {
+                case .balance(let account):
+                    return .routeTo(account)
+                case .chart, .priceAlert:
+                    return nil
                 }
             }
             .bindAndCatch(to: actionRelay)
@@ -216,85 +202,87 @@ final class DashboardDetailsScreenPresenter {
     }
 
     private func setupWalletBalancePresenter() {
-        interactor.nonCustodialActivitySupported
-            .filter { $0 }
-            .take(1) // This to ensure the cell shows only once
-            .map(weak: self) { (self, exists) in
-                guard exists else { return .hidden }
-                return .visible(
-                    self.balanceCellPresenter(for: .nonCustodial)
-                )
+        interactor.nonCustodialAccount
+            .flatMap(weak: self) { (self, account) -> Single<BalancePresentationState> in
+                account
+                    .can(perform: .viewActivity)
+                    .map(weak: self) { (self, supported) in
+                        switch supported {
+                        case false:
+                            return .hidden
+                        case true:
+                            let presenter = self.balanceCellPresenter(account: account)
+                            return .visible(presenter, account)
+                        }
+                    }
             }
+            .asObservable()
             .bindAndCatch(to: walletBalanceStateRelay)
             .disposed(by: disposeBag)
 
         walletBalanceStateRelay
-            .filter { $0.isVisible }
-            .mapToVoid()
-            .map { .show(.nonCustodial) }
+            .compactMap { $0.visible?.account }
+            .map { .show($0) }
             .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
 
     private func setupSavingsBalancePresenter() {
-        interactor.custodialSavingsFunded
-            .filter { $0 }
-            .take(1) // This to ensure the cell shows only once
-            .map(weak: self) { (self, exists) in
-                guard exists else { return .hidden }
-                return .visible(
-                    self.balanceCellPresenter(for: .custodial(.savings))
-                )
+        interactor.interestAccountIfFunded
+            .map(weak: self) { (self, account) -> BalancePresentationState in
+                switch account {
+                case .none:
+                    return .hidden
+                case .some(let account):
+                    let presenter = self.balanceCellPresenter(account: account)
+                    return .visible(presenter, account)
+                }
             }
+            .asObservable()
             .bindAndCatch(to: savingsBalanceStateRelay)
             .disposed(by: disposeBag)
 
         savingsBalanceStateRelay
-            .filter { $0.isVisible }
-            .mapToVoid()
-            .map { .show(.custodial(.savings)) }
+            .compactMap { $0.visible?.account }
+            .map { .show($0) }
             .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
 
     private func setupTradingBalancePresenter() {
-        Observable.just(
-            .visible(self.balanceCellPresenter(for: .custodial(.trading)))
-            )
+        interactor.tradingAccount
+            .map(weak: self) { (self, account) -> BalancePresentationState in
+                let presenter = self.balanceCellPresenter(account: account)
+                return .visible(presenter, account)
+            }
+            .asObservable()
             .bindAndCatch(to: tradingBalanceStateRelay)
             .disposed(by: disposeBag)
 
         tradingBalanceStateRelay
-            .filter { $0.isVisible }
-            .mapToVoid()
-            .map { .show(.custodial(.trading)) }
+            .compactMap { $0.visible?.account }
+            .map { .show($0) }
             .bindAndCatch(to: presentationActionRelay)
             .disposed(by: disposeBag)
     }
 
-    private func balanceCellPresenter(for accountType: SingleAccountType) -> CurrentBalanceCellPresenter {
+    private func balanceCellPresenter(account: BlockchainAccount) -> CurrentBalanceCellPresenter {
 
         let descriptionValue: () -> Observable<String> = { [weak self] in
             guard let self = self else { return .empty() }
-            switch accountType {
-            case .nonCustodial,
-                 .custodial(.trading),
-                 .custodial(.exchange):
-                return .just(self.currency.name)
-            case .custodial(.savings):
+            switch account {
+            case is CryptoInterestAccount:
                 return self.interactor
                     .rate
-                    .asObservable()
-                    .compactMap { $0 }
                     .map { "\(LocalizedString.Description.savingsPrefix) \($0)\(LocalizedString.Description.savingsSuffix)" }
+                    .asObservable()
+            default:
+                return .just(account.currencyType.name)
             }
         }
 
         return CurrentBalanceCellPresenter(
-            interactor: CurrentBalanceCellInteractor(
-                balanceFetching: interactor.balanceFetcher,
-                accountType: accountType
-            ),
+            interactor: CurrentBalanceCellInteractor(account: account),
             descriptionValue: descriptionValue,
             currency: .crypto(currency),
             titleAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.titleValue)",
@@ -302,7 +290,8 @@ final class DashboardDetailsScreenPresenter {
             pendingAccessibilitySuffix: "\(AccessilbityId.CurrentBalanceCell.pendingValue)",
             descriptors: .default(
                 cryptoAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.cryptoValue).\(currency.code)",
-                fiatAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.fiatValue).\(currency.code)")
+                fiatAccessiblitySuffix: "\(AccessilbityId.CurrentBalanceCell.fiatValue).\(currency.code)"
+            )
         )
     }
 }

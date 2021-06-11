@@ -7,7 +7,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
+final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private typealias LocalizedString = LocalizationConstants.Account
 
     let id: String
@@ -20,13 +20,17 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var pendingBalance: Single<MoneyValue> {
-        Single.just(MoneyValue.zero(currency: .bitcoinCash))
+        .just(.zero(currency: .bitcoinCash))
     }
 
     var balance: Single<MoneyValue> {
         balanceService
             .balance(for: xPub)
             .moneyValue
+    }
+
+    var actionableBalance: Single<MoneyValue> {
+        balance
     }
 
     var actions: Single<AvailableActions> {
@@ -103,14 +107,15 @@ class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
-        Single
-            .zip(
-                exchangeService.fiatPrice.take(1).asSingle(),
-                balance
-            ) { (exchangeRate: $0, balance: $1) }
-            .map { try MoneyValuePair(base: $0.balance, exchangeRate: $0.exchangeRate.moneyValue) }
-            .map(\.quote)
+    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+        exchangeService.fiatPrice
+            .flatMapLatest(weak: self) { (self, exchangeRate) in
+                self.balance
+                    .map { balance -> MoneyValuePair in
+                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
+                    }
+                    .asObservable()
+            }
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

@@ -16,11 +16,11 @@ extension Optional: OptionalType {
 
 extension ObservableType where Element: OptionalType {
     func onNil(error: Error) -> Observable<Element.Wrapped> {
-        flatMap { element -> Observable<Element.Wrapped> in
+        map { element -> Element.Wrapped in
             guard let value = element.value else {
-                return Observable<Element.Wrapped>.error(error)
+                throw error
             }
-            return Observable<Element.Wrapped>.just(value)
+            return value
         }
     }
 }

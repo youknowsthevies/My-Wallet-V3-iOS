@@ -22,14 +22,11 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
     let internalSendRelay = PublishRelay<Void>()
 
     private var stateService: CustodyWithdrawalStateService!
-    private let dataProviding: DataProviding
     private let navigationRouter: NavigationRouterAPI
     private var currency: CryptoCurrency!
     private let disposeBag = DisposeBag()
 
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         dataProviding: DataProviding = resolve()) {
-        self.dataProviding = dataProviding
+    init(navigationRouter: NavigationRouterAPI = NavigationRouter()) {
         self.navigationRouter = navigationRouter
     }
 

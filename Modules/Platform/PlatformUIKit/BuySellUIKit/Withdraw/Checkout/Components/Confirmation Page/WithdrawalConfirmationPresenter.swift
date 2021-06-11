@@ -38,7 +38,9 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
 
         viewModel = Driver.deferred({ [interactor] () -> Driver<PendingStateViewModel> in
             guard let amount = interactor.amount, interactor.isSuccess || interactor.isLoading else {
-                return .just(Self.errorViewModel(with: interactor.currencyType, buttonModel: buttonModel))
+                return .just(Self.errorViewModel(with: interactor.currencyType,
+                                                 buttonModel: buttonModel,
+                                                 errorDescription: interactor.errorDescription))
             }
             if interactor.isSuccess {
                 return .just(Self.viewModel(with: amount, buttonModel: buttonModel))
@@ -76,7 +78,9 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
         button: buttonModel)
     }
 
-    private static func errorViewModel(with currencyType: CurrencyType, buttonModel: ButtonViewModel) -> PendingStateViewModel {
+    private static func errorViewModel(with currencyType: CurrencyType,
+                                       buttonModel: ButtonViewModel,
+                                       errorDescription: String?) -> PendingStateViewModel {
         PendingStateViewModel(compositeStatusViewType: .composite(
             .init(
                 baseViewType: .text(currencyType.symbol),
@@ -86,7 +90,7 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
             )
         ),
         title: LocalizedString.Error.titleSuffix,
-        subtitle: LocalizedString.Error.subtitle,
+        subtitle: [LocalizedString.Error.subtitle, errorDescription].compactMap { $0 }.joined(separator: "\n\n"),
         button: buttonModel)
     }
 }

@@ -8,10 +8,14 @@ extension DependencyContainer {
     // MARK: - InterestKit Module
 
     public static var interestKit = module {
+
         factory { SavingsAccountClient() as SavingsAccountClientAPI }
 
-        factory { SavingAccountService() as SavingAccountServiceAPI }
+        single { SavingAccountService() as SavingAccountServiceAPI }
 
-        factory { SavingAccountService() as SavingsOverviewAPI }
+        factory { () -> SavingsOverviewAPI in
+            let service: SavingAccountServiceAPI = DIKit.resolve()
+            return service as SavingsOverviewAPI
+        }
     }
 }

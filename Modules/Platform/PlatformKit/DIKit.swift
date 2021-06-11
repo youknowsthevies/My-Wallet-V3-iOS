@@ -10,17 +10,9 @@ extension DependencyContainer {
 
     public static var platformKit = module {
 
-        // MARK: - BalanceProviding
+        // MARK: - Today Extension
 
-        factory { () -> BalanceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balance
-        }
-
-        factory { () -> ExchangeProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.exchange
-        }
+        single { PortfolioSyncingService() as BalanceSharingSettingsServiceAPI }
 
         // MARK: - Clients
 
@@ -138,7 +130,13 @@ extension DependencyContainer {
             )
         }
 
-        single { ReactiveWallet() }
+        // TODO: Change usages of "Coincore = resolve()" to "CoincoreAPI = resolve()"
+        single { () -> CoincoreAPI in
+            let service: Coincore = DIKit.resolve()
+            return service as CoincoreAPI
+        }
+
+        single { ReactiveWallet() as ReactiveWalletAPI }
 
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }
 
@@ -162,6 +160,8 @@ extension DependencyContainer {
         factory { PriceService() as PriceServiceAPI }
 
         factory { CryptoReceiveAddressFactoryService() }
+
+        factory { BlockchainAccountFetcher() as BlockchainAccountFetching }
 
         // MARK: - Settings
 
