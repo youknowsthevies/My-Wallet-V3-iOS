@@ -3,8 +3,8 @@
 import AuthenticationKit
 import ComposableArchitecture
 import Localization
-import ToolKit
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 typealias LoginViewString = LocalizationConstants.AuthenticationKit.Login
@@ -21,6 +21,7 @@ public struct LoginView: View {
     public var body: some View {
         NavigationView {
             VStack {
+                // Email Text Field
                 FormTextFieldGroup(
                     title: LoginViewString.TextFieldTitle.email,
                     text: viewStore.binding(
@@ -28,27 +29,34 @@ public struct LoginView: View {
                         send: { .didChangeEmailAddress($0) }
                     ),
                     textPlaceholder: LoginViewString.TextFieldPlaceholder.email,
-                    error: { text in
-                        !text.isEmail
-                    },
+                    error: { !$0.isEmail && !$0.isEmpty },
                     errorMessage: LoginViewString.TextFieldFootnote.invalidEmail
                 )
                 .disableAutocorrection(true)
                 .autocapitalization(.none)
-                .padding(EdgeInsets(top: 34, leading: 24, bottom: 2, trailing: 24))
+                .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
+
+                // Divider
                 LabelledDivider(label: LoginViewString.Divider.or)
-                IconButton(title: LoginViewString.Button.scanPairingCode,
-                           icon: Image.ButtonIcon.qrCode) {
-                    // TODO: add scan pairing code action here
+
+                // Scan Pairing Code Button
+                IconButton(
+                    title: LoginViewString.Button.scanPairingCode,
+                    icon: Image.ButtonIcon.qrCode) {
+                    // Add scan pairing code action here
                 }
                 .foregroundColor(.buttonPrimaryBackground)
                 .padding(EdgeInsets(top: 22, leading: 24, bottom: 34, trailing: 24))
+
                 Spacer()
+
+                // Continue Button
                 PrimaryButton(title: LoginViewString.Button._continue) {
                     viewStore.send(.setVerifyDeviceVisible(true))
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.state.emailAddress.isEmail)
+
                 NavigationLink(
                     destination: VerifyDeviceView(store: store),
                     isActive: viewStore.binding(
@@ -59,10 +67,10 @@ public struct LoginView: View {
                 )
             }
             .navigationBarTitle(LoginViewString.navigationTitle)
-            .updateNavigationBarStyle()
             .trailingNavigationButton(.close) {
                 viewStore.send(.setLoginVisible(false))
             }
+            .updateNavigationBarStyle()
         }
     }
 }
