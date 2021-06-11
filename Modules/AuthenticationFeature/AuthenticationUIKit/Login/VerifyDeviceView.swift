@@ -9,7 +9,6 @@ import UIComponentsKit
 typealias VerifyDeviceViewString = LocalizationConstants.AuthenticationKit.VerifyDevice
 
 public struct VerifyDeviceView: View {
-
     let store: Store<AuthenticationState, AuthenticationAction>
     @ObservedObject var viewStore: ViewStore<VerifyDeviceViewState, AuthenticationAction>
 
@@ -20,23 +19,33 @@ public struct VerifyDeviceView: View {
 
     public var body: some View {
         VStack {
+            // Verify Device Icon Image
             Image.CircleIcon.verifyDevice
                 .frame(width: 72, height: 72)
+
+            // Verify Device title
             Text(VerifyDeviceViewString.title)
-                .font(Font(weight: .semibold, size: 20))
                 .textStyle(.title)
-                .padding(EdgeInsets(top: 24, leading: 0, bottom: 8, trailing: 0))
+                .padding(.top, 16)
+
             Text(VerifyDeviceViewString.description)
                 .font(Font(weight: .medium, size: 16))
-                .textStyle(.subheading)
+                .foregroundColor(.textSubheading)
+                .lineSpacing(4)
+
             Spacer()
+
+            // Open Email App Button
             PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
                 viewStore.send(.setPasswordLoginVisible(true))
             }
-            .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+            .padding(.bottom, 10)
+
+            // Send Again Button
             SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
-                // TODO: add send again action here
+                // Add send again action here
             }
+
             NavigationLink(
                 destination: PasswordLoginView(store: store),
                 isActive: viewStore.binding(
@@ -47,7 +56,7 @@ public struct VerifyDeviceView: View {
             )
         }
         .multilineTextAlignment(.center)
-        .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
+        .padding(EdgeInsets(top: 247, leading: 24, bottom: 58, trailing: 24))
     }
 }
 
