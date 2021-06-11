@@ -3,6 +3,7 @@
 import AuthenticationKit
 import ComposableArchitecture
 import Localization
+import ToolKit
 import SwiftUI
 import UIComponentsKit
 
@@ -26,8 +27,14 @@ public struct LoginView: View {
                         get: { $0.emailAddress },
                         send: { .didChangeEmailAddress($0) }
                     ),
-                    textPlaceholder: LoginViewString.TextFieldPlaceholder.email
+                    textPlaceholder: LoginViewString.TextFieldPlaceholder.email,
+                    error: { text in
+                        !text.isEmail
+                    },
+                    errorMessage: LoginViewString.TextFieldFootnote.invalidEmail
                 )
+                .disableAutocorrection(true)
+                .autocapitalization(.none)
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 2, trailing: 24))
                 LabelledDivider(label: LoginViewString.Divider.or)
                 IconButton(title: LoginViewString.Button.scanPairingCode,
@@ -41,7 +48,7 @@ public struct LoginView: View {
                     viewStore.send(.setVerifyDeviceVisible(true))
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
-                .disabled(viewStore.state.emailAddress.isEmpty)
+                .disabled(!viewStore.state.emailAddress.isEmail)
                 NavigationLink(
                     destination: VerifyDeviceView(store: store),
                     isActive: viewStore.binding(

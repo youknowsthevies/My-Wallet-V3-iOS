@@ -11,12 +11,15 @@ public struct FormTextFieldStyle: TextFieldStyle {
     let borderWidth: CGFloat = 1
     let isEditing: Bool
     let isActive: Bool
+    let isError: Bool
 
     public init(isEditing: Bool = false,
-                isActive: Bool = true) {
+                isActive: Bool = true,
+                isError: Bool = false) {
         // required for exposing the view to the external world
         self.isEditing = isEditing
         self.isActive = isActive
+        self.isError = isError
     }
 
     public func _body(configuration: TextField<Self._Label>) -> some View {
@@ -25,8 +28,7 @@ public struct FormTextFieldStyle: TextFieldStyle {
             .padding(paddingInsets)
             .overlay(
                 RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
-                    .stroke(isEditing ? Color.borderFocused : Color.borderPrimary,
-                        lineWidth: borderWidth)
+                    .stroke(isError ? Color.borderError : (isEditing ? Color.borderFocused : Color.borderPrimary), lineWidth: borderWidth)
             )
             .background(
                 RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)

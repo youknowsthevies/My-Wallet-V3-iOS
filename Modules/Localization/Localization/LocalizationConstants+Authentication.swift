@@ -94,6 +94,10 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
         public enum TextFieldFootnote {
+            public static let invalidEmail = NSLocalizedString(
+                "Invalid Email",
+                comment: "Login screen: invalid email error message"
+            )
             public static let wallet = NSLocalizedString(
                 "Wallet: ",
                 comment: "Login screen: prefix for wallet identifier footnote"

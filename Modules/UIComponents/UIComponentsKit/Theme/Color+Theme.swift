@@ -5,6 +5,7 @@ extension Color {
     // MARK: Borders
     public static let borderPrimary = Color(paletteColor: .grey100)
     public static let borderFocused = Color(paletteColor: .blue600)
+    public static let borderError = Color(paletteColor: .red600)
 
     // MARK: Backgrounds
     public static let viewPrimaryBackground = Color(paletteColor: .white)
