@@ -93,34 +93,30 @@ struct FormTextFieldGroupDemoView: View {
                 title: "My Text Field",
                 text: .constant("")
             )
-            .padding()
             FormTextFieldGroup(
                 title: "My Text Field",
                 text: .constant(""),
                 textPlaceholder: "Some Placeholder",
                 footnote: .constant("Some Footnote")
             )
-            .padding()
             FormTextFieldGroup(
                 title: "My Text Field",
                 text: .constant("Lorem Ipsum"),
                 footnote: .constant("Lorem Ipsum")
             )
-            .padding()
             FormTextFieldGroup(
                 title: "My Secure Text Field",
                 text: .constant("Secured Text"),
                 isSecure: true
             )
-            .padding()
             FormTextFieldGroup(
                 title: "My Error Text Field",
                 text: .constant("Some Error Text"),
                 error: { _ in true },
                 errorMessage: "My Error Message"
             )
-            .padding()
         }
+        .padding()
     }
 }
 
