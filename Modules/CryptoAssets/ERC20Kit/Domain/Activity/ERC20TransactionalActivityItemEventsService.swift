@@ -37,6 +37,7 @@ fileprivate extension ERC20HistoricalTransaction {
         // TODO: Confirmation Status
         .init(
             identifier: identifier,
+            transactionHash: transactionHash,
             creationDate: createdAt,
             status: .complete,
             type: direction == .debit ? .receive : .send,

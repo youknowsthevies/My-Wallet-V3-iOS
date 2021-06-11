@@ -17,12 +17,17 @@ public enum Direction: String {
 public protocol HistoricalTransaction {
     associatedtype Address: AssetAddress
 
+    /// The transaction identifier, used for equality checking and backend calls.
     var identifier: String { get }
+
     var fromAddress: Address { get }
     var toAddress: Address { get }
     var direction: Direction { get }
     var amount: CryptoValue { get }
+
+    /// The transaction hash, used in Explorer URLs.
     var transactionHash: String { get }
+
     var createdAt: Date { get }
     var fee: CryptoValue? { get }
     var memo: String? { get }

@@ -63,12 +63,19 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - Public Properties
 
+    /**
+     The transaction identifier, used for equality checking and backend calls.
+
+     - Note: For Bitcoin Cash, this is identical to `transactionHash`.
+     */
     public var identifier: String {
         transactionHash
     }
+
     public var token: String {
         transactionHash
     }
+
     public let fromAddress: Address
     public let toAddress: Address
     public let direction: Direction

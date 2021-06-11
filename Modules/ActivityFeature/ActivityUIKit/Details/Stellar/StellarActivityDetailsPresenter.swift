@@ -145,7 +145,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         memoPresenter = TransactionalLineItem.memo().defaultPresenter(
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
-        orderIDPresenter = TransactionalLineItem.orderId().defaultCopyablePresenter(
+        orderIDPresenter = TransactionalLineItem.orderId(event.transactionHash).defaultCopyablePresenter(
             analyticsRecorder: analyticsRecorder,
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
@@ -187,12 +187,6 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
             .bind { [weak self] _ in
                 self?.router.showBlockchainExplorer(for: event)
             }
-            .disposed(by: disposeBag)
-
-        itemRelay
-            .map { $0?.transactionHash }
-            .mapToLabelContentStateInteraction()
-            .bindAndCatch(to: orderIDPresenter.interactor.description.stateRelay)
             .disposed(by: disposeBag)
 
         itemRelay

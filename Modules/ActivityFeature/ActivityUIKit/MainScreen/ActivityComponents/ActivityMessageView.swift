@@ -17,11 +17,10 @@ final class ActivityMessageView: UIView {
 
     // MARK: - Private Properties (UIStackView)
 
-    private let sharedWithStackView = UIStackView()
+    private let stackView = UIStackView()
     private let summaryStackView = UIStackView()
     private let descriptorsStackView = UIStackView()
-    private let outerStackView = UIStackView()
-    private let stackView = UIStackView()
+    private let sharedWithStackView = UIStackView()
 
     private let containerView = UIView()
     private let badgeImageView = BadgeImageView()
@@ -53,13 +52,11 @@ final class ActivityMessageView: UIView {
 
     private func setup() {
         backgroundColor = .lightGray
-        containerView.backgroundColor = .white
         addSubview(containerView)
 
-        containerView.addSubview(sharedWithStackView)
-        containerView.addSubview(logoImageView)
-        containerView.addSubview(stackView)
+        // MARK: - Container View
 
+        containerView.backgroundColor = .white
         containerView.layer.shadowColor = UIColor.securePinGrey.cgColor
         containerView.layer.shadowOffset = CGSize(width: 0, height: Spacing.standard)
         containerView.layer.shadowOpacity = 1
@@ -70,52 +67,73 @@ final class ActivityMessageView: UIView {
         containerView.layoutToSuperview(axis: .horizontal, offset: Spacing.inner)
         containerView.layoutToSuperview(axis: .vertical, offset: Spacing.inner)
 
+        containerView.addSubview(stackView)
+
+        // MARK: - Stack View
+
+        stackView.axis = .vertical
+        stackView.distribution = .equalSpacing
+
+        stackView.layout(edges: .top, .leading, to: containerView, offset: Spacing.standard)
+        stackView.layout(edges: .bottom, .trailing, to: containerView, offset: -Spacing.standard)
+
+        stackView.addArrangedSubview(summaryStackView)
+        stackView.addArrangedSubview(imageContainerView)
+        stackView.addArrangedSubview(sharedWithStackView)
+
+        // MARK: - Summary Stack View
+
+        summaryStackView.axis = .horizontal
         summaryStackView.alignment = .leading
         summaryStackView.spacing = Spacing.inner
-        stackView.axis = .vertical
-        stackView.alignment = .center
+
+        summaryStackView.addArrangedSubview(badgeImageView)
+        summaryStackView.addArrangedSubview(descriptorsStackView)
+
+        // MARK: - Badge Image View
+
+        badgeImageView.layout(size: .init(edge: Sizing.badge))
+
+        // MARK: - Descriptors Stack View
+
         descriptorsStackView.axis = .vertical
         descriptorsStackView.alignment = .leading
-        outerStackView.axis = .vertical
-        outerStackView.alignment = .leading
 
         descriptorsStackView.addArrangedSubview(titleLabel)
         descriptorsStackView.addArrangedSubview(descriptionLabel)
         descriptorsStackView.addArrangedSubview(cryptoValueLabel)
 
-        summaryStackView.addArrangedSubview(badgeImageView)
-        summaryStackView.addArrangedSubview(descriptorsStackView)
+        // MARK: - Image Container View
 
-        stackView.addArrangedSubview(summaryStackView)
-        stackView.addArrangedSubview(imageContainerView)
-        imageContainerView.addSubview(qrImageView)
-        qrImageView.contentMode = .scaleAspectFit
-        qrImageView.layout(edges: .top, .leading, to: imageContainerView, offset: 8.0)
-        qrImageView.layout(edges: .bottom, .trailing, to: imageContainerView, offset: -8.0)
-
-        sharedWithStackView.axis = .horizontal
-        sharedWithStackView.addArrangedSubview(sharedWithLabel)
-        sharedWithStackView.addArrangedSubview(logoImageView)
-
-        logoImageView.image = UIImage(named: "logo_small")
-        logoImageView.contentMode = .scaleAspectFit
-        logoImageView.layout(size: .init(edge: 16.0))
-
-        sharedWithStackView.alignment = .trailing
-        sharedWithStackView.spacing = Spacing.standard / 2.0
-        sharedWithStackView.layout(edges: .leading, to: containerView, offset: Spacing.standard, priority: .defaultLow)
-        sharedWithStackView.layout(edges: .bottom, .trailing, to: containerView, offset: -Spacing.standard)
-
-        badgeImageView.layout(size: .init(edge: Sizing.badge))
-
-        summaryStackView.layout(edges: .top, .leading, to: containerView, offset: Spacing.standard)
-        summaryStackView.layout(edges: .trailing, to: containerView, offset: -Spacing.standard)
-        stackView.layout(edges: .trailing, to: containerView, offset: -Spacing.standard)
-        stackView.layout(edge: .top, to: .bottom, of: sharedWithStackView, offset: Spacing.standard, priority: .defaultLow)
         imageContainerView.layer.shadowColor = UIColor.securePinGrey.cgColor
         imageContainerView.layer.shadowOffset = CGSize(width: 0, height: Spacing.standard)
         imageContainerView.layer.shadowOpacity = 0.5
         imageContainerView.layer.shadowRadius = 8.0
         imageContainerView.clipsToBounds = false
+
+        imageContainerView.addSubview(qrImageView)
+
+        // MARK: - QR Image View
+
+        qrImageView.contentMode = .scaleAspectFit
+        qrImageView.verticalContentCompressionResistancePriority = .defaultLow
+
+        qrImageView.layout(edges: .top, .leading, to: imageContainerView, offset: Spacing.standard)
+        qrImageView.layout(edges: .bottom, .trailing, to: imageContainerView, offset: -Spacing.standard)
+
+        // MARK: - Shared With Stack View
+
+        sharedWithStackView.axis = .horizontal
+        sharedWithStackView.alignment = .trailing
+        sharedWithStackView.spacing = Spacing.interItem
+
+        sharedWithStackView.addArrangedSubview(sharedWithLabel)
+        sharedWithStackView.addArrangedSubview(logoImageView)
+
+        // MARK: - Logo Image View
+
+        logoImageView.image = UIImage(named: "logo_small")
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.layout(size: .init(edge: 16.0))
     }
 }
