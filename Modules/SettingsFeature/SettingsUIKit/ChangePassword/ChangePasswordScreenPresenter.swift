@@ -79,7 +79,7 @@ final class ChangePasswordScreenPresenter {
         )
 
         currentPasswordTextFieldViewModel = TextFieldViewModel(
-            with: .password,
+            with: .currentPassword,
             validator: TextValidationFactory.Password.login,
             messageRecorder: resolve()
         )

@@ -49,6 +49,9 @@ public enum TextFieldType: Hashable {
     /// Password for auth
     case password
 
+    /// Current password for changing to new password
+    case currentPassword
+
     /// A single word from the mnemonic used for backup verification.
     /// The index is the index of the word in the mnemonic.
     case backupVerification(index: Int)
@@ -88,6 +91,8 @@ extension TextFieldType: CustomDebugStringConvertible {
             return "confirm-new-password"
         case .password:
             return "password"
+        case .currentPassword:
+            return "current-password"
         case .backupVerification(let index):
             return "backup-verification-\(index)"
         case .mobile:
@@ -127,6 +132,7 @@ extension TextFieldType {
         switch self {
         case .walletIdentifier,
              .password,
+             .currentPassword,
              .newPassword,
              .confirmNewPassword,
              .backupVerification,
@@ -176,6 +182,8 @@ extension TextFieldType {
             return .id(AccessibilityId.confirmNewPassword)
         case .password:
             return .id(AccessibilityId.password)
+        case .currentPassword:
+            return .id(AccessibilityId.currentPassword)
         case .walletIdentifier:
             return .id(AccessibilityId.walletIdentifier)
         case .mobile:
@@ -220,6 +228,7 @@ extension TextFieldType {
              .memo:
              return false
         case .password,
+             .currentPassword,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
@@ -244,6 +253,7 @@ extension TextFieldType {
         case .memo:
             return LocalizedString.noMemo
         case .password,
+             .currentPassword,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
@@ -279,6 +289,8 @@ extension TextFieldType {
         case .email:
             return LocalizedString.email
         case .password:
+            return LocalizedString.password
+        case .currentPassword:
             return LocalizedString.currentPassword
         case .newPassword:
             return LocalizedString.newPassword
@@ -318,6 +330,7 @@ extension TextFieldType {
              .newPassword,
              .confirmNewPassword,
              .password,
+             .currentPassword,
              .backupVerification,
              .oneTimeCode,
              .description,
@@ -350,6 +363,7 @@ extension TextFieldType {
             return .words
         case .backupVerification,
              .password,
+             .currentPassword,
              .newPassword,
              .confirmNewPassword,
              .walletIdentifier,
@@ -387,7 +401,7 @@ extension TextFieldType {
              .cryptoAddress,
              .memo:
             return false
-        case .newPassword, .confirmNewPassword, .password:
+        case .newPassword, .confirmNewPassword, .password, .currentPassword:
             return true
         }
     }
@@ -420,7 +434,7 @@ extension TextFieldType {
             return .oneTimeCode
         case .newPassword, .confirmNewPassword:
             return .newPassword
-        case .password:
+        case .password, .currentPassword:
             /// Disable password suggestions (avoid setting `.password` as value)
             return UITextContentType(rawValue: "")
         case .addressLine(let line):
