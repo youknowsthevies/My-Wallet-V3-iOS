@@ -9,7 +9,7 @@ public enum LoggedIn {
     public enum Action: Equatable {
         case none
         case start(window: UIWindow?)
-        case toggleSideMenu
+        case logout
     }
 
     public struct State: Equatable {
@@ -29,10 +29,10 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
     switch action {
     case .none:
         return .none
-    case .toggleSideMenu:
-        return .none
     case .start(let window):
         return handlePostAuthenticationLogic(environment: environment)
+    case .logout:
+        return .none
     }
 }
 
