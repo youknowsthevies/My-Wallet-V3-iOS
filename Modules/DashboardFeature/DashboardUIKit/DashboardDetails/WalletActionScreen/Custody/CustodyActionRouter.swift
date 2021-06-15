@@ -45,7 +45,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
     /// - note: This is needed in order for the reference to be kept in memory,
@@ -105,7 +105,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     public func start(with account: BlockchainAccount) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
-        self.disposeBag = DisposeBag()
         self.account = account
         self.stateService = CustodyActionStateService(recoveryStatusProviding: resolve())
 
