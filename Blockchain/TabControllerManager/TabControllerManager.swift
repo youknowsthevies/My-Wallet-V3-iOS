@@ -35,7 +35,7 @@ final class TabControllerManager: NSObject {
     private let receiveCoordinator: ReceiveCoordinator
     private let featureConfigurator: FeatureConfiguring
     private let internalFeatureFlag: InternalFeatureFlagServiceAPI
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     private let disposeBag = DisposeBag()
     @LazyInject private var walletManager: WalletManager
 
@@ -43,7 +43,7 @@ final class TabControllerManager: NSObject {
          analyticsEventRecorder: AnalyticsEventRecording = resolve(),
          featureConfigurator: FeatureConfiguring = resolve(),
          internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
-         coincore: Coincore = resolve()) {
+         coincore: CoincoreAPI = resolve()) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.featureConfigurator = featureConfigurator
         self.internalFeatureFlag = internalFeatureFlag

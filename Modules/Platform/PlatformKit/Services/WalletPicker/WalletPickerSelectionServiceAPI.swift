@@ -18,9 +18,9 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
     private var sharedStream: Observable<BlockchainAccount>!
     private let defaultValue: Observable<AccountGroup>
     private let selectedDataRelay: BehaviorRelay<BlockchainAccount?>
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
 
-    public init(coincore: Coincore = resolve()) {
+    public init(coincore: CoincoreAPI = resolve()) {
         self.coincore = coincore
         defaultValue = coincore.allAccounts.asObservable().share(replay: 1)
         selectedDataRelay = BehaviorRelay(value: nil)

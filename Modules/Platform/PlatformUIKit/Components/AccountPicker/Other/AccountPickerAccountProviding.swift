@@ -27,7 +27,7 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
     // MARK: - Private Properties
 
     private let action: AssetAction
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     private let singleAccountsOnly: Bool
     private let failSequence: Bool
     private let errorRecorder: ErrorRecording
@@ -70,7 +70,7 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
     ///   - action: The desired action. This account provider will only return accounts/account groups that can execute this action.
     ///   - failSequence: A flag indicating if, in the event of a wallet erring out, the whole `accounts: Single<[BlockchainAccount]>` sequence should err or if the offending element should be filtered out. Check `flatMapFilter`.
     public init(singleAccountsOnly: Bool,
-                coincore: Coincore = resolve(),
+                coincore: CoincoreAPI = resolve(),
                 errorRecorder: ErrorRecording = resolve(),
                 action: AssetAction,
                 failSequence: Bool = true) {

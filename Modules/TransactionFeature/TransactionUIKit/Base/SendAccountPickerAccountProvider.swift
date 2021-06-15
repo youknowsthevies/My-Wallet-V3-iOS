@@ -23,7 +23,7 @@ final class SendAccountPickerAccountProvider: AccountPickerAccountProviding {
 
     // MARK: - Private Properties
 
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     private let errorRecorder: ErrorRecording
 
     // MARK: - Properties
@@ -54,7 +54,7 @@ final class SendAccountPickerAccountProvider: AccountPickerAccountProviding {
 
     // MARK: - Init
 
-    public init(coincore: Coincore = resolve(),
+    public init(coincore: CoincoreAPI = resolve(),
                 errorRecorder: ErrorRecording = resolve()) {
         self.coincore = coincore
         self.errorRecorder = errorRecorder
