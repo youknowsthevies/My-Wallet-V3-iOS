@@ -165,7 +165,7 @@ public struct PaymentMethod: Equatable, Comparable {
     /// The maximum value of payment using that method
     public let max: FiatValue
 
-    /// The maximum value of payment using that method
+    /// The minimum value of payment using that method
     public let min: FiatValue
 
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {

@@ -5,7 +5,6 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-@available(*, deprecated, message: "We need to shift to using models returned by Coincore.")
 public protocol AssetBalanceFetching {
 
     /// Non-Custodial balance service

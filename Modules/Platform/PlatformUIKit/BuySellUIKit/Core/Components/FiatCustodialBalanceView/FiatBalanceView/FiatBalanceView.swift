@@ -118,8 +118,8 @@ public final class FiatBalanceView: UIView {
     private func startShimmering() {
         guard quoteLabel.content.isEmpty else { return }
         guard baseLabel.content.isEmpty else { return }
-        fiatLabelShimmeringView.start()
-        baseFiatLabelShimmeringView.start()
+        fiatLabelShimmeringView?.start()
+        baseFiatLabelShimmeringView?.start()
     }
 
     fileprivate func setup(with presentation: FiatBalanceViewAsset.Value.Presentation) {

@@ -80,6 +80,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
             .flatMapLatest { _ -> Observable<[PaymentMethod]> in
                 fetch
             }
+            .share(replay: 1, scope: .whileConnected)
 
         paymentMethodsSingle = fetch
             .take(1)

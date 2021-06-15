@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -21,12 +22,30 @@ public final class FiatBalanceViewInteractor {
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
 
-    public init(balance: MoneyValueBalancePairs) {
+    public init(
+        account: SingleAccount,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
+        fiatCurrencyService
+            .fiatCurrencyObservable
+            .flatMapLatest { fiatCurrency in
+                account.balancePair(fiatCurrency: fiatCurrency)
+            }
+            .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: account.currencyType))
+            .map { moneyValuePair -> FiatBalanceViewAsset.Value.Interaction in
+                .init(base: moneyValuePair.base, quote: moneyValuePair.quote)
+            }
+            .map { FiatBalanceViewAsset.State.Interaction.loaded(next: $0) }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
+    }
+
+    public init(balance: MoneyValue) {
         stateRelay.accept(
             .loaded(
                 next: .init(
-                    base: balance.base.fiatValue!,
-                    quote: balance.quote.fiatValue!
+                    base: balance,
+                    quote: balance
                 )
             )
         )

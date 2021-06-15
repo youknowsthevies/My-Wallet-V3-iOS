@@ -25,7 +25,7 @@ public enum PaymentMethodType: Equatable {
         case .card(let data):
             return .card([data.type])
         case .account(let data):
-            return .funds(data.balance.base.currencyType)
+            return .funds(data.topLimit.currency)
         case .suggested(let method):
             return method.type
         case .linkedBank(let data):
@@ -120,31 +120,37 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// Preferred payment method
     let preferredPaymentMethodTypeRelay = BehaviorRelay<PaymentMethodType?>(value: nil)
     var preferredPaymentMethodType: Observable<PaymentMethodType?> {
+        preferredPaymentMethodTypeRelay.asObservable()
+            .flatMap(weak: self) { (self, paymentMethod) in
+                guard let paymentMethod = paymentMethod else {
+                    return self.defaultPaymentMethod
+                }
+                return .just(paymentMethod)
+            }
+    }
+
+    /// If there is no preferred `PaymentMethodType` selected, this is the value to which the stream should default to.
+    private var defaultPaymentMethod: Observable<PaymentMethodType?> {
         Observable
             .combineLatest(
-                preferredPaymentMethodTypeRelay,
                 fiatCurrencyService.fiatCurrencyObservable,
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable()
             )
             .flatMap(weak: self) { (self, payload) in
-                let (preferredMethod, fiatCurrecy, isTier2Approved) = payload
-                if let preferredMethod = preferredMethod {
-                    return .just(preferredMethod)
-                } else {
-                    // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
-                    // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
-                    return self.methodTypes
-                        .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
-                            // we filter valid methods for buy
-                            types.filterValidForBuy(
-                                currentWalletCurrency: fiatCurrecy,
-                                accountForEligibility: isTier2Approved
-                            )
-                        }
-                        .map { $0.first }
-                        .asObservable()
-                        .catchErrorJustReturn(.none)
-                }
+                let (fiatCurrency, isTier2Approved) = payload
+                // In case of no preselection we want the first eligible, if none present, check if available is only 1 and
+                // preselect it. Otherwise, don't preselect anything, this is in parallel with Android logic
+                return self.methodTypes
+                    .map { (types: [PaymentMethodType]) -> [PaymentMethodType] in
+                        // we filter valid methods for buy
+                        types.filterValidForBuy(
+                            currentWalletCurrency: fiatCurrency,
+                            accountForEligibility: isTier2Approved
+                        )
+                    }
+                    .map { $0.first }
+                    .asObservable()
+                    .catchErrorJustReturn(.none)
             }
     }
 
@@ -154,26 +160,28 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let cardListService: CardListServiceAPI
-    private let balanceProvider: BalanceProviding
+    private let tradingBalanceService: TradingBalanceServiceAPI
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
 
     // MARK: - Setup
 
-    init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         cardListService: CardListServiceAPI = resolve(),
-         balanceProvider: BalanceProviding = resolve(),
-         linkedBankService: LinkedBanksServiceAPI = resolve(),
-         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        cardListService: CardListServiceAPI = resolve(),
+        tradingBalanceService: TradingBalanceServiceAPI = resolve(),
+        linkedBankService: LinkedBanksServiceAPI = resolve(),
+        beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
         self.cardListService = cardListService
-        self.balanceProvider = balanceProvider
+        self.tradingBalanceService = tradingBalanceService
         self.linkedBankService = linkedBankService
         self.beneficiariesServiceUpdater = beneficiariesServiceUpdater
         self.kycTiersService = kycTiersService
@@ -184,7 +192,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.fetchCards(),
-                balanceProvider.fiatFundsBalancesSingle
+                tradingBalanceService.balances
             )
             .map(weak: self) { (self, payload) in
                 self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
@@ -211,7 +219,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.cardsSingle,
-                balanceProvider.fiatFundsBalancesSingle,
+                tradingBalanceService.balances,
                 linkedBankService.fetchLinkedBanks()
             )
             .map(weak: self) { (self, payload) in
@@ -261,9 +269,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// ~~~
     private func merge(paymentMethods: [PaymentMethod],
                        cards: [CardData],
-                       balances: MoneyBalancePairsCalculationStates,
+                       balances: CustodialAccountBalanceStates,
                        linkedBanks: [LinkedBankData]) -> [PaymentMethodType] {
         let topCardLimit = (paymentMethods.first { $0.type.isCard })?.max
+
         let cardTypes = cards
             .filter { $0.state.isUsable }
             .map { card in
@@ -274,6 +283,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 return card
             }
             .map { PaymentMethodType.card($0) }
+
         let suggestedMethods = paymentMethods
             .filter { paymentMethod -> Bool in
                 switch paymentMethod.type {
@@ -294,32 +304,18 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .sorted()
             .map { PaymentMethodType.suggested($0) }
 
-        let fundsCurrencies = Set(
-            paymentMethods
-                .compactMap { method -> CurrencyType? in
-                    switch method.type {
-                    case .funds(let currencyType):
-                        return currencyType
-                    default:
-                        return nil
-                    }
+        let balancesResult = paymentMethods
+            .filter(\.type.isFunds)
+            .compactMap { paymentMethod -> FundData? in
+                guard case let .funds(currency) = paymentMethod.type else {
+                    return nil
                 }
-        )
-
-        let fundsMaxAmounts = paymentMethods
-            .filter { $0.type.isFunds }
-            .map { $0.max }
-
-        let balances = balances.all
-            .compactMap { $0.value }
-            .filter { !$0.isAbsent }
-            .filter { fundsCurrencies.contains($0.baseCurrency) }
-            .map { balance in
-                let fundTopLimit = fundsMaxAmounts.first { balance.base.currencyType == $0.currency }!
-                let data = FundData(topLimit: fundTopLimit, balance: balance)
-                return data
+                guard let balance = balances[currency].balance else {
+                    return nil
+                }
+                return FundData(balance: balance, max: paymentMethod.max)
             }
-            .map { PaymentMethodType.account($0) }
+            .map(PaymentMethodType.account)
 
         let topBankTransferLimit = (paymentMethods.first { $0.type.isBankTransfer })?.max
         let activeBanks = linkedBanks.filter(\.isActive)
@@ -334,7 +330,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
 
         // Dear future developer,
         // Please note that order matters, if needed to change the order, remember to also update the method's comment!
-        return balances + cardTypes + activeBanks + suggestedMethods
+        return balancesResult + cardTypes + activeBanks + suggestedMethods
     }
 
     private func provideMethodTypes() -> Observable<[PaymentMethodType]> {
@@ -342,7 +338,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             .combineLatest(
                 paymentMethodsService.paymentMethods,
                 cardListService.cards,
-                balanceProvider.fiatFundsBalances,
+                tradingBalanceService.balances.asObservable(),
                 linkedBankService.linkedBanks.asObservable()
             )
             .map(weak: self) { (self, payload) in
@@ -409,14 +405,15 @@ extension Array where Element == PaymentMethodType {
     /// Returns the payment methods valid for buy usage
     /// - Parameters:
     ///   - currentWalletCurrency: The current currency selected in settings
-    ///   - accountForEligibility: Pass `true` if the eligibily flag of a suggested paymentMethod should be taken in consideration,
+    ///   - accountForEligibility: Pass `true` if the eligibly flag of a suggested paymentMethod should be taken in consideration,
     ///                            otherwise `false`
     /// - Returns: An array of `PaymentMethodType` objects that are valid for buy
     public func filterValidForBuy(currentWalletCurrency: FiatCurrency, accountForEligibility: Bool) -> [PaymentMethodType] {
         filter { method in
             switch method {
             case .account(let data):
-                return !data.balance.base.isZero && data.balance.base.currencyType == currentWalletCurrency.currency
+                return data.topLimit.isPositive
+                    && data.topLimit.currency == currentWalletCurrency
             case .suggested(let paymentMethod):
                 switch paymentMethod.type {
                 case .bankAccount:
