@@ -15,14 +15,11 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
     private let transactionModel: TransactionModel
 
     var accounts: Observable<[BlockchainAccount]> {
-        transactionModel.state
-            .map { state -> [BlockchainAccount] in
-                switch state.source {
-                case .none:
-                    return state.availableSources
-                case .some:
-                    return state.availableTargets as? [BlockchainAccount] ?? []
-                }
+        transactionModel
+            .state
+            .map(transform)
+            .distinctUntilChanged { lhs, rhs in
+                lhs.map(\.id) == rhs.map(\.id)
             }
     }
 
@@ -38,7 +35,17 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
             .map(\.destination)
     }
 
-    init(transactionModel: TransactionModel) {
+    private let transform: (TransactionState) -> [BlockchainAccount]
+
+    /// TransactionModelAccountProvider
+    ///
+    /// - parameter transactionModel: An `TransactionModel` which `state` will be observed.
+    /// - parameter transform: A transform function to apply to each source element of `TransactionModel.state`.
+    init(
+        transactionModel: TransactionModel,
+        transform: @escaping (TransactionState) -> [BlockchainAccount]
+    ) {
         self.transactionModel = transactionModel
+        self.transform = transform
     }
 }
