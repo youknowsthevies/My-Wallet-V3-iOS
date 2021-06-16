@@ -4,7 +4,6 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import Firebase
-import FirebaseCrashlytics
 import NabuAnalyticsDataKit
 import PlatformKit
 import SettingsKit

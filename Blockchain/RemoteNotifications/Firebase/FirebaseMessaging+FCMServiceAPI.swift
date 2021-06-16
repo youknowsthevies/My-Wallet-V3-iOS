@@ -1,12 +1,30 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import FirebaseMessaging
+import RemoteNotificationsKit
 
-protocol FirebaseCloudMessagingServiceAPI: AnyObject {
+protocol FirebaseCloudMessagingServiceAPI: RemoteNotificationTokenFetching {
     var apnsToken: Data? { get set }
     @discardableResult
     func appDidReceiveMessage(_ message: [AnyHashable: Any]) -> MessagingMessageInfo
     func subscribe(toTopic topic: String, completion: FIRMessagingTopicOperationCompletion?)
 }
 
-extension Messaging: FirebaseCloudMessagingServiceAPI {}
+extension Messaging: FirebaseCloudMessagingServiceAPI {
+
+    public func token(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
+        token { (token, error) in
+            if let error = error {
+                handler(.failure(.external(error)))
+            } else if let token = token {
+                if token.isEmpty {
+                    handler(.failure(.tokenIsEmpty))
+                } else {
+                    handler(.success(token))
+                }
+            } else {
+                handler(.failure(.resultIsNil))
+            }
+        }
+    }
+}

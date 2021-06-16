@@ -10,7 +10,6 @@ import DebugUIKit
 import DIKit
 import EthereumKit
 import Firebase
-import FirebaseCrashlytics
 import FirebaseDynamicLinks
 import KYCKit
 import KYCUIKit

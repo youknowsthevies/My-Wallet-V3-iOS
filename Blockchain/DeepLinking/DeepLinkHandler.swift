@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import Firebase
+import FirebaseAnalytics
 import KYCKit
 import PlatformKit
 import PlatformUIKit

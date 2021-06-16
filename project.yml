@@ -490,7 +490,35 @@ targets:
     - framework: Carthage/Build/Differentiator.xcframework
     - framework: Carthage/Build/DIKit.xcframework
     - framework: Carthage/Build/Differentiator.xcframework
+    - framework: Carthage/Build/FirebaseABTesting.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseAnalytics.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseCore.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseCoreDiagnostics.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseCrashlytics.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseDynamicLinks.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseInstallations.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseMessaging.xcframework
+      embed: false
+    - framework: Carthage/Build/FirebaseRemoteConfig.xcframework
+      embed: false
+    - framework: Carthage/Build/GoogleAppMeasurement.xcframework
+      embed: false
+    - framework: Carthage/Build/GoogleDataTransport.xcframework
+      embed: false
+    - framework: Carthage/Build/GoogleUtilities.xcframework
+      embed: false
+    - framework: Carthage/Build/nanopb.xcframework
+      embed: false
     - framework: Carthage/Build/PhoneNumberKit.xcframework
+    - framework: Carthage/Build/PromisesObjC.xcframework
+      embed: false
     - framework: Carthage/Build/RIBs.xcframework
     - framework: Carthage/Build/RxCocoa.xcframework
     - framework: Carthage/Build/RxCombine.xcframework
@@ -544,61 +572,11 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
-    - carthage: FIRAnalyticsConnector
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseABTesting
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseAnalytics
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseCore
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseCoreDiagnostics
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseCrashlytics
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseDynamicLinks
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseInstallations
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseInstanceID
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseMessaging
-      findFrameworks: false
-      linkType: static
-    - carthage: FirebaseRemoteConfig
-      findFrameworks: false
-      linkType: static
-    - carthage: GoogleAppMeasurement
-      findFrameworks: false
-      linkType: static
-    - carthage: GoogleDataTransport
-      findFrameworks: false
-      linkType: static
-    - carthage: GoogleUtilities
-      findFrameworks: false
-      linkType: static
-    - carthage: nanopb
-      findFrameworks: false
-      linkType: static
-    - carthage: PromisesObjC
-      findFrameworks: false
-      linkType: static
-    - carthage: Protobuf
-      findFrameworks: false
-      linkType: static
     platform: iOS
     postBuildScripts:
     - inputFiles:
       - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+      - ${BUILT_PRODUCTS_DIR}/${INFOPLIST_PATH}
       name: Run Crashlytics
       script: ${PROJECT_DIR}/scripts/crashlytics/run
     postCompileScripts:
