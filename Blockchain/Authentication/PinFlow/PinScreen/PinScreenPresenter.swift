@@ -135,11 +135,12 @@ final class PinScreenPresenter {
     var digitPadIsEnabled: Observable<Bool> {
         digitPadIsEnabledRelay
             .observeOn(MainScheduler.instance)
+            .distinctUntilChanged()
     }
 
-    private let remainingTimeRelay = BehaviorRelay<Int>(value: 0)
-    var remainingTime: Observable<Int> {
-        remainingTimeRelay
+    private let lockTimeMessageRelay = BehaviorRelay<String>(value: "")
+    var lockTimeMessage: Observable<String> {
+        lockTimeMessageRelay
             .observeOn(MainScheduler.instance)
     }
 
@@ -290,8 +291,8 @@ final class PinScreenPresenter {
             }
             .disposed(by: disposeBag)
 
-        // Bind the digit pad lock time to the visibility of the digit pad
-        let remainingTime = digitPadViewModel.remainingLockTimeObservable
+        // A count down timer starting from `remaining` seconds
+        let timer = digitPadViewModel.remainingLockTimeObservable
             .flatMapLatest { remaining -> Observable<Int> in
                 // Create a count down timer that counts for `remaining` seconds
                 return Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
@@ -300,12 +301,35 @@ final class PinScreenPresenter {
                     .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
             }
 
-        remainingTime
-            .bindAndCatch(to: remainingTimeRelay)
+        // bind the timer to the lock time message shown when key pad is disabled
+        timer
+            .map {
+                if $0 == 0 {
+                    return ""
+                } else if $0 <= 60 {
+                    let message = LocalizationConstants.Pin.tryAgain +
+                        String(" \($0)") + LocalizationConstants.Pin.seconds
+                    return message
+                } else if $0 <= 3600 {
+                    let message = LocalizationConstants.Pin.tryAgain +
+                        String(" \($0/60)") + LocalizationConstants.Pin.minutes +
+                        String(" \($0%60)") + LocalizationConstants.Pin.seconds
+                    return message
+                } else {
+                    let message = LocalizationConstants.Pin.tryAgain +
+                        String(" \($0/3600)") + LocalizationConstants.Pin.hours +
+                        String(" \(($0/60)%60)") + LocalizationConstants.Pin.minutes +
+                        String(" \($0%60)") + LocalizationConstants.Pin.seconds
+                    return message
+                }
+            }
+            .bindAndCatch(to: lockTimeMessageRelay)
             .disposed(by: disposeBag)
 
-        remainingTime
-            .map { $0 == 0 } // check if seconds remaining is 0, if yes, enable keypad, otherwise disable
+        // bind the timer to the visibility of the key pad
+        timer
+            // check if seconds remaining is 0, if yes, enable keypad, otherwise disable
+            .map { $0 == 0 }
             .bindAndCatch(to: digitPadIsEnabledRelay)
             .disposed(by: disposeBag)
 

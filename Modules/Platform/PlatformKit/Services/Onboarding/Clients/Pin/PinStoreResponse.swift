@@ -42,7 +42,7 @@ public struct PinStoreResponse: Decodable & Error {
 
 extension PinStoreResponse {
 
-    // TODO: use this when backend updates the backoff algorithm
+    // TODO: use the imaginary cap approach when backend updates the backoff algorithm
 //    private var attemptsRemaining: Int? {
 //        guard let remaining = self.remaining else {
 //            return nil
@@ -67,13 +67,13 @@ extension PinStoreResponse {
     private var lockTimeSeconds: Int {
         switch UserDefaults.standard.integer(forKey: "WrongPinAttempts") {
         case 1...3:
-            return 10 // 10 seconds
+            return 10 // 1-3 wrong attempts, lock for 10 seconds
         case 4:
-            return 300 // 5 minutes
+            return 300 // 4 wrong attempts, lock for 5 minutes
         case 5:
-            return 3600 // 1 hour
+            return 3600 // 5 wrong attempts, lock for 1 hour
         default:
-            return 86400 // 24 hours
+            return 86400 // 6+ wrong attempts, lock for 24 hours
         }
     }
 
@@ -107,6 +107,7 @@ extension PinStoreResponse {
                 UserDefaults.standard.integer(forKey: "WrongPinAttempts") + 1,
                 forKey: "WrongPinAttempts"
             )
+            // Record the timestamp when a wrong attempt is made
             UserDefaults.standard.set(
                 NSDate().timeIntervalSince1970,
                 forKey: "LastWrongPinTimestamp"
@@ -114,10 +115,10 @@ extension PinStoreResponse {
             let message = LocalizationConstants.Pin.incorrect
             return PinError.incorrectPin(message, lockTimeSeconds)
         case .backoff:
+            // Calculate elapsed time and remaining lock time
             let lastWrongPinTimestamp = UserDefaults.standard.object(forKey: "LastWrongPinTimestamp") as! TimeInterval
             let elapsed = Int(NSDate().timeIntervalSince1970 - lastWrongPinTimestamp)
             let remaining = lockTimeSeconds - elapsed
-            print("TTT \(remaining)")
             let message = LocalizationConstants.Pin.backoff
             return PinError.backoff(message, remaining)
         case .success:

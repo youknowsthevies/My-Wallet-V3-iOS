@@ -78,7 +78,6 @@ final class PinScreenViewController: BaseScreenViewController {
         // Subscribe to digit pad visibility state
         presenter
             .digitPadIsEnabled
-            .distinctUntilChanged()
             .subscribe(onNext: { isEnabled in
                 if isEnabled {
                     self.digitPadView.isUserInteractionEnabled = true
@@ -92,24 +91,11 @@ final class PinScreenViewController: BaseScreenViewController {
 
         presenter
             .digitPadIsEnabled
-            .distinctUntilChanged()
             .bindAndCatch(to: lockTimeLabel.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter
-            .remainingTime
-            .map {
-                if $0 == 0 {
-                    self.errorLabel.alpha = 0
-                    return ""
-                } else if $0 <= 60 {
-                    return "Please try again in \($0) seconds"
-                } else if $0 <= 3600 {
-                    return "Please try again in \($0/60) minutes and \($0%60) seconds"
-                } else {
-                    return "Please try again in \n\($0/3600) hours and \(($0/60)%60) minutes and \($0%60) seconds"
-                }
-            }
+            .lockTimeMessage
             .distinctUntilChanged()
             .bindAndCatch(to: lockTimeLabel.rx.text)
             .disposed(by: disposeBag)
@@ -271,10 +257,10 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
         case .incorrectPin(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message)
+            showInlineError(with: message, for: TimeInterval(remaining))
         case .backoff(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message)
+            showInlineError(with: message, for: TimeInterval(remaining))
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
@@ -308,9 +294,13 @@ extension PinScreenViewController {
         animator.startAnimation()
     }
 
-    private func showInlineError(with text: String) {
+    private func showInlineError(with text: String, for duration: TimeInterval? = nil) {
         errorLabel.text = text
         errorLabel.alpha = 1
+        guard let durationTime = duration else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + durationTime) {
+            self.errorLabel.alpha = 0
+        }
     }
 
     /// Displays a logout warning alert when the user taps the `Log out` button
