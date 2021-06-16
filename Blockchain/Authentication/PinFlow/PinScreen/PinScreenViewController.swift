@@ -252,6 +252,10 @@ extension PinScreenViewController {
         case .incorrectPin(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
             showInlineError(with: message, for: TimeInterval(remaining))
+            // TODO: Replace this with a custom error type
+            if remaining == 300 {
+                displayTooManyAttemptsAlert()
+            }
         case .backoff(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
             showInlineError(with: message, for: TimeInterval(remaining))
@@ -295,6 +299,13 @@ extension PinScreenViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + durationTime) {
             self.errorLabel.alpha = 0
         }
+    }
+
+    /// Displays a warning alert when users have too many wrong attempts
+    private func displayTooManyAttemptsAlert() {
+        let alertController = TooManyAttemptsAlertViewController()
+        alertController.modalPresentationStyle = .overCurrentContext
+        present(alertController, animated: true)
     }
 
     /// Displays a logout warning alert when the user taps the `Log out` button

@@ -292,7 +292,7 @@ public enum LocalizationConstants {
         )
 
         public static let tooManyAttemptsWarningMessage = NSLocalizedString(
-            "You've made too many failed attempts to log in with your PIN. Please try again in 60 seconds.",
+            "You've made too many failed attempts to log in with your PIN. Please try again in 5 minutes.",
             comment: "Warning essage for alert that tells the user he had too many PIN attempts"
         )
 
