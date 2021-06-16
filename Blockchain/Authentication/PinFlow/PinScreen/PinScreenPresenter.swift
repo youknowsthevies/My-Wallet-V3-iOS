@@ -137,9 +137,9 @@ final class PinScreenPresenter {
             .distinctUntilChanged()
     }
 
-    private let lockTimeMessageRelay = BehaviorRelay<String>(value: "")
-    var lockTimeMessage: Observable<String> {
-        lockTimeMessageRelay
+    private let remainingLockTimeMessageRelay = BehaviorRelay<String>(value: "")
+    var remainingLockTimeMessage: Observable<String> {
+        remainingLockTimeMessageRelay
             .observeOn(MainScheduler.instance)
     }
 
@@ -317,7 +317,7 @@ final class PinScreenPresenter {
                     return message
                 }
             }
-            .bindAndCatch(to: lockTimeMessageRelay)
+            .bindAndCatch(to: remainingLockTimeMessageRelay)
             .disposed(by: disposeBag)
 
         // bind the timer to the visibility of the key pad

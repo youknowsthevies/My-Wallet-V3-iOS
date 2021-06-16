@@ -12,7 +12,7 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var digitPadView: DigitPadView!
     @IBOutlet private var securePinView: SecurePinView!
     @IBOutlet private var errorLabel: UILabel!
-    @IBOutlet private var lockTimeLabel: UILabel!
+    @IBOutlet private var remainingLockTimeLabel: UILabel!
 
     @IBOutlet private var digitPadBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
@@ -87,13 +87,13 @@ final class PinScreenViewController: BaseScreenViewController {
 
         presenter
             .digitPadIsEnabled
-            .bindAndCatch(to: lockTimeLabel.rx.isHidden)
+            .bindAndCatch(to: remainingLockTimeLabel.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter
-            .lockTimeMessage
+            .remainingLockTimeMessage
             .distinctUntilChanged()
-            .bindAndCatch(to: lockTimeLabel.rx.text)
+            .bindAndCatch(to: remainingLockTimeLabel.rx.text)
             .disposed(by: disposeBag)
 
         // TODO: Re-enable this once we have isolated the source of the crash
@@ -189,10 +189,10 @@ final class PinScreenViewController: BaseScreenViewController {
     }
 
     private func setupLockTimeLabel() {
-        lockTimeLabel.accessibility =
+        remainingLockTimeLabel.accessibility =
             .id(AccessibilityIdentifiers.PinScreen.lockTimeLabel)
-        lockTimeLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
-        lockTimeLabel.textColor = presenter.contentColor
+        remainingLockTimeLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
+        remainingLockTimeLabel.textColor = presenter.contentColor
     }
 
     // MARK: - Navigation
