@@ -251,14 +251,14 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
         case .incorrectPin(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining))
+            showInlineError(with: message, for: TimeInterval(remaining-1))
             // TODO: Replace this with a custom error type
             if remaining == 300 {
                 displayTooManyAttemptsAlert()
             }
         case .backoff(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining))
+            showInlineError(with: message, for: TimeInterval(remaining-1))
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
