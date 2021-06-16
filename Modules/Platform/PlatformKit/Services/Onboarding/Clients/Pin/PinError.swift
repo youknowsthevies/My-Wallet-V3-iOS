@@ -19,7 +19,7 @@ public enum PinError: Error {
     case incorrectPin(String, Int)
 
     /// Signifies that the PIN auth is locked due to exponential backoff. Has an associated message with the remaining lock time.
-    case backoff(String)
+    case backoff(String, Int)
 
     /// Signifies that the user tried to authenticate with the wrong pin too many times
     case tooManyAttempts

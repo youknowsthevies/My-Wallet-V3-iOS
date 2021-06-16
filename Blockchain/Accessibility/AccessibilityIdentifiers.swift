@@ -11,6 +11,7 @@ class AccessibilityIdentifiers: NSObject {
         static let pinIndicatorFormat = "\(prefix)pinIndicator-"
 
         static let errorLabel = "\(prefix)errorLabel"
+        static let lockTimeLabel = "\(prefix)lockTimeLabel"
 
         static let versionLabel = "\(prefix)versionLabel"
         static let swipeLabel = "\(prefix)swipeLabel"

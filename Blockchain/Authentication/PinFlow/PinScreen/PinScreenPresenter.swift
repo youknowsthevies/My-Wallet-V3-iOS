@@ -137,6 +137,12 @@ final class PinScreenPresenter {
             .observeOn(MainScheduler.instance)
     }
 
+    private let remainingTimeRelay = BehaviorRelay<Int>(value: 0)
+    var remainingTime: Observable<Int> {
+        remainingTimeRelay
+            .observeOn(MainScheduler.instance)
+    }
+
     // MARK: Routing
 
     private let performEffect: PinRouting.RoutingType.Effect
@@ -285,7 +291,7 @@ final class PinScreenPresenter {
             .disposed(by: disposeBag)
 
         // Bind the digit pad lock time to the visibility of the digit pad
-        digitPadViewModel.remainingLockTimeObservable
+        let remainingTime = digitPadViewModel.remainingLockTimeObservable
             .flatMapLatest { remaining -> Observable<Int> in
                 // Create a count down timer that counts for `remaining` seconds
                 return Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
@@ -293,6 +299,12 @@ final class PinScreenPresenter {
                     .map { $0 + 1 } // timer increment by 1 every time
                     .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
             }
+
+        remainingTime
+            .bindAndCatch(to: remainingTimeRelay)
+            .disposed(by: disposeBag)
+
+        remainingTime
             .map { $0 == 0 } // check if seconds remaining is 0, if yes, enable keypad, otherwise disable
             .bindAndCatch(to: digitPadIsEnabledRelay)
             .disposed(by: disposeBag)

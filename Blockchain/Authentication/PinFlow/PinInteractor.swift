@@ -100,6 +100,8 @@ final class PinInteractor: PinInteracting {
             }
             .do(
                 onSuccess: { [weak self] response in
+                    // Reset the Wrong PIN attempts count
+                    UserDefaults.standard.set(0, forKey: "WrongPinAttempts")
                     try self?.updateCacheIfNeeded(response: response, pinPayload: payload)
                 }
             )
@@ -183,6 +185,7 @@ final class PinInteractor: PinInteracting {
                 self.appSettings.encryptedPinPassword = data.encryptedPinPassword
                 self.appSettings.pinKey = payload.pinKey
                 self.appSettings.passwordPartHash = data.password.passwordPartHash
+                UserDefaults.standard.set(0, forKey: "WrongPinAttempts")
                 try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 return Completable.empty()
             }
@@ -225,11 +228,10 @@ final class PinInteractor: PinInteracting {
             throw PinError.tooManyAttempts
         case .incorrect:
             let message = response.error ?? LocalizationConstants.Pin.incorrect
-            let remaining = response.remaining ?? 0
-            throw PinError.incorrectPin(message, Int(remaining/1000))
+            throw PinError.incorrectPin(message, 0)
         case .backoff:
             let message = response.error ?? LocalizationConstants.Pin.backoff
-            throw PinError.backoff(message)
+            throw PinError.backoff(message, 0)
         case .success:
             guard let pinDecryptionKey = response.pinDecryptionValue, !pinDecryptionKey.isEmpty else {
                 throw PinError.custom(LocalizationConstants.Errors.genericError)

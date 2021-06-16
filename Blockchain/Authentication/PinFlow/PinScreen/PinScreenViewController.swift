@@ -14,6 +14,7 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var digitPadView: DigitPadView!
     @IBOutlet private var securePinView: SecurePinView!
     @IBOutlet private var errorLabel: UILabel!
+    @IBOutlet private var lockTimeLabel: UILabel!
 
     @IBOutlet private var digitPadBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
@@ -44,6 +45,7 @@ final class PinScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupErrorLabel()
+        setupLockTimeLabel()
         createServerStatusView()
         presenter.viewDidLoad()
 
@@ -86,6 +88,30 @@ final class PinScreenViewController: BaseScreenViewController {
                     self.digitPadView.alpha = 0.3
                 }
             })
+            .disposed(by: disposeBag)
+
+        presenter
+            .digitPadIsEnabled
+            .distinctUntilChanged()
+            .bindAndCatch(to: lockTimeLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+
+        presenter
+            .remainingTime
+            .map {
+                if $0 == 0 {
+                    self.errorLabel.alpha = 0
+                    return ""
+                } else if $0 <= 60 {
+                    return "Please try again in \($0) seconds"
+                } else if $0 <= 3600 {
+                    return "Please try again in \($0/60) minutes and \($0%60) seconds"
+                } else {
+                    return "Please try again in \n\($0/3600) hours and \(($0/60)%60) minutes and \($0%60) seconds"
+                }
+            }
+            .distinctUntilChanged()
+            .bindAndCatch(to: lockTimeLabel.rx.text)
             .disposed(by: disposeBag)
 
         // TODO: Re-enable this once we have isolated the source of the crash
@@ -182,6 +208,13 @@ final class PinScreenViewController: BaseScreenViewController {
         errorLabel.textColor = presenter.contentColor
     }
 
+    private func setupLockTimeLabel() {
+        lockTimeLabel.accessibility =
+            .id(AccessibilityIdentifiers.PinScreen.lockTimeLabel)
+        lockTimeLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
+        lockTimeLabel.textColor = presenter.contentColor
+    }
+
     // MARK: - Navigation
 
     override func navigationBarLeadingButtonPressed() {
@@ -239,7 +272,8 @@ extension PinScreenViewController {
         case .incorrectPin(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
             showInlineError(with: message)
-        case .backoff(let message):
+        case .backoff(let message, let remaining):
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
             showInlineError(with: message)
         case .tooManyAttempts:
             displayLogoutAlert()

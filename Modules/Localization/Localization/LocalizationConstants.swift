@@ -333,11 +333,11 @@ public enum LocalizationConstants {
         )
 
         public static let incorrect = NSLocalizedString(
-            "PIN Incorrect. %d attempts remaining.",
+            "PIN Incorrect",
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
         public static let backoff = NSLocalizedString(
-            "Try again in %ds",
+            "PIN is currently disabled",
             comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff retry algorithm."
         )
         public static let pinsDoNotMatch = NSLocalizedString(

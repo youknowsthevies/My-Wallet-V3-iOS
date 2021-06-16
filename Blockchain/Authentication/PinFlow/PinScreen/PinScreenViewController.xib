@@ -18,6 +18,7 @@
                 <outlet property="digitPadBottomConstraint" destination="Hw2-wA-bhA" id="81M-bZ-H4f"/>
                 <outlet property="digitPadView" destination="ghb-eu-pJh" id="yh9-oA-PgW"/>
                 <outlet property="errorLabel" destination="c2X-Wa-7FF" id="anh-Tq-Xfv"/>
+                <outlet property="lockTimeLabel" destination="szR-Qf-qe8" id="C1K-DK-CY7"/>
                 <outlet property="securePinView" destination="mVP-h6-MWt" id="5Vb-LP-aa4"/>
                 <outlet property="securePinViewTopConstraint" destination="qvb-h4-D0O" id="EJe-My-vMl"/>
                 <outlet property="swipeInstructionView" destination="tjF-8f-Dnw" id="MSY-ev-qxN"/>
@@ -52,7 +53,13 @@
                         <constraint firstAttribute="height" priority="250" constant="40" id="z0n-ze-skH"/>
                     </constraints>
                 </view>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c2X-Wa-7FF">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="szR-Qf-qe8" userLabel="lockTimeLabel">
+                    <rect key="frame" x="187.66666666666666" y="310" width="0.0" height="0.0"/>
+                    <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="12"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c2X-Wa-7FF" userLabel="errorLabel">
                     <rect key="frame" x="30" y="280" width="315" height="0.0"/>
                     <fontDescription key="fontDescription" name="Inter-SemiBold" family="Inter" pointSize="12"/>
                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -62,6 +69,7 @@
             <viewLayoutGuide key="safeArea" id="pki-mh-r7D"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="szR-Qf-qe8" firstAttribute="centerX" secondItem="mVP-h6-MWt" secondAttribute="centerX" id="0fG-sQ-Ud1"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="top" secondItem="mVP-h6-MWt" secondAttribute="bottom" constant="30" id="0oJ-az-zHb"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="1hw-3j-UDR"/>
                 <constraint firstItem="pki-mh-r7D" firstAttribute="trailing" secondItem="c2X-Wa-7FF" secondAttribute="trailing" constant="30" id="9KO-Sb-dVx"/>
@@ -70,6 +78,7 @@
                 <constraint firstAttribute="trailing" secondItem="ghb-eu-pJh" secondAttribute="trailing" id="NVj-mR-wft"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="leading" secondItem="pki-mh-r7D" secondAttribute="leading" constant="30" id="fHv-3o-7gP"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="centerX" secondItem="mVP-h6-MWt" secondAttribute="centerX" id="fza-ym-DGh"/>
+                <constraint firstItem="szR-Qf-qe8" firstAttribute="top" secondItem="c2X-Wa-7FF" secondAttribute="top" constant="30" id="hZw-iJ-ykq"/>
                 <constraint firstItem="ghb-eu-pJh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="oXn-8u-OiU"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="top" secondItem="pki-mh-r7D" secondAttribute="top" priority="999" constant="106" id="qvb-h4-D0O"/>
                 <constraint firstItem="ghb-eu-pJh" firstAttribute="top" secondItem="tjF-8f-Dnw" secondAttribute="bottom" constant="30" id="wW1-OT-9aW"/>
