@@ -115,30 +115,6 @@ extension WalletManager: WalletManagerReactiveAPI {
             .mapToVoid()
     }
 
-    // MARK: WalletTransactionDelegate
-
-    /// Reactive wrapper for delegate method `onTransactionReceived`
-    /// - Note: Method invoked when a transaction is received (only invoked when there is an
-    /// active websocket connection when the transaction was received)
-    var walletOnTransactionReceived: AnyPublisher<Void, Error> {
-        self.rx.onTransactionReceived
-            .asPublisher()
-            .mapToVoid()
-    }
-
-    // MARK: WalletSwipeAddressDelegate
-
-    /// Reactive wrapper for delegate method `onRetrievedSwipeToReceive`
-    /// Method invoked when swipe to receive addresses has been retrieved.
-    ///
-    /// - Parameters:
-    ///   - addresses: the addresses
-    ///   - assetType: the type of the asset for the retrieved addresses
-    var walletOnRetrievedSwipeToReceive: AnyPublisher<(addresses: [String], assetType: CryptoCurrency), Error> {
-        self.rx.onRetrievedSwipeToReceive
-            .asPublisher()
-    }
-
     // MARK: WalletSecondPasswordDelegate
 
     /// Reactive wrapper for delegate method `getSecondPassword`

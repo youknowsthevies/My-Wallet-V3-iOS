@@ -25,16 +25,16 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
 
     private let blockchainRepository: BlockchainDataRepository
     private let clientAPI: ExchangeClientAPI
-    private let accountRepository: AssetAccountRepositoryAPI
+    private let coincore: CoincoreAPI
 
     init(
         blockchainRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
         client: ExchangeClientAPI = resolve(),
-        accountRepository: AssetAccountRepositoryAPI = AssetAccountRepository()
+        coincore: CoincoreAPI = resolve()
     ) {
         self.blockchainRepository = blockchainRepository
         self.clientAPI = client
-        self.accountRepository = accountRepository
+        self.coincore = coincore
     }
 
     var hasLinkedExchangeAccount: Single<Bool> {
@@ -61,10 +61,27 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
     }
 
     func syncDepositAddresses() -> Completable {
-        accountRepository.accounts
-            .flatMapCompletable(weak: self) { (self, accounts) -> Completable in
-                let addresses = accounts.map { $0.address }
-                return self.clientAPI.syncDepositAddress(accounts: addresses)
+        Single
+            .just(coincore.cryptoAssets)
+            .flatMap { cryptoAssets -> Single<[SingleAccount?]> in
+                Single.zip(
+                    cryptoAssets
+                        .map { asset -> Single<SingleAccount?> in
+                            asset.defaultAccount.optional().catchErrorJustReturn(nil)
+                        }
+                )
+            }
+            .map { accounts -> [SingleAccount] in
+                accounts.compactMap { $0 }
+            }
+            .flatMap { accounts -> Single<[ReceiveAddress]> in
+                Single.zip(accounts.map(\.receiveAddress))
+            }
+            .map { receiveAddresses -> [CryptoReceiveAddress] in
+                receiveAddresses as? [CryptoReceiveAddress] ?? []
+            }
+            .flatMapCompletable(weak: self) { (self, receiveAddresses) in
+                self.clientAPI.syncDepositAddress(accounts: receiveAddresses)
             }
     }
 }

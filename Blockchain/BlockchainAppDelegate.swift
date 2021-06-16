@@ -156,22 +156,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         navigationBarAppearance.barTintColor = defaultBarStyle.backgroundColor
         navigationBarAppearance.tintColor = defaultBarStyle.tintColor
 
-        if isDebug {
-            let cacheSuite: CacheSuite = resolve()
-
-            let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
-            cacheSuite.removeObject(forKey: securityReminderKey)
-
-            let appReviewPromptKey = UserDefaults.DebugKeys.appReviewPromptCount.rawValue
-            cacheSuite.removeObject(forKey: appReviewPromptKey)
-
-            let zeroTickerKey = UserDefaults.DebugKeys.simulateZeroTicker.rawValue
-            cacheSuite.set(false, forKey: zeroTickerKey)
-
-            let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
-            cacheSuite.set(false, forKey: simulateSurgeKey)
-
-        }
         #if INTERNAL_BUILD
         debugCoordinator.enableDebugMenu(for: window)
         #endif
@@ -186,6 +170,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         checkForNewInstall()
 
         appCoordinator.start()
+
+        KeychainItemWrapper.removeAllSwipeAddresses()
 
         return true
     }
@@ -202,11 +188,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         let appSettings = BlockchainSettings.App.shared
         let wallet = WalletManager.shared.wallet
 
-        AssetAddressRepository.shared.fetchSwipeToReceiveAddressesIfNeeded()
-
         NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
-
-        WalletManager.shared.closeWebSockets(withCloseCode: .backgroundedApp)
 
         if wallet.isInitialized() {
             if appSettings.guid != nil && appSettings.sharedKey != nil {

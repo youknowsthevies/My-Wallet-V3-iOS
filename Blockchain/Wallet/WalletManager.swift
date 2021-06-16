@@ -14,7 +14,7 @@ import WalletPayloadKit
  Manager object for operations to the Blockchain Wallet.
  */
 @objc
-class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, WalletRepositoryProvider {
+class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
 
     @Inject static var shared: WalletManager
 
@@ -39,21 +39,11 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     @objc weak var historyDelegate: WalletHistoryDelegate?
     @objc weak var accountInfoAndExchangeRatesDelegate: WalletAccountInfoAndExchangeRatesDelegate?
     @objc weak var backupDelegate: WalletBackupDelegate?
-    @objc weak var transactionDelegate: WalletTransactionDelegate?
-    weak var swipeAddressDelegate: WalletSwipeAddressDelegate?
     weak var keyImportDelegate: WalletKeyImportDelegate?
     weak var secondPasswordDelegate: WalletSecondPasswordDelegate?
 
     private(set) var repository: WalletRepositoryAPI!
     private(set) var legacyRepository: WalletRepository!
-
-    private let disposeBag = DisposeBag()
-
-    /// Once a payment is recieved any subscriber is able to get an update
-    private let paymentReceivedRelay = PublishRelay<ReceivedPaymentDetails>()
-    var paymentReceived: Observable<ReceivedPaymentDetails> {
-        paymentReceivedRelay.asObservable()
-    }
 
     init(wallet: Wallet = Wallet()!,
          appSettings: BlockchainSettings.App = resolve(),
@@ -81,22 +71,11 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
     /// when the app is backgrounded
     func close() {
         latestMultiAddressResponse = nil
-        closeWebSockets(withCloseCode: .loggedOut)
-
         wallet.resetSyncStatus()
         wallet.loadJS()
         wallet.hasLoadedAccountInfo = false
 
         beginBackgroundUpdateTask()
-    }
-
-    /// Closes all wallet websockets with the provided WebSocketCloseCode
-    ///
-    /// - Parameter closeCode: the WebSocketCloseCode
-    @objc func closeWebSockets(withCloseCode closeCode: WebSocketCloseCode) {
-        [wallet.ethSocket, wallet.bchSocket, wallet.btcSocket].forEach {
-            $0?.close(withCode: closeCode.rawValue, reason: closeCode.reason)
-        }
     }
 
     @objc func forgetWallet() {
@@ -108,7 +87,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
         legacyRepository.legacySessionToken = nil
         legacyRepository.legacyPassword = nil
 
-        AssetAddressRepository.shared.removeAllSwipeAddresses()
         BlockchainSettings.App.shared.guid = nil
         BlockchainSettings.App.shared.sharedKey = nil
 
@@ -160,10 +138,6 @@ class WalletManager: NSObject, TransactionObserving, JSContextProviderAPI, Walle
         currencySymbols["code"] = fiatCode
         self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
     }
-
-    private func reloadAfterMultiaddressResponse() {
-        AppCoordinator.shared.reloadAfterMultiAddressResponse()
-    }
 }
 
 extension WalletManager: WalletDelegate {
@@ -195,9 +169,6 @@ extension WalletManager: WalletDelegate {
 
     func walletDidFinishLoad() {
         Logger.shared.info("walletDidFinishLoad()")
-
-        wallet.btcSwipeAddressToSubscribe = nil
-        wallet.bchSwipeAddressToSubscribe = nil
 
         DispatchQueue.main.async { [unowned self] in
             self.authDelegate?.authenticationCompleted()
@@ -256,9 +227,6 @@ extension WalletManager: WalletDelegate {
         latestMultiAddressResponse = response
         wallet.getAccountInfoAndExchangeRates()
         let newDefaultAccountLabeledAddressesCount = self.wallet.getDefaultAccountLabelledAddressesCount()
-        if BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount != newDefaultAccountLabeledAddressesCount {
-            AssetAddressRepository.shared.removeAllSwipeAddresses(for: .bitcoin)
-        }
         let newCount = newDefaultAccountLabeledAddressesCount
         BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount = Int(newCount)
         updateFiatSymbols()
@@ -310,34 +278,6 @@ extension WalletManager: WalletDelegate {
     func didFetchBitcoinCashHistory() {
         DispatchQueue.main.async { [unowned self] in
             self.historyDelegate?.didFetchBitcoinCashHistory()
-        }
-    }
-
-    // MARK: - Transaction
-
-    func receivedTransactionMessage() {
-        DispatchQueue.main.async { [unowned self] in
-            self.transactionDelegate?.onTransactionReceived()
-        }
-    }
-
-    func paymentReceived(onPINScreen amount: String!,
-                         assetType: LegacyAssetType,
-                         address: String!) {
-        let details = ReceivedPaymentDetails(amount: amount,
-                                             asset: .init(legacyAssetType: assetType),
-                                             address: address)
-        paymentReceivedRelay.accept(details)
-    }
-
-    // MARK: - Swipe Address
-
-    func didGetSwipeAddresses(_ newSwipeAddresses: [Any]!, assetType: LegacyAssetType) {
-        DispatchQueue.main.async { [unowned self] in
-            self.swipeAddressDelegate?.onRetrievedSwipeToReceive(
-                addresses: newSwipeAddresses as! [String],
-                assetType: CryptoCurrency(legacyAssetType: assetType)
-            )
         }
     }
 

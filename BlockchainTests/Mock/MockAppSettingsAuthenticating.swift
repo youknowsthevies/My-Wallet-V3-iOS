@@ -5,7 +5,7 @@ import Foundation
 @testable import Blockchain
 import PlatformKit
 
-class MockAppSettings: AppSettingsAuthenticating, SwipeToReceiveConfiguring, AppSettingsAPI, CloudBackupConfiguring {
+class MockAppSettings: AppSettingsAuthenticating, AppSettingsAPI, CloudBackupConfiguring {
 
     var sharedKey: String?
     var guid: String?
@@ -14,7 +14,6 @@ class MockAppSettings: AppSettingsAuthenticating, SwipeToReceiveConfiguring, App
     var biometryEnabled: Bool
     var passwordPartHash: String?
     var encryptedPinPassword: String?
-    var swipeToReceiveEnabled: Bool = false
     var isPairedWithWallet: Bool = false
     var cloudBackupEnabled: Bool = true
 

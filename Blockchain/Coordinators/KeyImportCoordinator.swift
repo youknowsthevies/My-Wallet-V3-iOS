@@ -200,8 +200,6 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
     @objc func on_add_private_key_to_legacy_address(address: String) {
         walletManager.wallet.isSyncing = true
         walletManager.wallet.shouldLoadMetadata = true
-        // TODO: change assetType parameter to `address.assetType` once it is directly called from Swift
-        walletManager.wallet.subscribe(toAddress: address, assetType: .bitcoin)
         importedPrivateKeyToLegacyAddress()
     }
 
@@ -323,11 +321,6 @@ extension KeyImportCoordinator: WalletKeyImportDelegate {
     }
 
     func importKey(from address: AssetAddress) {
-        if walletManager.wallet.isWatchOnlyLegacyAddress(address.publicKey) {
-            // TODO: change assetType parameter to `address.assetType` once it is directly called from Swift
-            walletManager.wallet.subscribe(toAddress: address.publicKey, assetType: .bitcoin)
-        }
-
         loadingViewPresenter.show(with: LocalizationConstants.syncingWallet)
         walletManager.wallet.lastImportedAddress = address.publicKey
 

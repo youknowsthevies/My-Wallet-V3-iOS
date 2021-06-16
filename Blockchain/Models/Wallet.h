@@ -18,7 +18,6 @@
  * MA 02110-1301  USA
  */
 
-#import "SRWebSocket.h"
 #import "Assets.h"
 #import "WalletDelegate.h"
 
@@ -31,7 +30,7 @@
        WalletRepository,
        EtherTransaction;
 
-@interface Wallet : NSObject <SRWebSocketDelegate>
+@interface Wallet : NSObject
 
 // Core Wallet Init Properties
 @property (nonatomic, readonly, strong) JSContext *context;
@@ -53,16 +52,6 @@
 @property (nonatomic, assign) BOOL isSyncing;
 @property (nonatomic, assign) BOOL isNew;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *btcRates;
-
-@property (nonatomic, strong) SRWebSocket *btcSocket;
-@property (nonatomic, strong) SRWebSocket *bchSocket;
-@property (nonatomic, strong) SRWebSocket *ethSocket;
-@property (nonatomic, strong) NSMutableArray *pendingEthSocketMessages;
-
-@property (nonatomic, strong) NSTimer *btcSocketTimer;
-@property (nonatomic, strong) NSTimer *bchSocketTimer;
-@property (nonatomic, copy) NSString *btcSwipeAddressToSubscribe;
-@property (nonatomic, copy) NSString *bchSwipeAddressToSubscribe;
 
 @property (nonatomic, readonly, strong, nonnull) BitcoinWallet * bitcoin;
 @property (nonatomic, readonly, strong, nonnull) EthereumWallet * ethereum;
@@ -97,9 +86,6 @@
 - (NSString *)labelForLegacyAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
 
 - (BOOL)isAddressArchived:(NSString *)address;
-
-- (void)subscribeToSwipeAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
-- (void)subscribeToAddress:(NSString *)address assetType:(LegacyAssetType)assetType;
 
 - (BOOL)isWatchOnlyLegacyAddress:(NSString*)address;
 
@@ -172,10 +158,6 @@
 - (BOOL)isLockboxEnabled;
 - (NSString *)getMobileMessage;
 - (void)getAccountInfoAndExchangeRates;
-
-# pragma mark - Bitcoin and Bitcoin Cash Payment Spender
-
-- (void)getSwipeAddresses:(NSInteger)numberOfAddresses assetType:(LegacyAssetType)assetType;
 
 # pragma mark - Ethereum
 

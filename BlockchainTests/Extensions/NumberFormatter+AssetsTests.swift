@@ -23,27 +23,6 @@ class NumberFormatterAssetsTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: Local Currency
-    func testLocalCurrencyFormatter() {
-        // Setup test
-        let name = "localCurrencyFormatter"
-        let groupingTuple = self.expectGrouping(expect: false, functionName: name)
-        let decimalTuple = self.expectDecimalPlaces(expected: self.localCurrencyDecimalPlaces, functionName: name)
-
-        let testStringFromNumber = { (input: NSNumber) -> Void in
-            self.testFormatter(formatter: NumberFormatter.localCurrencyFormatter,
-                          inputAmount: input,
-                          grouping: groupingTuple,
-                          decimalPlaces: decimalTuple)
-        }
-
-        // Execute Tests
-        testStringFromNumber(1234.56)
-        testStringFromNumber(123.45)
-        testStringFromNumber(123.456)
-        testStringFromNumber(1.0)
-        testStringFromNumber(0)
-    }
 
     func testLocalCurrencyFormatterWithGroupingSeparator() {
         // Setup test
@@ -66,29 +45,6 @@ class NumberFormatterAssetsTests: XCTestCase {
         testStringFromNumber(123.456, noGrouping)
         testStringFromNumber(1.0, noGrouping)
         testStringFromNumber(0, noGrouping)
-    }
-
-    // MARK: Digital Assets
-    func testAssetFormatter() {
-        // Setup test
-        let name = "assetFormatter"
-        let groupingTuple = self.expectGrouping(expect: false, functionName: name)
-        let testStringFromNumber = { (input: NSNumber, decimalTuple: ExpectDecimal) -> Void in
-            self.testFormatter(formatter: NumberFormatter.bitcoinAssetFormatter,
-                          inputAmount: input,
-                          grouping: groupingTuple,
-                          decimalPlaces: decimalTuple)
-        }
-
-        let decimals = { (expected: Int) -> ExpectDecimal in self.expectDecimalPlaces(expected: expected, functionName: name) }
-
-        // Execute tests
-        testStringFromNumber(1234.12345678, decimals(8))
-        testStringFromNumber(1234.123456, decimals(6))
-        testStringFromNumber(1234.1234, decimals(4))
-        testStringFromNumber(1234.1, decimals(1))
-        testStringFromNumber(1234, decimals(0))
-        testStringFromNumber(0, decimals(0))
     }
 
     func testBitcoinFormatterWithGroupingSeparator() {

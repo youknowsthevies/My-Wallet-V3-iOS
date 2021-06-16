@@ -60,8 +60,6 @@ let appDelegateReducer = Reducer<
                 .eraseToEffect()
                 .fireAndForget(),
 
-            clearCacheSuiteOnDebug(cacheSuite: environment.cacheSuite),
-
             applyGlobalNavigationAppearance(using: .lightContent()),
 
             applyCertificatePinning(using: environment.certificatePinner),
@@ -172,22 +170,6 @@ private func applyCertificatePinning(using service: CertificatePinnerAPI) -> App
 private func enableSift(using service: SiftServiceAPI) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.enable()
-    }
-}
-
-private func clearCacheSuiteOnDebug(cacheSuite: CacheSuite) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        let securityReminderKey = UserDefaults.DebugKeys.securityReminderTimer.rawValue
-        cacheSuite.removeObject(forKey: securityReminderKey)
-
-        let appReviewPromptKey = UserDefaults.DebugKeys.appReviewPromptCount.rawValue
-        cacheSuite.removeObject(forKey: appReviewPromptKey)
-
-        let zeroTickerKey = UserDefaults.DebugKeys.simulateZeroTicker.rawValue
-        cacheSuite.set(false, forKey: zeroTickerKey)
-
-        let simulateSurgeKey = UserDefaults.DebugKeys.simulateSurge.rawValue
-        cacheSuite.set(false, forKey: simulateSurgeKey)
     }
 }
 

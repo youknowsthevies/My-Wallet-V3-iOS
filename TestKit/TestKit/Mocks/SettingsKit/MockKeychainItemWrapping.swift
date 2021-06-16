@@ -49,20 +49,8 @@ class MockKeychainItemWrapping: KeychainItemWrapping {
         setSharedKeyInKeychainCalled = (sharedKey, true)
     }
 
-    var getSingleSwipeAddressCalled: (currency: CryptoCurrency?, called: Bool) = (nil, false)
-    var getSingleSwipeAddressValue: String?
-    func getSingleSwipeAddress(for: CryptoCurrency) -> String? {
-        getSingleSwipeAddressCalled = (`for`, true)
-        return getSingleSwipeAddressValue
-    }
-
-    var removeAllSwipeAddressesCalled: (currency: CryptoCurrency?, called: Bool) = (nil, false)
-    func removeAllSwipeAddresses(for: CryptoCurrency) {
-        removeAllSwipeAddressesCalled = (`for`, true)
-    }
-
-    var setSingleSwipeAddressCalled: (address: String?, currency: CryptoCurrency?, called: Bool) = (nil, nil, false)
-    func setSingleSwipeAddress(_ address: String, for: CryptoCurrency) {
-        setSingleSwipeAddressCalled = (address, `for`, true)
+    var removeAllSwipeAddressesCalled: Bool = false
+    func removeAllSwipeAddresses() {
+        removeAllSwipeAddressesCalled = true
     }
 }

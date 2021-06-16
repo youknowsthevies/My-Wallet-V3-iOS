@@ -107,13 +107,6 @@ extension AlertViewPresenter {
         }
     }
 
-    @objc func showWaitingForEtherPaymentAlert() {
-        standardNotify(
-            title: LocalizationConstants.SendEther.waitingForPaymentToFinishTitle,
-            message: LocalizationConstants.SendEther.waitingForPaymentToFinishMessage
-        )
-    }
-
     /// Shows the site maintenance error message from `walletOptions` if any.
     ///
     /// - Parameter walletOptions: the WalletOptions

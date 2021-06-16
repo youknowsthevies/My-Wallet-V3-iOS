@@ -12,14 +12,3 @@ extension String {
         return String(hashedString[..<endIndex])
     }
 }
-
-// MARK: - Symbol formatting
-extension String {
-    func appendAssetSymbol(for assetType: CryptoCurrency) -> String {
-        self + " " + assetType.displayCode
-    }
-
-    func appendCurrencySymbol() -> String {
-        BlockchainSettings.App.shared.fiatCurrency.symbol + self
-    }
-}

@@ -36,7 +36,6 @@ final class SettingsScreenInteractor {
     let appSettings: BlockchainSettings.App
     let featureConfigurator: FeatureFetchingConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
-    let swipeToReceiveConfiguration: AppFeatureConfiguration
     let authenticationCoordinator: AuthenticationCoordinating
 
     // MARK: - Private Properties
@@ -92,7 +91,6 @@ final class SettingsScreenInteractor {
             fiatCurrencyService: fiatCurrencyService
         )
 
-        swipeToReceiveConfiguration = featureConfigurator.configuration(for: .swipeToReceive)
         self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
         self.pitConnnectionProviding = pitConnectionAPI

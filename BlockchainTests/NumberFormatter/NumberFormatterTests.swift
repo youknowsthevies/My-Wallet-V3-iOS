@@ -57,20 +57,4 @@ class NumberFormatterTests: XCTestCase {
         let converted = NumberFormatter.convert(decimalString: arabicIndicValue)
         XCTAssertEqual(converted, "10.123456789")
     }
-
-    // TODO: IOS-1556 Add support for different locales.
-    func testLocalCurrencyConversion() {
-        // 2.532 ETH
-        guard
-            let amount = Decimal(string: "2.532"),
-            let rate = Decimal(string: "212.23")
-        else {
-            XCTFail("Could not initialize amount or rate")
-            return
-        }
-        let localCurrencyAmount = NumberFormatter.localCurrencyAmount(fromAmount: amount, fiatPerAmount: rate)
-        XCTAssertEqual(localCurrencyAmount,
-                       "537\(Locale.current.safeDecimalSeparator)36",
-                       "Formatted string should have two decimal places and round down when truncating")
-    }
 }

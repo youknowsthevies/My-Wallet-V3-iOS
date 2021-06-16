@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="15505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15509"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,7 +20,6 @@
                 <outlet property="errorLabel" destination="c2X-Wa-7FF" id="anh-Tq-Xfv"/>
                 <outlet property="securePinView" destination="mVP-h6-MWt" id="5Vb-LP-aa4"/>
                 <outlet property="securePinViewTopConstraint" destination="qvb-h4-D0O" id="EJe-My-vMl"/>
-                <outlet property="swipeInstructionView" destination="tjF-8f-Dnw" id="MSY-ev-qxN"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -44,14 +43,6 @@
                         <constraint firstAttribute="height" constant="260" id="fcG-EH-gvy"/>
                     </constraints>
                 </view>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tjF-8f-Dnw" customClass="SwipeInstructionView" customModule="Blockchain" customModuleProvider="target">
-                    <rect key="frame" x="87.666666666666686" y="408" width="200" height="40"/>
-                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="width" priority="250" constant="200" id="gj5-qr-4zx"/>
-                        <constraint firstAttribute="height" priority="250" constant="40" id="z0n-ze-skH"/>
-                    </constraints>
-                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="c2X-Wa-7FF">
                     <rect key="frame" x="30" y="280" width="315" height="0.0"/>
                     <fontDescription key="fontDescription" name="Montserrat-Light" family="Montserrat" pointSize="17"/>
@@ -59,21 +50,19 @@
                     <nil key="highlightedColor"/>
                 </label>
             </subviews>
+            <viewLayoutGuide key="safeArea" id="pki-mh-r7D"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="top" secondItem="mVP-h6-MWt" secondAttribute="bottom" constant="30" id="0oJ-az-zHb"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="1hw-3j-UDR"/>
                 <constraint firstItem="pki-mh-r7D" firstAttribute="trailing" secondItem="c2X-Wa-7FF" secondAttribute="trailing" constant="30" id="9KO-Sb-dVx"/>
-                <constraint firstItem="tjF-8f-Dnw" firstAttribute="centerX" secondItem="ghb-eu-pJh" secondAttribute="centerX" id="AmP-6Z-Q23"/>
                 <constraint firstItem="pki-mh-r7D" firstAttribute="bottom" secondItem="ghb-eu-pJh" secondAttribute="bottom" constant="40" id="Hw2-wA-bhA"/>
                 <constraint firstAttribute="trailing" secondItem="ghb-eu-pJh" secondAttribute="trailing" id="NVj-mR-wft"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="leading" secondItem="pki-mh-r7D" secondAttribute="leading" constant="30" id="fHv-3o-7gP"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="centerX" secondItem="mVP-h6-MWt" secondAttribute="centerX" id="fza-ym-DGh"/>
                 <constraint firstItem="ghb-eu-pJh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="oXn-8u-OiU"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="top" secondItem="pki-mh-r7D" secondAttribute="top" priority="999" constant="106" id="qvb-h4-D0O"/>
-                <constraint firstItem="ghb-eu-pJh" firstAttribute="top" secondItem="tjF-8f-Dnw" secondAttribute="bottom" constant="30" id="wW1-OT-9aW"/>
             </constraints>
-            <viewLayoutGuide key="safeArea" id="pki-mh-r7D"/>
             <point key="canvasLocation" x="136.80000000000001" y="139.65517241379311"/>
         </view>
     </objects>

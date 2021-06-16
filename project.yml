@@ -623,7 +623,6 @@ targets:
         - Submodules/OpenSSL-for-iPhone/lib
         HEADER_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/include
-        - $(PROJECT_DIR)/Submodules/SocketRocket
         LIBRARY_SEARCH_PATHS:
         - $(PROJECT_DIR)/Submodules/OpenSSL-for-iPhone/lib
         OTHER_LDFLAGS:
@@ -662,9 +661,6 @@ targets:
       - Firebase
       - Scripts
       path: Blockchain
-    - includes:
-      - '**/*.[hm]'
-      path: Submodules/SocketRocket/SocketRocket
     - includes:
       - BTCAddress.[hm]
       - BTCBase58.[hm]
@@ -1042,9 +1038,6 @@ targets:
         SWIFTY_BEAVER_APP_KEY: $(SWIFTY_BEAVER_APP_KEY)
         SWIFTY_BEAVER_APP_SECRET: $(SWIFTY_BEAVER_APP_SECRET)
         WALLET_SERVER: $(WALLET_SERVER)
-        WEBSOCKET_SERVER: $(WEBSOCKET_SERVER)
-        WEBSOCKET_SERVER_BCH: $(WEBSOCKET_SERVER_BCH)
-        WEBSOCKET_SERVER_ETH: $(WEBSOCKET_SERVER_ETH)
     platform: iOS
     postCompileScripts:
     - name: Get SSL Certificate

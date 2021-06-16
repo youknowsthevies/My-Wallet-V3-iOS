@@ -36,21 +36,6 @@ extension CryptoCurrency {
         }
     }
 
-    /// Returns `true` if an asset's addresses can be reused
-    var shouldAddressesBeReused: Bool {
-        switch self {
-        case .bitcoin,
-             .bitcoinCash:
-            return false
-        case .algorand,
-             .erc20,
-             .ethereum,
-             .polkadot,
-             .stellar:
-            return true
-        }
-    }
-
     init(legacyAssetType: LegacyAssetType) {
         switch legacyAssetType {
         case .aave:

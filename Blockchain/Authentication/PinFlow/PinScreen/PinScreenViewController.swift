@@ -9,8 +9,6 @@ final class PinScreenViewController: BaseScreenViewController {
 
     // MARK: - Properties
 
-    @IBOutlet private var swipeInstructionView: SwipeInstructionView!
-
     @IBOutlet private var digitPadView: DigitPadView!
     @IBOutlet private var securePinView: SecurePinView!
     @IBOutlet private var errorLabel: UILabel!
@@ -46,8 +44,6 @@ final class PinScreenViewController: BaseScreenViewController {
         setupErrorLabel()
         createServerStatusView()
         presenter.viewDidLoad()
-
-        swipeInstructionView.isHidden = !presenter.showsSwipeToReceive
         digitPadView.viewModel = presenter.digitPadViewModel
         securePinView.viewModel = presenter.securePinViewModel
 
@@ -140,8 +136,6 @@ final class PinScreenViewController: BaseScreenViewController {
 
     private func prepareForAppearance() {
         presenter.reset()
-        swipeInstructionView.setup(text: LocalizationConstants.Pin.swipeToReceiveLabel,
-                                   font: Font(.branded(.montserratMedium), size: .custom(14)).result)
     }
 
     private func setupNavigationBar() {
