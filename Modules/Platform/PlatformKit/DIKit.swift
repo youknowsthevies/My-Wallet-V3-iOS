@@ -120,7 +120,7 @@ extension DependencyContainer {
 
         factory { LinkedBanksFactory() as LinkedBanksFactoryAPI }
 
-        single { () -> Coincore in
+        single { () -> CoincoreAPI in
             let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
             return Coincore(
                 cryptoAssets: provider.allEnabledCryptoCurrencies.reduce(into: [CryptoCurrency: CryptoAsset]()) { (result, tag) in
@@ -128,12 +128,6 @@ extension DependencyContainer {
                     result[tag] = asset
                 }
             )
-        }
-
-        // TODO: Change usages of "Coincore = resolve()" to "CoincoreAPI = resolve()"
-        single { () -> CoincoreAPI in
-            let service: Coincore = DIKit.resolve()
-            return service as CoincoreAPI
         }
 
         single { ReactiveWallet() as ReactiveWalletAPI }

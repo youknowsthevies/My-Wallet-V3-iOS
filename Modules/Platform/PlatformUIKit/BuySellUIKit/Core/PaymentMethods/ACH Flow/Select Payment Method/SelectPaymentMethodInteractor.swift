@@ -110,10 +110,6 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
         }
     }
 
-    private func custodialFiatBalanceViewInteractor(by balance: MoneyValueBalancePairs) -> FiatCustodialBalanceViewInteractor {
-        FiatCustodialBalanceViewInteractor(balance: balance)
-    }
-
     // MARK: - Private
 
     private func generateCellType(by paymentMethodType: PaymentMethodType) -> PaymentMethodCellViewModelItem? {
@@ -139,7 +135,7 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
             cellType = .linkedCard(presenter)
         case .account(let data):
             let presenter = FiatCustodialBalanceViewPresenter(
-                interactor: custodialFiatBalanceViewInteractor(by: data.balance),
+                interactor: FiatCustodialBalanceViewInteractor(balance: data.topLimit.moneyValue),
                 descriptors: .paymentMethods(),
                 respondsToTaps: true,
                 presentationStyle: .plain

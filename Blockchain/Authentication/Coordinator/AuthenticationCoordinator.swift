@@ -64,7 +64,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     private var exchangeRepository: ExchangeAccountRepositoryAPI!
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
-    @LazyInject private var coincore: Coincore
+    @LazyInject private var coincore: CoincoreAPI
 
     @LazyInject private var analyticsRecoder: AnalyticsEventRecorderAPI
 

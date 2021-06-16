@@ -53,7 +53,7 @@ public final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     /// Display all available balance for given `CurrencyType`.
     public convenience init(
         currencyType: CurrencyType,
-        coincore: Coincore = resolve()
+        coincore: CoincoreAPI = resolve()
     ) {
         self.init(
             availableBalance: AvailableBalanceContentInteractor(

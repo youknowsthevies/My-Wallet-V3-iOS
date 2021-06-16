@@ -79,7 +79,7 @@ extension SelectionButtonViewModel {
             let limit = "\(data.topLimitDisplayValue) \(LocalizedString.Types.limitSubtitle)"
             subtitleRelay.accept(limit)
         case .some(.account(let data)):
-            let localImage = data.balance.baseCurrency.logoResource.local
+            let localImage = data.topLimit.currency.logoResource.local
             leadingContent = .image(
                 .init(
                     name: localImage.name,
@@ -90,8 +90,8 @@ extension SelectionButtonViewModel {
                     size: .init(edge: 32)
                 )
             )
-            title = data.balance.baseCurrency.name
-            subtitleRelay.accept("\(data.balance.base.toDisplayString(includeSymbol: true)) \(LocalizedString.Types.available)")
+            title = data.topLimit.currency.name
+            subtitleRelay.accept("\(data.topLimit.toDisplayString(includeSymbol: true)) \(LocalizedString.Types.available)")
             accessibilityContent = AccessibilityContent(
                 id: Accessibility.Identifier.SimpleBuy.BuyScreen.selectPaymentMethodLabel,
                 label: title

@@ -5,7 +5,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-extension Coincore {
+extension CoincoreAPI {
 
     public func createTransactionProcessor(
         with account: BlockchainAccount,

@@ -7,6 +7,9 @@ import RxSwift
 class MockCoincore: CoincoreAPI {
 
     var allAccounts: Single<AccountGroup> = Observable<AccountGroup>.empty().asSingle()
+    var allAssets: [Asset] = []
+    var fiatAsset: Asset = MockAsset()
+    var cryptoAssets: [CryptoAsset] = []
 
     func initialize() -> Completable {
         .just(event: .completed)
@@ -23,5 +26,23 @@ class MockCoincore: CoincoreAPI {
     var requestedCryptoAsset: CryptoAsset?
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? {
         requestedCryptoAsset
+    }
+}
+
+class MockAsset: Asset {
+    func initialize() -> Completable {
+        .empty()
+    }
+
+    func accountGroup(filter: AssetFilter) -> Single<AccountGroup> {
+        .never()
+    }
+
+    func transactionTargets(account: SingleAccount) -> Single<[SingleAccount]> {
+        .never()
+    }
+
+    func parse(address: String) -> Single<ReceiveAddress?> {
+        .never()
     }
 }

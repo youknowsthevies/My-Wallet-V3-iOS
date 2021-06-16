@@ -29,39 +29,44 @@ public final class FiatBalanceCollectionViewInteractor {
     // MARK: - Injected Properties
 
     private let tiersService: KYCTiersServiceAPI
-    private let balanceProvider: BalanceProviding
+    private let tradingBalanceService: TradingBalanceServiceAPI
     private let paymentMethodsService: PaymentMethodsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let refreshRelay = PublishRelay<Void>()
+    private let coincore: CoincoreAPI
+    private let disposeBag = DisposeBag()
 
     // MARK: - Accessors
 
     let interactorsStateRelay = BehaviorRelay<State>(value: .invalid(.empty))
-    private let disposeBag = DisposeBag()
+
+    private func fiatAccounts() -> Observable<[SingleAccount]> {
+        Observable
+            .zip(
+                tiersService.tiers.asObservable(),
+                coincore.allAccounts.asObservable()
+            ) { (tiers: $0, allAccounts: $1) }
+            .filter { $0.tiers.isTier2Approved }
+            .map { _, allAccounts in
+                allAccounts.accounts.filter { $0 is FiatAccount }
+            }
+    }
 
     private lazy var setup: Void = {
-
-        let preferredFiatCurrency = fiatCurrencyService.currencyObservable
-
-        let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
-        let balances = Observable
+        Observable
             .combineLatest(
-                balanceProvider.fiatFundsBalances,
-                tiersService.tiers.asObservable(),
+                fiatCurrencyService.fiatCurrencyObservable,
                 refreshRelay.asObservable()
-            ) { (balances: $0, tiers: $1, refresh: $2) }
-            .filter { $0.tiers.isTier2Approved }
-            .map { $0.balances }
-            .filter { $0.isValue } // All balances must contain value to load
-
-        Observable.combineLatest(balances, preferredFiatCurrency)
-            .map { (balances, preferredFiatCurrency) in
-                Array.init(
-                    balancePairsCalculationStates: balances,
-                    supportedFiatCurrencies: enabledFiatCurrencies
-                )
-                .sorted { (lhs, _) -> Bool in lhs.balance.base.code == preferredFiatCurrency.code }
+            ) { (fiatCurrency: $0, _: $1) }
+            .flatMapLatest(weak: self) { (self, data) in
+                self.fiatAccounts()
+                    .map { accounts in
+                        accounts
+                            .sorted { $0.currencyType.code < $1.currencyType.code }
+                            .sorted { (lhs, _) -> Bool in lhs.currencyType.code == data.fiatCurrency.code }
+                            .map(FiatCustodialBalanceViewInteractor.init(account:))
+                    }
             }
             .map { .value($0) }
             .startWith(.calculating)
@@ -70,13 +75,17 @@ public final class FiatBalanceCollectionViewInteractor {
             .disposed(by: disposeBag)
     }()
 
-    public init(tiersService: KYCTiersServiceAPI = resolve(),
-                balanceProvider: BalanceProviding = resolve(),
-                enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-                paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    public init(
+        tiersService: KYCTiersServiceAPI = resolve(),
+        tradingBalanceService: TradingBalanceServiceAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        paymentMethodsService: PaymentMethodsServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        coincore: CoincoreAPI = resolve()
+    ) {
+        self.coincore = coincore
         self.tiersService = tiersService
-        self.balanceProvider = balanceProvider
+        self.tradingBalanceService = tradingBalanceService
         self.paymentMethodsService = paymentMethodsService
         self.enabledCurrenciesService = enabledCurrenciesService
         self.fiatCurrencyService = fiatCurrencyService
@@ -94,7 +103,6 @@ extension FiatBalanceCollectionViewInteractor: Equatable {
 }
 
 extension FiatBalanceCollectionViewInteractor: FiatBalancesInteracting {
-
     public var hasBalances: Observable<Bool> {
         interactorsState
             .compactMap { $0.value }

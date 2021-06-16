@@ -9,6 +9,9 @@ import ToolKit
 public protocol CoincoreAPI {
     /// Provides access to fiat and crypto custodial and non custodial assets.
     var allAccounts: Single<AccountGroup> { get }
+    var allAssets: [Asset] { get }
+    var fiatAsset: Asset { get }
+    var cryptoAssets: [CryptoAsset] { get }
 
     /// Initialize any assets prior being available
     func initialize() -> Completable
@@ -23,7 +26,7 @@ public protocol CoincoreAPI {
     subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? { get }
 }
 
-public final class Coincore: CoincoreAPI {
+final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 
@@ -44,16 +47,16 @@ public final class Coincore: CoincoreAPI {
 
     // MARK: - Private Properties
 
-    private var allAssets: [Asset] {
-        [fiatAsset] + sortedCryptoAssets
+    var allAssets: [Asset] {
+        [fiatAsset] + cryptoAssets
+    }
+    let fiatAsset: Asset
+    var cryptoAssets: [CryptoAsset] {
+        cryptoAssetsDictionary.sorted(by: { $0.key < $1.key }).map { $0.value }
     }
 
-    private var sortedCryptoAssets: [CryptoAsset] {
-        cryptoAssets.sorted(by: { $0.key < $1.key }).map { $0.value }
-    }
+    private let cryptoAssetsDictionary: [CryptoCurrency: CryptoAsset]
 
-    private let cryptoAssets: [CryptoCurrency: CryptoAsset]
-    private let fiatAsset: FiatAsset
     private let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Setup
@@ -61,14 +64,14 @@ public final class Coincore: CoincoreAPI {
     init(cryptoAssets: [CryptoCurrency: CryptoAsset],
          fiatAsset: FiatAsset = FiatAsset(),
          reactiveWallet: ReactiveWalletAPI = resolve()) {
-        self.cryptoAssets = cryptoAssets
+        self.cryptoAssetsDictionary = cryptoAssets
         self.fiatAsset = fiatAsset
         self.reactiveWallet = reactiveWallet
     }
 
     /// Gives a chance for all assets to initialize themselves.
     public func initialize() -> Completable {
-        var completables = cryptoAssets
+        var completables = cryptoAssetsDictionary
             .values
             .map { asset -> Completable in
                 asset.initialize()
@@ -78,7 +81,7 @@ public final class Coincore: CoincoreAPI {
     }
 
     public subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? {
-        guard let asset = cryptoAssets[cryptoCurrency] else {
+        guard let asset = cryptoAssetsDictionary[cryptoCurrency] else {
             fatalError("Unknown crypto currency.")
         }
         return asset
@@ -110,7 +113,7 @@ public final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            guard let sourceCryptoAsset = cryptoAssets[cryptoAccount.asset] else {
+            guard let sourceCryptoAsset = cryptoAssetsDictionary[cryptoAccount.asset] else {
                 fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
             }
             return Single
@@ -161,7 +164,7 @@ public final class Coincore: CoincoreAPI {
 
 // MARK: - Combine Related Methods
 
-extension Coincore {
+extension CoincoreAPI {
     /// Gives a chance for all assets to initialize themselves.
     /// - Note: Uses the `initialize` method and converts it to a publisher.
     public func initializePublisher() -> AnyPublisher<Never, Never> {

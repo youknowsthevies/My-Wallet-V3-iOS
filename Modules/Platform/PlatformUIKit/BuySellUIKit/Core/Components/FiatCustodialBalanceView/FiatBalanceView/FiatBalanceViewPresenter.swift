@@ -33,13 +33,15 @@ public final class FiatBalanceViewPresenter {
 
     // MARK: - Setup
 
-    public init(alignment: UIStackView.Alignment = .fill,
-                interactor: FiatBalanceViewInteractor,
-                descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors) {
+    public init(
+        alignment: UIStackView.Alignment = .fill,
+        interactor: FiatBalanceViewInteractor,
+        descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors
+    ) {
         self.interactor = interactor
         self.alignmentRelay.accept(alignment)
 
-        /// Map interaction state into presnetation state
+        /// Map interaction state into presentation state
         /// and bind it to `stateRelay`
         interactor.state
             .map {

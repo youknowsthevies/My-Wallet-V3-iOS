@@ -1,13 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public struct FundData: Equatable {
-
+    /// The lesser between available amount and maximum limit.
     public let topLimit: FiatValue
 
-    public let balance: MoneyValueBalancePairs
-
-    init(topLimit: FiatValue, balance: MoneyValueBalancePairs) {
-        self.topLimit = topLimit
-        self.balance = balance
+    init(balance: CustodialAccountBalance, max: FiatValue) {
+        let fiatBalance = balance.available.fiatValue!
+        let useTotalBalance = (try? fiatBalance < max) ?? false
+        if useTotalBalance {
+            self.topLimit = fiatBalance
+        } else {
+            self.topLimit = max
+        }
     }
 }

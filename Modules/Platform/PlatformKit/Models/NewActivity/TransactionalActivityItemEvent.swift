@@ -32,10 +32,20 @@ public struct TransactionalActivityItemEvent: Tokenized {
     }
 
     public let creationDate: Date
+
+    /**
+     The transaction identifier, used for equality checking and backend calls.
+
+     - Note: This is identical to `transactionHash` for all crypto assets, except Stellar. See `StellarHistoricalTransaction` for more info.
+     */
     public let identifier: String
+
     public let status: EventStatus
     public let type: EventType
     public let amount: CryptoValue
+
+    /// The transaction hash, used in Explorer URLs.
+    public let transactionHash: String
 
     public var currency: CryptoCurrency {
         amount.currencyType
@@ -46,12 +56,14 @@ public struct TransactionalActivityItemEvent: Tokenized {
     }
 
     public init(identifier: String,
+                transactionHash: String,
                 creationDate: Date,
                 status: EventStatus,
                 type: EventType,
                 amount: CryptoValue) {
-        self.creationDate = creationDate
         self.identifier = identifier
+        self.transactionHash = transactionHash
+        self.creationDate = creationDate
         self.status = status
         self.type = type
         self.amount = amount

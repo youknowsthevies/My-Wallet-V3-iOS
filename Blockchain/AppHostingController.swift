@@ -2,6 +2,7 @@
 
 import Combine
 import ComposableArchitecture
+import DIKit
 import UIKit
 
 /// Acts as the main controller for onboarding and logged in states
@@ -11,9 +12,12 @@ final class AppHostingController: UIViewController {
 
     private var onboardingController: OnboardingHostingController?
     private var loggedInController: LoggedInHostingController?
+    private var loggedInDependencyBridge: LoggedInDependencyBridgeAPI
 
-    init(store: Store<CoreAppState, CoreAppAction>) {
+    init(store: Store<CoreAppState, CoreAppAction>,
+         loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve()) {
         self.store = store
+        self.loggedInDependencyBridge = loggedInDependencyBridge
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -39,6 +43,7 @@ final class AppHostingController: UIViewController {
                 }
                 self.onboardingController = onboardingController
                 self.loggedInController = nil
+                self.loggedInDependencyBridge.unregister()
             })
             .store(in: &cancellables)
 
@@ -47,6 +52,9 @@ final class AppHostingController: UIViewController {
             .ifLet(then: { [weak self] loggedInScope in
                 guard let self = self else { return }
                 let loggedInController = LoggedInHostingController(store: loggedInScope)
+                // this is important, register the controller as a bridge
+                // for many places throughout the app
+                self.loggedInDependencyBridge.register(bridge: loggedInController)
                 if let onboardingController = self.onboardingController {
                     self.transition(from: onboardingController,
                                     to: loggedInController,

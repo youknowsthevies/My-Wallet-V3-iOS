@@ -117,6 +117,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(value: CoreAppAction.proceedToLoggedIn)
     case .onboarding:
         return .none
+    case .loggedIn(.logout):
+        return .none
     case .loggedIn:
         return .none
     case .none:

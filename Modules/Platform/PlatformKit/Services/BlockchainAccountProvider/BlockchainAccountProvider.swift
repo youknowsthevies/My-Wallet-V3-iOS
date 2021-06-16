@@ -15,9 +15,9 @@ public enum BlockchainAccountProvidingError: Error {
 }
 
 final class BlockchainAccountProvider: BlockchainAccountProviding {
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
 
-    init(coincore: Coincore = resolve()) {
+    init(coincore: CoincoreAPI = resolve()) {
         self.coincore = coincore
     }
 

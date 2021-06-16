@@ -4,11 +4,11 @@ import RxCocoa
 import RxSwift
 import UIKit
 
-public final class FiatCustodialBalanceView: UIView {
+final class FiatCustodialBalanceView: UIView {
 
     // MARK: - Injected
 
-    public var presenter: FiatCustodialBalanceViewPresenter! {
+    var presenter: FiatCustodialBalanceViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -90,7 +90,10 @@ public final class FiatCustodialBalanceView: UIView {
         for view in [fiatCurrencyNameLabel, fiatCurrencyCodeLabel] {
             stackView.addArrangedSubview(view)
         }
-
+        fiatBalanceView.shimmer(
+            estimatedFiatLabelSize: CGSize(width: 90, height: 16),
+            estimatedCryptoLabelSize: CGSize(width: 90, height: 16)
+        )
         fiatBalanceView.layout(edge: .leading, to: .trailing, of: stackView, offset: Spacing.interItem)
         fiatBalanceView.layoutToSuperview(axis: .vertical, offset: Spacing.inner)
         fiatBalanceView.layoutToSuperview(.trailing, offset: -Spacing.outer, priority: .penultimateHigh)

@@ -115,25 +115,58 @@ extension DependencyContainer {
 
         // MARK: - Dashboard
 
-        factory {
-            AccountsRouter(
-                routing: AppCoordinator.shared
-            ) as AccountsRouting
+        factory { () -> AccountsRouting in
+            let routing: CurrencyRouting & TabSwapping = DIKit.resolve()
+            return AccountsRouter(
+                routing: routing
+            )
         }
-
-        factory { AppCoordinator.shared as CurrencyRouting }
-
-        factory { AppCoordinator.shared as TabSwapping }
 
         factory { UIApplication.shared as AppStoreOpening }
 
-        factory { AppCoordinator.shared as AppCoordinating }
+        factory { () -> CurrencyRouting & TabSwapping in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as CurrencyRouting & TabSwapping
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveCurrencyRoutingAndTabSwapping() as CurrencyRouting & TabSwapping
+        }
+
+        factory { () -> CurrencyRouting in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as CurrencyRouting
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveCurrencyRouting() as CurrencyRouting
+        }
+
+        factory { () -> TabSwapping in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as TabSwapping
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveTabSwapping() as TabSwapping
+        }
+
+        factory { () -> AppCoordinating in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as AppCoordinating
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveAppCoordinating() as AppCoordinating
+        }
+
+        factory { () -> DashboardUIKit.WalletOperationsRouting in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveWalletOperationsRouting() as DashboardUIKit.WalletOperationsRouting
+        }
 
         factory {
             BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as DashboardUIKit.BackupRouterAPI
         }
-
-        factory { AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting }
 
         factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
 
@@ -153,9 +186,15 @@ extension DependencyContainer {
 
         single { AppCoordinator() }
 
+        single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
+
         factory { () -> DrawerRouting in
-            let app: AppCoordinator = DIKit.resolve()
-            return app as DrawerRouting
+            guard useNewOnboarding() else {
+                let app: AppCoordinator = DIKit.resolve()
+                return app as DrawerRouting
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveDrawerRouting() as DrawerRouting
         }
 
         // MARK: - WalletManager

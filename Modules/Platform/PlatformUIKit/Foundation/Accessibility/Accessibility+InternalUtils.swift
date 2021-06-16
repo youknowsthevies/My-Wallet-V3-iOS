@@ -90,6 +90,7 @@ extension Accessibility.Identifier {
         static let newPassword = "\(prefix)newPassword"
         static let confirmNewPassword = "\(prefix)confirmNewPassword"
         static let password = "\(prefix)password"
+        static let currentPassword = "\(prefix)currentPassword"
         static let description = "\(prefix)description"
         static let walletIdentifier = "\(prefix)walletIdentifier"
         static let recoveryPhrase = "\(prefix)recoveryPhrase"

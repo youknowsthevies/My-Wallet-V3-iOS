@@ -43,11 +43,13 @@ fileprivate extension EthereumHistoricalTransaction {
                 )
             )
         }
-        return .init(identifier: identifier,
-              creationDate: createdAt,
-              status: status,
-              type: direction == .debit ? .receive : .send,
-              amount: amount
+        return .init(
+            identifier: identifier,
+            transactionHash: transactionHash,
+            creationDate: createdAt,
+            status: status,
+            type: direction == .debit ? .receive : .send,
+            amount: amount
         )
     }
 }

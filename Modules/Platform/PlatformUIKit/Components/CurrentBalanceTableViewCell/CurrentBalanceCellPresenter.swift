@@ -133,7 +133,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
         let model: BadgeImageViewModel
         switch (interactor.accountType, currency) {
-        case (.nonCustodial, .fiat(let fiatCurrency)):
+        case (_, .fiat(let fiatCurrency)):
             model = .empty
             titleRelay.accept(fiatCurrency.defaultWalletName)
         case (.nonCustodial, .crypto(let cryptoCurrency)):
@@ -172,9 +172,6 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
                 accessibilityIdSuffix: ""
             )
             titleRelay.accept(cryptoCurrency.defaultInterestWalletName)
-        case (.custodial, .fiat(let currency)):
-            model = .empty
-            titleRelay.accept(currency.name)
         }
         model.marginOffsetRelay.accept(1)
         iconImageViewContentRelay.accept(model)

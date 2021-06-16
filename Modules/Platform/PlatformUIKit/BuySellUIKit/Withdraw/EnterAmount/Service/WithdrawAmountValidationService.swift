@@ -50,7 +50,7 @@ final class WithdrawAmountValidationService {
 
     // MARK: - Services
 
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
 
     // MARK: - Properties
     private let fiatCurrency: FiatCurrency
@@ -58,7 +58,7 @@ final class WithdrawAmountValidationService {
 
     init(fiatCurrency: FiatCurrency,
          beneficiary: Beneficiary,
-         coincore: Coincore = resolve(),
+         coincore: CoincoreAPI = resolve(),
          withdrawFeeService: WithdrawalServiceAPI = resolve()) {
         self.fiatCurrency = fiatCurrency
         self.beneficiary = beneficiary

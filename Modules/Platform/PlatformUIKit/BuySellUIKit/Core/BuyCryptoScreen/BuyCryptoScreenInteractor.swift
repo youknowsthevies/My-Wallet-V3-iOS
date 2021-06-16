@@ -105,10 +105,11 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 fiatCurrencyService.fiatCurrencyObservable,
                 kycTiersService.tiers.map(\.isTier2Approved).asObservable()
             )
-            .map { payload in
-                let (methods, fiatCurrency, isTier2Approved) = payload
-                return methods.filterValidForBuy(currentWalletCurrency: fiatCurrency,
-                                                 accountForEligibility: isTier2Approved)
+            .map { methods, fiatCurrency, isTier2Approved in
+                methods.filterValidForBuy(
+                    currentWalletCurrency: fiatCurrency,
+                    accountForEligibility: isTier2Approved
+                )
             }
             .catchErrorJustReturn([])
     }
@@ -263,12 +264,9 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                 pairs.pairs(per: item.cryptoCurrency).first
             }
 
-        let preferredPaymentMethod = self.preferredPaymentMethodType
-            .compactMap { $0 }
-
         Observable
             .combineLatest(
-                preferredPaymentMethod,
+                preferredPaymentMethodType.compactMap { $0 },
                 amountTranslationInteractor.fiatAmount.compactMap { $0.fiatValue },
                 amountTranslationInteractor.cryptoAmount.compactMap { $0.cryptoValue },
                 pairForCryptoCurrency,
@@ -290,13 +288,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     maxFiatValue = cardData.topLimit
                     paymentMethodId = cardData.identifier
                 case .account(let data):
-                    let maxQuoteFiatValue = data.balance.quote.fiatValue!
-                    // Quote must be a fiat value
-                    if try maxQuoteFiatValue < data.topLimit {
-                        maxFiatValue = maxQuoteFiatValue
-                    } else {
-                        maxFiatValue = data.topLimit
-                    }
+                    maxFiatValue = data.topLimit
                     paymentMethodId = nil
                 case .suggested(let method):
                     guard method.max.currency == pair.maxFiatValue.currency else {
