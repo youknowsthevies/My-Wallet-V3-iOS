@@ -21,7 +21,6 @@
                 <outlet property="lockTimeLabel" destination="szR-Qf-qe8" id="C1K-DK-CY7"/>
                 <outlet property="securePinView" destination="mVP-h6-MWt" id="5Vb-LP-aa4"/>
                 <outlet property="securePinViewTopConstraint" destination="qvb-h4-D0O" id="EJe-My-vMl"/>
-                <outlet property="swipeInstructionView" destination="tjF-8f-Dnw" id="MSY-ev-qxN"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -73,7 +72,6 @@
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="top" secondItem="mVP-h6-MWt" secondAttribute="bottom" constant="30" id="0oJ-az-zHb"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="1hw-3j-UDR"/>
                 <constraint firstItem="pki-mh-r7D" firstAttribute="trailing" secondItem="c2X-Wa-7FF" secondAttribute="trailing" constant="30" id="9KO-Sb-dVx"/>
-                <constraint firstItem="tjF-8f-Dnw" firstAttribute="centerX" secondItem="ghb-eu-pJh" secondAttribute="centerX" id="AmP-6Z-Q23"/>
                 <constraint firstItem="pki-mh-r7D" firstAttribute="bottom" secondItem="ghb-eu-pJh" secondAttribute="bottom" constant="40" id="Hw2-wA-bhA"/>
                 <constraint firstAttribute="trailing" secondItem="ghb-eu-pJh" secondAttribute="trailing" id="NVj-mR-wft"/>
                 <constraint firstItem="c2X-Wa-7FF" firstAttribute="leading" secondItem="pki-mh-r7D" secondAttribute="leading" constant="30" id="fHv-3o-7gP"/>
@@ -81,7 +79,6 @@
                 <constraint firstItem="szR-Qf-qe8" firstAttribute="top" secondItem="c2X-Wa-7FF" secondAttribute="top" constant="30" id="hZw-iJ-ykq"/>
                 <constraint firstItem="ghb-eu-pJh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="oXn-8u-OiU"/>
                 <constraint firstItem="mVP-h6-MWt" firstAttribute="top" secondItem="pki-mh-r7D" secondAttribute="top" priority="999" constant="106" id="qvb-h4-D0O"/>
-                <constraint firstItem="ghb-eu-pJh" firstAttribute="top" secondItem="tjF-8f-Dnw" secondAttribute="bottom" constant="30" id="wW1-OT-9aW"/>
             </constraints>
             <point key="canvasLocation" x="136.80000000000001" y="139.65517241379311"/>
         </view>

@@ -33,7 +33,6 @@ import WalletPayloadKit
     @Inject private var authenticationCoordinator: AuthenticationCoordinator
     @Inject private var blockchainSettings: BlockchainSettings.App
     @Inject private var walletManager: WalletManager
-    @Inject private var paymentPresenter: PaymentPresenter
     @Inject private var loadingViewPresenter: LoadingViewPresenting
     @LazyInject private var appFeatureConfigurator: AppFeatureConfigurator
     @LazyInject private var credentialsStore: CredentialsStoreAPI
@@ -196,7 +195,9 @@ import WalletPayloadKit
         closeSideMenu()
     }
 
-    func reloadAfterMultiAddressResponse() {
+    // MARK: Private Methods
+
+    private func reloadAfterMultiAddressResponse() {
         guard tabControllerManager != nil, tabControllerManager!.tabViewController.isViewLoaded else {
             // Nothing to reload
             return
@@ -208,8 +209,6 @@ import WalletPayloadKit
         NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
         NotificationCenter.default.post(name: Constants.NotificationKeys.multiAddressResponseReload, object: nil)
     }
-
-    // MARK: Private Methods
 
     private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         // Sets root view controller

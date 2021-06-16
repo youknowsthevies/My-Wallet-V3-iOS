@@ -42,16 +42,7 @@ struct KeychainItemSwiftWrapper: KeychainItemWrapping {
         KeychainItemWrapper.setSharedKeyInKeychain(sharedKey)
     }
 
-    func getSingleSwipeAddress(for crypto: CryptoCurrency) -> String? {
-        KeychainItemWrapper.getSingleSwipeAddress(for: crypto.legacy)
+    func removeAllSwipeAddresses() {
+        KeychainItemWrapper.removeAllSwipeAddresses()
     }
-
-    func removeAllSwipeAddresses(for crypto: CryptoCurrency) {
-        KeychainItemWrapper.removeAllSwipeAddresses(for: crypto.legacy)
-    }
-
-    func setSingleSwipeAddress(_ address: String, for crypto: CryptoCurrency) {
-        KeychainItemWrapper.setSingleSwipeAddress(address, for: crypto.legacy)
-    }
-
 }

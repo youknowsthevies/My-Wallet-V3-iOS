@@ -57,8 +57,6 @@ extension DependencyContainer {
 
         single { OnboardingRouter() }
 
-        factory { PaymentPresenter() }
-
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }

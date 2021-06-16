@@ -23,8 +23,6 @@
 
 #pragma mark - Strings
 
-#define WEBSOCKET_ERROR_INVALID_SERVER_CERTIFICATE @"Invalid server certificate."
-
 // TODO Start - Deprecate these in favor of Constants.FontNames
 #define FONT_MONTSERRAT_REGULAR @"Montserrat-Regular"
 #define FONT_MONTSERRAT_LIGHT @"Montserrat-Light"
@@ -40,11 +38,6 @@
 
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL @"accountsAndAddressesDetail"
 #define SEGUE_IDENTIFIER_ACCOUNTS_AND_ADDRESSES_DETAIL_EDIT @"accountsAndAddressesDetailEdit"
-
-#define NETWORK_MAINNET @"bitcoin"
-#define NETWORK_TESTNET @"testnet"
-
-#define USER_DEFAULTS_KEY_ENV @"environment"
 
 #define ENV_INDEX_DEV @0
 #define ENV_INDEX_STAGING @1
@@ -102,12 +95,6 @@
 #define JAVASCRIPTCORE_SET_INTERVAL @"setInterval"
 #define JAVASCRIPTCORE_CLEAR_INTERVAL @"clearInterval"
 
-#define WEBSOCKET_CLOSE_REASON_USER_BACKGROUNDED @"User backgrounded app"
-#define WEBSOCKET_CLOSE_REASON_LOGGED_OUT @"Logged out"
-#define WEBSOCKET_CLOSE_REASON_DECRYPTED_WALLET @"Decrypted Wallet"
-#define WEBSOCKET_CLOSE_REASON_RECEIVED_TO_SWIPE_ADDRESS @"Received to swipe address"
-#define WEBSOCKET_CLOSE_REASON_ARCHIVED_UNARCHIVED @"Archived or Unarchived"
-
 #pragma mark - Constants
 
 #define SATOSHI 1e8 // 100,000,000
@@ -124,12 +111,6 @@
 
 #define ONE_PERCENT_DECIMAL @0.01
 #define FIFTY_CENTS_DECIMAL @0.50
-
-#define WEBSOCKET_CODE_BACKGROUNDED_APP 4500
-#define WEBSOCKET_CODE_LOGGED_OUT 4501
-#define WEBSOCKET_CODE_DECRYPTED_WALLET 4502
-#define WEBSOCKET_CODE_RECEIVED_TO_SWIPE_ADDRESS 4503
-#define WEBSOCKET_CODE_ARCHIVE_UNARCHIVE 4504
 
 #define ERROR_UNDEFINED @"undefined"
 #define ERROR_ALL_OUTPUTS_ARE_VERY_SMALL @"All Outputs Are Very Small"

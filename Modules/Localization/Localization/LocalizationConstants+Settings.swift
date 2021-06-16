@@ -67,7 +67,6 @@ extension LocalizationConstants.Settings {
     public static let changePassword = NSLocalizedString("Change Password", comment: "Change Password")
     public static let enableTouchID = NSLocalizedString("Enable Touch ID", comment: "Enable Touch ID")
     public static let enableFaceID = NSLocalizedString("Enable Face ID", comment: "Enable Face ID")
-    public static let swipeToReceive = NSLocalizedString("Swipe to Receive", comment: "Swipe to Receive")
     public static let expires = NSLocalizedString("Exp:", comment: "Abbreviation for Expiration")
     public struct Card {
         public static let add = NSLocalizedString("Add a Card", comment: "Add a Card")

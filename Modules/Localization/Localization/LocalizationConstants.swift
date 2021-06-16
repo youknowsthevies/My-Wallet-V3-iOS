@@ -48,7 +48,6 @@ public enum LocalizationConstants {
     public static let youWillBeLeavingTheApp = NSLocalizedString("You will be leaving the app.", comment: "")
     public static let openMailApp = NSLocalizedString("Open Email App", comment: "")
     public static let goToSettings = NSLocalizedString("Go to Settings", comment: "")
-    public static let swipeReceive = NSLocalizedString("Swipe to Receive", comment: "")
     public static let twostep = NSLocalizedString("Enable 2-Step", comment: "")
     public static let localCurrency = NSLocalizedString("Select Your Currency", comment: "")
     public static let localCurrencyDescription = NSLocalizedString(
@@ -223,11 +222,6 @@ public enum LocalizationConstants {
                 "Backspace button",
                 comment: "Accessiblity label for backspace button"
             )
-            
-            public static let swipeHint = NSLocalizedString(
-                "Swipe right to see your addresses",
-                comment: "Accessiblity hint for swipe to receive label"
-            )
         }
         
         public struct LogoutAlert {
@@ -241,12 +235,7 @@ public enum LocalizationConstants {
                 comment: "Log out alert message"
             )
         }
-        
-        public static let swipeToReceiveLabel = NSLocalizedString(
-            "Swipe to receive",
-            comment: "Title label indicating the can swipe the screen to see his wallet addresses on login"
-        )
-        
+
         public static let enableFaceIdTitle = NSLocalizedString(
             "Enable Face ID",
             comment: "Title for alert letting the user to enable face id"
@@ -321,13 +310,6 @@ public enum LocalizationConstants {
             "Please log in with your Wallet ID and password.",
             comment: "Message for alert that tells the user he had too many PIN attempts, and his account is now logged out"
         )
-        
-        public static let revealAddress = NSLocalizedString(
-        """
-        Enable this option to reveal a receive address when you swipe left on the PIN screen, making
-        receiving bitcoin even faster. Five addresses will be loaded consecutively, after which logging in is
-        required to show new addresses.
-        """, comment: "")
 
         public static let genericError = NSLocalizedString(
             "An error occured. Please try again",
@@ -797,11 +779,6 @@ public enum LocalizationConstants {
         public static let myPaxWallet = NSLocalizedString("My USD Digital Wallet", comment: "")
     }
 
-    public struct SendEther {
-        public static let waitingForPaymentToFinishTitle = NSLocalizedString("Waiting for payment", comment: "")
-        public static let waitingForPaymentToFinishMessage = NSLocalizedString("Please wait until your previous transaction confirms", comment: "")
-    }
-
     public struct WalletPicker {
         public static let title = selectAWallet
         public static let selectAWallet = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
@@ -820,12 +797,6 @@ public enum LocalizationConstants {
             "OK",
             comment: "Generic error bottom sheet OK button"
         )
-    }
-    
-    public struct PaymentReceivedAlert {
-        public static let titleSuffix = NSLocalizedString(
-            "Received",
-            comment: "alert title suffix announcing a payment was received")
     }
 
     public struct Address {

@@ -8,7 +8,6 @@ extension AnalyticsEvents {
         case settingsPhoneClicked
         case settingsWebWalletLoginClick
         case settingsSwapLimitClicked
-        case settingsSwipeToReceiveSwitch(value: Bool)
         case settingsCloudBackupSwitch(value: Bool)
         case settingsWalletIdCopyClick
         case settingsWalletIdCopied
@@ -37,9 +36,6 @@ extension AnalyticsEvents {
             // Settings - swap limit clicked
             case .settingsSwapLimitClicked:
                 return "settings_swap_limit_clicked"
-            // Settings - swipe to receive switch clicked
-            case .settingsSwipeToReceiveSwitch:
-                return "settings_swipe_to_receive_switch"
             case .settingsCloudBackupSwitch:
                 return "settings_cloud_backup_switch"
             // Settings - wallet id copy clicked

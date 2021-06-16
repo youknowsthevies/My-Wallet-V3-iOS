@@ -32,7 +32,6 @@ final class PinScreenPresenter {
 
     typealias Settings = AppSettingsAPI &
                          AppSettingsAuthenticating &
-                         SwipeToReceiveConfiguring &
                          CloudBackupConfiguring
 
     // MARK: - Properties
@@ -168,11 +167,6 @@ final class PinScreenPresenter {
 
     /// The use case for the screen
     let useCase: PinScreenUseCase
-
-    /// Returns `true` in case the flow should show swipe to receive button
-    var showsSwipeToReceive: Bool {
-        useCase.isAuthenticateOnLogin && appSettings.swipeToReceiveEnabled
-    }
 
     // MARK: - Setup
 

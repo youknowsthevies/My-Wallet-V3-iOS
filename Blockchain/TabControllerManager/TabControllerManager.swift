@@ -187,15 +187,6 @@ final class TabControllerManager: NSObject {
     }
 }
 
-// MARK: - WalletTransactionDelegate
-
-extension TabControllerManager: WalletTransactionDelegate {
-    func onTransactionReceived() {
-        SoundManager.shared.playBeep()
-        NotificationCenter.default.post(Notification(name: Constants.NotificationKeys.transactionReceived))
-    }
-}
-
 // MARK: - TabViewControllerDelegate
 
 extension TabControllerManager: TabViewControllerDelegate {
@@ -206,7 +197,6 @@ extension TabControllerManager: TabViewControllerDelegate {
     // MARK: - View Life Cycle
 
     func tabViewControllerViewDidLoad(_ tabViewController: TabViewController) {
-        walletManager.transactionDelegate = self
     }
 
     func sendClicked() {

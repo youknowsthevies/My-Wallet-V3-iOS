@@ -26,28 +26,13 @@ function NativeEthSocket () {
   this.handlers = []
 }
 
-NativeEthSocket.prototype.on = function (type, callback) {
-}
+NativeEthSocket.prototype.on = function (type, callback) { }
 
-NativeEthSocket.prototype.onMessage = function (msg) {
-  this.handlers.forEach(function (handler) {
-    handler(msg)
-  })
-}
+NativeEthSocket.prototype.onMessage = function (msg) { }
 
-NativeEthSocket.prototype.subscribeToAccount = function (account) {
-  var accountMsg = EthSocket.accountSub(account)
-  objc_eth_socket_send(accountMsg)
-  var handler = EthSocket.accountMessageHandler(account)
-  this.handlers.push(handler)
-}
+NativeEthSocket.prototype.subscribeToAccount = function (account) { }
 
-NativeEthSocket.prototype.subscribeToBlocks = function (ethWallet) {
-  var blockMsg = EthSocket.blocksSub(ethWallet)
-  objc_eth_socket_send(blockMsg)
-  var handler = EthSocket.blockMessageHandler(ethWallet)
-  this.handlers.push(handler)
-}
+NativeEthSocket.prototype.subscribeToBlocks = function (ethWallet) { }
 
 // MARK: WalletOptions
 
@@ -699,20 +684,6 @@ MyWalletPhone.changeLastUsedReceiveIndexOfDefaultAccount = function() {
     MyWallet.wallet.hdwallet.defaultAccount.lastUsedReceiveIndex = MyWallet.wallet.hdwallet.defaultAccount.receiveIndex;
 }
 
-MyWalletPhone.getBtcSwipeAddresses = function(numberOfAddresses, label) {
-
-    var addresses = [];
-
-    MyWalletPhone.changeLastUsedReceiveIndexOfDefaultAccount();
-
-    for (var i = 0; i < numberOfAddresses; i++) {
-        addresses.push(MyWallet.wallet.hdwallet.defaultAccount.receiveAddress);
-        MyWalletPhone.changeLastUsedReceiveIndexOfDefaultAccount();
-    }
-
-    objc_did_get_btc_swipe_addresses(addresses);
-}
-
 MyWalletPhone.sendBitcoinPayment = function(payment, secondPassword, success, error, dismiss) {
     if (MyWallet.wallet.isDoubleEncrypted) {
         if (secondPassword) {
@@ -1261,10 +1232,6 @@ MyWalletPhone.getBitcoinNote = function(txHash) {
     return MyWallet.wallet._tx_notes[txHash];
 }
 
-MyWalletPhone.didReceiveEthSocketMessage = function(msg) {
-    ethSocketInstance.onMessage(msg);
-}
-
 MyWalletPhone.getEtherAddress = function(helperText) {
 
     var eth = MyWallet.wallet.eth;
@@ -1638,35 +1605,11 @@ MyWalletPhone.bch = {
         }
     },
 
-    didGetTxMessage : function() {
-        MyWalletPhone.bch.getHistory().then(function(){objc_on_tx_received()});
-    },
-
     getSocketOnOpenMessage : function() {
         if (!MyWallet.wallet) {
           return null;
         }
         return BlockchainSocket.xpubSub(MyWallet.wallet.bch.activeAccounts.map(function(account) {return account.xpub}));
-    },
-
-    getSwipeAddresses : function(numberOfAddresses) {
-        const isV4 = MyWallet.wallet.hdwallet.accounts[0].derivations
-        let xpub = MyWallet.wallet.bch.defaultAccount.xpub
-        let receiveIndex = MyWallet.wallet.bch.getAccountIndexes(xpub).receive;
-        let accountIndex = MyWallet.wallet.bch.defaultAccountIdx;
-        let hdAccount = MyWallet.wallet.hdwallet.accounts[accountIndex];
-        var addresses = [];
-        for (var i = 0; i < numberOfAddresses; i++) {
-            var address = "";
-            if (isV4) {
-                address = hdAccount.receiveAddressAtIndex(receiveIndex + i, "legacy")
-            } else {
-                address = hdAccount.receiveAddressAtIndex(receiveIndex + i)
-            }
-            let bchAddress = Helpers.toBitcoinCash(address);
-            addresses.push(bchAddress);
-        }
-        objc_did_get_bch_swipe_addresses(addresses);
     },
 
     fromBitcoinCash : function(address) {

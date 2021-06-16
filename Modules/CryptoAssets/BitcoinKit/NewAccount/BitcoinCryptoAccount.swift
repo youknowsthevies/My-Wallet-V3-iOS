@@ -46,15 +46,14 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
 
     var receiveAddress: Single<ReceiveAddress> {
         bridge.receiveAddress(forXPub: id)
-            .flatMap(weak: self) { (self, address) -> Single<(Int32, String)> in
-                Single.zip(self.bridge.walletIndex(for: address), Single.just(address))
+            .flatMap { [bridge] address -> Single<(Int32, String)> in
+                Single.zip(bridge.walletIndex(for: address), .just(address))
             }
-            .map(weak: self) { (self, values) -> ReceiveAddress in
-                let (index, address) = values
-                return BitcoinChainReceiveAddress<BitcoinToken>(
+            .map { [label, onTxCompleted] (index, address) -> ReceiveAddress in
+                BitcoinChainReceiveAddress<BitcoinToken>(
                     address: address,
-                    label: self.label,
-                    onTxCompleted: self.onTxCompleted,
+                    label: label,
+                    onTxCompleted: onTxCompleted,
                     index: index
                 )
             }

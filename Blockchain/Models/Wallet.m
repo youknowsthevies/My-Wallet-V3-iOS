@@ -20,7 +20,6 @@
 #import "NSData+Hex.h"
 #import "NSNumberFormatter+Currencies.h"
 #import "NSString+JSONParser_NSString.h"
-#import "NSURLRequest+SRWebSocket.h"
 
 #define DICTIONARY_KEY_CURRENCY @"currency"
 
@@ -411,10 +410,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf did_archive_or_unarchive];
     };
 
-    self.context[@"objc_did_get_btc_swipe_addresses"] = ^(NSArray *swipeAddresses) {
-        [weakSelf did_get_swipe_addresses:swipeAddresses asset_type:LegacyAssetTypeBitcoin];
-    };
-
 #pragma mark State
 
     self.context[@"objc_reload"] = ^() {
@@ -435,10 +430,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
     self.context[@"objc_ws_on_open"] = ^() {
         [weakSelf ws_on_open];
-    };
-
-    self.context[@"objc_on_tx_received"] = ^() {
-        [weakSelf on_tx_received];
     };
 
     self.context[@"objc_makeNotice_id_message"] = ^(NSString *type, NSString *_id, NSString *message) {
@@ -487,10 +478,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 
 #pragma mark Ethereum
 
-    self.context[@"objc_eth_socket_send"] = ^(JSValue *message) {
-        [weakSelf eth_socket_send:[message toString]];
-    };
-
     [self.ethereum setupWith:self.context];
 
 #pragma mark Bitcoin
@@ -515,10 +502,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf did_get_bitcoin_cash_exchange_rates:[result toDictionary]];
     };
 
-    self.context[@"objc_did_get_bch_swipe_addresses"] = ^(NSArray *swipeAddresses) {
-        [weakSelf did_get_swipe_addresses:swipeAddresses asset_type:LegacyAssetTypeBitcoinCash];
-    };
-
 #pragma mark Other
 
     [self.context evaluateScriptCheckIsOnMainQueue:[self getJSSource]];
@@ -539,141 +522,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         DLog(@"Error: delegate of class %@ does not respond to selector walletDidLoad!", [delegate class]);
     }
 
-}
-
-- (NSMutableArray *)pendingEthSocketMessages
-{
-    if (!_pendingEthSocketMessages) _pendingEthSocketMessages = [NSMutableArray new];
-    return _pendingEthSocketMessages;
-}
-
-- (void)setupEthSocket
-{
-    _ethSocket = [[SRWebSocket alloc] initWithURLRequest:[self getWebSocketRequest:LegacyAssetTypeEther]];
-    _ethSocket.delegate = self;
-}
-
-- (void)setupSocket:(LegacyAssetType)assetType
-{
-    if (assetType == LegacyAssetTypeBitcoin) {
-        self.btcSocket = [[SRWebSocket alloc] initWithURLRequest:[self getWebSocketRequest:LegacyAssetTypeBitcoin]];
-        self.btcSocket.delegate = self;
-
-        [self.btcSocketTimer invalidate];
-        self.btcSocketTimer = nil;
-        self.btcSocketTimer = [NSTimer scheduledTimerWithTimeInterval:15.0
-                                                               target:self
-                                                             selector:@selector(pingBtcSocket)
-                                                             userInfo:nil
-                                                              repeats:YES];
-
-        [self.btcSocket open];
-    } else {
-        self.bchSocket = [[SRWebSocket alloc] initWithURLRequest:[self getWebSocketRequest:LegacyAssetTypeBitcoinCash]];
-        self.bchSocket.delegate = self;
-
-        [self.bchSocketTimer invalidate];
-        self.bchSocketTimer = nil;
-        self.bchSocketTimer = [NSTimer scheduledTimerWithTimeInterval:15.0
-                                                               target:self
-                                                             selector:@selector(pingBchSocket)
-                                                             userInfo:nil
-                                                              repeats:YES];
-
-        [self.bchSocket open];
-    }
-}
-
-- (NSURLRequest *)getWebSocketRequest:(LegacyAssetType)assetType
-{
-    NSString *websocketURL;
-
-    if (assetType == LegacyAssetTypeBitcoin) {
-        websocketURL = [BlockchainAPI.shared webSocketUri];
-    } else if (assetType == LegacyAssetTypeEther) {
-        websocketURL = [BlockchainAPI.shared ethereumWebSocketUri];
-    } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        websocketURL = [BlockchainAPI.shared bitcoinCashWebSocketUri];
-    } else {
-        return nil;
-    }
-
-    NSMutableURLRequest *webSocketRequest = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:websocketURL]];
-    [webSocketRequest addValue:[BlockchainAPI.shared walletUrl] forHTTPHeaderField:@"Origin"];
-
-    if (BlockchainAPI.shared.shouldPinCertificate) {
-        // TODO: migrate to CertificatePinner class
-        // Note: All `DEV` and `STAGING` builds should disable certificate pinning
-        // so as QA can see network requests.
-        NSData *certificateData = NetworkDependenciesObjc.certificatePinner.certificateData;
-        SecCertificateRef certRef = SecCertificateCreateWithData(kCFAllocatorDefault, (__bridge CFDataRef)certificateData);
-        id certificate = (__bridge id)certRef;
-        [webSocketRequest setSR_SSLPinnedCertificates:@[certificate]];
-        [webSocketRequest setSR_comparesPublicKeys:YES];
-        CFRelease(certRef);
-    }
-    return webSocketRequest;
-}
-
-- (void)pingBtcSocket
-{
-    if (self.btcSocket.readyState == 1) {
-        NSError *error;
-        [self.btcSocket sendPing:[@"{ op: \"ping\" }" dataUsingEncoding:NSUTF8StringEncoding] error:&error];
-        if (error) DLog(@"Error sending ping: %@", [error localizedDescription]);
-    } else {
-        DLog(@"reconnecting websocket");
-        [self setupSocket:LegacyAssetTypeBitcoin];
-    }
-}
-
-- (void)pingBchSocket
-{
-    if (self.bchSocket.readyState == 1) {
-        NSError *error;
-        [self.bchSocket sendPing:[@"{ op: \"ping\" }" dataUsingEncoding:NSUTF8StringEncoding] error:&error];
-        if (error) DLog(@"Error sending ping: %@", [error localizedDescription]);
-    } else {
-        DLog(@"reconnecting websocket");
-        [self setupSocket:LegacyAssetTypeBitcoinCash];
-    }
-}
-
-- (void)subscribeToXPub:(NSString *)xPub assetType:(LegacyAssetType)assetType
-{
-    SRWebSocket *socket = assetType == LegacyAssetTypeBitcoin ? self.btcSocket : self.bchSocket;
-
-    if (socket && socket.readyState == 1) {
-        NSError *error;
-        [socket sendString:[NSString stringWithFormat:@"{\"op\":\"xpub_sub\",\"xpub\":\"%@\"}", xPub] error:&error];
-        if (error) DLog(@"Error subscribing to xpub: %@", [error localizedDescription]);
-    } else {
-        [self setupSocket:assetType];
-    }
-}
-
-- (void)subscribeToAddress:(NSString *)address assetType:(LegacyAssetType)assetType
-{
-    SRWebSocket *socket = assetType == LegacyAssetTypeBitcoin ? self.btcSocket : self.bchSocket;
-
-    if (socket && socket.readyState == 1) {
-        NSError *error;
-        [socket sendString:[NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", address] error:&error];
-        if (error) DLog(@"Error subscribing to address: %@", [error localizedDescription]);
-    } else {
-        [self setupSocket:assetType];
-    }
-}
-
-- (void)subscribeToSwipeAddress:(NSString *)address assetType:(LegacyAssetType)assetType
-{
-    if (assetType == LegacyAssetTypeBitcoin) {
-        self.btcSwipeAddressToSubscribe = address;
-    } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        self.bchSwipeAddressToSubscribe = address;
-    }
-
-    [self subscribeToAddress:address assetType:assetType];
 }
 
 /// Called after recovering wallet with mnemonic
@@ -711,148 +559,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     // Some changes to the wallet requiring syncing afterwards need only specific updates to the UI; reloading the entire Receive screen, for example, is not necessary when setting the default account. Unfortunately information about the specific function that triggers backup is lost by the time multiaddress is called.
 
     self.isSettingDefaultAccount = NO;
-}
-
-# pragma mark - Socket Delegate
-
-- (void)webSocketDidOpen:(SRWebSocket *)webSocket
-{
-    if (webSocket == self.ethSocket) {
-        DLog(@"eth websocket opened");
-        for (NSString *message in [self.pendingEthSocketMessages reverseObjectEnumerator]) {
-            DLog(@"Sending queued eth socket message %@", message);
-            [self sendEthSocketMessage:message];
-        }
-        [self.pendingEthSocketMessages removeAllObjects];
-    } else if (webSocket == self.btcSocket) {
-        DLog(@"btc websocket opened");
-        NSString *message = self.btcSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self.btcSwipeAddressToSubscribe escapedForJS]] : [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.getSocketOnOpenMessage()"] toString];
-
-        NSError *error;
-        [webSocket sendString:message error:&error];
-        if (error) DLog(@"Error subscribing to address: %@", [error localizedDescription]);
-    } else if (webSocket == self.bchSocket) {
-        DLog(@"bch websocket opened");
-        NSString *message = self.bchSwipeAddressToSubscribe ? [NSString stringWithFormat:@"{\"op\":\"addr_sub\",\"addr\":\"%@\"}", [self fromBitcoinCash:[self.bchSwipeAddressToSubscribe escapedForJS]]] : [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.getSocketOnOpenMessage()"] toString];
-        NSError *error;
-        [webSocket sendString:message error:&error];
-        if (error) DLog(@"Error subscribing to address: %@", [error localizedDescription]);
-    }
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
-{
-    DLog(@"%@ failed with error: %@", webSocket == self.ethSocket ? @"eth socket" : @"web socket", [error localizedDescription]);
-    if ([error.localizedDescription isEqualToString:WEBSOCKET_ERROR_INVALID_SERVER_CERTIFICATE]) {
-        // TODO: add failedToValidateCertificate function
-        // [app failedToValidateCertificate:[error localizedDescription]];
-    }
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
-{
-    if (webSocket == self.ethSocket) {
-        DLog(@"eth websocket closed: code %li, reason: %@", code, reason);
-    } else if (webSocket == self.btcSocket || webSocket == self.bchSocket) {
-        if (code == WEBSOCKET_CODE_BACKGROUNDED_APP || code == WEBSOCKET_CODE_LOGGED_OUT || code == WEBSOCKET_CODE_RECEIVED_TO_SWIPE_ADDRESS) {
-            // Socket will reopen when app becomes active and after decryption
-            return;
-        }
-
-        DLog(@"websocket closed: code %li, reason: %@", code, reason);
-        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-            if (self.btcSocket.readyState != 1) {
-                DLog(@"reconnecting websocket");
-                [self setupSocket:LegacyAssetTypeBitcoin];
-            }
-            if (self.bchSocket.readyState != 1) {
-                DLog(@"reconnecting websocket");
-                [self setupSocket:LegacyAssetTypeBitcoinCash];
-            }
-        }
-    }
-}
-
-- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessageWithString:(NSString *)string
-{
-    if (webSocket == self.ethSocket) {
-        DLog(@"received eth socket message string");
-        [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.didReceiveEthSocketMessage(\"%@\")", [string escapedForJS]]];
-    } else {
-        DLog(@"received websocket message string");
-
-        if (webSocket == self.btcSocket) {
-            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWallet.getSocketOnMessage(\"%@\", { checksum: null })", [string escapedForJS]]];
-        } else if (webSocket == self.bchSocket) {
-            [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.bch.didGetTxMessage()"];
-        }
-
-        NSDictionary *message = [string getJSONObject];
-        NSDictionary *transaction = message[@"x"];
-
-        if (webSocket == self.btcSocket && self.btcSwipeAddressToSubscribe) {
-            NSString *hash = transaction[DICTIONARY_KEY_HASH];
-            [self getAmountReceivedForTransactionHash:hash socket:webSocket];
-        } else if (webSocket == self.bchSocket && self.bchSwipeAddressToSubscribe) {
-            NSArray *outputs = transaction[DICTIONARY_KEY_OUT];
-            NSString *address = [self fromBitcoinCash:self.bchSwipeAddressToSubscribe];
-            uint64_t amountReceived = 0;
-            for (NSDictionary *output in outputs) {
-                if ([[output objectForKey:DICTIONARY_KEY_ADDRESS_OUTPUT] isEqualToString:address]) amountReceived = amountReceived + [[output objectForKey:DICTIONARY_KEY_VALUE] longLongValue];
-            };
-
-            if (amountReceived > 0) {
-                if ([delegate respondsToSelector:@selector(paymentReceivedOnPINScreen:assetType:address:)]) {
-                    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-                        NSString *amountString = [NSNumberFormatter formatBCHAmount:amountReceived includeSymbol:YES inLocalCurrency:NO];
-                        [delegate paymentReceivedOnPINScreen:amountString assetType:LegacyAssetTypeBitcoinCash address: self.bchSwipeAddressToSubscribe];
-                    }
-                } else {
-                    DLog(@"Error: delegate of class %@ does not respond to selector paymentReceivedOnPINScreen:!", [delegate class]);
-                }
-            }
-
-            self.bchSwipeAddressToSubscribe = nil;
-
-            [webSocket closeWithCode:WEBSOCKET_CODE_RECEIVED_TO_SWIPE_ADDRESS reason:WEBSOCKET_CLOSE_REASON_RECEIVED_TO_SWIPE_ADDRESS];
-        }
-    }
-}
-
-- (void)getAmountReceivedForTransactionHash:(NSString *)txHash socket:(SRWebSocket *)webSocket
-{
-    NSURL *URL = [NSURL URLWithString:[[BlockchainAPI.shared walletUrl] stringByAppendingString:[NSString stringWithFormat:TRANSACTION_RESULT_URL_SUFFIX_HASH_ARGUMENT_ADDRESS_ARGUMENT, txHash, self.btcSwipeAddressToSubscribe]]];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-
-    NSURLSessionDataTask *task = [NetworkDependenciesObjc.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-
-        if (error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // TODO: add alert for error here
-            });
-            return;
-        }
-
-        uint64_t amountReceived = [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] longLongValue];
-
-        NSString *amountString = [NSNumberFormatter formatMoney:amountReceived localCurrency:NO];
-
-        if (amountReceived > 0) {
-            if ([self->delegate respondsToSelector:@selector(paymentReceivedOnPINScreen:assetType:address:)]) {
-                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-                    [self->delegate paymentReceivedOnPINScreen:amountString assetType:LegacyAssetTypeBitcoin address: self.btcSwipeAddressToSubscribe];
-                }
-            } else {
-                DLog(@"Error: delegate of class %@ does not respond to selector paymentReceivedOnPINScreen:!", [self->delegate class]);
-            }
-        }
-        
-        self.btcSwipeAddressToSubscribe = nil;
-
-        [webSocket closeWithCode:WEBSOCKET_CODE_RECEIVED_TO_SWIPE_ADDRESS reason:WEBSOCKET_CLOSE_REASON_RECEIVED_TO_SWIPE_ADDRESS];
-    }];
-
-    [task resume];
 }
 
 # pragma mark - Calls from Obj-C to JS
@@ -1223,19 +929,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     return 0;
 }
 
-- (void)getSwipeAddresses:(NSInteger)numberOfAddresses assetType:(LegacyAssetType)assetType
-{
-    NSString *script;
-    if (assetType == LegacyAssetTypeBitcoin) {
-        script = [NSString stringWithFormat:@"MyWalletPhone.getBtcSwipeAddresses(%ld)", (long)numberOfAddresses];
-    } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        script = [NSString stringWithFormat:@"MyWalletPhone.bch.getSwipeAddresses(%ld)", (long)numberOfAddresses];
-    } else {
-        return;
-    }
-    [self.context evaluateScriptCheckIsOnMainQueue:script];
-}
-
 - (int)getDefaultAccountLabelledAddressesCount
 {
     return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getDefaultAccountLabelledAddressesCount()"] toNumber] intValue];
@@ -1466,17 +1159,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (void)on_tx_received
-{
-    DLog(@"on_tx_received");
-
-    if ([delegate respondsToSelector:@selector(receivedTransactionMessage)]) {
-        [delegate receivedTransactionMessage];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector receivedTransactionMessage!", [delegate class]);
-    }
-}
-
 - (void)getPrivateKeyPasswordSuccess:(JSValue *)success error:(void(^)(id))_error
 {
     if ([delegate respondsToSelector:@selector(getPrivateKeyPasswordWithSuccess:)]) {
@@ -1597,20 +1279,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)did_decrypt
 {
     DLog(@"did_decrypt");
-
-    if (self.btcSocket) {
-        [self.btcSocket closeWithCode:WEBSOCKET_CODE_DECRYPTED_WALLET reason:WEBSOCKET_CLOSE_REASON_DECRYPTED_WALLET];
-    } else {
-        [self setupSocket:LegacyAssetTypeBitcoin];
-    }
-
-    if (self.bchSocket) {
-        [self.bchSocket closeWithCode:WEBSOCKET_CODE_DECRYPTED_WALLET reason:WEBSOCKET_CLOSE_REASON_DECRYPTED_WALLET];
-    } else {
-        [self setupSocket:LegacyAssetTypeBitcoinCash];
-    }
-
-    [self setupEthSocket];
 
     NSString *sharedKey = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.sharedKey"] toString];
     NSString *guid = [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWallet.wallet.guid"] toString];
@@ -1834,8 +1502,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 {
     DLog(@"on_add_new_account");
 
-    [self subscribeToXPub:[self getXpubForAccount:[self getActiveAccountsCount:LegacyAssetTypeBitcoin] - 1 assetType:LegacyAssetTypeBitcoin] assetType:LegacyAssetTypeBitcoin];
-
     dispatch_async(dispatch_get_main_queue(), ^{
         [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     });
@@ -1929,39 +1595,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)did_archive_or_unarchive
 {
     DLog(@"did_archive_or_unarchive");
-
-    [self.btcSocket closeWithCode:WEBSOCKET_CODE_ARCHIVE_UNARCHIVE reason:WEBSOCKET_CLOSE_REASON_ARCHIVED_UNARCHIVED];
-    [self.bchSocket closeWithCode:WEBSOCKET_CODE_ARCHIVE_UNARCHIVE reason:WEBSOCKET_CLOSE_REASON_ARCHIVED_UNARCHIVED];
-}
-
-- (void)did_get_swipe_addresses:(NSArray *)swipeAddresses asset_type:(LegacyAssetType)assetType
-{
-    DLog(@"did_get_swipe_addresses");
-
-    if ([self.delegate respondsToSelector:@selector(didGetSwipeAddresses:assetType:)]) {
-        [self.delegate didGetSwipeAddresses:swipeAddresses assetType:assetType];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didGetSwipeAddresses!", [delegate class]);
-    }
-}
-
-- (void)eth_socket_send:(NSString *)message
-{
-    if (self.ethSocket && self.ethSocket.readyState == SR_OPEN) {
-        DLog(@"Sending eth socket message %@", message);
-        [self sendEthSocketMessage:message];
-    } else {
-        DLog(@"Will send eth socket message %@", message);
-        [self.pendingEthSocketMessages insertObject:message atIndex:0];
-        [self.ethSocket open];
-    }
-}
-
-- (void)sendEthSocketMessage:(NSString *)message
-{
-    NSError *error;
-    [self.ethSocket sendString:message error:&error];
-    if (error) DLog(@"Error sending eth socket message: %@", [error localizedDescription]);
 }
 
 - (void)did_fetch_bch_history
@@ -2313,22 +1946,7 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)useDebugSettingsIfSet
 {
     [self updateServerURL:[BlockchainAPI.shared walletUrl]];
-
-    [self updateWebSocketURL:[BlockchainAPI.shared webSocketUri]];
-
     [self updateAPIURL:[BlockchainAPI.shared apiUrl]];
-
-#ifdef DEBUG
-    BOOL testnetOn = [[[NSUserDefaults standardUserDefaults] objectForKey:USER_DEFAULTS_KEY_ENV] isEqual:ENV_INDEX_TESTNET];
-    NSString *network;
-    if (testnetOn) {
-        network = NETWORK_TESTNET;
-    } else {
-        network = NETWORK_MAINNET;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.changeNetwork(\"%@\")", [network escapedForJS]]];
-#endif
 }
 
 @end

@@ -73,7 +73,6 @@ enum SettingsSectionType: Int, Equatable {
             case emailNotifications
             case balanceSyncing
             case bioAuthentication
-            case swipeToReceive
         }
 
         enum ClipboardCellType: String {

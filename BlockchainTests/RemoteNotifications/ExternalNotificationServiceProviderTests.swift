@@ -12,12 +12,8 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
 
     func testSuccessfullTokenFetching() {
         let expectedToken = "fcm-token-value"
-        let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(expectedToken))
-        let messagingService = MockMessagingService()
-        let provider = ExternalNotificationServiceProvider(
-            tokenFetcher: tokenFetcher,
-            messagingService: messagingService
-        )
+        let messagingService = MockMessagingService(expectedTokenResult: .success(expectedToken))
+        let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
         do {
             let token = try provider.token.toBlocking().first()!
             XCTAssertEqual(token, expectedToken)
@@ -27,12 +23,8 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
     }
 
     func testEmptyTokenFetchingFailure() {
-        let tokenFetcher = MockFirebaseInstanceID(expectedResult: .failure(.tokenIsEmpty))
-        let messagingService = MockMessagingService()
-        let provider = ExternalNotificationServiceProvider(
-            tokenFetcher: tokenFetcher,
-            messagingService: messagingService
-        )
+        let messagingService = MockMessagingService(expectedTokenResult: .failure(.tokenIsEmpty))
+        let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
         do {
             let token = try provider.token.toBlocking().first()!
             XCTFail("expected \(RemoteNotification.TokenFetchError.tokenIsEmpty). got token \(token) instead")
@@ -44,12 +36,8 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
     }
 
     func testTopicSubscriptionSuccess() {
-        let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(""))
-        let messagingService = MockMessagingService(shouldSubscribeToTopicsSuccessfully: true)
-        let provider = ExternalNotificationServiceProvider(
-            tokenFetcher: tokenFetcher,
-            messagingService: messagingService
-        )
+        let messagingService = MockMessagingService(expectedTokenResult: .success(""), shouldSubscribeToTopicsSuccessfully: true)
+        let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
         let topic = RemoteNotification.Topic.todo
         do {
             try provider.subscribe(to: topic).toBlocking().first()
@@ -60,12 +48,8 @@ final class ExternalNotificationServiceProviderTests: XCTestCase {
     }
 
     func testTopicSubscriptionFailure() {
-        let tokenFetcher = MockFirebaseInstanceID(expectedResult: .failure(.tokenIsEmpty))
-        let messagingService = MockMessagingService(shouldSubscribeToTopicsSuccessfully: false)
-        let provider = ExternalNotificationServiceProvider(
-            tokenFetcher: tokenFetcher,
-            messagingService: messagingService
-        )
+        let messagingService = MockMessagingService(expectedTokenResult: .failure(.tokenIsEmpty), shouldSubscribeToTopicsSuccessfully: false)
+        let provider = ExternalNotificationServiceProvider(messagingService: messagingService)
         let topic = RemoteNotification.Topic.todo
         do {
             try provider.subscribe(to: topic).toBlocking().first()

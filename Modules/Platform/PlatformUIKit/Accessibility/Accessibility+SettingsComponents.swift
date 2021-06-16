@@ -28,10 +28,6 @@ extension Accessibility.Identifier {
                 public static let title = "\(SettingsCell.prefix)BioAuthentication"
             }
 
-            public enum SwipeToReceive {
-                public static let title = "\(SettingsCell.prefix)SwipeToReceive"
-            }
-
             public enum AccountLimits {
                 public static let title = "\(SettingsCell.prefix)AccountLimits"
             }
@@ -82,7 +78,6 @@ extension Accessibility.Identifier {
             private static let prefix = "\(Settings.prefix)SwitchView."
             public static let SMSSwitchView = "\(prefix)SMSSwitchView"
             public static let BioSwitchView = "\(prefix)BioSwitchView"
-            public static let swipeToReceive = "\(prefix)swipeToReceiveSwitchView"
             public static let twoFactorSwitchView = "\(prefix)twoFactorSwitchView"
             public static let balanceSync = "\(prefix)balanceSyncSwitchView"
             public static let cloudBackup = "\(prefix)cloudBackup"

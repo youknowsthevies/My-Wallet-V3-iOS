@@ -9,7 +9,6 @@ public enum AppFeature: Int, CaseIterable {
     // MARK: - Local features
 
     case biometry
-    case swipeToReceive
 
     // MARK: - Firebase features
 
@@ -48,8 +47,7 @@ extension AppFeature {
             return "trading_account_external_send_ios"
         case .sendToDomainName:
             return "send_to_domain_name_ios"
-        case .biometry,
-             .swipeToReceive:
+        case .biometry:
             return nil
         }
     }

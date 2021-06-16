@@ -12,16 +12,21 @@ protocol ExchangeClientAPI {
 
     var linkID: Single<LinkID> { get }
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable
-    func syncDepositAddress(accounts: [AssetAddress]) -> Completable
+    func syncDepositAddress(accounts: [CryptoReceiveAddress]) -> Completable
 }
 
 final class ExchangeClient: ExchangeClientAPI {
 
+    private let requestBuilder: RequestBuilder
     private let networkAdapter: NetworkAdapterAPI
     private let appSettings: BlockchainSettings.App
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         settings: BlockchainSettings.App = resolve()) {
+    init(
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail),
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        settings: BlockchainSettings.App = resolve()
+    ) {
+        self.requestBuilder = requestBuilder
         self.networkAdapter = networkAdapter
         self.appSettings = settings
     }
@@ -30,34 +35,24 @@ final class ExchangeClient: ExchangeClientAPI {
         let fallback = fetchLinkIDPayload()
             .flatMap(weak: self) { (_, payload) -> Single<LinkID> in
                 guard let linkID = payload["linkId"] else {
-                return Single.error(ExchangeLinkingAPIError.noLinkID)
-            }
+                    return Single.error(ExchangeLinkingAPIError.noLinkID)
+                }
 
-            return Single.just(linkID)
-        }
+                return Single.just(linkID)
+            }
         return existingUserLinkIdentifier().ifEmpty(switchTo: fallback)
     }
 
-    func syncDepositAddress(accounts: [AssetAddress]) -> Completable {
-        let depositAddresses: Dictionary<String, String> = Dictionary(accounts.map { account in
-            if let bitcoinCashAddress = account as? BitcoinCashAssetAddress {
-                let depositAddress = bitcoinCashAddress.publicKey.removing(prefix: "\(AssetConstants.URLSchemes.bitcoinCash):")
-                return (bitcoinCashAddress.cryptoCurrency.code, depositAddress)
-            } else {
-                return (account.cryptoCurrency.code, account.publicKey)
-            }
-        }) { _, last in last }
+    func syncDepositAddress(accounts: [CryptoReceiveAddress]) -> Completable {
+        let depositAddresses = accounts.reduce(into: [String: String]()) { result, receiveAddress in
+            result[receiveAddress.asset.code] = receiveAddress.address
+        }
         let payload = ["addresses" : depositAddresses ]
-        let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl)!
-        let components = ["users", "deposit", "addresses"]
-        let endpoint = URL.endpoint(apiURL, pathComponents: components)!
-        let request = NetworkRequest(
-            endpoint: endpoint,
-            method: .post,
+        let request = requestBuilder.post(
+            path: ["users", "deposit", "addresses"],
             body: try? JSONEncoder().encode(payload),
-            authenticated: true,
-            contentType: .json
-        )
+            authenticated: true
+        )!
         return networkAdapter
             .perform(
                 request: request,
