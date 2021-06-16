@@ -118,7 +118,8 @@ extension PinStoreResponse {
             // Calculate elapsed time and remaining lock time
             let lastWrongPinTimestamp = UserDefaults.standard.object(forKey: "LastWrongPinTimestamp") as! TimeInterval
             let elapsed = Int(NSDate().timeIntervalSince1970 - lastWrongPinTimestamp)
-            let remaining = lockTimeSeconds - elapsed
+            // Ensure no negative number
+            let remaining = max(lockTimeSeconds - elapsed, 0)
             let message = LocalizationConstants.Pin.backoff
             return PinError.backoff(message, remaining)
         case .success:
