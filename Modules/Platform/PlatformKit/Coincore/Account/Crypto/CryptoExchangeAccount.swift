@@ -45,12 +45,11 @@ public final class CryptoExchangeAccount: ExchangeAccount {
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        balance
+        .just(.zero(currency: asset))
     }
 
     public var balance: Single<MoneyValue> {
-        /// Exchange API does not return a balance.
-        .just(MoneyValue.zero(currency: asset))
+        .just(.zero(currency: asset))
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
@@ -90,7 +89,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
-        actions.map { $0.contains(action) }
+        .just(false)
     }
 
     // MARK: - Private Properties

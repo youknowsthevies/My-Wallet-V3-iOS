@@ -9,17 +9,20 @@ public protocol AccountPickerAccountProviding: AnyObject {
     var accounts: Observable<[BlockchainAccount]> { get }
 }
 
-public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProviding {
+public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
 
     // MARK: - Types
 
     private enum Error: LocalizedError {
-        case failedLoadingWallet(action: AssetAction, asset: String, name: String)
+        case loadingFailed(account: BlockchainAccount, action: AssetAction, error: String)
 
         var errorDescription: String? {
             switch self {
-            case let .failedLoadingWallet(action, asset, name):
-                return "Failed to load wallet asset '\(asset)' name '\(name)' action '\(action)'"
+            case let .loadingFailed(account, action, error):
+                let type = String(reflecting: account)
+                let asset = account.currencyType.code
+                let label = account.label
+                return "Failed to load: '\(type)' asset '\(asset)' label '\(label)' action '\(action)'  error '\(error)'."
             }
         }
     }
@@ -45,16 +48,13 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
             .flatMapFilter(
                 action: action,
                 failSequence: failSequence,
-                onError: { [weak self] account in
-                    guard let self = self else { return }
-                    let asset: String
-                    if let account = account as? SingleAccount {
-                        asset = account.currencyType.displaySymbol
-                    } else {
-                        asset = "unknown"
-                    }
-                    let error: Error = .failedLoadingWallet(action: self.action, asset: asset, name: account.label)
-                    self.errorRecorder.error(error)
+                onError: { [action, errorRecorder] account, error in
+                    let error: Error = .loadingFailed(
+                        account: account,
+                        action: action,
+                        error: error.localizedDescription
+                    )
+                    errorRecorder.error(error)
                 }
             )
             .asObservable()
@@ -73,7 +73,7 @@ public final class AccountPickerDefaultAccountProvider: AccountPickerAccountProv
                 coincore: Coincore = resolve(),
                 errorRecorder: ErrorRecording = resolve(),
                 action: AssetAction,
-                failSequence: Bool = true) {
+                failSequence: Bool) {
         self.action = action
         self.coincore = coincore
         self.singleAccountsOnly = singleAccountsOnly

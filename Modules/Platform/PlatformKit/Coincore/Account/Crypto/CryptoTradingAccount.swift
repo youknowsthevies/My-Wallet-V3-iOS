@@ -7,6 +7,17 @@ import ToolKit
 /// Named `CustodialTradingAccount` on Android
 public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
+    private enum Error: LocalizedError {
+        case loadingFailed(asset: String, label: String, action: AssetAction, error: String)
+
+        var errorDescription: String? {
+            switch self {
+            case let .loadingFailed(asset, label, action, error):
+                return "Failed to load: 'CryptoTradingAccount' asset '\(asset)' label '\(label)' action '\(action)' error '\(error)' ."
+            }
+        }
+    }
+
     public lazy var id: String = "CryptoTradingAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
@@ -120,12 +131,14 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let featureFetcher: FeatureFetching
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
+    private let errorRecorder: ErrorRecording
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currency)
     }
 
     public init(
         asset: CryptoCurrency,
+        errorRecorder: ErrorRecording = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
@@ -147,6 +160,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.featureFetcher = featureFetcher
         self.internalFeatureFlagService = internalFeatureFlagService
         self.kycTiersService = kycTiersService
+        self.errorRecorder = errorRecorder
     }
 
     public func can(perform action: AssetAction) -> Single<Bool> {
@@ -159,6 +173,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .map { [asset] isPositive in
                     isPositive && asset.hasNonCustodialWithdrawalSupport
                 }
+                .catchError { [label, asset] error in
+                    throw Error.loadingFailed(
+                        asset: asset.code,
+                        label: label,
+                        action: action,
+                        error: error.localizedDescription
+                    )
+                }
+                .recordErrors(on: errorRecorder)
+                .catchErrorJustReturn(false)
         case .sell,
              .swap:
             return balance
@@ -169,6 +193,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     }
                     return self.eligibilityService.isEligible
                 }
+                .catchError { [label, asset] error in
+                    throw Error.loadingFailed(
+                        asset: asset.code,
+                        label: label,
+                        action: action,
+                        error: error.localizedDescription
+                    )
+                }
+                .recordErrors(on: errorRecorder)
+                .catchErrorJustReturn(false)
         case .receive:
             return Single.just(internalFeatureFlagService.isEnabled(.tradingAccountReceive))
                 .flatMap(weak: self) { (self, isEnabled) -> Single<Bool> in
@@ -177,6 +211,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     }
                     return .just(true)
                 }
+                .catchError { [label, asset] error in
+                    throw Error.loadingFailed(
+                        asset: asset.code,
+                        label: label,
+                        action: action,
+                        error: error.localizedDescription
+                    )
+                }
+                .recordErrors(on: errorRecorder)
+                .catchErrorJustReturn(false)
         case .deposit,
              .withdraw:
             return .just(false)
