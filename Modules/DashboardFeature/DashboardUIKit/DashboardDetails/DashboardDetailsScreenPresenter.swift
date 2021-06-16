@@ -217,6 +217,7 @@ final class DashboardDetailsScreenPresenter {
                     }
             }
             .asObservable()
+            .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: walletBalanceStateRelay)
             .disposed(by: disposeBag)
 
@@ -239,6 +240,7 @@ final class DashboardDetailsScreenPresenter {
                 }
             }
             .asObservable()
+            .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: savingsBalanceStateRelay)
             .disposed(by: disposeBag)
 
@@ -256,6 +258,7 @@ final class DashboardDetailsScreenPresenter {
                 return .visible(presenter, account)
             }
             .asObservable()
+            .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: tradingBalanceStateRelay)
             .disposed(by: disposeBag)
 
