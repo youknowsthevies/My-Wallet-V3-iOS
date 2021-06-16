@@ -24,8 +24,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             initialAuthorizationStatus: .authorized,
             expectedAuthorizationResult: .success(true)
         )
-        let messagingService = MockMessagingService()
-        let tokenFetcher = MockFirebaseInstanceID(expectedResult: .success(token))
+        let messagingService = MockMessagingService(expectedTokenResult: .success(token))
         let credentialsProvider = MockGuidSharedKeyRepositoryAPI()
         let networkAdapter = NetworkAdapterMock()
         networkAdapter.response = (filename: "remote-notification-registration-success", bundle: Bundle(for: RemoteNotificationServiceTests.self))
@@ -42,10 +41,7 @@ final class RemoteNotificationServiceTests: XCTestCase {
             userNotificationCenter: userNotificationCenter,
             messagingService: messagingService
         )
-        let externalServiceProvider = ExternalNotificationServiceProvider(
-            tokenFetcher: tokenFetcher,
-            messagingService: messagingService
-        )
+        let externalServiceProvider = ExternalNotificationServiceProvider(messagingService: messagingService)
         let networkService = RemoteNotificationNetworkService(networkAdapter: networkAdapter)
 
         // Instantiate the main service

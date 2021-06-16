@@ -2,7 +2,7 @@
 
 @testable import Blockchain
 import FirebaseMessaging
-import RemoteNotificationsKit
+@testable import RemoteNotificationsKit
 
 final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
 
@@ -12,10 +12,14 @@ final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
 
     var apnsToken: Data?
 
+    private let expectedTokenResult: RemoteNotificationTokenFetchResult
+
     private(set) var topics = Set<RemoteNotification.Topic>()
+
     private let shouldSubscribeToTopicsSuccessfully: Bool
 
-    init(shouldSubscribeToTopicsSuccessfully: Bool = true) {
+    init(expectedTokenResult: RemoteNotificationTokenFetchResult, shouldSubscribeToTopicsSuccessfully: Bool = true) {
+        self.expectedTokenResult = expectedTokenResult
         self.shouldSubscribeToTopicsSuccessfully = shouldSubscribeToTopicsSuccessfully
     }
 
@@ -31,5 +35,9 @@ final class MockMessagingService: FirebaseCloudMessagingServiceAPI {
         } else {
             completion!(FakeError.subscriptionFailure)
         }
+    }
+
+    func token(handler: @escaping (RemoteNotificationTokenFetchResult) -> Void) {
+        handler(expectedTokenResult)
     }
 }
