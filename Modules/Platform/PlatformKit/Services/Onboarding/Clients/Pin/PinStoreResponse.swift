@@ -57,7 +57,7 @@ extension PinStoreResponse {
         remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
     }
 
-    public func toPinError(_ lockTimeSeconds: Int) -> PinError {
+    public func toPinError(pinLockTime: Int = 0) -> PinError {
         // First verify that the status code was received
         guard let code = statusCode else {
             return PinError.serverError(LocalizationConstants.Errors.genericError)
@@ -68,10 +68,10 @@ extension PinStoreResponse {
             return PinError.tooManyAttempts
         case .incorrect:
             let message = LocalizationConstants.Pin.incorrect
-            return PinError.incorrectPin(message, lockTimeSeconds)
+            return PinError.incorrectPin(message, pinLockTime)
         case .backoff:
             let message = LocalizationConstants.Pin.backoff
-            return PinError.backoff(message, lockTimeSeconds)
+            return PinError.backoff(message, pinLockTime)
         case .success:
             // Should not happen because this is an error response
             return PinError.serverError(LocalizationConstants.Errors.genericError)
