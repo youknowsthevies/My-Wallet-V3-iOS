@@ -24,7 +24,7 @@ final class TransactionInteractor {
         }
     }
 
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     private let availablePairsService: AvailableTradingPairsServiceAPI
     private let swapEligibilityService: EligibilityServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
@@ -35,7 +35,7 @@ final class TransactionInteractor {
     private let invalidate = PublishSubject<Void>()
 
     init(
-        coincore: Coincore = resolve(),
+        coincore: CoincoreAPI = resolve(),
         availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
         swapEligibilityService: EligibilityServiceAPI = resolve(),
         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
