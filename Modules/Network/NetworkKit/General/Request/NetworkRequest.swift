@@ -74,6 +74,8 @@ public struct NetworkRequest {
 
     let requestId = UUID()
 
+    private(set) var shouldDebug: Bool = false
+
     private var defaultHeaders: HTTPHeaders {
         [HttpHeaderField.requestId: requestId.uuidString]
     }
@@ -103,6 +105,13 @@ public struct NetworkRequest {
     func adding(authenticationToken: String) -> Self {
         var request = self
         request.headers[HttpHeaderField.authorization] = authenticationToken
+        return request
+    }
+
+    /// Used by the handler to print debug detailed information about the request and response
+    public func debug() -> Self {
+        var request = self
+        request.shouldDebug = true
         return request
     }
 
