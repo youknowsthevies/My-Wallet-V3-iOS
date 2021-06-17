@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-public protocol WalletActionScreenInteracting: class {
+public protocol WalletActionScreenInteracting: AnyObject {
     var currency: CurrencyType { get }
     var accountType: SingleAccountType { get }
     var balanceCellInteractor: CurrentBalanceCellInteracting { get }

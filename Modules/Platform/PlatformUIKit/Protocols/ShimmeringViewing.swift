@@ -6,7 +6,7 @@ public enum ShimmerDirection {
 }
 
 /// Provides shimmering trait to the inheriting view
-public protocol ShimmeringViewing: class {
+public protocol ShimmeringViewing: AnyObject {
 
     /// The direction of the shimmer
     var shimmerDirection: ShimmerDirection { get }

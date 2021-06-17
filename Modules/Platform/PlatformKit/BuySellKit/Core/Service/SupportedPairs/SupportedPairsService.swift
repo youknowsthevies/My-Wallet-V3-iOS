@@ -4,7 +4,7 @@ import DIKit
 import RxRelay
 import RxSwift
 
-public protocol SupportedPairsServiceAPI: class {
+public protocol SupportedPairsServiceAPI: AnyObject {
 
     /// Fetches `pairs` using the specified filter
     func fetchPairs(for option: SupportedPairsFilterOption) -> Single<SupportedPairs>

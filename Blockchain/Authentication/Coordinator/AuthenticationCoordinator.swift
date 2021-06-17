@@ -13,7 +13,7 @@ import RxSwift
 import SettingsKit
 import ToolKit
 
-protocol PairingWalletFetching: class {
+protocol PairingWalletFetching: AnyObject {
     func authenticate(using password: String)
 }
 

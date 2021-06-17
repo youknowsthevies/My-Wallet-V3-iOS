@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public protocol HistoricalFiatPriceProviding: class {
+public protocol HistoricalFiatPriceProviding: AnyObject {
 
     /// Returns the service that matches the `CryptoCurrency`
     subscript(currency: CryptoCurrency) -> HistoricalFiatPriceServiceAPI { get }

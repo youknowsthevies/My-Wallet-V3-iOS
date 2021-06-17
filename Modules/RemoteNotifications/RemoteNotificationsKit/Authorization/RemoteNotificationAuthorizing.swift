@@ -10,14 +10,14 @@ public typealias RemoteNotificationAuthorizing = RemoteNotificationRegistering &
 
 /// A protocol that encapsulates the registration to any notification service
 /// The app delegate should hold its instance and inform it about registration events.
-public protocol RemoteNotificationRegistering: class {
+public protocol RemoteNotificationRegistering: AnyObject {
     /// Registers for remote notifications ONLY if the authorization status is `.authorized`.
     /// Should be called at the application startup after first initializing Firebase Messaging.
     func registerForRemoteNotificationsIfAuthorized() -> Single<Void>
 }
 
 /// A protocol that defines remote-notification authorization / registration methods
-public protocol RemoteNotificationAuthorizationRequesting: class {
+public protocol RemoteNotificationAuthorizationRequesting: AnyObject {
     /// Request authorization for remote notifications if the status is not yet determined.
     func requestAuthorizationIfNeeded() -> Single<Void>
     func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error>

@@ -10,7 +10,7 @@ import ToolKit
 public typealias SuggestedAmountsCalculationState = ValueCalculationState<[FiatValue]>
 
 /// A simple buy suggested amounts API
-public protocol SuggestedAmountsServiceAPI: class {
+public protocol SuggestedAmountsServiceAPI: AnyObject {
 
     /// Streams the suggested amounts
     var calculationState: Observable<SuggestedAmountsCalculationState> { get }

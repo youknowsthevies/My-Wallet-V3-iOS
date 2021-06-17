@@ -2,7 +2,7 @@
 
 import Foundation
 
-@objc protocol WalletHistoryDelegate: class {
+@objc protocol WalletHistoryDelegate: AnyObject {
 
     /// Method invoked when getting transaction history fails
     func didFailGetHistory(error: String?)

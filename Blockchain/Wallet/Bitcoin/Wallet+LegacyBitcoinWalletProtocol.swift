@@ -3,7 +3,7 @@
 import Foundation
 import JavaScriptCore
 
-protocol LegacyBitcoinWalletProtocol: class {
+protocol LegacyBitcoinWalletProtocol: AnyObject {
 
     func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void)
 

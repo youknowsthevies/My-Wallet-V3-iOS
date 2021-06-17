@@ -4,7 +4,7 @@ import DIKit
 import RxSwift
 import ToolKit
 
-public protocol KYCTiersServiceAPI: class {
+public protocol KYCTiersServiceAPI: AnyObject {
 
     /// Returns the cached tiers. Fetches them if they are not already cached
     var tiers: Single<KYC.UserTiers> { get }

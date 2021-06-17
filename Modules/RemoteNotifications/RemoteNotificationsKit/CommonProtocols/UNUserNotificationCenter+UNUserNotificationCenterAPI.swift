@@ -3,7 +3,7 @@
 import UserNotifications
 
 /// A protocol that provides custom APIs for various operations of UNUserNotificationCenter
-public protocol UNUserNotificationCenterAPI: class {
+public protocol UNUserNotificationCenterAPI: AnyObject {
     /// A delegate for handling incoming notifications and notification-related actions
     var delegate: UNUserNotificationCenterDelegate? { get set }
     /// Retrieve the notification settings from users

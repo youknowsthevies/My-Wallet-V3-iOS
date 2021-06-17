@@ -2,7 +2,7 @@
 
 import Combine
 
-public protocol SharedKeyRepositoryCombineAPI: class {
+public protocol SharedKeyRepositoryCombineAPI: AnyObject {
 
     /// Streams `Bool` indicating whether the shared key is currently cached in the repo
     var hasSharedKeyPublisher: AnyPublisher<Bool, Never> { get }

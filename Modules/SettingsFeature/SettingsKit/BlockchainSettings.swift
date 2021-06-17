@@ -24,7 +24,7 @@ public protocol KeychainItemWrapping {
     func removeAllSwipeAddresses()
 }
 
-public protocol LegacyPasswordProviding: class {
+public protocol LegacyPasswordProviding: AnyObject {
     func setLegacyPassword(_ legacyPassword: String?)
 }
 

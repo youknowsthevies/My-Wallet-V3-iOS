@@ -6,7 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-protocol AirdropCenterServiceAPI: class {
+protocol AirdropCenterServiceAPI: AnyObject {
 
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> { get }
 

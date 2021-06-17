@@ -5,7 +5,7 @@ import DIKit
 import RxSwift
 
 /// A service API that aggregates card addition logic
-public protocol CardUpdateServiceAPI: class {
+public protocol CardUpdateServiceAPI: AnyObject {
     func add(card: CardData) -> Single<PartnerAuthorizationData>
 }
 

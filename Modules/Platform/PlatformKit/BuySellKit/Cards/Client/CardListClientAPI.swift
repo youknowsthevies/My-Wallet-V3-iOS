@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol CardListClientAPI: class {
+public protocol CardListClientAPI: AnyObject {
     var cardList: Single<[CardPayload]> { get }
 }

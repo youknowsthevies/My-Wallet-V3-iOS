@@ -4,7 +4,7 @@ import DIKit
 import RxSwift
 import ToolKit
 
-public protocol SupportedCurrenciesServiceAPI: class {
+public protocol SupportedCurrenciesServiceAPI: AnyObject {
     var supportedCurrencies: Single<Set<FiatCurrency>> { get }
 }
 

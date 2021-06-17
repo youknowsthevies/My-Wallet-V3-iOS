@@ -9,7 +9,7 @@ import RxSwift
 /// `PlatformKit` as a dependency. So, we have `Wallet.m` conform to protocols that we need
 /// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
 /// describing this.
-public protocol EthereumWalletAccountBridgeAPI: class {
+public protocol EthereumWalletAccountBridgeAPI: AnyObject {
     var wallets: Single<[EthereumWalletAccount]> { get }
 }
 

@@ -24,7 +24,7 @@ protocol PaymentMethodPresentable: Presentable {
     func connect(action: Driver<PaymentMethodAction>) -> Driver<PaymentMethodEffects>
 }
 
-protocol PaymentMethodListener: class {
+protocol PaymentMethodListener: AnyObject {
     /// Close the payment method screen
     func closePaymentMethodScreen()
 

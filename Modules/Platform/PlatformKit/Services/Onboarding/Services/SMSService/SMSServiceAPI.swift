@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol SMSServiceAPI: class {
+public protocol SMSServiceAPI: AnyObject {
     /// Requests SMS OTP
     func request() -> Completable
 }

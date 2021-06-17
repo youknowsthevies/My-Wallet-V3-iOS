@@ -8,7 +8,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-protocol InterestIdentityVerificationAnnouncementRouting: class {
+protocol InterestIdentityVerificationAnnouncementRouting: AnyObject {
     func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool)
 }
 

@@ -3,7 +3,7 @@
 import RxSwift
 import ToolKit
 
-public protocol ActivityProviding: class {
+public protocol ActivityProviding: AnyObject {
     /// Returns the activity service
     subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI { get }
     subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI { get }

@@ -3,7 +3,7 @@
 import Foundation
 import RxSwift
 
-public protocol LegacyEthereumWalletAPI: class {
+public protocol LegacyEthereumWalletAPI: AnyObject {
 
     func checkIfEthereumAccountExists() -> Bool
 

@@ -35,7 +35,7 @@ public enum CardActivationState {
     }
 }
 
-public protocol CardActivationServiceAPI: class {
+public protocol CardActivationServiceAPI: AnyObject {
 
     /// Cancel polling
     var cancel: Completable { get }

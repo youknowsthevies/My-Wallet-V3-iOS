@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol AssetPieChartInteracting: class {
+public protocol AssetPieChartInteracting: AnyObject {
     var state: Observable<AssetPieChart.State.Interaction> { get }
 }

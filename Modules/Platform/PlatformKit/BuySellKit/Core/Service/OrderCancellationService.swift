@@ -3,7 +3,7 @@
 import DIKit
 import RxSwift
 
-public protocol OrderCancellationServiceAPI: class {
+public protocol OrderCancellationServiceAPI: AnyObject {
 
     /// Cancels an order associated with the given id
     func cancel(order id: String) -> Completable

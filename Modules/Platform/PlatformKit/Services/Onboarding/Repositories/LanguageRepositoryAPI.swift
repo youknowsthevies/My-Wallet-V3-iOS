@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol LanguageRepositoryAPI: class {
+public protocol LanguageRepositoryAPI: AnyObject {
     func set(language: String) -> Completable
 }

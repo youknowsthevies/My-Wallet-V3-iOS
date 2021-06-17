@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 /// A passive state receiver API for Simple-Buy flow.
-public protocol StateReceiverServiceAPI: class {
+public protocol StateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
@@ -59,16 +59,16 @@ public protocol CurrencySelectionServiceAPI {
     func reselectCurrency()
 }
 
-public protocol StateCacheProviderAPI: class {
+public protocol StateCacheProviderAPI: AnyObject {
     var cache: Atomic<EventCache> { get }
 }
 
-public protocol PendingOrderCompletionStateServiceAPI: class {
+public protocol PendingOrderCompletionStateServiceAPI: AnyObject {
     func orderPending(with orderDetails: OrderDetails)
     func orderCompleted()
 }
 
-public protocol URLSelectionServiceAPI: class {
+public protocol URLSelectionServiceAPI: AnyObject {
     func show(url: URL)
 }
 

@@ -11,7 +11,7 @@ public enum WalletCryptoPBKDF2Iterations {
     public static let pinLogin: Int = 1
 }
 
-public protocol WalletCryptoServiceAPI: class {
+public protocol WalletCryptoServiceAPI: AnyObject {
     func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String>
     func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String>
 }

@@ -3,7 +3,7 @@
 import RxSwift
 
 /// A `GUID` client/service API. A concrete type is expected to fetch the `GUID`
-public protocol GuidServiceAPI: class {
+public protocol GuidServiceAPI: AnyObject {
     /// A `Single` that streams the `GUID` on success or fails due
     /// to a missing resource or network error.
     var guid: Single<String> { get }

@@ -3,7 +3,7 @@
 import Foundation
 
 @objc
-protocol WalletProtocol: class {
+protocol WalletProtocol: AnyObject {
 
     var isBitcoinWalletFunded: Bool { get }
 

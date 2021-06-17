@@ -3,7 +3,7 @@
 import PlatformKit
 import RxSwift
 
-protocol LegacyBitcoinCashWalletProtocol: class {
+protocol LegacyBitcoinCashWalletProtocol: AnyObject {
 
     var hasBitcoinCashAccount: Bool { get }
 

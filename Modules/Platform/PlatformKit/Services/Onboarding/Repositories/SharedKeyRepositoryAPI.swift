@@ -3,7 +3,7 @@
 import Combine
 import RxSwift
 
-public protocol SharedKeyRepositoryAPI: class {
+public protocol SharedKeyRepositoryAPI: AnyObject {
     /// Streams `Bool` indicating whether the shared key is currently cached in the repo
     var hasSharedKey: Single<Bool> { get }
 

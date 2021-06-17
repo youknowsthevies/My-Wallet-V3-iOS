@@ -7,7 +7,7 @@ public enum PasswordRepositoryError: Error {
     case syncFailed
 }
 
-public protocol PasswordRepositoryAPI: class {
+public protocol PasswordRepositoryAPI: AnyObject {
 
     /// Streams `Bool` indicating whether a password is currently cached in the repo
     var hasPassword: Single<Bool> { get }

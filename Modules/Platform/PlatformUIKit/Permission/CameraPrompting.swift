@@ -5,7 +5,7 @@ import Localization
 import PlatformKit
 import ToolKit
 
-public protocol CameraPrompting: class {
+public protocol CameraPrompting: AnyObject {
     var permissionsRequestor: PermissionsRequestor { get set }
     var cameraPromptingDelegate: CameraPromptingDelegate? { get set }
 
@@ -43,7 +43,7 @@ public extension CameraPrompting where Self: MicrophonePrompting {
     }
 }
 
-public protocol CameraPromptingDelegate: class {
+public protocol CameraPromptingDelegate: AnyObject {
     var analyticsRecorder: AnalyticsEventRecording { get }
     func showCameraPermissionsDenied()
     func promptToAcceptCameraPermissions(confirmHandler: @escaping (() -> Void))

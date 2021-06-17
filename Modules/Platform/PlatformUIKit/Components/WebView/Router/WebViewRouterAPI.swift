@@ -3,6 +3,6 @@
 import RxRelay
 
 /// A routing API to any web view.
-public protocol WebViewRouterAPI: class {
+public protocol WebViewRouterAPI: AnyObject {
     var launchRelay: PublishRelay<TitledLink> { get }
 }

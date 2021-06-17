@@ -7,7 +7,7 @@ import RxSwift
 /// `PlatformKit` as a dependency. So, we have `Wallet.m` conform to protocols that we need
 /// and inject it in as a dependency. Frequently we'll use the term `bridge` as a way of
 /// describing this. 
-public protocol StellarWalletBridgeAPI: class {
+public protocol StellarWalletBridgeAPI: AnyObject {
     func update(accountIndex: Int, label: String) -> Completable
     func stellarWallets() -> [StellarWalletAccount]
     func save(keyPair: StellarKeyPair, label: String, completion: @escaping (Result<Void, Error>) -> Void)

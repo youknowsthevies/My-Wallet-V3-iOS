@@ -4,7 +4,7 @@ import Foundation
 import PlatformKit
 
 /// Protocol definition for a delegate for authentication-related wallet callbacks
-protocol WalletAuthDelegate: class {
+protocol WalletAuthDelegate: AnyObject {
     /// Callback invoked when the wallet successfully decrypts
     func didDecryptWallet(guid: String?, sharedKey: String?, password: String?)
 

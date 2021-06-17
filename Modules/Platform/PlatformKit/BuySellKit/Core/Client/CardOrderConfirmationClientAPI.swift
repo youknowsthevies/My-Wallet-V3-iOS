@@ -2,7 +2,7 @@
 
 import RxSwift
 
-protocol CardOrderConfirmationClientAPI: class {
+protocol CardOrderConfirmationClientAPI: AnyObject {
 
     /// Confirm an order
     func confirmOrder(with identifier: String,

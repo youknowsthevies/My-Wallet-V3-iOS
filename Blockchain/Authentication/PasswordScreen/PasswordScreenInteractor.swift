@@ -3,7 +3,7 @@
 import RxRelay
 import RxSwift
 
-protocol PasswordScreenInteracting: class {
+protocol PasswordScreenInteracting: AnyObject {
     var type: PasswordScreenType { get }
     var passwordRelay: BehaviorRelay<String> { get }
     var isValid: Bool { get }
