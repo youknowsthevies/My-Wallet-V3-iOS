@@ -65,10 +65,7 @@ extension LoggedInHostingController {
     }
 
     func handleAccountsAndAddresses() {
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
-            createAccountsAndAddressesViewController(),
-            animated: true
-        )
+        present(createAccountsAndAddressesViewController(), animated: true)
     }
 
     func handleSettings() {
@@ -106,10 +103,7 @@ extension LoggedInHostingController {
         alert.addAction(
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         )
-        self.topMostViewController?.present(
-            alert,
-            animated: true
-        )
+        present(alert, animated: true)
     }
 
     func handleLogout() {
@@ -124,17 +118,7 @@ extension LoggedInHostingController {
             }
         )
         alert.addAction(UIAlertAction(title: LocalizationConstants.cancel, style: .cancel))
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
-            alert,
-            animated: true
-        )
-    }
-
-    func clearOnLogout() {
-        unimplemented()
-//        tabControllerManager = nil
-//        slidingViewController = nil
-//        sideMenuViewController = nil
+        present(alert, animated: true)
     }
 
     /// Starts Buy Crypto flow.

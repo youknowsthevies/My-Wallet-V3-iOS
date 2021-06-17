@@ -4,6 +4,30 @@ import DashboardUIKit
 import PlatformUIKit
 import SettingsUIKit
 
+// These protocols are added here for simplicity,
+// these are adopted both by `LoggedInHostingController` and `AppCoordinator`
+// The methods and properties provided by these protocol where used by accessing the `.shared` property of AppCoordinator
+
+/// Provider the `TabControllerManager`
+protocol TabControllerManagerProvider {
+    var tabControllerManager: TabControllerManager? { get }
+}
+
+/// Provides the ability to start a backup flow
+protocol BackupFlowStarterAPI {
+    func startBackupFlow()
+}
+
+/// Provides the ability to show settings
+protocol SettingsStarterAPI {
+    func showSettingsView()
+}
+
+/// Provides a reload mechanism that `Wallet` triggers 
+protocol LoggedInReloadAPI {
+    func reload()
+}
+
 /// This protocol conforms to a set of certain protocols that were used as part of the
 /// older `AppCoordinator` class which was passed around using it's `shared` property
 /// This attempts to bridge the two worlds of the `LoggedInHostingController` and any
@@ -14,13 +38,29 @@ protocol LoggedInBridge: DrawerRouting,
                          CashIdentityVerificationAnnouncementRouting,
                          InterestIdentityVerificationAnnouncementRouting,
                          AppCoordinating,
-                         WalletOperationsRouting { }
+                         WalletOperationsRouting,
+                         TabControllerManagerProvider,
+                         BackupFlowStarterAPI,
+                         SettingsStarterAPI,
+                         LoggedInReloadAPI { }
 
 protocol LoggedInDependencyBridgeAPI {
     /// Registers the bridge
     func register(bridge: LoggedInBridge)
     /// Unregisters the bridge
     func unregister()
+
+    /// Provides the `TabControllerManager` for instances that might need
+    func resolveTabControllerProvider() -> TabControllerManagerProvider
+
+    /// Provides `BackupFlowStarterAPI` methods
+    func resolveBackupFlowStarter() -> BackupFlowStarterAPI
+
+    /// Provides `SettingsStarterAPI` methods
+    func resolveSettingsStarter() -> SettingsStarterAPI
+
+    /// Provides `LoggedInReloadAPI` methods
+    func resolveLoggedInReload() -> LoggedInReloadAPI
 
     /// Provides `DrawerRouting` methods
     func resolveDrawerRouting() -> DrawerRouting
@@ -52,6 +92,22 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func unregister() {
         hostingControllerBridge = nil
+    }
+
+    func resolveTabControllerProvider() -> TabControllerManagerProvider {
+        resolve() as TabControllerManagerProvider
+    }
+
+    func resolveBackupFlowStarter() -> BackupFlowStarterAPI {
+        resolve() as BackupFlowStarterAPI
+    }
+
+    func resolveSettingsStarter() -> SettingsStarterAPI {
+        resolve() as SettingsStarterAPI
+    }
+
+    func resolveLoggedInReload() -> LoggedInReloadAPI {
+        resolve() as LoggedInReloadAPI
     }
 
     func resolveDrawerRouting() -> DrawerRouting {
@@ -90,7 +146,8 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
     /// - precondition: The bridge should conform to the type
     /// - Returns: The underlying bridge as a specific protocol type
     private func resolve<T>() -> T {
-        precondition(hostingControllerBridge is T)
+        precondition(hostingControllerBridge != nil, "No bridge detected, please first use register(bridge:) method")
+        precondition(hostingControllerBridge is T, "Bridge does not conform to \(T.self) protocol")
         return hostingControllerBridge as! T
     }
 }

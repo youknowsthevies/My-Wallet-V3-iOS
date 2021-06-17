@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxSwift
@@ -18,7 +19,7 @@ final class EmailAuthorizationPresenter {
 
     // MARK: - Setup
 
-    init(routerStateProvider: OnboardingRouterStateProviding = AppCoordinator.shared.onboardingRouter,
+    init(routerStateProvider: OnboardingRouterStateProviding = resolve(),
          emailAuthorizationService: EmailAuthorizationService,
          alertPresenter: AlertViewPresenter = .shared) {
         self.emailAuthorizationService = emailAuthorizationService

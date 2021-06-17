@@ -46,16 +46,22 @@ final class WalletIntroductionPresenter: NSObject {
     private let recorder: AnalyticsEventRecording
     private let screen: WalletIntroductionLocation.Screen
     private let onboardingSettings: OnboardingSettings
+    private let tabControllerProvider: TabControllerManagerProvider
+    private let drawerRouter: DrawerRouting
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
     private let disposeBag = DisposeBag()
 
     init(onboardingSettings: OnboardingSettings = resolve(),
          screen: WalletIntroductionLocation.Screen,
-         recorder: AnalyticsEventRecording = resolve()) {
+         recorder: AnalyticsEventRecording = resolve(),
+         tabControllerProvider: TabControllerManagerProvider = resolve(),
+         drawerRouter: DrawerRouting = resolve()) {
         self.onboardingSettings = onboardingSettings
         self.screen = screen
         self.interactor = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: screen)
         self.recorder = recorder
+        self.tabControllerProvider = tabControllerProvider
+        self.drawerRouter = drawerRouter
     }
 
     func start() {
@@ -127,7 +133,7 @@ extension WalletIntroductionPresenter {
     private var home: HomeWalletIntroductionEvent {
         HomeWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager?.showDashboard()
+            self.tabControllerProvider.tabControllerManager?.showDashboard()
             self.triggerNextStep()
         })
     }
@@ -139,7 +145,7 @@ extension WalletIntroductionPresenter {
     private var send: SendWalletIntroductionEvent {
         SendWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager?.showSend()
+            self.tabControllerProvider.tabControllerManager?.showSend()
             self.triggerNextStep()
         })
     }
@@ -151,7 +157,7 @@ extension WalletIntroductionPresenter {
     private var request: RequestWalletIntroductionEvent {
         RequestWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager?.showReceive()
+            self.tabControllerProvider.tabControllerManager?.showReceive()
             self.triggerNextStep()
         })
     }
@@ -163,7 +169,7 @@ extension WalletIntroductionPresenter {
     private var swap: SwapWalletIntroductionEvent {
         SwapWalletIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
-            AppCoordinator.shared.tabControllerManager?.showSwap()
+            self.tabControllerProvider.tabControllerManager?.showSwap()
             self.triggerNextStep()
         })
     }
@@ -172,7 +178,7 @@ extension WalletIntroductionPresenter {
         SwapDescriptionIntroductionEvent(selection: { [weak self] in
             guard let self = self else { return }
             self.triggerNextStep()
-            AppCoordinator.shared.toggleSideMenu()
+            self.drawerRouter.toggleSideMenu()
         })
     }
 }

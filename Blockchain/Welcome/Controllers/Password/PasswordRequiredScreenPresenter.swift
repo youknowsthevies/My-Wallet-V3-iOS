@@ -57,7 +57,7 @@ final class PasswordRequiredScreenPresenter {
     // MARK: - Setup
 
     init(loadingViewPresenter: LoadingViewPresenting = resolve(),
-         onboardingRouter: OnboardingRouter = AppCoordinator.shared.onboardingRouter,
+         onboardingRouter: OnboardingRouter = resolve(),
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
          interactor: PasswordRequiredScreenInteractor = PasswordRequiredScreenInteractor(),
          alertPresenter: AlertViewPresenter = .shared) {

@@ -32,6 +32,7 @@ final class TabControllerManager: NSObject {
     private var withdrawRouter: WithdrawRootRouting!
 
     private var analyticsEventRecorder: AnalyticsEventRecording
+    private let drawerRouter: DrawerRouting
     private let receiveCoordinator: ReceiveCoordinator
     private let featureConfigurator: FeatureConfiguring
     private let internalFeatureFlag: InternalFeatureFlagServiceAPI
@@ -43,12 +44,14 @@ final class TabControllerManager: NSObject {
          analyticsEventRecorder: AnalyticsEventRecording = resolve(),
          featureConfigurator: FeatureConfiguring = resolve(),
          internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
-         coincore: CoincoreAPI = resolve()) {
+         coincore: CoincoreAPI = resolve(),
+         drawerRouter: DrawerRouting = resolve()) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.featureConfigurator = featureConfigurator
         self.internalFeatureFlag = internalFeatureFlag
         self.coincore = coincore
         self.receiveCoordinator = receiveCoordinator
+        self.drawerRouter = drawerRouter
         tabViewController = TabViewController.makeFromStoryboard()
         super.init()
         tabViewController.delegate = self
@@ -66,7 +69,7 @@ final class TabControllerManager: NSObject {
     }
 
     @objc func showTransactions() {
-        AppCoordinator.shared.closeSideMenu()
+        drawerRouter.closeSideMenu()
         if activityNavigationController == nil {
             activityNavigationController = UINavigationController(rootViewController: ActivityScreenViewController())
         }
