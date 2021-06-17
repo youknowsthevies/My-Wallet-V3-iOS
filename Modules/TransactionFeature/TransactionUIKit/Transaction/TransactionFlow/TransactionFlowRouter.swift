@@ -84,7 +84,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             subtitle: TransactionFlowDescriptor.AccountPicker.sourceSubtitle(action: action)
         )
         let builder = AccountPickerBuilder(
-            accountProvider: TransactionModelAccountProvider(transactionModel: transactionModel),
+            accountProvider: TransactionModelAccountProvider(
+                transactionModel: transactionModel,
+                transform: { $0.availableSources }
+            ),
             action: action
         )
         let router = builder.build(
@@ -104,7 +107,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             subtitle: TransactionFlowDescriptor.AccountPicker.destinationSubtitle(action: action)
         )
         let builder = AccountPickerBuilder(
-            accountProvider: TransactionModelAccountProvider(transactionModel: transactionModel),
+            accountProvider: TransactionModelAccountProvider(
+                transactionModel: transactionModel,
+                transform: { $0.availableTargets as? [BlockchainAccount] ?? [] }
+            ),
             action: action
         )
         let router = builder.build(
@@ -121,7 +127,10 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
 
     func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction) {
         let builder = TargetSelectionPageBuilder(
-            accountProvider: TransactionModelAccountProvider(transactionModel: transactionModel),
+            accountProvider: TransactionModelAccountProvider(
+                transactionModel: transactionModel,
+                transform: { $0.availableTargets as? [BlockchainAccount] ?? [] }
+            ),
             action: action
         )
         let router = builder.build(

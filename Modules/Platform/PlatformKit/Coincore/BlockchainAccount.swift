@@ -68,11 +68,11 @@ extension BlockchainAccount {
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [BlockchainAccount] {
     /// Filters an `[BlockchainAccount]` for only `BlockchainAccount`s that can perform the given action.
-    /// - parameter failSequence: When `true` rethrows errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
+    /// - parameter failSequence: When `true` re-throws errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
     public func flatMapFilter(
         action: AssetAction,
-        failSequence: Bool = true,
-        onError: ((BlockchainAccount) -> Void)? = nil
+        failSequence: Bool,
+        onError: ((BlockchainAccount, Error) -> Void)? = nil
     ) -> PrimitiveSequence<SingleTrait, Element> {
         flatMap { accounts -> Single<Element> in
             let elements: [Single<BlockchainAccount?>] = accounts.map { account in
@@ -81,7 +81,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [Blockcha
                     // If account can perform, return itself, else return nil
                     .map { $0 ? account : nil }
                     .catchError { error -> Single<BlockchainAccount?> in
-                        onError?(account)
+                        onError?(account, error)
                         if failSequence {
                             throw error
                         }
@@ -100,11 +100,11 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [Blockcha
 
 extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAccount] {
     /// Filters an `[SingleAccount]` for only `SingleAccount`s that can perform the given action.
-    /// - parameter failSequence: When `true` rethrows errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
+    /// - parameter failSequence: When `true` re-throws errors raised by any `BlockchainAccount.can(perform:)`. If this is set to `false`, filters out from the emitted element any account whose `BlockchainAccount.can(perform:)` failed.
     public func flatMapFilter(
         action: AssetAction,
-        failSequence: Bool = true,
-        onError: ((SingleAccount) -> Void)? = nil
+        failSequence: Bool,
+        onError: ((SingleAccount, Error) -> Void)? = nil
     ) -> PrimitiveSequence<SingleTrait, Element> {
         flatMap { accounts -> Single<Element> in
             let elements: [Single<SingleAccount?>] = accounts.map { account in
@@ -113,7 +113,7 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
                     // If account can perform, return itself, else return nil
                     .map { $0 ? account : nil }
                     .catchError { error -> Single<SingleAccount?> in
-                        onError?(account)
+                        onError?(account, error)
                         if failSequence {
                             throw error
                         }
