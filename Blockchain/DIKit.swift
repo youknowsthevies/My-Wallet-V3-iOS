@@ -55,6 +55,11 @@ extension DependencyContainer {
 
         single { OnboardingSettings() }
 
+        factory { () -> OnboardingSettingsAPI in
+            let settings: OnboardingSettings = DIKit.resolve()
+            return settings as OnboardingSettingsAPI
+        }
+
         single { OnboardingRouter() }
 
         factory { () -> OnboardingRouterStateProviding in

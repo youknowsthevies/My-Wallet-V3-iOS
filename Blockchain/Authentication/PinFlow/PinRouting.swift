@@ -36,6 +36,9 @@ struct PinRouting {
         /// Creation of a new pin code where none existed before
         case create(parent: UnretainedContentBox<UIViewController>)
 
+        /// Creation of a new pin code where none existed before, allowing for a custom origin
+        case createPin(from: Origin)
+
         /// Authentication flow: upon entering foreground
         case authenticate(from: Origin, logoutRouting: RoutingType.Logout)
 
@@ -88,6 +91,8 @@ struct PinRouting {
                 return .foreground(parent: boxedParent)
             case .create(parent: let boxedParent):
                 return .foreground(parent: boxedParent)
+            case .createPin(from: let origin):
+                return origin
             case .enableBiometrics(parent: let boxedParent, logoutRouting: _):
                 return .foreground(parent: boxedParent)
             }
@@ -103,6 +108,8 @@ struct PinRouting {
             case .enableBiometrics(parent: _, logoutRouting: let routing):
                 return routing
             case .create:
+                return nil
+            case .createPin:
                 return nil
             }
         }
@@ -127,6 +134,15 @@ struct PinRouting {
                 return parent.value
             case .create(parent: let parent):
                 return parent.value
+            case .createPin(from: let origin):
+                switch origin {
+                case .foreground(parent: let parent):
+                    return parent.value
+                case .background: // Only case when there is no parent as the login is the root
+                    return nil
+                case .attachedOn(controller: let controller):
+                    return controller.value
+                }
             }
         }
     }
@@ -186,7 +202,8 @@ extension PinRouting.Flow: CustomDebugStringConvertible {
             return "change pin"
         case .enableBiometrics:
             return "enable biometrics"
-        case .create:
+        case .create,
+             .createPin:
             return "create a new pin"
         }
     }

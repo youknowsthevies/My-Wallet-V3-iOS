@@ -250,7 +250,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     @objc func showPasswordRequiredViewController() {
         guard let window = UIApplication.shared.keyWindow else { return }
-        let presenter = PasswordRequiredScreenPresenter()
+        let walletFetcher: (String) -> Void = { [weak self] password in
+            self?.authenticate(using: password)
+        }
+        let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
+        let presenter = PasswordRequiredScreenPresenter(interactor: interactor)
         let viewController = PasswordRequiredViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window

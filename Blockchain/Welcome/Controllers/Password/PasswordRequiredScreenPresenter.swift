@@ -56,10 +56,10 @@ final class PasswordRequiredScreenPresenter {
 
     // MARK: - Setup
 
-    init(loadingViewPresenter: LoadingViewPresenting = resolve(),
+    init(interactor: PasswordRequiredScreenInteractor,
+         loadingViewPresenter: LoadingViewPresenting = resolve(),
          onboardingRouter: OnboardingRouter = resolve(),
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
-         interactor: PasswordRequiredScreenInteractor = PasswordRequiredScreenInteractor(),
          alertPresenter: AlertViewPresenter = .shared) {
         self.loadingViewPresenter = loadingViewPresenter
         self.onboardingRouter = onboardingRouter

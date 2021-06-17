@@ -61,21 +61,12 @@ final class PinHostingController: UIViewController {
 
     /// Create a new pin code. Used during onboarding, when the user is required to define a pin code before entering his wallet.
     func createPin() {
-        let parentViewController = UIApplication.shared.topMostViewController!
-        let boxedParent = UnretainedContentBox(parentViewController)
-        let flow = PinRouting.Flow.create(parent: boxedParent)
-        pinRouter = PinRouter(flow: flow) { [weak self] _ in
+        let boxedParent = UnretainedContentBox<UIViewController>(self)
+        let flow = PinRouting.Flow.createPin(from: .attachedOn(controller: boxedParent))
+        pinRouter = PinRouter(flow: flow) { [weak self] input in
             guard let self = self else { return }
 //            self.alertPresenter.showMobileNoticeIfNeeded()
-//            /// TODO: Inject app coordinator instead - currently there is
-//            /// a crash related to circle-dependency between `AuthenticationCoordinator`
-//            /// and `AppCoordinator`.
-//            AppCoordinator.shared.startAfterWalletAuthentication(
-//                completion: { [weak self] in
-//                    // Handle any necessary routing after authentication
-//                    self?.handlePostAuthenticationLogic()
-//                }
-//            )
+            self.viewStore.send(.pinCreated)
         }
         pinRouter?.execute()
     }

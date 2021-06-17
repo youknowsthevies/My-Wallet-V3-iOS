@@ -10,13 +10,14 @@ public enum Onboarding {
         case start
         case pin(PinCore.Action)
         case walletUpgrade(WalletUpgrade.Action)
-        case passwordScreen
+        case passwordScreen(PasswordRequired.Action)
         case welcomeScreen
     }
 
     public struct State: Equatable {
         var pinState: PinCore.State? = .init()
         var walletUpgradeState: WalletUpgrade.State?
+        var passwordScreen: PasswordRequired.State?
     }
 
     public struct Environment {
@@ -41,6 +42,15 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 )
             }
         ),
+    passwordRequiredReducer
+        .optional()
+        .pullback(
+            state: \.passwordScreen,
+            action: /Onboarding.Action.passwordScreen,
+            environment: { _ in
+                PasswordRequired.Environment()
+            }
+        ),
     walletUpgradeReducer
             .optional()
             .pullback(
@@ -54,16 +64,16 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         switch action {
         case .start:
             return decideFlow(
+                state: &state,
                 blockchainSettings: environment.blockchainSettings
             )
-        case .pin(.logout):
-            // TODO: Handle logout logic
-            return .none
         case .pin:
             return .none
         case .passwordScreen:
             return .none
         case .welcomeScreen:
+            return .none
+        case .walletUpgrade(.begin):
             return .none
         case .walletUpgrade:
             return .none
@@ -73,20 +83,28 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
 
 // MARK: - Internal Methods
 
-func decideFlow(blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
+func decideFlow(state: inout Onboarding.State, blockchainSettings: BlockchainSettings.App) -> Effect<Onboarding.Action, Never> {
     if blockchainSettings.guid != nil, blockchainSettings.sharedKey != nil {
         // Original flow
         if blockchainSettings.isPinSet {
+            state.pinState = .init()
+            state.passwordScreen = nil
             return Effect(value: .pin(.authenticate))
         } else {
-            return Effect(value: .passwordScreen)
+            state.pinState = nil
+            state.passwordScreen = .init()
+            return Effect(value: .passwordScreen(.start))
         }
     } else if blockchainSettings.pinKey != nil, blockchainSettings.encryptedPinPassword != nil {
         // iCloud restoration flow
         if blockchainSettings.isPinSet {
+            state.pinState = .init()
+            state.passwordScreen = nil
             return Effect(value: .pin(.authenticate))
         } else {
-            return Effect(value: .passwordScreen)
+            state.pinState = nil
+            state.passwordScreen = .init()
+            return Effect(value: .passwordScreen(.start))
         }
     } else {
         // on boarding == login

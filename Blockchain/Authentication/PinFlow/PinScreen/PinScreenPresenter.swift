@@ -46,7 +46,8 @@ final class PinScreenPresenter {
         title = "\(title) (\(hash))"
         #endif
         switch flow {
-        case .create:
+        case .create,
+             .createPin:
             return .content(Screen.NavigationBarContent(title: title))
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
@@ -72,6 +73,8 @@ final class PinScreenPresenter {
         case .change, .enableBiometrics:
             return .back
         case .create:
+            return .none
+        case .createPin:
             return .none
         }
     }
@@ -188,7 +191,7 @@ final class PinScreenPresenter {
             backgroundColor = .white
             emptyPinColor = .securePinGrey
             buttonHighlightColor = UIColor.black.withAlphaComponent(0.08)
-        case .authenticate, .create, .enableBiometrics:
+        case .authenticate, .create, .enableBiometrics, .createPin:
             contentColor = .white
             backgroundColor = .primary
             emptyPinColor = UIColor.white.withAlphaComponent(0.12)
