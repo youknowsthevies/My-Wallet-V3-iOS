@@ -14,13 +14,23 @@
 
 *Describe how a reviewer can verify your changes. This helps with those who are unfamiliar with the feature.*
 
-## Screenshot/Design assessment
+## Screenshot
 
 *If the change is UI related, paste a screenshot here and include an assessment of design accuracy if applicable.*
 
+*If you have a Loom this is not necessary, but nice to have.*
+
+## Looms
+
+*Provide a link to a Loom that demos the feature. This is optional though it helps reviewers and could save them from requiring to checkout the branch.*
+
+*Provide a link to a Loom that smoke tests the app if your work touches key functionality. (Optional)*
+
+*Provide a link to a Loom that steps through your code.*
+
 ## Merge Checklist
 
-- [ ] The PR uses a title supported by [.changelogrc](https://github.com/blockchain/My-Wallet-V3-iOS/blob/dev/.changelogrc#L6...L69).
+- [ ] The PR uses a title supported by [.changelogrc](https://github.com/blockchain/My-Wallet-V3-iOS/blob/master/.changelogrc).
 - [ ] UI components have accessibility identifiers and labels to support automated testing.
 - [ ] Areas of technical debt are marked with a `// TICKET:` comment that includes a ticket number.
 - [ ] You have added unit tests.
