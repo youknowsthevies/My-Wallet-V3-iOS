@@ -75,13 +75,8 @@ final class PinScreenViewController: BaseScreenViewController {
         presenter
             .digitPadIsEnabled
             .subscribe(onNext: { isEnabled in
-                if isEnabled {
-                    self.digitPadView.isUserInteractionEnabled = true
-                    self.digitPadView.alpha = 1
-                } else {
-                    self.digitPadView.isUserInteractionEnabled = false
-                    self.digitPadView.alpha = 0.3
-                }
+                self.digitPadView.isUserInteractionEnabled = isEnabled
+                self.digitPadView.alpha = isEnabled ? 1 : 0.3
             })
             .disposed(by: disposeBag)
 
