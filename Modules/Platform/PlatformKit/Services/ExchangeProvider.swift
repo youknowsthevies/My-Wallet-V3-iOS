@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A provider for exchange rates as per supported crypto.
-public protocol ExchangeProviding: class {
+public protocol ExchangeProviding: AnyObject {
 
     /// Returns the exchange service
     subscript(currency: Currency) -> PairExchangeServiceAPI { get }

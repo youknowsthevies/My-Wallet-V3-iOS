@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol CardDeletionClientAPI: class {
+public protocol CardDeletionClientAPI: AnyObject {
     func deleteCard(by id: String) -> Completable
 }

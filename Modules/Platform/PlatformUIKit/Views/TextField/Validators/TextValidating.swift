@@ -22,7 +22,7 @@ public enum TextValidationState {
 }
 
 /// A source of text stream
-public protocol TextSource: class {
+public protocol TextSource: AnyObject {
     var valueRelay: BehaviorRelay<String> { get }
 }
 

@@ -20,10 +20,11 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     var tabControllerManager: TabControllerManager?
     var slidingViewController: ECSlidingViewController?
 
-    // TODO: We might need to further split this out into small
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
+
     @LazyInject var secureChannelRouter: SecureChannelRouting
     @Inject var airdropRouter: AirdropRouterAPI
+
     var settingsRouterAPI: SettingsRouterAPI?
     var buyRouter: PlatformUIKit.RouterAPI!
     var sellRouter: PlatformUIKit.SellRouter!
@@ -56,6 +57,19 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     private func sideMenuProvider() -> SideMenuViewController {
         let sideMenuController = SideMenuViewController.makeFromStoryboard()
         sideMenuController.delegate = self
+        sideMenuController.createGestureRecognizers = { [weak self] in
+            guard let self = self else { return nil }
+            return (
+                UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(Self.toggleSideMenu)
+                ),
+                UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(Self.toggleSideMenu)
+                )
+            )
+        }
         return sideMenuController
     }
 
@@ -74,6 +88,12 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         tabController?.tabViewController.loadViewIfNeeded()
         // Configure side menu controller
         sideMenuController?.peekPadding = viewController.anchorRightPeekAmount
+        sideMenuController?.provideTabControllerManager = { [weak tabController] in
+            tabController
+        }
+        sideMenuController?.provideSlidingViewController = { [weak viewController] in
+            viewController
+        }
         // Show dashboard as the default screen
         tabController?.showDashboard()
         return viewController
@@ -109,9 +129,27 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
             break
         }
     }
+
+    // MARK: - LoggedInReloadAPI
+    func reload() {
+        accountsAndAddressesNavigationController?.reload()
+        sideMenuViewController?.reload()
+
+        NotificationCenter.default.post(
+            name: Constants.NotificationKeys.reloadToDismissViews,
+            object: nil
+        )
+
+        // Legacy code for generating new addresses
+        NotificationCenter.default.post(
+            name: Constants.NotificationKeys.newAddress,
+            object: nil
+        )
+    }
 }
 
 extension LoggedInHostingController {
+    @objc // needed as we use this for gesture recognizers
     func toggleSideMenu() {
         // If the sideMenu is not shown, show it
         if slidingViewController?.currentTopViewPosition == .centered {
@@ -119,6 +157,16 @@ extension LoggedInHostingController {
         } else {
             slidingViewController?.resetTopView(animated: true)
         }
+    }
+
+    func closeSideMenu() {
+        guard let slidingViewController = slidingViewController else {
+            return
+        }
+        guard slidingViewController.currentTopViewPosition != .centered else {
+            return
+        }
+        slidingViewController.resetTopView(animated: true)
     }
 
     func showSettingsView() {

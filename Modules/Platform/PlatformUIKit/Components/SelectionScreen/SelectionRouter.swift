@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public protocol SelectionRouterAPI: class {
+public protocol SelectionRouterAPI: AnyObject {
     func showSelectionScreen(screenTitle: String,
                              searchBarPlaceholder: String,
                              using service: SelectionServiceAPI)

@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol AuthenticatorRepositoryAPI: class {
+public protocol AuthenticatorRepositoryAPI: AnyObject {
 
     /// Streams the authenticator type
     var authenticatorType: Single<AuthenticatorType> { get }

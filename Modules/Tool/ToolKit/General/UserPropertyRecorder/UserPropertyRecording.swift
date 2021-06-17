@@ -5,7 +5,7 @@ import Foundation
 /// This protocol enables user property recording, whether it can be persisted into disk,
 /// keychain, user defaults, remote configuration on a third party service,
 /// backend or even being cached to memory.
-public protocol UserPropertyRecording: class {
+public protocol UserPropertyRecording: AnyObject {
 
     /// Records the user identifier
     func record(id: String)

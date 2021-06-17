@@ -26,6 +26,7 @@ final class ExchangeCoordinator {
     private let loadingIndicatorAPI: LoadingViewPresenting
     private let appSettings: BlockchainSettings.App
     private let campaignComposer: CampaignComposer
+    private let drawerRouter: DrawerRouting
 
     // MARK: Init
 
@@ -33,12 +34,14 @@ final class ExchangeCoordinator {
          authenticator: ExchangeAccountAuthenticatorAPI = ExchangeAccountAuthenticator(),
          loadingIndicatorAPI: LoadingViewPresenting = resolve(),
          campaignComposer: CampaignComposer = CampaignComposer(),
-         appSettings: BlockchainSettings.App = resolve()) {
+         appSettings: BlockchainSettings.App = resolve(),
+         drawerRouter: DrawerRouting = resolve()) {
         self.repository = repository
         self.campaignComposer = campaignComposer
         self.authenticator = authenticator
         self.loadingIndicatorAPI = loadingIndicatorAPI
         self.appSettings = appSettings
+        self.drawerRouter = drawerRouter
     }
 
     // MARK: Public Functions
@@ -127,7 +130,7 @@ final class ExchangeCoordinator {
         let emailConfirmationScreen = ExchangeEmailVerificationViewController.makeFromStoryboard()
 
         let disposable = emailConfirmationScreen.verificationObserver
-            .dismissNavControllerOnDisposal(navController: self.navController)
+            .dismissNavControllerOnDisposal(navController: self.navController, drawerRouter: drawerRouter)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 emailConfirmationScreen.dismiss(animated: true, completion: nil)
@@ -221,7 +224,7 @@ final class ExchangeCoordinator {
             .hideBottomSheetOnCompletionOrError(bottomAlertSheet: syncingBottomAlertSheet)
             .showSheetAfterCompletion(bottomAlertSheet: successfulLinkingBottomSheet)
             .showSheetAfterFailure(bottomAlertSheet: failureLinkingBottomSheet)
-            .dismissNavControllerOnSubscription(navController: navController)
+            .dismissNavControllerOnSubscription(navController: navController, drawerRouter: drawerRouter)
             .subscribe(onCompleted: {
                 // Do nothing, the user's account should now be linked.
                 self.appSettings.exchangeLinkIdentifier = nil
@@ -274,11 +277,11 @@ final class ExchangeCoordinator {
 
 fileprivate extension ObservableType {
 
-    func dismissNavControllerOnDisposal(navController: BaseNavigationController) -> Observable<Element> {
+    func dismissNavControllerOnDisposal(navController: BaseNavigationController, drawerRouter: DrawerRouting) -> Observable<Element> {
         self.do(onDispose: {
             navController.popToRootViewController(animated: true)
             navController.dismiss(animated: true, completion: nil)
-            AppCoordinator.shared.closeSideMenu()
+            drawerRouter.closeSideMenu()
         })
     }
 
@@ -286,19 +289,19 @@ fileprivate extension ObservableType {
 
 private extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
 
-    func dismissNavControllerOnDisposal(navController: BaseNavigationController?) -> Completable {
+    func dismissNavControllerOnDisposal(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
         self.do(onDispose: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
-            AppCoordinator.shared.closeSideMenu()
+            drawerRouter.closeSideMenu()
         })
     }
 
-    func dismissNavControllerOnSubscription(navController: BaseNavigationController?) -> Completable {
+    func dismissNavControllerOnSubscription(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
         self.do(onSubscribed: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
-            AppCoordinator.shared.closeSideMenu()
+            drawerRouter.closeSideMenu()
         })
     }
 

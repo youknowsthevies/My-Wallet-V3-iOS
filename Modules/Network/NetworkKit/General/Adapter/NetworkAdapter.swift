@@ -12,7 +12,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     private let queue: DispatchQueue
 
     init(communicator: NetworkCommunicatorAPI = resolve(),
-         queue: DispatchQueue = DispatchQueue.global(qos: .background)) {
+         queue: DispatchQueue = DispatchQueue.global(qos: .default)) {
         self.communicator = communicator
         self.queue = queue
     }
@@ -23,7 +23,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribe(on: queue)
+            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
             .eraseToAnyPublisher()
     }
 
@@ -33,7 +33,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType?, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decodeOptional(responseType: responseType, for: request, using: request.decoder)
-            .subscribe(on: queue)
+            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
             .eraseToAnyPublisher()
     }
 
@@ -42,7 +42,7 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, ErrorResponseType> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribe(on: queue)
+            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
             .eraseToAnyPublisher()
     }
 
@@ -51,8 +51,34 @@ final class NetworkAdapter: NetworkAdapterAPI {
     ) -> AnyPublisher<ResponseType, NetworkError> {
         communicator.dataTaskPublisher(for: request)
             .decode(for: request, using: request.decoder)
-            .subscribe(on: queue)
+            .subscribeOnQueueIfiOS14OrGreater(queue: queue)
             .eraseToAnyPublisher()
+    }
+}
+
+extension AnyPublisher where Output: Decodable,
+                             Failure == NetworkError {
+
+    fileprivate func subscribeOnQueueIfiOS14OrGreater(
+        queue: DispatchQueue
+    ) -> AnyPublisher<Output, Failure> {
+        guard #available(iOS 14, *) else {
+            return self
+        }
+        return subscribe(on: queue).eraseToAnyPublisher()
+    }
+}
+
+extension AnyPublisher where Output: Decodable,
+                             Failure: FromNetworkErrorConvertible {
+
+    fileprivate func subscribeOnQueueIfiOS14OrGreater(
+        queue: DispatchQueue
+    ) -> AnyPublisher<Output, Failure> {
+        guard #available(iOS 14, *) else {
+            return self
+        }
+        return subscribe(on: queue).eraseToAnyPublisher()
     }
 }
 

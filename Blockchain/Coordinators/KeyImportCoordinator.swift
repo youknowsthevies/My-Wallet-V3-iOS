@@ -15,13 +15,13 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
     }
 }
 
-@objc protocol PrivateKeyReaderDelegate: class {
+@objc protocol PrivateKeyReaderDelegate: AnyObject {
     func didFinishScanning(_ privateKey: String, for address: String?)
     @objc optional func didFinishScanningWithError(_ error: PrivateKeyReaderError)
 }
 
 // TODO: remove once AccountsAndAddresses and SendBitcoinViewController are migrated to Swift
-@objc protocol LegacyPrivateKeyDelegate: class {
+@objc protocol LegacyPrivateKeyDelegate: AnyObject {
     func didFinishScanning(_ privateKey: String)
     @objc optional func didFinishScanningWithError(_ error: PrivateKeyReaderError)
 }

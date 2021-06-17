@@ -23,7 +23,7 @@ protocol NetworkFeeSelectionPresentable: Presentable {
     func connect(state: Driver<NetworkFeeSelectionInteractor.State>) -> Driver<NetworkFeeSelectionEffects>
 }
 
-protocol NetworkFeeSelectionListener: class {
+protocol NetworkFeeSelectionListener: AnyObject {
     func dismissNetworkFeeSelectionScreen()
 }
 

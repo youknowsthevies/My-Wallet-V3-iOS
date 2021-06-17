@@ -14,20 +14,20 @@ import SafariServices
 import SettingsKit
 import ToolKit
 
-public protocol AppCoordinating: class {
+public protocol AppCoordinating: AnyObject {
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool)
 }
 
-public protocol AuthenticationCoordinating: class {
+public protocol AuthenticationCoordinating: AnyObject {
     func enableBiometrics()
     func changePin()
 }
 
-public protocol ExchangeCoordinating: class {
+public protocol ExchangeCoordinating: AnyObject {
     func start(from viewController: UIViewController)
 }
 
-public protocol AppStoreOpening: class {
+public protocol AppStoreOpening: AnyObject {
     func openAppStore()
 }
 

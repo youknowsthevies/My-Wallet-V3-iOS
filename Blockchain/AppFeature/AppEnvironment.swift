@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DebugUIKit
 import DIKit
 import NetworkKit
@@ -26,6 +27,9 @@ public struct AppEnvironment {
     var backgroundAppHandler: BackgroundAppHandler
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI
+
+    var sharedContainer: SharedContainerUserDefaults
+    var analyticsRecorder: AnalyticsEventRecorderAPI
 
     var coincore: CoincoreAPI
 

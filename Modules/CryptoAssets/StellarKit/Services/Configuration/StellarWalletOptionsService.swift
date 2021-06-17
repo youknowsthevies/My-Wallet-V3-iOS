@@ -4,7 +4,7 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-protocol StellarWalletOptionsBridgeAPI: class {
+protocol StellarWalletOptionsBridgeAPI: AnyObject {
     var stellarConfigurationDomain: Single<String?> { get }
 }
 

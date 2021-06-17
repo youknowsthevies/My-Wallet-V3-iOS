@@ -4,7 +4,7 @@ import AnalyticsKit
 import DIKit
 import RxSwift
 
-public protocol OrderCreationServiceAPI: class {
+public protocol OrderCreationServiceAPI: AnyObject {
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<CheckoutData>
 }
 

@@ -17,7 +17,14 @@ import WalletPayloadKit
 /// TODO: This class should be refactored so any view would load
 /// as late as possible and also would be deallocated when is no longer in use
 /// TICKET: IOS-2619
-@objc class AppCoordinator: NSObject, Coordinator, MainFlowProviding {
+@objc class AppCoordinator: NSObject,
+                            Coordinator,
+                            MainFlowProviding,
+                            BackupFlowStarterAPI,
+                            SettingsStarterAPI,
+                            TabControllerManagerProvider,
+                            LoggedInReloadAPI,
+                            ClearOnLogoutAPI {
 
     // MARK: - Properties
 
@@ -243,6 +250,13 @@ import WalletPayloadKit
         viewController.underLeftViewController = self.sideMenuViewController
         viewController.topViewController = self.tabControllerManager?.tabViewController
         self.slidingViewController = viewController
+        sideMenuViewController.provideTabControllerManager = { [weak tabControllerManager] in
+            tabControllerManager
+        }
+        sideMenuViewController.provideSlidingViewController = { [weak slidingViewController] in
+            slidingViewController
+        }
+        sideMenuViewController?.peekPadding = viewController.anchorRightPeekAmount
         self.tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
         self.tabControllerManager?.tabViewController.loadViewIfNeeded()
         self.tabControllerManager?.showDashboard()
@@ -252,6 +266,19 @@ import WalletPayloadKit
     private func setupSideMenuViewController() {
         let viewController = SideMenuViewController.makeFromStoryboard()
         viewController.delegate = self
+        viewController.createGestureRecognizers = { [weak self] in
+            guard let self = self else { return nil }
+            return (
+                UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(AppCoordinator.toggleSideMenu)
+                ),
+                UITapGestureRecognizer(
+                    target: self,
+                    action: #selector(AppCoordinator.toggleSideMenu)
+                )
+            )
+        }
         self.sideMenuViewController = viewController
     }
 

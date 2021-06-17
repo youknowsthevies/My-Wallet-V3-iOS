@@ -3,14 +3,14 @@
 import RxRelay
 import RxSwift
 
-protocol BackupRouterStateReceiverServiceAPI: class {
+protocol BackupRouterStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<BackupRouterStateService.Action> { get }
 }
 
-protocol BackupRouterStateEmitterServiceAPI: class {
+protocol BackupRouterStateEmitterServiceAPI: AnyObject {
 
     /// Move to the next state
     var nextRelay: PublishRelay<Void> { get }

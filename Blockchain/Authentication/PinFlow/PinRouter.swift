@@ -56,6 +56,8 @@ final class PinRouter: NSObject {
         switch self.flow {
         case .create:
             self.create()
+        case .createPin:
+            self.create()
         case .change:
             self.change()
         case .authenticate(from: let origin, logoutRouting: _):

@@ -4,7 +4,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-public protocol AssetLineChartInteracting: class {
+public protocol AssetLineChartInteracting: AnyObject {
 
     var priceWindowRelay: PublishRelay<PriceWindow> { get }
 

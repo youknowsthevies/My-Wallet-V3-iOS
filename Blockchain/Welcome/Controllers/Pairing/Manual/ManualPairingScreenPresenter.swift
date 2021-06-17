@@ -50,7 +50,7 @@ final class ManualPairingScreenPresenter {
     // MARK: - Setup
 
     init(interactor: ManualPairingInteractor = ManualPairingInteractor(),
-         routerStateProvider: OnboardingRouterStateProviding = AppCoordinator.shared.onboardingRouter,
+         routerStateProvider: OnboardingRouterStateProviding = resolve(),
          alertPresenter: AlertViewPresenter = .shared,
          loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.routerStateProvider = routerStateProvider

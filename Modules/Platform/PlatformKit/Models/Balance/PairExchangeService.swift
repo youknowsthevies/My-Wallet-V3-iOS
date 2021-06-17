@@ -4,7 +4,7 @@ import DIKit
 import RxRelay
 import RxSwift
 
-public protocol PairExchangeServiceAPI: class {
+public protocol PairExchangeServiceAPI: AnyObject {
 
     /// The current fiat exchange price.
     /// The implementer should implement this as a `.shared(replay: 1)`

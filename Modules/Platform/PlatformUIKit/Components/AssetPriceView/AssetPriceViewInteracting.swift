@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol AssetPriceViewInteracting: class {
+public protocol AssetPriceViewInteracting: AnyObject {
     var state: Observable<DashboardAsset.State.AssetPrice.Interaction> { get }
 }

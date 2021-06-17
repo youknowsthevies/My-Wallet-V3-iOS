@@ -10,7 +10,7 @@ import ToolKit
 
 protocol LinkedBanksRouting: ViewableRouting { }
 
-protocol LinkedBanksListener: class {
+protocol LinkedBanksListener: AnyObject {
     /// Routes to the TransactonFlow with a given `FiatAccount`
     func routeToTransactionFlow(sourceAccount: LinkedBankAccount)
 

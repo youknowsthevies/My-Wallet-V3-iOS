@@ -5,7 +5,7 @@ import NetworkKit
 import RxSwift
 import ToolKit
 
-public protocol TradingBalanceClientAPI: class {
+public protocol TradingBalanceClientAPI: AnyObject {
     var balance: Single<CustodialBalanceResponse?> { get }
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?>
 }

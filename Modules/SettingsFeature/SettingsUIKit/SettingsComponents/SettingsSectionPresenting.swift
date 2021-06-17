@@ -3,7 +3,7 @@
 import PlatformKit
 import RxSwift
 
-protocol SettingsSectionPresenting: class {
+protocol SettingsSectionPresenting: AnyObject {
     var sectionType: SettingsSectionType { get }
     var state: Observable<SettingsSectionLoadingState> { get }
 }

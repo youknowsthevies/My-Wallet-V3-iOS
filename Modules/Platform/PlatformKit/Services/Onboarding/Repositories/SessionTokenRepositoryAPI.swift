@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol SessionTokenRepositoryAPI: class {
+public protocol SessionTokenRepositoryAPI: AnyObject {
 
     /// Streams `Bool` indicating whether a session token is currently cached in the repo
     var hasSessionToken: Single<Bool> { get }

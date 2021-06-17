@@ -4,13 +4,13 @@ import DIKit
 import RxRelay
 
 /// Emits a command to return to the previous state
-public protocol RoutingPreviousStateEmitterAPI: class {
+public protocol RoutingPreviousStateEmitterAPI: AnyObject {
     /// Move to the previous state
     var previousRelay: PublishRelay<Void> { get }
 }
 
 /// Emits a command to move forward to the next state
-public protocol RoutingNextStateEmitterAPI: class {
+public protocol RoutingNextStateEmitterAPI: AnyObject {
     /// Move to the next state
     var nextRelay: PublishRelay<Void> { get }
 }

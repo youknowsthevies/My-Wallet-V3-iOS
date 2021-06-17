@@ -24,7 +24,7 @@ final class PasswordRequiredViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    init(presenter: PasswordRequiredScreenPresenter = PasswordRequiredScreenPresenter()) {
+    init(presenter: PasswordRequiredScreenPresenter) {
         self.presenter = presenter
         super.init(nibName: PasswordRequiredViewController.objectName, bundle: nil)
     }

@@ -10,20 +10,39 @@ import TransactionKit
 
 final class TransactionInteractor {
 
-    private let coincore: CoincoreAPI
+    private enum Error: LocalizedError {
+        case loadingFailed(account: BlockchainAccount, action: AssetAction, error: String)
+
+        var errorDescription: String? {
+            switch self {
+            case let .loadingFailed(account, action, error):
+                let type = String(reflecting: account)
+                let asset = account.currencyType.code
+                let label = account.label
+                return "Failed to load: '\(type)' asset '\(asset)' label '\(label)' action '\(action)' error '\(error)'."
+            }
+        }
+    }
+
+    private let coincore: Coincore
     private let availablePairsService: AvailableTradingPairsServiceAPI
     private let swapEligibilityService: EligibilityServiceAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let errorRecorder: ErrorRecording
     private var transactionProcessor: TransactionProcessor?
 
     /// Used to invalidate the transaction processor chain.
     private let invalidate = PublishSubject<Void>()
 
-    init(coincore: CoincoreAPI = resolve(),
-         availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
-         swapEligibilityService: EligibilityServiceAPI = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
+    init(
+        coincore: Coincore = resolve(),
+        availablePairsService: AvailableTradingPairsServiceAPI = resolve(),
+        swapEligibilityService: EligibilityServiceAPI = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        errorRecorder: ErrorRecording = resolve()
+    ) {
         self.coincore = coincore
+        self.errorRecorder = errorRecorder
         self.availablePairsService = availablePairsService
         self.swapEligibilityService = swapEligibilityService
         self.linkedBanksFactory = linkedBanksFactory
@@ -81,7 +100,18 @@ final class TransactionInteractor {
             let tradingPairs = availablePairsService.availableTradingPairs
             let allAccounts = coincore.allAccounts
                 .map(\.accounts)
-                .flatMapFilter(action: action)
+                .flatMapFilter(
+                    action: action,
+                    failSequence: false,
+                    onError: { [errorRecorder] account, error in
+                        let error: Error = .loadingFailed(
+                            account: account,
+                            action: action,
+                            error: error.localizedDescription
+                        )
+                        errorRecorder.error(error)
+                    }
+                )
                 .map { accounts in
                     accounts.compactMap { account in
                         account as? CryptoAccount

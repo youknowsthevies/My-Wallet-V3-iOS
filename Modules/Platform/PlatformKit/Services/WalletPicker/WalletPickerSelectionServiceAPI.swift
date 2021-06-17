@@ -4,7 +4,7 @@ import DIKit
 import RxRelay
 import RxSwift
 
-public protocol WalletPickerSelectionServiceAPI: class {
+public protocol WalletPickerSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }
     func record(selection: BlockchainAccount)
 }

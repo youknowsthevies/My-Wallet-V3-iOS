@@ -3,7 +3,7 @@
 import DIKit
 import PlatformUIKit
 
-protocol AirdropRouterAPI: class {
+protocol AirdropRouterAPI: AnyObject {
 
     /// Presents airdrop status screen for raw value of `AirdropCampaigns.Campaign.Name`.
     func presentAirdropStatusScreen(for campaignName: String,

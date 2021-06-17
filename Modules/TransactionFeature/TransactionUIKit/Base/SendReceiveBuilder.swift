@@ -32,7 +32,7 @@ public final class ReceiveBuilder {
             titleViewStyle: .text(value: LocalizedReceive.Text.request),
             barStyle: .lightContent()
         )
-        let accountProvider = AccountPickerDefaultAccountProvider(
+        let accountProvider = AccountPickerAccountProvider(
             singleAccountsOnly: true,
             action: .receive,
             failSequence: false

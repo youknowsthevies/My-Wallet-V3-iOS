@@ -51,7 +51,11 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     walletUpgradeService: $0.walletUpgradeService,
                     exchangeRepository: $0.exchangeRepository,
                     remoteNotificationServiceContainer: $0.remoteNotificationServiceContainer,
-                    coincore: resolve()
+                    coincore: resolve(),
+                    sharedContainer: $0.sharedContainer,
+                    analyticsRecorder: $0.analyticsRecorder,
+                    siftService: resolve(),
+                    onboardingSettings: $0.onboardingSettings
                 )
             }),
     appReducerCore

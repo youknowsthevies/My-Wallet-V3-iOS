@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol CardChargeClientAPI: class {
+public protocol CardChargeClientAPI: AnyObject {
     func chargeCard(by id: String) -> Completable
 }

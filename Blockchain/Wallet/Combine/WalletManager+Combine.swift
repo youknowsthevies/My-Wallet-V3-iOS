@@ -12,7 +12,7 @@ extension WalletManager: WalletManagerReactiveAPI {
         self.rx.didDecryptWallet
             .asPublisher()
     }
-    
+
     /// Reactive wrapper for authentication delegate methods
     /// - Note: The following methods will be taken into account and will create a `Result<Bool, AuthenticationError>`:
     /// - `walletDidFinishLoad`

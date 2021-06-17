@@ -4,14 +4,14 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-protocol NonCustodialActionStateReceiverServiceAPI: class {
+protocol NonCustodialActionStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<NonCustodialActionState>> { get }
 }
 
-protocol NonCustodialActionEmitterAPI: class {
+protocol NonCustodialActionEmitterAPI: AnyObject {
     var selectionRelay: PublishRelay<RoutingAction<NonCustodialActionState>> { get }
 }
 

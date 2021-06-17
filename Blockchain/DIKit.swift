@@ -55,7 +55,17 @@ extension DependencyContainer {
 
         single { OnboardingSettings() }
 
+        factory { () -> OnboardingSettingsAPI in
+            let settings: OnboardingSettings = DIKit.resolve()
+            return settings as OnboardingSettingsAPI
+        }
+
         single { OnboardingRouter() }
+
+        factory { () -> OnboardingRouterStateProviding in
+            let router: OnboardingRouter = DIKit.resolve()
+            return router as OnboardingRouterStateProviding
+        }
 
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
 
@@ -122,6 +132,30 @@ extension DependencyContainer {
 
         factory { UIApplication.shared as AppStoreOpening }
 
+        factory {
+            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as DashboardUIKit.BackupRouterAPI
+        }
+
+        factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
+
+        factory { AnnouncementPresenter() as DashboardUIKit.AnnouncementPresenting }
+
+        factory { FiatBalanceCellProvider() as FiatBalanceCellProviding }
+
+        factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
+
+        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
+
+        factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
+
+        factory { WithdrawalRouter() as WithdrawalRouting }
+
+        // MARK: - AppCoordinator
+
+        single { AppCoordinator() }
+
+        single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
+
         factory { () -> CurrencyRouting & TabSwapping in
             guard useNewOnboarding() else {
                 return AppCoordinator.shared as CurrencyRouting & TabSwapping
@@ -162,29 +196,46 @@ extension DependencyContainer {
             return bridge.resolveWalletOperationsRouting() as DashboardUIKit.WalletOperationsRouting
         }
 
-        factory {
-            BackupFundsRouter(entry: .custody, navigationRouter: NavigationRouter()) as DashboardUIKit.BackupRouterAPI
+        factory { () -> BackupFlowStarterAPI in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as BackupFlowStarterAPI
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveBackupFlowStarter() as BackupFlowStarterAPI
         }
 
-        factory { AnalyticsUserPropertyInteractor() as DashboardUIKit.AnalyticsUserPropertyInteracting }
+        factory { () -> CashIdentityVerificationAnnouncementRouting in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as CashIdentityVerificationAnnouncementRouting
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveCashIdentityVerificationAnnouncementRouting() as CashIdentityVerificationAnnouncementRouting
+        }
 
-        factory { AnnouncementPresenter() as DashboardUIKit.AnnouncementPresenting }
+        factory { () -> InterestIdentityVerificationAnnouncementRouting in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as InterestIdentityVerificationAnnouncementRouting
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveInterestIdentityVerificationAnnouncementRouting() as InterestIdentityVerificationAnnouncementRouting
+        }
 
-        factory { FiatBalanceCellProvider() as FiatBalanceCellProviding }
+        factory { () -> SettingsStarterAPI in
+            guard useNewOnboarding() else {
+                return AppCoordinator.shared as SettingsStarterAPI
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveSettingsStarter() as SettingsStarterAPI
+        }
 
-        factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
-
-        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
-
-        factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
-
-        factory { WithdrawalRouter() as WithdrawalRouting }
-
-        // MARK: - AppCoordinator
-
-        single { AppCoordinator() }
-
-        single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
+        factory { () -> TabControllerManagerProvider in
+            guard useNewOnboarding() else {
+                let app: AppCoordinator = DIKit.resolve()
+                return app as TabControllerManagerProvider
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveTabControllerProvider() as TabControllerManagerProvider
+        }
 
         factory { () -> DrawerRouting in
             guard useNewOnboarding() else {
@@ -193,6 +244,23 @@ extension DependencyContainer {
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
             return bridge.resolveDrawerRouting() as DrawerRouting
+        }
+
+        factory { () -> LoggedInReloadAPI in
+            guard useNewOnboarding() else {
+                let app: AppCoordinator = DIKit.resolve()
+                return app as LoggedInReloadAPI
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveLoggedInReload() as LoggedInReloadAPI
+        }
+
+        factory { () -> ClearOnLogoutAPI in
+            guard useNewOnboarding() else {
+                let app: AppCoordinator = DIKit.resolve()
+                return app as ClearOnLogoutAPI
+            }
+            return EmptyClearOnLogout()
         }
 
         // MARK: - WalletManager

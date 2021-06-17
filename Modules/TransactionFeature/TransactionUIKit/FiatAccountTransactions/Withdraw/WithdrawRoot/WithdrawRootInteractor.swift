@@ -9,7 +9,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public protocol WithdrawRootRouting: class {
+public protocol WithdrawRootRouting: AnyObject {
     /// Routes to the wire details flow.
     /// Does not execute dismissal of top most screen (Payment Method Selector)
     func startWithWireInstructions(currency: FiatCurrency)

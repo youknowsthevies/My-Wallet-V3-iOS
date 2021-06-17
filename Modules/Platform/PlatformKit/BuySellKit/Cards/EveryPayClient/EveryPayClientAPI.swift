@@ -3,7 +3,7 @@
 import NetworkKit
 import RxSwift
 
-public protocol EveryPayClientAPI: class {
+public protocol EveryPayClientAPI: AnyObject {
     func send(cardDetails: CardPartnerPayload.EveryPay.SendCardDetailsRequest.CardDetails,
               apiUserName: String,
               token: String) -> Single<CardPartnerPayload.EveryPay.CardDetailsResponse>

@@ -49,6 +49,8 @@
 @property (nonatomic, assign) int emptyAccountIndex;
 @property (nonatomic, assign) int recoveredAccountIndex;
 
+@property (nonatomic, copy, nullable) void (^handleReload)(void);
+
 @property (nonatomic, assign) BOOL isSyncing;
 @property (nonatomic, assign) BOOL isNew;
 @property (nonatomic, copy, nullable) NSDictionary<NSString *, id> *btcRates;

@@ -3,7 +3,7 @@
 import RxSwift
 
 /// Service that provides login methods
-public protocol LoginServiceAPI: class {
+public protocol LoginServiceAPI: AnyObject {
 
     /// Standard login using cached `GUID` and `session-token`
     func login(walletIdentifier: String) -> Completable

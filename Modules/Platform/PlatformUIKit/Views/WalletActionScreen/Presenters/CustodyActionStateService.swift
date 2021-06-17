@@ -13,34 +13,34 @@ public protocol RecoveryPhraseStatusProviding {
     var fetchTriggerRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyActionStateReceiverServiceAPI: class {
+public protocol CustodyActionStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<RoutingAction<CustodyActionState>> { get }
 }
 
-public protocol CustodySwapEmitterAPI: class {
+public protocol CustodySwapEmitterAPI: AnyObject {
     var swapRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyActivityEmitterAPI: class {
+public protocol CustodyActivityEmitterAPI: AnyObject {
     var activityRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyDepositEmitterAPI: class {
+public protocol CustodyDepositEmitterAPI: AnyObject {
     var depositRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyWithdrawEmitterAPI: class {
+public protocol CustodyWithdrawEmitterAPI: AnyObject {
     var withdrawRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodyBuyEmitterAPI: class {
+public protocol CustodyBuyEmitterAPI: AnyObject {
     var buyRelay: PublishRelay<Void> { get }
 }
 
-public protocol CustodySellEmitterAPI: class {
+public protocol CustodySellEmitterAPI: AnyObject {
     var sellRelay: PublishRelay<Void> { get }
 }
 

@@ -3,7 +3,7 @@
 import DIKit
 import RxSwift
 
-public protocol PaymentAccountServiceAPI: class {
+public protocol PaymentAccountServiceAPI: AnyObject {
 
     /// Fetch the Payment Account information for the currency wallet's fiat currency
     var paymentAccount: Single<PaymentAccountDescribing> { get }

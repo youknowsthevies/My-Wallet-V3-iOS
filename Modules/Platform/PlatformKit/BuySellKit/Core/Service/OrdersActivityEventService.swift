@@ -3,7 +3,7 @@
 import DIKit
 import RxSwift
 
-public protocol OrdersActivityEventServiceAPI: class {
+public protocol OrdersActivityEventServiceAPI: AnyObject {
     func activityResponse(fiatCurrency: FiatCurrency) -> Single<OrdersActivityResponse>
 }
 

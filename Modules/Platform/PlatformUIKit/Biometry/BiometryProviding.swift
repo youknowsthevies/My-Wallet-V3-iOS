@@ -3,7 +3,7 @@
 import RxSwift
 
 /// A protocol that provides the client with biometry API
-public protocol BiometryProviding: class {
+public protocol BiometryProviding: AnyObject {
     var canAuthenticate: Result<Biometry.BiometryType, Biometry.EvaluationError> { get }
     var configuredType: Biometry.BiometryType { get }
     var configurationStatus: Biometry.Status { get }

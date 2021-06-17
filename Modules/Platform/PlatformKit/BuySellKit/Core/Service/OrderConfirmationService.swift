@@ -4,7 +4,7 @@ import AnalyticsKit
 import DIKit
 import RxSwift
 
-public protocol OrderConfirmationServiceAPI: class {
+public protocol OrderConfirmationServiceAPI: AnyObject {
     func confirm(checkoutData: CheckoutData) -> Single<CheckoutData>
 }
 

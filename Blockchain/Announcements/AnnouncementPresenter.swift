@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import DashboardUIKit
 import DIKit
 import KYCKit
 import PlatformKit
@@ -13,10 +14,13 @@ import RxSwift
 final class AnnouncementPresenter {
 
     // MARK: Services
+    private let tabSwapping: TabSwapping
+    private let walletOperating: WalletOperationsRouting
+    private let backupFlowStarter: BackupFlowStarterAPI
+    private let settingsStarter: SettingsStarterAPI
+    private let tapControllerManagerProvider: TabControllerManagerProvider
 
-    private let appCoordinator: AppCoordinator
     private let featureFetcher: FeatureFetching
-    private let airdropRouter: AirdropRouterAPI
     private let cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting
     private let interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting
     private let kycRouter: KYCRouterAPI
@@ -49,10 +53,13 @@ final class AnnouncementPresenter {
     init(interactor: AnnouncementInteracting = AnnouncementInteractor(),
          topMostViewControllerProvider: TopMostViewControllerProviding = DIKit.resolve(),
          featureFetcher: FeatureFetching = DIKit.resolve(),
-         airdropRouter: AirdropRouterAPI = AppCoordinator.shared.airdropRouter,
-         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
-         interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = AppCoordinator.shared,
-         appCoordinator: AppCoordinator = .shared,
+         cashIdentityVerificationRouter: CashIdentityVerificationAnnouncementRouting = DIKit.resolve(),
+         interestIdentityVerificationRouter: InterestIdentityVerificationAnnouncementRouting = DIKit.resolve(),
+         tabSwapping: TabSwapping = DIKit.resolve(),
+         walletOperating: WalletOperationsRouting = DIKit.resolve(),
+         backupFlowStarter: BackupFlowStarterAPI = DIKit.resolve(),
+         settingsStarter: SettingsStarterAPI = DIKit.resolve(),
+         tapControllerManagerProvider: TabControllerManagerProvider = DIKit.resolve(),
          exchangeCoordinator: ExchangeCoordinator = .shared,
          kycRouter: KYCRouterAPI = DIKit.resolve(),
          reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
@@ -63,17 +70,20 @@ final class AnnouncementPresenter {
         self.interactor = interactor
         self.webViewServiceAPI = webViewServiceAPI
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.appCoordinator = appCoordinator
         self.interestIdentityVerificationRouter = interestIdentityVerificationRouter
         self.cashIdentityVerificationRouter = cashIdentityVerificationRouter
         self.exchangeCoordinator = exchangeCoordinator
         self.kycRouter = kycRouter
-        self.airdropRouter = airdropRouter
         self.reactiveWallet = reactiveWallet
         self.kycSettings = kycSettings
         self.featureFetcher = featureFetcher
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
+        self.tabSwapping = tabSwapping
+        self.walletOperating = walletOperating
+        self.backupFlowStarter = backupFlowStarter
+        self.settingsStarter = settingsStarter
+        self.tapControllerManagerProvider = tapControllerManagerProvider
 
         announcement
             .asObservable()
@@ -238,9 +248,9 @@ extension AnnouncementPresenter {
         WalletIntroAnnouncement(
             reappearanceTimeInterval: reappearanceTimeInterval,
             action: { [weak self] in
-               guard let self = self else { return }
-               self.hideAnnouncement()
-               self.appCoordinator.tabControllerManager?.tabViewController.setupIntroduction()
+                guard let self = self else { return }
+                self.hideAnnouncement()
+                self.tapControllerManagerProvider.tabControllerManager?.tabViewController.setupIntroduction()
             },
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
@@ -262,7 +272,7 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
-                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
+                guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
                 self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
@@ -280,9 +290,9 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-               guard let self = self else { return }
-               self.hideAnnouncement()
-               self.appCoordinator.switchTabToReceive()
+                guard let self = self else { return }
+                self.hideAnnouncement()
+                self.tabSwapping.switchTabToReceive()
             }
         )
     }
@@ -297,7 +307,7 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
-                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
+                guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
                 self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
@@ -350,7 +360,7 @@ extension AnnouncementPresenter {
             action: { [weak self] in
                 guard let self = self else { return }
                 self.hideAnnouncement()
-                self.appCoordinator.switchToSend()
+                self.tabSwapping.switchToSend()
             })
     }
 
@@ -436,7 +446,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.appCoordinator.switchTabToSwap()
+                self?.tabSwapping.switchTabToSwap()
                 self?.analyticsRecorder.record(event: AnalyticsEvents.New.Swap.swapClicked(origin: .dashboardPromo))
             }
         )
@@ -451,8 +461,8 @@ extension AnnouncementPresenter {
             dismiss: { [weak self] in
                 self?.hideAnnouncement()
             },
-            action: { [weak appCoordinator] in
-                appCoordinator?.startBackupFlow()
+            action: { [weak self] in
+                self?.backupFlowStarter.startBackupFlow()
             }
         )
     }
@@ -467,7 +477,7 @@ extension AnnouncementPresenter {
                 self?.hideAnnouncement()
             },
             action: { [weak self] in
-                self?.appCoordinator.showSettingsView()
+                self?.settingsStarter.showSettingsView()
             }
         )
     }
@@ -481,7 +491,7 @@ extension AnnouncementPresenter {
             },
             action: { [weak self] in
                 guard let self = self else { return }
-                guard let tabControllerManager = self.appCoordinator.tabControllerManager else { return }
+                guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
                 self.kycRouter.start(from: tabControllerManager.tabViewController,
                                      tier: tier,
@@ -493,7 +503,7 @@ extension AnnouncementPresenter {
 
 private extension AnnouncementPresenter {
     func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
-        appCoordinator.handleBuyCrypto(currency: currency)
+        walletOperating.handleBuyCrypto(currency: currency)
         analyticsRecorder.record(
             event: AnalyticsEvents.New.SimpleBuy.buySellClicked(type: .buy, origin: .dashboardPromo)
         )

@@ -4,7 +4,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-protocol UpdateMobileStateReceiverServiceAPI: class {
+protocol UpdateMobileStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state

@@ -5,7 +5,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol CardListServiceAPI: class {
+public protocol CardListServiceAPI: AnyObject {
 
     /// Streams an updated array of cards.
     /// Expected to reactively stream the updated cards after

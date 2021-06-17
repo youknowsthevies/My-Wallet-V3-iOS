@@ -9,7 +9,7 @@ import RxSwift
 import ToolKit
 import WalletPayloadKit
 
-public protocol WebLoginQRCodeServiceAPI: class {
+public protocol WebLoginQRCodeServiceAPI: AnyObject {
     var qrCode: Single<String> { get }
 }
 

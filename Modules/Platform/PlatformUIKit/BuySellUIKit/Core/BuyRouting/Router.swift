@@ -13,7 +13,7 @@ public enum RouterError: Error {
     case kyc(KYCRouterError)
 }
 
-public protocol RouterAPI: class {
+public protocol RouterAPI: AnyObject {
     func setup(startImmediately: Bool)
     func start()
     func next(to state: StateService.State)

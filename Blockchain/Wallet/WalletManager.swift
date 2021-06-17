@@ -18,6 +18,8 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
 
     @Inject static var shared: WalletManager
 
+    @LazyInject var loggedInReloadHandler: LoggedInReloadAPI
+
     @objc static var sharedInstance: WalletManager {
         shared
     }
@@ -59,6 +61,9 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
         self.wallet.delegate = self
         self.wallet.ethereum.reactiveWallet = reactiveWallet
         self.wallet.bitcoin.reactiveWallet = reactiveWallet
+        self.wallet.handleReload = { [weak self] in
+            self?.loggedInReloadHandler.reload()
+        }
     }
 
     /// Returns the context. Should be invoked on the main queue always.
@@ -94,9 +99,9 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
 
         latestMultiAddressResponse = nil
 
-        let appCoordinator = AppCoordinator.shared
-        appCoordinator.clearOnLogout()
-        appCoordinator.reload()
+        let clearOnLogoutHandler: ClearOnLogoutAPI = DIKit.resolve()
+        clearOnLogoutHandler.clearOnLogout()
+        loggedInReloadHandler.reload()
 
         BlockchainSettings.App.shared.biometryEnabled = false
     }

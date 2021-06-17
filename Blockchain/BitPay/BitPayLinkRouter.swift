@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import PlatformKit
 
 class BitPayLinkRouter: DeepLinkRouting {
@@ -7,6 +8,7 @@ class BitPayLinkRouter: DeepLinkRouting {
     // MARK: - Private Properties
 
     private let service: BitpayServiceProtocol
+    @LazyInject var tabControllerProvider: TabControllerManagerProvider
 
     // MARK: - Init
 
@@ -24,7 +26,7 @@ class BitPayLinkRouter: DeepLinkRouting {
 
     func routeIfNeeded() -> Bool {
         guard let bitpayURL: URL = service.contentRelay.value else { return false }
-        AppCoordinator.shared.tabControllerManager?.setupBitpayPayment(from: bitpayURL)
+        tabControllerProvider.tabControllerManager?.setupBitpayPayment(from: bitpayURL)
         service.contentRelay.accept(nil)
         return true
     }

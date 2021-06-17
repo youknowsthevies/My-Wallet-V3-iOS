@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol WalletPayloadServiceAPI: class {
+public protocol WalletPayloadServiceAPI: AnyObject {
     func requestUsingSessionToken() -> Single<AuthenticatorType>
     func requestUsingSharedKey() -> Completable
     func request(guid: String, sharedKey: String) -> Completable

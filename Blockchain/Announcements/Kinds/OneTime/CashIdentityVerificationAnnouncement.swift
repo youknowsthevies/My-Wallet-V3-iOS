@@ -8,7 +8,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-protocol CashIdentityVerificationAnnouncementRouting: class {
+protocol CashIdentityVerificationAnnouncementRouting: AnyObject {
     func showCashIdentityVerificationScreen()
 }
 

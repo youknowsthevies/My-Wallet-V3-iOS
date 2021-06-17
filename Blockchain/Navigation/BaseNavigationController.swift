@@ -59,7 +59,7 @@ extension NavigationCTAType {
     }
 }
 
-protocol NavigatableView: class {
+protocol NavigatableView: AnyObject {
 
     var rightCTATintColor: UIColor { get }
     var leftCTATintColor: UIColor { get }
