@@ -142,9 +142,11 @@ final class PinInteractor: PinInteracting {
                     switch pinError {
                     case .incorrectPin:
                         self.recordWrongPinAttemptRecord()
+                        print("TTT \(pinError)")
                         throw pinError
-                    case .backoff(let message, _):
-                        let remaining = self.getBackoffRemainingLockTime()
+                    case .backoff(let message, let lockTimeSeconds):
+                        let remaining = self.getBackoffRemainingLockTime(lockTimeSeconds)
+                        print("TTT \(remaining)")
                         throw PinError.backoff(message, remaining)
                     default:
                         throw pinError
@@ -271,7 +273,7 @@ final class PinInteractor: PinInteracting {
             throw pinError
         case .backoff:
             let message = LocalizationConstants.Pin.backoff
-            let remaining = getBackoffRemainingLockTime()
+            let remaining = getBackoffRemainingLockTime(lockTimeSeconds)
             throw PinError.backoff(message, remaining)
         case .success:
             // Reset the Wrong PIN attempts count on successful login
@@ -290,7 +292,7 @@ final class PinInteractor: PinInteracting {
         lastWrongPinAttemptTimestamp = NSDate().timeIntervalSince1970
     }
 
-    private func getBackoffRemainingLockTime() -> Int {
+    private func getBackoffRemainingLockTime(_ lockTimeSeconds: Int) -> Int {
         // Calculate elapsed time and remaining lock time
         let elapsed = Int(NSDate().timeIntervalSince1970 - self.lastWrongPinAttemptTimestamp)
         // Ensure no negative number

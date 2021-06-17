@@ -137,9 +137,9 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (1st wrong attempt)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect error with a lock time
+        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
-            // THEN: The lock time should equal 10 seconds, cache should records wrong attempt and timestamp
+            // THEN: The lock time should equal 10 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 10)
             XCTAssertEqual(cache.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue), 1)
             XCTAssertNotNil(cache.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue))
@@ -157,9 +157,9 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (4th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect error with a lock time
+        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
-            // THEN: The lock time should equal 300 seconds, cache should records wrong attempt and timestamp
+            // THEN: The lock time should equal 300 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 300)
             XCTAssertEqual(cache.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue), 4)
             XCTAssertNotNil(cache.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue))
@@ -168,9 +168,9 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (5th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect error with a lock time
+        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
-            // THEN: The lock time should equal 3600 seconds, cache should records wrong attempt and timestamp
+            // THEN: The lock time should equal 3600 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 3600)
             XCTAssertEqual(cache.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue), 5)
             XCTAssertNotNil(cache.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue))
@@ -179,9 +179,9 @@ class PinInteractorTests: XCTestCase {
         // GIVEN: The user entered an incorrect PIN (6th incorrect attempts)
         do {
             _ = try interactor.validate(using: payload).toBlocking().first()
-        // WHEN: The PIN interactor returns an incorrect error with a lock time
+        // WHEN: The PIN interactor returns an incorrect PIN error with a lock time
         } catch PinError.incorrectPin(_, let lockTimeSeconds) {
-            // THEN: The lock time should equal 86400 seconds, cache should records wrong attempt and timestamp
+            // THEN: The lock time should equal 86400 seconds, cache should record wrong attempt and timestamp
             XCTAssertEqual(lockTimeSeconds, 86400)
             XCTAssertEqual(cache.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue), 6)
             XCTAssertNotNil(cache.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue))
@@ -243,20 +243,27 @@ class PinInteractorTests: XCTestCase {
             }
         }
 
-        let interactorBackoff = PinInteractor(pinClient: MockPinClient(statusCode: .backoff),
-                                              maintenanceService: maintenanceService,
-                                              wallet: wallet,
-                                              appSettings: appSettings,
-                                              cacheSuite: cache)
+        // Wait for 1 second and trigger backoff
+        let waitTime = 1.0
+        let exp = expectation(description: "Test after 1 second")
+        let result = XCTWaiter.wait(for: [exp], timeout: waitTime)
+        if result == XCTWaiter.Result.timedOut {
+            let interactorBackoff = PinInteractor(pinClient: MockPinClient(statusCode: .backoff),
+                                                  maintenanceService: maintenanceService,
+                                                  wallet: wallet,
+                                                  appSettings: appSettings,
+                                                  cacheSuite: cache)
 
-        // GIVEN: The user entered a PIN during locked period (Backoff case)
-        do {
-            // WHEN: The PIN interactor returns a backoff error with a lock time
-            _ = try interactorBackoff.validate(using: payload).toBlocking().first()
-        } catch PinError.backoff(_, let remainingLockTime) {
-            // THEN: The remainig lock time should be less than or equal to the starting lock time
-            // Note that in real-life situation it should be always less than
-            XCTAssertTrue(remainingLockTime <= 86400)
+            // GIVEN: The user entered a PIN during locked period (Backoff case), and it is 1 second after 6th wrong attempt
+            do {
+                // WHEN: The PIN interactor returns a backoff error with a lock time
+                _ = try interactorBackoff.validate(using: payload).toBlocking().first()
+            } catch PinError.backoff(_, let remainingLockTime) {
+                // THEN: The remainig lock time should be equal to original lock time - elapsed time
+                XCTAssertTrue(remainingLockTime == 86400 - Int(waitTime))
+            }
+        } else {
+            XCTFail("Delay Interrupted")
         }
     }
 
@@ -331,13 +338,16 @@ class PinInteractorTests: XCTestCase {
             XCTAssert(true)
         }
 
+        // GIVEN: The user entered a correct PIN
         let interactorSuccess = PinInteractor(pinClient: MockPinClient(statusCode: .success),
                                               maintenanceService: maintenanceService,
                                               wallet: wallet,
                                               appSettings: appSettings,
                                               cacheSuite: cache)
         do {
+            // WHEN: The PIN interactor returns a successful result
             _ = try interactorSuccess.validate(using: payload).toBlocking().first()
+            // THEN: The cache should reset to 0 wrong PIN attempts count
             XCTAssertEqual(cache.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue), 0)
         } catch {
             XCTAssert(false)
