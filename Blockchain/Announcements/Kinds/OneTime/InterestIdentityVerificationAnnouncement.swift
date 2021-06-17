@@ -77,7 +77,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
     // MARK: - Setup
 
     init(isKYCVerified: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,

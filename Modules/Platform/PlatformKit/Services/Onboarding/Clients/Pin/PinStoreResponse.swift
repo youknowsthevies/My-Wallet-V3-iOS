@@ -42,41 +42,6 @@ public struct PinStoreResponse: Decodable & Error {
 
 extension PinStoreResponse {
 
-    // TODO: use the imaginary cap approach when backend updates the backoff algorithm
-//    private var attemptsRemaining: Int? {
-//        guard let remaining = self.remaining else {
-//            return nil
-//        }
-//        switch remaining {
-//        case 1000: // 1s back off, 5 attempts left
-//            return 5
-//        case 5000: // 5s back off, 4 attempts left
-//            return 4
-//        case 10000: // 10s back off, 3 attemtps left
-//            return 3
-//        case 300000: // 5m back off, 2 attempts left
-//            return 2
-//        case 3000000: // 50m back off, 1 attempts left
-//            return 1
-//        default: // any other higher back off, 0 attempts left
-//            return 0
-//        }
-//    }
-
-    // TODO: Use hardcoded value for now, replace with the actual lock time returned from backend
-    private var lockTimeSeconds: Int {
-        switch UserDefaults.standard.integer(forKey: "WrongPinAttempts") {
-        case 1...3:
-            return 10 // 1-3 wrong attempts, lock for 10 seconds
-        case 4:
-            return 300 // 4 wrong attempts, lock for 5 minutes
-        case 5:
-            return 3600 // 5 wrong attempts, lock for 1 hour
-        default:
-            return 86400 // 6+ wrong attempts, lock for 24 hours
-        }
-    }
-
     /// Is the response successful
     public var isSuccessful: Bool {
         statusCode == .success && error == nil
@@ -92,7 +57,7 @@ extension PinStoreResponse {
         remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
     }
 
-    public func toPinError() -> PinError {
+    public func toPinError(_ lockTimeSeconds: Int) -> PinError {
         // First verify that the status code was received
         guard let code = statusCode else {
             return PinError.serverError(LocalizationConstants.Errors.genericError)
@@ -102,26 +67,11 @@ extension PinStoreResponse {
         case .deleted:
             return PinError.tooManyAttempts
         case .incorrect:
-            // Add wrong PIN attempt count by 1
-            UserDefaults.standard.set(
-                UserDefaults.standard.integer(forKey: "WrongPinAttempts") + 1,
-                forKey: "WrongPinAttempts"
-            )
-            // Record the timestamp when a wrong attempt is made
-            UserDefaults.standard.set(
-                NSDate().timeIntervalSince1970,
-                forKey: "LastWrongPinTimestamp"
-            )
             let message = LocalizationConstants.Pin.incorrect
             return PinError.incorrectPin(message, lockTimeSeconds)
         case .backoff:
-            // Calculate elapsed time and remaining lock time
-            let lastWrongPinTimestamp = UserDefaults.standard.object(forKey: "LastWrongPinTimestamp") as! TimeInterval
-            let elapsed = Int(NSDate().timeIntervalSince1970 - lastWrongPinTimestamp)
-            // Ensure no negative number
-            let remaining = max(lockTimeSeconds - elapsed, 0)
             let message = LocalizationConstants.Pin.backoff
-            return PinError.backoff(message, remaining)
+            return PinError.backoff(message, lockTimeSeconds)
         case .success:
             // Should not happen because this is an error response
             return PinError.serverError(LocalizationConstants.Errors.genericError)

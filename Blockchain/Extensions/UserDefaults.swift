@@ -6,5 +6,9 @@ extension UserDefaults {
     enum Keys: String {
         case walletIntroLatestLocation
         case firstRun
+
+        // MAKR: - PIN Login Flow
+        case walletWrongPinAttempts
+        case walletLastWrongPinTimestamp
     }
 }

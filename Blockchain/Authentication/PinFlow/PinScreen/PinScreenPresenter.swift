@@ -297,26 +297,7 @@ final class PinScreenPresenter {
 
         // bind the timer to the lock time message shown when key pad is disabled
         timer
-            .map {
-                if $0 == 0 {
-                    return ""
-                } else if $0 <= 60 {
-                    let message = LocalizationConstants.Pin.tryAgain +
-                        String(" \($0)") + LocalizationConstants.Pin.seconds
-                    return message
-                } else if $0 <= 3600 {
-                    let message = LocalizationConstants.Pin.tryAgain +
-                        String(" \($0/60)") + LocalizationConstants.Pin.minutes +
-                        String(" \($0%60)") + LocalizationConstants.Pin.seconds
-                    return message
-                } else {
-                    let message = LocalizationConstants.Pin.tryAgain +
-                        String(" \($0/3600)") + LocalizationConstants.Pin.hours +
-                        String(" \(($0/60)%60)") + LocalizationConstants.Pin.minutes +
-                        String(" \($0%60)") + LocalizationConstants.Pin.seconds
-                    return message
-                }
-            }
+            .map(formatRemainingLockTimeMessage)
             .bindAndCatch(to: remainingLockTimeMessageRelay)
             .disposed(by: disposeBag)
 
@@ -369,6 +350,31 @@ extension PinScreenPresenter {
 
     // TODO: Display an overlay for the pin
     func trailingButtonPressed() {}
+}
+
+// MARK: - Error Display
+
+extension PinScreenPresenter {
+
+    /// Formatting remaining PIN lock time error message
+    /// - parameter duration: the lock time duration in seconds
+    private func formatRemainingLockTimeMessage(duration: Int) -> String {
+        var message = ""
+        if duration > 0 && duration <= 60 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration)") + LocalizationConstants.Pin.seconds
+        } else if duration > 60 && duration <= 3600 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration/60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+        } else if duration > 3600 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration/3600)") + LocalizationConstants.Pin.hours +
+                String(" \((duration/60)%60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+        }
+        return message
+    }
 }
 
 // MARK: - API & Functionality

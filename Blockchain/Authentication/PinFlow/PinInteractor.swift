@@ -12,20 +12,46 @@ final class PinInteractor: PinInteracting {
 
     // MARK: - Properties
 
+    /// In case the user attempted to logout while the pin was being sent to the server
+    /// the app needs to disragard any future response
+    var hasLogoutAttempted = false
+
     private let pinClient: PinClientAPI
     private let maintenanceService: MaintenanceServicing
     private let credentialsProvider: WalletCredentialsProviding
     private let wallet: WalletProtocol
     private let appSettings: AppSettingsAuthenticating
     private let recorder: ErrorRecording
+    private let cacheSuite: CacheSuite
     private let loginService: PinLoginServiceAPI
     private let walletCryptoService: WalletCryptoServiceAPI
-
     private let disposeBag = DisposeBag()
 
-    /// In case the user attempted to logout while the pin was being sent to the server
-    /// the app needs to disragard any future response
-    var hasLogoutAttempted = false
+    /// A helper property to get the wrong PIN attempts count from UserDefaults
+    private var wrongPinAttemptsCount: Int {
+        get { cacheSuite.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue) }
+        set { cacheSuite.set(newValue, forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue) }
+    }
+
+    /// A helper property to get the timestamp for the last wrong PIN attempt
+    private var lastWrongPinAttemptTimestamp: TimeInterval {
+        get { cacheSuite.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue) as! TimeInterval }
+        set { cacheSuite.set(newValue, forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue) }
+    }
+    // TODO: Use hardcoded value for now, replace with the actual lock time returned from backend
+    ///
+    private var lockTimeSeconds: Int {
+        switch wrongPinAttemptsCount {
+        case 0...2:
+            return 10 // when 0-2+ wrong attempts, lock for 10 seconds
+        case 3:
+            return 300 // when 3+ wrong attempts, lock for 5 minutes
+        case 4:
+            return 3600 // when 4+ wrong attempts, lock for 1 hour
+        default:
+            return 86400 // when 5+ wrong attempts, lock for 24 hours
+        }
+    }
 
     // MARK: - Setup
 
@@ -35,6 +61,7 @@ final class PinInteractor: PinInteracting {
          wallet: WalletProtocol = WalletManager.shared.wallet,
          appSettings: AppSettingsAuthenticating = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
+         cacheSuite: CacheSuite = resolve(),
          walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
          walletRepository: WalletRepositoryAPI = resolve(),
          walletCryptoService: WalletCryptoServiceAPI = resolve()) {
@@ -52,6 +79,7 @@ final class PinInteractor: PinInteracting {
         self.wallet = wallet
         self.appSettings = appSettings
         self.recorder = recorder
+        self.cacheSuite = cacheSuite
         self.walletCryptoService = walletCryptoService
     }
 
@@ -100,9 +128,10 @@ final class PinInteractor: PinInteracting {
             }
             .do(
                 onSuccess: { [weak self] response in
-                    // Reset the Wrong PIN attempts count
-                    UserDefaults.standard.set(0, forKey: "WrongPinAttempts")
-                    try self?.updateCacheIfNeeded(response: response, pinPayload: payload)
+                    guard let self = self else { return }
+                    // Reset the Wrong PIN attempts count on successful login
+                    self.wrongPinAttemptsCount = 0
+                    try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 }
             )
             .map { [weak self] response -> String in
@@ -111,7 +140,23 @@ final class PinInteractor: PinInteracting {
             }
             .catchError { error in
                 if let response = error as? PinStoreResponse {
-                    throw response.toPinError()
+                    let pinError = response.toPinError(self.lockTimeSeconds)
+                    switch pinError {
+                    case .incorrectPin:
+                        // Add wrong PIN attempt count by 1
+                        self.wrongPinAttemptsCount += 1
+                        // Record the timestamp when a wrong attempt is made
+                        self.lastWrongPinAttemptTimestamp = NSDate().timeIntervalSince1970
+                        throw pinError
+                    case .backoff(let message, let lockTimeSeconds):
+                        // Calculate elapsed time and remaining lock time
+                        let elapsed = Int(NSDate().timeIntervalSince1970 - self.lastWrongPinAttemptTimestamp)
+                        // Ensure no negative number
+                        let remaining = max(lockTimeSeconds - elapsed, 0)
+                        throw PinError.backoff(message, remaining)
+                    default:
+                        throw pinError
+                    }
                 } else {
                     throw PinError.map(from: error)
                 }
@@ -185,7 +230,8 @@ final class PinInteractor: PinInteracting {
                 self.appSettings.encryptedPinPassword = data.encryptedPinPassword
                 self.appSettings.pinKey = payload.pinKey
                 self.appSettings.passwordPartHash = data.password.passwordPartHash
-                UserDefaults.standard.set(0, forKey: "WrongPinAttempts")
+                // Reset the Wrong PIN attempts count on successful new PIN creation
+                self.wrongPinAttemptsCount = 0
                 try self.updateCacheIfNeeded(response: response, pinPayload: payload)
                 return Completable.empty()
             }
