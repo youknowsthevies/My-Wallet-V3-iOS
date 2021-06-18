@@ -10,11 +10,11 @@ for_lane :upload do
 end
 
 for_lane :dev do
-  app_identifier "com.rainydayapps.Blockchain"
+  app_identifier "com.rainydayapps.Blockchain.dev"
 end
 
 for_lane :staging do
-  app_identifier "com.rainydayapps.Blockchain"
+  app_identifier "com.rainydayapps.Blockchain.staging"
 end
 
 for_lane :production do
