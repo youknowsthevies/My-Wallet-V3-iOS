@@ -1,4 +1,13 @@
-app_identifier(["com.rainydayapps.Blockchain","com.rainydayapps.Blockchain.TodayExtension"])
+app_identifier(
+    [
+        "com.rainydayapps.Blockchain",
+        "com.rainydayapps.Blockchain.TodayExtension",
+        "com.rainydayapps.Blockchain.dev",
+        "com.rainydayapps.Blockchain.dev.TodayExtension",
+        "com.rainydayapps.Blockchain.staging",
+        "com.rainydayapps.Blockchain.staging.TodayExtension",
+    ]
+)
 git_url(ENV["CREDENTIALS_REPO"])
 type("appstore")
 username(ENV["FASTLANE_USER"])
