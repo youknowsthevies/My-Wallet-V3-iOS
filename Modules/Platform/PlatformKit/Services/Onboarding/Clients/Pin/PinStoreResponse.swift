@@ -81,7 +81,7 @@ extension PinStoreResponse: FromNetworkErrorConvertible {
     ) -> PinStoreResponse {
         PinStoreResponse(
             statusCode: nil,
-            error: communicatorError.localizedDescription,
+            error: String(describing: communicatorError),
             pinDecryptionValue: nil,
             key: nil,
             value: nil

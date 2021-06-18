@@ -94,7 +94,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -107,7 +107,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -119,7 +119,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -131,7 +131,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -141,7 +141,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success:
             success()
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -152,7 +152,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -167,7 +167,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success:
             success()
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -177,7 +177,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -199,7 +199,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success(let value):
             success(value)
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 
@@ -214,7 +214,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         case .success:
             success()
         case .failure(let e):
-            error("\(e.localizedDescription)")
+            error(String(describing: e))
         }
     }
 

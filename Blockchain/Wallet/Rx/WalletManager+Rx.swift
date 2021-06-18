@@ -53,7 +53,7 @@ extension Reactive where Base: WalletManager {
                     .failure(
                         AuthenticationError(
                             code: AuthenticationError.ErrorCode.unknown.rawValue,
-                            description: error.localizedDescription
+                            description: String(describing: error)
                         )
                     )
                 )

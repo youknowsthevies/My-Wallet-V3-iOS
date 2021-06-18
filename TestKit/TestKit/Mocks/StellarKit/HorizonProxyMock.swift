@@ -19,7 +19,7 @@ final class HorizonProxyMock: HorizonProxyAPI {
             let result = try decoder.decode(AccountResponse.self, from: data)
             return .just(result)
         } catch {
-            fatalError(error.localizedDescription)
+            fatalError(String(describing: error))
         }
     }
 

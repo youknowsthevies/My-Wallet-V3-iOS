@@ -47,7 +47,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             case .success(let payment):
                 success(payment.0, payment.1)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.signBitcoinPayment"
@@ -131,7 +131,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             case .success(let defaultWalletIndex):
                 success(defaultWalletIndex)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getDefaultBitcoinWalletIndexAsync"
@@ -154,7 +154,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             case .success(let defaultWalletIndex):
                 success(defaultWalletIndex)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getBitcoinWalletIndexAsync"
@@ -175,7 +175,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             case .success(let accounts):
                 success(accounts)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getBitcoinWalletsAsync"
@@ -198,7 +198,7 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             case .success(let wallet):
                 success(wallet)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getHDWalletAsync"

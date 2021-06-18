@@ -350,9 +350,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
                 case .success(let string):
                     self.secureChannelRouter.didScanPairingQRCode(msg: string)
                 case .failure(let error):
-                    Logger.shared.debug(error.localizedDescription)
+                    Logger.shared.debug(String(describing: error))
                     AlertViewPresenter.shared
-                        .standardError(message: error.localizedDescription)
+                        .standardError(message: String(describing: error))
                 }
             }
         )

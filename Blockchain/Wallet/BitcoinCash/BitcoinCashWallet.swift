@@ -46,7 +46,7 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                 case .success(let address):
                     return address
                 case .failure(let error):
-                    fatalError(error.localizedDescription)
+                    fatalError(String(describing: error))
                 }
             }
             .map { $0.replacingOccurrences(of: "bitcoincash:", with: "") }

@@ -169,7 +169,7 @@ enum TransactionAction: MviAction {
             newState.executionStatus = .completed
             return newState.withUpdatedBackstack(oldState: oldState)
         case .fatalTransactionError(let error):
-            Logger.shared.error(error.localizedDescription)
+            Logger.shared.error(String(describing: error))
             var newState = oldState
             newState.nextEnabled = true
             newState.step = .inProgress
@@ -237,7 +237,7 @@ enum FatalTransactionError: Error, Equatable {
         case .rxError(let error):
             return "\(LocalizationConstants.Errors.genericError) \n\(error.debugDescription)"
         case .generic(let error):
-            return error.localizedDescription
+            return String(describing: error)
         }
     }
 

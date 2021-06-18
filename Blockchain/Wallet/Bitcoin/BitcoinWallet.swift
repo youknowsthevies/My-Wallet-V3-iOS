@@ -279,7 +279,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 case .success(let address):
                     return address
                 case .failure(let error):
-                    fatalError(error.localizedDescription)
+                    fatalError(String(describing: error))
                 }
             }
     }

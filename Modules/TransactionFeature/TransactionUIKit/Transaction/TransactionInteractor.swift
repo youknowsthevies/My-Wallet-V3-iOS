@@ -107,7 +107,7 @@ final class TransactionInteractor {
                         let error: Error = .loadingFailed(
                             account: account,
                             action: action,
-                            error: error.localizedDescription
+                            error: String(describing: error)
                         )
                         errorRecorder.error(error)
                     }

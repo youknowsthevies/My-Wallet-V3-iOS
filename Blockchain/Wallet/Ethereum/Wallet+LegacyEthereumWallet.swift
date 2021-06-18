@@ -42,7 +42,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             case .success(let accounts):
                 success(accounts)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getEtherAccountsAsync"
@@ -103,7 +103,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             case .success(let tokens):
                 success(tokens)
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.getERC20TokensAsync"
@@ -129,7 +129,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             case .success:
                 success()
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let function: String = "MyWalletPhone.setERC20TokensAsync"
@@ -158,7 +158,7 @@ extension Wallet: LegacyEthereumWalletAPI {
             case .success:
                 success()
             case .failure(let errorMessage):
-                error(errorMessage.localizedDescription)
+                error(String(describing: errorMessage))
             }
         }
         let escapedTransactionHash = "'\(transactionHash.escapedForJS())'"

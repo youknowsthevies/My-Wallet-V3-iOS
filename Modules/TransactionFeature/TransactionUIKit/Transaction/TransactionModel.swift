@@ -150,7 +150,7 @@ final class TransactionModel {
             .modifyTransactionConfirmation(confirmation)
             .subscribe(
                 onError: { error in
-                    Logger.shared.error("!TRANSACTION!> Unable to modify transaction confirmation: \(error.localizedDescription)")
+                    Logger.shared.error("!TRANSACTION!> Unable to modify transaction confirmation: \(String(describing: error))")
                 }
             )
     }
@@ -160,7 +160,7 @@ final class TransactionModel {
             .subscribe(onCompleted: {
                 Logger.shared.debug("!TRANSACTION!> Tx setFeeLevel complete")
             }, onError: { [weak self] error in
-                Logger.shared.error("!TRANSACTION!> Unable to set feeLevel: \(error.localizedDescription)")
+                Logger.shared.error("!TRANSACTION!> Unable to set feeLevel: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
     }
@@ -179,7 +179,7 @@ final class TransactionModel {
             .subscribe(onCompleted: {
                 Logger.shared.debug("!TRANSACTION!> Tx validation complete")
             }, onError: { [weak self] error in
-                Logger.shared.error("!TRANSACTION!> Unable to processValidateTransaction: \(error.localizedDescription)")
+                Logger.shared.error("!TRANSACTION!> Unable to processValidateTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
     }
@@ -189,7 +189,7 @@ final class TransactionModel {
             .subscribe(onSuccess: { [weak self] result in
                 self?.process(action: .updateTransactionComplete(result))
             }, onError: { [weak self] error in
-                Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(error.localizedDescription)")
+                Logger.shared.error("!TRANSACTION!> Unable to processExecuteTransaction: \(String(describing: error))")
                 self?.process(action: .fatalTransactionError(error))
             })
     }
@@ -227,7 +227,7 @@ final class TransactionModel {
                     self?.process(action: .pendingTransactionUpdated(transaction))
                 },
                 onError: { [weak self] error in
-                    Logger.shared.error("!TRANSACTION!> Unable to process target selection: \(error.localizedDescription)")
+                    Logger.shared.error("!TRANSACTION!> Unable to process target selection: \(String(describing: error))")
                     self?.process(action: .fatalTransactionError(error))
                 }
             )

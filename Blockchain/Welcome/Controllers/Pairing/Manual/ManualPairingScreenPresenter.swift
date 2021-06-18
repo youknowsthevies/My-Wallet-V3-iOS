@@ -144,7 +144,7 @@ final class ManualPairingScreenPresenter {
                 case .message(let string):
                     self.alertPresenter.standardError(message: string)
                 case .error(let error):
-                    self.alertPresenter.standardError(message: error.localizedDescription)
+                    self.alertPresenter.standardError(message: String(describing: error))
                 }
             }
             .disposed(by: disposeBag)

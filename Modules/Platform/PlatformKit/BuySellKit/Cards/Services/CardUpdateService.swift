@@ -156,7 +156,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
             .do(onError: { [weak self] error in
                 self?.analyticsRecorder.record(
-                    event: CardUpdateEvent.sbCardEverypayFailure(data: error.localizedDescription)
+                    event: CardUpdateEvent.sbCardEverypayFailure(data: String(describing: error))
                 )
             })
     }

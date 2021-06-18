@@ -192,12 +192,12 @@ final class KYCCoordinator: KYCRouterAPI {
                 strongSelf.initializeNavigationStack(viewController, user: user, tier: tier)
                 strongSelf.restoreToMostRecentPageIfNeeded(tier: tier)
             }, onError: { [alertPresenter, errorRecorder] error in
-                Logger.shared.error("Failed to get user: \(error.localizedDescription)")
+                Logger.shared.error("Failed to get user: \(String(describing: error))")
                 errorRecorder.error(error)
                 alertPresenter.notify(
                     content: .init(
                         title: LocalizationConstants.KYC.Errors.cannotFetchUserAlertTitle,
-                        message: error.localizedDescription
+                        message: String(describing: error)
                     ),
                     in: viewController
                 )
@@ -272,7 +272,7 @@ final class KYCCoordinator: KYCRouterAPI {
                         self.navController.pushViewController(controller, animated: true)
                     }
                 }, onError: { error in
-                    Logger.shared.error("Error getting next page: \(error.localizedDescription)")
+                    Logger.shared.error("Error getting next page: \(String(describing: error))")
                 }, onCompleted: { [weak self] in
                     Logger.shared.info("No more next pages")
                     guard let strongSelf = self else {

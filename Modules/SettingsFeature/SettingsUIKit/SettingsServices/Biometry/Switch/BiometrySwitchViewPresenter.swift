@@ -85,7 +85,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                 AlertViewPresenter.shared
                     .standardNotify(
                         title: LocalizationConstants.Errors.error,
-                        message: error.localizedDescription,
+                        message: String(describing: error),
                         actions: [accept]
                 )
                 return Disposables.create()
