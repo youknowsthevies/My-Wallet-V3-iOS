@@ -27,6 +27,10 @@ public final class KYCPager: KYCPagerAPI {
             switch payload {
             case .countrySelected(let country):
                 kycCountry = country
+            case .sddVerification(let isVerified):
+                if isVerified {
+                    return .empty() // User is SDD verified, so we can exit KYC
+                }
             case .stateSelected:
                 // no-op: handled in coordinator
                 break
@@ -46,7 +50,7 @@ public final class KYCPager: KYCPagerAPI {
                 user: user,
                 country: kycCountry,
                 tiersResponse: strongSelf.tiersResponse
-                ) else {
+            ) else {
                 return strongSelf.nextPageFromNextTierMaybe()
             }
             return Maybe.just(nextPage)
@@ -91,7 +95,12 @@ public final class KYCPager: KYCPagerAPI {
 
 extension KYCPageType {
 
-    public static func startingPage(forUser user: NabuUser, tiersResponse: KYC.UserTiers) -> KYCPageType {
+    public static func startingPage(
+        forUser user: NabuUser,
+        tiersResponse: KYC.UserTiers,
+        isSDDEligible: Bool,
+        isSDDVerified: Bool
+    ) -> KYCPageType {
         if !user.email.verified {
             return .enterEmail
         }
@@ -101,10 +110,19 @@ extension KYCPageType {
         }
 
         if let mobile = user.mobile, mobile.verified {
-            /// If the user can complete tier2 than they
-            /// either need to resubmit their documents
-            /// or submit their documents for the first time.
             if tiersResponse.canCompleteTier2 {
+                if isSDDVerified {
+                    // if they are SDD verified we should move on to buy but since this method doesn't allow returning nil, go to the SDD check first
+                    // from there you should get redirected to buy
+                    return .sddVerificationCheck // this
+                } else if isSDDEligible {
+                    // if they are SDD eligible, perform the SDD check and decide
+                    return .sddVerificationCheck
+                }
+
+                // If the user can complete tier2 than they
+                // either need to resubmit their documents
+                // or submit their documents for the first time.
                 return user.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
             } else {
                 return .accountStatus
@@ -114,23 +132,11 @@ extension KYCPageType {
         return .enterPhone
     }
 
-    public static func lastPage(forTier tier: KYC.Tier) -> KYCPageType {
-        switch tier {
-        case .tier0,
-             .tier1:
-            return .address
-        case .tier2:
-            // IOS-1873 handle .resubmitIdentity and update tests
-            return .verifyIdentity
-        }
-    }
-
     public static func moreInfoPage(forTier tier: KYC.Tier) -> KYCPageType? {
         switch tier {
         case .tier2:
             return .tier1ForcedTier2
-        case .tier0,
-             .tier1:
+        default:
             return nil
         }
     }
@@ -140,7 +146,7 @@ extension KYCPageType {
         user: NabuUser?,
         country: CountryData?,
         tiersResponse: KYC.UserTiers
-        ) -> KYCPageType? {
+    ) -> KYCPageType? {
         switch tier {
         case .tier0,
              .tier1:
@@ -154,7 +160,8 @@ extension KYCPageType {
         switch self {
         case .welcome:
             if let user = user {
-                return KYCPageType.startingPage(forUser: user, tiersResponse: tiersResponse)
+                // We can pass true here, as non-eligible users would get send to the Tier 2 upgrade path anyway
+                return KYCPageType.startingPage(forUser: user, tiersResponse: tiersResponse, isSDDEligible: true, isSDDVerified: false)
             }
             return .enterEmail
         case .enterEmail:
@@ -174,6 +181,8 @@ extension KYCPageType {
         case .profile:
             return .address
         case .address:
+            return .sddVerificationCheck
+        case .sddVerificationCheck:
             // END
             return nil
         case .tier1ForcedTier2,
@@ -190,7 +199,9 @@ extension KYCPageType {
 
     private func nextPageTier2(user: NabuUser?, country: CountryData?, tiersResponse: KYC.UserTiers) -> KYCPageType? {
         switch self {
-        case .address,
+        case .address:
+            return .sddVerificationCheck
+        case .sddVerificationCheck,
              .tier1ForcedTier2:
             // Skip the enter phone step if the user already has verified their phone number
             if let user = user, let mobile = user.mobile, mobile.verified {

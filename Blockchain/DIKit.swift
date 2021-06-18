@@ -12,6 +12,8 @@ import EthereumKit
 import KYCKit
 import KYCUIKit
 import NabuAnalyticsKit
+import OnboardingKit
+import OnboardingUIKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -511,13 +513,25 @@ extension DependencyContainer {
             EmailVerificationAdapter(settingsService: DIKit.resolve())
         }
 
+        // MARK: Onboarding Module
+
+        // this must be kept in memory because of how PlatformUIKit.Router works, otherwise the flow crashes.
+        single { () -> OnboardingUIKit.OnboardingRouterAPI in
+            OnboardingUIKit.OnboardingRouter()
+        }
+
+        factory { () -> OnboardingUIKit.BuyCryptoRouterAPI in
+            TransactionsAdapter()
+        }
+
+        factory { () -> OnboardingUIKit.EmailVerificationRouterAPI in
+            KYCAdapter()
+        }
+
         // MARK: Transactions Module
 
         factory { () -> PlatformUIKit.KYCRouting  in
-            KYCAdapter(
-                router: DIKit.resolve(),
-                emailVerificationService: DIKit.resolve()
-            )
+            KYCAdapter()
         }
     }
 }

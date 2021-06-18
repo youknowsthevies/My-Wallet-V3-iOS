@@ -5,6 +5,7 @@ import UIKit
 public final class MockViewController: UIViewController {
 
     public struct RecordedInvocations {
+        public var dismiss: [(animated: Bool, completion: (() -> Void)?)] = []
         public var presentViewController: [UIViewController] = []
     }
 
@@ -12,5 +13,9 @@ public final class MockViewController: UIViewController {
 
     override public func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         recordedInvocations.presentViewController.append(viewControllerToPresent)
+    }
+
+    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        recordedInvocations.dismiss.append((flag, completion))
     }
 }

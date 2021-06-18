@@ -18,6 +18,7 @@ final class EmailVerificationReducerTests: XCTestCase {
     private var recordedInvocations: RecordedInvocations!
     private var stubbedResults: StubbedResults!
 
+    private var testPollingQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         EmailVerificationState,
         EmailVerificationState,
@@ -30,6 +31,7 @@ final class EmailVerificationReducerTests: XCTestCase {
         try super.setUpWithError()
         recordedInvocations = RecordedInvocations()
         stubbedResults = StubbedResults()
+        testPollingQueue = DispatchQueue.test
         resetTestStore()
     }
 
@@ -37,6 +39,7 @@ final class EmailVerificationReducerTests: XCTestCase {
         recordedInvocations = nil
         stubbedResults = nil
         testStore = nil
+        testPollingQueue = nil
         try super.tearDownWithError()
     }
 
@@ -65,13 +68,36 @@ final class EmailVerificationReducerTests: XCTestCase {
         )
     }
 
+    func test_polls_verificationStatus_every_few_seconds_while_on_screen() throws {
+        // poll currently set to 5 seconds
+        testStore.assert(
+            .send(.didAppear),
+            .do {
+                // nothing should happen after 1 second
+                self.testPollingQueue.advance(by: 1)
+            },
+            .do {
+                // poll should happen after 4 more seconds (5 seconds in total)
+                self.testPollingQueue.advance(by: 4)
+            },
+            .receive(.loadVerificationState),
+            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
+            .receive(.presentStep(.verifyEmailPrompt)),
+            .send(.didDisappear),
+            .do {
+                // no more actions should be received after view disappears
+                self.testPollingQueue.advance(by: 15)
+            }
+        )
+    }
+
     func test_loads_verificationStatus_when_app_opened_unverified() throws {
         testStore.assert(
             .send(.didEnterForeground),
-            .receive(.loadVerificationState),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
+            .receive(.loadVerificationState),
             .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
             .receive(.presentStep(.verifyEmailPrompt)) {
                 $0.flowStep = .verifyEmailPrompt
@@ -84,10 +110,10 @@ final class EmailVerificationReducerTests: XCTestCase {
         mockService?.stubbedResults.checkEmailVerificationStatus = .just(.init(emailAddress: "test@example.com", status: .verified))
         testStore.assert(
             .send(.didEnterForeground),
-            .receive(.loadVerificationState),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
+            .receive(.loadVerificationState),
             .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .verified)))),
             .receive(.presentStep(.emailVerifiedPrompt)) {
                 $0.flowStep = .emailVerifiedPrompt
@@ -100,10 +126,10 @@ final class EmailVerificationReducerTests: XCTestCase {
         mockService?.stubbedResults.checkEmailVerificationStatus = .failure(.unknown(MockError.unknown))
         testStore.assert(
             .send(.didEnterForeground),
-            .receive(.loadVerificationState),
             .receive(.presentStep(.loadingVerificationState)) {
                 $0.flowStep = .loadingVerificationState
             },
+            .receive(.loadVerificationState),
             .receive(.didReceiveEmailVerficationResponse(.failure(.unknown(MockError.unknown)))) {
                 $0.emailVerificationFailedAlert = AlertState(
                     title: TextState(L10n.GenericError.title),
@@ -376,10 +402,11 @@ final class EmailVerificationReducerTests: XCTestCase {
                 flowCompletionCallback: { [weak self] result in
                     self?.recordedInvocations.flowCompletionCallback.append(result)
                 },
-                mainQueue: .immediate,
                 openMailApp: { [unowned self] in
                     Effect(value: self.stubbedResults.canOpenMailApp)
-                }
+                },
+                mainQueue: .immediate,
+                pollingQueue: testPollingQueue.eraseToAnyScheduler()
             )
         )
     }

@@ -18,5 +18,16 @@ extension DependencyContainer {
         // MARK: - Hooks
 
         factory { TransactionAnalyticsHook() }
+
+        // MARK: - Other
+
+        factory { () -> CryptoCurrenciesServiceAPI in
+            CryptoCurrenciesService(
+                pairsService: DIKit.resolve(),
+                priceService: DIKit.resolve()
+            )
+        }
+
+        factory { TransactionsRouter() as TransactionsRouterAPI }
     }
 }

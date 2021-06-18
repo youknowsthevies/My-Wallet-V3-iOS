@@ -5,6 +5,7 @@ import BitcoinKit
 import Combine
 import DIKit
 import KYCUIKit
+import OnboardingUIKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -59,7 +60,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     private let deepLinkRouter: DeepLinkRouting
 
-    private let settingsAPIClient: SettingsServiceAPI
+    private let onboardingRouter: OnboardingUIKit.OnboardingRouterAPI
     private let featureFlagsService: InternalFeatureFlagServiceAPI
 
     private var exchangeRepository: ExchangeAccountRepositoryAPI!
@@ -93,7 +94,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouting = resolve(),
-         settingsAPIClient: SettingsServiceAPI = resolve(),
+         onboardingRouter: OnboardingRouterAPI = resolve(),
          featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
         self.sharedContainter = sharedContainter
@@ -106,7 +107,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         self.dataRepository = dataRepository
         self.deepLinkRouter = deepLinkRouter
         self.loadingViewPresenter = loadingViewPresenter
-        self.settingsAPIClient = settingsAPIClient
+        self.onboardingRouter = onboardingRouter
         self.featureFlagsService = featureFlagsService
         remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
         remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
@@ -183,8 +184,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedIn)
 
         if isCreatingWallet {
-            if featureFlagsService.isEnabled(.showEmailVerificationAtLogin) {
-                presentEmailVerificationFlow()
+            if featureFlagsService.isEnabled(.showOnboardingAfterSignUp) {
+                presentOnboardingFlow()
             } else {
                 presentSimpleBuyFlow()
             }
@@ -311,30 +312,14 @@ extension AuthenticationCoordinator: PairingWalletFetching {
 
     // MARK: Email Verification
 
-    private func presentEmailVerificationFlow() {
+    private func presentOnboardingFlow() {
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else {
             fatalError("🔴 Could not present Email Verification Flow: topMostViewController is nil!")
         }
-        settingsAPIClient.fetchPublisher(force: false)
-            .ignoreFailure()
-            .map { $0.email }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self, weak viewController] emailAddress in
-                guard let self = self, let viewController = viewController else {
-                    fatalError("Check you're retaining this instances!")
-                }
-                let router: KYCUIKit.Routing = resolve()
-                router.routeToEmailVerification(
-                    from: viewController,
-                    emailAddress: emailAddress,
-                    flowCompletion: { [weak self] result in
-                        viewController.dismiss(animated: true, completion: {
-                            if result == .completed {
-                                self?.presentSimpleBuyFlow()
-                            }
-                        })
-                    }
-                )
+        onboardingRouter.presentOnboarding(from: viewController)
+            .sink { onboardingResult in
+                Logger.shared.debug("[AuthenticationCoordinator] Onboarding completed with result: \(onboardingResult)")
+                viewController.dismiss(animated: true, completion: nil)
             }
             .store(in: &cancellables)
     }
@@ -344,13 +329,6 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private func presentSimpleBuyFlow() {
         fiatCurrencySettingsService.update(currency: .locale, context: .walletCreation)
             .asPublisher()
-            .flatMap { [supportedPairsInteractor] _ in
-                supportedPairsInteractor.fetch()
-                    .asPublisher()
-            }
-            .map { !$0.pairs.isEmpty }
-            .filter { $0 }
-            .eraseToAnyPublisher()
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 if case .finished = completion {

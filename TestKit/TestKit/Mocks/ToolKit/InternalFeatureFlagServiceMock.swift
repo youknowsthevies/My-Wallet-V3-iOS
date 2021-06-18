@@ -3,14 +3,22 @@
 import ToolKit
 
 final class InternalFeatureFlagServiceMock: InternalFeatureFlagServiceAPI {
-    var underlyingIsEnabled: Bool = false
+
+    private var features: [InternalFeature: Bool] = [:]
+
     func isEnabled(_ feature: InternalFeature) -> Bool {
-        underlyingIsEnabled
+        features[feature] ?? false
     }
 
-    func enable(_ feature: InternalFeature) { }
+    func enable(_ feature: InternalFeature) {
+        features[feature] = true
+    }
 
-    func enable(_ features: [InternalFeature]) { }
+    func enable(_ features: [InternalFeature]) {
+        features.forEach(enable)
+    }
 
-    func disable(_ feature: InternalFeature) { }
+    func disable(_ feature: InternalFeature) {
+        features.removeValue(forKey: feature)
+    }
 }

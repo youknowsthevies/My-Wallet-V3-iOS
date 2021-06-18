@@ -27,22 +27,43 @@ class KYCPageTypeTests: XCTestCase {
     func testStartingPage() {
         XCTAssertEqual(
             KYCPageType.enterEmail,
-            KYCPageType.startingPage(forUser: createNabuUser(), tiersResponse: pendingTier2Response)
+            KYCPageType.startingPage(
+                forUser: createNabuUser(),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
         )
         XCTAssertEqual(
             KYCPageType.country,
-            KYCPageType.startingPage(forUser: createNabuUser(isEmailVerified: true), tiersResponse: pendingTier2Response)
+            KYCPageType.startingPage(
+                forUser: createNabuUser(isEmailVerified: true),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
         )
         XCTAssertEqual(
             KYCPageType.enterPhone,
-            KYCPageType.startingPage(forUser: createNabuUser(isEmailVerified: true, hasAddress: true), tiersResponse: pendingTier2Response)
+            KYCPageType.startingPage(
+                forUser: createNabuUser(isEmailVerified: true, hasAddress: true),
+                tiersResponse: pendingTier2Response,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
         )
         XCTAssertEqual(
             KYCPageType.verifyIdentity,
-            KYCPageType.startingPage(forUser: createNabuUser(isMobileVerified: true,
-                                                             isEmailVerified: true,
-                                                             hasAddress: true),
-                                     tiersResponse: noTiersResponse)
+            KYCPageType.startingPage(
+                forUser: createNabuUser(
+                    isMobileVerified: true,
+                    isEmailVerified: true,
+                    hasAddress: true
+                ),
+                tiersResponse: noTiersResponse,
+                isSDDEligible: false,
+                isSDDVerified: false
+            )
         )
     }
 
@@ -71,7 +92,10 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.address,
             KYCPageType.profile.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
-        XCTAssertNil(KYCPageType.address.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response))
+        XCTAssertEqual(
+            KYCPageType.sddVerificationCheck,
+            KYCPageType.address.nextPage(forTier: .tier1, user: nil, country: nil, tiersResponse: pendingTier2Response)
+        )
     }
 
     func testNextPageTier2() {
@@ -100,11 +124,11 @@ class KYCPageTypeTests: XCTestCase {
             KYCPageType.profile.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.enterPhone,
+            KYCPageType.sddVerificationCheck,
             KYCPageType.address.nextPage(forTier: .tier2, user: nil, country: nil, tiersResponse: pendingTier2Response)
         )
         XCTAssertEqual(
-            KYCPageType.verifyIdentity,
+            KYCPageType.sddVerificationCheck,
             KYCPageType.address.nextPage(forTier: .tier2, user: createNabuUser(isMobileVerified: true), country: nil, tiersResponse: noTiersResponse)
         )
         XCTAssertEqual(

@@ -37,6 +37,8 @@ struct EmailVerificationState: Equatable {
 /// The `master` `Action`type  for the Email Verification Flow
 enum EmailVerificationAction: Equatable {
     case closeButtonTapped
+    case didAppear
+    case didDisappear
     case didEnterForeground
     case didReceiveEmailVerficationResponse(Result<EmailVerificationResponse, EmailVerificationCheckError>)
     case dismissEmailVerificationFailedAlert
@@ -54,17 +56,20 @@ struct EmailVerificationEnvironment {
     let emailVerificationService: EmailVerificationServiceAPI
     let flowCompletionCallback: ((FlowResult) -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let pollingQueue: AnySchedulerOf<DispatchQueue>
     let openMailApp: () -> Effect<Bool, Never>
 
     init(
         emailVerificationService: EmailVerificationServiceAPI,
         flowCompletionCallback: ((FlowResult) -> Void)?,
-        mainQueue: AnySchedulerOf<DispatchQueue>,
-        openMailApp: @escaping () -> Effect<Bool, Never>
+        openMailApp: @escaping () -> Effect<Bool, Never>,
+        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        pollingQueue: AnySchedulerOf<DispatchQueue> = DispatchQueue.global(qos: .background).eraseToAnyScheduler()
     ) {
         self.emailVerificationService = emailVerificationService
         self.flowCompletionCallback = flowCompletionCallback
         self.mainQueue = mainQueue
+        self.pollingQueue = pollingQueue
         self.openMailApp = openMailApp
     }
 }
@@ -108,13 +113,24 @@ let emailVerificationReducer = Reducer.combine(
         }
     ),
     Reducer<EmailVerificationState, EmailVerificationAction, EmailVerificationEnvironment> { state, action, environment in
+        struct TimerIdentifier: Hashable {}
         switch action {
         case .closeButtonTapped:
             environment.flowCompletionCallback?(.abandoned)
             return .none
 
+        case .didAppear:
+            return Effect.timer(id: TimerIdentifier(), every: 5, on: environment.pollingQueue)
+                .map { _ in .loadVerificationState }
+
+        case .didDisappear:
+            return .cancel(id: TimerIdentifier())
+
         case .didEnterForeground:
-            return Effect(value: .loadVerificationState)
+            return .merge(
+                Effect(value: .presentStep(.loadingVerificationState)),
+                Effect(value: .loadVerificationState)
+            )
 
         case .didReceiveEmailVerficationResponse(let response):
             switch response {
@@ -135,15 +151,10 @@ let emailVerificationReducer = Reducer.combine(
             }
 
         case .loadVerificationState:
-            return .merge(
-                .init(value: .presentStep(.loadingVerificationState)),
-                environment.emailVerificationService.checkEmailVerificationStatus()
-                    .receive(on: environment.mainQueue)
-                    .catchToEffect()
-                    .map { result in
-                        .didReceiveEmailVerficationResponse(result)
-                    }
-            )
+            return environment.emailVerificationService.checkEmailVerificationStatus()
+                .receive(on: environment.mainQueue)
+                .catchToEffect()
+                .map(EmailVerificationAction.didReceiveEmailVerficationResponse)
 
         case .dismissEmailVerificationFailedAlert:
             state.emailVerificationFailedAlert = nil

@@ -3,5 +3,5 @@
 import RxSwift
 
 protocol PaymentEligibleMethodsClientAPI: AnyObject {
-    func eligiblePaymentMethods(for currency: String, eligibleOnly: Bool) -> Single<[PaymentMethodsResponse.Method]>
+    func eligiblePaymentMethods(for currency: String, currentTier: KYC.Tier, sddEligibleTier: Int?) -> Single<[PaymentMethodsResponse.Method]>
 }

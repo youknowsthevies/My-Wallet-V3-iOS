@@ -74,6 +74,12 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: KYCKitTests
         randomExecutionOrder: true
+      - name: KYCUIKitTests
+        randomExecutionOrder: true
+      - name: OnboardingKitTests
+        randomExecutionOrder: true
+      - name: OnboardingUIKitTests
+        randomExecutionOrder: true
       - name: SettingsKitTests
         randomExecutionOrder: true
       - name: SettingsUIKitTests
@@ -85,8 +91,6 @@ schemeTemplates:
       - name: NabuAnalyticsKitTests
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
-        randomExecutionOrder: true
-      - name: KYCUIKitTests
         randomExecutionOrder: true
       - name: AuthenticationKitTests
         randomExecutionOrder: true
@@ -607,6 +611,8 @@ targets:
     - target: DashboardUIKit
     - target: KYCKit
     - target: KYCUIKit
+    - target: OnboardingKit
+    - target: OnboardingUIKit
     - target: DebugUIKit
     - target: SettingsUIKit
     - target: SettingsKit
@@ -1094,6 +1100,64 @@ targets:
       featureName: Network
     templates:
     - ModuleTests
+  OnboardingDemo:
+    dependencies:
+    - target: KYCKit
+    - target: KYCUIKit
+    - target: OnboardingKit
+    - target: OnboardingUIKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: SharedPackagesKit
+    - target: ToolKit
+    - target: UIComponentsKit
+    platform: iOS
+    sources:
+      - createIntermediateGroups: true
+        path: Modules/OnboardingFeature/OnboardingDemo
+    type: application
+  OnboardingKit:
+    scheme:
+      testTargets:
+      - OnboardingKitTests
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - Module
+  OnboardingKitTests:
+    dependencies:
+    - target: OnboardingKit
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - ModuleTests
+  OnboardingUIKit:
+    dependencies:
+    - target: OnboardingKit
+    - target: ToolKit
+    scheme:
+      testTargets:
+      - OnboardingUIKitTests
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - Module
+  OnboardingUIKitTests:
+    dependencies:
+    - target: OnboardingUIKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit # required for PlatformUIKit mocks to compile
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - ModuleTests
   PlatformKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
@@ -1383,14 +1447,16 @@ targets:
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/RxCocoa.xcframework
     - framework: Carthage/Build/RxRelay.xcframework
+    - target: AnalyticsKit
     - target: KYCKit
     - target: KYCUIKit
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
+    - target: SharedPackagesKit
     - target: ToolKit
     - target: TransactionKit
-    - target: AnalyticsKit
+    - target: UIComponentsKit
     templateAttributes:
       featureName: TransactionFeature
     templates:

@@ -11,10 +11,14 @@ extension KYC {
     ///          user information such as name and address.
     /// - tier2: the 2nd tier requiring the user to provide additional
     ///          identity information such as a drivers licence, passport,
-    //           etc.
+    ///          etc.
+    /// - SeeAlso: https://docs.google.com/spreadsheets/d/1BEdFJtbXpjcwolOljFRVBDjoe6GAoGvUkFCOzlUM_dM/edit#gid=1035097792
     public enum Tier: Int, CaseIterable, Codable, Comparable {
+        /// no kyc info provided
         case tier0 = 0
+        /// Silver: We know name and address. Can't buy or sell, unless SDD-verified.
         case tier1 = 1
+        /// Gold: We verified the user's identity. They can do everything.
         case tier2 = 2
 
         // It's best to use comparison to compare tiers instead of using `==` directly
