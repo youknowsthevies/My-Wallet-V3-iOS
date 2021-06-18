@@ -290,10 +290,25 @@ public enum LocalizationConstants {
             "Too Many PIN Attempts",
             comment: "Title for alert that tells the user he had too many PIN attempts"
         )
+
+        public static let tooManyAttemptsWarningMessage = NSLocalizedString(
+            "You've made too many failed attempts to log in with your PIN. Please try again in 5 minutes.",
+            comment: "Warning essage for alert that tells the user he had too many PIN attempts"
+        )
+
+        public static let forgotYourPinTitle = NSLocalizedString(
+            "Forgot your PIN?",
+            comment: "Title for alert that instructs users what to do if they may have forgot their PIN"
+        )
+
+        public static let forgotYourPinMessage = NSLocalizedString(
+            "For your security, we've disabled PIN log in for the next 24 hours. To access your wallet now, log in with your Wallet ID & Password",
+            comment: "Alert message that instructs users what to do if they may have forgot their PIN"
+        )
         
-        public static let tooManyAttemptsMessage = NSLocalizedString(
-            "Please enter your wallet password.",
-            comment: "Message for alert that tells the user he had too many PIN attempts"
+        public static let tooManyAttemptsLogoutMessage = NSLocalizedString(
+            "Please log in with your Wallet ID and password.",
+            comment: "Message for alert that tells the user he had too many PIN attempts, and his account is now logged out"
         )
 
         public static let genericError = NSLocalizedString(
@@ -314,8 +329,24 @@ public enum LocalizationConstants {
             comment: "Error message displayed when the entered PIN is incorrect and the user should try to enter the PIN code again."
         )
         public static let backoff = NSLocalizedString(
-            "Please try again later",
-            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff"
+            "PIN is currently disabled",
+            comment: "Error message displayed when the user entered a PIN in when the PIN function is locked due to exponential backoff retry algorithm."
+        )
+        public static let tryAgain = NSLocalizedString(
+            "Please try again in",
+            comment: "Error message displayed when the user entered wrong PIN or PIN function is locked. Prompts user to try again later"
+        )
+        public static let seconds = NSLocalizedString(
+            "s",
+            comment: "Time indicator for how much seconds to wait before retrying a PIN"
+        )
+        public static let minutes = NSLocalizedString(
+            "m",
+            comment: "Time indicator for how much minutes to wait before retrying a PIN"
+        )
+        public static let hours = NSLocalizedString(
+            "h",
+            comment: "Time indicator for how much hours to wait before retrying a PIN"
         )
         public static let pinsDoNotMatch = NSLocalizedString(
             "PINs don't match",
@@ -346,6 +377,17 @@ public enum LocalizationConstants {
         An error occurred validating your PIN code with the remote server. You may be offline or Blockchain may be experiencing difficulties. Would you like retry validation or instead enter your password manually?
         """, comment: "Error message displayed to the user when their PIN cannot be validated if it is correct."
         )
+
+        public struct Button {
+            public static let notNowButton = NSLocalizedString(
+                "Not Now",
+                comment: "A CTA button for not now action"
+            )
+            public static let useMyWalletIdButton = NSLocalizedString(
+                "Use My Wallet ID",
+                comment: "A CTA button for use my wallet ID to login"
+            )
+        }
     }
 
     public struct DeepLink {

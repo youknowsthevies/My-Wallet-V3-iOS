@@ -12,6 +12,7 @@ final class PinScreenViewController: BaseScreenViewController {
     @IBOutlet private var digitPadView: DigitPadView!
     @IBOutlet private var securePinView: SecurePinView!
     @IBOutlet private var errorLabel: UILabel!
+    @IBOutlet private var remainingLockTimeLabel: UILabel!
 
     @IBOutlet private var digitPadBottomConstraint: NSLayoutConstraint!
     @IBOutlet private var securePinViewTopConstraint: NSLayoutConstraint!
@@ -42,6 +43,7 @@ final class PinScreenViewController: BaseScreenViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupErrorLabel()
+        setupLockTimeLabel()
         createServerStatusView()
         presenter.viewDidLoad()
         digitPadView.viewModel = presenter.digitPadViewModel
@@ -68,6 +70,26 @@ final class PinScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         serverStatusContainerView.isHidden = true
+
+        // Subscribe to digit pad visibility state
+        presenter
+            .digitPadIsEnabled
+            .subscribe(onNext: { isEnabled in
+                self.digitPadView.isUserInteractionEnabled = isEnabled
+                self.digitPadView.alpha = isEnabled ? 1 : 0.3
+            })
+            .disposed(by: disposeBag)
+
+        presenter
+            .digitPadIsEnabled
+            .bindAndCatch(to: remainingLockTimeLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+
+        presenter
+            .remainingLockTimeMessage
+            .distinctUntilChanged()
+            .bindAndCatch(to: remainingLockTimeLabel.rx.text)
+            .disposed(by: disposeBag)
 
         // TODO: Re-enable this once we have isolated the source of the crash
 //        presenter.serverStatus
@@ -157,8 +179,15 @@ final class PinScreenViewController: BaseScreenViewController {
 
     private func setupErrorLabel() {
         errorLabel.accessibility = .id(AccessibilityIdentifiers.PinScreen.errorLabel)
-        errorLabel.font = Font(.branded(.montserratLight), size: .standard(.small(.h2))).result
+        errorLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
         errorLabel.textColor = presenter.contentColor
+    }
+
+    private func setupLockTimeLabel() {
+        remainingLockTimeLabel.accessibility =
+            .id(AccessibilityIdentifiers.PinScreen.lockTimeLabel)
+        remainingLockTimeLabel.font = Font(.branded(.interSemiBold), size: .standard(.small(.h2))).result
+        remainingLockTimeLabel.textColor = presenter.contentColor
     }
 
     // MARK: - Navigation
@@ -215,10 +244,16 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.newPinMustBeDifferent)
         case .invalid:
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
-        case .incorrectPin(let message):
-            showInlineError(with: message)
-        case .backoff(let message):
-            showInlineError(with: message)
+        case .incorrectPin(let message, let remaining):
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
+            showInlineError(with: message, for: TimeInterval(remaining-1))
+            // TODO: Replace this with a custom error type
+            if remaining == 300 {
+                displayTooManyAttemptsAlert()
+            }
+        case .backoff(let message, let remaining):
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
+            showInlineError(with: message, for: TimeInterval(remaining-1))
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
@@ -252,9 +287,20 @@ extension PinScreenViewController {
         animator.startAnimation()
     }
 
-    private func showInlineError(with text: String) {
+    private func showInlineError(with text: String, for duration: TimeInterval? = nil) {
         errorLabel.text = text
         errorLabel.alpha = 1
+        guard let durationTime = duration else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + durationTime) {
+            self.errorLabel.alpha = 0
+        }
+    }
+
+    /// Displays a warning alert when users have too many wrong attempts
+    private func displayTooManyAttemptsAlert() {
+        let alertController = TooManyAttemptsAlertViewController()
+        alertController.modalPresentationStyle = .overCurrentContext
+        present(alertController, animated: true)
     }
 
     /// Displays a logout warning alert when the user taps the `Log out` button

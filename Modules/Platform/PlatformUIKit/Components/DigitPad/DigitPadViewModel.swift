@@ -53,6 +53,12 @@ public final class DigitPadViewModel {
         valueInsertedPublishRelay.asObservable()
     }
 
+    /// Relay for the current digit pad remaining lock time
+    private let remainingLockTimeRelay = PublishRelay<Int>()
+    public var remainingLockTimeObservable: Observable<Int> {
+        remainingLockTimeRelay.asObservable()
+    }
+
     /// The raw `String` value
     public var value: String {
         valueRelay.value
@@ -140,5 +146,10 @@ public final class DigitPadViewModel {
     public func reset(to value: String = "") {
         valueRelay.accept(value)
         valueInsertedPublishRelay.accept(Void())
+    }
+
+    /// Emits the updated lock time (seconds) due to new incorrect PIN attempt
+    public func remainingLockTimeDidChange(remaining: Int) {
+        remainingLockTimeRelay.accept(remaining)
     }
 }
