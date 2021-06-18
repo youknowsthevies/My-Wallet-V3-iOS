@@ -184,7 +184,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         alert.notify(
             content: AlertViewContent(
                 title: LocalizationConstants.Errors.genericError,
-                message: error.localizedDescription
+                message: String(describing: error)
             ),
             in: nil
         )

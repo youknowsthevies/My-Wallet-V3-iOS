@@ -6,12 +6,11 @@ extension KYC.Tier {
 
     public var headline: String? {
         switch self {
-        case .tier0:
-            return nil
-        case .tier1:
-            return nil
         case .tier2:
             return LocalizationConstants.KYC.freeCrypto
+        case .tier0,
+             .tier1:
+            return nil
         }
     }
 
@@ -28,12 +27,12 @@ extension KYC.Tier {
 
     public var requirementsDescription: String {
         switch self {
-        case .tier0:
-            return ""
         case .tier1:
             return LocalizationConstants.KYC.tierOneRequirements
         case .tier2:
             return LocalizationConstants.KYC.tierTwoRequirements
+        case .tier0:
+            return ""
         }
     }
 

@@ -39,37 +39,45 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
         let fetch = fiatCurrencyService.fiatCurrencyObservable
             .flatMap { [tiersService, eligibleMethodsClient] (fiatCurrency) ->  Observable<[PaymentMethod]> in
-                tiersService.fetchTiers()
-                    .map(\.isTier2Approved)
-                    .flatMap { isTier2Approved -> Single<[PaymentMethodsResponse.Method]> in
-                        eligibleMethodsClient.eligiblePaymentMethods(for: fiatCurrency.code,
-                                                                     eligibleOnly: isTier2Approved)
-                    }
-                    .map { methods in
-                        Array<PaymentMethod>.init(
-                            methods: methods,
-                            currency: fiatCurrency,
-                            supportedFiatCurrencies: enabledFiatCurrencies
-                        )
-                    }
-                    .map { paymentMethods in
-                        paymentMethods.filter { paymentMethod in
-                            switch paymentMethod.type {
-                            case .card:
-                                return true
-                            case .funds(let currencyType):
-                                return currencyType.code == fiatCurrency.code
-                            case .bankTransfer:
-                                // this gets special treatment as we currently only support bank linkage in the US.
-                                return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
-                            case .bankAccount:
-                                // Filter out bank transfer details from currencies we do not
-                                //  have local support/UI.
-                                return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
-                            }
+                Single.zip(
+                    tiersService.fetchTiers(),
+                    tiersService.simplifiedDueDiligenceEligibility()
+                )
+                .flatMap { (tiersResult, sddEligility) -> Single<[PaymentMethodsResponse.Method]> in
+                    eligibleMethodsClient.eligiblePaymentMethods(
+                        for: fiatCurrency.code,
+                        currentTier: tiersResult.latestApprovedTier,
+                        sddEligibleTier: ( // get SDD limits for eligible users
+                            (tiersResult.isTier0 || tiersResult.isTier1Approved) && sddEligility.eligible
+                        ) ? sddEligility.tier : nil
+                    )
+                }
+                .map { methods in
+                    Array<PaymentMethod>.init(
+                        methods: methods,
+                        currency: fiatCurrency,
+                        supportedFiatCurrencies: enabledFiatCurrencies
+                    )
+                    .filter(\.isVisible) // only visible payment methods should be shown to the user
+                }
+                .map { paymentMethods in
+                    paymentMethods.filter { paymentMethod in
+                        switch paymentMethod.type {
+                        case .card:
+                            return true
+                        case .funds(let currencyType):
+                            return currencyType.code == fiatCurrency.code
+                        case .bankTransfer:
+                            // this gets special treatment as we currently only support bank linkage in the US.
+                            return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
+                        case .bankAccount:
+                            // Filter out bank transfer details from currencies we do not
+                            //  have local support/UI.
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
                         }
                     }
-                    .asObservable()
+                }
+                .asObservable()
             }
             .distinctUntilChanged()
             .share(replay: 1, scope: .whileConnected)

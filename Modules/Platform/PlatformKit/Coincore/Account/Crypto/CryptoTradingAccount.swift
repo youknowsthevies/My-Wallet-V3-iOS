@@ -178,7 +178,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                         asset: asset.code,
                         label: label,
                         action: action,
-                        error: error.localizedDescription
+                        error: String(describing: error)
                     )
                 }
                 .recordErrors(on: errorRecorder)
@@ -198,7 +198,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                         asset: asset.code,
                         label: label,
                         action: action,
-                        error: error.localizedDescription
+                        error: String(describing: error)
                     )
                 }
                 .recordErrors(on: errorRecorder)
@@ -216,7 +216,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                         asset: asset.code,
                         label: label,
                         action: action,
-                        error: error.localizedDescription
+                        error: String(describing: error)
                     )
                 }
                 .recordErrors(on: errorRecorder)

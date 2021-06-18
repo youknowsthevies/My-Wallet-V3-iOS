@@ -207,7 +207,7 @@ public struct Biometry {
         public var errorDescription: String? {
             switch self {
             case .system(let error):
-                return error.localizedDescription
+                return String(describing: error)
             case .notAllowed:
                 return LocalizationConstants.Biometry.notConfigured
             }

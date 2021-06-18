@@ -117,11 +117,11 @@ final class QRCodeScanner: NSObject, QRCodeScannerProtocol {
         case .failure(let error):
             switch error {
             case .avCaptureError(.failedToRetrieveDevice), .avCaptureError(.inputError):
-                alertViewPresenter.standardError(message: error.localizedDescription)
+                alertViewPresenter.standardError(message: String(describing: error))
             case .avCaptureError(.notAuthorized):
                 alertViewPresenter.showNeedsCameraPermissionAlert()
             default:
-                alertViewPresenter.standardError(message: error.localizedDescription)
+                alertViewPresenter.standardError(message: String(describing: error))
             }
             return nil
         }

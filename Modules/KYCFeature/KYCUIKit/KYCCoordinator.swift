@@ -166,12 +166,14 @@ final class KYCCoordinator: KYCRouterAPI {
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let postTierObservable = post(tier: tier).asObservable()
         let userObservable = dataRepository.fetchNabuUser().asObservable()
+        let isSDDEligible = tiersService.checkSimplifiedDueDiligenceEligibility().asObservable()
+        let isSDDVerified = tiersService.checkSimplifiedDueDiligenceVerification().asObservable()
 
-        let disposable = Observable.zip(userObservable, postTierObservable)
+        let disposable = Observable.zip(userObservable, postTierObservable, isSDDEligible, isSDDVerified)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
-            .subscribe(onNext: { [weak self] (user, tiersResponse) in
+            .subscribe(onNext: { [weak self] (user, tiersResponse, isSDDEligible, isSDDVerified) in
                 self?.pager = KYCPager(tier: tier, tiersResponse: tiersResponse)
                 Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
                 guard let strongSelf = self else {
@@ -180,24 +182,43 @@ final class KYCCoordinator: KYCRouterAPI {
                 strongSelf.userTiersResponse = tiersResponse
                 strongSelf.user = user
 
+                // SDD Eligible users can buy but we only need to check for SDD during the buy flow.
+                // This is to avoid breaking Tier 2 upgrade paths (e.g., from Settings)
+                let shouldCheckForSDDVerification = parentFlow == .simpleBuy ? isSDDEligible : false
+
                 let startingPage = user.isSunriverAirdropRegistered == true ?
                     KYCPageType.welcome :
-                    KYCPageType.startingPage(forUser: user, tiersResponse: tiersResponse)
+                    KYCPageType.startingPage(
+                        forUser: user,
+                        tiersResponse: tiersResponse,
+                        isSDDEligible: shouldCheckForSDDVerification,
+                        isSDDVerified: isSDDVerified
+                    )
                 if startingPage != .accountStatus {
                     /// If the starting page is accountStatus, they do not have any additional
                     /// pages to view, so we don't want to set `isCompletingKyc` to `true`.
                     strongSelf.kycSettings.isCompletingKyc = true
                 }
 
-                strongSelf.initializeNavigationStack(viewController, user: user, tier: tier)
-                strongSelf.restoreToMostRecentPageIfNeeded(tier: tier)
+                strongSelf.initializeNavigationStack(
+                    viewController,
+                    user: user,
+                    tier: tier,
+                    isSDDEligible: shouldCheckForSDDVerification,
+                    isSDDVerified: isSDDVerified
+                )
+                strongSelf.restoreToMostRecentPageIfNeeded(
+                    tier: tier,
+                    isSDDEligible: isSDDEligible,
+                    isSDDVerified: isSDDVerified
+                )
             }, onError: { [alertPresenter, errorRecorder] error in
-                Logger.shared.error("Failed to get user: \(error.localizedDescription)")
+                Logger.shared.error("Failed to get user: \(String(describing: error))")
                 errorRecorder.error(error)
                 alertPresenter.notify(
                     content: .init(
                         title: LocalizationConstants.KYC.Errors.cannotFetchUserAlertTitle,
-                        message: error.localizedDescription
+                        message: String(describing: error)
                     ),
                     in: viewController
                 )
@@ -272,7 +293,7 @@ final class KYCCoordinator: KYCRouterAPI {
                         self.navController.pushViewController(controller, animated: true)
                     }
                 }, onError: { error in
-                    Logger.shared.error("Error getting next page: \(error.localizedDescription)")
+                    Logger.shared.error("Error getting next page: \(String(describing: error))")
                 }, onCompleted: { [weak self] in
                     Logger.shared.info("No more next pages")
                     guard let strongSelf = self else {
@@ -330,7 +351,7 @@ final class KYCCoordinator: KYCRouterAPI {
     // MARK: View Restoration
 
     /// Restores the user to the most recent page if they dropped off mid-flow while KYC'ing
-    private func restoreToMostRecentPageIfNeeded(tier: KYC.Tier) {
+    private func restoreToMostRecentPageIfNeeded(tier: KYC.Tier, isSDDEligible: Bool, isSDDVerified: Bool) {
         guard let currentUser = user else {
             return
         }
@@ -338,7 +359,12 @@ final class KYCCoordinator: KYCRouterAPI {
 
         let latestPage = kycSettings.latestKycPage
 
-        let startingPage = KYCPageType.startingPage(forUser: currentUser, tiersResponse: response)
+        let startingPage = KYCPageType.startingPage(
+            forUser: currentUser,
+            tiersResponse: response,
+            isSDDEligible: isSDDEligible,
+            isSDDVerified: isSDDVerified
+        )
 
         if startingPage == .accountStatus {
             /// The `tier` on KYCPager cannot be `tier1` if the user's `startingPage` is `.accountStatus`.
@@ -350,7 +376,7 @@ final class KYCCoordinator: KYCRouterAPI {
             for: currentUser,
             tiersResponse: response,
             latestPage: latestPage
-            ) else {
+        ) else {
             return
         }
 
@@ -396,6 +422,7 @@ final class KYCCoordinator: KYCRouterAPI {
              .states,
              .profile,
              .address,
+             .sddVerificationCheck,
              .tier1ForcedTier2,
              .enterPhone,
              .verifyIdentity,
@@ -405,11 +432,22 @@ final class KYCCoordinator: KYCRouterAPI {
         }
     }
 
-    private func initializeNavigationStack(_ viewController: UIViewController, user: NabuUser, tier: KYC.Tier) {
+    private func initializeNavigationStack(
+        _ viewController: UIViewController,
+        user: NabuUser,
+        tier: KYC.Tier,
+        isSDDEligible: Bool,
+        isSDDVerified: Bool
+    ) {
         guard let response = userTiersResponse else { return }
         let startingPage = user.isSunriverAirdropRegistered == true ?
             KYCPageType.welcome :
-            KYCPageType.startingPage(forUser: user, tiersResponse: response)
+            KYCPageType.startingPage(
+                forUser: user,
+                tiersResponse: response,
+                isSDDEligible: isSDDEligible,
+                isSDDVerified: isSDDVerified
+            )
         var controller: KYCBaseViewController
         if startingPage == .accountStatus {
             controller = pageFactory.createFrom(
@@ -441,6 +479,7 @@ final class KYCCoordinator: KYCRouterAPI {
             self.states = states
         case .phoneNumberUpdated,
              .emailPendingVerification,
+             .sddVerification,
              .accountStatus:
             // Not handled here
             return
@@ -496,6 +535,7 @@ final class KYCCoordinator: KYCRouterAPI {
         // Optionally apply page model
         switch type {
         case .tier1ForcedTier2,
+             .sddVerificationCheck,
              .welcome,
              .confirmEmail,
              .country,

@@ -25,6 +25,9 @@ struct PaymentMethodsResponse: Decodable {
 
         /// The eligible state of the payment
         let eligible: Bool
+
+        /// When `true`, the payment method can be shown to the user
+        let visible: Bool
     }
 
     /// The currency for the payment method (e.g: `USD`)

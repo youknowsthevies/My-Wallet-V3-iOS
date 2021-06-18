@@ -74,6 +74,12 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: KYCKitTests
         randomExecutionOrder: true
+      - name: KYCUIKitTests
+        randomExecutionOrder: true
+      - name: OnboardingKitTests
+        randomExecutionOrder: true
+      - name: OnboardingUIKitTests
+        randomExecutionOrder: true
       - name: SettingsKitTests
         randomExecutionOrder: true
       - name: SettingsUIKitTests
@@ -85,8 +91,6 @@ schemeTemplates:
       - name: NabuAnalyticsKitTests
         randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
-        randomExecutionOrder: true
-      - name: KYCUIKitTests
         randomExecutionOrder: true
       - name: AuthenticationKitTests
         randomExecutionOrder: true
@@ -134,36 +138,80 @@ settingGroups:
       CODE_SIGN_ENTITLEMENTS: Blockchain/Blockchain.entitlements
       CODE_SIGN_STYLE: Manual
       DEVELOPMENT_TEAM: NZ6PH75U7K
-  base_signing_today_extension:
+
+  debug_signing_dev:
     base:
-      CODE_SIGN_ENTITLEMENTS: TodayExtension/TodayExtension.entitlements
-      CODE_SIGN_STYLE: Manual
-      DEVELOPMENT_TEAM: NZ6PH75U7K
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.dev
+    groups:
+    - base_signing
+  debug_signing_staging:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.staging
+    groups:
+    - base_signing
+  release_signing_staging:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.staging
+    groups:
+    - base_signing
   debug_signing:
     base:
       CODE_SIGN_IDENTITY: iPhone Developer
       PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain
     groups:
     - base_signing
-  debug_signing_today_extension:
-    base:
-      CODE_SIGN_IDENTITY: iPhone Developer
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.TodayExtension
-    groups:
-    - base_signing_today_extension
   release_signing:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
       PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain
     groups:
     - base_signing
+
+  base_signing_today_extension:
+    base:
+      CODE_SIGN_ENTITLEMENTS: TodayExtension/TodayExtension.entitlements
+      CODE_SIGN_STYLE: Manual
+      DEVELOPMENT_TEAM: NZ6PH75U7K
+
+  debug_signing_today_extension_dev:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.dev.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.dev.TodayExtension
+    groups:
+    - base_signing_today_extension
+  debug_signing_today_extension_staging:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.staging.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.staging.TodayExtension
+    groups:
+    - base_signing_today_extension
+  release_signing_today_extension_staging:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.staging.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.staging.TodayExtension
+    groups:
+    - base_signing_today_extension
+  debug_signing_today_extension:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Developer
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.TodayExtension
+    groups:
+    - base_signing_today_extension
   release_signing_today_extension:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
       PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.TodayExtension
     groups:
     - base_signing_today_extension
+
 settings:
   base:
     CODE_SIGN_STYLE: Manual
@@ -563,6 +611,8 @@ targets:
     - target: DashboardUIKit
     - target: KYCKit
     - target: KYCUIKit
+    - target: OnboardingKit
+    - target: OnboardingUIKit
     - target: DebugUIKit
     - target: SettingsUIKit
     - target: SettingsKit
@@ -609,13 +659,17 @@ targets:
       configs:
         Debug Dev:
           groups:
-          - debug_signing
-          - base_ios
-        Debug Production:
-          groups:
-          - debug_signing
+          - debug_signing_dev
           - base_ios
         Debug Staging:
+          groups:
+          - debug_signing_staging
+          - base_ios
+        Release Staging:
+          groups:
+          - release_signing_staging
+          - base_ios
+        Debug Production:
           groups:
           - debug_signing
           - base_ios
@@ -624,10 +678,6 @@ targets:
           - release_signing
           - base_ios
         Release Internal:
-          groups:
-          - release_signing
-          - base_ios
-        Release Staging:
           groups:
           - release_signing
           - base_ios
@@ -1050,6 +1100,64 @@ targets:
       featureName: Network
     templates:
     - ModuleTests
+  OnboardingDemo:
+    dependencies:
+    - target: KYCKit
+    - target: KYCUIKit
+    - target: OnboardingKit
+    - target: OnboardingUIKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    - target: SharedPackagesKit
+    - target: ToolKit
+    - target: UIComponentsKit
+    platform: iOS
+    sources:
+      - createIntermediateGroups: true
+        path: Modules/OnboardingFeature/OnboardingDemo
+    type: application
+  OnboardingKit:
+    scheme:
+      testTargets:
+      - OnboardingKitTests
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - Module
+  OnboardingKitTests:
+    dependencies:
+    - target: OnboardingKit
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - ModuleTests
+  OnboardingUIKit:
+    dependencies:
+    - target: OnboardingKit
+    - target: ToolKit
+    scheme:
+      testTargets:
+      - OnboardingUIKitTests
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - Module
+  OnboardingUIKitTests:
+    dependencies:
+    - target: OnboardingUIKit
+    - target: PlatformKit
+    - target: PlatformUIKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit # required for PlatformUIKit mocks to compile
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformUIKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
+    templateAttributes:
+      featureName: OnboardingFeature
+    templates:
+    - ModuleTests
   PlatformKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
@@ -1258,20 +1366,20 @@ targets:
       configs:
         Debug Dev:
           groups:
-          - debug_signing_today_extension
-        Debug Production:
-          groups:
-          - debug_signing_today_extension
+          - debug_signing_today_extension_dev
         Debug Staging:
+          groups:
+          - debug_signing_today_extension_staging
+        Release Staging:
+          groups:
+          - release_signing_today_extension_staging
+        Debug Production:
           groups:
           - debug_signing_today_extension
         Release:
           groups:
           - release_signing_today_extension
         Release Internal:
-          groups:
-          - release_signing_today_extension
-        Release Staging:
           groups:
           - release_signing_today_extension
     sources:
@@ -1339,14 +1447,16 @@ targets:
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/RxCocoa.xcframework
     - framework: Carthage/Build/RxRelay.xcframework
+    - target: AnalyticsKit
     - target: KYCKit
     - target: KYCUIKit
     - target: Localization
     - target: PlatformKit
     - target: PlatformUIKit
+    - target: SharedPackagesKit
     - target: ToolKit
     - target: TransactionKit
-    - target: AnalyticsKit
+    - target: UIComponentsKit
     templateAttributes:
       featureName: TransactionFeature
     templates:

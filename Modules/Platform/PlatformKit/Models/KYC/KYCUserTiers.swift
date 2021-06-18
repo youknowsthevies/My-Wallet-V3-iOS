@@ -6,6 +6,10 @@ extension KYC {
     public struct UserTiers: Decodable {
         public let tiers: [KYC.UserTier]
 
+        public var isTier0: Bool {
+            latestApprovedTier == .tier0
+        }
+
         /// `true` in case the user has a verified GOLD tier.
         public var isTier2Approved: Bool {
             latestApprovedTier == .tier2

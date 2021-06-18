@@ -37,4 +37,10 @@ extension Color {
     public static let badgeBackgroundError = Color(paletteColor: .red000)
     public static let badgeBackgroundWarning = Color(paletteColor: .orange000)
     public static let badgeBackgroundSuccess = Color(paletteColor: .green000)
+
+    // MARK: Other Elements
+    public static let positiveTrend = Color(paletteColor: .green600)
+    public static let negativeTrend = Color(paletteColor: .red600)
+    public static let neutralTrend = Color(paletteColor: .grey600)
+    public static let disclosureIndicator = Color(paletteColor: .grey400)
 }

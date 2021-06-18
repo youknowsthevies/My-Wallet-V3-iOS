@@ -40,6 +40,7 @@ public final class Router: RouterAPI {
     private let supportedPairsInteractor: SupportedPairsInteractorServiceAPI
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
     private let settingsService: FiatCurrencySettingsServiceAPI
+    private let tiersService: KYCTiersServiceAPI
     private let cryptoSelectionService: CryptoCurrencySelectionServiceAPI
     private let navigationRouter: NavigationRouterAPI
     private let alertViewPresenter: AlertViewPresenterAPI
@@ -62,21 +63,23 @@ public final class Router: RouterAPI {
     // MARK: - Setup
 
     public init(
-        navigationRouter: NavigationRouterAPI,
+        builder: Buildable,
+        currency: CryptoCurrency = .bitcoin,
+        navigationRouter: NavigationRouterAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         settingsService: CompleteSettingsServiceAPI = resolve(),
         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
-        builder: Buildable,
-        kycRouter: KYCRouterAPI, // TODO: merge with the following or remove (IOS-4471)
-        newKYCRouter: KYCRouting,
-        currency: CryptoCurrency
+        kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
+        newKYCRouter: KYCRouting = resolve()
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
         self.stateService = builder.stateService
+        self.tiersService = tiersService
         self.kycRouter = kycRouter
         self.newKYCRouter = newKYCRouter
         self.builder = builder
@@ -521,7 +524,6 @@ public final class Router: RouterAPI {
     }
 
     private func showCardAuthorization(with data: OrderDetails) {
-
         let interactor = CardAuthorizationScreenInteractor(
             routingInteractor: stateService
         )
@@ -562,16 +564,41 @@ public final class Router: RouterAPI {
             .observeOn(MainScheduler.instance)
             .share()
 
+        // tier 2, silver +, etc. can buy. Only tier 0 and 1 can't.
+        // so, observe KYC and check for a valid tier that can buy and move forward or backward accordingly.
         stopped
             .filter { $0 == .tier2 }
             .mapToVoid()
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: kycDisposeBag)
 
-        stopped
+        let sddVerificationCheck = stopped
+            // when kyc is stopped and the user is not Tier 2 verified
             .filter { $0 != .tier2 }
+            // first check if they are Tier 1 verified and SDD verified
+            .flatMap(weak: self) { (self, tier) -> Observable<Bool> in
+                // only Tier 1 users can be SDD verified
+                guard tier == .tier1 else {
+                    return .just(false)
+                }
+                return self.tiersService.checkSimplifiedDueDiligenceVerification()
+                    .asObservable()
+            }
+            // ensure we can subscribe for multiple scenarios
+            .share()
+
+        // if the user is NOT SDD verified, we cannot proceed, so go back
+        sddVerificationCheck
+            .filter { $0 == false }
             .mapToVoid()
             .bindAndCatch(to: stateService.previousRelay)
+            .disposed(by: kycDisposeBag)
+
+        // if the user is SDD verified, we can proceed to buy
+        sddVerificationCheck
+            .filter { $0 == true }
+            .mapToVoid()
+            .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: kycDisposeBag)
 
         if afterDismissal {

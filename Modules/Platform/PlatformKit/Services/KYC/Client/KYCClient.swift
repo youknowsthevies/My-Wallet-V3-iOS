@@ -5,6 +5,17 @@ import DIKit
 import NetworkKit
 import RxSwift
 
+public struct SimplifiedDueDiligenceResponse: Codable {
+    let eligible: Bool
+    let tier: Int
+}
+
+// swiftlint:disable:next type_name
+public struct SimplifiedDueDiligenceVerificationResponse: Codable {
+    let verified: Bool
+    let taskComplete: Bool
+}
+
 public protocol KYCClientAPI: AnyObject {
 
     func tiers() -> Single<KYC.UserTiers>
@@ -22,6 +33,8 @@ public protocol KYCClientAPI: AnyObject {
     // MARK: Combine Interface
 
     func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError>
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError>
+    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError>
 }
 
 public final class KYCClient: KYCClientAPI {
@@ -36,6 +49,8 @@ public final class KYCClient: KYCClientAPI {
         static let credentials = [ "kyc", "credentials" ]
         static let credentiasForVeriff = [ "kyc", "credentials", "veriff" ]
         static let currentUser = [ "users", "current" ]
+        static let simplifiedDueDiligenceEligibility = ["sdd", "eligible"]
+        static let simplifiedDueDiligenceVerification = ["sdd", "verified"]
         static func supportedDocuments(for country: String) -> [String] {
             [ "kyc", "supported-documents", country ]
         }
@@ -231,6 +246,22 @@ public final class KYCClient: KYCClientAPI {
     public func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
         let request = requestBuilder.get(
             path: Path.currentUser,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    public func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.simplifiedDueDiligenceEligibility,
+            authenticated: true
+        )!
+        return networkAdapter.perform(request: request)
+    }
+
+    public func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
+        let request = requestBuilder.get(
+            path: Path.simplifiedDueDiligenceVerification,
             authenticated: true
         )!
         return networkAdapter.perform(request: request)

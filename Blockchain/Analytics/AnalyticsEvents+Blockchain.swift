@@ -213,7 +213,7 @@ extension AnalyticsEvents {
                 return nil
             case .bitpayPaymentFailure(error: let error):
                 guard let error = error else { return nil }
-                return ["error": error.localizedDescription]
+                return ["error": String(describing: error)]
             }
         }
     }

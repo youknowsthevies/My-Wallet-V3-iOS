@@ -61,6 +61,12 @@ struct EmailVerificationView: View {
                     }
                 }
             }
+            .onAppear {
+                viewStore.send(.didAppear)
+            }
+            .onDisappear {
+                viewStore.send(.didDisappear)
+            }
             .onAppEnteredForeground {
                 viewStore.send(.didEnterForeground)
             }
@@ -119,7 +125,6 @@ struct EmailVerificationView_Previews: PreviewProvider {
                 environment: EmailVerificationEnvironment(
                     emailVerificationService: NoOpEmailVerificationService(),
                     flowCompletionCallback: nil,
-                    mainQueue: .main,
                     openMailApp: { Effect(value: true) }
                 )
             )

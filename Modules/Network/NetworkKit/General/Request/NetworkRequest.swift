@@ -27,14 +27,13 @@ public struct NetworkRequest {
 
         let request: NSMutableURLRequest = NSMutableURLRequest(
             url: endpoint,
-            cachePolicy: .reloadIgnoringLocalCacheData,
-            timeoutInterval: 30.0
+            cachePolicy: allowsCachingResponse ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData,
+            timeoutInterval: timeoutInterval
         )
 
         request.httpMethod = method.rawValue
-
+        
         let requestHeaders = headers.merging(defaultHeaders)
-
         for (key, value) in requestHeaders {
             request.addValue(value, forHTTPHeaderField: key)
         }
@@ -63,6 +62,11 @@ public struct NetworkRequest {
     let contentType: ContentType
     let decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
+
+    /// Defaults to `true` for `GET` requests
+    public var allowsCachingResponse: Bool
+
+    public var timeoutInterval: TimeInterval = 30
 
     // TODO: modify this to be an Encodable type so that JSON serialization is done in this class
     // vs. having to serialize outside of this class
@@ -100,6 +104,7 @@ public struct NetworkRequest {
         self.decoder = decoder
         self.responseHandler = responseHandler
         self.recordErrors = recordErrors
+        self.allowsCachingResponse = method == .get
     }
 
     func adding(authenticationToken: String) -> Self {

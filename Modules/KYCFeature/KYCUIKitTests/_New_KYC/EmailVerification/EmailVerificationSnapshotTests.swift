@@ -26,8 +26,9 @@ final class EmailVerificationSnapshotTests: XCTestCase {
         environment = EmailVerificationEnvironment(
             emailVerificationService: mockEmailVerificationService,
             flowCompletionCallback: { _ in },
+            openMailApp: { .none },
             mainQueue: .immediate,
-            openMailApp: { .none }
+            pollingQueue: .immediate
         )
         rebuildRootStore()
     }

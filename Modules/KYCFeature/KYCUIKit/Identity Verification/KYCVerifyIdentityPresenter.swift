@@ -45,7 +45,7 @@ class KYCVerifyIdentityPresenter {
                 self?.identityView?.showDocumentTypes(documentTypes)
             },
             onError: { [weak self] error in
-                Logger.shared.error("Error: \(error.localizedDescription)")
+                Logger.shared.error("Error: \(String(describing: error))")
                 self?.loadingView?.hideLoadingIndicator()
                 self?.loadingView?.showErrorMessage(LocalizationConstants.Errors.genericError)
             }

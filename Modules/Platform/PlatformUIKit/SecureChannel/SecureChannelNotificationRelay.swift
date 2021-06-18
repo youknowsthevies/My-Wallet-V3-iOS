@@ -57,7 +57,7 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
                     completionHandler(.noData)
                 },
                 onError: { error in
-                    Logger.shared.debug("Secure Channel Error: \(error.localizedDescription)")
+                    Logger.shared.debug("Secure Channel Error: \(String(describing: error))")
                 }
             )
             .disposed(by: disposeBag)
@@ -120,7 +120,7 @@ final class SecureChannelNotificationRelay: SecureChannelNotificationRelaying {
                     self?.router.didReceiveSecureChannelCandidate(candidate)
                 },
                 onError: { [weak self] error in
-                    Logger.shared.debug("Secure Channel Error: \(error.localizedDescription)")
+                    Logger.shared.debug("Secure Channel Error: \(String(describing: error))")
                     self?.router.didReceiveError(error)
                 }
             )

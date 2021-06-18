@@ -1,113 +1,170 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import Blockchain
-@testable import KYCKit
-@testable import KYCUIKit
-import PlatformUIKit // sadly, the transactions logic is here
-import SwiftUI
+import Combine
+import KYCUIKit
+import OnboardingUIKit
+import PlatformUIKit
 import XCTest
 
 final class KYCAdapterTests: XCTestCase {
 
     private var adapter: KYCAdapter!
     private var mockRouter: MockKYCRouter!
-    private var mockEmailVerificationService: MockEmailVerificationService!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
 
         mockRouter = MockKYCRouter()
-        mockEmailVerificationService = MockEmailVerificationService()
-        adapter = KYCAdapter(
-            router: mockRouter,
-            emailVerificationService: mockEmailVerificationService
-        )
+        adapter = KYCAdapter(router: mockRouter)
     }
 
     override func tearDownWithError() throws {
         adapter = nil
         mockRouter = nil
-        mockEmailVerificationService = nil
 
         try super.tearDownWithError()
     }
 
-    func test_fails_when_emailVerification_fails() throws {
-        // GIVEN: The user's email adddress verification check fails
-        let e = expectation(description: "Waiting for publisher")
-        mockEmailVerificationService.stubbedResults.checkEmailVerificationStatus = .failure(.unknown(MockError.unknown))
+    func test_redirectsToRouter_for_emailVerification() {
+        // WHEN: the adapter is asked to present email verification
+        let _: AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
+        // THEN: it should defer to the KYC Module's router to do it
+        XCTAssertEqual(mockRouter.recordedInvocations.presentEmailVerificationIfNeeded.count, 1)
+    }
 
-        // WHEN: The adapter is asked to present the kyc flow if needed
-        let mockViewController = MockViewController()
+    func test_redirectsToRouter_for_kyc() {
+        // WHEN: the adapter is asked to present the kyc flow
+        let _: AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> = adapter.presentKYCIfNeeded(from: UIViewController())
+        // THEN: it should defer to the KYC Module's router to do it
+        XCTAssertEqual(mockRouter.recordedInvocations.presentKYCIfNeeded.count, 1)
+    }
+
+    func test_redirectsToRouter_for_emailVerificationAndKYC() {
+        // WHEN: the adapter is asked to present both email verification and the KYC flow
+        let _: AnyPublisher<KYCUIKit.FlowResult, KYCUIKit.RouterError> = adapter.presentEmailVerificationAndKYCIfNeeded(from: UIViewController())
+        // THEN: it should defer to the KYC Module's router to do it
+        XCTAssertEqual(mockRouter.recordedInvocations.presentEmailVerificationAndKYCIfNeeded.count, 1)
+    }
+
+    // MARK: - PlatformUIKit.KYCRouting
+
+    func test_maps_kyc_error_emailVerificationFailed_to_complete_for_transactions() {
+        // GIVEN: Email Verification fails
+        mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .failure(.emailVerificationFailed)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var error: KYCRouterError?
-        let cancellable = adapter.presentEmailVerificationAndKYCIfNeeded(from: mockViewController).sink(
-            receiveCompletion: { completion in
-                if case let .failure(theError) = completion {
-                    error = theError
-                }
-                e.fulfill()
-            },
-            receiveValue: { _ in
-                // no-op
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { completion in
+            if case let .failure(theError) = completion {
+                error = theError
             }
-        )
-        waitForExpectations(timeout: 1)
-        cancellable.cancel()
+            e.fulfill()
+        } receiveValue: { _ in
+            // no-op: just needs to be here to compile code
+        }
 
-        // THEN: a meaningful error is returned
+        wait(for: [e], timeout: 5)
+        cancellable.cancel()
         XCTAssertEqual(error, .emailVerificationFailed)
     }
 
-    func test_presents_emailVerificationFlow_when_email_unverfied() throws {
-        // GIVEN: The user's email adddress is NOT verified
-        let e = expectation(description: "Waiting for publisher")
-        mockEmailVerificationService.stubbedResults.checkEmailVerificationStatus = .just(
-            .init(emailAddress: "test@example.com", status: .unverified)
-        )
-
-        // WHEN: The adapter is asked to present the kyc flow if needed
-        let mockViewController = MockViewController()
-        let cancellable = adapter.presentEmailVerificationAndKYCIfNeeded(from: mockViewController).sink(
-            receiveCompletion: { _ in
-                e.fulfill()
-            },
-            receiveValue: { _ in
-                // no-op
+    func test_maps_kyc_error_kycVerificationFailed_to_complete_for_transactions() {
+        // GIVEN: Email Verification or KYC fails
+        mockRouter.stubbedResults.presentEmailVerificationAndKYCIfNeeded = .failure(.kycVerificationFailed)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentEmailVerificationAndKYCIfNeeded(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
+        var error: KYCRouterError?
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { completion in
+            if case let .failure(theError) = completion {
+                error = theError
             }
-        )
-        // NOTE: The publisher doesn't complete until email verification and subsequent steps are complete
-        DispatchQueue.main.asyncAfter(deadline: .now()) { // NOTE: need to dispatch to give time to email verification check publisher to be mapped
-            // complete email verification, if it was presented, so the publisher moves to the next step
-            self.mockRouter.recordedInvocations.routeToEmailVerification.first?.flowCompletion(.completed)
+            e.fulfill()
+        } receiveValue: { _ in
+            // no-op: just needs to be here to compile code
         }
-        waitForExpectations(timeout: 1)
-        cancellable.cancel()
 
-        // THEN: the email verification flow is presented
-        XCTAssertNotNil(mockRouter.recordedInvocations.routeToEmailVerification.first)
+        wait(for: [e], timeout: 5)
+        cancellable.cancel()
+        XCTAssertEqual(error, .kycVerificationFailed)
     }
 
-    func test_doesNotPresent_emailVerificationFlow_when_email_verfied() throws {
-        // GIVEN: The user's email adddress is verified
-        let e = expectation(description: "Waiting for publisher")
-        mockEmailVerificationService.stubbedResults.checkEmailVerificationStatus = .just(
-            .init(emailAddress: "test@example.com", status: .verified)
-        )
-
-        // WHEN: The adapter is asked to present the kyc flow if needed
-        let mockViewController = MockViewController()
-        let cancellable = adapter.presentEmailVerificationAndKYCIfNeeded(from: mockViewController).sink(
-            receiveCompletion: { _ in
-                e.fulfill()
-            },
-            receiveValue: { _ in
-                // no-op
+    func test_maps_kyc_error_kycStepFailed_to_complete_for_transactions() {
+        // GIVEN: KYC fails
+        mockRouter.stubbedResults.presentKYCIfNeeded = .failure(.kycStepFailed)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentKYCIfNeeded(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
+        var error: KYCRouterError?
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { completion in
+            if case let .failure(theError) = completion {
+                error = theError
             }
-        )
-        waitForExpectations(timeout: 1)
+            e.fulfill()
+        } receiveValue: { _ in
+            // no-op: just needs to be here to compile code
+        }
 
-        // THEN: the email verification flow is not presented
-        XCTAssertNil(mockRouter.recordedInvocations.routeToEmailVerification.first)
+        wait(for: [e], timeout: 5)
         cancellable.cancel()
+        XCTAssertEqual(error, .kycStepFailed)
+    }
+
+    // MARK: - OnboardingUIKit.EmailVerificationRouterAPI
+
+    func test_maps_emailVerification_error_to_complete_for_onboarding() {
+        // GIVEN: Email Verification fails
+        mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .failure(.emailVerificationFailed)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
+        var result: OnboardingResult?
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { onboardingResult in
+            result = onboardingResult
+            e.fulfill()
+        }
+        wait(for: [e], timeout: 5)
+        cancellable.cancel()
+        XCTAssertEqual(result, .completed)
+    }
+
+    func test_maps_emailVerification_completion_to_complete_for_onboarding() {
+        // GIVEN: Email Verification fails
+        mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .just(.completed)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
+        var result: OnboardingResult?
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { onboardingResult in
+            result = onboardingResult
+            e.fulfill()
+        }
+        wait(for: [e], timeout: 5)
+        cancellable.cancel()
+        XCTAssertEqual(result, .completed)
+    }
+
+    func test_maps_emailVerification_abandoned_to_abandoned_for_onboarding() {
+        // GIVEN: Email Verification fails
+        mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .just(.abandoned)
+        // WHEN: the adapter is asked to present the email verification flow for Onboarding
+        let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentEmailVerification(from: UIViewController())
+        // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
+        var result: OnboardingResult?
+        let e = expectation(description: "Wait for publisher to complete")
+        let cancellable = publisher.sink { onboardingResult in
+            result = onboardingResult
+            e.fulfill()
+        }
+        wait(for: [e], timeout: 5)
+        cancellable.cancel()
+        XCTAssertEqual(result, .abandoned)
     }
 }

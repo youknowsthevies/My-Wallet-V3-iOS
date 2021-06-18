@@ -233,7 +233,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .catchError { error -> Observable<AmountTranslationInteractor.State> in
                 .just(
                     AmountTranslationInteractor.State.error(
-                        message: error.localizedDescription
+                        message: String(describing: error)
                     )
                 )
             }

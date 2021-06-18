@@ -22,7 +22,7 @@ final class UserActivityHandler {
 
         let handled = DynamicLinks.dynamicLinks().handleUniversalLink(webpageUrl) { [weak self] dynamicLink, error in
             guard error == nil else {
-                Logger.shared.error("Got error handling universal link: \(error!.localizedDescription)")
+                Logger.shared.error("Got error handling universal link: \(String(describing: error!))")
                 return
             }
 

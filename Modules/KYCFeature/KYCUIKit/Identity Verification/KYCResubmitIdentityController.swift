@@ -133,7 +133,7 @@ extension KYCResubmitIdentityController: VeriffController {
             self.dismiss(animated: true, completion: {
                 AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
             })
-            Logger.shared.error("Failed to submit verification \(error.localizedDescription)")
+            Logger.shared.error("Failed to submit verification \(String(describing: error))")
         })
     }
 
@@ -154,7 +154,7 @@ extension KYCResubmitIdentityController: VeriffController {
             guard let this = self else { return }
             this.launchVeriffController(credentials: credentials)
         }, onError: { error in
-            Logger.shared.error("Failed to get Veriff credentials. Error: \(error.localizedDescription)")
+            Logger.shared.error("Failed to get Veriff credentials. Error: \(String(describing: error))")
         })
     }
 }

@@ -36,7 +36,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
     }
 
     init?(request: NetworkRequest, error: URLError) {
-        self = .clientError(ErrorDetails(request: request, message: error.localizedDescription))
+        self = .clientError(ErrorDetails(request: request, message: String(describing: error)))
     }
 
     var name: String {

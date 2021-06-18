@@ -60,7 +60,7 @@
     }
 
     public func error(_ error: Error) {
-        log(error.localizedDescription, level: .error)
+        log(String(describing: error), level: .error)
     }
 
     public func log (
