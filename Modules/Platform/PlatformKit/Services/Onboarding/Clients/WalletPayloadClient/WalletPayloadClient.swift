@@ -87,7 +87,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         static func from(_ communicatorError: NetworkError) -> WalletPayloadClient.ErrorResponse {
             ErrorResponse(
                 isEmailAuthorizationRequired: true,
-                errorMessage: communicatorError.localizedDescription
+                errorMessage: String(describing: communicatorError)
             )
         }
 

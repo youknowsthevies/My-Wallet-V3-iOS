@@ -84,7 +84,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
     private let beneficiariesService: BeneficiariesServiceAPI
     private let pendingOrderDetailsService: PendingOrderDetailsServiceAPI
     private let simpleBuyEligibilityService: EligibilityServiceAPI
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
 
     // MARK: - Setup
 
@@ -97,7 +97,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
          beneficiariesService: BeneficiariesServiceAPI = resolve(),
          pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
          simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
-         coincore: Coincore = resolve()) {
+         coincore: CoincoreAPI = resolve()) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository

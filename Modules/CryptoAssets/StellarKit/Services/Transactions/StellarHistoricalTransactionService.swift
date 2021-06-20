@@ -40,14 +40,14 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
         return fetchTransactions(accountId: accountID, size: size, token: nil)
     }
 
-    private func fetch(transaction hash: String,
+    private func fetch(operationID: String,
                        accountId: String,
                        operationService: stellarsdk.OperationsService) -> Single<StellarHistoricalTransaction> {
         Single<OperationResponse>
             .create { observer -> Disposable in
                 operationService
                     .getOperationDetails(
-                        operationId: hash,
+                        operationId: operationID,
                         join: "transactions",
                         response: { response in
                             switch response {
@@ -116,7 +116,7 @@ extension StellarHistoricalTransactionService: HistoricalTransactionDetailsAPI {
         }
         return operationService
             .flatMap(weak: self) { (self, operationService) in
-                self.fetch(transaction: identifier, accountId: accountID, operationService: operationService)
+                self.fetch(operationID: identifier, accountId: accountID, operationService: operationService)
             }
             .asObservable()
     }
@@ -176,11 +176,11 @@ fileprivate extension AccountCreatedOperationResponse {
     func accountCreated(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.AccountCreated {
         StellarHistoricalTransaction.AccountCreated(
             identifier: id,
+            pagingToken: pagingToken,
             funder: funder,
             account: account,
             direction: funder == accountID ? .credit : .debit,
             balance: startingBalance,
-            token: pagingToken,
             sourceAccountID: sourceAccount,
             transactionHash: transactionHash,
             createdAt: createdAt,
@@ -193,8 +193,8 @@ fileprivate extension AccountCreatedOperationResponse {
 fileprivate extension PaymentOperationResponse {
     func payment(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.Payment {
         StellarHistoricalTransaction.Payment(
-            token: pagingToken,
             identifier: id,
+            pagingToken: pagingToken,
             fromAccount: from,
             toAccount: to,
             direction: from == accountID ? .credit : .debit,

@@ -27,6 +27,13 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
+    /**
+     The transaction identifier, used for equality checking and backend calls.
+
+     - Note:
+        For Stellar, this is different than `transactionHash`.
+        See [Stellar Operation Object](https://developers.stellar.org/api/resources/operations/object/) for more info.
+     */
     public var identifier: String {
         switch self {
         case .accountCreated(let value):
@@ -85,6 +92,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
+    /// The transaction hash, used in Explorer URLs.
     public var transactionHash: String {
         switch self {
         case .accountCreated(let value):
@@ -106,28 +114,52 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
     case accountCreated(AccountCreated)
     case payment(Payment)
 
+    /**
+     Historical transaction representing the creation of an account.
+     See [Stellar Create Account Object](https://developers.stellar.org/api/resources/operations/object/create-account/) for more info.
+     */
     public struct AccountCreated {
+
+        /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String
+
+        /// The transaction paging token, used for pagination.
+        let pagingToken: String
+
         let funder: String
         let account: String
         let direction: Direction
         let balance: Decimal
-        let token: String
         let sourceAccountID: String
+
+        /// The transaction hash, used in Explorer URLs.
         let transactionHash: String
+
         let createdAt: Date
         var fee: Int?
         var memo: String?
     }
 
+    /**
+     Historical transaction representing a payment.
+     See [Stellar Payment Object](https://developers.stellar.org/api/resources/operations/object/payment/) for more info.
+     */
     public struct Payment {
-        let token: String
+
+        /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String
+
+        /// The transaction paging token, used for pagination.
+        let pagingToken: String
+
         let fromAccount: String
         let toAccount: String
         let direction: Direction
         let amount: String
+
+        /// The transaction hash, used in Explorer URLs.
         let transactionHash: String
+
         let createdAt: Date
         var fee: Int?
         var memo: String?

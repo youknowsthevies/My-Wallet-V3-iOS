@@ -27,7 +27,7 @@ final class CachedValueTests: XCTestCase {
             let value = try cachedValue.valueSingle.toBlocking().first()
             XCTAssertEqual(value, expectedValue)
         } catch {
-            XCTFail(error.localizedDescription)
+            XCTFail(String(describing: error))
         }
     }
 

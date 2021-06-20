@@ -7,6 +7,7 @@ public struct HistoricalPriceSeries {
 
     /// The difference in percentage between the latest price to the first price
     public let delta: Double
+    public let deltaPercentage: Double
     public let prices: [PriceQuoteAtTimeResponse]
     public let fiatChange: Decimal
 
@@ -20,5 +21,6 @@ public struct HistoricalPriceSeries {
             fiatChange = 0
             delta = 0
         }
+        deltaPercentage = delta * 100
     }
 }

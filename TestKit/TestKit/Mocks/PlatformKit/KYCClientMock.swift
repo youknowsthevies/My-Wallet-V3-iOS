@@ -4,13 +4,19 @@ import Combine
 import NetworkKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
 final class KYCClientMock: KYCClientAPI {
 
     struct StubbedResults {
         var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = {
-            Fail(error: NabuNetworkError.mockError)
-                .eraseToAnyPublisher()
+            .failure(NabuNetworkError.mockError)
+        }()
+        var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = {
+            .failure(NabuNetworkError.mockError)
+        }()
+        var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = {
+            .failure(NabuNetworkError.mockError)
         }()
     }
 
@@ -68,5 +74,13 @@ final class KYCClientMock: KYCClientAPI {
 
     func fetchUser() -> AnyPublisher<NabuUser, NabuNetworkError> {
         stubbedResults.fetchUser
+    }
+
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> {
+        stubbedResults.checkSimplifiedDueDiligenceEligibility
+    }
+
+    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
+        stubbedResults.checkSimplifiedDueDiligenceVerification
     }
 }

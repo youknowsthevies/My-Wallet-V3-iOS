@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol FiatActivityItemEventFetcherAPI: class {
+public protocol FiatActivityItemEventFetcherAPI: AnyObject {
     func fiatActivity(fiatCurrency: FiatCurrency) -> Single<[FiatActivityItemEvent]>
 }

@@ -8,12 +8,12 @@ import TransactionKit
 
 final class TargetSelectionInteractor {
 
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServicing
 
-    init(coincore: Coincore = resolve(),
+    init(coincore: CoincoreAPI = resolve(),
          nameResolutionService: BlockchainNameResolutionServicing = resolve(),
          featureFetcher: FeatureFetching = resolve(),
          linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {

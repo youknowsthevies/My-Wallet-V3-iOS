@@ -3,6 +3,11 @@
 import Localization
 
 public struct LinkedBankData {
+    public enum Partner: String {
+        case yodlee = "YODLEE"
+        case yapily = "YAPILY"
+    }
+
     public struct Account {
         public enum AccountType {
             case savings
@@ -39,6 +44,7 @@ public struct LinkedBankData {
     let state: LinkedBankResponse.State
     public let error: LinkageError?
     public let paymentMethodType: PaymentMethodPayloadType
+    public let partner: Partner
 
     public var topLimit: FiatValue
 
@@ -52,6 +58,10 @@ public struct LinkedBankData {
         state = response.state
         error = LinkageError(from: response.error)
         paymentMethodType = response.isBankTransferAccount ? .bankTransfer : .bankAccount
+        guard let partner = Partner(rawValue: response.partner) else {
+            return nil
+        }
+        self.partner = partner
         guard let currency = FiatCurrency(code: response.currency) else {
             return nil
         }

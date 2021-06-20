@@ -38,6 +38,8 @@ final class APIClient: SimpleBuyClientAPI {
         static let benefiary = "beneficiary"
         static let eligibleOnly = "eligibleOnly"
         static let paymentMethod = "paymentMethod"
+        static let fetchSDDLimits = "fetchSddLimits"
+        static let sddEligileTier = "tier"
     }
 
     private enum Path {
@@ -369,27 +371,40 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - PaymentEligibleMethodsClientAPI
 
-    func eligiblePaymentMethods(for currency: String, eligibleOnly: Bool) -> Single<[PaymentMethodsResponse.Method]> {
-        let queryParameters = [
+    func eligiblePaymentMethods(for currency: String, currentTier: KYC.Tier, sddEligibleTier: Int?) -> Single<[PaymentMethodsResponse.Method]> {
+        var queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
                 value: currency
             ),
             URLQueryItem(
                 name: Parameter.eligibleOnly,
-                value: "\(eligibleOnly)"
+                value: "\(currentTier == .tier2)"
             )
         ]
+
+        if let sddEligibleTier = sddEligibleTier {
+            queryParameters.append(contentsOf: [
+                URLQueryItem(
+                    name: Parameter.fetchSDDLimits,
+                    value: "true"
+                ),
+                URLQueryItem(
+                    name: Parameter.sddEligileTier,
+                    value: "\(sddEligibleTier)"
+                )
+            ])
+        }
+
         let request = requestBuilder.get(
             path: Path.eligiblePaymentMethods,
             parameters: queryParameters,
             authenticated: true
         )!
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
+        return networkAdapter.perform(
+            request: request,
+            errorResponseType: NabuNetworkError.self
+        )
     }
 
     // MARK: - WithdrawalClientAPI

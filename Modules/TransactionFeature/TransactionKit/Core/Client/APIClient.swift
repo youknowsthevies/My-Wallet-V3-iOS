@@ -209,7 +209,6 @@ final class APIClient: TransactionKitClientAPI {
             )
     }
 
-    /// TODO: Probably can be a `Completable`.
     func verifySignedTransaction(invoiceID: String, currency: CryptoCurrency, transactionHex: String, transactionSize: Int) -> Completable {
         let transaction = BitPayPayment.Transaction(
             tx: transactionHex,

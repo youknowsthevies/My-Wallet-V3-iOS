@@ -22,8 +22,10 @@ struct InternalFeatureItem: Equatable {
             return "New Pin/Onboarding (experimental)"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
-        case .showEmailVerificationAtLogin:
-            return "Show Email Verification at Login"
+        case .showOnboardingAfterSignUp:
+            return "Show Onboarding after creating Wallet"
+        case .showEmailVerificationInOnboarding:
+            return "Show Email Verification in Onboarding Flow"
         case .showEmailVerificationInBuyFlow:
             return "Show Email Verification in Buy Flow"
         }

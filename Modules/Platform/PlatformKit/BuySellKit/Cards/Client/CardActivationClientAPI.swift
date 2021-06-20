@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol CardActivationClientAPI: class {
+public protocol CardActivationClientAPI: AnyObject {
     func activateCard(by id: String,
                       url: String) -> Single<ActivateCardResponse.Partner>
 }

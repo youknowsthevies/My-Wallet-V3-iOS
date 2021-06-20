@@ -6,7 +6,7 @@ import RxCocoa
 import RxRelay
 import RxSwift
 
-public protocol CardAuthorizationRoutingInteractorAPI: class {
+public protocol CardAuthorizationRoutingInteractorAPI: AnyObject {
     func cardAuthorized(with paymentMethodId: String)
 }
 

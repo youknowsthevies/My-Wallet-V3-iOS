@@ -2,7 +2,7 @@
 
 import Foundation
 
-@objc protocol WalletRecoveryDelegate: class {
+@objc protocol WalletRecoveryDelegate: AnyObject {
 
     /// Method invoked when the recovery sequence is completed
     func didRecoverWallet()

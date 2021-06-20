@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol TwoFAWalletServiceAPI: class {
+public protocol TwoFAWalletServiceAPI: AnyObject {
     func send(code: String) -> Completable
 }

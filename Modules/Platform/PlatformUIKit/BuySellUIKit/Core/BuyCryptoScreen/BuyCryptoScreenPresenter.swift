@@ -180,17 +180,6 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                         }
                     }
                 case .failure(let error):
-                    if let error = error as? RouterError {
-                        switch error {
-                        case .kyc(.emailVerificationAbandoned), .kyc(.kycVerificationAbandoned):
-                            // user dismissed flow, don't show an alert
-                            self.loader.hide()
-                            return
-                        default:
-                            // continue to error handling logic
-                            break
-                        }
-                    }
                     self.handle(error)
                 }
             }
@@ -276,10 +265,10 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         let trailingImageViewContent: ImageViewContent
         // in case there's no preferredPaymentMethodType
-        // but the payment methods count is greater than zero
+        // but the payment methods count is greater than 1
         // we still need to allow the user to tap in order to show
         // the payment selection modal
-        if methodCount > 0 {
+        if methodCount > 1 {
             trailingImageViewContent = ImageViewContent(
                 imageName: "icon-disclosure-small"
             )

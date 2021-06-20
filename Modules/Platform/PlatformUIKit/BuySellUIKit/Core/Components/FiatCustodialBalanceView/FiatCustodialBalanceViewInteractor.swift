@@ -7,41 +7,29 @@ import ToolKit
 
 public final class FiatCustodialBalanceViewInteractor {
 
-    public var currency: Observable<FiatCurrency> {
-        guard case CurrencyType.fiat(let currency) = balance.base.currencyType else {
+    let balanceViewInteractor: FiatBalanceViewInteractor
+    let currencyType: CurrencyType
+
+    public var fiatCurrency: Observable<FiatCurrency> {
+        guard case CurrencyType.fiat(let currency) = currencyType else {
             fatalError("The base currency of `FiatCustodialBalanceViewInteractor` must be a fiat currency type")
         }
         return .just(currency)
     }
 
-    public var identifier: String {
-        balance.debugDescription
+    init(account: SingleAccount) {
+        currencyType = account.currencyType
+        balanceViewInteractor = FiatBalanceViewInteractor(account: account)
     }
 
-    let balanceViewInteractor: FiatBalanceViewInteractor
-    let balance: MoneyValueBalancePairs
-
-    public init(balance: MoneyValueBalancePairs) {
-        self.balance = balance
+    public init(balance: MoneyValue) {
+        currencyType = balance.currency
         balanceViewInteractor = FiatBalanceViewInteractor(balance: balance)
     }
 }
 
 extension FiatCustodialBalanceViewInteractor: Equatable {
     public static func == (lhs: FiatCustodialBalanceViewInteractor, rhs: FiatCustodialBalanceViewInteractor) -> Bool {
-        lhs.balance.base.currencyType == rhs.balance.base.currencyType
-    }
-}
-
-// MARK: - Array extension to populate balance pairs
-
-extension Array where Element == FiatCustodialBalanceViewInteractor {
-    init(balancePairsCalculationStates: MoneyBalancePairsCalculationStates,
-         supportedFiatCurrencies: [FiatCurrency]) {
-        self = balancePairsCalculationStates.all
-            .compactMap { $0.value }
-            .filter { supportedFiatCurrencies.contains($0.base.fiatValue!.currencyType) }
-            .sorted { $0.base.fiatValue!.currencyType.code < $1.base.fiatValue!.currencyType.code }
-            .map { FiatCustodialBalanceViewInteractor(balance: $0) }
+        lhs.currencyType == rhs.currencyType
     }
 }

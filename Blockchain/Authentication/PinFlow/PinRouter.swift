@@ -31,24 +31,15 @@ final class PinRouter: NSObject {
     /// A recorder for errors
     private let recorder: Recording
 
-    /// Swipe to receive configuration
-    private let swipeToReceiveConfig: SwipeToReceiveConfiguring
-
-    private let enabledCryptoCurrencies: [CryptoCurrency]
-
     private let webViewService: WebViewServiceAPI
 
     // MARK: - Setup
 
     init(flow: PinRouting.Flow,
-         swipeToReceiveConfig: SwipeToReceiveConfiguring = BlockchainSettings.App.shared,
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
          completion: PinRouting.RoutingType.Forward? = nil,
          webViewService: WebViewServiceAPI = resolve()) {
-        enabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
         self.flow = flow
-        self.swipeToReceiveConfig = swipeToReceiveConfig
         self.recorder = recorder
         self.completion = completion
         self.webViewService = webViewService
@@ -64,6 +55,8 @@ final class PinRouter: NSObject {
         self.isBeingDisplayed = true
         switch self.flow {
         case .create:
+            self.create()
+        case .createPin:
             self.create()
         case .change:
             self.change()
@@ -131,23 +124,8 @@ extension PinRouter {
     /// Leads to authentication flow on logic.
     /// - parameter pinViewController: Pin view controller to be the first screen
     private func authenticateOnLogin(using pinViewController: UIViewController) {
-        let enabledCryptoCurrencies = self.enabledCryptoCurrencies
         let pinInput = LoginContainerViewController.Input.viewController(pinViewController)
-        let addressInputs: [LoginContainerViewController.Input]
-        if swipeToReceiveConfig.swipeToReceiveEnabled {
-            addressInputs = enabledCryptoCurrencies
-                .filter { $0.hasNonCustodialReceiveSupport }
-                .map { asset -> LoginContainerViewController.Input in
-                    let interactor = AddressInteractor(asset: asset, addressType: .swipeToReceive)
-                    let presenter = AddressPresenter(interactor: interactor)
-                    let viewController = AddressViewController(using: presenter)
-                    return .viewController(viewController)
-                }
-        } else {
-            addressInputs = []
-        }
-
-        let containerViewController = LoginContainerViewController(using: [pinInput] + addressInputs)
+        let containerViewController = LoginContainerViewController(using: [pinInput])
         present(viewController: containerViewController)
     }
 

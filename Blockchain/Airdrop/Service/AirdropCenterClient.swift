@@ -5,7 +5,7 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-protocol AirdropCenterClientAPI: class {
+protocol AirdropCenterClientAPI: AnyObject {
     var campaigns: Single<AirdropCampaigns> { get }
 }
 

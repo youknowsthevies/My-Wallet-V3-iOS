@@ -11,7 +11,7 @@ public enum KYCParentFlow {
 }
 
 // TICKET: IOS-4734 (remove this code)
-public protocol KYCRouterAPI: class {
+public protocol KYCRouterAPI: AnyObject {
     var tier1Finished: Observable<Void> { get }
     var tier2Finished: Observable<Void> { get }
     var kycStopped: Observable<KYC.Tier> { get }

@@ -50,7 +50,7 @@ final class ManualPairingScreenPresenter {
     // MARK: - Setup
 
     init(interactor: ManualPairingInteractor = ManualPairingInteractor(),
-         routerStateProvider: OnboardingRouterStateProviding = AppCoordinator.shared.onboardingRouter,
+         routerStateProvider: OnboardingRouterStateProviding = resolve(),
          alertPresenter: AlertViewPresenter = .shared,
          loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.routerStateProvider = routerStateProvider
@@ -144,7 +144,7 @@ final class ManualPairingScreenPresenter {
                 case .message(let string):
                     self.alertPresenter.standardError(message: string)
                 case .error(let error):
-                    self.alertPresenter.standardError(message: error.localizedDescription)
+                    self.alertPresenter.standardError(message: String(describing: error))
                 }
             }
             .disposed(by: disposeBag)

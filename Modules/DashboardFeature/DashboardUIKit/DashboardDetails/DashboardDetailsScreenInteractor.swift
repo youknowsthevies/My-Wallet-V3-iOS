@@ -44,11 +44,11 @@ final class DashboardDetailsScreenInteractor {
     private let savingsAccountService: SavingsOverviewAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let recoveryPhraseStatus: RecoveryPhraseStatusProviding
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
     // MARK: - Setup
 
     init(currency: CryptoCurrency,
-         coincore: Coincore = resolve(),
+         coincore: CoincoreAPI = resolve(),
          savingsAccountService: SavingsOverviewAPI = resolve(),
          blockchainAccountFetcher: BlockchainAccountFetching = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),

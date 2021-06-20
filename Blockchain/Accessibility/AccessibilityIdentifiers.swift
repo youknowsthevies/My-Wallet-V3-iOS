@@ -11,6 +11,7 @@ class AccessibilityIdentifiers: NSObject {
         static let pinIndicatorFormat = "\(prefix)pinIndicator-"
 
         static let errorLabel = "\(prefix)errorLabel"
+        static let lockTimeLabel = "\(prefix)lockTimeLabel"
 
         static let versionLabel = "\(prefix)versionLabel"
         static let swipeLabel = "\(prefix)swipeLabel"
@@ -18,14 +19,6 @@ class AccessibilityIdentifiers: NSObject {
 
     struct Address {
         static let prefix = "AddressScreen."
-
-        static let assetNameLabel = "\(prefix)assetNameLabel"
-        static let assetImageView = "\(prefix)assetImageView"
-
-        static let addressLabel = "\(prefix)addressLabel"
-        static let qrImageView = "\(prefix)addressQRImage"
-        static let copyButton = "\(prefix)copyButton"
-        static let shareButton = "\(prefix)shareButton"
         static let pageControl = "\(prefix)pageControl"
     }
 
@@ -41,9 +34,6 @@ class AccessibilityIdentifiers: NSObject {
 
     enum Navigation {
         private static let prefix = "NavigationBar."
-        static let backButton = "\(prefix)backButton"
-        static let closeButton = "\(prefix)closeButton"
-        static let titleLabel = "\(prefix)titleLabel"
 
         enum Button {
             private static let prefix = "\(Navigation.prefix)Button."

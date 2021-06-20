@@ -8,7 +8,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol PasteboardLineItemPresenting: class {
+public protocol PasteboardLineItemPresenting: AnyObject {
     var pasteboardValue: String { get }
 }
 

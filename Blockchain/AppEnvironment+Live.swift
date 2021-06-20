@@ -2,6 +2,7 @@
 
 import DebugUIKit
 import DIKit
+import PlatformKit
 
 extension AppEnvironment {
     static var live: AppEnvironment {
@@ -20,6 +21,8 @@ extension AppEnvironment {
             backgroundAppHandler: .init(),
             portfolioSyncingService: resolve(),
             internalFeatureService: resolve(),
+            sharedContainer: .default,
+            analyticsRecorder: resolve(),
             coincore: resolve(),
             walletManager: .shared,
             walletUpgradeService: resolve(),

@@ -182,7 +182,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 
     public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Single<Element> {
         self.do(onError: { error in
-            fatalError(error.localizedDescription)
+            fatalError(String(describing: error))
         })
     }
 }

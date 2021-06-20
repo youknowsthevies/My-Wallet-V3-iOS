@@ -19,10 +19,7 @@ class ConfigTests: XCTestCase {
             "EXPLORER_SERVER",
             "RETAIL_CORE_SOCKET_URL",
             "RETAIL_CORE_URL",
-            "WALLET_SERVER",
-            "WEBSOCKET_SERVER",
-            "WEBSOCKET_SERVER_BCH",
-            "WEBSOCKET_SERVER_ETH"
+            "WALLET_SERVER"
         ]
         for key in keys {
             let value = getValue(for: key)

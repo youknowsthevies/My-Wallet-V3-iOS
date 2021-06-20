@@ -82,18 +82,6 @@ public final class BlockchainAPI: NSObject {
         InfoDictionaryHelper.value(for: .swiftyBeaverAppKey)
     }
 
-    // MARK: URI
-
-    @objc public var webSocketUri: String? {
-        InfoDictionaryHelper.value(for: .websocketServerBTC, prefix: "wss://")
-    }
-    @objc public var ethereumWebSocketUri: String? {
-        InfoDictionaryHelper.value(for: .websocketServerETH, prefix: "wss://")
-    }
-    @objc public var bitcoinCashWebSocketUri: String? {
-        InfoDictionaryHelper.value(for: .websocketServerBCH, prefix: "wss://")
-    }
-
     // MARK: URL
 
     public var apiHost: String {

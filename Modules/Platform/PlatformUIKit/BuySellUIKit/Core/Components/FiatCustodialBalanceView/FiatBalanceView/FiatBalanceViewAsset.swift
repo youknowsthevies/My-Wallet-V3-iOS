@@ -18,12 +18,12 @@ public struct FiatBalanceViewAsset {
 
         public struct Interaction {
             /// The balance
-            public let base: FiatValue
+            public let base: MoneyValue
 
             /// The converted value if the
             /// balance currency type does not
             /// match the user's preferred currency
-            public let quote: FiatValue
+            public let quote: MoneyValue
         }
 
         public struct Presentation {

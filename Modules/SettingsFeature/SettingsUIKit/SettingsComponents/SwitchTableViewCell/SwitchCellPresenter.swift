@@ -106,21 +106,3 @@ class BioAuthenticationSwitchCellPresenter: SwitchCellPresenting {
                                                            authenticationCoordinator: authenticationCoordinator)
     }
 }
-
-class SwipeReceiveSwitchCellPresenter: SwitchCellPresenting {
-
-    private typealias AccessibilityId = Accessibility.Identifier.Settings.SettingsCell
-
-    let accessibility: Accessibility = .id(AccessibilityId.SwipeToReceive.title)
-    let labelContentPresenting: LabelContentPresenting
-    let switchViewPresenting: SwitchViewPresenting
-
-    init(appSettings: BlockchainSettings.App) {
-
-        switchViewPresenting = SwipeReceiveSwitchViewPresenter(appSettings: appSettings)
-        labelContentPresenting = DefaultLabelContentPresenter(
-            knownValue: LocalizationConstants.Settings.swipeToReceive,
-            descriptors: .settings
-        )
-    }
-}

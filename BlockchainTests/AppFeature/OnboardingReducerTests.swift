@@ -80,8 +80,12 @@ class OnboardingReducerTests: XCTestCase {
 
         // then
         testStore.assert(
-            .send(.start),
-            .receive(.passwordScreen)
+            .send(.start, { state in
+                state.passwordScreen = .init()
+                state.pinState = nil
+                state.walletUpgradeState = nil
+            }),
+            .receive(.passwordScreen(.start))
         )
     }
 
@@ -128,8 +132,12 @@ class OnboardingReducerTests: XCTestCase {
 
         // then
         testStore.assert(
-            .send(.start),
-            .receive(.passwordScreen)
+            .send(.start, { state in
+                state.passwordScreen = .init()
+                state.pinState = nil
+                state.walletUpgradeState = nil
+            }),
+            .receive(.passwordScreen(.start))
         )
     }
 

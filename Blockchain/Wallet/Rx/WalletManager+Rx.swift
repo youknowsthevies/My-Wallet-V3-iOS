@@ -53,7 +53,7 @@ extension Reactive where Base: WalletManager {
                     .failure(
                         AuthenticationError(
                             code: AuthenticationError.ErrorCode.unknown.rawValue,
-                            description: error.localizedDescription
+                            description: String(describing: error)
                         )
                     )
                 )
@@ -156,37 +156,6 @@ extension Reactive where Base: WalletManager {
         base.rx.methodInvoked(#selector(WalletManager.didFailBackupWallet))
             .ignoreElements()
             .observeOn(MainScheduler.asyncInstance)
-    }
-
-    // MARK: WalletTransactionDelegate
-
-    /// Reactive wrapper for delegate method `onTransactionReceived`
-    /// - Note: Method invoked when a transaction is received (only invoked when there is an
-    /// active websocket connection when the transaction was received)
-    var onTransactionReceived: Observable<Void> {
-        base.rx.methodInvoked(#selector(WalletManager.receivedTransactionMessage))
-            .mapToVoid()
-            .observeOn(MainScheduler.asyncInstance)
-            .share(replay: 1, scope: .whileConnected)
-    }
-
-    // MARK: WalletSwipeAddressDelegate
-
-    /// Reactive wrapper for delegate method `onRetrievedSwipeToReceive`
-    /// Method invoked when swipe to receive addresses has been retrieved.
-    ///
-    /// - Parameters:
-    ///   - addresses: the addresses
-    ///   - assetType: the type of the asset for the retrieved addresses
-    var onRetrievedSwipeToReceive: Observable<(addresses: [String], assetType: CryptoCurrency)> {
-        base.rx.methodInvoked(#selector(WalletManager.didGetSwipeAddresses(_:assetType:)))
-            .map { arg in
-                let addresses = try castOrThrow([String].self, arg[0])
-                let assetType = try castOrThrow(LegacyAssetType.self, arg[1])
-                return (addresses, CryptoCurrency(legacyAssetType: assetType))
-            }
-            .observeOn(MainScheduler.asyncInstance)
-            .share(replay: 1, scope: .whileConnected)
     }
 
     // MARK: WalletSecondPasswordDelegate

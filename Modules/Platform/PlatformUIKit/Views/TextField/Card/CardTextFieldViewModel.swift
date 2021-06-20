@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-public protocol CardTypeSource: class {
+public protocol CardTypeSource: AnyObject {
     var cardType: Observable<CardType> { get }
 }
 

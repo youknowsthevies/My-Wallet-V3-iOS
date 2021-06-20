@@ -3,6 +3,7 @@
 import AnalyticsKit
 import Combine
 import DIKit
+import ToolKit
 
 protocol NetworkCommunicatorAPI {
 
@@ -58,7 +59,10 @@ final class NetworkCommunicator: NetworkCommunicatorAPI {
     private func execute(
         request: NetworkRequest
     ) -> AnyPublisher<ServerResponse, NetworkError> {
-        session.erasedDataTaskPublisher(for: request.urlRequest)
+        if request.shouldDebug {
+            Logger.shared.debug("[NetworkKit] Performing request: \(request)")
+        }
+        return session.erasedDataTaskPublisher(for: request.urlRequest)
             .mapError(NetworkError.urlError)
             .flatMap { elements -> AnyPublisher<ServerResponse, NetworkError> in
                 request.responseHandler.handle(elements: elements, for: request)

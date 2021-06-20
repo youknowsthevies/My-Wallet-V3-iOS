@@ -5,21 +5,16 @@ import RxSwift
 import ToolKit
 
 /// Provider of balance services and total balance in `FiatValue`
-public protocol BalanceProviding: class {
+public protocol BalanceProviding: AnyObject {
 
     subscript(currency: CurrencyType) -> AssetBalanceFetching { get }
 
-    /// Streams the total fiat balance in the wallet
+    /// Streams the total sum of the converted fiat balance of each
     var fiatBalance: Observable<FiatValueCalculationState> { get }
 
-    /// Streams the fiat balances
+    /// Streams a `MoneyBalancePairsCalculationStates` containing the
+    /// converted fiat balance of all services registered in this provider.
     var fiatBalances: Observable<MoneyBalancePairsCalculationStates> { get }
-
-    /// Streams the balances of the fiat based currencies
-    var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> { get }
-
-    /// Single wrapper for `fiatFundsBalances` the balances of the fiat based currencies
-    var fiatFundsBalancesSingle: Single<MoneyBalancePairsCalculationStates> { get }
 
     /// Triggers a refresh on the balances
     func refresh()
@@ -30,31 +25,24 @@ public final class BalanceProvider: BalanceProviding {
 
     // MARK: - Balance
 
-    /// Reduce cross asset fiat balance values into a single fiat value
     public var fiatBalance: Observable<FiatValueCalculationState> {
         fiatBalances
             .map { $0.totalFiat }
             .share()
     }
 
-    /// Calculates all balances in `WalletBalance`
     public var fiatBalances: Observable<MoneyBalancePairsCalculationStates> {
-        // Array of `calculationState` observables from all currencies we want to fetch.
         let observables = services
-            .reduce(into: [Observable<[CurrencyType : MoneyBalancePairsCalculationState]>]()) { (result, element) in
-                let observable = element.value.calculationState
-                    // Map the `MoneyBalancePairsCalculationState` so it remains attached to its currency.
-                    .map { calculationState -> [CurrencyType : MoneyBalancePairsCalculationState] in
-                        [element.key: calculationState]
-                    }
-                result.append(observable)
+            .map { key, value -> Observable<[CurrencyType : MoneyBalancePairsCalculationState]> in
+                value.calculationState.map { state in
+                    [key: state]
+                }
             }
-        return Observable
-            .combineLatest(observables)
+        return Observable.combineLatest(observables)
             .map { data -> [CurrencyType : MoneyBalancePairsCalculationState] in
                 // Reduce our `[Dictionary]` into a single `Dictionary`.
-                data.reduce(into: [CurrencyType : MoneyBalancePairsCalculationState]()) { (result, this) in
-                    result.merge(this)
+                data.reduce(into: [CurrencyType : MoneyBalancePairsCalculationState]()) { (result, element) in
+                    result.merge(element)
                 }
             }
             .map { statePerCurrency in
@@ -63,15 +51,7 @@ public final class BalanceProvider: BalanceProviding {
                     statePerCurrency: statePerCurrency
                 )
             }
-            .share()
-    }
-
-    public var fiatFundsBalances: Observable<MoneyBalancePairsCalculationStates> {
-        fiatBalances.map { $0.fiatBaseStates }
-    }
-
-    public var fiatFundsBalancesSingle: Single<MoneyBalancePairsCalculationStates> {
-        fiatFundsBalances.take(1).asSingle()
+            .share(replay: 1, scope: .whileConnected)
     }
 
     public subscript(currency: Currency) -> AssetBalanceFetching {

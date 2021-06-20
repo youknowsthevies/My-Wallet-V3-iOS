@@ -26,7 +26,7 @@ final class CrashlyticsRecorder: Recording {
     func error(_ error: Error) {
         let userInfo: [String: Any] = [
             "description": String(describing: error),
-            "localizedDescription": error.localizedDescription
+            "localizedDescription": String(describing: error)
         ]
         let prettyError = NSError(domain: domain(for: error), code: 0, userInfo: userInfo)
         crashlytics.record(error: prettyError)

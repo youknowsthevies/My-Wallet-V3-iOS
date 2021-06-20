@@ -226,31 +226,9 @@ public final class StateService: StateServiceAPI {
                 states: self.states(byAppending: state)
             )
         case .kycBeforeCheckout(let data):
-            state = .pendingKycApproval(data)
-            apply(
-                action: .next(to: state),
-                states: self.states(byAppending: state)
-            )
+            checkSDDVerificationAndContinue(with: data)
         case .pendingKycApproval(let data):
-            // After KYC - add card if necessary or link a bank flow for bank transfer
-            switch data.order.paymentMethod {
-            case .bankAccount:
-                state = .checkout(data)
-            case .card:
-                state = .addCard(data)
-            case .funds:
-                state = .fundsTransferDetails(
-                    currency: data.order.inputValue.currencyType,
-                    isOriginPaymentMethods: false,
-                    isOriginDeposit: false
-                )
-            case .bankTransfer:
-                state = .linkBank
-            }
-            apply(
-                action: .next(to: state),
-                states: self.states(byAppending: state)
-            )
+            applyStateToContinueCheckoutAfterKYC(using: data)
         case .bankTransferDetails,
              .fundsTransferDetails,
              .pendingOrderDetails,
@@ -413,6 +391,62 @@ public final class StateService: StateServiceAPI {
     private func states(byAppending state: State) -> States {
         messageRecorder.record("StateService: appending state: \(state.debugDescription) to \(statesRelay.value.debugDescription)")
         return statesRelay.value.states(byAppending: state)
+    }
+
+    private func checkTier3Verification() -> Single<Bool> {
+        Single.zip(
+            kycTiersService.fetchTiers(),
+            kycTiersService.checkSimplifiedDueDiligenceVerification().asObservable().asSingle()
+        )
+        .map { (userTiers, isSDDVerified) in
+            userTiers.latestApprovedTier == .tier1 && isSDDVerified
+        }
+    }
+
+    private func checkSDDVerificationAndContinue(with data: CheckoutData) {
+        checkTier3Verification()
+            .subscribe { [weak self] isTier3Verified in
+                if isTier3Verified {
+                    self?.applyStateToContinueCheckoutAfterKYC(using: data)
+                } else {
+                    self?.applyStateToPendingKYC(using: data)
+                }
+            } onError: { [weak self] error in
+                Logger.shared.error(error)
+                self?.applyStateToPendingKYC(using: data)
+            }
+            .disposed(by: disposeBag)
+    }
+
+    private func applyStateToPendingKYC(using data: CheckoutData) {
+        let state: State = .pendingKycApproval(data)
+        apply(
+            action: .next(to: state),
+            states: self.states(byAppending: state)
+        )
+    }
+
+    private func applyStateToContinueCheckoutAfterKYC(using data: CheckoutData) {
+        // After KYC - add card if necessary or link a bank flow for bank transfer
+        let state: State
+        switch data.order.paymentMethod {
+        case .bankAccount:
+            state = .checkout(data)
+        case .card:
+            state = .addCard(data)
+        case .funds:
+            state = .fundsTransferDetails(
+                currency: data.order.inputValue.currencyType,
+                isOriginPaymentMethods: false,
+                isOriginDeposit: false
+            )
+        case .bankTransfer:
+            state = .linkBank
+        }
+        apply(
+            action: .next(to: state),
+            states: self.states(byAppending: state)
+        )
     }
 }
 

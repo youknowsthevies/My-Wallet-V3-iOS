@@ -4,7 +4,6 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import Firebase
-import FirebaseCrashlytics
 import NabuAnalyticsDataKit
 import PlatformKit
 import SettingsKit
@@ -108,7 +107,7 @@ private func defineDependencies() {
     // swiftlint:enable trailing_semicolon
 }
 
-private func useNewOnboarding() -> Bool {
+func useNewOnboarding() -> Bool {
     let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
     return featureFlagService.isEnabled(.newOnboarding)
 }

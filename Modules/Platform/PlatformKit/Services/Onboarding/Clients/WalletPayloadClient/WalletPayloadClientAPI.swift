@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol WalletPayloadClientAPI: class {
+public protocol WalletPayloadClientAPI: AnyObject {
     func payload(guid: String,
                  identifier: WalletPayloadClient.Identifier) -> Single<WalletPayloadClient.ClientResponse>
 }

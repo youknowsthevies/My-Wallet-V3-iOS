@@ -25,7 +25,7 @@ protocol AddNewPaymentMethodPresentable: Presentable {
     func connect(action: Driver<AddNewPaymentMethodAction>) -> Driver<AddNewPaymentMethodEffects>
 }
 
-public protocol AddNewPaymentMethodListener: class {
+public protocol AddNewPaymentMethodListener: AnyObject {
     func closeFlow()
     func navigate(with method: PaymentMethod)
 }

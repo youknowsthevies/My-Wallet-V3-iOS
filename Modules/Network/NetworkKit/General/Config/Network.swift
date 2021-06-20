@@ -70,7 +70,7 @@ public class UserAgentProvider {
     }
 }
 
-protocol NetworkSessionDelegateAPI: class {
+protocol NetworkSessionDelegateAPI: AnyObject {
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping AuthChallengeHandler)
 }
 
@@ -101,7 +101,7 @@ class BlockchainNetworkCommunicatorSessionHandler: NetworkSessionDelegateAPI {
     }
 }
 
-protocol SessionDelegateAPI: class, URLSessionDelegate {
+protocol SessionDelegateAPI: AnyObject, URLSessionDelegate {
     var delegate: NetworkSessionDelegateAPI? { get set }
 }
 

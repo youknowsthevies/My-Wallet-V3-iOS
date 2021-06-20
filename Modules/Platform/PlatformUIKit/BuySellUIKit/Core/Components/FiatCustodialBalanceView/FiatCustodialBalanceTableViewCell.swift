@@ -2,11 +2,11 @@
 
 import UIKit
 
-public final class FiatCustodialBalanceTableViewCell: UITableViewCell {
+final class FiatCustodialBalanceTableViewCell: UITableViewCell {
 
     // MARK: - Properties
 
-    public var presenter: FiatCustodialBalanceViewPresenter! {
+    var presenter: FiatCustodialBalanceViewPresenter! {
         didSet {
             custodialBalanceView.presenter = presenter
         }
@@ -16,19 +16,19 @@ public final class FiatCustodialBalanceTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         custodialBalanceView = FiatCustodialBalanceView()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(custodialBalanceView)
-        custodialBalanceView.fillSuperview()
+        custodialBalanceView.layout(edges: .leading, .trailing, .top, .bottom, to: contentView)
     }
 
     @available(*, unavailable)
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

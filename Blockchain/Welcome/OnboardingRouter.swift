@@ -6,7 +6,7 @@ import PlatformUIKit
 import RxRelay
 import RxSwift
 
-protocol OnboardingRouterStateProviding: class {
+protocol OnboardingRouterStateProviding: AnyObject {
     var state: OnboardingRouter.State { get set }
 }
 

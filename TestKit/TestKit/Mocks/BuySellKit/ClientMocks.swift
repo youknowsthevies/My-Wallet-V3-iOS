@@ -32,14 +32,16 @@ extension APIClient {
                     limits: .init(min: "5000", max: "200000"),
                     subTypes: [],
                     currency: "GBP",
-                    eligible: true
+                    eligible: true,
+                    visible: true
                 ),
                 .init(
                     type: "CARD",
                     limits: .init(min: "5000", max: "500000"),
                     subTypes: [],
                     currency: "GBP",
-                    eligible: true
+                    eligible: true,
+                    visible: true
                 )
             ]
         )

@@ -1,16 +1,26 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import RxSwift
 import ToolKit
 
-public protocol KYCTiersServiceAPI: class {
+public protocol KYCTiersServiceAPI: AnyObject {
 
     /// Returns the cached tiers. Fetches them if they are not already cached
     var tiers: Single<KYC.UserTiers> { get }
 
     /// Fetches the tiers from remote
     func fetchTiers() -> Single<KYC.UserTiers>
+
+    /// Fetches Simplified Due Diligence Eligibility Status
+    func checkSimplifiedDueDiligenceEligibility() -> Single<Bool>
+
+    /// Fetches the Simplified Due Diligence Eligibility Status returning the whole response
+    func simplifiedDueDiligenceEligibility() -> Single<SimplifiedDueDiligenceResponse>
+
+    /// Fetches the Simplified Due Diligence Verification Status. It pools the API until a valid result is available. If the check fails, it returns `false`.
+    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never>
 }
 
 final class KYCTiersService: KYCTiersServiceAPI {
@@ -43,6 +53,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     // MARK: - Private Properties
 
+    private let client: KYCClientAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
     private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
@@ -53,8 +64,6 @@ final class KYCTiersService: KYCTiersServiceAPI {
         }
     }()
 
-    private let client: KYCClientAPI
-
     // MARK: - Setup
 
     init(client: KYCClientAPI = resolve()) {
@@ -64,5 +73,38 @@ final class KYCTiersService: KYCTiersServiceAPI {
     func fetchTiers() -> Single<KYC.UserTiers> {
         _  = setup
         return cachedTiers.fetchValue
+    }
+
+    func simplifiedDueDiligenceEligibility() -> Single<SimplifiedDueDiligenceResponse> {
+        client.checkSimplifiedDueDiligenceEligibility()
+            .asObservable()
+            .asSingle()
+    }
+
+    func checkSimplifiedDueDiligenceEligibility() -> Single<Bool> {
+        simplifiedDueDiligenceEligibility()
+            .map(\.eligible)
+    }
+
+    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never> {
+        func pollingHelper(attemptsCount: Int = 1) -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
+            // Poll the API every 5 seconds until `taskComplete` is `true` or an error is returned from the upstream for a maximum of 10 times
+            client.checkSimplifiedDueDiligenceVerification()
+                .flatMap { [pollingHelper] result -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> in
+                    let shouldRetry = !result.taskComplete && attemptsCount <= 10
+                    guard shouldRetry else {
+                        return .just(result)
+                    }
+                    return pollingHelper(attemptsCount + 1)
+                        .delay(for: 5, scheduler: RunLoop.main)
+                        .eraseToAnyPublisher()
+                }
+                .eraseToAnyPublisher()
+        }
+
+        return pollingHelper()
+            .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
+            .map(\.verified)
+            .eraseToAnyPublisher()
     }
 }

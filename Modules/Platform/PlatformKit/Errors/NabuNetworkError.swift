@@ -53,15 +53,6 @@ public enum NabuNetworkError: Error, Decodable {
         self = .communicatorError(communicatorError)
     }
 
-    public var localizedDescription: String? {
-        switch self {
-        case let .nabuError(error):
-            return error.localizedDescription
-        case let .communicatorError(error):
-            return error.localizedDescription
-        }
-    }
-
     private static func crashOnUnknownCodeOrType(
         code: NabuErrorCode,
         type: NabuErrorType,
@@ -91,6 +82,18 @@ public enum NabuNetworkError: Error, Decodable {
     }
 }
 
+extension NabuNetworkError: CustomStringConvertible {
+
+    public var description: String {
+        switch self {
+        case let .nabuError(error):
+            return String(describing: error)
+        case let .communicatorError(error):
+            return String(describing: error)
+        }
+    }
+}
+
 extension NabuNetworkError: Equatable {
 
     /// Just a simple implementation to bubble up this to UI States. We can improve on this if needed.
@@ -109,26 +112,41 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 /// Describes an error returned by Nabu
 public struct NabuError: Error, Codable, Equatable {
 
+    private enum CodingKeys : String, CodingKey {
+        case code
+        case type
+        case serverDescription = "description"
+    }
+
     public let code: NabuErrorCode
     public let type: NabuErrorType
-    public let description: String?
+    public let serverDescription: String?
+
+    public var localizedDescription: String? {
+        description
+    }
+
+    public init(
+        code: NabuErrorCode,
+        type: NabuErrorType,
+        description: String?
+    ) {
+        self.code = code
+        self.type = type
+        self.serverDescription = description
+    }
+}
+
+extension NabuError: CustomStringConvertible {
 
     /// Provides the error description that backend sent back,
     /// if no description is provided or in case it is empty the error code will be displayed
     /// otherwise the error will be in the form of "{error-description} - Error code: {code}"
-    public var localizedDescription: String? {
-        guard let description = description, !description.isEmpty else {
+    public var description: String {
+        guard let description = serverDescription, !description.isEmpty else {
             return "\(LocalizationConstants.Errors.errorCode): \(code)"
         }
         return "\(description) - \(LocalizationConstants.Errors.errorCode): \(code)"
-    }
-
-    public init(code: NabuErrorCode,
-                type: NabuErrorType,
-                description: String?) {
-        self.code = code
-        self.type = type
-        self.description = description
     }
 }
 

@@ -23,7 +23,10 @@ public enum InternalFeature: String, CaseIterable {
     // MARK: - Email Verification
 
     /// Shows Email Verification insted of Simple Buy at Login
-    case showEmailVerificationAtLogin
+    case showOnboardingAfterSignUp
+
+    /// Shows Email Verification in Onboarding, otherwise just show the buy flow
+    case showEmailVerificationInOnboarding
 
     /// Shows Email Verification, if needed, when a user tries to make a purchase
     case showEmailVerificationInBuyFlow

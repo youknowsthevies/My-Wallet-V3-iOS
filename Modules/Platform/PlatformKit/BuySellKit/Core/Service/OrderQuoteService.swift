@@ -3,7 +3,7 @@
 import DIKit
 import RxSwift
 
-public protocol OrderQuoteServiceAPI: class {
+public protocol OrderQuoteServiceAPI: AnyObject {
     func getQuote(for action: Order.Action,
                   cryptoCurrency: CryptoCurrency,
                   fiatValue: FiatValue) -> Single<Quote>

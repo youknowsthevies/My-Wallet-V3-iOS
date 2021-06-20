@@ -2,7 +2,7 @@
 
 import PlatformKit
 
-protocol WalletKeyImportDelegate: class {
+protocol WalletKeyImportDelegate: AnyObject {
 
     func alertUserOfImportedIncorrectPrivateKey()
 

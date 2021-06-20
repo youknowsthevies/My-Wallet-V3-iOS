@@ -21,7 +21,7 @@ protocol ACHFlowRootRouting: Routing {
     func closeFlow()
 }
 
-protocol ACHFlowRootListener: class {
+protocol ACHFlowRootListener: AnyObject {
     // Declare methods the interactor can invoke to communicate with other RIBs.
 }
 

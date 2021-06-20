@@ -194,7 +194,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                 case .finished:
                     authenticationSuccessfulExpectation.fulfill()
                 case .failure(let error):
-                    XCTFail("Authentication failed with error: \(error.localizedDescription)")
+                    XCTFail("Authentication failed with error: \(String(describing: error))")
                 }
             }, receiveValue: { value in
                 XCTAssertEqual(value, expectedSessionTokenValue)
@@ -322,7 +322,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                     )
                     authenticationSuccessfulExpectation.fulfill()
                 case .failure(let error):
-                    XCTFail("Failed with error: \(error.localizedDescription)")
+                    XCTFail("Failed with error: \(String(describing: error))")
                 }
             }, receiveValue: { value in
                 XCTAssertEqual(value, expectedSessionTokenValue)
@@ -513,7 +513,7 @@ class NabuAuthenticationExecutorTests: XCTestCase {
                     )
                     authenticationSuccessfulExpectation.fulfill()
                 case .failure(let error):
-                    XCTFail("Failed with error: \(error.localizedDescription)")
+                    XCTFail("Failed with error: \(String(describing: error))")
                 }
             }, receiveValue: { value in
                 XCTAssertEqual(value, newSessionTokenResponse.token)

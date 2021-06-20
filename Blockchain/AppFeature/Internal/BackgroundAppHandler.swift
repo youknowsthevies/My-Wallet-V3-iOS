@@ -38,11 +38,7 @@ final class BackgroundAppHandler {
         let appSettings = BlockchainSettings.App.shared
         let wallet = WalletManager.shared.wallet
 
-        AssetAddressRepository.shared.fetchSwipeToReceiveAddressesIfNeeded()
-
         NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
-
-        WalletManager.shared.closeWebSockets(withCloseCode: .backgroundedApp)
 
         if wallet.isInitialized() {
             if appSettings.guid != nil && appSettings.sharedKey != nil {

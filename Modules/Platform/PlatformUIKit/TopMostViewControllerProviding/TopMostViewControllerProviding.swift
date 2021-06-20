@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 /// A provider protocol for top most view controller
-public protocol TopMostViewControllerProviding: class {
+public protocol TopMostViewControllerProviding: AnyObject {
     var topMostViewController: UIViewController? { get }
 }
 

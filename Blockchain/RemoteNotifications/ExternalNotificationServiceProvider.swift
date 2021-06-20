@@ -1,7 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Firebase
-import FirebaseInstanceID
 import FirebaseMessaging
 import PlatformKit
 import RemoteNotificationsKit
@@ -15,7 +13,7 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
     var token: Single<String> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
-                self.tokenFetcher.instanceID { result in
+                self.messagingService.token { result in
                     observer(result.singleEvent)
                 }
                 return Disposables.create()
@@ -23,16 +21,13 @@ final class ExternalNotificationServiceProvider: ExternalNotificationProviding {
             .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
     }
 
-    private let tokenFetcher: RemoteNotificationTokenFetching
     private let messagingService: FirebaseCloudMessagingServiceAPI
 
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(tokenFetcher: RemoteNotificationTokenFetching = InstanceID.instanceID(),
-         messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging()) {
-        self.tokenFetcher = tokenFetcher
+    init(messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging()) {
         self.messagingService = messagingService
     }
 

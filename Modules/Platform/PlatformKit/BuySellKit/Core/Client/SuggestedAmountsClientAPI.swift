@@ -2,6 +2,6 @@
 
 import RxSwift
 
-protocol SuggestedAmountsClientAPI: class {
+protocol SuggestedAmountsClientAPI: AnyObject {
     func suggestedAmounts(for currency: FiatCurrency) -> Single<SuggestedAmountsResponse>
 }

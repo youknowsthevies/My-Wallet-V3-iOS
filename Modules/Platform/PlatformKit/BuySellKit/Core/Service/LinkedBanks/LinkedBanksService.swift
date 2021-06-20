@@ -52,7 +52,11 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
         cachedValue.setFetch {
             client.linkedBanks()
                 .map { response -> [LinkedBankData] in
+                    // The API path is `banking-info` that includes both linked banked and bank account/beneficiary
+                    // we currently only need to display the linked banks as for beneficiaries we use older APIs.
+                    // So the filtering is a patch until we remove the older backend APIs
                     response.compactMap(LinkedBankData.init(response:))
+                        .filter { $0.paymentMethodType == .bankTransfer && $0.partner == .yodlee }
                 }
         }
 

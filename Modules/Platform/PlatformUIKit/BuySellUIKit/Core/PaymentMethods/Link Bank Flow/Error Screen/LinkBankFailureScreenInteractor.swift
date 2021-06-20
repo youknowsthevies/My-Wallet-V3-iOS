@@ -8,7 +8,7 @@ protocol LinkBankFailureScreenRouting: ViewableRouting {}
 
 protocol LinkBankFailureScreenPresentable: Presentable {}
 
-protocol LinkBankFailureScreenListener: class {
+protocol LinkBankFailureScreenListener: AnyObject {
     var retryAction: PublishRelay<LinkBankFlow.Action> { get }
     func closeFlow(isInteractive: Bool)
 }

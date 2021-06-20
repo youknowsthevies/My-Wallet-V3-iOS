@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol PendingOrderCreationServiceAPI: class {
+public protocol PendingOrderCreationServiceAPI: AnyObject {
     func create(using candidateOrderDetails: CandidateOrderDetails) -> Single<PendingConfirmationCheckoutData>
 }

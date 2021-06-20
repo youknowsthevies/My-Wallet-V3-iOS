@@ -2,7 +2,7 @@
 
 import RxSwift
 
-protocol OrderDetailsClientAPI: class {
+protocol OrderDetailsClientAPI: AnyObject {
 
     /// Fetch all Buy/Sell orders
     func orderDetails(pendingOnly: Bool) -> Single<[OrderPayload.Response]>

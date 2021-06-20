@@ -4,7 +4,7 @@ import DIKit
 import RxRelay
 import RxSwift
 
-public protocol WalletPickerSelectionServiceAPI: class {
+public protocol WalletPickerSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }
     func record(selection: BlockchainAccount)
 }
@@ -18,9 +18,9 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
     private var sharedStream: Observable<BlockchainAccount>!
     private let defaultValue: Observable<AccountGroup>
     private let selectedDataRelay: BehaviorRelay<BlockchainAccount?>
-    private let coincore: Coincore
+    private let coincore: CoincoreAPI
 
-    public init(coincore: Coincore = resolve()) {
+    public init(coincore: CoincoreAPI = resolve()) {
         self.coincore = coincore
         defaultValue = coincore.allAccounts.asObservable().share(replay: 1)
         selectedDataRelay = BehaviorRelay(value: nil)

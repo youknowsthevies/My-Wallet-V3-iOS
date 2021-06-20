@@ -118,7 +118,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     self?.transactionModel.process(action: action)
                 },
                 onError: { [weak self] error in
-                    Logger.shared.debug("Unable to configure transaction flow, aborting. \(error.localizedDescription)")
+                    Logger.shared.debug("Unable to configure transaction flow, aborting. \(String(describing: error))")
                     self?.finishFlow()
                 }
             )

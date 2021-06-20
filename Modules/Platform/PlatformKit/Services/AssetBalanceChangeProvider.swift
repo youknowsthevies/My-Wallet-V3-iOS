@@ -5,7 +5,7 @@ import RxSwift
 import ToolKit
 
 /// A provider for balance change
-public protocol AssetBalanceChangeProviding: class {
+public protocol AssetBalanceChangeProviding: AnyObject {
 
     /// A balance fetcher
     var balance: AssetBalanceFetching { get }

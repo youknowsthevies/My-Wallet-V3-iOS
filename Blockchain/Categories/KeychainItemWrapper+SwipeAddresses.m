@@ -34,69 +34,6 @@
     }
 }
 
-+ (NSArray *)getSwipeAddressesForAssetType:(LegacyAssetType)assetType
-{
-    return [KeychainItemWrapper getMutableSwipeAddressesForAssetType:assetType];
-}
-
-+ (NSMutableArray *)getMutableSwipeAddressesForAssetType:(LegacyAssetType)assetType
-{
-    NSString *keychainKey = [KeychainItemWrapper keychainKeyForAssetType:assetType];
-    
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:keychainKey accessGroup:nil];
-    NSData *arrayData = [keychain objectForKey:(__bridge id)kSecValueData];
-    NSMutableArray *swipeAddresses = [NSKeyedUnarchiver unarchiveObjectWithData:arrayData];
-    
-    return swipeAddresses;
-}
-
-+ (void)addSwipeAddress:(NSString *)swipeAddress assetType:(LegacyAssetType)assetType
-{
-    NSMutableArray *swipeAddresses = [KeychainItemWrapper getMutableSwipeAddressesForAssetType:assetType];
-    if (!swipeAddresses) swipeAddresses = [NSMutableArray new];
-    [swipeAddresses addObject:swipeAddress];
-    
-    [KeychainItemWrapper saveSwipeAddresses: swipeAddresses assetType: assetType];
-}
-
-+ (void)removeSwipeAddress:(NSString *)swipeAddress assetType:(LegacyAssetType)assetType {
-    
-    NSMutableArray *swipeAddresses = [KeychainItemWrapper getMutableSwipeAddressesForAssetType:assetType];
-    if (!swipeAddresses) {
-        return;
-    }
-    [swipeAddresses removeObject:swipeAddress];
-    [KeychainItemWrapper saveSwipeAddresses:swipeAddresses assetType:assetType];
-}
-
-+ (void)saveSwipeAddresses:(NSArray *)addresses assetType:(LegacyAssetType)assetType {
-    NSString *keychainKey = [KeychainItemWrapper keychainKeyForAssetType:assetType];
-    
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:keychainKey accessGroup:nil];
-    [keychain setObject:(__bridge id)kSecAttrAccessibleWhenUnlockedThisDeviceOnly forKey:(__bridge id)kSecAttrAccessible];
-    
-    [keychain setObject:keychainKey forKey:(__bridge id)kSecAttrAccount];
-    [keychain setObject:[NSKeyedArchiver archivedDataWithRootObject:addresses] forKey:(__bridge id)kSecValueData];
-}
-
-+ (void)removeFirstSwipeAddressForAssetType:(LegacyAssetType)assetType
-{
-    NSMutableArray *swipeAddresses = [KeychainItemWrapper getMutableSwipeAddressesForAssetType:assetType];
-    if (swipeAddresses.count > 0) {
-        [swipeAddresses removeObjectAtIndex:0];
-        
-        NSString *keychainKey = [KeychainItemWrapper keychainKeyForAssetType:assetType];
-        
-        KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:keychainKey accessGroup:nil];
-        [keychain setObject:(__bridge id)kSecAttrAccessibleWhenUnlockedThisDeviceOnly forKey:(__bridge id)kSecAttrAccessible];
-        
-        [keychain setObject:keychainKey forKey:(__bridge id)kSecAttrAccount];
-        [keychain setObject:[NSKeyedArchiver archivedDataWithRootObject:swipeAddresses] forKey:(__bridge id)kSecValueData];
-    } else {
-        DLog(@"Error removing first swipe address: no swipe addresses stored!");
-    }
-}
-
 + (void)removeAllSwipeAddressesForAssetType:(LegacyAssetType)assetType
 {
     NSString *keychainKey = [KeychainItemWrapper keychainKeyForAssetType:assetType];
@@ -116,27 +53,6 @@
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeTether];
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeWDGLD];
     [KeychainItemWrapper removeAllSwipeAddressesForAssetType:LegacyAssetTypeYearnFinance];
-}
-
-#pragma mark - Single Address Swipe to Receive
-
-+ (void)setSingleSwipeAddress:(NSString *_Nonnull)swipeAddress forAssetType:(LegacyAssetType)assetType
-{
-    NSString *key = [self keychainKeyForAssetType:assetType];
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:key accessGroup:nil];
-    [keychain setObject:(__bridge id)kSecAttrAccessibleWhenUnlockedThisDeviceOnly forKey:(__bridge id)kSecAttrAccessible];
-
-    [keychain setObject:key forKey:(__bridge id)kSecAttrAccount];
-    [keychain setObject:[swipeAddress dataUsingEncoding:NSUTF8StringEncoding] forKey:(__bridge id)kSecValueData];
-}
-
-+ (NSString *_Nullable)getSingleSwipeAddressForAssetType:(LegacyAssetType)assetType
-{
-    NSString *key = [self keychainKeyForAssetType:assetType];
-    KeychainItemWrapper *keychain = [[KeychainItemWrapper alloc] initWithIdentifier:key accessGroup:nil];
-    NSData *addressData = [keychain objectForKey:(__bridge id)kSecValueData];
-    NSString *address = [[NSString alloc] initWithData:addressData encoding:NSUTF8StringEncoding];
-    return address.length == 0 ? nil : address;
 }
 
 @end

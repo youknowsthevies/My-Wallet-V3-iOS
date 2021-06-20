@@ -15,9 +15,15 @@ public struct ERC20HistoricalTransaction: HistoricalTransaction, Tokenized, Hash
         transactionHash
     }
 
+    /**
+     The transaction identifier, used for equality checking and backend calls.
+
+     - Note: For ERC20 assets, this is identical to `transactionHash`.
+     */
     public var identifier: String {
         transactionHash
     }
+
     public var fromAddress: EthereumAddress
     public var toAddress: EthereumAddress
     public var direction: Direction

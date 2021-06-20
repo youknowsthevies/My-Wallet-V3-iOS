@@ -4,7 +4,7 @@ import Foundation
 import RxSwift
 
 /// Aggregrates any external service notification logic
-public protocol ExternalNotificationProviding: class {
+public protocol ExternalNotificationProviding: AnyObject {
     /// A `Single` that streams the token value if exist and not empty or `nil`.
     /// Throws an error (`RemoteNotificationTokenFetchError`) in case the service has failed or if the token came out empty.
     var token: Single<String> { get }

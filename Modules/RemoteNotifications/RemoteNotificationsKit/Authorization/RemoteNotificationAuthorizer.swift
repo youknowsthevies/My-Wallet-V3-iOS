@@ -110,7 +110,7 @@ extension RemoteNotificationAuthorizer: RemoteNotificationRegistering {
                     application.registerForRemoteNotifications()
                 },
                 onError: { error in
-                    Logger.shared.error("Token registration failed with error: \(error.localizedDescription)")
+                    Logger.shared.error("Token registration failed with error: \(String(describing: error))")
                 }
             )
     }

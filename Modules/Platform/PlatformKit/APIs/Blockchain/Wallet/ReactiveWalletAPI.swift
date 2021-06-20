@@ -14,7 +14,7 @@ public struct WalletSetup {
     }
 }
 
-public protocol ReactiveWalletCombineAPI: class {
+public protocol ReactiveWalletCombineAPI: AnyObject {
     var waitUntilInitializedSinglePublisher: AnyPublisher<Void, Never> { get }
     var waitUntilInitializedStreamPublisher: AnyPublisher<Void, Never> { get }
     var initializationStatePublisher: AnyPublisher<WalletSetup.State, Never> { get }

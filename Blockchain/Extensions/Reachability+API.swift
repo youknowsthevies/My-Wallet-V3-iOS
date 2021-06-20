@@ -17,7 +17,7 @@ extension Reachability {
     }
 }
 
-protocol InternetReachabilityAPI: class {
+protocol InternetReachabilityAPI: AnyObject {
     var canConnect: Bool { get }
 }
 

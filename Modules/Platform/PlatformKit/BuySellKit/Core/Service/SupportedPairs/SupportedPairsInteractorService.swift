@@ -9,7 +9,7 @@ import ToolKit
 public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState<SupportedPairs>
 
 /// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
-public protocol SupportedPairsInteractorServiceAPI: class {
+public protocol SupportedPairsInteractorServiceAPI: AnyObject {
     var pairs: Observable<SupportedPairs> { get }
     func fetch() -> Observable<SupportedPairs>
 }

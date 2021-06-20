@@ -46,14 +46,14 @@ enum CustodyWithdrawalStatus: Equatable {
     case failed(WithdrawalError)
 }
 
-protocol CustodyWithdrawalStateReceiverServiceAPI: class {
+protocol CustodyWithdrawalStateReceiverServiceAPI: AnyObject {
 
     /// The action that should be executed, the `next` action
     /// is coupled with the current state
     var action: Observable<CustodyWithdrawalStateService.Action> { get }
 }
 
-protocol CustodyWithdrawalStateEmitterServiceAPI: class {
+protocol CustodyWithdrawalStateEmitterServiceAPI: AnyObject {
 
     /// A relay for submitting the withdrawal status after submittal.
     /// This allows the `nextRelay` to be free of nested types and

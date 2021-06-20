@@ -2,7 +2,7 @@
 
 import RxSwift
 
-public protocol BalanceChangeProviding: class {
+public protocol BalanceChangeProviding: AnyObject {
     var change: Observable<MoneyBalancePairsCalculationStates> { get }
 
     subscript(currency: CryptoCurrency) -> AssetBalanceChangeProviding { get }

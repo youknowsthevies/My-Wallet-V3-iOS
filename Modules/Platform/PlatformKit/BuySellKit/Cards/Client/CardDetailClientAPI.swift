@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol CardDetailClientAPI: class {
+public protocol CardDetailClientAPI: AnyObject {
     func getCard(by id: String) -> Single<CardPayload>
 }

@@ -29,6 +29,11 @@ class SideMenuViewController: UIViewController {
     /// It is then assigned to `SideMenuCell` for layout purposes
     var peekPadding: CGFloat = 0
 
+    var createGestureRecognizers: (() -> (tapToCloseVC: UITapGestureRecognizer, tapToCloseTabBar: UITapGestureRecognizer)?)?
+
+    var provideTabControllerManager: (() -> TabControllerManager?)?
+    var provideSlidingViewController: (() -> ECSlidingViewController?)?
+
     // MARK: - Private Properties
 
     @IBOutlet private var tableViewBackgroundView: UIView!
@@ -52,9 +57,6 @@ class SideMenuViewController: UIViewController {
 
     private let recorder: ErrorRecording = CrashlyticsRecorder()
     private let analyticsRecorder: AnalyticsEventRecording = resolve()
-    private var appCoordinator: AppCoordinator {
-        AppCoordinator.shared
-    }
 
     // MARK: - View Controller Lifecycle
 
@@ -62,14 +64,12 @@ class SideMenuViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = UIColor.NavigationBar.LightContent.background
         tableViewBackgroundView.backgroundColor = UIColor.NavigationBar.LightContent.background
-        tapToCloseGestureRecognizerTabBar = UITapGestureRecognizer(
-            target: appCoordinator,
-            action: #selector(appCoordinator.toggleSideMenu)
-        )
-        tapToCloseGestureRecognizerVC = UITapGestureRecognizer(
-            target: appCoordinator,
-            action: #selector(appCoordinator.toggleSideMenu)
-        )
+        if let recognizers = createGestureRecognizers?() {
+            tapToCloseGestureRecognizerTabBar = recognizers.tapToCloseTabBar
+            tapToCloseGestureRecognizerVC = recognizers.tapToCloseVC
+        } else {
+            Logger.shared.warning("No gesture recognizers were set on \(self)")
+        }
         registerCells()
         initializeTableView()
         addShadow()
@@ -135,14 +135,14 @@ class SideMenuViewController: UIViewController {
     }
 
     private func addShadow() {
-        guard let view = appCoordinator.slidingViewController?.topViewController.view else { return }
+        guard let view = provideSlidingViewController?()?.topViewController.view else { return }
         view.layer.shadowOpacity = 0.3
         view.layer.shadowRadius = 10.0
         view.layer.shadowColor = UIColor.black.cgColor
     }
 
     private func setSideMenuGestures() {
-        guard let tabControllerManager = appCoordinator.tabControllerManager else { return }
+        guard let tabControllerManager = provideTabControllerManager?() else { return }
         let tabViewController = tabControllerManager.tabViewController
 
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
@@ -152,7 +152,7 @@ class SideMenuViewController: UIViewController {
         }
 
         // Enable Pan gesture and tap gesture to close sideMenu
-        guard let slidingViewController = appCoordinator.slidingViewController else {
+        guard let slidingViewController = provideSlidingViewController?() else {
             return
         }
 
@@ -170,9 +170,9 @@ class SideMenuViewController: UIViewController {
     }
 
     private func resetSideMenuGestures() {
-        guard let tabControllerManager = appCoordinator.tabControllerManager else { return }
+        guard let tabControllerManager = provideTabControllerManager?() else { return }
         let tabViewController = tabControllerManager.tabViewController
-        guard let slidingViewController = appCoordinator.slidingViewController else { return }
+        guard let slidingViewController = provideSlidingViewController?() else { return }
         if let activeViewController = tabViewController.activeViewController {
             activeViewController.view.removeGestureRecognizer(slidingViewController.panGesture)
             activeViewController.view.removeGestureRecognizer(tapToCloseGestureRecognizerVC)

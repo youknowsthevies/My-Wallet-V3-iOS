@@ -4,16 +4,16 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-public final class FiatCustodialBalanceViewPresenter: Equatable {
+final class FiatCustodialBalanceViewPresenter: Equatable {
 
     // MARK: - Types
 
-    public enum PresentationStyle {
+    enum PresentationStyle {
         case border
         case plain
     }
 
-    public struct Descriptors {
+    struct Descriptors {
         let currencyNameFont: UIFont
         let currencyNameFontColor: UIColor
         let currencyNameAccessibilityId: Accessibility
@@ -25,7 +25,7 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
     }
 
     /// Emits tap events
-    public var tap: Signal<Void> {
+    var tap: Signal<Void> {
         tapRelay.asSignal()
     }
 
@@ -46,12 +46,8 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
         currencyCodeRelay.asDriver()
     }
 
-    var identifier: String {
-        interactor.identifier
-    }
-
     var currencyType: CurrencyType {
-        interactor.balance.base.currencyType
+        interactor.currencyType
     }
 
     let tapRelay = PublishRelay<Void>()
@@ -64,10 +60,12 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
     private let interactor: FiatCustodialBalanceViewInteractor
     private let disposeBag = DisposeBag()
 
-    public init(interactor: FiatCustodialBalanceViewInteractor,
-                descriptors: Descriptors,
-                respondsToTaps: Bool,
-                presentationStyle: PresentationStyle) {
+    init(
+        interactor: FiatCustodialBalanceViewInteractor,
+        descriptors: Descriptors,
+        respondsToTaps: Bool,
+        presentationStyle: PresentationStyle
+    ) {
         self.interactor = interactor
         self.respondsToTaps = respondsToTaps
         self.presentationStyle = presentationStyle
@@ -77,7 +75,7 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
         )
 
         interactor
-            .currency
+            .fiatCurrency
             .map(\.logoResource)
             .map(\.local)
             .map { localResource in
@@ -94,8 +92,8 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
             .disposed(by: disposeBag)
 
         interactor
-            .currency
-            .map { $0.code }
+            .fiatCurrency
+            .map(\.code)
             .map {
                 .init(
                     text: $0,
@@ -108,8 +106,8 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
             .disposed(by: disposeBag)
 
         interactor
-            .currency
-            .map { $0.name }
+            .fiatCurrency
+            .map(\.name)
             .map {
                 .init(
                     text: $0,
@@ -124,13 +122,13 @@ public final class FiatCustodialBalanceViewPresenter: Equatable {
     }
 }
 
-public extension FiatCustodialBalanceViewPresenter {
-    static func ==(lhs: FiatCustodialBalanceViewPresenter, rhs: FiatCustodialBalanceViewPresenter) -> Bool {
-        lhs.interactor.balance == rhs.interactor.balance
+extension FiatCustodialBalanceViewPresenter {
+    static func == (lhs: FiatCustodialBalanceViewPresenter, rhs: FiatCustodialBalanceViewPresenter) -> Bool {
+        lhs.interactor == rhs.interactor
     }
 }
 
-public extension FiatCustodialBalanceViewPresenter.Descriptors {
+extension FiatCustodialBalanceViewPresenter.Descriptors {
     typealias Descriptors = FiatCustodialBalanceViewPresenter.Descriptors
     typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
 

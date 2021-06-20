@@ -3,7 +3,7 @@
 import RxSwift
 
 /// A service API for auto pairing
-public protocol AutoWalletPairingServiceAPI: class {
+public protocol AutoWalletPairingServiceAPI: AnyObject {
     /// Maps a QR pairing code of a wallet into its password.
     func pair(using pairingData: PairingData) -> Single<String>
 }

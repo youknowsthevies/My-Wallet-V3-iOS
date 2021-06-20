@@ -3,7 +3,7 @@
 import DIKit
 import RxSwift
 
-public protocol SwapActivityServiceAPI: class {
+public protocol SwapActivityServiceAPI: AnyObject {
     var pageSize: Int { get }
     func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]>
     func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]>

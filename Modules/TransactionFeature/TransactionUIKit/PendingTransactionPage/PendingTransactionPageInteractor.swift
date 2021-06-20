@@ -59,7 +59,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                         fatalError("No state.source")
                     }
                     if crashOnError {
-                        fatalError(error.localizedDescription)
+                        fatalError(String(describing: error))
                     }
                     return .zero(currency: source.currencyType)
                 }
@@ -72,7 +72,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
                     return value
                 case .failure(let error):
                     if crashOnError {
-                        fatalError(error.localizedDescription)
+                        fatalError(String(describing: error))
                     }
                     switch state.destination {
                     case nil:
@@ -445,9 +445,9 @@ private extension TransactionErrorState {
         case .unknownError:
             return LocalizationConstants.Transaction.Error.generic
         case .fatalError(let error):
-            return error.localizedDescription
+            return String(describing: error)
         case .nabuError(let error):
-            return error.localizedDescription
+            return String(describing: error)
         }
     }
 

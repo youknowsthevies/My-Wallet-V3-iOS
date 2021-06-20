@@ -2,6 +2,6 @@
 
 import Foundation
 
-protocol WalletCredentialsProviding: class {
+protocol WalletCredentialsProviding: AnyObject {
     var legacyPassword: String? { get }
 }

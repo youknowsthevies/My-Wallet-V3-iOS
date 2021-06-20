@@ -43,6 +43,7 @@ extension BitcoinHistoricalTransaction {
         }
         return .init(
             identifier: identifier,
+            transactionHash: transactionHash,
             creationDate: createdAt,
             status: status,
             type: direction == .debit ? .receive : .send,

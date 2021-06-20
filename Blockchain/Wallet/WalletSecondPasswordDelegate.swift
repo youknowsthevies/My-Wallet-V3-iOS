@@ -3,7 +3,7 @@
 import JavaScriptCore
 import PlatformKit
 
-protocol WalletSecondPasswordDelegate: class {
+protocol WalletSecondPasswordDelegate: AnyObject {
     /// Method invoked when second password is required for JS function to complete.
     func getSecondPassword(success: WalletSuccessCallback, dismiss: WalletDismissCallback?)
 

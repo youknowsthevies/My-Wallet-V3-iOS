@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol AutoWalletPairingClientAPI: class {
+public protocol AutoWalletPairingClientAPI: AnyObject {
     func request(guid: String) -> Single<String>
 }

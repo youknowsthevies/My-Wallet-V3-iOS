@@ -55,7 +55,6 @@ struct Constants {
         static let backupSuccess = NSNotification.Name("backupSuccess")
         static let getFiatAtTime = NSNotification.Name("getFiatAtTime")
         static let exchangeSubmitted = NSNotification.Name("exchangeSubmitted")
-        static let transactionReceived = NSNotification.Name("transactionReceived")
         static let kycStopped = NSNotification.Name("kycStopped")
         static let swapFlowCompleted = NSNotification.Name("swapFlowCompleted")
         static let swapToPaxFlowCompleted = NSNotification.Name("swapToPaxFlowCompleted")
@@ -80,9 +79,6 @@ struct Constants {
         static let lockbox = "https://blockchain.com/lockbox"
         static let stellarMinimumBalanceInfo = "https://www.stellar.org/developers/guides/concepts/fees.html#minimum-account-balance"
         static let ethGasExplanationForPax = "https://support.blockchain.com/hc/en-us/articles/360027492092-Why-do-I-need-ETH-to-send-my-PAX-"
-    }
-    struct Wallet {
-        static let swipeToReceiveAddressCount = 5
     }
     struct JSErrors {
         static let addressAndKeyImportWrongBipPass = "wrongBipPass"

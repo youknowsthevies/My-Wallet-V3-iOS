@@ -9,7 +9,7 @@ public enum EmailSettingsServiceError: Error {
     case networkError(NetworkError)
 }
 
-public protocol EmailSettingsServiceAPI: class {
+public protocol EmailSettingsServiceAPI: AnyObject {
 
     /// A `Single` that streams
     var email: Single<String> { get }

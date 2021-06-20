@@ -98,7 +98,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                     if let _ = error as? RxError {
                         self?.showRxFailureError(isBuy: isBuy)
                     } else {
-                        self?.showError(localizedDescription: error.localizedDescription)
+                        self?.showError(localizedDescription: String(describing: error))
                     }
                 }
             )

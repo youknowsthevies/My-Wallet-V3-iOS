@@ -103,7 +103,7 @@ final class SecureChannelRouter: SecureChannelRouting {
         alertViewPresenter.notify(
             content: AlertViewContent(
                 title: "QR Code Login",
-                message: error.localizedDescription
+                message: String(describing: error)
             ),
             in: nil
         )

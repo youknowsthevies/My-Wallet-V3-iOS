@@ -5,7 +5,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public protocol NonCustodialActionRouterAPI: class {
+public protocol NonCustodialActionRouterAPI: AnyObject {
     func next(to state: NonCustodialActionState)
     func start(with account: BlockchainAccount)
 }

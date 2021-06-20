@@ -5,7 +5,7 @@ import PlatformKit
 import RxCocoa
 import RxSwift
 
-public protocol WalletActionScreenPresenting: class {
+public protocol WalletActionScreenPresenting: AnyObject {
 
     var selectionRelay: PublishRelay<WalletActionCellType> { get }
 

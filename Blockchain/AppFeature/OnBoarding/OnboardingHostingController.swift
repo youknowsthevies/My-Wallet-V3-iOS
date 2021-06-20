@@ -36,6 +36,23 @@ final class OnboardingHostingController: UIViewController {
             .store(in: &cancellables)
 
         store
+            .scope(state: \.passwordScreen, action: Onboarding.Action.passwordScreen)
+            .ifLet(then: { [weak self] _ in
+                guard let self = self else { return }
+                let walletFetcher: (String) -> Void = { password in
+                    self.viewStore.send(.passwordScreen(.authenticate(password)))
+                }
+                let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
+                let presenter = PasswordRequiredScreenPresenter(interactor: interactor)
+                let viewController = PasswordRequiredViewController(presenter: presenter)
+                let navigationController = UINavigationController(rootViewController: viewController)
+
+                self.transitionFromCurrentController(to: navigationController)
+                self.currentController = navigationController
+            })
+            .store(in: &cancellables)
+
+        store
             .scope(state: \.walletUpgradeState, action: Onboarding.Action.walletUpgrade)
             .ifLet(then: { [weak self] _ in
                 guard let self = self else { return }

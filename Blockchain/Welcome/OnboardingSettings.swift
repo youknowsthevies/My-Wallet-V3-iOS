@@ -2,8 +2,15 @@
 
 import Foundation
 
+protocol OnboardingSettingsAPI {
+    var walletIntroLatestLocation: WalletIntroductionLocation? { get set }
+    var firstRun: Bool { get set }
+
+    func reset()
+}
+
 /// Encapsulates all onboarding-related settings for the user
-final class OnboardingSettings {
+final class OnboardingSettings: OnboardingSettingsAPI {
 
     private lazy var defaults: UserDefaults = .standard
 

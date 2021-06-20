@@ -3,7 +3,7 @@
 import RxSwift
 
 /// Fetches the supported pairs
-protocol SupportedPairsClientAPI: class {
+protocol SupportedPairsClientAPI: AnyObject {
     /// Fetch the supported pairs according to a given fetch-option
     func supportedPairs(with option: SupportedPairsFilterOption) -> Single<SupportedPairsResponse>
 }

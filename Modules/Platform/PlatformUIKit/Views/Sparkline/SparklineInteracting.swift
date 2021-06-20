@@ -5,7 +5,7 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-public protocol SparklineInteracting: class {
+public protocol SparklineInteracting: AnyObject {
 
     /// The currency displayed in the Sparkline
     var cryptoCurrency: CryptoCurrency { get }

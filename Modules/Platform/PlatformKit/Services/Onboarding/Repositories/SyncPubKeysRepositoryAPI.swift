@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol SyncPubKeysRepositoryAPI: class {
+public protocol SyncPubKeysRepositoryAPI: AnyObject {
     func set(syncPubKeys: Bool) -> Completable
 }

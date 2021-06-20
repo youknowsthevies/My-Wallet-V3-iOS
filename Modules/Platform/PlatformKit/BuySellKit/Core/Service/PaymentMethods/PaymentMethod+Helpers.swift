@@ -23,7 +23,13 @@ extension PaymentMethod {
         }
         let min = FiatValue.create(minor: method.limits.min, currency: currency)!
         let max = FiatValue.create(minor: method.limits.max, currency: currency)!
-        self.init(type: methodType, max: max, min: min, isEligible: method.eligible)
+        self.init(
+            type: methodType,
+            max: max,
+            min: min,
+            isEligible: method.eligible,
+            isVisible: method.visible
+        )
     }
 }
 

@@ -21,12 +21,10 @@ public protocol KeychainItemWrapping {
     func removeSharedKeyFromKeychain()
     func setSharedKeyInKeychain(_ sharedKey: String?)
 
-    func getSingleSwipeAddress(for: CryptoCurrency) -> String?
-    func removeAllSwipeAddresses(for: CryptoCurrency)
-    func setSingleSwipeAddress(_ address: String, for: CryptoCurrency)
+    func removeAllSwipeAddresses()
 }
 
-public protocol LegacyPasswordProviding: class {
+public protocol LegacyPasswordProviding: AnyObject {
     func setLegacyPassword(_ legacyPassword: String?)
 }
 
@@ -45,8 +43,7 @@ public final class BlockchainSettings: NSObject {
                       AppSettingsAuthenticating,
                       AppSettingsSecureChannel,
                       CloudBackupConfiguring,
-                      PermissionSettingsAPI,
-                      SwipeToReceiveConfiguring {
+                      PermissionSettingsAPI {
 
         @Inject
         @objc
@@ -289,47 +286,6 @@ public final class BlockchainSettings: NSObject {
         }
 
         /**
-         Determines if the application should allow access to swipe-to-receive on the pin screen.
-
-         - Note:
-         The value of this setting is controlled by a switch on the settings screen.
-
-         The default of this setting is `true`.
-         */
-        public var swipeToReceiveEnabled: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.swipeToReceiveEnabled.rawValue)
-            }
-        }
-
-        private func getSwipeAddress(for currency: CryptoCurrency) -> String? {
-            keychainItemWrapper.getSingleSwipeAddress(for: currency)
-        }
-
-        private func setSwipeAddress(_ address: String?, for currency: CryptoCurrency) {
-            guard let address = address else {
-                keychainItemWrapper.removeAllSwipeAddresses(for: currency)
-                return
-            }
-            keychainItemWrapper.setSingleSwipeAddress(address, for: currency)
-        }
-
-        /// ETH address to be used for swipe to receive
-        public var swipeAddressForEthereum: String? {
-            get { getSwipeAddress(for: .ethereum) }
-            set { setSwipeAddress(newValue, for: .ethereum) }
-        }
-
-        /// XLM address to be used for swipe to receive
-        public var swipeAddressForStellar: String? {
-            get { getSwipeAddress(for: .stellar) }
-            set { setSwipeAddress(newValue, for: .stellar) }
-        }
-
-        /**
          Determines the number of labeled addresses for the default account.
          - Note:
          This value is set when the wallet has gotten its latest multi-address response.
@@ -441,7 +397,6 @@ public final class BlockchainSettings: NSObject {
             super.init()
 
             defaults.register(defaults: [
-                UserDefaults.Keys.swipeToReceiveEnabled.rawValue: true,
                 UserDefaults.Keys.cloudBackupEnabled.rawValue: true
             ])
             migratePasswordAndPinIfNeeded()

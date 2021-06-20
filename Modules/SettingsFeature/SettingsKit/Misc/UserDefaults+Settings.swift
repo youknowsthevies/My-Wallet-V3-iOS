@@ -18,7 +18,6 @@ extension UserDefaults {
         case passwordPartHash
         case biometryEnabled
         case cloudBackupEnabled
-        case swipeToReceiveEnabled = "swipeToReceive"
         case defaultAccountLabelledAddressesCount
         case dontAskUserToShowAppReviewPrompt
         case didTapOnAirdropDeepLink

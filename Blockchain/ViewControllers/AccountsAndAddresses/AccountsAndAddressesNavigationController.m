@@ -38,8 +38,7 @@
 
 - (void)didSetDefaultAccount
 {
-    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoin];
-    [AssetAddressRepository.sharedInstance removeAllSwipeAddressesForAsset:LegacyAssetTypeBitcoinCash];
+
 }
 
 - (void)didGenerateNewAddress

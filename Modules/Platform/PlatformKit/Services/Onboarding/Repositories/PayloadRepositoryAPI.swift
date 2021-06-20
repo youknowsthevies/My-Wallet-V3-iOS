@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol PayloadRepositoryAPI: class {
+public protocol PayloadRepositoryAPI: AnyObject {
     func set(payload: String) -> Completable
 }

@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol SessionTokenServiceAPI: class {
+public protocol SessionTokenServiceAPI: AnyObject {
     func setupSessionToken() -> Completable
 }

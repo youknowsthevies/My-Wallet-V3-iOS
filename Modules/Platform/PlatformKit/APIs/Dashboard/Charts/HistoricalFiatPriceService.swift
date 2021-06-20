@@ -9,7 +9,7 @@ import ToolKit
 /// latest Fiat price for a given asset type and is to be used
 /// with the `HistoricalPricesAPI`. Basically it's the last item
 /// in the array of prices returned.
-public protocol LatestFiatPriceFetching: class {
+public protocol LatestFiatPriceFetching: AnyObject {
     var latestPrice: Observable<FiatValue> { get }
 }
 

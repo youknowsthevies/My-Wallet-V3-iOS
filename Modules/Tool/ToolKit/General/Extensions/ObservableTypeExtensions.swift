@@ -238,7 +238,7 @@ extension ObservableType {
 
     public func crashOnError(file: String = #file, line: UInt = #line, function: String = #function) -> Observable<Element> {
         self.do(onError: { error in
-            fatalError(error.localizedDescription)
+            fatalError(String(describing: error))
         })
     }
 }

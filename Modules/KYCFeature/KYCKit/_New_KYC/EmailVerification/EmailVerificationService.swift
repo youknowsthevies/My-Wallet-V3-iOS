@@ -29,6 +29,11 @@ public struct EmailVerificationResponse: Equatable {
 
     public let emailAddress: String
     public let status: Status
+
+    public init(emailAddress: String, status: Status) {
+        self.emailAddress = emailAddress
+        self.status = status
+    }
 }
 
 /// `EmailVerificationServiceAPI` is the interface the UI should use to interface to the email verification APIs.

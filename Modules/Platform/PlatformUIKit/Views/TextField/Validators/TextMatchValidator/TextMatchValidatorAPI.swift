@@ -2,6 +2,6 @@
 
 import RxSwift
 
-public protocol TextMatchValidatorAPI: class {
+public protocol TextMatchValidatorAPI: AnyObject {
     var validationState: Observable<TextValidationState> { get }
 }

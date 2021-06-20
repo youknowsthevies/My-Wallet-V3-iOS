@@ -5,7 +5,7 @@ import NetworkKit
 import RxSwift
 
 /// Protocol definition for interacting with the `WalletSettings` object.
-protocol SettingsClientAPI: class {
+protocol SettingsClientAPI: AnyObject {
 
     /// Fetches the wallet settings from the backend.
     /// - Parameter guid: The wallet identifier that must be valid.

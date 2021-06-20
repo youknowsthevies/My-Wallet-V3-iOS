@@ -25,3 +25,8 @@ public func unimplemented(_ message: String = "", file: StaticString = #file, li
 public func impossible(_ message: String = "", file: StaticString = #file, line: UInt = #line) -> Never {
     fatalError("Impossible state. \(message)", file: file, line: line)
 }
+
+/// Terminates the app with a `fatalError` marking an unexpected deallocation at the caller's file and line
+public func unexpectedDeallocation(file: StaticString = #file, line: UInt = #line) -> Never {
+    fatalError("Unexpected deallocation at \(#file):\(#line)")
+}

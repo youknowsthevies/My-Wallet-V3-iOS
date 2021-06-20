@@ -8,7 +8,7 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-protocol InterestIdentityVerificationAnnouncementRouting: class {
+protocol InterestIdentityVerificationAnnouncementRouting: AnyObject {
     func showInterestDashboardAnnouncementScreen(isKYCVerfied: Bool)
 }
 
@@ -77,7 +77,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
     // MARK: - Setup
 
     init(isKYCVerified: Bool,
-         cacheSuite: CacheSuite = UserDefaults.standard,
+         cacheSuite: CacheSuite = resolve(),
          analyticsRecorder: AnalyticsEventRecording = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,

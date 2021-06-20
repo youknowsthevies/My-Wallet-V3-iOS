@@ -36,6 +36,7 @@ final class ActivityMessageViewModel {
             text: LocalizationConstants.Activity.MainScreen.MessageView.sharedWithBlockchain,
             font: .main(.semibold, 8.0),
             color: .descriptionText,
+            alignment: .right,
             accessibility: .none
         )
 
@@ -63,7 +64,8 @@ final class ActivityMessageViewModel {
             accessibility: .none
         )
 
-        guard let url = transactionDetailService.transactionDetailURL(for: event.identifier, cryptoCurrency: transaction.currency) else { return nil }
+        let transactionHash = transaction.transactionHash
+        guard let url = transactionDetailService.transactionDetailURL(for: transactionHash, cryptoCurrency: transaction.currency) else { return nil }
         image = QRCode(string: url)?.image
 
         logoImage = .init(

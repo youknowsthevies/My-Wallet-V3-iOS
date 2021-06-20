@@ -3,7 +3,7 @@
 import Foundation
 
 // Protocol for a view that performs an async function.
-public protocol LoadingView: class {
+public protocol LoadingView: AnyObject {
     func showLoadingIndicator()
 
     func hideLoadingIndicator()

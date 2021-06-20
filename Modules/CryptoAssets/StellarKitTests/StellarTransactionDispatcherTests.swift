@@ -37,7 +37,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
         do {
             _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
         } catch {
-            XCTFail(error.localizedDescription)
+            XCTFail(String(describing: error))
         }
     }
 
@@ -47,7 +47,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
             XCTFail("Should have failed")
         } catch {
             if (error as? SendFailureReason) != expectedError {
-                XCTFail("Unexpected error \(error.localizedDescription)")
+                XCTFail("Unexpected error \(String(describing: error))")
             }
         }
     }
@@ -81,7 +81,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
         do {
             _ = try sut.dryRunTransaction(sendDetails: sendDetails).toBlocking().first()
         } catch {
-            XCTFail(error.localizedDescription)
+            XCTFail(String(describing: error))
         }
     }
 

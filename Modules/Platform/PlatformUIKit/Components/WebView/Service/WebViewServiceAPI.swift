@@ -3,7 +3,7 @@
 import SafariServices
 
 /// A protocol for Safari services
-public protocol WebViewServiceAPI: class {
+public protocol WebViewServiceAPI: AnyObject {
     func openSafari(url: String, from parent: ViewControllerAPI)
     func openSafari(url: URL, from parent: ViewControllerAPI)
 }

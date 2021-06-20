@@ -16,6 +16,16 @@ public extension UIView {
         return constraints
     }
 
+    @discardableResult
+    func constraint(centerTo other: UIView, insets: CGPoint = .zero) -> [NSLayoutConstraint] {
+        let constraints = [
+            centerXAnchor.constraint(equalTo: other.centerXAnchor, constant: insets.x),
+            centerYAnchor.constraint(equalTo: other.centerYAnchor, constant: insets.y)
+        ]
+        activate(constraints)
+        return constraints
+    }
+
     private func activate(_ constraints: [NSLayoutConstraint]) {
         translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate(constraints)

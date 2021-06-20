@@ -6,7 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public protocol OrdersServiceAPI: class {
+public protocol OrdersServiceAPI: AnyObject {
 
     /// Streams all cached Simple Buy orders from cache, or fetch from
     /// remote if they are not cached

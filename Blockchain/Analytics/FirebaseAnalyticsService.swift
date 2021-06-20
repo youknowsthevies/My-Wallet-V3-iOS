@@ -2,7 +2,7 @@
 
 import AnalyticsKit
 import DIKit
-import Firebase
+import FirebaseAnalytics
 import Foundation
 import PlatformKit
 import ToolKit

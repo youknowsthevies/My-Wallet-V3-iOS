@@ -54,7 +54,7 @@ protocol YodleeScreenPresentable: Presentable {
     func connect(action: Driver<YodleeScreen.Action>) -> Driver<YodleeScreen.Effect>
 }
 
-protocol YodleeScreenListener: class {
+protocol YodleeScreenListener: AnyObject {
     func closeFlow(isInteractive: Bool)
     func returnToSplashScreen()
     func updateBankLinked()

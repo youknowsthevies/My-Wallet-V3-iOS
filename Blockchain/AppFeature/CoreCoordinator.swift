@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -9,6 +10,14 @@ import RemoteNotificationsKit
 import SettingsKit
 import UIKit
 import WalletPayloadKit
+
+/// Used for canceling publishers
+private struct WalletCancelations {
+    struct DecryptId: Hashable {}
+    struct AuthenticationId: Hashable {}
+    struct InitializationId: Hashable {}
+    struct UpgradeId: Hashable {}
+}
 
 struct CoreAppState: Equatable {
     var window: UIWindow?
@@ -20,9 +29,16 @@ public enum CoreAppAction: Equatable {
     case start(window: UIWindow)
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
-    case walletInitialized
-    case walletNeedsUpgrade(Bool)
     case proceedToLoggedIn
+    // Wallet Related Actions
+    case walletInitialized
+    case authenticate(String)
+    case didDecryptWallet(WalletDecryption)
+    case decryptionFailure(AuthenticationError)
+    case authenticated(Result<Bool, AuthenticationError>)
+    case setupPin
+    case initializeWallet
+    case walletNeedsUpgrade(Bool)
     case none
 }
 
@@ -36,6 +52,10 @@ struct CoreAppEnvironment {
     var exchangeRepository: ExchangeAccountRepositoryAPI
     var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
     var coincore: CoincoreAPI
+    var sharedContainer: SharedContainerUserDefaults
+    var analyticsRecorder: AnalyticsEventRecorderAPI
+    var siftService: SiftServiceAPI
+    var onboardingSettings: OnboardingSettingsAPI
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -83,17 +103,78 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 )
             }
         )
-    case .onboarding(.pin(.authenticated(.success))):
+    case .authenticate(let password):
+        environment.walletManager.wallet.fetch(with: password)
+        let appSettings = environment.blockchainSettings
+        return .merge(
+            environment.walletManager.didDecryptWallet
+                .catchToEffect()
+                .cancellable(id: WalletCancelations.DecryptId(), cancelInFlight: false)
+                .map { result -> CoreAppAction in
+                    guard case let .success(value) = result else {
+                        return .none
+                    }
+                    return handleWalletDecryption(value)
+                },
+            environment.walletManager.didCompleteAuthentication
+                .catchToEffect()
+                .cancellable(id: WalletCancelations.AuthenticationId(), cancelInFlight: false)
+                .map { result -> CoreAppAction in
+                    guard case let .success(value) = result else {
+                        return CoreAppAction.authenticated(
+                            .failure(.init(code: AuthenticationError.ErrorCode.unknown.rawValue))
+                        )
+                    }
+                    return CoreAppAction.authenticated(value)
+                }
+        )
+    case .didDecryptWallet(let decryption):
+        environment.blockchainSettings.guid = decryption.guid
+        environment.blockchainSettings.sharedKey = decryption.sharedKey
+
+        return .merge(
+            .cancel(id: WalletCancelations.DecryptId()),
+            .fireAndForget {
+                clearPinIfNeeded(
+                    for: decryption.passwordPartHash,
+                    appSettings: environment.blockchainSettings
+                )
+            }
+        )
+    case .decryptionFailure(let error):
+        return .none
+    case .authenticated(.failure(let error)):
+        // TODO: Handle authentication error
+        return .none
+    case .authenticated(.success):
+        // decide if we need to set a pin or not
+        guard environment.blockchainSettings.isPinSet else {
+            return .merge(
+                .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(value: .setupPin)
+            )
+        }
+        return .merge(
+            .cancel(id: WalletCancelations.AuthenticationId()),
+            Effect(value: .initializeWallet)
+        )
+    case .setupPin:
+        state.onboarding?.pinState = .init()
+        state.onboarding?.passwordScreen = nil
+        return Effect(value: CoreAppAction.onboarding(.pin(.create)))
+    case .initializeWallet:
         return environment.walletManager
             .reactiveWallet
             .waitUntilInitializedSinglePublisher
             .catchToEffect()
+            .cancellable(id: WalletCancelations.InitializationId(), cancelInFlight: false)
             .map { _ in CoreAppAction.walletInitialized }
     case .walletInitialized:
         // TODO: Handle second password as well
         return environment.walletUpgradeService
             .needsWalletUpgradePublisher
             .catchToEffect()
+            .cancellable(id: WalletCancelations.UpgradeId(), cancelInFlight: false)
             .map { result -> CoreAppAction in
                 guard case .success(let shouldUpgrade) = result else {
                     // impossible with current `WalletUpgradeServicing` implementation
@@ -108,13 +189,55 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         state.onboarding?.pinState = nil
         state.onboarding?.walletUpgradeState = WalletUpgrade.State()
-        return Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
+        return .merge(
+            .cancel(id: WalletCancelations.InitializationId()),
+            .cancel(id: WalletCancelations.UpgradeId()),
+            Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
+        )
     case .proceedToLoggedIn:
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
-        return Effect(value: CoreAppAction.loggedIn(.start(window: state.window)))
+        return .merge(
+            .cancel(id: WalletCancelations.InitializationId()),
+            .cancel(id: WalletCancelations.UpgradeId()),
+            Effect(
+                value: CoreAppAction.loggedIn(.start(window: state.window))
+            )
+        )
     case .onboarding(.walletUpgrade(.completed)):
-        return Effect(value: CoreAppAction.proceedToLoggedIn)
+        return Effect(
+            value: CoreAppAction.proceedToLoggedIn
+        )
+    case .onboarding(.passwordScreen(.authenticate(let password))):
+        return Effect(
+            value: .authenticate(password)
+        )
+    case .onboarding(.pin(.handleAuthentication(let password))):
+        return Effect(
+            value: .authenticate(password)
+        )
+    case .onboarding(.pin(.pinCreated)):
+        return Effect(
+            value: .initializeWallet
+        )
+    case .onboarding(.pin(.logout)),
+         .loggedIn(.logout):
+        // reset
+        environment.walletManager.close()
+
+        NotificationCenter.default.post(name: .logout, object: nil)
+        environment.analyticsRecorder.record(event: AnalyticsEvents.New.Navigation.signedOut)
+
+        environment.siftService.removeUserId()
+        environment.sharedContainer.reset()
+        environment.blockchainSettings.reset()
+        environment.onboardingSettings.reset()
+
+        // update state
+        state.loggedIn = nil
+        state.onboarding = .init(pinState: nil, walletUpgradeState: nil, passwordScreen: .init())
+        // show password screen
+        return Effect(value: .onboarding(.passwordScreen(.start)))
     case .onboarding:
         return .none
     case .loggedIn:
@@ -161,4 +284,44 @@ internal func syncPinKeyWithICloud(blockchainSettings: BlockchainSettings.App,
             blockchainSettings.encryptedPinPassword = pinData.encryptedPinPassword
         }
     }
+}
+
+func handleWalletDecryption(_ decryption: WalletDecryption) -> CoreAppAction {
+
+    //// Verify valid GUID and sharedKey
+    guard let guid = decryption.guid, guid.count == 36 else {
+        return .decryptionFailure(
+            AuthenticationError(
+                code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue,
+                description: LocalizationConstants.Authentication.errorDecryptingWallet
+            )
+        )
+    }
+
+    guard let sharedKey = decryption.sharedKey, sharedKey.count == 36 else {
+        return .decryptionFailure(
+            AuthenticationError(
+                code: AuthenticationError.ErrorCode.invalidSharedKey.rawValue,
+                description: LocalizationConstants.Authentication.invalidSharedKey
+            )
+        )
+    }
+
+    return .didDecryptWallet(decryption)
+}
+
+func clearPinIfNeeded(for passwordPartHash: String?, appSettings: BlockchainSettings.App) {
+    // Because we are not storing the password on the device. We record the first few letters of the hashed password.
+    // With the hash prefix we can then figure out if the password changed. If so, clear the pin
+    // so that the user can reset it
+    guard let passwordPartHash = passwordPartHash,
+          let savedPasswordPartHash = appSettings.passwordPartHash else {
+        return
+    }
+
+    guard passwordPartHash != savedPasswordPartHash else {
+        return
+    }
+
+    appSettings.clearPin()
 }

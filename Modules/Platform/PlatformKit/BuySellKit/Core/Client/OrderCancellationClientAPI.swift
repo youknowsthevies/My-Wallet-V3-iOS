@@ -2,7 +2,7 @@
 
 import RxSwift
 
-protocol OrderCancellationClientAPI: class {
+protocol OrderCancellationClientAPI: AnyObject {
     /// Cancels an order with a given identifier
     func cancel(order id: String) -> Completable
 }

@@ -61,7 +61,7 @@ final class ActivityRouter: ActivityRouterAPI {
 
     func showBlockchainExplorer(for event: TransactionalActivityItemEvent) {
         guard
-            let urlString = transactionDetailService.transactionDetailURL(for: event.identifier, cryptoCurrency: event.currency),
+            let urlString = transactionDetailService.transactionDetailURL(for: event.transactionHash, cryptoCurrency: event.currency),
             let url = URL(string: urlString)
             else { return }
         let controller = SFSafariViewController(url: url)

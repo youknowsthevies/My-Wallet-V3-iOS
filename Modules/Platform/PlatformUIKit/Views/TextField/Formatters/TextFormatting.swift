@@ -28,6 +28,6 @@ public enum TextInputOperation {
     case deletion
 }
 
-public protocol TextFormatting: class {
+public protocol TextFormatting: AnyObject {
     func format(_ string: String, operation: TextInputOperation) -> TextFormattingSource
 }

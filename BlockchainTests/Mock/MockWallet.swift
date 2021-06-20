@@ -26,6 +26,5 @@ class MockWallet: Wallet {
     override func fetch(with password: String) {
         fetchCalled = true
         self.password = password
-        load(withGuid: guid, sharedKey: sharedKey, password: password)
     }
 }

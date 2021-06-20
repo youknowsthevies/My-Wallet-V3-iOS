@@ -62,7 +62,7 @@ class PinScreenPresenterTests: XCTestCase {
     func testAuthenticationPinIncorrectOnLogin() {
         let flow = PinRouting.Flow.authenticate(from: .background, logoutRouting: {})
         let useCase = PinScreenUseCase.authenticateOnLogin
-        let interactor = MockPinInteractor(expectedError: .incorrectPin("pin incorrect"))
+        let interactor = MockPinInteractor(expectedError: .incorrectPin("pin incorrect", 0))
         let forward: PinRouting.RoutingType.Forward = { _ in
             XCTFail("expected an error \(PinError.incorrectPin). `forwardRouting` was invoked instead")
         }

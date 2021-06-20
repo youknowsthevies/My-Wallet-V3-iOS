@@ -4,7 +4,7 @@ import PlatformKit
 import RxSwift
 
 /// Entry Point for any remote notifications network requests and responses
-protocol RemoteNotificationNetworkServicing: class {
+protocol RemoteNotificationNetworkServicing: AnyObject {
     /// Send network request for remote notifications registration
     /// - Parameters:
     ///   - deviceToken: A token string that identifies the device

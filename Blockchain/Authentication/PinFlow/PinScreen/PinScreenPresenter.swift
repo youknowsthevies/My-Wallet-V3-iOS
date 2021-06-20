@@ -32,7 +32,6 @@ final class PinScreenPresenter {
 
     typealias Settings = AppSettingsAPI &
                          AppSettingsAuthenticating &
-                         SwipeToReceiveConfiguring &
                          CloudBackupConfiguring
 
     // MARK: - Properties
@@ -47,7 +46,8 @@ final class PinScreenPresenter {
         title = "\(title) (\(hash))"
         #endif
         switch flow {
-        case .create:
+        case .create,
+             .createPin:
             return .content(Screen.NavigationBarContent(title: title))
         case .authenticate(from: let origin, logoutRouting: _):
             switch origin {
@@ -73,6 +73,8 @@ final class PinScreenPresenter {
         case .change, .enableBiometrics:
             return .back
         case .create:
+            return .none
+        case .createPin:
             return .none
         }
     }
@@ -131,6 +133,19 @@ final class PinScreenPresenter {
 
     let serverStatusTitle = LocalizationConstants.ServerStatus.mainTitle
 
+    private let digitPadIsEnabledRelay = BehaviorRelay<Bool>(value: true)
+    var digitPadIsEnabled: Observable<Bool> {
+        digitPadIsEnabledRelay
+            .observeOn(MainScheduler.instance)
+            .distinctUntilChanged()
+    }
+
+    private let remainingLockTimeMessageRelay = BehaviorRelay<String>(value: "")
+    var remainingLockTimeMessage: Observable<String> {
+        remainingLockTimeMessageRelay
+            .observeOn(MainScheduler.instance)
+    }
+
     // MARK: Routing
 
     private let performEffect: PinRouting.RoutingType.Effect
@@ -155,11 +170,6 @@ final class PinScreenPresenter {
 
     /// The use case for the screen
     let useCase: PinScreenUseCase
-
-    /// Returns `true` in case the flow should show swipe to receive button
-    var showsSwipeToReceive: Bool {
-        useCase.isAuthenticateOnLogin && appSettings.swipeToReceiveEnabled
-    }
 
     // MARK: - Setup
 
@@ -194,7 +204,7 @@ final class PinScreenPresenter {
             backgroundColor = .white
             emptyPinColor = .securePinGrey
             buttonHighlightColor = UIColor.black.withAlphaComponent(0.08)
-        case .authenticate, .create, .enableBiometrics:
+        case .authenticate, .create, .enableBiometrics, .createPin:
             contentColor = .white
             backgroundColor = .primary
             emptyPinColor = UIColor.white.withAlphaComponent(0.12)
@@ -278,6 +288,29 @@ final class PinScreenPresenter {
             }
             .disposed(by: disposeBag)
 
+        // A count down timer starting from `remaining` seconds
+        let timer = digitPadViewModel.remainingLockTimeObservable
+            .flatMapLatest { remaining -> Observable<Int> in
+                // Create a count down timer that counts for `remaining` seconds
+                return Observable<Int>.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
+                    .take(remaining) // takes the first `remaining` seconds
+                    .map { $0 + 1 } // timer increment by 1 every time
+                    .map { remaining - $0 } // `remaining` - timer value equals actual seconds remaining
+            }
+
+        // bind the timer to the lock time message shown when key pad is disabled
+        timer
+            .map(formatRemainingLockTimeMessage)
+            .bindAndCatch(to: remainingLockTimeMessageRelay)
+            .disposed(by: disposeBag)
+
+        // bind the timer to the visibility of the key pad
+        timer
+            // check if seconds remaining is 0, if yes, enable keypad, otherwise disable
+            .map { $0 == 0 }
+            .bindAndCatch(to: digitPadIsEnabledRelay)
+            .disposed(by: disposeBag)
+
         learnMoreServerStatusTap
             .emit(weak: self) { (self, url) in
                 self.performEffect(.openLink(url: url))
@@ -320,6 +353,31 @@ extension PinScreenPresenter {
 
     // TODO: Display an overlay for the pin
     func trailingButtonPressed() {}
+}
+
+// MARK: - Error Display
+
+extension PinScreenPresenter {
+
+    /// Formatting remaining PIN lock time error message
+    /// - parameter duration: the lock time duration in seconds
+    private func formatRemainingLockTimeMessage(duration: Int) -> String {
+        var message = ""
+        if duration > 0 && duration <= 60 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration)") + LocalizationConstants.Pin.seconds
+        } else if duration > 60 && duration <= 3600 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration/60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+        } else if duration > 3600 {
+            message = LocalizationConstants.Pin.tryAgain +
+                String(" \(duration/3600)") + LocalizationConstants.Pin.hours +
+                String(" \((duration/60)%60)") + LocalizationConstants.Pin.minutes +
+                String(" \(duration%60)") + LocalizationConstants.Pin.seconds
+        }
+        return message
+    }
 }
 
 // MARK: - API & Functionality
@@ -604,7 +662,7 @@ extension PinScreenPresenter {
         let okButton = AlertAction(style: .confirm(LocalizationConstants.okString))
         let image = UIImage(named: "lock_icon")!
         return AlertModel(headline: LocalizationConstants.Pin.tooManyAttemptsTitle,
-                          body: LocalizationConstants.Pin.tooManyAttemptsMessage,
+                          body: LocalizationConstants.Pin.tooManyAttemptsLogoutMessage,
                           actions: [okButton],
                           image: image,
                           style: .sheet)

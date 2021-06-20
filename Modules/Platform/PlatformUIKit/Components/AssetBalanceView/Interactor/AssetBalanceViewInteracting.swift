@@ -3,7 +3,7 @@
 import PlatformKit
 import RxSwift
 
-public protocol AssetBalanceViewInteracting: class {
+public protocol AssetBalanceViewInteracting: AnyObject {
     var state: Observable<AssetBalanceViewModel.State.Interaction> { get }
 }
 

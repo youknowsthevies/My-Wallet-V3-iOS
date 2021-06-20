@@ -15,18 +15,22 @@ public struct PinStoreResponse: Decodable & Error {
     private enum CodingKeys: String, CodingKey {
         case code = "code"
         case error = "error"
+        case remaining = "remaining"
         case pinDecryptionValue = "success"
         case key = "key"
         case value = "value"
     }
 
-    // This is a status code from the server
+    /// This is a status code from the server
     public let statusCode: StatusCode?
 
-    // This is an error string from the server or nil
+    /// This is an error string from the server or nil
     public let error: String?
 
-    // The PIN decryption value from the server
+    /// This is the remaining PIN locked time in milliseconds due to exponential back off
+    public let remaining: Int?
+
+    /// The PIN decryption value from the server
     public let pinDecryptionValue: String?
 
     /// Pin code lookup key
@@ -50,9 +54,10 @@ extension PinStoreResponse {
         key = try values.decodeIfPresent(String.self, forKey: .key)
         value = try values.decodeIfPresent(String.self, forKey: .value)
         error = try values.decodeIfPresent(String.self, forKey: .error)
+        remaining = try values.decodeIfPresent(Int.self, forKey: .remaining)
     }
 
-    public func toPinError() -> PinError {
+    public func toPinError(pinLockTime: Int = 0) -> PinError {
         // First verify that the status code was received
         guard let code = statusCode else {
             return PinError.serverError(LocalizationConstants.Errors.genericError)
@@ -62,11 +67,11 @@ extension PinStoreResponse {
         case .deleted:
             return PinError.tooManyAttempts
         case .incorrect:
-            let message = error ?? LocalizationConstants.Pin.incorrect
-            return PinError.incorrectPin(message)
+            let message = LocalizationConstants.Pin.incorrect
+            return PinError.incorrectPin(message, pinLockTime)
         case .backoff:
-            let message = error ?? LocalizationConstants.Pin.backoff
-            return PinError.backoff(message)
+            let message = LocalizationConstants.Pin.backoff
+            return PinError.backoff(message, pinLockTime)
         case .success:
             // Should not happen because this is an error response
             return PinError.serverError(LocalizationConstants.Errors.genericError)
@@ -81,7 +86,8 @@ extension PinStoreResponse: FromNetworkErrorConvertible {
     ) -> PinStoreResponse {
         PinStoreResponse(
             statusCode: nil,
-            error: communicatorError.localizedDescription,
+            error: String(describing: communicatorError),
+            remaining: nil,
             pinDecryptionValue: nil,
             key: nil,
             value: nil

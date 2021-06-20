@@ -5,7 +5,7 @@ import DIKit
 import RxSwift
 
 /// A service API that aggregates card addition logic
-public protocol CardUpdateServiceAPI: class {
+public protocol CardUpdateServiceAPI: AnyObject {
     func add(card: CardData) -> Single<PartnerAuthorizationData>
 }
 
@@ -156,7 +156,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
             }
             .do(onError: { [weak self] error in
                 self?.analyticsRecorder.record(
-                    event: CardUpdateEvent.sbCardEverypayFailure(data: error.localizedDescription)
+                    event: CardUpdateEvent.sbCardEverypayFailure(data: String(describing: error))
                 )
             })
     }

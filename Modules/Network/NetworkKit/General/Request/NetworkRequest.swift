@@ -27,14 +27,13 @@ public struct NetworkRequest {
 
         let request: NSMutableURLRequest = NSMutableURLRequest(
             url: endpoint,
-            cachePolicy: .reloadIgnoringLocalCacheData,
-            timeoutInterval: 30.0
+            cachePolicy: allowsCachingResponse ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData,
+            timeoutInterval: timeoutInterval
         )
 
         request.httpMethod = method.rawValue
-
+        
         let requestHeaders = headers.merging(defaultHeaders)
-
         for (key, value) in requestHeaders {
             request.addValue(value, forHTTPHeaderField: key)
         }
@@ -64,6 +63,11 @@ public struct NetworkRequest {
     let decoder: NetworkResponseDecoderAPI
     let responseHandler: NetworkResponseHandlerAPI
 
+    /// Defaults to `true` for `GET` requests
+    public var allowsCachingResponse: Bool
+
+    public var timeoutInterval: TimeInterval = 30
+
     // TODO: modify this to be an Encodable type so that JSON serialization is done in this class
     // vs. having to serialize outside of this class
     let body: Data?
@@ -73,6 +77,8 @@ public struct NetworkRequest {
     let authenticated: Bool
 
     let requestId = UUID()
+
+    private(set) var shouldDebug: Bool = false
 
     private var defaultHeaders: HTTPHeaders {
         [HttpHeaderField.requestId: requestId.uuidString]
@@ -98,11 +104,19 @@ public struct NetworkRequest {
         self.decoder = decoder
         self.responseHandler = responseHandler
         self.recordErrors = recordErrors
+        self.allowsCachingResponse = method == .get
     }
 
     func adding(authenticationToken: String) -> Self {
         var request = self
         request.headers[HttpHeaderField.authorization] = authenticationToken
+        return request
+    }
+
+    /// Used by the handler to print debug detailed information about the request and response
+    public func debug() -> Self {
+        var request = self
+        request.shouldDebug = true
         return request
     }
 
