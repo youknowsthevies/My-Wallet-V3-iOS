@@ -42,7 +42,19 @@ extension CryptoCurrencyQuote: Identifiable {
 }
 
 public enum CryptoCurrenciesServiceError: Error, Equatable {
-    case other(String)
+
+    case other(Error)
+
+    var description: String? {
+        if case let .other(error) = self {
+            return error.localizedDescription
+        }
+        return nil
+    }
+
+    public static func == (lhs: CryptoCurrenciesServiceError, rhs: CryptoCurrenciesServiceError) -> Bool {
+        lhs.description == lhs.description
+    }
 }
 
 public protocol CryptoCurrenciesServiceAPI {
@@ -72,9 +84,7 @@ public final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
         // Step 1: Fetch all Crypto Currencies that can be purchased using the passed-in Fiat Currency
         pairsService.fetchPairs(for: .only(fiatCurrency: fiatCurrency))
             .asPublisher()
-            .mapError { error in
-                CryptoCurrenciesServiceError.other(error.localizedDescription)
-            }
+            .mapError(CryptoCurrenciesServiceError.other)
             .flatMap { [priceService] data -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> in
                 // Step 2: Combine each purchasable Crypto Currency with its price data from the last 24h and merge results into a single value
                 Publishers.MergeMany(
@@ -87,9 +97,7 @@ public final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                                 priceService.priceSeries(within: .day(.oneHour), of: pair.cryptoCurrency, in: pair.fiatCurrency)
                                     .asPublisher()
                             )
-                            .mapError { error in
-                                CryptoCurrenciesServiceError.other(error.localizedDescription)
-                            }
+                            .mapError(CryptoCurrenciesServiceError.other)
                             .map { (quote, historicalPriceSeries) in
                                 CryptoCurrencyQuote(
                                     cryptoCurrency: pair.cryptoCurrency,
