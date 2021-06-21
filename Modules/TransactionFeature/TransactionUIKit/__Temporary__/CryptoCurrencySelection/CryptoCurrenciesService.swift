@@ -47,7 +47,7 @@ public enum CryptoCurrenciesServiceError: Error, Equatable {
 
     var description: String? {
         if case let .other(error) = self {
-            return error.localizedDescription
+            return String(describing: error)
         }
         return nil
     }
