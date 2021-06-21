@@ -17,11 +17,9 @@ public struct CredentialsView: View {
 
     public var body: some View {
         VStack {
-            // Scroll View for smaller screen size
             ScrollView(.vertical) {
                 VStack(alignment: .leading) {
 
-                    // Email Text Field (pre-filled and disabled)
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.email,
                         text: viewStore.binding(
@@ -38,7 +36,6 @@ public struct CredentialsView: View {
                     )
                     .padding(.bottom, 20)
 
-                    // Password Secure Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.password,
                         text: viewStore.binding(
@@ -49,7 +46,6 @@ public struct CredentialsView: View {
                     )
                     .padding(.bottom, 1)
 
-                    // Trouble Logging in Link
                     Button(
                         action: {
                             // Add link action here
@@ -62,7 +58,6 @@ public struct CredentialsView: View {
                     )
                     .padding(.bottom, 16)
 
-                    // 2FA Text Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.twoFactorAuthCode,
                         text: viewStore.binding(
@@ -72,7 +67,6 @@ public struct CredentialsView: View {
                         textPlaceholder: "-----"
                     )
 
-                    // Reset 2FA Prompt and Button
                     HStack {
                         Text(LoginViewString.TextFieldFootnote.lostTwoFactorAuthCodePrompt)
                             .textStyle(.subheading)
@@ -89,7 +83,6 @@ public struct CredentialsView: View {
                     }
                     .padding(.bottom, 16)
 
-                    // Verify with hardware key Secure Field
                     FormTextFieldGroup(
                         title: LoginViewString.TextFieldTitle.hardwareKeyVerify,
                         text: viewStore.binding(
@@ -106,7 +99,6 @@ public struct CredentialsView: View {
                 .padding(EdgeInsets(top: 80, leading: 24, bottom: 0, trailing: 24))
             }
 
-            // Continue Button
             PrimaryButton(title: LoginViewString.Button._continue) {
                 // Add Authentication actoin here
             }

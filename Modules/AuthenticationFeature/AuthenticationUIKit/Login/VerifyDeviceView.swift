@@ -19,11 +19,9 @@ public struct VerifyDeviceView: View {
 
     public var body: some View {
         VStack {
-            // Verify Device Icon Image
             Image.CircleIcon.verifyDevice
                 .frame(width: 72, height: 72)
 
-            // Verify Device title
             Text(VerifyDeviceViewString.title)
                 .textStyle(.title)
                 .padding(.top, 16)
@@ -35,13 +33,11 @@ public struct VerifyDeviceView: View {
 
             Spacer()
 
-            // Open Email App Button
             PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
                 viewStore.send(.setPasswordLoginVisible(true))
             }
             .padding(.bottom, 10)
 
-            // Send Again Button
             SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
                 // Add send again action here
             }

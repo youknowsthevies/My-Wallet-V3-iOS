@@ -21,7 +21,6 @@ public struct LoginView: View {
     public var body: some View {
         NavigationView {
             VStack {
-                // Email Text Field
                 FormTextFieldGroup(
                     title: LoginViewString.TextFieldTitle.email,
                     text: viewStore.binding(
@@ -36,10 +35,8 @@ public struct LoginView: View {
                 .autocapitalization(.none)
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
 
-                // Divider
                 LabelledDivider(label: LoginViewString.Divider.or)
 
-                // Scan Pairing Code Button
                 IconButton(
                     title: LoginViewString.Button.scanPairingCode,
                     icon: Image.ButtonIcon.qrCode) {
@@ -50,12 +47,8 @@ public struct LoginView: View {
 
                 Spacer()
 
-                // Continue Button
                 PrimaryButton(title: LoginViewString.Button._continue) {
                     viewStore.send(.setVerifyDeviceVisible(true))
-
-                    // Add send email verification here
-
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.state.emailAddress.isEmail)
