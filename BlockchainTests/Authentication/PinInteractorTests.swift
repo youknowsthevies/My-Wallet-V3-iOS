@@ -208,10 +208,13 @@ class PinInteractorTests: XCTestCase {
 
     // Backoff error is returned in the relevant case
     func testBackoffError() throws {
+        let cache = MemoryCacheSuite()
+        cache.set(10.0, forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue)
         let interactor = PinInteractor(pinClient: MockPinClient(statusCode: .backoff),
                                        maintenanceService: maintenanceService,
                                        wallet: wallet,
-                                       appSettings: appSettings)
+                                       appSettings: appSettings,
+                                       cacheSuite: cache)
         let payload = PinPayload(pinCode: "1234",
                                  keyPair: try .generateNewKeyPair(),
                                  persistsLocally: false)
