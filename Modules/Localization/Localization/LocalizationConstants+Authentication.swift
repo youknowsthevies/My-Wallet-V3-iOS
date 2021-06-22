@@ -53,9 +53,9 @@ extension LocalizationConstants.AuthenticationKit {
                 "Log In",
                 comment: "Welcome screen: login CTA button"
             )
-            public static let recoverFunds = NSLocalizedString(
-                "Recover Funds",
-                comment: "Welcome screen: recover funds CTA button"
+            public static let restoreWallet = NSLocalizedString(
+                "Restore Wallet",
+                comment: "Welcome screen: restore wallet CTA button"
             )
         }
         public static let title = NSLocalizedString(
@@ -94,6 +94,10 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
         public enum TextFieldFootnote {
+            public static let invalidEmail = NSLocalizedString(
+                "Invalid Email",
+                comment: "Login screen: invalid email error message"
+            )
             public static let wallet = NSLocalizedString(
                 "Wallet: ",
                 comment: "Login screen: prefix for wallet identifier footnote"
@@ -101,10 +105,6 @@ extension LocalizationConstants.AuthenticationKit {
             public static let incorrectPassword = NSLocalizedString(
                 "Incorrect Password",
                 comment: "Login screen: wrong password footnote"
-            )
-            public static let troubleLogInPrompt = NSLocalizedString(
-                "Trouble logging in?",
-                comment: "Login screen: prompt for forgot password"
             )
             public static let incorrectTwoFactorAuthCode = NSLocalizedString(
                 "Incorrect 2FA Code",
@@ -117,6 +117,20 @@ extension LocalizationConstants.AuthenticationKit {
             public static let incorrectHardwareKey = NSLocalizedString(
                 "Incorrect |HARDWARE KEY| code",
                 comment: "Login screen: wrong hardware key"
+            )
+            public static let lostTwoFactorAuthCodePrompt = NSLocalizedString(
+                "Lost access to your 2FA device?",
+                comment: "Login screen: a prompt for user to reset their 2FA if they lost their 2FA device"
+            )
+        }
+        public enum Link {
+            public static let troubleLogInLink = NSLocalizedString(
+                "Trouble logging in?",
+                comment: "Login screen: link for forgot password"
+            )
+            public static let resetTwoFactorAuthLink = NSLocalizedString(
+                "Reset your 2FA",
+                comment: "Login screen: link for resetting 2FA"
             )
         }
         public enum Divider {

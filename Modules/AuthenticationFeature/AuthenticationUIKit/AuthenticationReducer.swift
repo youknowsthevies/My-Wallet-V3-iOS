@@ -27,5 +27,17 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
     case .setVerifyDeviceVisible(let isVisible):
         state.isVerifyDeviceVisible = isVisible
         return .none
+    case .setPasswordLoginVisible(let isVisible):
+        state.isPasswordLoginVisible = isVisible
+        return .none
+    case .didChangePassword(let password):
+        state.password = password
+        return .none
+    case .didChangeTwoFactorAuthCode(let code):
+        state.twoFactorAuthCode = code
+        return .none
+    case .didChangeHardwareKeyCode(let code):
+        state.hardwareKeyCode = code
+        return .none
     }
 }

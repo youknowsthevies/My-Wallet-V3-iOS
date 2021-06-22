@@ -11,5 +11,11 @@ public struct AuthenticationState: Equatable {
     // MARK: - Verify Device Screen
     public var isVerifyDeviceVisible: Bool = false
 
+    // MARK: - Password Login Screen
+    public var isPasswordLoginVisible: Bool = false
+    public var password: String = ""
+    public var twoFactorAuthCode: String = ""
+    public var hardwareKeyCode: String = ""
+
     public init() {}
 }

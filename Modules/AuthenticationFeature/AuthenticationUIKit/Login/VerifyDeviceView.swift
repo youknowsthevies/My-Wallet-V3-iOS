@@ -9,7 +9,6 @@ import UIComponentsKit
 typealias VerifyDeviceViewString = LocalizationConstants.AuthenticationKit.VerifyDevice
 
 public struct VerifyDeviceView: View {
-
     let store: Store<AuthenticationState, AuthenticationAction>
     @ObservedObject var viewStore: ViewStore<VerifyDeviceViewState, AuthenticationAction>
 
@@ -22,29 +21,46 @@ public struct VerifyDeviceView: View {
         VStack {
             Image.CircleIcon.verifyDevice
                 .frame(width: 72, height: 72)
+
             Text(VerifyDeviceViewString.title)
-                .font(Font(weight: .semibold, size: 20))
                 .textStyle(.title)
-                .padding(EdgeInsets(top: 24, leading: 0, bottom: 8, trailing: 0))
+                .padding(.top, 16)
+
             Text(VerifyDeviceViewString.description)
                 .font(Font(weight: .medium, size: 16))
-                .textStyle(.subheading)
+                .foregroundColor(.textSubheading)
+                .lineSpacing(4)
+
             Spacer()
+
             PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
-                // TODO: add open email action here
+                viewStore.send(.setPasswordLoginVisible(true))
             }
-            .padding(EdgeInsets(top: 0, leading: 0, bottom: 16, trailing: 0))
+            .padding(.bottom, 10)
+
             SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
-                // TODO: add send again action here
+                // Add send again action here
             }
+
+            NavigationLink(
+                destination: CredentialsView(store: store),
+                isActive: viewStore.binding(
+                    get: \.isPasswordLoginVisible,
+                    send:  AuthenticationAction.setPasswordLoginVisible(_:)
+                ),
+                label: EmptyView.init
+            )
         }
         .multilineTextAlignment(.center)
-        .padding(EdgeInsets(top: 247, leading: 24, bottom: 56, trailing: 24))
+        .padding(EdgeInsets(top: 247, leading: 24, bottom: 58, trailing: 24))
     }
 }
 
 struct VerifyDeviceViewState: Equatable {
+    var isPasswordLoginVisible: Bool
+
     init(state: AuthenticationState) {
+        isPasswordLoginVisible = state.isPasswordLoginVisible
     }
 }
 

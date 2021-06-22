@@ -5,9 +5,13 @@ extension Color {
     // MARK: Borders
     public static let borderPrimary = Color(paletteColor: .grey100)
     public static let borderFocused = Color(paletteColor: .blue600)
+    public static let borderError = Color(paletteColor: .red600)
 
     // MARK: Backgrounds
     public static let viewPrimaryBackground = Color(paletteColor: .white)
+    public static let textFieldActiveBackground = Color(paletteColor: .white)
+    public static let textFieldInactiveBackground = Color(paletteColor: .grey100)
+    public static let passwordPeekEyeColor = Color(paletteColor: .grey400)
 
     // MARK: PrimaryButton
     public static let buttonPrimaryBackground = Color(paletteColor: .blue600)
@@ -16,6 +20,9 @@ extension Color {
     // MARK: SecondaryButton
     public static let buttonSecondaryBackground = Color(paletteColor: .white)
     public static let buttonSecondaryText = Color(paletteColor: .blue600)
+
+    // MAKR: Links
+    public static let buttonLinkText = Color(paletteColor: .blue600)
 
     // MARK: Divider
     public static let dividerLine = Color(paletteColor: .grey100)
