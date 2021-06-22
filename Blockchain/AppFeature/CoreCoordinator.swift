@@ -33,7 +33,8 @@ public enum CoreAppAction: Equatable {
     case appForegrounded
     // Wallet Related Actions
     case walletInitialized
-    case authenticate(String)
+    case fetchWallet(String)
+    case authenticate
     case didDecryptWallet(WalletDecryption)
     case decryptionFailure(AuthenticationError)
     case authenticated(Result<Bool, AuthenticationError>)
@@ -44,6 +45,7 @@ public enum CoreAppAction: Equatable {
 }
 
 struct CoreAppEnvironment {
+    var loadingViewPresenter: LoadingViewPresenting
     var walletManager: WalletManager
     var appFeatureConfigurator: FeatureConfiguratorAPI
     var blockchainSettings: BlockchainSettings.App
@@ -57,6 +59,7 @@ struct CoreAppEnvironment {
     var analyticsRecorder: AnalyticsEventRecorderAPI
     var siftService: SiftServiceAPI
     var onboardingSettings: OnboardingSettingsAPI
+    var mainQueue: AnySchedulerOf<DispatchQueue>
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -80,11 +83,14 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.loggedIn,
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
+                    analyticsRecorder: environment.analyticsRecorder,
+                    loadingViewPresenter: environment.loadingViewPresenter,
                     exchangeRepository: environment.exchangeRepository,
                     remoteNotificationTokenSender: environment.remoteNotificationServiceContainer.tokenSender,
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
                     walletManager: environment.walletManager,
-                    coincore: environment.coincore
+                    coincore: environment.coincore,
+                    appSettings: environment.blockchainSettings
                 )
             }),
     mainAppReducerCore
@@ -113,11 +119,14 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             return Effect(value: .onboarding(.start))
         }
         return .none
-    case .authenticate(let password):
+    case .fetchWallet(let password):
         environment.walletManager.wallet.fetch(with: password)
+        return Effect(value: .authenticate)
+    case .authenticate:
         let appSettings = environment.blockchainSettings
         return .merge(
             environment.walletManager.didDecryptWallet
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: WalletCancelations.DecryptId(), cancelInFlight: false)
                 .map { result -> CoreAppAction in
@@ -127,6 +136,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                     return handleWalletDecryption(value)
                 },
             environment.walletManager.didCompleteAuthentication
+                .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .cancellable(id: WalletCancelations.AuthenticationId(), cancelInFlight: false)
                 .map { result -> CoreAppAction in
@@ -153,13 +163,14 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
     case .decryptionFailure(let error):
         state.onboarding?.displayAlert = .walletAuthentication(error)
-        return .none
+        return .cancel(id: WalletCancelations.DecryptId())
     case .authenticated(.failure(let error)):
         state.onboarding?.displayAlert = .walletAuthentication(error)
-        return .none
+        return .cancel(id: WalletCancelations.AuthenticationId())
     case .authenticated(.success):
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
+            state.onboarding?.showLegacyCreateWalletScreen = false
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(value: .setupPin)
@@ -177,6 +188,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return environment.walletManager
             .reactiveWallet
             .waitUntilInitializedSinglePublisher
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: WalletCancelations.InitializationId(), cancelInFlight: false)
             .map { _ in CoreAppAction.walletInitialized }
@@ -184,6 +196,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // TODO: Handle second password as well
         return environment.walletUpgradeService
             .needsWalletUpgradePublisher
+            .receive(on: environment.mainQueue)
             .catchToEffect()
             .cancellable(id: WalletCancelations.UpgradeId(), cancelInFlight: false)
             .map { result -> CoreAppAction in
@@ -212,8 +225,17 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             .cancel(id: WalletCancelations.InitializationId()),
             .cancel(id: WalletCancelations.UpgradeId()),
             Effect(
-                value: CoreAppAction.loggedIn(.start(window: state.window))
+                value: CoreAppAction.loggedIn(.start)
             )
+        )
+    case .onboarding(.welcomeScreen(.createAccount)):
+        // send `authenticate` action so that we can listen for wallet creation
+        return Effect(value: .authenticate)
+    case .onboarding(.createAccountScreenClosed):
+        // cancel any authentication publishers in case the create wallet is closed
+        return .merge(
+            .cancel(id: WalletCancelations.DecryptId()),
+            .cancel(id: WalletCancelations.AuthenticationId())
         )
     case .onboarding(.walletUpgrade(.completed)):
         return Effect(
@@ -221,11 +243,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
     case .onboarding(.passwordScreen(.authenticate(let password))):
         return Effect(
-            value: .authenticate(password)
+            value: .fetchWallet(password)
         )
     case .onboarding(.pin(.handleAuthentication(let password))):
         return Effect(
-            value: .authenticate(password)
+            value: .fetchWallet(password)
         )
     case .onboarding(.pin(.pinCreated)):
         return Effect(

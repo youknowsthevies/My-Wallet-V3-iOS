@@ -56,11 +56,13 @@ final class CreateWalletScreenInteractor: NSObject {
 // MARK: - RegisterWalletScreenInteracting
 
 extension CreateWalletScreenInteractor: RegisterWalletScreenInteracting {
-    func prepare() throws { }
+    func prepare() -> Result<Void, Error> {
+        .success(())
+    }
 
-    func execute() throws {
+    func execute() -> Result<Void, Error> {
         guard reachability.canConnect else {
-            throw InternetReachability.ErrorType.internetUnreachable
+            return .failure(InternetReachability.ErrorType.internetUnreachable)
         }
 
         analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletCreation)
@@ -69,6 +71,7 @@ extension CreateWalletScreenInteractor: RegisterWalletScreenInteracting {
         // Continue in walletJSReady callback
         wallet.delegate = self
         wallet.loadJS()
+        return .success(())
     }
 }
 

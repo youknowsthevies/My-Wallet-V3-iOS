@@ -14,15 +14,18 @@ final class OnboardingHostingController: UIViewController {
     let viewStore: ViewStore<Onboarding.State, Onboarding.Action>
 
     private let alertViewPresenter: AlertViewPresenterAPI
+    private let webViewService: WebViewServiceAPI
 
     private var currentController: UIViewController?
     private var cancellables: Set<AnyCancellable> = []
 
     init(store: Store<Onboarding.State, Onboarding.Action>,
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+         alertViewPresenter: AlertViewPresenterAPI = resolve(),
+         webViewService: WebViewServiceAPI = resolve()) {
         self.store = store
         self.viewStore = ViewStore(store)
         self.alertViewPresenter = alertViewPresenter
+        self.webViewService = webViewService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -38,7 +41,21 @@ final class OnboardingHostingController: UIViewController {
             .compactMap { $0 }
             .removeDuplicates()
             .sink { [weak self] alert in
-                self?.showAlert(type: alert)
+                guard let self = self else { return }
+                self.showAlert(type: alert)
+            }
+            .store(in: &cancellables)
+
+        viewStore.publisher
+            .showLegacyCreateWalletScreen
+            .removeDuplicates()
+            .sink { [weak self] shouldPresent in
+                guard let self = self else { return }
+                guard shouldPresent else {
+                    self.dismiss(animated: true, completion: nil)
+                    return
+                }
+                self.presentCreateWallet()
             }
             .store(in: &cancellables)
 
@@ -116,6 +133,33 @@ final class OnboardingHostingController: UIViewController {
         let presenter = WalletUpgradePresenter(interactor: interactor)
         let viewController = WalletUpgradeViewController(presenter: presenter)
         return viewController
+    }
+
+    private func presentCreateWallet() {
+        let interactor = CreateWalletInteractor()
+        let presenter = RegisterWalletScreenPresenter(
+            interactor: interactor,
+            navBarStyle: .darkContent(),
+            leadingButton: .none,
+            trailingButton: .close
+        )
+        let navigationController = UINavigationController()
+        let cancellable = presenter.webViewLaunchRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .sink { [weak webViewService] url in
+                webViewService?.openSafari(url: url, from: navigationController)
+            }
+        let dismissHandler = { [weak viewStore] in
+            viewStore?.send(.createAccountScreenClosed)
+            cancellable.cancel()
+        }
+        let viewController = RegisterWalletViewController(presenter: presenter, dismissHandler: dismissHandler)
+        // disallow swipe down to dismiss
+        viewController.isModalInPresentation = true
+        navigationController.setViewControllers([viewController], animated: false)
+        present(navigationController, animated: true, completion: nil)
     }
 
     private func showAlert(type: Onboarding.Alert) {

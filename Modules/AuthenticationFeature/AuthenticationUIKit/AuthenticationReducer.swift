@@ -7,6 +7,7 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
     case .start:
         return .none
     case .createAccount:
+        state.isLoginVisible = false
         return .none
     case .login:
         return .none

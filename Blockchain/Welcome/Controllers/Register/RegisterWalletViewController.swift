@@ -21,6 +21,7 @@ final class RegisterWalletViewController: BaseScreenViewController {
     // MARK: - Injected
 
     private let presenter: RegisterWalletScreenPresenter
+    private let dismissHandler: (() -> Void)?
 
     // MARK: - Accessors
 
@@ -28,8 +29,9 @@ final class RegisterWalletViewController: BaseScreenViewController {
 
     // MARK: - Setup
 
-    init(presenter: RegisterWalletScreenPresenter) {
+    init(presenter: RegisterWalletScreenPresenter, dismissHandler: (() -> Void)? = nil) {
         self.presenter = presenter
+        self.dismissHandler = dismissHandler
         super.init(nibName: RegisterWalletViewController.objectName, bundle: nil)
     }
 
@@ -47,7 +49,11 @@ final class RegisterWalletViewController: BaseScreenViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
+        set(
+            barStyle: presenter.navBarStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleStyle
         keyboardInteractionController = KeyboardInteractionController(
             in: self,
@@ -87,5 +93,10 @@ final class RegisterWalletViewController: BaseScreenViewController {
         view.layoutIfNeeded()
         termsOfUseTextView.setupHeight()
         presenter.viewDidLoad()
+    }
+
+    override func navigationBarTrailingButtonPressed() {
+        super.navigationBarTrailingButtonPressed()
+        dismissHandler?()
     }
 }

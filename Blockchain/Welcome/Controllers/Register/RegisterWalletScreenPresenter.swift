@@ -25,7 +25,9 @@ final class RegisterWalletScreenPresenter {
         }
     }
 
-    let navBarStyle = Screen.Style.Bar.lightContent()
+    let navBarStyle: Screen.Style.Bar
+    let leadingButton: Screen.Style.LeadingButton
+    let trailingButton: Screen.Style.TrailingButton
     let emailTextFieldViewModel: TextFieldViewModel
     let passwordTextFieldViewModel: PasswordTextFieldViewModel
     let confirmPasswordTextFieldViewModel: PasswordTextFieldViewModel
@@ -73,11 +75,17 @@ final class RegisterWalletScreenPresenter {
     init(alertPresenter: AlertViewPresenter = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          interactor: RegisterWalletScreenInteracting,
-         type: RegistrationType = .default) {
+         type: RegistrationType = .default,
+         navBarStyle: Screen.Style.Bar = .lightContent(),
+         leadingButton: Screen.Style.LeadingButton = .back,
+         trailingButton: Screen.Style.TrailingButton = .none) {
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
         self.type = type
+        self.navBarStyle = navBarStyle
+        self.leadingButton = leadingButton
+        self.trailingButton = trailingButton
         let newPasswordValidator = TextValidationFactory.Password.new
         let confirmNewPasswordValidator = TextValidationFactory.Password.new
         let textMatchValidator = CollectionTextMatchValidator(
@@ -163,7 +171,7 @@ final class RegisterWalletScreenPresenter {
 
     private lazy var prepareOnce: Void = {
         do {
-            try interactor.prepare()
+            try interactor.prepare().get()
         } catch {
             alertPresenter.internetConnection()
             loadingViewPresenter.hide()
@@ -185,7 +193,7 @@ final class RegisterWalletScreenPresenter {
     private func execute() {
         loadingViewPresenter.showCircular(with: LocalizationConstants.Authentication.loadingWallet)
         do {
-            try interactor.execute()
+            try interactor.execute().get()
         } catch { // TODO: Handle additional errors
             alertPresenter.internetConnection()
             loadingViewPresenter.hide()

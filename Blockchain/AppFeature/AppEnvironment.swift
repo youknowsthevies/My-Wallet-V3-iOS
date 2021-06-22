@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import NetworkKit
@@ -14,6 +15,7 @@ import WalletPayloadKit
 public struct AppEnvironment {
     public var debugCoordinator: DebugCoordinating
 
+    var loadingViewPresenter: LoadingViewPresenting
     var onboardingSettings: OnboardingSettings
     var blurEffectHandler: BlurVisualEffectHandler
     var appCoordinator: AppCoordinator
@@ -40,4 +42,6 @@ public struct AppEnvironment {
     var appFeatureConfigurator: FeatureConfiguratorAPI
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
+
+    var mainQueue: AnySchedulerOf<DispatchQueue>
 }

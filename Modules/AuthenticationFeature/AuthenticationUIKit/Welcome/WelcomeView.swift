@@ -89,7 +89,7 @@ struct WelcomeActionSection: View {
     var body: some View {
         VStack {
             PrimaryButton(title: WelcomeViewString.Button.createAccount) {
-                // Connect to Create Wallet Screen
+                viewStore.send(.createAccount)
             }
             .padding(.bottom, 10)
 

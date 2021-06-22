@@ -19,6 +19,7 @@ public enum Onboarding {
         case passwordScreen(PasswordRequired.Action)
         case welcomeScreen(AuthenticationAction)
         case forgetWallet
+        case createAccountScreenClosed
     }
 
     public struct State: Equatable {
@@ -27,6 +28,7 @@ public enum Onboarding {
         var passwordScreen: PasswordRequired.State?
         var authenticationState: AuthenticationState?
         var displayAlert: Alert?
+        var showLegacyCreateWalletScreen: Bool = false
     }
 
     public struct Environment {
@@ -89,6 +91,12 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
                 blockchainSettings: environment.blockchainSettings
             )
         case .pin:
+            return .none
+        case .createAccountScreenClosed:
+            state.showLegacyCreateWalletScreen = false
+            return .none
+        case .welcomeScreen(.createAccount):
+            state.showLegacyCreateWalletScreen = true
             return .none
         case .welcomeScreen:
             return .none

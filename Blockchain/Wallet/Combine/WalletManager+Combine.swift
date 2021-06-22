@@ -1,9 +1,23 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import PlatformKit
 
 extension WalletManager: WalletManagerReactiveAPI {
+
+    var didCreateNewAccount: AnyPublisher<Result<WalletCreation, WalletCreationError>, Never> {
+        self.rx.didCreateNewAccount
+            .asPublisher()
+            .ignoreFailure()
+    }
+
+    var walletJSisReady: AnyPublisher<Void, Error> {
+        self.rx.walletJSReady
+            .asPublisher()
+            .mapToVoid()
+    }
+
     // MARK: WalletAuthDelegate
 
     /// Reactive wrapper for delegate method `walletDidDecrypt(withSharedKey:guid:)`

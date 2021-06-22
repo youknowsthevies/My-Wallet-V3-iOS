@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
+import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import PlatformKit
@@ -8,6 +10,7 @@ extension AppEnvironment {
     static var live: AppEnvironment {
         AppEnvironment(
             debugCoordinator: resolve(tag : DebugScreenContext.tag),
+            loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: .init(),
             appCoordinator: .shared,
@@ -29,7 +32,8 @@ extension AppEnvironment {
             exchangeRepository: ExchangeAccountRepository(),
             appFeatureConfigurator: resolve(),
             blockchainSettings: .shared,
-            credentialsStore: resolve()
+            credentialsStore: resolve(),
+            mainQueue: .main
         )
     }
 }

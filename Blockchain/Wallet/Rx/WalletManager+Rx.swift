@@ -1,11 +1,50 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import PlatformKit
 import RxCocoa
 import RxSwift
 
 extension Reactive where Base: WalletManager {
+
+    /// Reactive wrapper for delegate method `didCreateNewAccount(_:sharedKey:password:)`
+    /// and `errorCreatingNewAccount(_:)`
+    /// Returns a `Result<WalletCreation, WalletCreationError>`
+    var didCreateNewAccount: Observable<Result<WalletCreation, WalletCreationError>> {
+        let success = base.rx.methodInvoked(#selector(WalletManager.didCreateNewAccount(_:sharedKey:password:)))
+            .map { arg -> Result<WalletCreation, WalletCreationError> in
+                let guid = try castOrThrow(String.self, arg[0])
+                let sharedKey = try castOrThrow(String.self, arg[1])
+                let password = try castOrThrow(String.self, arg[2])
+                return .success(WalletCreation(guid: guid, sharedKey: sharedKey, password: password))
+            }
+
+        let failure = base.rx.methodInvoked(#selector(WalletManager.errorCreatingNewAccount(_:)))
+            .map { arg -> Result<WalletCreation, WalletCreationError> in
+                let message = try castOrThrow(String?.self, arg[0])
+                return .failure(WalletCreationError.message(message))
+            }
+
+        return Observable.merge(success, failure)
+            .catchError { error -> Observable<Result<WalletCreation, WalletCreationError>> in
+                return .just(
+                    .failure(
+                        .unknownError(
+                            error.localizedDescription
+                        )
+                    )
+                )
+            }
+            .share(replay: 1, scope: .whileConnected)
+    }
+
+    /// Reactive wrapper for delegate method `walletJSReady`
+    var walletJSReady: Observable<Void> {
+        base.rx.methodInvoked(#selector(WalletManager.walletJSReady))
+            .mapToVoid()
+            .share(replay: 1, scope: .whileConnected)
+    }
 
     // MARK: WalletAuthDelegate
 
@@ -19,7 +58,6 @@ extension Reactive where Base: WalletManager {
                 let passwordPartHash = base.legacyRepository.legacyPassword?.passwordPartHash
                 return WalletDecryption(guid: guid, sharedKey: sharedKey, passwordPartHash: passwordPartHash)
             }
-            .observeOn(MainScheduler.asyncInstance)
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -58,7 +96,6 @@ extension Reactive where Base: WalletManager {
                     )
                 )
             }
-            .observeOn(MainScheduler.asyncInstance)
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -69,7 +106,6 @@ extension Reactive where Base: WalletManager {
     var didGetAccountInfo: Completable {
         base.rx.methodInvoked(#selector(WalletManager.walletDidGetAccountInfo))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: WalletAddressesDelegate
@@ -79,7 +115,6 @@ extension Reactive where Base: WalletManager {
     var didGenerateNewAddress: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didGenerateNewAddress))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     /// Reactive wrapper for delegate method `returnToAddressesScreen`
@@ -87,7 +122,6 @@ extension Reactive where Base: WalletManager {
     var returnToAddressesScreen: Completable {
         base.rx.methodInvoked(#selector(WalletManager.returnToAddressesScreen))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     /// Reactive wrapper for delegate method `didSetDefaultAccount`
@@ -95,7 +129,6 @@ extension Reactive where Base: WalletManager {
     var didSetDefaultAccount: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didSetDefaultAccount))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: WalletRecoveryDelegate
@@ -105,7 +138,6 @@ extension Reactive where Base: WalletManager {
     var didRecoverWallet: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didRecoverWallet))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     /// Reactive wrapper for delegate method `didFailRecovery`
@@ -113,7 +145,6 @@ extension Reactive where Base: WalletManager {
     var didFailRecovery: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didFailRecovery))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: WalletHistoryDelegate
@@ -126,7 +157,6 @@ extension Reactive where Base: WalletManager {
                 let error = try castOrThrow(String?.self, arg[0])
                 return error
             }
-            .observeOn(MainScheduler.asyncInstance)
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -137,7 +167,6 @@ extension Reactive where Base: WalletManager {
     var didGetAccountInfoAndExchangeRates: Completable {
         base.rx.methodInvoked(#selector(WalletManager.walletDidGetAccountInfoAndExchangeRates(_:)))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: WalletBackupDelegate
@@ -147,7 +176,6 @@ extension Reactive where Base: WalletManager {
     var didBackupWallet: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didBackupWallet))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     /// Reactive wrapper for delegate method `didFailBackupWallet`
@@ -155,7 +183,6 @@ extension Reactive where Base: WalletManager {
     var didFailBackupWallet: Completable {
         base.rx.methodInvoked(#selector(WalletManager.didFailBackupWallet))
             .ignoreElements()
-            .observeOn(MainScheduler.asyncInstance)
     }
 
     // MARK: WalletSecondPasswordDelegate
@@ -169,7 +196,6 @@ extension Reactive where Base: WalletManager {
                 let dismiss = try castOrThrow(WalletDismissCallback?.self, arg[1])
                 return (success, dismiss)
             }
-            .observeOn(MainScheduler.asyncInstance)
             .share(replay: 1, scope: .whileConnected)
     }
 
@@ -179,7 +205,6 @@ extension Reactive where Base: WalletManager {
                 let success = try castOrThrow(WalletSuccessCallback.self, arg[0])
                 return success
             }
-            .observeOn(MainScheduler.asyncInstance)
             .share(replay: 1, scope: .whileConnected)
     }
 }

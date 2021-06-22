@@ -148,6 +148,23 @@ extension WalletManager: WalletDelegate {
 
     // MARK: - Auth
 
+    func didCreateNewAccount(_ guid: String!, sharedKey: String!, password: String!) {
+        // this is no-op intentionally
+        // for context, `CreateWalletScreenInteractor` and `RecoverWalletScreenInteractor`
+        // are stealing the `Wallet` delegate and capturing this method to do their logic
+        //
+        // This is added here so that the `WalletManager+Rx` and `WalletManager+Combine`
+        // would be able to listen if the method is invoked and handle it.
+    }
+
+    func errorCreatingNewAccount(_ message: String!) {
+        // this is no-op intentionally ^^ same as above ^^
+    }
+
+    func walletJSReady() {
+        // this is no-op intentionally ^^ same as above ^^
+    }
+
     func walletDidGetBtcExchangeRates() {
         updateFiatSymbols()
     }

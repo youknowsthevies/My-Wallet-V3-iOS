@@ -13,6 +13,7 @@ import SettingsUIKit
 final class LoggedInHostingController: UIViewController, LoggedInBridge {
     let store: Store<LoggedIn.State, LoggedIn.Action>
     let viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>
+    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - The controllers
     var sideMenuViewController: SideMenuViewController?
@@ -21,6 +22,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     weak var accountsAndAddressesNavigationController: AccountsAndAddressesNavigationController?
 
+    @LazyInject var alertViewPresenter: AlertViewPresenterAPI
     @LazyInject var secureChannelRouter: SecureChannelRouting
     @Inject var airdropRouter: AirdropRouterAPI
 
@@ -42,6 +44,32 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        viewStore.publisher
+            .reloadAfterMultiAddressResponse
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.reloadAfterMultiAddressResponse()
+            }
+            .store(in: &cancellables)
+
+        viewStore.publisher
+            .reloadAfterSymbolChanged
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.accountsAndAddressesNavigationController?.reload()
+                self?.sideMenuViewController?.reload()
+            }
+            .store(in: &cancellables)
+
+        viewStore.publisher
+            .displayWalletAlertContent
+            .compactMap { $0 }
+            .removeDuplicates()
+            .sink {[weak self] content in
+                self?.showAlert(with: content)
+            }
+            .store(in: &cancellables)
+
         let sideMenu = sideMenuProvider()
         let tabController = tabControllerProvider()
         let slidingViewController = slidingControllerProvider(sideMenuController: sideMenu, tabController: tabController)
@@ -55,6 +83,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     }
 
     func clear() {
+        cancellables.forEach { $0.cancel() }
         sideMenuViewController?.delegate = nil
         sideMenuViewController?.createGestureRecognizers = nil
         sideMenuViewController = nil
@@ -102,6 +131,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         // Show dashboard as the default screen
         tabController?.showDashboard()
         return viewController
+    }
+
+    private func showAlert(with content: AlertViewContent) {
+        alertViewPresenter.notify(content: content, in: self)
     }
 }
 
@@ -250,5 +283,18 @@ extension LoggedInHostingController {
         }
         let controller = InterestDashboardAnnouncementViewController(presenter: presenter)
         tabControllerManager?.tabViewController.showInterestIdentityVerificationScreen(controller)
+    }
+
+    func reloadAfterMultiAddressResponse() {
+        guard let tabControllerManager = tabControllerManager, tabControllerManager.tabViewController.isViewLoaded else {
+            // Nothing to reload
+            return
+        }
+        accountsAndAddressesNavigationController?.reload()
+        sideMenuViewController?.reload()
+
+        NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
+        NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
+        NotificationCenter.default.post(name: Constants.NotificationKeys.multiAddressResponseReload, object: nil)
     }
 }

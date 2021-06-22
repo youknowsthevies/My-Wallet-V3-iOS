@@ -44,6 +44,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.core,
             environment: {
                 CoreAppEnvironment(
+                    loadingViewPresenter: $0.loadingViewPresenter,
                     walletManager: $0.walletManager,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     blockchainSettings:  $0.blockchainSettings,
@@ -56,7 +57,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     sharedContainer: $0.sharedContainer,
                     analyticsRecorder: $0.analyticsRecorder,
                     siftService: resolve(),
-                    onboardingSettings: $0.onboardingSettings
+                    onboardingSettings: $0.onboardingSettings,
+                    mainQueue: $0.mainQueue
                 )
             }),
     appReducerCore

@@ -42,7 +42,6 @@ extension CryptoCurrencyQuote: Identifiable {
 }
 
 public enum CryptoCurrenciesServiceError: Error, Equatable {
-
     case other(Error)
 
     var description: String? {

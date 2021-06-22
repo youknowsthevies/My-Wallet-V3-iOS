@@ -17,8 +17,8 @@ protocol RegisterWalletScreenInteracting: AnyObject {
     /// Reflects errors received from the JS layer
     var error: Observable<String> { get }
 
-    func prepare() throws
+    func prepare() -> Result<Void, Error>
 
     /// Executes the registration (creation / recovery)
-    func execute() throws
+    func execute() -> Result<Void, Error>
 }

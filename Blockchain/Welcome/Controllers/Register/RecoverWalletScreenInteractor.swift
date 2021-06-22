@@ -55,18 +55,19 @@ final class RecoverWalletScreenInteractor {
 // MARK: - RegisterWalletScreenInteracting
 
 extension RecoverWalletScreenInteractor: RegisterWalletScreenInteracting {
-    func prepare() throws {
+    func prepare() -> Result<Void, Error> {
         guard reachability.canConnect else {
-            throw InternetReachability.ErrorType.internetUnreachable
+            return .failure(InternetReachability.ErrorType.internetUnreachable)
         }
         wallet.loadJS()
         wallet.delegate = WalletManager.shared
         wallet.recoverFromMetadata(withMnemonicPassphrase: passphrase)
+        return .success(())
     }
 
-    func execute() throws {
+    func execute() -> Result<Void, Error> {
         guard reachability.canConnect else {
-            throw InternetReachability.ErrorType.internetUnreachable
+            return .failure(InternetReachability.ErrorType.internetUnreachable)
         }
         wallet.loadJS()
         wallet.delegate = WalletManager.shared
@@ -77,5 +78,6 @@ extension RecoverWalletScreenInteractor: RegisterWalletScreenInteracting {
             password: password,
             mnemonicPassphrase: passphrase
         )
+        return .success(())
     }
 }

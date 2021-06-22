@@ -29,6 +29,7 @@ class MainAppReducerTests: XCTestCase {
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var mockSiftService: MockSiftService!
     var onboardingSettings: MockOnboardingSettings!
+    var mockMainQueue: TestSchedulerOf<DispatchQueue>!
 
     var testStore: TestStore<
         CoreAppState,
@@ -65,11 +66,13 @@ class MainAppReducerTests: XCTestCase {
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         mockSiftService = MockSiftService()
         onboardingSettings = MockOnboardingSettings()
+        mockMainQueue = DispatchQueue.test
 
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
+                loadingViewPresenter: LoadingViewPresenter(),
                 walletManager: mockWalletManager,
                 appFeatureConfigurator: mockFeatureConfigurator,
                 blockchainSettings: mockSettingsApp,
@@ -82,7 +85,8 @@ class MainAppReducerTests: XCTestCase {
                 sharedContainer: SharedContainerUserDefaults(),
                 analyticsRecorder: mockAnalyticsRecorder,
                 siftService: mockSiftService,
-                onboardingSettings: onboardingSettings
+                onboardingSettings: onboardingSettings,
+                mainQueue: mockMainQueue.eraseToAnyScheduler()
             )
         )
     }
@@ -180,7 +184,7 @@ class MainAppReducerTests: XCTestCase {
         // when authenticating 
         testStore.send(.onboarding(.passwordScreen(.authenticate("password"))))
 
-        testStore.receive(.authenticate("password"))
+        testStore.receive(.fetchWallet("password"))
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
@@ -208,7 +212,7 @@ class MainAppReducerTests: XCTestCase {
         // when authenticating
         testStore.send(.onboarding(.pin(.handleAuthentication("password"))))
 
-        testStore.receive(.authenticate("password"))
+        testStore.receive(.fetchWallet("password"))
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
@@ -217,13 +221,53 @@ class MainAppReducerTests: XCTestCase {
         XCTAssertTrue(mockWallet.fetchCalled)
     }
 
+    func test_creating_wallet() {
+        mockSettingsApp.guid = nil
+        mockSettingsApp.sharedKey = nil
+        mockSettingsApp.isPinSet = false
+
+        testStore.send(.onboarding(.start)) { state in
+            state.onboarding = .init()
+            state.onboarding?.pinState = nil
+            state.onboarding?.authenticationState = .init()
+        }
+
+        testStore.receive(.onboarding(.welcomeScreen(.start)))
+
+        testStore.send(.onboarding(.welcomeScreen(.createAccount))) { state in
+            state.onboarding?.showLegacyCreateWalletScreen = true
+        }
+
+        testStore.receive(.authenticate)
+
+        let guid = String(repeating: "a", count: 36)
+        let sharedKey = String(repeating: "b", count: 36)
+        // we need to assign this here as the WalletManager+Rx gets the password hash the legacy password
+        mockWalletManager.legacyRepository.legacyPassword = "a-password"
+        mockWallet.load(withGuid: guid, sharedKey: sharedKey, password: "a-password")
+
+        mockMainQueue.advance()
+
+        let walletDecryption = WalletDecryption(guid: guid,
+                                                sharedKey: sharedKey,
+                                                passwordPartHash: "a-password".passwordPartHash)
+        testStore.receive(.didDecryptWallet(walletDecryption))
+        testStore.receive(.authenticated(.success(true))) { state in
+            state.onboarding?.showLegacyCreateWalletScreen = false
+        }
+        testStore.receive(.setupPin) { state in
+            state.onboarding?.pinState = .init()
+            state.onboarding?.passwordScreen = nil
+        }
+    }
+
     func test_sending_logout_should_perform_cleanup_and_display_password_screen() {
         testStore.send(.proceedToLoggedIn) { state in
             state.loggedIn = .init()
             state.onboarding = nil
         }
 
-        testStore.receive(.loggedIn(.start(window: nil)))
+        testStore.receive(.loggedIn(.start))
 
         testStore.send(.loggedIn(.logout)) { state in
             state.loggedIn = nil
@@ -278,6 +322,7 @@ class MainAppReducerTests: XCTestCase {
         mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(true))
 
         testStore.send(.walletInitialized)
+        mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(true)) { state in
             state.onboarding?.pinState = nil
             state.onboarding?.walletUpgradeState = WalletUpgrade.State()
@@ -291,18 +336,19 @@ class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start(window: nil)))
+        testStore.receive(.loggedIn(.start))
     }
 
     func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {
         mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
         testStore.send(.walletInitialized)
+        mockMainQueue.advance()
         testStore.receive(.walletNeedsUpgrade(false))
         testStore.receive(.proceedToLoggedIn) { state in
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start(window: nil)))
+        testStore.receive(.loggedIn(.start))
     }
 
     func test_clearPinIfNeeded_correctly_clears_pin() {

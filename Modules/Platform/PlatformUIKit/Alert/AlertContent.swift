@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct AlertViewContent {
+public struct AlertViewContent: Equatable {
 
     public typealias Action = ((UIAlertAction) -> Void)
 

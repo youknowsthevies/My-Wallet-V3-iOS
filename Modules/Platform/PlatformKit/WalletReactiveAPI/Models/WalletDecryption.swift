@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+// MARK: Wallet Decryption
+
 /// Holds the necessary information for a decrypted wallet
 public struct WalletDecryption: Equatable {
     public let guid: String?
