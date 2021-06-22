@@ -127,11 +127,12 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialAddressService: CustodialAddressServiceAPI
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
-    private let exchangeService: PairExchangeServiceAPI
     private let featureFetcher: FeatureFetching
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let kycTiersService: KYCTiersServiceAPI
     private let errorRecorder: ErrorRecording
+    private let fiatPriceService: FiatPriceServiceAPI
+
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currency)
     }
@@ -139,24 +140,24 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public init(
         asset: CryptoCurrency,
         errorRecorder: ErrorRecording = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
         self.asset = asset
         self.label = asset.defaultTradingWalletName
+        self.fiatPriceService = fiatPriceService
         self.balanceService = balanceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
         self.custodialAddressService = custodialAddressService
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
-        self.exchangeService = exchangeProviding[asset]
         self.featureFetcher = featureFetcher
         self.internalFeatureFlagService = internalFeatureFlagService
         self.kycTiersService = kycTiersService
@@ -228,13 +229,25 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        exchangeService.fiatPrice
-            .flatMapLatest(weak: self) { (self, exchangeRate) in
-                self.balance
-                    .map { balance -> MoneyValuePair in
-                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
-                    }
-                    .asObservable()
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+            }
+            .asObservable()
+    }
+
+    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
 }

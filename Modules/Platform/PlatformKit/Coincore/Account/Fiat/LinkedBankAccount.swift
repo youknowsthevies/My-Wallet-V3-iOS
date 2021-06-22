@@ -80,6 +80,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 
+    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
+    }
+
     public func can(perform action: AssetAction) -> Single<Bool> {
         actions.map { $0.contains(action) }
     }

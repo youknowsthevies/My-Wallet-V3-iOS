@@ -19,10 +19,10 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         if accounts.isEmpty {
             return .just(false)
         }
-
-        return Single.zip(accounts.map(\.requireSecondPassword))
+        return Single
+            .zip(accounts.map(\.requireSecondPassword))
             .map { values -> Bool in
-                !values.contains(false)
+                values.contains(true)
             }
     }
 
@@ -30,11 +30,11 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        let asset = self.asset
-        return Single.zip(accounts.map(\.actionableBalance))
-                    .map { values -> MoneyValue in
-                        try values.reduce(MoneyValue.zero(currency: asset), +)
-                }
+        return Single
+            .zip(accounts.map(\.actionableBalance))
+            .map { [asset] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: asset), +)
+            }
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
@@ -45,32 +45,33 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
         if accounts.isEmpty {
             return .just(false)
         }
-        return Single.zip(accounts.map(\.isFunded))
-                    .map { values -> Bool in
-                        !values.contains(false)
-                    }
+        return Single
+            .zip(accounts.map(\.isFunded))
+            .map { values -> Bool in
+                values.contains(true)
+            }
     }
 
     public var pendingBalance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        let asset = self.asset
-        return Single.zip(accounts.map(\.pendingBalance))
-                    .map { values -> MoneyValue in
-                        try values.reduce(MoneyValue.zero(currency: asset), +)
-                }
+        return Single
+            .zip(accounts.map(\.pendingBalance))
+            .map { [asset] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: asset), +)
+            }
     }
 
     public var balance: Single<MoneyValue> {
         if accounts.isEmpty {
             return .just(.zero(currency: asset))
         }
-        let asset = self.asset
-        return Single.zip(accounts.map(\.balance))
-                    .map { values -> MoneyValue in
-                        try values.reduce(MoneyValue.zero(currency: asset), +)
-                }
+        return Single
+            .zip(accounts.map(\.balance))
+            .map { [asset] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: asset), +)
+            }
     }
 
     public init(asset: CryptoCurrency, accounts: [SingleAccount]) {

@@ -18,7 +18,7 @@ public protocol HistoricalFiatPriceServiceAPI: LatestFiatPriceFetching {
     /// The calculationState of the service. Returns a `ValueCalculationState` that
     /// contains `HistoricalPriceSeries` and a `FiatValue` each derived from `LatestFiatPriceFetching`
     /// and `HistoricalFiatPriceFetching`.
-    var calculationState: Observable<ValueCalculationState<(HistoricalFiatPriceResponse)>> { get }
+    var calculationState: Observable<ValueCalculationState<HistoricalFiatPriceResponse>> { get }
     /// A trigger that force the service to fetch the updated price.
     /// Handy to call on currency type and value changes
     var fetchTriggerRelay: PublishRelay<PriceWindow> { get }

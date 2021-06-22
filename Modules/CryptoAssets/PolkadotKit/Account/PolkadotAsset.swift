@@ -47,21 +47,13 @@ final class PolkadotAsset: CryptoAsset {
 
     private var allAccountsGroup: Single<AccountGroup> {
         Single
-            .zip(
+            .zip([
                 nonCustodialGroup,
                 custodialGroup,
                 interestGroup,
                 exchangeGroup
-            )
-            .map { (nonCustodialGroup, custodialGroup, interestGroup, exchangeGroup) -> [SingleAccount] in
-                nonCustodialGroup.accounts
-                    + custodialGroup.accounts
-                    + interestGroup.accounts
-                    + exchangeGroup.accounts
-            }
-            .map { [asset] accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
+            ])
+            .flatMapAllAccountGroup()
     }
 
     private var custodialGroup: Single<AccountGroup> {

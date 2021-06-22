@@ -7,8 +7,11 @@ import ToolKit
 public protocol CryptoAsset: Asset {
     var asset: CryptoCurrency { get }
     var defaultAccount: Single<SingleAccount> { get }
-    var kycTiersService: KYCTiersServiceAPI { get }
     var canTransactToCustodial: Single<Bool> { get }
+
+    // MARK: - Services
+
+    var kycTiersService: KYCTiersServiceAPI { get }
 }
 
 extension CryptoAsset {

@@ -84,4 +84,8 @@ final class FiatCustodialAccount: FiatAccount {
                     .asObservable()
             }
     }
+
+    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        balancePair(fiatCurrency: fiatCurrency).take(1).asSingle()
+    }
 }

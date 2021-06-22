@@ -5,15 +5,15 @@ import RxSwift
 import ToolKit
 
 /// An `AccountGroup` containing all accounts.
-final class AllAccountsGroup: AccountGroup {
+public final class AllAccountsGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
-    let accounts: [SingleAccount]
-    let id: String = "AllAccountsGroup"
-    let label: String = LocalizedString.allWallets
+    public let accounts: [SingleAccount]
+    public let id: String = "AllAccountsGroup"
+    public let label: String = LocalizedString.allWallets
     let actions: AvailableActions = [.viewActivity]
 
-    var isFunded: Single<Bool> {
+    public var isFunded: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
         }
@@ -23,7 +23,7 @@ final class AllAccountsGroup: AccountGroup {
             }
     }
 
-    var requireSecondPassword: Single<Bool> {
+    public var requireSecondPassword: Single<Bool> {
         if accounts.isEmpty {
             return .just(false)
         }
@@ -34,40 +34,23 @@ final class AllAccountsGroup: AccountGroup {
             }
     }
 
-    var pendingBalance: Single<MoneyValue> {
-        .error(AccountGroupError.noBalance)
-    }
-
-    var balance: Single<MoneyValue> {
-        .error(AccountGroupError.noBalance)
-    }
-
-    var actionableBalance: Single<MoneyValue> {
+    public var pendingBalance: Single<MoneyValue> {
         unimplemented()
     }
 
-    var receiveAddress: Single<ReceiveAddress> {
+    public var balance: Single<MoneyValue> {
         unimplemented()
     }
 
-    init(accounts: [SingleAccount]) {
+    public var actionableBalance: Single<MoneyValue> {
+        unimplemented()
+    }
+
+    public var receiveAddress: Single<ReceiveAddress> {
+        unimplemented()
+    }
+
+    public init(accounts: [SingleAccount]) {
         self.accounts = accounts
     }
-
-    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        unimplemented()
-    }
-
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
-        let balances: [Observable<MoneyValue>] = accounts
-            .map { account in
-                account
-                    .fiatBalance(fiatCurrency: fiatCurrency)
-            }
-        return Observable.combineLatest(balances)
-            .map { balances in
-                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
-            }
-    }
-
 }

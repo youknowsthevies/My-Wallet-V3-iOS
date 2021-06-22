@@ -59,23 +59,23 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
-    private let exchangeService: PairExchangeServiceAPI
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let hdAccountIndex: Int
+    private let fiatPriceService: FiatPriceServiceAPI
     private let walletAccount: BitcoinWalletAccount
 
     init(walletAccount: BitcoinWalletAccount,
          isDefault: Bool,
-         exchangeProviding: ExchangeProviding = resolve(),
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
+         fiatPriceService: FiatPriceServiceAPI = resolve(),
          bridge: BitcoinWalletBridgeAPI = resolve()) {
         self.id = walletAccount.publicKeys.default.address
         self.hdAccountIndex = walletAccount.index
         self.label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
-        self.exchangeService = exchangeProviding[.bitcoin]
         self.balanceService = balanceService
+        self.fiatPriceService = fiatPriceService
         self.bridge = bridge
         self.walletAccount = walletAccount
     }
@@ -96,13 +96,25 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        exchangeService.fiatPrice
-            .flatMapLatest(weak: self) { (self, exchangeRate) in
-                self.balance
-                    .map { balance -> MoneyValuePair in
-                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
-                    }
-                    .asObservable()
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+            }
+            .asObservable()
+    }
+
+    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
 

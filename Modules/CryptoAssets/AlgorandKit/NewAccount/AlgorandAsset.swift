@@ -46,20 +46,14 @@ final class AlgorandAsset: CryptoAsset {
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return Single.zip(nonCustodialGroup,
-                          custodialGroup,
-                          interestGroup,
-                          exchangeGroup)
-            .map { (nonCustodialGroup, custodialGroup, interestGroup, exchangeGroup) -> [SingleAccount] in
-                    nonCustodialGroup.accounts +
-                    custodialGroup.accounts +
-                    interestGroup.accounts +
-                    exchangeGroup.accounts
-            }
-            .map { accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
+        Single
+            .zip([
+                nonCustodialGroup,
+                custodialGroup,
+                interestGroup,
+                exchangeGroup
+            ])
+            .flatMapAllAccountGroup()
     }
 
     private var custodialGroup: Single<AccountGroup> {
@@ -71,8 +65,7 @@ final class AlgorandAsset: CryptoAsset {
     }
 
     private var exchangeGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
             .optional()
             .catchError { error in
@@ -91,7 +84,7 @@ final class AlgorandAsset: CryptoAsset {
                     return Single.just(nil)
                 }
             }
-            .map { account in
+            .map { [asset] account in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset, accounts: [])
                 }

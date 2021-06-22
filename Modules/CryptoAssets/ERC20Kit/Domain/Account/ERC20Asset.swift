@@ -79,19 +79,14 @@ final class ERC20Asset: CryptoAsset {
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {
-        Single.zip(nonCustodialGroup,
-                   custodialGroup,
-                   interestGroup,
-                   exchangeGroup)
-            .map { (nonCustodialGroup, custodialGroup, interestGroup, exchangeGroup) -> [SingleAccount] in
-                    nonCustodialGroup.accounts +
-                    custodialGroup.accounts +
-                    interestGroup.accounts +
-                    exchangeGroup.accounts
-            }
-            .map { [asset] accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
+        Single
+            .zip([
+                nonCustodialGroup,
+                custodialGroup,
+                interestGroup,
+                exchangeGroup
+            ])
+            .flatMapAllAccountGroup()
     }
 
     private var custodialGroup: Single<AccountGroup> {

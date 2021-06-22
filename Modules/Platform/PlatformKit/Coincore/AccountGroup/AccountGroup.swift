@@ -18,19 +18,53 @@ extension AccountGroup {
         return type
     }
 
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
+        let balances: [Observable<MoneyValue>] = accounts
+            .map { account in
+                account
+                    .fiatBalance(fiatCurrency: fiatCurrency)
+            }
+        return Observable.combineLatest(balances)
+            .map { balances in
+                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            }
+    }
+
+    public func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue> {
+        let balances: [Single<MoneyValue>] = accounts
+            .map { account in
+                account
+                    .fiatBalance(fiatCurrency: fiatCurrency, at: date)
+            }
+        return Single.zip(balances)
+            .map { balances in
+                try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
+            }
+    }
+
     public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        let balances: [Observable<MoneyValuePair>] = accounts
+        let balancePairs: [Observable<MoneyValuePair>] = accounts
             .map { account in
                 account
                     .balancePair(fiatCurrency: fiatCurrency)
                     .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
             }
-        return Observable.combineLatest(balances)
+        return Observable.combineLatest(balancePairs)
             .map { [currencyType] pairs -> MoneyValuePair in
-                let zero: MoneyValuePair = .zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency)
-                return try pairs.reduce(into: zero) { (result, this) in
-                    result = try result + this
-                }
+                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
+            }
+    }
+
+    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        let balancePairs: [Single<MoneyValuePair>] = accounts
+            .map { account in
+                account
+                    .balancePair(fiatCurrency: fiatCurrency, at: date)
+                    .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
+            }
+        return Single.zip(balancePairs)
+            .map { [currencyType] pairs -> MoneyValuePair in
+                try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
             }
     }
 
@@ -55,4 +89,14 @@ extension AccountGroup {
 public enum AccountGroupError: Error {
     case noBalance
     case noReceiveAddress
+}
+
+extension PrimitiveSequence where Trait == SingleTrait, Element == [AccountGroup] {
+    public func flatMapAllAccountGroup() -> Single<AccountGroup> {
+        map { groups in
+            AllAccountsGroup(
+                accounts: groups.map(\.accounts).flatMap { $0 }
+            )
+        }
+    }
 }

@@ -130,6 +130,8 @@ extension DependencyContainer {
             )
         }
 
+        single { FiatPriceService() as FiatPriceServiceAPI }
+
         single { ReactiveWallet() as ReactiveWalletAPI }
 
         factory { BlockchainAccountProvider() as BlockchainAccountProviding }

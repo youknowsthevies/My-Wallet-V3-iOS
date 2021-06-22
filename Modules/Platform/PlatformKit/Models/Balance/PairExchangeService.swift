@@ -29,7 +29,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
                 fiatCurrencyService.fiatCurrencyObservable,
                 fetchTriggerRelay
             )
-            .throttle(.milliseconds(100), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
+            .throttle(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
             .map { $0.0 }
             .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<PriceQuoteAtTime> in
                 self.priceService
@@ -37,7 +37,6 @@ public final class PairExchangeService: PairExchangeServiceAPI {
                     .catchErrorJustReturn(
                         PriceQuoteAtTime(
                             timestamp: Date(),
-                            volume24h: nil,
                             moneyValue: .zero(currency: fiatCurrency)
                         )
                     )

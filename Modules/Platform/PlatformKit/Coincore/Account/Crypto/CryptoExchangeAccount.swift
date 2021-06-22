@@ -88,6 +88,11 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }
 
+    public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        /// Exchange API does not return a balance.
+        .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
+    }
+
     public func can(perform action: AssetAction) -> Single<Bool> {
         .just(false)
     }

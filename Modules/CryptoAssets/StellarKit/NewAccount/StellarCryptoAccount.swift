@@ -50,7 +50,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
     private let accountDetailsService: StellarAccountDetailsServiceAPI
-    private let exchangeService: PairExchangeServiceAPI
+    private let fiatPriceService: FiatPriceServiceAPI
     private let accountCache: CachedValue<StellarAccountDetails>
 
     init(id: String,
@@ -58,7 +58,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
          hdAccountIndex: Int,
          bridge: StellarWalletBridgeAPI = resolve(),
          accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
-         exchangeProviding: ExchangeProviding = resolve()) {
+         fiatPriceService: FiatPriceServiceAPI = resolve()) {
         let asset = CryptoCurrency.stellar
         self.asset = asset
         self.bridge = bridge
@@ -66,7 +66,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.hdAccountIndex = hdAccountIndex
         self.label = label ?? asset.defaultWalletName
         self.accountDetailsService = accountDetailsService
-        self.exchangeService = exchangeProviding[asset]
+        self.fiatPriceService = fiatPriceService
         accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
         accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
             self.accountDetailsService.accountDetails(for: self.id)
@@ -89,17 +89,29 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        exchangeService.fiatPrice
-            .flatMapLatest(weak: self) { (self, exchangeRate) in
-                self.balance
-                    .map { balance -> MoneyValuePair in
-                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
-                    }
-                    .asObservable()
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
+            .asObservable()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {
         bridge.update(accountIndex: hdAccountIndex, label: newLabel)
+    }
+
+    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+            }
     }
 }

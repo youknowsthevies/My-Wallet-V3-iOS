@@ -5,9 +5,6 @@ public struct PriceQuoteAtTime: Equatable {
     /// The time stamp of the quote
     public let timestamp: Date
 
-    /// The volume over 24 hours
-    public let volume24h: Decimal?
-
     /// The quote value
     public let moneyValue: MoneyValue
 }
@@ -21,7 +18,6 @@ extension PriceQuoteAtTime {
     /// - Throws: Money value initialization error.
     public init(response: PriceQuoteAtTimeResponse, currency: Currency) throws {
         self.moneyValue = MoneyValue.create(major: "\(response.price)", currency: currency.currency)!
-        self.volume24h = response.volume24h
         self.timestamp = response.timestamp
     }
 }

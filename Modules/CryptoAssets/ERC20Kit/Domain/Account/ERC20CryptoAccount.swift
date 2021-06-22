@@ -47,23 +47,23 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     private let erc20Token: ERC20Token
     private let balanceService: ERC20BalanceServiceAPI
-    private let exchangeService: PairExchangeServiceAPI
     private let featureFetcher: FeatureFetching
+    private let fiatPriceService: FiatPriceServiceAPI
 
     init(
         id: String,
         erc20Token: ERC20Token,
         balanceService: ERC20BalanceServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve(),
-        featureFetcher: FeatureFetching = resolve()
+        featureFetcher: FeatureFetching = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
         self.id = id
         self.erc20Token = erc20Token
         self.asset = erc20Token.assetType
         self.label = erc20Token.assetType.defaultWalletName
-        self.exchangeService = exchangeProviding[erc20Token.assetType]
         self.balanceService = balanceService
         self.featureFetcher = featureFetcher
+        self.fiatPriceService = fiatPriceService
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
@@ -86,13 +86,25 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        exchangeService.fiatPrice
-            .flatMapLatest(weak: self) { (self, exchangeRate) in
-                self.balance
-                    .map { balance -> MoneyValuePair in
-                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
-                    }
-                    .asObservable()
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
+            }
+            .asObservable()
+    }
+
+    func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
+        Single
+            .zip(
+                fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
+                balance
+            )
+            .map { (fiatPrice, balance) in
+                try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
 }

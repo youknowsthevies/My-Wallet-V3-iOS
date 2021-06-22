@@ -84,20 +84,14 @@ final class StellarAsset: CryptoAsset {
     // MARK: - Helpers
 
     private var allAccountsGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return Single.zip(nonCustodialGroup,
-                          custodialGroup,
-                          interestGroup,
-                          exchangeGroup)
-            .map { (nonCustodialGroup, custodialGroup, interestGroup, exchangeGroup) -> [SingleAccount] in
-                    nonCustodialGroup.accounts +
-                    custodialGroup.accounts +
-                    interestGroup.accounts +
-                    exchangeGroup.accounts
-            }
-            .map { accounts -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
-            }
+        Single
+            .zip([
+                nonCustodialGroup,
+                custodialGroup,
+                interestGroup,
+                exchangeGroup
+            ])
+            .flatMapAllAccountGroup()
     }
 
     private var custodialGroup: Single<AccountGroup> {
