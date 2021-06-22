@@ -19,6 +19,9 @@ final class OnboardingHostingController: UIViewController {
     private var currentController: UIViewController?
     private var cancellables: Set<AnyCancellable> = []
 
+    /// This is assigned when the recover funds option is selected on the WelcomeScreen
+    private var recoverWalletNavigationController: UINavigationController?
+
     init(store: Store<Onboarding.State, Onboarding.Action>,
          alertViewPresenter: AlertViewPresenterAPI = resolve(),
          webViewService: WebViewServiceAPI = resolve()) {
@@ -56,6 +59,21 @@ final class OnboardingHostingController: UIViewController {
                     return
                 }
                 self.presentCreateWallet()
+            }
+            .store(in: &cancellables)
+
+        viewStore.publisher
+            .showLegacyRecoverWalletScreen
+            .removeDuplicates()
+            .sink { [weak self] shouldPresent in
+                guard let self = self else { return }
+                guard shouldPresent else {
+                    self.recoverWalletNavigationController?.dismiss(animated: true) {
+                        self.recoverWalletNavigationController = nil
+                    }
+                    return
+                }
+                self.presentRecoverFunds()
             }
             .store(in: &cancellables)
 
@@ -127,13 +145,16 @@ final class OnboardingHostingController: UIViewController {
         }
     }
 
+    // MARK: Wallet Upgrade
+
     // Provides the view controller that displays the wallet upgrade
     private func setupWalletUpgrade(completion: @escaping () -> Void) -> WalletUpgradeViewController {
         let interactor = WalletUpgradeInteractor(completion: completion)
         let presenter = WalletUpgradePresenter(interactor: interactor)
-        let viewController = WalletUpgradeViewController(presenter: presenter)
-        return viewController
+        return WalletUpgradeViewController(presenter: presenter)
     }
+
+    // MARK: Create Wallet
 
     private func presentCreateWallet() {
         let interactor = CreateWalletInteractor()
@@ -161,6 +182,62 @@ final class OnboardingHostingController: UIViewController {
         navigationController.setViewControllers([viewController], animated: false)
         present(navigationController, animated: true, completion: nil)
     }
+
+    // MARK: Recover Wallet
+
+    private func presentRecoverFunds() {
+        let presenter = RecoverFundsScreenPresenter(
+            navBarStyle: .darkContent(),
+            leadingButton: .none,
+            trailingButton: .close
+        )
+        let cancellable = presenter.continueTappedRelay
+            .asPublisher()
+            .ignoreFailure()
+            .sink(receiveValue: { [weak self] mnemonic in
+                self?.navigateToCreateRecoveryWalletScreen(mnemonic)
+            })
+        let dismissHandler: () -> Void = { [weak self] in
+            cancellable.cancel()
+            self?.viewStore.send(.recoverWalletScreenClosed)
+        }
+        let controller = RecoverFundsViewController(presenter: presenter, dismissHandler: dismissHandler)
+        // disallow swipe down to dismiss
+        controller.isModalInPresentation = true
+        let navigationController = UINavigationController(rootViewController: controller)
+        present(navigationController, animated: true, completion: nil)
+        self.recoverWalletNavigationController = navigationController
+    }
+
+    private func navigateToCreateRecoveryWalletScreen(_ mnemonic: String) {
+        let interactor = RecoverWalletInteractor(passphrase: mnemonic)
+        let presenter = RegisterWalletScreenPresenter(
+            interactor: interactor,
+            type: .recovery,
+            navBarStyle: .darkContent(),
+            leadingButton: .none,
+            trailingButton: .close
+        )
+        let cancellable = presenter.webViewLaunchRelay
+            .asObservable()
+            .asPublisher()
+            .ignoreFailure()
+            .sink { [weak self] url in
+                guard let self = self else { return }
+                guard let navController = self.recoverWalletNavigationController else { return }
+                self.webViewService.openSafari(url: url, from: navController)
+            }
+        let dismissHandler = { [weak self] in
+            cancellable.cancel()
+            self?.viewStore.send(.recoverWalletScreenClosed)
+        }
+        let viewController = RegisterWalletViewController(presenter: presenter, dismissHandler: dismissHandler)
+        // disallow swipe down to dismiss
+        viewController.isModalInPresentation = true
+        self.recoverWalletNavigationController?.pushViewController(viewController, animated: true)
+    }
+
+    // MARK: Alerts
 
     private func showAlert(type: Onboarding.Alert) {
         switch type {

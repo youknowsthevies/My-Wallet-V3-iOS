@@ -170,7 +170,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .authenticated(.success):
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
-            state.onboarding?.showLegacyCreateWalletScreen = false
+            state.onboarding?.hideLegacyScreenIfNeeded()
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
                 Effect(value: .setupPin)
@@ -228,10 +228,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 value: CoreAppAction.loggedIn(.start)
             )
         )
-    case .onboarding(.welcomeScreen(.createAccount)):
-        // send `authenticate` action so that we can listen for wallet creation
+    case .onboarding(.welcomeScreen(.createAccount)),
+         .onboarding(.welcomeScreen(.recoverFunds)):
+        // send `authenticate` action so that we can listen for wallet creation or recovery
         return Effect(value: .authenticate)
-    case .onboarding(.createAccountScreenClosed):
+    case .onboarding(.createAccountScreenClosed),
+         .onboarding(.recoverWalletScreenClosed):
         // cancel any authentication publishers in case the create wallet is closed
         return .merge(
             .cancel(id: WalletCancelations.DecryptId()),

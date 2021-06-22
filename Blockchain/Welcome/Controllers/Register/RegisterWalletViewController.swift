@@ -96,7 +96,6 @@ final class RegisterWalletViewController: BaseScreenViewController {
     }
 
     override func navigationBarTrailingButtonPressed() {
-        super.navigationBarTrailingButtonPressed()
         dismissHandler?()
     }
 }

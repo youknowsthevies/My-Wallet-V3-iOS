@@ -44,7 +44,9 @@ final class RecoverFundsScreenPresenter {
 
     let continueTappedRelay = PublishRelay<String>()
 
-    let navBarStyle = Screen.Style.Bar.lightContent()
+    let navBarStyle: Screen.Style.Bar
+    let leadingButton: Screen.Style.LeadingButton
+    let trailingButton: Screen.Style.TrailingButton
     let titleStyle = Screen.Style.TitleView.text(value: LocalizationConstants.Onboarding.RecoverFunds.title)
     let description = LocalizationConstants.Onboarding.RecoverFunds.description
     let mnemonicTextViewModel = MnemonicTextViewViewModel(
@@ -71,7 +73,12 @@ final class RecoverFundsScreenPresenter {
 
     // MARK: - Setup
 
-    init() {
+    init(navBarStyle: Screen.Style.Bar = .lightContent(),
+         leadingButton: Screen.Style.LeadingButton = .back,
+         trailingButton: Screen.Style.TrailingButton = .none) {
+        self.navBarStyle = navBarStyle
+        self.leadingButton = leadingButton
+        self.trailingButton = trailingButton
         let stateObservable = mnemonicTextViewModel.state.map { payload -> State in
             switch payload {
             case .complete(let value):

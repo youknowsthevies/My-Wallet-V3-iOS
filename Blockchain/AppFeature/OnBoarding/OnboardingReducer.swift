@@ -20,6 +20,7 @@ public enum Onboarding {
         case welcomeScreen(AuthenticationAction)
         case forgetWallet
         case createAccountScreenClosed
+        case recoverWalletScreenClosed
     }
 
     public struct State: Equatable {
@@ -29,6 +30,19 @@ public enum Onboarding {
         var authenticationState: AuthenticationState?
         var displayAlert: Alert?
         var showLegacyCreateWalletScreen: Bool = false
+        var showLegacyRecoverWalletScreen: Bool = false
+
+        /// Helper method to toggle any visible legacy screen if needed
+        /// ugly, yeah, I know, but we need to check which current screen is presented
+        /// and dismiss that in the `OnboardingHostingController`
+        mutating func hideLegacyScreenIfNeeded() {
+            if showLegacyCreateWalletScreen {
+                showLegacyCreateWalletScreen = false
+            }
+            if showLegacyRecoverWalletScreen {
+                showLegacyRecoverWalletScreen = false
+            }
+        }
     }
 
     public struct Environment {
@@ -95,8 +109,14 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
         case .createAccountScreenClosed:
             state.showLegacyCreateWalletScreen = false
             return .none
+        case .recoverWalletScreenClosed:
+            state.showLegacyRecoverWalletScreen = false
+            return .none
         case .welcomeScreen(.createAccount):
             state.showLegacyCreateWalletScreen = true
+            return .none
+        case .welcomeScreen(.recoverFunds):
+            state.showLegacyRecoverWalletScreen = true
             return .none
         case .welcomeScreen:
             return .none

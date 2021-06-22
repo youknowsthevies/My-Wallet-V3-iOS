@@ -100,7 +100,7 @@ struct WelcomeActionSection: View {
 
             HStack {
                 Button(WelcomeViewString.Button.restoreWallet) {
-                    // Connect to recover funds Screen
+                    viewStore.send(.recoverFunds)
                 }
                 .font(Font(weight: .semibold, size: 12))
                 .foregroundColor(.buttonLinkText)

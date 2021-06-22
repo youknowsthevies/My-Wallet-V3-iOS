@@ -261,6 +261,46 @@ class MainAppReducerTests: XCTestCase {
         }
     }
 
+    func test_recover_wallet() {
+        mockSettingsApp.guid = nil
+        mockSettingsApp.sharedKey = nil
+        mockSettingsApp.isPinSet = false
+
+        testStore.send(.onboarding(.start)) { state in
+            state.onboarding = .init()
+            state.onboarding?.pinState = nil
+            state.onboarding?.authenticationState = .init()
+        }
+
+        testStore.receive(.onboarding(.welcomeScreen(.start)))
+
+        testStore.send(.onboarding(.welcomeScreen(.recoverFunds))) { state in
+            state.onboarding?.showLegacyRecoverWalletScreen = true
+        }
+
+        testStore.receive(.authenticate)
+
+        let guid = String(repeating: "a", count: 36)
+        let sharedKey = String(repeating: "b", count: 36)
+        // we need to assign this here as the WalletManager+Rx gets the password hash the legacy password
+        mockWalletManager.legacyRepository.legacyPassword = "a-password"
+        mockWallet.load(withGuid: guid, sharedKey: sharedKey, password: "a-password")
+
+        mockMainQueue.advance()
+
+        let walletDecryption = WalletDecryption(guid: guid,
+                                                sharedKey: sharedKey,
+                                                passwordPartHash: "a-password".passwordPartHash)
+        testStore.receive(.didDecryptWallet(walletDecryption))
+        testStore.receive(.authenticated(.success(true))) { state in
+            state.onboarding?.showLegacyRecoverWalletScreen = false
+        }
+        testStore.receive(.setupPin) { state in
+            state.onboarding?.pinState = .init()
+            state.onboarding?.passwordScreen = nil
+        }
+    }
+
     func test_sending_logout_should_perform_cleanup_and_display_password_screen() {
         testStore.send(.proceedToLoggedIn) { state in
             state.loggedIn = .init()

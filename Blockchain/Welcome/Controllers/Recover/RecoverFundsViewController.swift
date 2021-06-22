@@ -18,11 +18,13 @@ final class RecoverFundsViewController: BaseScreenViewController {
     // MARK: - Injected
 
     private let presenter: RecoverFundsScreenPresenter
+    private let dismissHandler: (() -> Void)?
 
     // MARK: - Setup
 
-    init(presenter: RecoverFundsScreenPresenter) {
+    init(presenter: RecoverFundsScreenPresenter, dismissHandler: (() -> Void)? = nil) {
         self.presenter = presenter
+        self.dismissHandler = dismissHandler
         super.init(nibName: RecoverFundsViewController.objectName, bundle: nil)
     }
 
@@ -32,7 +34,9 @@ final class RecoverFundsViewController: BaseScreenViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.navBarStyle, leadingButtonStyle: .back)
+        set(barStyle: presenter.navBarStyle,
+            leadingButtonStyle: presenter.leadingButton,
+            trailingButtonStyle: presenter.trailingButton)
         titleViewStyle = presenter.titleStyle
         descriptionLabel.textColor = .descriptionText
         keyboardInteractionController = KeyboardInteractionController(in: self)
@@ -41,5 +45,9 @@ final class RecoverFundsViewController: BaseScreenViewController {
             viewModel: presenter.mnemonicTextViewModel,
             keyboardInteractionController: keyboardInteractionController
         )
+    }
+
+    override func navigationBarTrailingButtonPressed() {
+        dismissHandler?()
     }
 }
