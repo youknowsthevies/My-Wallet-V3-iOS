@@ -4,6 +4,8 @@ import ComposableArchitecture
 
 public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAction, AuthenticationEnvironment> { state, action, environment in
     switch action {
+    case .start:
+        return .none
     case .createAccount:
         return .none
     case .login:

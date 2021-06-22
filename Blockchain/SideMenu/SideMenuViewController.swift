@@ -31,8 +31,8 @@ class SideMenuViewController: UIViewController {
 
     var createGestureRecognizers: (() -> (tapToCloseVC: UITapGestureRecognizer, tapToCloseTabBar: UITapGestureRecognizer)?)?
 
-    var provideTabControllerManager: (() -> TabControllerManager?)?
-    var provideSlidingViewController: (() -> ECSlidingViewController?)?
+    weak var tabControllerManager: TabControllerManager?
+    weak var slidingViewController: ECSlidingViewController?
 
     // MARK: - Private Properties
 
@@ -135,14 +135,14 @@ class SideMenuViewController: UIViewController {
     }
 
     private func addShadow() {
-        guard let view = provideSlidingViewController?()?.topViewController.view else { return }
+        guard let view = slidingViewController?.topViewController.view else { return }
         view.layer.shadowOpacity = 0.3
         view.layer.shadowRadius = 10.0
         view.layer.shadowColor = UIColor.black.cgColor
     }
 
     private func setSideMenuGestures() {
-        guard let tabControllerManager = provideTabControllerManager?() else { return }
+        guard let tabControllerManager = tabControllerManager else { return }
         let tabViewController = tabControllerManager.tabViewController
 
         if let menuSwipeRecognizerView = tabViewController.menuSwipeRecognizerView {
@@ -152,7 +152,7 @@ class SideMenuViewController: UIViewController {
         }
 
         // Enable Pan gesture and tap gesture to close sideMenu
-        guard let slidingViewController = provideSlidingViewController?() else {
+        guard let slidingViewController = slidingViewController else {
             return
         }
 
@@ -170,9 +170,9 @@ class SideMenuViewController: UIViewController {
     }
 
     private func resetSideMenuGestures() {
-        guard let tabControllerManager = provideTabControllerManager?() else { return }
+        guard let tabControllerManager = tabControllerManager else { return }
         let tabViewController = tabControllerManager.tabViewController
-        guard let slidingViewController = provideSlidingViewController?() else { return }
+        guard let slidingViewController = slidingViewController else { return }
         if let activeViewController = tabViewController.activeViewController {
             activeViewController.view.removeGestureRecognizer(slidingViewController.panGesture)
             activeViewController.view.removeGestureRecognizer(tapToCloseGestureRecognizerVC)

@@ -35,14 +35,14 @@ extension Reactive where Base: WalletManager {
         let loadError = base.rx.methodInvoked(#selector(WalletManager.walletFailedToLoad))
             .map { _ -> Result<Bool, AuthenticationError> in
                 .failure(
-                    .init(code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue)
+                    .init(code: AuthenticationError.ErrorCode.errorDecryptingWallet)
                 )
             }
 
         let decryptError = base.rx.methodInvoked(#selector(WalletManager.walletFailedToDecrypt))
             .map { _ -> Result<Bool, AuthenticationError> in
                 .failure(
-                    .init(code: AuthenticationError.ErrorCode.failedToLoadWallet.rawValue)
+                    .init(code: AuthenticationError.ErrorCode.failedToLoadWallet)
                 )
             }
 
@@ -52,8 +52,8 @@ extension Reactive where Base: WalletManager {
                 return .just(
                     .failure(
                         AuthenticationError(
-                            code: AuthenticationError.ErrorCode.unknown.rawValue,
-                            description: String(describing: error)
+                            code: AuthenticationError.ErrorCode.unknown,
+                            description: error.localizedDescription
                         )
                     )
                 )

@@ -11,12 +11,9 @@ final class BackgroundAppHandler {
         )
     )
 
-    private let appCoordinator: AppCoordinator
     private let urlSession: URLSession
 
-    init(appCoordinator: AppCoordinator = .shared,
-         urlSession: URLSession = resolve()) {
-        self.appCoordinator = appCoordinator
+    init(urlSession: URLSession = resolve()) {
         self.urlSession = urlSession
     }
 
@@ -31,14 +28,12 @@ final class BackgroundAppHandler {
     }
 
     func delayedApplicationDidEnterBackground(_ application: UIApplication) {
+        NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
+
         // Wallet-related background actions
 
-        // TODO: This should be moved into a component that performs actions to the wallet
-        // on different lifecycle events (e.g. "WalletAppLifecycleListener")
         let appSettings = BlockchainSettings.App.shared
         let wallet = WalletManager.shared.wallet
-
-        NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
 
         if wallet.isInitialized() {
             if appSettings.guid != nil && appSettings.sharedKey != nil {
@@ -50,15 +45,12 @@ final class BackgroundAppHandler {
         // UI-related background actions
         ModalPresenter.shared.closeAllModals()
 
-        /// TODO: Remove this - we don't want any such logic in `AppDelegate`
-        /// We have to make sure the 2FA alerts (email / auth app) are still showing
-        /// when the user goes back to foreground
-        if appCoordinator.onboardingRouter.state != .pending2FA {
-            UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
-        }
-
-        appCoordinator.cleanupOnAppBackgrounded()
-        AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
+//        if appCoordinator.onboardingRouter.state != .pending2FA {
+//            UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
+//        }
+//
+//        appCoordinator.cleanupOnAppBackgrounded()
+//        AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
 
         urlSession.reset {
             Logger.shared.debug("URLSession reset completed.")

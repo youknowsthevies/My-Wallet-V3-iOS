@@ -45,7 +45,7 @@ final class PasswordRequiredScreenPresenter {
     private let launchAnnouncementPresenter: LaunchAnnouncementPresenter
     private let interactor: PasswordRequiredScreenInteractor
     private let alertPresenter: AlertViewPresenter
-    private unowned let onboardingRouter: OnboardingRouter
+    private let forgetWalletRouting: (() -> Void)?
 
     // MARK: - Private Properties
 
@@ -57,15 +57,15 @@ final class PasswordRequiredScreenPresenter {
     // MARK: - Setup
 
     init(interactor: PasswordRequiredScreenInteractor,
+         forgetWalletRouting: (() -> Void)?,
          loadingViewPresenter: LoadingViewPresenting = resolve(),
-         onboardingRouter: OnboardingRouter = resolve(),
          launchAnnouncementPresenter: LaunchAnnouncementPresenter = LaunchAnnouncementPresenter(),
          alertPresenter: AlertViewPresenter = .shared) {
         self.loadingViewPresenter = loadingViewPresenter
-        self.onboardingRouter = onboardingRouter
         self.launchAnnouncementPresenter = launchAnnouncementPresenter
         self.alertPresenter = alertPresenter
         self.interactor = interactor
+        self.forgetWalletRouting = forgetWalletRouting
 
         let stateObservable = passwordTextFieldViewModel.state
             .map(weak: self) { (self, payload) -> FormPresentationState in
@@ -157,7 +157,7 @@ final class PasswordRequiredScreenPresenter {
     /// Forgets the wallet and routes to the first onboarding screen
     private func forgetWallet() {
         interactor.forget()
-        onboardingRouter.start()
+        forgetWalletRouting?()
     }
 
     /// Authenticate

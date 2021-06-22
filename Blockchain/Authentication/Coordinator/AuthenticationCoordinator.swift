@@ -94,7 +94,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          loadingViewPresenter: LoadingViewPresenting = resolve(),
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouting = resolve(),
-         onboardingRouter: OnboardingRouterAPI = resolve(),
+         onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
          featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
         self.sharedContainter = sharedContainter
@@ -107,8 +107,8 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         self.dataRepository = dataRepository
         self.deepLinkRouter = deepLinkRouter
         self.loadingViewPresenter = loadingViewPresenter
-        self.onboardingRouter = onboardingRouter
         self.featureFlagsService = featureFlagsService
+        self.onboardingRouter = onboardingRouter
         remoteNotificationAuthorizer = remoteNotificationServiceContainer.authorizer
         remoteNotificationTokenSender = remoteNotificationServiceContainer.tokenSender
         super.init()
@@ -130,9 +130,9 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         // Error checking
         guard error == nil, isAuthenticated else {
             switch error!.code {
-            case AuthenticationError.ErrorCode.noInternet.rawValue:
+            case AuthenticationError.ErrorCode.noInternet:
                 alertPresenter.internetConnection()
-            case AuthenticationError.ErrorCode.failedToLoadWallet.rawValue:
+            case AuthenticationError.ErrorCode.failedToLoadWallet:
                 handleFailedToLoadWallet()
             default:
                 if let description = error!.description {
@@ -255,7 +255,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
             self?.authenticate(using: password)
         }
         let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
-        let presenter = PasswordRequiredScreenPresenter(interactor: interactor)
+
+        let forgetWalletRouting: () -> Void = {
+            AppCoordinator.shared.onboardingRouter.start()
+        }
+        let presenter = PasswordRequiredScreenPresenter(interactor: interactor, forgetWalletRouting: forgetWalletRouting)
         let viewController = PasswordRequiredViewController(presenter: presenter)
         let navigationController = UINavigationController(rootViewController: viewController)
         // Sets view controller as rootViewController of the window
@@ -373,7 +377,7 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
         // Verify valid GUID and sharedKey
         guard let guid = guid, guid.count == 36 else {
             failAuth(withError: AuthenticationError(
-                code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue,
+                code: AuthenticationError.ErrorCode.errorDecryptingWallet,
                 description: LocalizationConstants.Authentication.errorDecryptingWallet
             ))
             return
@@ -381,7 +385,7 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
 
         guard let sharedKey = sharedKey, sharedKey.count == 36 else {
             failAuth(withError: AuthenticationError(
-                code: AuthenticationError.ErrorCode.invalidSharedKey.rawValue,
+                code: AuthenticationError.ErrorCode.invalidSharedKey,
                 description: LocalizationConstants.Authentication.invalidSharedKey
             ))
             return

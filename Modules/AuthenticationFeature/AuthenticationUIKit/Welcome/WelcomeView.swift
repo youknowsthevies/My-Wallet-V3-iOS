@@ -91,14 +91,16 @@ struct WelcomeActionSection: View {
             PrimaryButton(title: WelcomeViewString.Button.createAccount) {
                 // add login action here
             }
-            .frame(width: .infinity, height: 48)
+            .frame(height: 48)
+            .frame(maxWidth: .infinity)
             .cornerRadius(8.0)
             .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
 
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
-            .frame(width: .infinity, height: 48)
+            .frame(height: 48)
+            .frame(maxWidth: .infinity)
             .padding(EdgeInsets(top: 0, leading: 24, bottom: 10, trailing: 24))
 
             HStack {
@@ -111,7 +113,8 @@ struct WelcomeActionSection: View {
                 Text("Test Version")
                     .font(Font(weight: .medium, size: 12))
             }
-            .frame(width: .infinity, height: 28)
+            .frame(height: 28)
+            .frame(maxWidth: .infinity)
             .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
         }
     }

@@ -336,7 +336,7 @@ class MainAppReducerTests: XCTestCase {
 
         // then
         let expectedError = AuthenticationError(
-            code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue,
+            code: AuthenticationError.ErrorCode.errorDecryptingWallet,
             description: LocalizationConstants.Authentication.errorDecryptingWallet
         )
 
@@ -358,7 +358,7 @@ class MainAppReducerTests: XCTestCase {
 
         // then
         let expectedError = AuthenticationError(
-            code: AuthenticationError.ErrorCode.invalidSharedKey.rawValue,
+            code: AuthenticationError.ErrorCode.invalidSharedKey,
             description: LocalizationConstants.Authentication.invalidSharedKey
         )
 

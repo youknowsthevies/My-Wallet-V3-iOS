@@ -30,6 +30,7 @@ public enum CoreAppAction: Equatable {
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
     case proceedToLoggedIn
+    case appForegrounded
     // Wallet Related Actions
     case walletInitialized
     case authenticate(String)
@@ -68,7 +69,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                 Onboarding.Environment(
                     blockchainSettings: environment.blockchainSettings,
                     walletManager: environment.walletManager,
-                    alertPresenter: environment.alertPresenter
+                    alertPresenter: environment.alertPresenter,
+                    mainQueue: .main
                 )
             }),
     loggedInReducer
@@ -103,6 +105,14 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 )
             }
         )
+    case .appForegrounded:
+        // check if we need to display the pin for authentication
+        guard environment.walletManager.wallet.isInitialized() else {
+            state.loggedIn = nil
+            state.onboarding = .init()
+            return Effect(value: .onboarding(.start))
+        }
+        return .none
     case .authenticate(let password):
         environment.walletManager.wallet.fetch(with: password)
         let appSettings = environment.blockchainSettings
@@ -122,7 +132,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 .map { result -> CoreAppAction in
                     guard case let .success(value) = result else {
                         return CoreAppAction.authenticated(
-                            .failure(.init(code: AuthenticationError.ErrorCode.unknown.rawValue))
+                            .failure(.init(code: AuthenticationError.ErrorCode.unknown))
                         )
                     }
                     return CoreAppAction.authenticated(value)
@@ -142,9 +152,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             }
         )
     case .decryptionFailure(let error):
+        state.onboarding?.displayAlert = .walletAuthentication(error)
         return .none
     case .authenticated(.failure(let error)):
-        // TODO: Handle authentication error
+        state.onboarding?.displayAlert = .walletAuthentication(error)
         return .none
     case .authenticated(.success):
         // decide if we need to set a pin or not
@@ -292,7 +303,7 @@ func handleWalletDecryption(_ decryption: WalletDecryption) -> CoreAppAction {
     guard let guid = decryption.guid, guid.count == 36 else {
         return .decryptionFailure(
             AuthenticationError(
-                code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue,
+                code: AuthenticationError.ErrorCode.errorDecryptingWallet,
                 description: LocalizationConstants.Authentication.errorDecryptingWallet
             )
         )
@@ -301,7 +312,7 @@ func handleWalletDecryption(_ decryption: WalletDecryption) -> CoreAppAction {
     guard let sharedKey = decryption.sharedKey, sharedKey.count == 36 else {
         return .decryptionFailure(
             AuthenticationError(
-                code: AuthenticationError.ErrorCode.invalidSharedKey.rawValue,
+                code: AuthenticationError.ErrorCode.invalidSharedKey,
                 description: LocalizationConstants.Authentication.invalidSharedKey
             )
         )

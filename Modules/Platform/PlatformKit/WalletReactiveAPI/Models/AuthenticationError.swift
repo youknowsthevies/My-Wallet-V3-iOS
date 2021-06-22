@@ -14,7 +14,7 @@ public struct AuthenticationError: Error, Equatable {
         case unknown
     }
 
-    public let code: Int
+    public let code: ErrorCode
     public let description: String?
 
     /**
@@ -22,7 +22,7 @@ public struct AuthenticationError: Error, Equatable {
         - code: The code associated with the error object.
         - description: The description associated with the error object.
      */
-    public init(code: Int, description: String? = nil) {
+    public init(code: ErrorCode, description: String? = nil) {
         self.code = code
         self.description = description
     }
