@@ -107,9 +107,7 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
         if !additionalWallets.isEmpty {
             sections.append(
                 .destination(
-                    header: provideSectionHeader(
-                                action: action,
-                                title: sourceAccount is NonCustodialAccount ? .orSelect : .to),
+                    header: provideSectionHeader(action: action, title: .orSelect),
                     items: additionalWallets
                 )
             )
@@ -122,9 +120,15 @@ struct NonTradingSourceDestinationStrategy: TargetDestinationsStrategyAPI {
 
 private func provideSectionHeader(action: AssetAction, title: TargetDestinationTitle) -> TargetSelectionHeaderBuilder {
     switch action {
-    case .swap,
-         .send,
-         .withdraw:
+    case .swap:
+        return TargetSelectionHeaderBuilder(
+            headerType: .section(
+                .init(
+                    sectionTitle: title.text
+                )
+            )
+        )
+    case .send:
         return TargetSelectionHeaderBuilder(
             headerType: .section(
                 .init(
@@ -133,6 +137,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
             )
         )
     case .deposit,
+         .withdraw,
          .receive,
          .sell,
          .viewActivity:
