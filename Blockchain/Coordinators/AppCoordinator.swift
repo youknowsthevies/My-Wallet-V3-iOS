@@ -250,12 +250,9 @@ import WalletPayloadKit
         viewController.underLeftViewController = self.sideMenuViewController
         viewController.topViewController = self.tabControllerManager?.tabViewController
         self.slidingViewController = viewController
-        sideMenuViewController.provideTabControllerManager = { [weak tabControllerManager] in
-            tabControllerManager
-        }
-        sideMenuViewController.provideSlidingViewController = { [weak slidingViewController] in
-            slidingViewController
-        }
+        sideMenuViewController.tabControllerManager = tabControllerManager
+        sideMenuViewController.slidingViewController = slidingViewController
+
         sideMenuViewController?.peekPadding = viewController.anchorRightPeekAmount
         self.tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
         self.tabControllerManager?.tabViewController.loadViewIfNeeded()

@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public enum AuthenticationAction: Equatable {
+    // MARK: - Start Action
+    case start
     // MARK: - Welcome Screen
     case createAccount
     case login

@@ -44,7 +44,8 @@ class OnboardingReducerTests: XCTestCase {
             environment: Onboarding.Environment(
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
-                alertPresenter: mockAlertPresenter
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
             )
         )
 
@@ -69,7 +70,8 @@ class OnboardingReducerTests: XCTestCase {
             environment: Onboarding.Environment(
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
-                alertPresenter: mockAlertPresenter
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
             )
         )
 
@@ -96,7 +98,8 @@ class OnboardingReducerTests: XCTestCase {
             environment: Onboarding.Environment(
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
-                alertPresenter: mockAlertPresenter
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
             )
         )
 
@@ -121,7 +124,8 @@ class OnboardingReducerTests: XCTestCase {
             environment: Onboarding.Environment(
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
-                alertPresenter: mockAlertPresenter
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
             )
         )
 
@@ -148,7 +152,8 @@ class OnboardingReducerTests: XCTestCase {
             environment: Onboarding.Environment(
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
-                alertPresenter: mockAlertPresenter
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
             )
         )
 
@@ -160,8 +165,81 @@ class OnboardingReducerTests: XCTestCase {
 
         // then
         testStore.assert(
-            .send(.start),
-            .receive(.welcomeScreen)
+            .send(.start) { state in
+                state.pinState = nil
+                state.authenticationState = .init()
+            },
+            .receive(.welcomeScreen(.start))
         )
+    }
+
+    func test_forget_wallet_should_show_welcome_screen() {
+        let testStore = TestStore(
+            initialState: Onboarding.State(),
+            reducer: onBoardingReducer,
+            environment: Onboarding.Environment(
+                blockchainSettings: settingsApp,
+                walletManager: mockWalletManager,
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
+            )
+        )
+
+        // given
+        settingsApp.pinKey = "a-pin-key"
+        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.isPinSet = true
+
+        // then
+        testStore.assert(
+            .send(.start),
+            .receive(.pin(.authenticate), { state in
+                state.pinState?.authenticate = true
+            })
+        )
+
+        // when sending forgetWallet as a direct action
+        testStore.send(.forgetWallet) { state in
+            state.pinState = nil
+            state.authenticationState = .init()
+        }
+
+        // then
+        testStore.receive(.welcomeScreen(.start))
+    }
+
+    func test_forget_wallet_from_password_screen() {
+        let testStore = TestStore(
+            initialState: Onboarding.State(),
+            reducer: onBoardingReducer,
+            environment: Onboarding.Environment(
+                blockchainSettings: settingsApp,
+                walletManager: mockWalletManager,
+                alertPresenter: mockAlertPresenter,
+                mainQueue: .main
+            )
+        )
+
+        // given
+        settingsApp.pinKey = "a-pin-key"
+        settingsApp.encryptedPinPassword = "a-encryptedPinPassword"
+        settingsApp.isPinSet = false
+
+        // then
+        testStore.send(.start) { state in
+            state.passwordScreen = .init()
+            state.pinState = nil
+            state.walletUpgradeState = nil
+        }
+
+        testStore.receive(.passwordScreen(.start))
+
+        // when sending forgetWallet from password screen
+        testStore.send(.passwordScreen(.forgetWallet)) { state in
+            state.passwordScreen = nil
+            state.authenticationState = .init()
+        }
+
+        testStore.receive(.welcomeScreen(.start))
     }
 }

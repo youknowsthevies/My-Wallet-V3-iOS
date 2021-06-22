@@ -13,7 +13,6 @@ import SettingsUIKit
 final class LoggedInHostingController: UIViewController, LoggedInBridge {
     let store: Store<LoggedIn.State, LoggedIn.Action>
     let viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>
-    private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - The controllers
     var sideMenuViewController: SideMenuViewController?
@@ -48,8 +47,20 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         let slidingViewController = slidingControllerProvider(sideMenuController: sideMenu, tabController: tabController)
         add(child: slidingViewController)
         self.slidingViewController = slidingViewController
-        self.sideMenuViewController = sideMenu
-        self.tabControllerManager = tabController
+        sideMenuViewController = sideMenu
+        tabControllerManager = tabController
+
+        sideMenuViewController?.tabControllerManager = tabControllerManager
+        sideMenuViewController?.slidingViewController = slidingViewController
+    }
+
+    func clear() {
+        sideMenuViewController?.delegate = nil
+        sideMenuViewController?.createGestureRecognizers = nil
+        sideMenuViewController = nil
+        tabControllerManager = nil
+        slidingViewController?.remove()
+        slidingViewController = nil
     }
 
     // MARK: Private
@@ -88,12 +99,6 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         tabController?.tabViewController.loadViewIfNeeded()
         // Configure side menu controller
         sideMenuController?.peekPadding = viewController.anchorRightPeekAmount
-        sideMenuController?.provideTabControllerManager = { [weak tabController] in
-            tabController
-        }
-        sideMenuController?.provideSlidingViewController = { [weak viewController] in
-            viewController
-        }
         // Show dashboard as the default screen
         tabController?.showDashboard()
         return viewController

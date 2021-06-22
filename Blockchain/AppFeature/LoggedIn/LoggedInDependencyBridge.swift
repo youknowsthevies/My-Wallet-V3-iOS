@@ -9,22 +9,22 @@ import SettingsUIKit
 // The methods and properties provided by these protocol where used by accessing the `.shared` property of AppCoordinator
 
 /// Provider the `TabControllerManager`
-protocol TabControllerManagerProvider {
+protocol TabControllerManagerProvider: AnyObject {
     var tabControllerManager: TabControllerManager? { get }
 }
 
 /// Provides the ability to start a backup flow
-protocol BackupFlowStarterAPI {
+protocol BackupFlowStarterAPI: AnyObject {
     func startBackupFlow()
 }
 
 /// Provides the ability to show settings
-protocol SettingsStarterAPI {
+protocol SettingsStarterAPI: AnyObject {
     func showSettingsView()
 }
 
 /// Provides a reload mechanism that `Wallet` triggers 
-protocol LoggedInReloadAPI {
+protocol LoggedInReloadAPI: AnyObject {
     func reload()
 }
 
@@ -44,7 +44,7 @@ protocol LoggedInBridge: DrawerRouting,
                          SettingsStarterAPI,
                          LoggedInReloadAPI { }
 
-protocol LoggedInDependencyBridgeAPI {
+protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
     func register(bridge: LoggedInBridge)
     /// Unregisters the bridge

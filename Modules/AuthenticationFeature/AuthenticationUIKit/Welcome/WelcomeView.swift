@@ -92,10 +92,12 @@ struct WelcomeActionSection: View {
                 // Connect to Create Wallet Screen
             }
             .padding(.bottom, 10)
+
             SecondaryButton(title: WelcomeViewString.Button.login) {
                 viewStore.send(.setLoginVisible(true))
             }
             .padding(.bottom, 20)
+
             HStack {
                 Button(WelcomeViewString.Button.restoreWallet) {
                     // Connect to recover funds Screen

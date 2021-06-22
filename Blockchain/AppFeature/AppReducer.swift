@@ -26,6 +26,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             action: /AppAction.appDelegate,
             environment: {
                 AppDelegateEnvironment(
+                    appSettings: $0.blockchainSettings,
                     debugCoordinator: $0.debugCoordinator,
                     onboardingSettings: $0.onboardingSettings,
                     cacheSuite: $0.cacheSuite,
@@ -77,8 +78,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         }
     case .appDelegate(.willEnterForeground):
         guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
-            // TODO: Handle coming back from background
-            return .none
+            return Effect(value: .core(.appForegrounded))
         }
         return .fireAndForget {
             handleWillEnterForeground(coordinator: environment.appCoordinator)

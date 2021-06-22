@@ -19,6 +19,7 @@ public enum AppDelegateAction: Equatable {
     case willResignActive
     case willEnterForeground(_ application: UIApplication)
     case didEnterBackground(_ application: UIApplication)
+    case handleDelayedEnterBackground
     case didBecomeActive
     case open(_ url: URL)
     case userActivity(_ userActivity: NSUserActivity)
@@ -27,6 +28,7 @@ public enum AppDelegateAction: Equatable {
 
 /// Holds the dependencies
 struct AppDelegateEnvironment {
+    var appSettings: BlockchainSettings.App
     var debugCoordinator: DebugCoordinating
     var onboardingSettings: OnboardingSettings
     var cacheSuite: CacheSuite
@@ -51,8 +53,8 @@ let appDelegateReducer = Reducer<
     case .didFinishLaunching(let window):
         state.window = window
         return .merge(
-            migrateAnnoucements(),
-            updateAppBecameActiveAcount(),
+            migrateAnnouncements(),
+            updateAppBecameActiveCount(appSettings: environment.appSettings),
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
@@ -69,10 +71,7 @@ let appDelegateReducer = Reducer<
             enableDebugMenuIfNeeded(
                 coordinator: environment.debugCoordinator,
                 on: window
-            ),
-
-            checkForNewInstall(onboardingSettings: environment.onboardingSettings)
-
+            )
         )
     case .willResignActive:
         return applyBlurFilter(
@@ -85,13 +84,15 @@ let appDelegateReducer = Reducer<
                 environment.backgroundAppHandler
                     .handleAppEnteredForeground(application)
             },
-            updateAppBecameActiveAcount()
+            updateAppBecameActiveCount(appSettings: environment.appSettings)
         )
     case .didEnterBackground(let application):
         return .fireAndForget {
             environment.backgroundAppHandler
                 .handleAppEnteredBackground(application)
         }
+    case .handleDelayedEnterBackground:
+        return .none
     case .didBecomeActive:
         return .merge(
             removeBlurFilter(
@@ -141,26 +142,6 @@ private func removeBlurFilter(handler: BlurVisualEffectHandler, from window: UIW
     }
 }
 
-@available(*, deprecated, message: "adding this here for compatibility, but will be removed by the newer onboardingReducer")
-private func checkForNewInstall(onboardingSettings: OnboardingSettings) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        let appSettings = BlockchainSettings.App.shared
-
-        guard !onboardingSettings.firstRun else {
-            Logger.shared.info("This is not the 1st time the user is running the app.")
-            return
-        }
-
-        onboardingSettings.firstRun = true
-
-        if appSettings.guid != nil && appSettings.sharedKey != nil && !appSettings.isPinSet {
-            AlertViewPresenter.shared.alertUserAskingToUseOldKeychain { _ in
-                AuthenticationCoordinator.shared.showPasswordRequiredViewController()
-            }
-        }
-    }
-}
-
 private func applyCertificatePinning(using service: CertificatePinnerAPI) -> AppDelegateEffect {
     Effect.fireAndForget {
         service.pinCertificateIfNeeded()
@@ -184,13 +165,13 @@ private func applyGlobalNavigationAppearance(using barStyle: Screen.Style.Bar) -
     }
 }
 
-private func updateAppBecameActiveAcount() -> AppDelegateEffect {
+private func updateAppBecameActiveCount(appSettings: BlockchainSettings.App) -> AppDelegateEffect {
     Effect.fireAndForget {
-        BlockchainSettings.App.shared.appBecameActiveCount += 1
+        appSettings.appBecameActiveCount += 1
     }
 }
 
-private func migrateAnnoucements() -> AppDelegateEffect {
+private func migrateAnnouncements() -> AppDelegateEffect {
     Effect.fireAndForget {
         AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
     }

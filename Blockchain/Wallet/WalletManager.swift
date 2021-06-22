@@ -101,7 +101,6 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
 
         let clearOnLogoutHandler: ClearOnLogoutAPI = DIKit.resolve()
         clearOnLogoutHandler.clearOnLogout()
-        loggedInReloadHandler.reload()
 
         BlockchainSettings.App.shared.biometryEnabled = false
     }
@@ -184,7 +183,9 @@ extension WalletManager: WalletDelegate {
         Logger.shared.info("walletFailedToDecrypt()")
         DispatchQueue.main.async { [unowned self] in
             self.authDelegate?.authenticationError(error:
-                AuthenticationError(code: AuthenticationError.ErrorCode.errorDecryptingWallet.rawValue)
+                AuthenticationError(
+                    code: .errorDecryptingWallet
+                )
             )
         }
     }
@@ -192,9 +193,11 @@ extension WalletManager: WalletDelegate {
     func walletFailedToLoad() {
         Logger.shared.info("walletFailedToLoad()")
         DispatchQueue.main.async { [unowned self] in
-            self.authDelegate?.authenticationError(error: AuthenticationError(
-                code: AuthenticationError.ErrorCode.failedToLoadWallet.rawValue
-            ))
+            self.authDelegate?.authenticationError(
+                error: AuthenticationError(
+                    code: .failedToLoadWallet
+                )
+            )
         }
     }
 

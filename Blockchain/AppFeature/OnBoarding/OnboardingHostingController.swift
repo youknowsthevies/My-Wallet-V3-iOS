@@ -1,21 +1,28 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationUIKit
 import Combine
 import ComposableArchitecture
+import DIKit
 import PlatformUIKit
+import SwiftUI
 import UIKit
 
 /// Acts as a container for Pin screen and Login screen
 final class OnboardingHostingController: UIViewController {
     let store: Store<Onboarding.State, Onboarding.Action>
     let viewStore: ViewStore<Onboarding.State, Onboarding.Action>
-    private var cancellables: Set<AnyCancellable> = []
+
+    private let alertViewPresenter: AlertViewPresenterAPI
 
     private var currentController: UIViewController?
+    private var cancellables: Set<AnyCancellable> = []
 
-    init(store: Store<Onboarding.State, Onboarding.Action>) {
+    init(store: Store<Onboarding.State, Onboarding.Action>,
+         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
         self.store = store
         self.viewStore = ViewStore(store)
+        self.alertViewPresenter = alertViewPresenter
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -25,6 +32,28 @@ final class OnboardingHostingController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        viewStore.publisher
+            .displayAlert
+            .compactMap { $0 }
+            .removeDuplicates()
+            .sink { [weak self] alert in
+                self?.showAlert(type: alert)
+            }
+            .store(in: &cancellables)
+
+        store
+            .scope(state: \.authenticationState, action: Onboarding.Action.welcomeScreen)
+            .ifLet(then: { [weak self] authStore in
+                guard let self = self else { return }
+                let welcomeView = WelcomeView(store: authStore)
+                let hostingController = UIHostingController(rootView: welcomeView)
+                self.transitionFromCurrentController(to: hostingController)
+                hostingController.view.constraint(edgesTo: self.view)
+                self.currentController = hostingController
+            })
+            .store(in: &cancellables)
+
         store
             .scope(state: \.pinState, action: Onboarding.Action.pin)
             .ifLet(then: { [weak self] pinStore in
@@ -42,8 +71,11 @@ final class OnboardingHostingController: UIViewController {
                 let walletFetcher: (String) -> Void = { password in
                     self.viewStore.send(.passwordScreen(.authenticate(password)))
                 }
+                let forgetWalletRouting: () -> Void = { [weak self] in
+                    self?.viewStore.send(.passwordScreen(.forgetWallet))
+                }
                 let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
-                let presenter = PasswordRequiredScreenPresenter(interactor: interactor)
+                let presenter = PasswordRequiredScreenPresenter(interactor: interactor, forgetWalletRouting: forgetWalletRouting)
                 let viewController = PasswordRequiredViewController(presenter: presenter)
                 let navigationController = UINavigationController(rootViewController: viewController)
 
@@ -84,5 +116,64 @@ final class OnboardingHostingController: UIViewController {
         let presenter = WalletUpgradePresenter(interactor: interactor)
         let viewController = WalletUpgradeViewController(presenter: presenter)
         return viewController
+    }
+
+    private func showAlert(type: Onboarding.Alert) {
+        switch type {
+        case .walletAuthentication(let error) where error.code == .failedToLoadWallet:
+            handleFailedToLoadWalletAlert()
+        case .walletAuthentication(let error) where error.code == .noInternet:
+            let content = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.noInternetConnection
+            )
+            alertViewPresenter.notify(content: content, in: self)
+        case .walletAuthentication(let error):
+            if let description = error.description {
+                let content = AlertViewContent(
+                    title: LocalizationConstants.Errors.error,
+                    message: description
+                )
+                alertViewPresenter.notify(content: content, in: self)
+            }
+        }
+    }
+}
+
+extension OnboardingHostingController {
+    /// TODO: We should revisit this
+    private func handleFailedToLoadWalletAlert() {
+        let alertController = UIAlertController(
+            title: LocalizationConstants.Authentication.failedToLoadWallet,
+            message: LocalizationConstants.Authentication.failedToLoadWalletDetail,
+            preferredStyle: .alert
+        )
+        alertController.addAction(
+            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { _ in
+
+                let forgetWalletAlert = UIAlertController(
+                    title: LocalizationConstants.Errors.warning,
+                    message: LocalizationConstants.Authentication.forgetWalletDetail,
+                    preferredStyle: .alert
+                )
+                forgetWalletAlert.addAction(
+                    UIAlertAction(title: LocalizationConstants.cancel, style: .cancel) { [weak self] _ in
+                        self?.handleFailedToLoadWalletAlert()
+                    }
+                )
+                forgetWalletAlert.addAction(
+                    UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { [weak self] _ in
+                        self?.viewStore.send(.forgetWallet)
+                    }
+                )
+                self.present(forgetWalletAlert, animated: true)
+            }
+        )
+        alertController.addAction(
+            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { _ in
+                UIApplication.shared.suspendApp()
+            }
+        )
+        self.present(alertController, animated: true)
     }
 }

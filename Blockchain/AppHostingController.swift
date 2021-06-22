@@ -42,8 +42,9 @@ final class AppHostingController: UIViewController {
                     self.add(child: onboardingController)
                 }
                 self.onboardingController = onboardingController
-                self.loggedInController = nil
                 self.loggedInDependencyBridge.unregister()
+                self.loggedInController?.clear()
+                self.loggedInController = nil
             })
             .store(in: &cancellables)
 
