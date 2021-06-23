@@ -16,9 +16,11 @@ public protocol CryptoAsset: Asset {
 
 extension CryptoAsset {
     public var canTransactToCustodial: Single<Bool> {
-        kycTiersService.tiers.map { tiers in
-            tiers.isTier1Approved || tiers.isTier2Approved
-        }
+        kycTiersService.tiers
+            .map { tiers in
+                tiers.isTier1Approved || tiers.isTier2Approved
+            }
+            .catchErrorJustReturn(false)
     }
 
     public func initialize() -> Completable {
@@ -52,7 +54,6 @@ extension CryptoAsset {
             fatalError("Expected a CryptoAccount: \(account)")
         }
         precondition(crypto.asset == asset)
-        // TODO: Fetch exchange accounts
         switch crypto {
         case is CryptoTradingAccount:
             return accountGroup(filter: .nonCustodial)
@@ -63,7 +64,7 @@ extension CryptoAsset {
                     self.accountGroup(filter: canTransactToCustodial ? .all : .nonCustodial)
                 }
                 .map(\.accounts)
-                .flatMapFilter(excluding: crypto.id)
+                .mapFilter(excluding: crypto.id)
         default:
             unimplemented()
         }

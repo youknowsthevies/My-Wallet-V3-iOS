@@ -2,6 +2,7 @@
 
 import PlatformKit
 import PlatformUIKit
+import RxRelay
 import RxSwift
 import ToolKit
 
@@ -14,6 +15,8 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     // MARK: - IBOutlets
 
     @IBOutlet private var tableView: SelfSizingTableView!
+    /// A reload relay that debounces its stream before calling table view to reload its data.
+    private let reloadRelay = PublishRelay<Void>()
 
     // MARK: - Injected
 
@@ -23,7 +26,8 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     init(using presenter: DashboardDetailsScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: DashboardDetailsViewController.objectName, bundle: DashboardDetailsViewController.bundle)
+        super.init(nibName: DashboardDetailsViewController.objectName,
+                   bundle: DashboardDetailsViewController.bundle)
     }
 
     @available(*, unavailable)
@@ -70,6 +74,13 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             }
             .bindAndCatch(to: presenter.presenterSelectionRelay)
             .disposed(by: disposeBag)
+
+        reloadRelay
+            .debounce(.milliseconds(500), scheduler: MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.tableView.reloadData()
+            })
+            .disposed(by: disposeBag)
     }
 
     private func setupNavigationBar() {
@@ -83,12 +94,8 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     private func execute(action: DashboardDetailsScreenPresenter.PresentationAction) {
         switch action {
-        case .show(let account):
-            guard let row = presenter.index(for: account) else {
-                return
-            }
-            let indexPath = IndexPath(row: row, section: 0)
-            tableView.insertRows(at: [indexPath], with: .automatic)
+        case .show:
+            reloadRelay.accept(())
         }
     }
 }

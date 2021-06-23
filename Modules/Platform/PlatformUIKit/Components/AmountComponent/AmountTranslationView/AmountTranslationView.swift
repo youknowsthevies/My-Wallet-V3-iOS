@@ -176,6 +176,14 @@ public final class AmountTranslationView: UIView {
             .bindAndCatch(to: presenter.swapButtonTapRelay)
             .disposed(by: disposeBag)
 
+        let tapGesture = UITapGestureRecognizer()
+        addGestureRecognizer(tapGesture)
+
+        tapGesture.rx.event
+            .mapToVoid()
+            .bindAndCatch(to: presenter.swapButtonTapRelay)
+            .disposed(by: disposeBag)
+
         presenter.activeAmountInput
             .map { input -> Bool in
                 input == .fiat

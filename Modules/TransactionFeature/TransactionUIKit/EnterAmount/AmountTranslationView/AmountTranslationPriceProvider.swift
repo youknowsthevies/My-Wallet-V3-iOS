@@ -25,7 +25,7 @@ final class AmountTranslationPriceProvider: AmountTranslationPriceProviding {
             .map { sourceToFiatPair -> MoneyValuePair in
                 let amount = amount.isEmpty ? "0" : amount
                 return MoneyValuePair(
-                    fiat: FiatValue.create(major: amount, currency: fiatCurrency)!,
+                    fiat: FiatValue.create(majorDisplay: amount, currency: fiatCurrency)!,
                     priceInFiat: sourceToFiatPair.quote.fiatValue!,
                     cryptoCurrency: cryptoCurrency,
                     usesFiatAsBase: true
@@ -44,7 +44,7 @@ final class AmountTranslationPriceProvider: AmountTranslationPriceProviding {
             .map { sourceToFiatPair -> MoneyValuePair in
                 let amount = amount.isEmpty ? "0" : amount
                 return try MoneyValuePair(
-                    base: CryptoValue.create(major: amount, currency: cryptoCurrency)!.moneyValue,
+                    base: CryptoValue.create(majorDisplay: amount, currency: cryptoCurrency)!.moneyValue,
                     exchangeRate: sourceToFiatPair.quote
                 )
             }

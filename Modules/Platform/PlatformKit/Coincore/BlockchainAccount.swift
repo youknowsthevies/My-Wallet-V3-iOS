@@ -138,16 +138,10 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
         }
     }
 
-    public func flatMapFilter(excluding identifier: String) -> PrimitiveSequence<SingleTrait, Element> {
-        flatMap { accounts -> Single<Element> in
-            let elements: [Single<SingleAccount?>] = accounts.map { account in
-                let value = account.id != identifier ? account : nil
-                return Single.just(value)
-            }
-            return Single.zip(elements)
-                .map { accounts -> Element in
-                    accounts.compactMap { $0 }
-                }
+    /// Maps each `[SingleAccount]` object filtering out accounts that match the given identifier.
+    public func mapFilter(excluding identifier: String) -> PrimitiveSequence<SingleTrait, Element> {
+        map { accounts in
+            accounts.filter { $0.id != identifier }
         }
     }
 }

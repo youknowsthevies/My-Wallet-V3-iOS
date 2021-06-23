@@ -24,11 +24,14 @@ public final class AssetBalanceViewPresenter {
     // MARK: - Injected
 
     private lazy var setup: Void = {
-        /// Map interaction state into presnetation state
-        /// and bind it to `stateRelay`
-        let descriptors = self.descriptors
-        Observable.combineLatest(interactor.state, alignmentRelay.asObservable())
-            .map { (state, alignment) in
+        /// Map interaction state into presentation state
+        ///  and bind it to `stateRelay`.
+        Observable
+            .combineLatest(
+                interactor.state.catchErrorJustReturn(.loading),
+                alignmentRelay.asObservable()
+            )
+            .map { [descriptors] (state, alignment) in
                 .init(
                     with: state,
                     alignment: alignment,
