@@ -13,10 +13,10 @@ public protocol NonCustodialAccount { }
 
 public protocol BlockchainAccount {
 
-    /// This account ID.
+    /// A unique identifier for this `BlockchainAccount`.
     ///
-    /// This may be an internal ID, a public key, or something else.
-    var id: String { get }
+    /// This may be used to compare if two BlockchainAccount are the same.
+    var identifier: AnyHashable { get }
 
     /// This account label.
     var label: String { get }
@@ -138,10 +138,10 @@ extension PrimitiveSequenceType where Trait == SingleTrait, Element == [SingleAc
         }
     }
 
-    /// Maps each `[SingleAccount]` object filtering out accounts that match the given identifier.
-    public func mapFilter(excluding identifier: String) -> PrimitiveSequence<SingleTrait, Element> {
+    /// Maps each `[SingleAccount]` object filtering out accounts that match the given `BlockchainAccount` identifier.
+    public func mapFilter(excluding identifier: AnyHashable) -> PrimitiveSequence<SingleTrait, Element> {
         map { accounts in
-            accounts.filter { $0.id != identifier }
+            accounts.filter { $0.identifier != identifier }
         }
     }
 }

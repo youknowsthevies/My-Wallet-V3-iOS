@@ -69,7 +69,7 @@ extension AccountGroup {
     }
 
     public func includes(account: BlockchainAccount) -> Bool {
-        accounts.map(\.id).contains(account.id)
+        accounts.map(\.identifier).contains(account.identifier)
     }
 
     public var actions: Single<AvailableActions> {

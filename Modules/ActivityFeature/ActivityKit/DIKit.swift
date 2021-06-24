@@ -47,12 +47,22 @@ extension DependencyContainer {
             let euroEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.EUR))
             let gbpEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.GBP))
             let usdEventService = FiatEventService(fiat: DIKit.resolve(tag: FiatCurrency.USD))
-            let enabledCurrenciesService: EnabledCurrenciesServiceAPI = DIKit.resolve()
-            let cryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
 
-            let cryptos = cryptoCurrencies
+            let enabledCurrenciesService: EnabledCurrenciesServiceAPI = DIKit.resolve()
+            let erc20ServiceFactory: CryptoItemEventServiceERC20Factory = DIKit.resolve()
+
+            let allEnabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
+            let nonERC20 = allEnabledCryptoCurrencies
+                .filter { !$0.isERC20 }
                 .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
                     let component: CryptoItemEventServiceAPI = DIKit.resolve(tag: cryptoCurrency)
+                    result[cryptoCurrency] = component
+                }
+
+            let erc20 = allEnabledCryptoCurrencies
+                .filter(\.isERC20)
+                .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
+                    let component: CryptoItemEventServiceAPI = erc20ServiceFactory.service(cryptoCurrency: cryptoCurrency)
                     result[cryptoCurrency] = component
                 }
 
@@ -62,7 +72,7 @@ extension DependencyContainer {
                     FiatCurrency.GBP: gbpEventService,
                     FiatCurrency.USD: usdEventService
                 ],
-                cryptos: cryptos
+                cryptos: nonERC20.merging(erc20)
             )
         }
 
@@ -70,9 +80,7 @@ extension DependencyContainer {
 
         factory { EmptySwapActivityItemEventService() }
 
-        factory(tag: CryptoCurrency.erc20(.aave)) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.erc20(cryptoCurrency: .erc20(.aave))
-        }
+        factory { CryptoItemEventServiceERC20Factory() }
 
         factory(tag: CryptoCurrency.algorand) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.algorand()
@@ -90,14 +98,6 @@ extension DependencyContainer {
             CryptoEventService.bitcoinCash()
         }
 
-        factory(tag: CryptoCurrency.erc20(.tether)) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.erc20(cryptoCurrency: .erc20(.tether))
-        }
-
-        factory(tag: CryptoCurrency.erc20(.pax)) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.erc20(cryptoCurrency: .erc20(.pax))
-        }
-
         factory(tag: CryptoCurrency.ethereum) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.ethereum()
         }
@@ -105,14 +105,13 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.stellar) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.stellar()
         }
+    }
+}
 
-        factory(tag: CryptoCurrency.erc20(.wdgld)) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.erc20(cryptoCurrency: .erc20(.wdgld))
-        }
+class CryptoItemEventServiceERC20Factory {
 
-        factory(tag: CryptoCurrency.erc20(.yearnFinance)) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.erc20(cryptoCurrency: .erc20(.yearnFinance))
-        }
+    func service(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI {
+        CryptoEventService.erc20(cryptoCurrency: cryptoCurrency)
     }
 }
 

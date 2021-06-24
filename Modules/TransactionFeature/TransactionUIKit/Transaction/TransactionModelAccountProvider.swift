@@ -19,7 +19,7 @@ class TransactionModelAccountProvider: SourceAndTargetAccountProviding {
             .state
             .map(transform)
             .distinctUntilChanged { lhs, rhs in
-                lhs.map(\.id) == rhs.map(\.id)
+                lhs.map(\.identifier) == rhs.map(\.identifier)
             }
     }
 

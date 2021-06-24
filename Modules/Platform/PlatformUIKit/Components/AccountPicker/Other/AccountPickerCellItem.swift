@@ -20,7 +20,7 @@ struct AccountPickerCellItem: IdentifiableType {
     }
 
     var identity: AnyHashable {
-        account.id
+        account.identifier
     }
 
     let account: BlockchainAccount

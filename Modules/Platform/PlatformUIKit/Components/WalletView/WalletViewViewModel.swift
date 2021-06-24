@@ -13,7 +13,7 @@ final class WalletViewViewModel {
         let accessibilityPrefix: String
     }
 
-    let identifier: String
+    let identifier: AnyHashable
     let accountTypeBadge: BadgeImageViewModel
     let badgeImageViewModel: BadgeImageViewModel
     let nameLabelContent: LabelContent
@@ -21,7 +21,7 @@ final class WalletViewViewModel {
 
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
-        identifier = account.id
+        identifier = account.identifier
         let localImage = currency.logoResource.local
         badgeImageViewModel = .default(
             with: account is LinkedBankAccount ? "icon-bank" : localImage.name,

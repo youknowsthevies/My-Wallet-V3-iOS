@@ -6,7 +6,7 @@ final class RadioSelectionHandler: RadioSelectionHandling {
 
     let selectionAction = PublishRelay<RadioSelectionAction>()
 
-    let selectionState: Observable<[String: Bool]>
+    let selectionState: Observable<[AnyHashable: Bool]>
 
     init() {
         selectionState = selectionAction

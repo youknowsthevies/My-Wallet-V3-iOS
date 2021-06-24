@@ -25,7 +25,7 @@ final class StellarAsset: CryptoAsset {
                 return account
             }
             .map { account -> SingleAccount in
-                StellarCryptoAccount(id: account.publicKey, label: account.label, hdAccountIndex: account.index)
+                StellarCryptoAccount(publicKey: account.publicKey, label: account.label, hdAccountIndex: account.index)
             }
     }
 

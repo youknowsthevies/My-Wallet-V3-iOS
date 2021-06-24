@@ -18,7 +18,7 @@ public final class RadioAccountCellInteractor: Equatable {
         isSelected = radioSelectionHandler
             .selectionState
             .map { state in
-                guard let isSelected = state[account.id] else {
+                guard let isSelected = state[account.identifier] else {
                     return false
                 }
                 return isSelected
@@ -28,6 +28,6 @@ public final class RadioAccountCellInteractor: Equatable {
     }
 
     public static func == (lhs: RadioAccountCellInteractor, rhs: RadioAccountCellInteractor) -> Bool {
-        lhs.account.id == rhs.account.id
+        lhs.account.identifier == rhs.account.identifier
     }
 }

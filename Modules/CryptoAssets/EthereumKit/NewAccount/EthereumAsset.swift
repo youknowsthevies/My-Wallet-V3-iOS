@@ -14,7 +14,7 @@ final class EthereumAsset: CryptoAsset {
             .defaultAccount
             .map { account -> SingleAccount in
                 EthereumCryptoAccount(
-                    id: account.publicKey,
+                    publicKey: account.publicKey,
                     label: account.label,
                     hdAccountIndex: account.index
                 )

@@ -18,27 +18,27 @@ public protocol ActivityServiceContaining {
 }
 
 final class ActivityServiceContainer: ActivityServiceContaining {
-    public var asset: Observable<CurrencyType> {
+    var asset: Observable<CurrencyType> {
         selectionService.selectedData
             .map(\.currencyType)
     }
 
-    public var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
+    var activityEventsLoadingState: Observable<ActivityItemEventsLoadingState> {
         _ = setup
         return eventsRelay.asObservable()
     }
 
-    public var activity: Observable<ActivityItemEventServiceAPI> {
+    var activity: Observable<ActivityItemEventServiceAPI> {
         asset.map { currency -> ActivityItemEventServiceAPI in
             self.activityProviding[currency]
         }
     }
 
-    public let activityProviding: ActivityProviding
-    public let fiatCurrency: FiatCurrencySettingsServiceAPI
-    public let selectionService: WalletPickerSelectionServiceAPI
-    public let accountSelectionService: AccountSelectionServiceAPI
-    public let exchangeProviding: ExchangeProviding
+    let activityProviding: ActivityProviding
+    let fiatCurrency: FiatCurrencySettingsServiceAPI
+    let selectionService: WalletPickerSelectionServiceAPI
+    let accountSelectionService: AccountSelectionServiceAPI
+    let exchangeProviding: ExchangeProviding
 
     private let eventsRelay = BehaviorRelay<ActivityItemEventsLoadingState>(value: .loading)
     private let disposeBag = DisposeBag()
@@ -101,7 +101,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .disposed(by: disposeBag)
     }()
 
-    public init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
+    init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
                 exchangeProviding: ExchangeProviding = resolve(),
                 activityProviding: ActivityProviding = resolve()) {
         self.selectionService = WalletPickerSelectionService()

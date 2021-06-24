@@ -45,12 +45,12 @@ struct TransactionState: Equatable, StateType {
             && lhs.passwordRequired == rhs.passwordRequired
             && lhs.pendingTransaction == rhs.pendingTransaction
             && lhs.secondPassword == rhs.secondPassword
-            && lhs.source?.id == rhs.source?.id
+            && lhs.source?.identifier == rhs.source?.identifier
             && lhs.sourceDestinationPair == rhs.sourceDestinationPair
             && lhs.sourceToFiatPair == rhs.sourceToFiatPair
             && lhs.step == rhs.step
             && lhs.stepsBackStack == rhs.stepsBackStack
-            && lhs.availableSources.map(\.id) == rhs.availableSources.map(\.id)
+            && lhs.availableSources.map(\.identifier) == rhs.availableSources.map(\.identifier)
             && lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
     }
 

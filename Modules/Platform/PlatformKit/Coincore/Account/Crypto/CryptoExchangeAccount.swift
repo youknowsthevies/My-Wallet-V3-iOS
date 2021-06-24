@@ -77,7 +77,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
         .just(true)
     }
 
-    public lazy var id: String = "CryptoExchangeAccount." + asset.code
+    private(set) public lazy var identifier: AnyHashable = "CryptoExchangeAccount." + asset.code
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
     public let label: String

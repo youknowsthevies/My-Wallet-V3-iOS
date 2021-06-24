@@ -177,7 +177,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         /// Binding for radio selection state
         let initialTargetsAction = transactionState
             .map(\.availableTargets)
-            .map { $0.compactMap { $0 as? SingleAccount }.map(\.id) }
+            .map { $0.compactMap { $0 as? SingleAccount }.map(\.identifier) }
             .distinctUntilChanged()
             .map(RadioSelectionAction.initialValues)
 
@@ -188,7 +188,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
             // a selected input is inferred if the inputValidated is TargetSelectionInputValidation.account
             .filter { $0.inputValidated.isAccountSelection }
             .compactMap { $0.destination as? SingleAccount }
-            .map(\.id)
+            .map(\.identifier)
             .map(RadioSelectionAction.select)
 
         Observable.merge(initialTargetsAction,
@@ -263,7 +263,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
         }
         var state = state
 
-        if state.sourceInteractor?.account.id != sourceAccount.id {
+        if state.sourceInteractor?.account.identifier != sourceAccount.identifier {
             state = state
                     .update(keyPath: \.sourceInteractor,
                             value: .singleAccount(sourceAccount, AccountAssetBalanceViewInteractor(account: sourceAccount)))

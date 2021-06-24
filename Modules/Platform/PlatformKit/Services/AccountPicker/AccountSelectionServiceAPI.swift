@@ -16,7 +16,7 @@ public final class AccountPickerSelectionService: AccountSelectionServiceAPI {
 
     public var selectedData: Observable<BlockchainAccount> {
         selectedDataRelay
-            .distinctUntilChanged(\.id)
+            .distinctUntilChanged(\.identifier)
     }
 
     public init(defaultSelection: BlockchainAccount) {

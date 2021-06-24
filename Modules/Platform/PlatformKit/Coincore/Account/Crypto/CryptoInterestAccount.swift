@@ -6,7 +6,7 @@ import RxSwift
 import ToolKit
 
 public final class CryptoInterestAccount: CryptoAccount {
-    public lazy var id: String = "CryptoInterestAccount." + asset.code
+    private(set) public lazy var identifier: AnyHashable = "CryptoInterestAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false

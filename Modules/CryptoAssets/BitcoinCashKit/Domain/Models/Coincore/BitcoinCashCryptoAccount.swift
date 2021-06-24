@@ -8,9 +8,8 @@ import RxSwift
 import ToolKit
 
 final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
-    private typealias LocalizedString = LocalizationConstants.Account
 
-    let id: String
+    private(set) lazy var identifier: AnyHashable = "BitcoinCashCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
     let asset: CryptoCurrency = .bitcoinCash
     let isDefault: Bool
@@ -45,7 +44,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        let receiveAddress: Single<String> = bridge.receiveAddress(forXPub: id)
+        let receiveAddress: Single<String> = bridge.receiveAddress(forXPub: xPub.address)
         let account: Single<BitcoinCashWalletAccount> = bridge
             .wallets
             .map { [xPub] wallets in
@@ -83,7 +82,6 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
          bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.xPub = xPub
-        self.id = xPub.address
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
         self.isDefault = isDefault
         self.hdAccountIndex = hdAccountIndex

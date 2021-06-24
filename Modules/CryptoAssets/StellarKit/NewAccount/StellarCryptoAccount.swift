@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import Localization
 import PlatformKit
 import RxSwift
 import ToolKit
 
 class StellarCryptoAccount: CryptoNonCustodialAccount {
-    let id: String
+
+    private(set) lazy var identifier: AnyHashable = "StellarCryptoAccount.\(publicKey)"
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
@@ -44,32 +44,35 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(StellarReceiveAddress(address: id, label: label))
+        .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 
+    private let publicKey: String
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
     private let accountDetailsService: StellarAccountDetailsServiceAPI
     private let fiatPriceService: FiatPriceServiceAPI
     private let accountCache: CachedValue<StellarAccountDetails>
 
-    init(id: String,
-         label: String? = nil,
-         hdAccountIndex: Int,
-         bridge: StellarWalletBridgeAPI = resolve(),
-         accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
-         fiatPriceService: FiatPriceServiceAPI = resolve()) {
+    init(
+        publicKey: String,
+        label: String? = nil,
+        hdAccountIndex: Int,
+        bridge: StellarWalletBridgeAPI = resolve(),
+        accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve()
+    ) {
         let asset = CryptoCurrency.stellar
         self.asset = asset
         self.bridge = bridge
-        self.id = id
+        self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex
         self.label = label ?? asset.defaultWalletName
         self.accountDetailsService = accountDetailsService
         self.fiatPriceService = fiatPriceService
         accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
         accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in
-            self.accountDetailsService.accountDetails(for: self.id)
+            self.accountDetailsService.accountDetails(for: publicKey)
         }
     }
 

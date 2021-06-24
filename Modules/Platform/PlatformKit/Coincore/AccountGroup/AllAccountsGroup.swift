@@ -9,7 +9,7 @@ public final class AllAccountsGroup: AccountGroup {
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
     public let accounts: [SingleAccount]
-    public let id: String = "AllAccountsGroup"
+    public let identifier: AnyHashable = "AllAccountsGroup"
     public let label: String = LocalizedString.allWallets
     let actions: AvailableActions = [.viewActivity]
 

@@ -31,7 +31,7 @@ public final class WalletPickerSelectionService: WalletPickerSelectionServiceAPI
                 }
                 return .just(account)
             }
-            .distinctUntilChanged(\.id)
+            .distinctUntilChanged(\.identifier)
             .share(replay: 1)
     }
 

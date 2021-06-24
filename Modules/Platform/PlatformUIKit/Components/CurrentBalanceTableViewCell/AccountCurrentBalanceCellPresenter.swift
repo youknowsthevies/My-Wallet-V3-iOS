@@ -178,6 +178,6 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
 extension AccountCurrentBalanceCellPresenter: Equatable {
     public static func == (lhs: AccountCurrentBalanceCellPresenter, rhs: AccountCurrentBalanceCellPresenter) -> Bool {
-        lhs.account.id == rhs.account.id
+        lhs.account.identifier == rhs.account.identifier
     }
 }

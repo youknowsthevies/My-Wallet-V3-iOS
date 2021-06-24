@@ -8,7 +8,7 @@ public class FiatAccountGroup: AccountGroup {
 
     private typealias LocalizedString = LocalizationConstants.AccountGroup
 
-    public let id: String = "FiatAccountGroup"
+    private(set) public lazy var identifier: AnyHashable = "FiatAccountGroup"
 
     public let label: String
 

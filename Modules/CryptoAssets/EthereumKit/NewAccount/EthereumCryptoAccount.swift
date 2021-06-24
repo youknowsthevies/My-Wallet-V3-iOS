@@ -6,7 +6,8 @@ import RxSwift
 import ToolKit
 
 final class EthereumCryptoAccount: CryptoNonCustodialAccount {
-    let id: String
+
+    private(set) lazy var identifier: AnyHashable = "EthereumCryptoAccount.\(publicKey)"
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
@@ -41,24 +42,27 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(EthereumReceiveAddress(address: id, label: label, onTxCompleted: onTxCompleted))
+        .just(EthereumReceiveAddress(address: publicKey, label: label, onTxCompleted: onTxCompleted))
     }
 
+    private let publicKey: String
     private let hdAccountIndex: Int
     private let accountDetailsService: EthereumAccountDetailsServiceAPI
     private let fiatPriceService: FiatPriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
 
-    init(id: String,
-         label: String? = nil,
-         hdAccountIndex: Int,
-         bridge: EthereumWalletBridgeAPI = resolve(),
-         accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
-         fiatPriceService: FiatPriceServiceAPI = resolve(),
-         exchangeProviding: ExchangeProviding = resolve()) {
+    init(
+        publicKey: String,
+        label: String? = nil,
+        hdAccountIndex: Int,
+        bridge: EthereumWalletBridgeAPI = resolve(),
+        accountDetailsService: EthereumAccountDetailsServiceAPI = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve()
+    ) {
         let asset = CryptoCurrency.ethereum
         self.asset = asset
-        self.id = id
+        self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex
         self.fiatPriceService = fiatPriceService
         self.accountDetailsService = accountDetailsService

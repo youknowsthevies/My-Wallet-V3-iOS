@@ -64,7 +64,7 @@ extension CryptoAsset {
                     self.accountGroup(filter: canTransactToCustodial ? .all : .nonCustodial)
                 }
                 .map(\.accounts)
-                .mapFilter(excluding: crypto.id)
+                .mapFilter(excluding: crypto.identifier)
         default:
             unimplemented()
         }

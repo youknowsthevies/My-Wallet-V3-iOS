@@ -44,7 +44,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
         }
 
         public static func == (lhs: Interactor, rhs: Interactor) -> Bool {
-            lhs.account.id == rhs.account.id
+            lhs.account.identifier == rhs.account.identifier
         }
     }
 
@@ -72,7 +72,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             guard let account = account else {
                 fatalError("Expected an account")
             }
-            return account.id
+            return account.identifier
         }
     }
 

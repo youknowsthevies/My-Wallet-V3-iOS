@@ -25,10 +25,10 @@ final class DashboardDetailsScreenPresenter {
         case priceAlert
         case chart
 
-        private var id: String {
+        private var id: AnyHashable {
             switch self {
             case .balance(let account):
-                return account.id
+                return account.identifier
             case .priceAlert:
                 return "priceAlert"
             case .chart:

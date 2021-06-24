@@ -20,7 +20,7 @@ final class ERC20Asset: CryptoAsset {
                 return wallet
             }
             .map { [erc20Token] wallet -> SingleAccount in
-                ERC20CryptoAccount(id: wallet.publicKey, erc20Token: erc20Token)
+                ERC20CryptoAccount(publicKey: wallet.publicKey, erc20Token: erc20Token)
             }
     }
 
@@ -133,7 +133,7 @@ final class ERC20Asset: CryptoAsset {
     private var nonCustodialGroup: Single<AccountGroup> {
         walletAccountBridge.wallets
             .map { [erc20Token] wallets -> [SingleAccount] in
-                wallets.map { ERC20CryptoAccount(id: $0.publicKey, erc20Token: erc20Token) }
+                wallets.map { ERC20CryptoAccount(publicKey: $0.publicKey, erc20Token: erc20Token) }
             }
             .map { [asset] accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)

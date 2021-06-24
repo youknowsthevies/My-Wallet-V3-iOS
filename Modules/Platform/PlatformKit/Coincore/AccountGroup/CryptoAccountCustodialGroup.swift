@@ -79,7 +79,7 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         return account
     }
 
-    private(set) public lazy var id: String = "CryptoAccountCustodialGroup" + asset.code
+    private(set) public lazy var identifier: AnyHashable = "CryptoAccountCustodialGroup." + asset.code
 
     public init(asset: CryptoCurrency, accounts: [SingleAccount]) {
         self.asset = asset

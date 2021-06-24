@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformKit
 import RxSwift
 import ToolKit
 
@@ -14,19 +15,19 @@ public protocol ActivityProviding: AnyObject {
     func refresh()
 }
 
-public final class ActivityProvider: ActivityProviding {
+final class ActivityProvider: ActivityProviding {
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
-    public subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI {
+    subscript(currency: CurrencyType) -> ActivityItemEventServiceAPI {
         services[currency]!
     }
 
-    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI {
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoItemEventServiceAPI {
         services[.crypto(cryptoCurrency)] as! CryptoItemEventServiceAPI
     }
 
-    public subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI {
+    subscript(fiatCurrency: FiatCurrency) -> FiatItemEventServiceAPI {
         services[.fiat(fiatCurrency)] as! FiatItemEventServiceAPI
     }
 
@@ -36,8 +37,8 @@ public final class ActivityProvider: ActivityProviding {
 
     // MARK: - Setup
 
-    public init(fiats: [FiatCurrency: ActivityItemEventServiceAPI],
-                cryptos: [CryptoCurrency: ActivityItemEventServiceAPI]) {
+    init(fiats: [FiatCurrency: ActivityItemEventServiceAPI],
+         cryptos: [CryptoCurrency: ActivityItemEventServiceAPI]) {
         for (currency, service) in fiats {
             services[currency.currency] = service
         }
@@ -46,11 +47,11 @@ public final class ActivityProvider: ActivityProviding {
         }
     }
 
-    public var activityItems: Observable<ActivityItemEventsLoadingState> {
+    var activityItems: Observable<ActivityItemEventsLoadingState> {
         activityItemsLoadingStates.map { $0.allActivity }
     }
 
-    public func refresh() {
+    func refresh() {
         services.values.forEach { $0.refresh() }
     }
 

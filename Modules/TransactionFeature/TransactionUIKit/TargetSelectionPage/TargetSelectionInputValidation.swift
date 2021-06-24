@@ -166,8 +166,8 @@ extension TargetSelectionInputValidation.Account {
     static func ==(lhs: TargetSelectionInputValidation.Account, rhs: TargetSelectionInputValidation.Account) -> Bool {
         switch (lhs, rhs) {
         case (.account(let left), .account(let right)):
-            return left.label == right.label &&
-                left.id == right.id
+            return left.label == right.label
+                && left.identifier == right.identifier
         case (.none, .none):
             return true
         default:

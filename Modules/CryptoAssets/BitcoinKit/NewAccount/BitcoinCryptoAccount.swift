@@ -8,9 +8,8 @@ import RxSwift
 import ToolKit
 
 class BitcoinCryptoAccount: CryptoNonCustodialAccount {
-    private typealias LocalizedString = LocalizationConstants.Account
 
-    let id: String
+    private(set) lazy var identifier: AnyHashable = "BitcoinCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
     let asset: CryptoCurrency = .bitcoin
     let isDefault: Bool
@@ -45,7 +44,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        bridge.receiveAddress(forXPub: id)
+        bridge.receiveAddress(forXPub: xPub.address)
             .flatMap { [bridge] address -> Single<(Int32, String)> in
                 Single.zip(bridge.walletIndex(for: address), .just(address))
             }
@@ -59,6 +58,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    private let xPub: XPub
     private let balanceService: BalanceServiceAPI
     private let bridge: BitcoinWalletBridgeAPI
     private let hdAccountIndex: Int
@@ -70,7 +70,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
          fiatPriceService: FiatPriceServiceAPI = resolve(),
          bridge: BitcoinWalletBridgeAPI = resolve()) {
-        self.id = walletAccount.publicKeys.default.address
+        self.xPub = walletAccount.publicKeys.default
         self.hdAccountIndex = walletAccount.index
         self.label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault

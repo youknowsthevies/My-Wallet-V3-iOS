@@ -7,7 +7,7 @@ import ToolKit
 
 final class FiatCustodialAccount: FiatAccount {
 
-    let id: String
+    private(set) lazy var identifier: AnyHashable = "FiatCustodialAccount.\(fiatCurrency.code)"
     let actions: Single<AvailableActions> = .just([.deposit, .viewActivity])
     let isDefault: Bool = true
     let label: String
@@ -56,7 +56,6 @@ final class FiatCustodialAccount: FiatAccount {
         balanceService: TradingBalanceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
-        id = "FiatCustodialAccount." + fiatCurrency.code
         label = fiatCurrency.defaultWalletName
         self.fiatCurrency = fiatCurrency
         self.balanceService = balanceService

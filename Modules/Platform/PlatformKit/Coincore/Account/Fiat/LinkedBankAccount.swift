@@ -34,7 +34,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
-        .just(BankAccountReceiveAddress(address: id, label: label))
+        .just(BankAccountReceiveAddress(address: accountId, label: label))
     }
 
     public var balance: Single<MoneyValue> {
@@ -49,8 +49,9 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     }
 
     public let fiatCurrency: FiatCurrency
-    public let id: String
+    private(set) public lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
     public let label: String
+    public let accountId: String
     public let accountNumber: String
     public let paymentType: PaymentMethodPayloadType
 
@@ -60,16 +61,18 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     // MARK: - Init
 
-    public init(label: String,
-                accountNumber: String,
-                accountId: String,
-                currency: FiatCurrency,
-                paymentType: PaymentMethodPayloadType,
-                withdrawServiceAPI: WithdrawalServiceAPI = resolve()) {
+    public init(
+        label: String,
+        accountNumber: String,
+        accountId: String,
+        currency: FiatCurrency,
+        paymentType: PaymentMethodPayloadType,
+        withdrawServiceAPI: WithdrawalServiceAPI = resolve()
+    ) {
         self.label = label
+        self.accountId = accountId
         self.accountNumber = accountNumber
         self.fiatCurrency = currency
-        self.id = accountId
         self.paymentType = paymentType
         self.withdrawService = withdrawServiceAPI
     }

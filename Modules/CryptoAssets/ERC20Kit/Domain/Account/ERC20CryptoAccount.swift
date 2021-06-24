@@ -7,7 +7,7 @@ import RxSwift
 import ToolKit
 
 final class ERC20CryptoAccount: CryptoNonCustodialAccount {
-    let id: String
+    private(set) lazy var identifier: AnyHashable = "ERC20CryptoAccount.\(asset.code).\(publicKey)"
     let label: String
     let asset: CryptoCurrency
     let isDefault: Bool = true
@@ -22,7 +22,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
 
     var balance: Single<MoneyValue> {
         balanceService
-            .balance(for: EthereumAddress(stringLiteral: id), cryptoCurrency: asset)
+            .balance(for: EthereumAddress(stringLiteral: publicKey), cryptoCurrency: asset)
             .moneyValue
     }
 
@@ -45,22 +45,23 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     var receiveAddress: Single<ReceiveAddress> {
-        .just(ERC20ReceiveAddress(asset: asset, address: id, label: label, onTxCompleted: onTxCompleted))
+        .just(ERC20ReceiveAddress(asset: asset, address: publicKey, label: label, onTxCompleted: onTxCompleted))
     }
 
+    private let publicKey: String
     private let erc20Token: ERC20AssetModel
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
     private let fiatPriceService: FiatPriceServiceAPI
 
     init(
-        id: String,
+        publicKey: String,
         erc20Token: ERC20AssetModel,
         balanceService: ERC20BalanceServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
-        self.id = id
+        self.publicKey = publicKey
         self.erc20Token = erc20Token
         self.asset = erc20Token.cryptoCurrency
         self.label = erc20Token.cryptoCurrency.defaultWalletName

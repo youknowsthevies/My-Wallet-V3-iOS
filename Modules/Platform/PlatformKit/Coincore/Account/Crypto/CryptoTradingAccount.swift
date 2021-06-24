@@ -18,7 +18,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
-    public lazy var id: String = "CryptoTradingAccount." + asset.code
+    private(set) public lazy var identifier: AnyHashable = "CryptoTradingAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false

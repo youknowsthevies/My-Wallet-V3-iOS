@@ -23,7 +23,7 @@ struct BlockchainAccountWrapper: Equatable {
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.account.id == rhs.account.id
+        lhs.account.identifier == rhs.account.identifier
     }
 }
 
