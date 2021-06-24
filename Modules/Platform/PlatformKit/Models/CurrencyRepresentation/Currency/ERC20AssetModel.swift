@@ -2,34 +2,34 @@
 
 import Localization
 
-public struct CryptoCurrencyModel: Hashable {
-    public enum Kind {
-        case erc20(contract: String, logoPNGUrl: String)
-        case coin
-    }
-
+public struct ERC20AssetModel: CryptoAssetModel {
+    public static let typeTag: AnyHashable = "ETH.ERC20"
     public let name: String
     public let code: String
-    public let symbol: String
     public let maxDecimalPlaces: Int
     public let maxStartDate: TimeInterval
-    public let kind: Kind
+    public let kind: CryptoAssetType
+    public var cryptoCurrency: CryptoCurrency { .erc20(self) }
+    /// A `Hashable` tag that can be used to discern between different L1/L2 chains.
+    public var typeTag: AnyHashable { ERC20AssetModel.typeTag }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(code)
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.code == rhs.code
+    init(name: String, code: String, maxDecimalPlaces: Int, maxStartDate: TimeInterval, kind: CryptoAssetType) {
+        guard case .erc20 = kind else {
+            preconditionFailure("Creating a ERC20AssetModel with a non 'erc20' kind is a programmatic error")
+        }
+        self.name = name
+        self.code = code
+        self.maxDecimalPlaces = maxDecimalPlaces
+        self.maxStartDate = maxStartDate
+        self.kind = kind
     }
 }
 
-extension CryptoCurrencyModel {
-    public static var aave: CryptoCurrencyModel {
-        CryptoCurrencyModel(
+extension ERC20AssetModel {
+    public static var aave: ERC20AssetModel {
+        ERC20AssetModel(
             name: "Aave",
             code: "AAVE",
-            symbol: "AAVE",
             maxDecimalPlaces: 18,
             maxStartDate: 1615831200,
             kind: .erc20(
@@ -39,11 +39,10 @@ extension CryptoCurrencyModel {
             )
         )
     }
-    public static var yearnFinance: CryptoCurrencyModel {
-        CryptoCurrencyModel(
+    public static var yearnFinance: ERC20AssetModel {
+        ERC20AssetModel(
             name: "Yearn Finance",
             code: "YFI",
-            symbol: "YFI",
             maxDecimalPlaces: 18,
             maxStartDate: 1615831200,
             kind: .erc20(
@@ -53,11 +52,10 @@ extension CryptoCurrencyModel {
             )
         )
     }
-    public static var wdgld: CryptoCurrencyModel {
-        CryptoCurrencyModel(
+    public static var wdgld: ERC20AssetModel {
+        ERC20AssetModel(
             name: "Wrapped-DGLD",
             code: "WDGLD",
-            symbol: "WDGLD",
             maxDecimalPlaces: 8,
             maxStartDate: 1605636000,
             kind: .erc20(
@@ -67,11 +65,10 @@ extension CryptoCurrencyModel {
             )
         )
     }
-    public static var pax: CryptoCurrencyModel {
-        CryptoCurrencyModel(
+    public static var pax: ERC20AssetModel {
+        ERC20AssetModel(
             name: "USD \(LocalizationConstants.digital)",
             code: "PAX",
-            symbol: "PAX",
             maxDecimalPlaces: 18,
             maxStartDate: 1555060318,
             kind: .erc20(
@@ -81,11 +78,10 @@ extension CryptoCurrencyModel {
             )
         )
     }
-    public static var tether: CryptoCurrencyModel {
-        CryptoCurrencyModel(
+    public static var tether: ERC20AssetModel {
+        ERC20AssetModel(
             name: "Tether",
             code: "USDT",
-            symbol: "USDT",
             maxDecimalPlaces: 6,
             maxStartDate: 1511829681,
             kind: .erc20(

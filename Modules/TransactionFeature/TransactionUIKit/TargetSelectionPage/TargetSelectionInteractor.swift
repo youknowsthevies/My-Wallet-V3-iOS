@@ -51,9 +51,7 @@ final class TargetSelectionInteractor {
         guard let crypto = account as? CryptoAccount else {
             fatalError("You cannot validate an address using this account type: \(account)")
         }
-        guard let asset = coincore[crypto.asset] else {
-            fatalError("asset for \(account) not found")
-        }
+        let asset = coincore[crypto.asset]
         return asset
             .parse(address: address)
             .flatMap(weak: self) { (self, validatedAddress) -> Single<Result<ReceiveAddress, Error>> in

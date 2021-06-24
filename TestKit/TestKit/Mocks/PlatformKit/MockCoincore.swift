@@ -23,8 +23,8 @@ class MockCoincore: CoincoreAPI {
         .just([])
     }
 
-    var requestedCryptoAsset: CryptoAsset?
-    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? {
+    var requestedCryptoAsset: CryptoAsset!
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         requestedCryptoAsset
     }
 }

@@ -23,7 +23,7 @@ public protocol CoincoreAPI {
     ///   - action: An `AssetAction` to determine the transaction targets
     func getTransactionTargets(sourceAccount: BlockchainAccount, action: AssetAction) -> Single<[SingleAccount]>
 
-    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? { get }
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset { get }
 }
 
 final class Coincore: CoincoreAPI {
@@ -51,28 +51,25 @@ final class Coincore: CoincoreAPI {
         [fiatAsset] + cryptoAssets
     }
     let fiatAsset: Asset
-    var cryptoAssets: [CryptoAsset] {
-        cryptoAssetsDictionary.sorted(by: { $0.key < $1.key }).map { $0.value }
-    }
-
-    private let cryptoAssetsDictionary: [CryptoCurrency: CryptoAsset]
+    let cryptoAssets: [CryptoAsset]
 
     private let reactiveWallet: ReactiveWalletAPI
 
     // MARK: - Setup
 
-    init(cryptoAssets: [CryptoCurrency: CryptoAsset],
-         fiatAsset: FiatAsset = FiatAsset(),
-         reactiveWallet: ReactiveWalletAPI = resolve()) {
-        self.cryptoAssetsDictionary = cryptoAssets
+    init(
+        cryptoAssets: [CryptoAsset],
+        fiatAsset: FiatAsset = FiatAsset(),
+        reactiveWallet: ReactiveWalletAPI = resolve()
+    ) {
+        self.cryptoAssets = cryptoAssets.sorted(by: { $0.asset < $1.asset })
         self.fiatAsset = fiatAsset
         self.reactiveWallet = reactiveWallet
     }
 
     /// Gives a chance for all assets to initialize themselves.
     public func initialize() -> Completable {
-        var completables = cryptoAssetsDictionary
-            .values
+        var completables = cryptoAssets
             .map { asset -> Completable in
                 asset.initialize()
             }
@@ -80,9 +77,9 @@ final class Coincore: CoincoreAPI {
         return Completable.concat(completables)
     }
 
-    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset? {
-        guard let asset = cryptoAssetsDictionary[cryptoCurrency] else {
-            fatalError("Unknown crypto currency.")
+    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
+        guard let asset = cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
+            fatalError("Unknown crypto currency '\(cryptoCurrency.code)'.")
         }
         return asset
     }
@@ -113,9 +110,7 @@ final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            guard let sourceCryptoAsset = cryptoAssetsDictionary[cryptoAccount.asset] else {
-                fatalError("CryptoAsset unavailable for sourceAccount: \(sourceAccount)")
-            }
+            let sourceCryptoAsset = self[cryptoAccount.asset]
             return Single
                 .zip(
                     sourceCryptoAsset.transactionTargets(account: cryptoAccount),

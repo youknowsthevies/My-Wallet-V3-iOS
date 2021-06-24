@@ -25,19 +25,19 @@ final class ERC20Asset: CryptoAsset {
     }
 
     let kycTiersService: KYCTiersServiceAPI
-    private let erc20Token: ERC20Token
+    private let erc20Token: ERC20AssetModel
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
     private let errorRecorder: ErrorRecording
 
     init(
-        erc20Token: ERC20Token,
+        erc20Token: ERC20AssetModel,
         walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
-        self.asset = erc20Token.assetType
+        self.asset = erc20Token.cryptoCurrency
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder

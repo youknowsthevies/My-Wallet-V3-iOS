@@ -11,7 +11,7 @@ public enum CryptoCurrency: Currency, Hashable, Codable, CustomDebugStringConver
     case stellar
     case algorand
     case polkadot
-    case erc20(CryptoCurrencyModel)
+    case erc20(ERC20AssetModel)
 
     public init?(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         guard let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies
@@ -215,6 +215,16 @@ extension CryptoCurrency {
             return true
         case .algorand, .bitcoin, .bitcoinCash, .ethereum, .polkadot, .stellar:
             return false
+        }
+    }
+
+    /// A `Hashable` tag that can be used to discern between different L1/L2 chains.
+    public var typeTag: AnyHashable {
+        switch self {
+        case .erc20(let model):
+            return model.typeTag
+        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .polkadot, .stellar:
+            return self
         }
     }
 }

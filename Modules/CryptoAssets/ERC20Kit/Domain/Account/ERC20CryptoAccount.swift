@@ -30,11 +30,14 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
+    // TODO: Use ERC20AssetModel.products field to dictate if swap is enabled for this currency.
+    private let legacySwapEnabledCurrencies: [ERC20AssetModel] = [.aave, .pax, .tether, .wdgld, .yearnFinance]
+
     var actions: Single<AvailableActions> {
         isFunded
-            .map { [erc20Token] isFunded -> AvailableActions in
+            .map { [erc20Token, legacySwapEnabledCurrencies] isFunded -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
-                if erc20Token.nonCustodialTransactionSupport.contains(.swap), isFunded {
+                if legacySwapEnabledCurrencies.contains(erc20Token), isFunded {
                     base.insert(.swap)
                 }
                 return base
@@ -45,22 +48,22 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(ERC20ReceiveAddress(asset: asset, address: id, label: label, onTxCompleted: onTxCompleted))
     }
 
-    private let erc20Token: ERC20Token
+    private let erc20Token: ERC20AssetModel
     private let balanceService: ERC20BalanceServiceAPI
     private let featureFetcher: FeatureFetching
     private let fiatPriceService: FiatPriceServiceAPI
 
     init(
         id: String,
-        erc20Token: ERC20Token,
+        erc20Token: ERC20AssetModel,
         balanceService: ERC20BalanceServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
         self.id = id
         self.erc20Token = erc20Token
-        self.asset = erc20Token.assetType
-        self.label = erc20Token.assetType.defaultWalletName
+        self.asset = erc20Token.cryptoCurrency
+        self.label = erc20Token.cryptoCurrency.defaultWalletName
         self.balanceService = balanceService
         self.featureFetcher = featureFetcher
         self.fiatPriceService = fiatPriceService
@@ -78,7 +81,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
              .withdraw:
             return .just(false)
         case .swap:
-            guard erc20Token.nonCustodialTransactionSupport.contains(.swap) else {
+            guard legacySwapEnabledCurrencies.contains(erc20Token) else {
                 return .just(false)
             }
             return isFunded

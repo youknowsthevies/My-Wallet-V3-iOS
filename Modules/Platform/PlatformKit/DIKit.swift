@@ -4,6 +4,10 @@ import DIKit
 import NetworkKit
 import ToolKit
 
+public protocol ERC20AssetFactoryAPI {
+    func erc20Asset(erc20AssetModel: ERC20AssetModel) -> CryptoAsset
+}
+
 extension DependencyContainer {
 
     // MARK: - PlatformKit Module
@@ -122,11 +126,26 @@ extension DependencyContainer {
 
         single { () -> CoincoreAPI in
             let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
-            return Coincore(
-                cryptoAssets: provider.allEnabledCryptoCurrencies.reduce(into: [CryptoCurrency: CryptoAsset]()) { (result, tag) in
-                    let asset: CryptoAsset = DIKit.resolve(tag: tag)
-                    result[tag] = asset
+            let allEnabledCryptoCurrencies = provider.allEnabledCryptoCurrencies
+            let nonERC20 = allEnabledCryptoCurrencies
+                .filter { !$0.isERC20 }
+                .map { cryptoCurrency -> CryptoAsset in
+                    let asset: CryptoAsset = DIKit.resolve(tag: cryptoCurrency)
+                    return asset
                 }
+            let erc20Factory: ERC20AssetFactoryAPI = DIKit.resolve()
+            let erc20 = allEnabledCryptoCurrencies
+                .filter(\.isERC20)
+                .compactMap { cryptoCurrency -> ERC20AssetModel? in
+                    guard case let .erc20(model) = cryptoCurrency else {
+                        return nil
+                    }
+                    return model
+                }
+                .compactMap { erc20Factory.erc20Asset(erc20AssetModel: $0) }
+
+            return Coincore(
+                cryptoAssets: nonERC20 + erc20
             )
         }
 

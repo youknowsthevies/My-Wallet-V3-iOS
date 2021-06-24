@@ -34,11 +34,11 @@ public struct ERC20ContractGasActivityModel {
     }
 
     private static func token(address: EthereumAddress) -> CryptoCurrency? {
-        let knownERC20: [ERC20Token] = [ .aave, .pax, .tether, .wdgld, .yearnFinance]
+        let knownERC20: [ERC20AssetModel] = [.aave, .pax, .tether, .wdgld, .yearnFinance]
         let publicKey = address.publicKey.lowercased()
         for token in knownERC20 {
             if publicKey.compare(token.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {
-                return token.assetType
+                return token.cryptoCurrency
             }
         }
         return nil
