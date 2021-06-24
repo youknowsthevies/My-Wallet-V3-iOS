@@ -26,9 +26,9 @@ final class ActivityScreenInteractor {
     }
 
     var activityBalance: Observable<FiatValue> {
-        fiatCurrency
-            .withLatestFrom(selectionService.selectedData) { (fiatCurrency: $0, account: $1) }
-            .flatMapLatest { (fiatCurrency: FiatCurrency, account: BlockchainAccount) in
+        Observable
+            .combineLatest(fiatCurrency, selectionService.selectedData)
+            .flatMap { (fiatCurrency: FiatCurrency, account: BlockchainAccount) in
                 account.fiatBalance(fiatCurrency: fiatCurrency)
                     .compactMap(\.fiatValue)
                     .catchErrorJustReturn(.zero(currency: fiatCurrency))

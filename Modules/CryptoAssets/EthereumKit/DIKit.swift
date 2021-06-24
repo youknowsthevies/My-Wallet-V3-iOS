@@ -30,10 +30,6 @@ extension DependencyContainer {
             return repository as EthereumWalletAccountRepositoryAPI
         }
 
-        factory(tag: CryptoCurrency.ethereum) {
-            EthereumAssetBalanceFetcher() as CryptoAccountBalanceFetching
-        }
-
         single { EthereumHistoricalTransactionService() }
 
         factory { EthereumTransactionalActivityItemEventsService() }

@@ -398,19 +398,9 @@ extension DependencyContainer {
 
         single { DataProvider() as DataProviding }
 
-        factory { () -> BalanceProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balance
-        }
-
         factory { () -> ExchangeProviding in
             let provider: DataProviding = DIKit.resolve()
             return provider.exchange
-        }
-
-        factory { () -> BalanceChangeProviding in
-            let provider: DataProviding = DIKit.resolve()
-            return provider.balanceChange
         }
 
         factory { () -> HistoricalFiatPriceProviding in

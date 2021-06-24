@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import DIKit
 import PlatformKit
 import RxSwift
@@ -10,45 +11,63 @@ final class AnalyticsUserPropertyInteractor {
 
     // MARK: - Properties
 
-    private let recorder: UserPropertyRecording
+    private let coincore: CoincoreAPI
     private let dataRepository: BlockchainDataRepository
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let recorder: UserPropertyRecording
     private let tiersService: KYCTiersServiceAPI
     private let walletRepository: WalletRepositoryAPI
-    private let balanceProvider: BalanceProviding
-    private let disposeBag = DisposeBag()
+    private var disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
-         balanceProvider: BalanceProviding = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve(),
-         walletRepository: WalletRepositoryAPI = resolve(),
-         dataRepository: BlockchainDataRepository = .shared) {
-        self.recorder = recorder
+    init(
+        coincore: CoincoreAPI = resolve(),
+        dataRepository: BlockchainDataRepository = .shared,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        recorder: UserPropertyRecording = AnalyticsUserPropertyRecorder(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        walletRepository: WalletRepositoryAPI = resolve()
+    ) {
+        self.coincore = coincore
         self.dataRepository = dataRepository
-        self.balanceProvider = balanceProvider
-        self.walletRepository = walletRepository
+        self.fiatCurrencyService = fiatCurrencyService
+        self.recorder = recorder
         self.tiersService = tiersService
+        self.walletRepository = walletRepository
+    }
+
+    func fiatBalances() -> Single<[CryptoCurrency: MoneyValue]> {
+        let balances: [Single<(asset: CryptoCurrency, moneyValue: MoneyValue?)>] = coincore.cryptoAssets
+            .map { asset in
+                asset.accountGroup(filter: .all)
+                    .flatMap { accountGroup -> Single<MoneyValue> in
+                        // We want to record the fiat balance analytics event always in USD.
+                        accountGroup.fiatBalance(fiatCurrency: .USD)
+                    }
+                    .optional()
+                    .catchErrorJustReturn(nil)
+                    .map { (asset: asset.asset, moneyValue: $0) }
+            }
+        return Single.zip(balances)
+            .map { items in
+                items.reduce(into: [CryptoCurrency: MoneyValue]()) { result, item in
+                    result[item.asset] = item.moneyValue
+                }
+            }
+
     }
 
     /// Records all the user properties
     func record() {
-
-        let balances = balanceProvider.fiatBalances
-            .filter { $0.isValue }
-            .map { totalState in
-                totalState.all.compactMap { $0.value }
-            }
-            .take(1)
-            .asSingle()
-
+        disposeBag = DisposeBag()
         Single
             .zip(
                 dataRepository.nabuUserSingle,
                 tiersService.tiers,
                 walletRepository.authenticatorType,
                 walletRepository.guid,
-                balances
+                fiatBalances()
             )
             .subscribe(
                 onSuccess: { [weak self] (user, tiers, authenticatorType, guid, balances) in
@@ -71,7 +90,7 @@ final class AnalyticsUserPropertyInteractor {
                         tiers: KYC.UserTiers?,
                         authenticatorType: AuthenticatorType,
                         guid: String?,
-                        balances: [MoneyValueBalancePairs]) {
+                        balances: [CryptoCurrency: MoneyValue]) {
         if let identifier = user?.personalDetails.identifier {
             recorder.record(id: identifier)
         }
@@ -100,41 +119,31 @@ final class AnalyticsUserPropertyInteractor {
 
         recorder.record(StandardUserProperty(key: .twoFAEnabled, value: String(authenticatorType.isTwoFactor)))
 
-        let firstBalance = balances[0]
-        var totalFiatBalance = firstBalance.quote
+        let positives: [String] = balances
+            .filter { $0.value.isPositive }
+            .map { $0.key.code }
 
-        var positives: [String] = []
-        if firstBalance.base.isPositive {
-            positives += [firstBalance.base.currencyType.code]
-        }
-
-        for balance in balances.dropFirst() {
-            do {
-                if balance.base.isPositive {
-                    positives += [balance.base.currencyType.code]
-                }
-                totalFiatBalance = try totalFiatBalance + balance.quote
-            } catch {
-                Logger.shared.error(error)
-            }
-        }
+        let totalFiatBalance = try? balances.values.reduce(FiatValue.zero(currency: .USD).moneyValue, +)
 
         recorder.record(StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ",")))
+        recorder.record(StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0)))
+    }
 
-        var reportedBalance: String
-        switch totalFiatBalance.amount {
-        case 0:
-            reportedBalance = "0"
-        case (1...10):
-            reportedBalance = "1-10"
-        case (11...100):
-            reportedBalance = "11-100"
-        case (101...1000):
-            reportedBalance = "101-1000"
-        default: // > 1000
-            reportedBalance = "1001"
+    /// Total balance (measured in USD) in buckets: 0, 0-10, 10-100, 100-1000, >1000
+    private func balanceBucket(for minorUSDBalance: BigInt) -> String {
+        switch minorUSDBalance {
+        case ...0_99:
+            return "0 USD"
+        case 1_00...10_99:
+            return "1-10 USD"
+        case 11_00...100_99:
+            return "11-100 USD"
+        case 101_00...1000_99:
+            return "101-1000 USD"
+        case 1001_00...:
+            return "1001 USD"
+        default:
+            return "0 USD"
         }
-        reportedBalance += " \(totalFiatBalance.currencyType.code)"
-        recorder.record(StandardUserProperty(key: .totalBalance, value: reportedBalance))
     }
 }

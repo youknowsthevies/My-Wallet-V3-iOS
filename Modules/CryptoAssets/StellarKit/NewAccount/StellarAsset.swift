@@ -31,11 +31,11 @@ final class StellarAsset: CryptoAsset {
 
     let kycTiersService: KYCTiersServiceAPI
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
-    private let accountRepository: StellarWalletAccountRepository
+    private let accountRepository: StellarWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
     private let addressFactory: StellarCryptoReceiveAddressFactory
     init(
-        accountRepository: StellarWalletAccountRepository = resolve(),
+        accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),

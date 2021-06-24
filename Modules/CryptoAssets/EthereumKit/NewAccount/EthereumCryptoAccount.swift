@@ -81,7 +81,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
@@ -90,7 +90,6 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
             .map { (fiatPrice, balance) in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
-            .asObservable()
     }
 
     func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {

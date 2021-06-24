@@ -10,57 +10,63 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
 
     public var state: Observable<AssetPieChart.State.Interaction> {
         _ = setup
-        return stateRelay
-            .asObservable()
+        return stateRelay.asObservable()
     }
 
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
-        let currencies = Observable.just(currencyTypes)
-        Observable
-            .combineLatest(balanceProvider.fiatBalances, balanceProvider.fiatBalance, currencies)
-            .map { (balances, totalBalance, currencies) in
-                guard let totalFiatValue = totalBalance.value else {
-                    return .loading
-                }
-
-                let total = MoneyValue(fiatValue: totalFiatValue)
-
-                guard total.isPositive else {
-                    let zero = MoneyValue.zero(currency: total.currencyType)
-                    let states = currencies.map { AssetPieChart.Value.Interaction(asset: $0, percentage: zero) }
-                    return .loaded(next: states)
-                }
-
-                let balances: [LoadingState<AssetPieChart.Value.Interaction>] = try currencies
-                    .map { currency -> LoadingState<AssetPieChart.Value.Interaction> in
-                        guard let balance = balances[currency.currency].value?.quote else {
-                            return .loading
+        fiatCurrencyService.fiatCurrencyObservable
+            .flatMapLatest { [coincore] fiatCurrency -> Observable<AssetPieChart.State.Interaction> in
+                let cryptoStreams: [Observable<MoneyValuePair>] = coincore.cryptoAssets.map { asset in
+                    asset.accountGroup(filter: .all)
+                        .flatMap { accountGroup -> Single<MoneyValuePair> in
+                            accountGroup.balancePair(fiatCurrency: fiatCurrency)
                         }
-                        return .loaded(next: AssetPieChart.Value.Interaction(asset: currency, percentage: try balance / total))
-                    }
-
-                guard !balances.contains(.loading) else {
-                    return .loading
+                        .asObservable()
                 }
-                return .loaded(next: balances.compactMap { $0.value })
+                let fiatStream: Observable<MoneyValuePair> = coincore.fiatAsset
+                    .accountGroup(filter: .all)
+                    .flatMap{ accountGroup -> Single<MoneyValuePair> in
+                        accountGroup.fiatBalance(fiatCurrency: fiatCurrency)
+                            .map { MoneyValuePair(base: $0, quote: $0) }
+                    }
+                    .asObservable()
+
+                return Observable.combineLatest(cryptoStreams + [fiatStream])
+                    .map { pairs -> AssetPieChart.State.Interaction in
+                        let total = try pairs.map(\.quote)
+                            .reduce(MoneyValue.zero(currency: fiatCurrency), +)
+                        guard total.isPositive else {
+                            return .loaded(next: [])
+                        }
+
+                        let states = try pairs.map { pair in
+                            AssetPieChart.Value.Interaction(
+                                asset: pair.base.currency,
+                                percentage: try pair.quote / total
+                            )
+                        }
+                        return .loaded(next: states)
+                    }
             }
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }()
 
-    private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
+    private let coincore: CoincoreAPI
     private let disposeBag = DisposeBag()
-
-    private let currencyTypes: [CurrencyType]
-    private let balanceProvider: BalanceProviding
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
 
     // MARK: - Setup
 
-    public init(balanceProvider: BalanceProviding, currencyTypes: [CurrencyType]) {
-        self.balanceProvider = balanceProvider
-        self.currencyTypes = currencyTypes
+    public init(
+        coincore: CoincoreAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
+        self.coincore = coincore
+        self.fiatCurrencyService = fiatCurrencyService
     }
 }

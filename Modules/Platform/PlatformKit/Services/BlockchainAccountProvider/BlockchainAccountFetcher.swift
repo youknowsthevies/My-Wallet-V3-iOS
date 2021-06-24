@@ -4,7 +4,6 @@ import DIKit
 import RxSwift
 
 public protocol BlockchainAccountFetching {
-    func accounts(for currencyType: CurrencyType) -> Single<[BlockchainAccount]>
     func account(for currencyType: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount>
 }
 
@@ -17,10 +16,6 @@ final class BlockchainAccountFetcher: BlockchainAccountFetching {
     }
 
     // MARK: - BlockchainAccountFetching
-
-    func accounts(for currencyType: CurrencyType) -> Single<[BlockchainAccount]> {
-        blockchainAccountProvider.accounts(for: currencyType)
-    }
 
     func account(for currencyType: CurrencyType, accountType: SingleAccountType) -> Single<BlockchainAccount> {
         blockchainAccountProvider

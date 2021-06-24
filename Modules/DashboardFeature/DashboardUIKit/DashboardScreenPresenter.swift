@@ -105,7 +105,9 @@ final class DashboardScreenPresenter {
             cellTypes.append(.fiatCustodialBalances)
         }
 
-        let assetCells: [CellType] = interactor.enabledCryptoCurrencies.map { .crypto($0) }
+        let assetCells: [CellType] = interactor
+            .enabledCryptoCurrencies
+            .map { .crypto($0) }
         assetCells.forEach { cellTypes.append($0) }
 
         switch announcementCardArrangement {
@@ -202,16 +204,17 @@ final class DashboardScreenPresenter {
         interactor: DashboardScreenInteractor = DashboardScreenInteractor(),
         accountFetcher: BlockchainAccountFetching = resolve(),
         drawerRouter: DrawerRouting = resolve(),
-        announcementPresenter: AnnouncementPresenting = resolve()
+        announcementPresenter: AnnouncementPresenting = resolve(),
+        coincore: CoincoreAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.accountFetcher = accountFetcher
         self.interactor = interactor
         self.drawerRouter = drawerRouter
         self.announcementPresenter = announcementPresenter
         totalBalancePresenter = TotalBalanceViewPresenter(
-            balanceProvider: interactor.balanceProvider,
-            balanceChangeProvider: interactor.balanceChangeProvider,
-            enabledCurrenciesService: interactor.enabledCurrenciesService
+            coincore: coincore,
+            fiatCurrencyService: fiatCurrencyService
         )
         noticePresenter = DashboardNoticePresenter()
         historicalBalanceCellPresenters = interactor
@@ -300,8 +303,8 @@ final class DashboardScreenPresenter {
     }
 
     /// Given the cell index, returns the historical balance presenter
-    func historicalBalancePresenter(by cellIndex: Int) -> HistoricalBalanceCellPresenter {
-        historicalBalanceCellPresenters[cellIndex - firstAssetCellIndex]
+    func historicalBalancePresenter(by cryptoCurrency: CryptoCurrency) -> HistoricalBalanceCellPresenter {
+        historicalBalanceCellPresenters.first { $0.cryptoCurrency == cryptoCurrency }!
     }
 
     // MARK: - Navigation

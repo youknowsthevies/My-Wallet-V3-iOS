@@ -271,7 +271,7 @@ extension DashboardViewController: UITableViewDelegate, UITableViewDataSource {
 
     private func assetCell(for indexPath: IndexPath, currency: CryptoCurrency) -> UITableViewCell {
         let cell = tableView.dequeue(HistoricalBalanceTableViewCell.self, for: indexPath)
-        cell.presenter = presenter.historicalBalancePresenter(by: indexPath.row)
+        cell.presenter = presenter.historicalBalancePresenter(by: currency)
         return cell
     }
 

@@ -3,7 +3,7 @@
 import BigInt
 import ToolKit
 
-public protocol Money {
+public protocol Money: CustomDebugStringConvertible {
 
     /// The type of currency (e.g. `fiat` or `crypto`)
     var currency: CurrencyType { get }
@@ -63,6 +63,10 @@ public protocol Money {
 }
 
 extension Money {
+
+    public var debugDescription: String {
+        "\(type(of: self)) \(code) \(amount)"
+    }
 
     public var code: String {
         currency.code

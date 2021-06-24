@@ -1,18 +1,25 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import DIKit
 import RxRelay
 import RxSwift
 import ToolKit
 
 public protocol PortfolioBalanceChangeProviding {
-    var changeObservable: Observable<PortfolioBalanceChange> { get }
+    var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> { get }
+}
+
+public struct PortfolioBalanceChange {
+    public let balance: MoneyValue
+    public let changePercentage: Double
+    public let change: MoneyValue
 }
 
 public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProviding {
 
     // MARK: - Exposed Properties
 
-    public var changeObservable: Observable<PortfolioBalanceChange> {
+    public var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> {
         _ = setup
         return changeRelay.asObservable()
     }
@@ -20,50 +27,63 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     // MARK: - Private Properties
 
     private lazy var setup: Void = {
-        Observable.combineLatest(balanceProvider.fiatBalance, balanceChangeProvider.change)
-            .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
-            .map { (balance, change) -> PortfolioBalanceChange in
-                guard let currentBalance = balance.value else { return .zero }
-                guard change.containsValue else { return .zero }
-                guard let changeValue = change.totalFiat.value else { return .zero }
-
-                let percentage: Decimal // in range [0...1]
-                if currentBalance.isZero {
-                    percentage = 0
-                } else {
-                    let previousBalance = try currentBalance - changeValue
-
-                    /// `zero` shouldn't be possible but is handled in any case
-                    /// in a wa that would not throw
-                    if previousBalance.isZero {
-                        percentage = 0
-                    } else {
-                        let precentageFiat = try changeValue / previousBalance
-                        percentage = precentageFiat.displayMajorValue
-                    }
-                }
-                return .init(
-                    balance: currentBalance.displayMajorValue,
-                    changePercentage: percentage.doubleValue,
-                    change: changeValue.displayMajorValue
-                )
+        Observable.combineLatest(fiatCurrencyService.fiatCurrencyObservable, coincore.allAccounts.asObservable())
+            .flatMapLatest(weak: self) { (self, data) in
+                self.fetch(accountGroup: data.1, fiatCurrency: data.0)
+                    .map { .value($0) }
+                    .catchErrorJustReturn(.calculating)
+                    .asObservable()
             }
-            .catchErrorJustReturn(.zero)
+            .catchErrorJustReturn(.calculating)
             .bindAndCatch(to: changeRelay)
             .disposed(by: disposeBag)
     }()
 
-    private let balanceProvider: BalanceProviding
-    private let balanceChangeProvider: BalanceChangeProviding
-    private let changeRelay = BehaviorRelay<PortfolioBalanceChange>(value: .zero)
+    private var date24hAgo: Date {
+        Date().addingTimeInterval(-24*60*60)
+    }
+
+    private func fetch(accountGroup: AccountGroup, fiatCurrency: FiatCurrency) -> Single<PortfolioBalanceChange> {
+        Single.zip(
+            accountGroup.fiatBalance(fiatCurrency: fiatCurrency),
+            accountGroup.fiatBalance(fiatCurrency: fiatCurrency, at: date24hAgo)
+        )
+        .map { currentBalance, previousBalance in
+            let percentage: Decimal // in range [0...1]
+            let change = try currentBalance - previousBalance
+            if currentBalance.isZero {
+                percentage = 0
+            } else {
+                /// `zero` shouldn't be possible but is handled in any case
+                /// in a way that would not throw
+                if previousBalance.isZero || previousBalance.isNegative {
+                    percentage = 0
+                } else {
+                    percentage = try change.percentage(of: previousBalance)
+                }
+            }
+            return PortfolioBalanceChange(
+                balance: currentBalance,
+                changePercentage: percentage.doubleValue,
+                change: change
+            )
+        }
+
+    }
+
+    private let coincore: CoincoreAPI
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let changeRelay = BehaviorRelay<ValueCalculationState<PortfolioBalanceChange>>(value: .calculating)
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    public init(balanceProvider: BalanceProviding,
-                balanceChangeProvider: BalanceChangeProviding) {
-        self.balanceProvider = balanceProvider
-        self.balanceChangeProvider = balanceChangeProvider
+    public init(
+        coincore: CoincoreAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
+        self.coincore = coincore
+        self.fiatCurrencyService = fiatCurrencyService
     }
 
 }

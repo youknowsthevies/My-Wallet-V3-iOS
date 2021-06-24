@@ -17,10 +17,12 @@ final class HistoricalBalanceCellInteractor {
 
     // MARK: - Setup
 
-    init(cryptoCurrency: CryptoCurrency,
-         historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
-         assetBalanceFetcher: AssetBalanceFetching) {
-        self.cryptoCurrency = cryptoCurrency
+    init(
+        cryptoAsset: CryptoAsset,
+        historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
+        self.cryptoCurrency = cryptoAsset.asset
         sparklineInteractor = SparklineInteractor(
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency
@@ -28,8 +30,13 @@ final class HistoricalBalanceCellInteractor {
         priceInteractor = AssetPriceViewInteractor(
             historicalPriceProvider: historicalFiatPriceService
         )
-        balanceInteractor = AssetBalanceViewInteractor(
-            assetBalanceFetching: assetBalanceFetcher
+        balanceInteractor = AccountAssetBalanceViewInteractor(
+            cryptoAsset: cryptoAsset,
+            fiatCurrencyService: fiatCurrencyService
         )
+    }
+
+    func refresh() {
+        balanceInteractor.refresh()
     }
 }

@@ -40,7 +40,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
     private let bridge: EthereumWalletBridgeAPI
-    private let balanceFetching: CryptoAccountBalanceFetching
+    private let ethereumAccountDetails: EthereumAccountDetailsServiceAPI
     private let erc20AccountService: ERC20AccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
@@ -53,7 +53,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     init(
         erc20Token: ERC20Token,
         requireSecondPassword: Bool,
-        balanceFetching: CryptoAccountBalanceFetching = { () -> CryptoAccountBalanceFetching in resolve(tag: CryptoCurrency.ethereum) }(),
+        ethereumAccountDetails: EthereumAccountDetailsServiceAPI = resolve(),
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
@@ -63,7 +63,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
     ) {
         self.erc20Token = erc20Token
-        self.balanceFetching = balanceFetching
+        self.ethereumAccountDetails = ethereumAccountDetails
         self.fiatCurrencyService = fiatCurrencyService
         self.feeService = feeService
         self.requireSecondPassword = requireSecondPassword
@@ -336,7 +336,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     private var ethereumAccountBalance: Single<CryptoValue> {
-        balanceFetching.balance
+        ethereumAccountDetails.accountDetails().map(\.balance)
     }
 
     /// Streams `MoneyValuePair` for the exchange rate of the source ERC20 Asset in the current fiat currency.

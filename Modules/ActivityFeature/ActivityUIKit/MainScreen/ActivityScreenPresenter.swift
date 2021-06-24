@@ -118,14 +118,14 @@ final class ActivityScreenPresenter {
         interactor
             .selectedData
             .map { SelectionButtonViewModel.LeadingContent.content(from: $0) }
+            .catchErrorJustReturn(.none)
             .bindAndCatch(to: selectionButtonViewModel.leadingContentTypeRelay)
             .disposed(by: disposeBag)
 
-        let titleObservable: Observable<String> = interactor
+        interactor
             .selectedData
             .map(\.label)
-
-        titleObservable
+            .catchErrorJustReturn("")
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
@@ -147,6 +147,7 @@ final class ActivityScreenPresenter {
                 }
             }
             .map { .image($0) }
+            .catchErrorJustReturn(.empty)
             .bindAndCatch(to: selectionButtonViewModel.trailingContentRelay)
             .disposed(by: disposeBag)
 

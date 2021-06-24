@@ -3,6 +3,7 @@
 import Localization
 import PlatformKit
 import PlatformUIKit
+import RxSwift
 
 final class TotalBalanceViewPresenter {
 
@@ -20,20 +21,19 @@ final class TotalBalanceViewPresenter {
     let balancePresenter: AssetPriceViewPresenter
     let pieChartPresenter: AssetPieChartPresenter
 
-    private let interactor: TotalBalanceViewInteractor
-
     // MARK: - Setup
 
-    init(balanceProvider: BalanceProviding,
-         balanceChangeProvider: BalanceChangeProviding,
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI) {
-        let balanceInteractor = BalanceChangeViewInteractor(
-            balanceProvider: balanceProvider,
-            balanceChangeProvider: balanceChangeProvider
+    init(
+        coincore: CoincoreAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
+        let balanceInteractor = PortfolioBalanceChangeProvider(
+            coincore: coincore,
+            fiatCurrencyService: fiatCurrencyService
         )
         let chartInteractor = AssetPieChartInteractor(
-            balanceProvider: balanceProvider,
-            currencyTypes: enabledCurrenciesService.allEnabledCurrencyTypes
+            coincore: coincore,
+            fiatCurrencyService: fiatCurrencyService
         )
         pieChartPresenter = AssetPieChartPresenter(
             edge: 88,
@@ -43,9 +43,24 @@ final class TotalBalanceViewPresenter {
             interactor: balanceInteractor,
             descriptors: .balance
         )
-        interactor = TotalBalanceViewInteractor(
-            chartInteractor: chartInteractor,
-            balanceInteractor: balanceInteractor
-        )
+    }
+}
+
+extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
+    public var state: Observable<DashboardAsset.State.AssetPrice.Interaction> {
+        changeObservable
+            .map { state in
+                switch state {
+                case .calculating, .invalid:
+                    return .loading
+                case .value(let change):
+                    return .loaded(next: .init(
+                        time: .hours(24),
+                        fiatValue: change.balance.fiatValue!,
+                        changePercentage: change.changePercentage,
+                        fiatChange: change.change.fiatValue!
+                    ))
+                }
+            }
     }
 }

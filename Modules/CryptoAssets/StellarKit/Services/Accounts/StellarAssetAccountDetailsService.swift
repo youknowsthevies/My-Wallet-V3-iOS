@@ -20,8 +20,8 @@ final class StellarAccountDetailsService: StellarAccountDetailsServiceAPI {
 
     func accountDetails(for accountID: String) -> Single<StellarAccountDetails> {
         horizonProxy.accountResponse(for: accountID)
-            .map(weak: self) { (self, response) -> StellarAccountDetails in
-                let minBalance = self.horizonProxy.minimumBalance(subentryCount: response.subentryCount)
+            .map { [horizonProxy] (response) -> StellarAccountDetails in
+                let minBalance = horizonProxy.minimumBalance(subentryCount: response.subentryCount)
                 return response.toAssetAccountDetails(minimumBalance: minBalance)
             }
             .catchError { error in

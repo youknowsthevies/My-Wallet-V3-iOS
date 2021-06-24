@@ -17,15 +17,11 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.erc20(.aave)) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
-        factory(tag: CryptoCurrency.erc20(.aave)) { ERC20AssetBalanceFetcher(cryptoCurrency: .erc20(.aave)) as CryptoAccountBalanceFetching }
-
         // MARK: - PAX
 
         factory(tag: CryptoCurrency.erc20(.pax)) { ERC20Asset(erc20Token: ERC20Token.pax) as CryptoAsset }
 
         factory(tag: CryptoCurrency.erc20(.pax)) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
-
-        factory(tag: CryptoCurrency.erc20(.pax)) { ERC20AssetBalanceFetcher(cryptoCurrency: .erc20(.pax)) as CryptoAccountBalanceFetching }
 
         // MARK: - Tether
 
@@ -33,25 +29,17 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.erc20(.tether)) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
-        factory(tag: CryptoCurrency.erc20(.tether)) { ERC20AssetBalanceFetcher(cryptoCurrency: .erc20(.tether)) as CryptoAccountBalanceFetching }
-
         // MARK: - WDGLD
 
         factory(tag: CryptoCurrency.erc20(.wdgld)) { ERC20Asset(erc20Token: ERC20Token.wdgld) as CryptoAsset }
 
         factory(tag: CryptoCurrency.erc20(.wdgld)) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
-        factory(tag: CryptoCurrency.erc20(.wdgld)) { ERC20AssetBalanceFetcher(cryptoCurrency: .erc20(.wdgld)) as CryptoAccountBalanceFetching }
-
         // MARK: - Yearn Finance
 
         factory(tag: CryptoCurrency.erc20(.yearnFinance)) { ERC20Asset(erc20Token: ERC20Token.yearnFinance) as CryptoAsset }
 
         factory(tag: CryptoCurrency.erc20(.yearnFinance)) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
-
-        factory(tag: CryptoCurrency.erc20(.yearnFinance)) {
-            ERC20AssetBalanceFetcher(cryptoCurrency: .erc20(.yearnFinance)) as CryptoAccountBalanceFetching
-        }
 
         // MARK: Asset Agnostic
 

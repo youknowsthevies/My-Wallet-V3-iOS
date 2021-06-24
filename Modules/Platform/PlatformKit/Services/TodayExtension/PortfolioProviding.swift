@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BigInt
 import RxSwift
 
 public protocol PortfolioProviding {
@@ -8,21 +9,19 @@ public protocol PortfolioProviding {
 
 public final class PortfolioProvider: PortfolioProviding {
 
-    private let balanceProviding: BalanceProviding
-    private let balanceChangeProviding: BalanceChangeProviding
     private let portfolioBalanceChangeProviding: PortfolioBalanceChangeProviding
-    private let fiatCurrencyProviding: FiatCurrencyServiceAPI
-    private let disposeBag = DisposeBag()
+    private let fiatCurrencyService: FiatCurrencyServiceAPI
+    private let coincore: CoincoreAPI
 
-    public init(balanceProviding: BalanceProviding,
-                balanceChangeProviding: BalanceChangeProviding,
-                fiatCurrencyProviding: FiatCurrencyServiceAPI) {
-        self.fiatCurrencyProviding = fiatCurrencyProviding
-        self.balanceProviding = balanceProviding
-        self.balanceChangeProviding = balanceChangeProviding
+    public init(
+        coincore: CoincoreAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
+        self.fiatCurrencyService = fiatCurrencyService
+        self.coincore = coincore
         self.portfolioBalanceChangeProviding = PortfolioBalanceChangeProvider(
-            balanceProvider: balanceProviding,
-            balanceChangeProvider: balanceChangeProviding
+            coincore: coincore,
+            fiatCurrencyService: fiatCurrencyService
         )
     }
 
@@ -31,29 +30,30 @@ public final class PortfolioProvider: PortfolioProviding {
     public var portfolio: Observable<Portfolio> {
         let balancesObservable = Observable.combineLatest(
             balance(for: .ethereum),
-            balance(for: .erc20(.pax)),
             balance(for: .stellar),
             balance(for: .bitcoin),
-            balance(for: .bitcoinCash),
-            balance(for: .erc20(.tether))
+            balance(for: .bitcoinCash)
         )
-        return Observable.combineLatest(
-            balancesObservable,
-            change,
-            fiatCurrencyProviding.fiatCurrencyObservable
+        return Observable
+            .combineLatest(
+                balancesObservable,
+                change,
+                fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (values) -> Portfolio in
-                let balances = values.0
-                let change = values.1
-                let fiatCurrency = values.2
+            .map { (accounts, change, fiatCurrency) -> Portfolio in
+                let (ethereum, stellar, bitcoin, bitcoinCash) = accounts
                 return .init(
-                    ether: balances.0,
-                    pax: balances.1,
-                    stellar: balances.2,
-                    bitcoin: balances.3,
-                    bitcoinCash: balances.4,
-                    tether: balances.5,
-                    balanceChange: change,
+                    accounts: [
+                        .ethereum: ethereum,
+                        .stellar: stellar,
+                        .bitcoin: bitcoin,
+                        .bitcoinCash: bitcoinCash
+                    ],
+                    balanceChange: .init(
+                        balance: change.balance.displayMajorValue,
+                        changePercentage: change.changePercentage,
+                        change: change.change.displayMajorValue
+                    ),
                     fiatCurrency: fiatCurrency
                 )
             }
@@ -64,16 +64,22 @@ public final class PortfolioProvider: PortfolioProviding {
     private var change: Observable<PortfolioBalanceChange> {
         portfolioBalanceChangeProviding
             .changeObservable
+            .compactMap(\.value)
     }
 
     // MARK: - Balance Descriptions
 
-    private func balance(for currency: CryptoCurrency) -> Observable<String> {
-        balanceProviding[.crypto(currency)]
-            .calculationState
-            .compactMap { $0.value }
-            .map { $0.total.base.amount }
+    private func balance(for currency: CryptoCurrency) -> Observable<Portfolio.Account> {
+        guard let cryptoAsset = coincore.cryptoAssets.first(where: { $0.asset == currency }) else {
+            return .just(Portfolio.Account(currency: currency, balance: BigInt.zero.description))
+        }
+        return cryptoAsset
+            .accountGroup(filter: .all)
+            .flatMap(\.balance)
+            .map(\.amount)
             .catchErrorJustReturn(.zero)
-            .map { $0.description }
+            .map(\.description)
+            .map { Portfolio.Account(currency: currency, balance: $0) }
+            .asObservable()
     }
 }

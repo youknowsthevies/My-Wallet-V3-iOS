@@ -37,13 +37,13 @@ public protocol BlockchainAccount {
     var isFunded: Single<Bool> { get }
 
     /// The balance of this account exchanged to the given fiat currency.
-    func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue>
+    func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue>
 
     /// The balance of this account exchanged to the given fiat currency.
     func fiatBalance(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValue>
 
     /// The balance of this account exchanged to the given fiat currency.
-    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair>
+    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair>
 
     /// The balance of this account exchanged to the given fiat currency.
     func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair>
@@ -67,7 +67,7 @@ public protocol BlockchainAccount {
 
 extension BlockchainAccount {
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         balancePair(fiatCurrency: fiatCurrency).map(\.quote)
     }
 

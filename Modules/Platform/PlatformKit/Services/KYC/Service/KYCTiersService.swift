@@ -56,7 +56,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     private let client: KYCClientAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
 
     private lazy var setup: Void = {
         cachedTiers.setFetch(weak: self) { (self) in

@@ -19,29 +19,12 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         balanceValue
     }
 
-    var balanceMoney: Single<MoneyValue> {
-        Single.just(.init(cryptoValue: CryptoValue.create(major: "2.0", currency: .ethereum)!))
-    }
-
-    var pendingBalanceMoney: Single<MoneyValue> {
-        Single.just(.init(cryptoValue: CryptoValue.create(major: "2.0", currency: .ethereum)!))
-    }
-
-    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
-        pendingBalanceMoney
-            .asObservable()
-    }
-
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
         .empty()
     }
 
     func memo(for transactionHash: String) -> Single<String?> {
         .just(nil)
-    }
-
-    public var accountType: SingleAccountType {
-        .nonCustodial
     }
 
     var isWaitingOnTransactionValue = Single.just(false)
@@ -65,12 +48,8 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
 
     var balanceValue: Single<CryptoValue> = Single.just(CryptoValue.create(major: "2.0", currency: .ethereum)!)
 
-    var balanceObservable: Observable<CryptoValue> {
-        balance.asObservable()
-    }
-
     var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map { MoneyValue(cryptoValue: $0) }
+        balance.asObservable().moneyValue
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()

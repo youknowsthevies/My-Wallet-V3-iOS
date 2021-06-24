@@ -27,7 +27,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
         Observable
             .combineLatest(
                 fiatCurrencyService.fiatCurrencyObservable,
-                fetchTriggerRelay
+                fetchTriggerRelay.asObservable().startWith(())
             )
             .throttle(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
             .map { $0.0 }

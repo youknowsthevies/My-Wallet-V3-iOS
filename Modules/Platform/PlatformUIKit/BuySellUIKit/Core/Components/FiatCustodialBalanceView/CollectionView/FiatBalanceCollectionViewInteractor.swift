@@ -41,15 +41,17 @@ public final class FiatBalanceCollectionViewInteractor {
 
     let interactorsStateRelay = BehaviorRelay<State>(value: .invalid(.empty))
 
-    private func fiatAccounts() -> Observable<[SingleAccount]> {
-        Observable
-            .zip(
-                tiersService.tiers.asObservable(),
-                coincore.allAccounts.asObservable()
-            ) { (tiers: $0, allAccounts: $1) }
-            .filter { $0.tiers.isTier2Approved }
-            .map { _, allAccounts in
-                allAccounts.accounts.filter { $0 is FiatAccount }
+    private func fiatAccounts() -> Single<[SingleAccount]> {
+        tiersService.tiers
+            .map(\.isTier2Approved)
+            .catchErrorJustReturn(false)
+            .flatMap(weak: self) { (self, isTier2Approved) in
+                guard isTier2Approved else {
+                    return .just([])
+                }
+                return self.coincore.fiatAsset
+                    .accountGroup(filter: .all)
+                    .map(\.accounts)
             }
     }
 
@@ -61,6 +63,7 @@ public final class FiatBalanceCollectionViewInteractor {
             ) { (fiatCurrency: $0, _: $1) }
             .flatMapLatest(weak: self) { (self, data) in
                 self.fiatAccounts()
+                    .asObservable()
                     .map { accounts in
                         accounts
                             .sorted { $0.currencyType.code < $1.currencyType.code }

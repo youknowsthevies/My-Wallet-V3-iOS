@@ -67,25 +67,24 @@ final class FiatCustodialAccount: FiatAccount {
         actions.map { $0.contains(action) }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         guard self.fiatCurrency != fiatCurrency else {
             return balance
                 .map { balance in
                     MoneyValuePair(base: balance, quote: balance)
                 }
-                .asObservable()
         }
-        return exchange.fiatPrice
-            .flatMap(weak: self) { (self, exchangeRate) in
-                self.balance
-                    .map { balance -> MoneyValuePair in
-                        try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
-                    }
-                    .asObservable()
+        return Single
+            .zip(
+                exchange.fiatPrice.take(1).asSingle(),
+                balance
+            )
+            .map { exchangeRate, balance -> MoneyValuePair in
+                try MoneyValuePair(base: balance, exchangeRate: exchangeRate.moneyValue)
             }
     }
 
     func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {
-        balancePair(fiatCurrency: fiatCurrency).take(1).asSingle()
+        balancePair(fiatCurrency: fiatCurrency)
     }
 }

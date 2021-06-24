@@ -5,56 +5,36 @@ public enum SingleAccountType: Hashable {
     case nonCustodial
 
     public enum CustodialAccountType: String, Hashable {
-        case exchange
         case trading
         case savings
-
-        var isTrading: Bool {
-            self == .trading
-        }
-
-        var isSavings: Bool {
-            self == .savings
-        }
-
-        var isExchange: Bool {
-            self == .exchange
-        }
     }
 
     public var isTrading: Bool {
         switch self {
-        case .nonCustodial:
+        case .nonCustodial,
+             .custodial(.savings):
             return false
-        case .custodial(let type):
-            return type.isTrading
-        }
-    }
-
-    public var isExchange: Bool {
-        switch self {
-        case .nonCustodial:
-            return false
-        case .custodial(let type):
-            return type.isExchange
+        case .custodial(.trading):
+            return true
         }
     }
 
     public var isSavings: Bool {
         switch self {
-        case .nonCustodial:
+        case .nonCustodial,
+             .custodial(.trading):
             return false
-        case .custodial(let type):
-            return type.isSavings
+        case .custodial(.savings):
+            return true
         }
     }
 
     public var description: String {
         switch self {
         case .custodial(let type):
-            return "custodial.\(type.rawValue)"
+            return "SingleAccountType.custodial.\(type.rawValue)"
         case .nonCustodial:
-            return "noncustodial"
+            return "SingleAccountType.nonCustodial"
         }
     }
 }

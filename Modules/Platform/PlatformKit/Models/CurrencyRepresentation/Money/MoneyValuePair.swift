@@ -92,6 +92,6 @@ public struct MoneyValuePair: Equatable {
 
 extension MoneyValuePair: CustomDebugStringConvertible {
     public var debugDescription: String {
-        "MoneyValue: base \(base.toDisplayString(includeSymbol: true)), quote \(quote.toDisplayString(includeSymbol: true))"
+        "MoneyValuePair: base \(base.toDisplayString(includeSymbol: true)), quote \(quote.toDisplayString(includeSymbol: true))"
     }
 }

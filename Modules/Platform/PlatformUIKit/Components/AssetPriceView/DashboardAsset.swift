@@ -91,7 +91,7 @@ public struct DashboardAsset {
         public struct Presentation {
 
             /// The presentation model for `AssetPriceView`
-            public struct AssetPrice {
+            public struct AssetPrice: CustomDebugStringConvertible {
 
                 private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
 
@@ -127,6 +127,10 @@ public struct DashboardAsset {
                 let change: NSAttributedString
 
                 let changeAccessibility: Accessibility
+
+                public var debugDescription: String {
+                    price.text + " " + change.string
+                }
 
                 // MARK: - Setup
 

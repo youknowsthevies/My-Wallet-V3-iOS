@@ -67,7 +67,6 @@ final class SettingsRouter: SettingsRouterAPI {
     private let wallet: WalletRecoveryVerifing
     private let repository: DataRepositoryAPI
     private let pitConnectionAPI: PITConnectionStatusProviding
-    private let balanceChangeProviding: BalanceChangeProviding
 
     private let builder: SettingsBuilding
 
@@ -94,8 +93,7 @@ final class SettingsRouter: SettingsRouterAPI {
         currencyRouter: CurrencyRouting = resolve(),
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
-        repository: DataRepositoryAPI = resolve(),
-        balanceChangeProviding: BalanceChangeProviding = resolve()
+        repository: DataRepositoryAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -113,7 +111,6 @@ final class SettingsRouter: SettingsRouterAPI {
         self.pitConnectionAPI = pitConnectionAPI
         self.passwordRepository = passwordRepository
         self.repository = repository
-        self.balanceChangeProviding = balanceChangeProviding
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -142,7 +139,6 @@ final class SettingsRouter: SettingsRouterAPI {
         let interactor = SettingsScreenInteractor(
             pitConnectionAPI: pitConnectionAPI,
             wallet: wallet,
-            balanceChangeProviding: balanceChangeProviding,
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
        )

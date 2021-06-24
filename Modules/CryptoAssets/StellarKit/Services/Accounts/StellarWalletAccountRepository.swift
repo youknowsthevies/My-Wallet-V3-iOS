@@ -12,8 +12,8 @@ public protocol StellarWalletAccountRepositoryAPI {
     func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair>
 }
 
-public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountInitializer {
-    public typealias WalletAccount = StellarWalletAccount
+class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletAccountInitializer {
+    typealias WalletAccount = StellarWalletAccount
 
     private let bridge: StellarWalletBridgeAPI
     private let mnemonicAccessAPI: MnemonicAccessAPI
@@ -25,14 +25,14 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
         self.mnemonicAccessAPI = mnemonicAccessAPI
     }
 
-    public func initializeMetadataMaybe() -> Maybe<WalletAccount> {
+    func initializeMetadataMaybe() -> Maybe<WalletAccount> {
         loadDefaultAccount().ifEmpty(
             switchTo: createAndSaveStellarAccount()
         )
     }
 
     /// The default `StellarWallet`, will be nil if it has not yet been initialized
-    public var defaultAccount: StellarWalletAccount? {
+    var defaultAccount: StellarWalletAccount? {
         accounts().first
     }
 
@@ -40,7 +40,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
         bridge.stellarWallets()
     }
 
-    public func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
+    func loadKeyPair(with secondPassword: String?) -> Single<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonic(with: secondPassword)
             .map { mnemonic in
@@ -51,7 +51,7 @@ public class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, 
             }
     }
 
-    public func loadKeyPair() -> Maybe<StellarKeyPair> {
+    func loadKeyPair() -> Maybe<StellarKeyPair> {
         mnemonicAccessAPI
             .mnemonicPromptingIfNeeded
             .map { mnemonic in

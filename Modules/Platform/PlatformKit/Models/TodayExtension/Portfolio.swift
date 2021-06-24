@@ -2,8 +2,31 @@
 
 public struct Portfolio: Codable {
 
-    private var accounts: [CryptoCurrency: Account] = [:]
+    // MARK: - Types
 
+    struct Account: Codable {
+        let currency: CryptoCurrency
+        let balance: String
+        var cryptoValue: CryptoValue {
+            CryptoValue.create(minor: balance, currency: currency) ?? CryptoValue.zero(currency: currency)
+        }
+    }
+   public struct BalanceChange: Codable {
+        let balance: Decimal
+        public let changePercentage: Double
+        let change: Decimal
+
+        static let zero: BalanceChange = .init(
+            balance: 0.0,
+            changePercentage: 0.0,
+            change: 0.0
+        )
+    }
+
+    // MARK: - Public Properties
+
+    public let balanceChange: BalanceChange
+    let fiatCurrency: FiatCurrency
     public var balanceFiatValue: FiatValue {
         FiatValue.create(
             major: balanceChange.balance,
@@ -11,51 +34,30 @@ public struct Portfolio: Codable {
         )
     }
 
-    public var changeFiatValue: FiatValue {
+   public var changeFiatValue: FiatValue {
         FiatValue.create(
             major: balanceChange.change,
             currency: fiatCurrency
         )
     }
 
-    public subscript(currency: CryptoCurrency) -> Account {
+    subscript(currency: CryptoCurrency) -> Account {
         accounts[currency]!
     }
 
-    public let balanceChange: PortfolioBalanceChange
-    public let fiatCurrency: FiatCurrency
+    // MARK: - Private Properties
 
-    public struct Account: Codable {
-        let currency: CryptoCurrency
-        let balance: String
+    private var accounts: [CryptoCurrency: Account] = [:]
 
-        public init(currency: CryptoCurrency, balance: String) {
-            self.currency = currency
-            self.balance = balance
-        }
-    }
+    // MARK: - Init
 
-    public init(ether: String,
-                pax: String,
-                stellar: String,
-                bitcoin: String,
-                bitcoinCash: String,
-                tether: String,
-                balanceChange: PortfolioBalanceChange,
-                fiatCurrency: FiatCurrency) {
-        accounts[.ethereum] = Account(currency: .ethereum, balance: ether)
-        accounts[.erc20(.pax)] = Account(currency: .erc20(.pax), balance: pax)
-        accounts[.stellar] = Account(currency: .stellar, balance: stellar)
-        accounts[.bitcoin] = Account(currency: .bitcoin, balance: bitcoin)
-        accounts[.bitcoinCash] = Account(currency: .bitcoinCash, balance: bitcoinCash)
-        accounts[.erc20(.tether)] = Account(currency: .erc20(.tether), balance: tether)
+    init(
+        accounts: [CryptoCurrency : Portfolio.Account],
+        balanceChange: BalanceChange,
+        fiatCurrency: FiatCurrency
+    ) {
+        self.accounts = accounts
         self.balanceChange = balanceChange
         self.fiatCurrency = fiatCurrency
-    }
-}
-
-public extension Portfolio.Account {
-    var cryptoValue: CryptoValue {
-        CryptoValue.create(minor: balance, currency: currency) ?? CryptoValue.zero(currency: currency)
     }
 }

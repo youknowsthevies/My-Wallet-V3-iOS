@@ -6,7 +6,7 @@ import PlatformKit
 import RxSwift
 import ToolKit
 
-protocol EthereumAccountDetailsServiceAPI {
+public protocol EthereumAccountDetailsServiceAPI {
 
     /// Streams the default account details.
     func accountDetails() -> Single<EthereumAssetAccountDetails>

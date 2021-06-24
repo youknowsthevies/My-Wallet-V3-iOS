@@ -10,9 +10,7 @@ final class DashboardScreenInteractor {
 
     // MARK: - Services
 
-    let balanceProvider: BalanceProviding
     let historicalProvider: HistoricalFiatPriceProviding
-    let balanceChangeProvider: BalanceChangeProviding
     let reactiveWallet: ReactiveWalletAPI
     let userPropertyInteractor: AnalyticsUserPropertyInteracting
 
@@ -28,23 +26,23 @@ final class DashboardScreenInteractor {
 
     private let disposeBag = DisposeBag()
 
-    init(balanceProvider: BalanceProviding = resolve(),
-         historicalProvider: HistoricalFiatPriceProviding = resolve(),
-         balanceChangeProvider: BalanceChangeProviding = resolve(),
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve(),
-         userPropertyInteractor: AnalyticsUserPropertyInteracting = resolve()) {
+    init(
+        historicalProvider: HistoricalFiatPriceProviding = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        userPropertyInteractor: AnalyticsUserPropertyInteracting = resolve(),
+        coincore: CoincoreAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.historicalProvider = historicalProvider
-        self.balanceProvider = balanceProvider
-        self.balanceChangeProvider = balanceChangeProvider
         self.reactiveWallet = reactiveWallet
         self.enabledCurrenciesService = enabledCurrenciesService
         self.userPropertyInteractor = userPropertyInteractor
-        historicalBalanceInteractors = enabledCurrenciesService.allEnabledCryptoCurrencies.map {
+        historicalBalanceInteractors = coincore.cryptoAssets.map { cryptoAsset in
             HistoricalBalanceCellInteractor(
-                cryptoCurrency: $0,
-                historicalFiatPriceService: historicalProvider[$0],
-                assetBalanceFetcher: balanceProvider[$0.currency]
+                cryptoAsset: cryptoAsset,
+                historicalFiatPriceService: historicalProvider[cryptoAsset.asset],
+                fiatCurrencyService: fiatCurrencyService
             )
         }
 
@@ -60,9 +58,12 @@ final class DashboardScreenInteractor {
             .bind { [weak self] _ in
                 guard let self = self else { return }
 
+                for interactor in self.historicalBalanceInteractors {
+                    interactor.refresh()
+                }
+
                 /// Refresh dashboard interaction layer
                 self.historicalProvider.refresh(window: .day(.oneHour))
-                self.balanceProvider.refresh()
 
                 /// Record user properties once wallet is initialized
                 self.userPropertyInteractor.record()

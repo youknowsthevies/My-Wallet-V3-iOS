@@ -83,7 +83,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
     public let label: String
     public let state: ExchangeAccountState
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         /// Exchange API does not return a balance.
         .just(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency))
     }

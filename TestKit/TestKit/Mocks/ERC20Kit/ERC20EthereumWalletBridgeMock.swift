@@ -37,24 +37,6 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         .just(nil)
     }
 
-    var pendingBalanceMoney: Single<MoneyValue> {
-        .just(CryptoValue.create(major: "1.0", currency: cryptoCurrency)!.moneyValue)
-    }
-
-    var pendingBalanceMoneyObservable: Observable<MoneyValue> {
-        pendingBalanceMoney
-            .asObservable()
-    }
-
-    var balanceMoney: Single<MoneyValue> {
-        balance
-            .moneyValue
-    }
-
-    public var accountType: SingleAccountType {
-        .nonCustodial
-    }
-
     var isWaitingOnTransaction: Single<Bool> {
         isWaitingOnTransactionValue
     }
@@ -71,12 +53,8 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         .just(balanceValue)
     }
 
-    var balanceObservable: Observable<CryptoValue> {
-        balance.asObservable()
-    }
-
     var balanceMoneyObservable: Observable<MoneyValue> {
-        balanceObservable.map { MoneyValue(cryptoValue: $0) }
+        balance.asObservable().moneyValue
     }
 
     let balanceFetchTriggerRelay = PublishRelay<Void>()

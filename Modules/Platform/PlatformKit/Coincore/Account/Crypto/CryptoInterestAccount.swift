@@ -62,7 +62,7 @@ public final class CryptoInterestAccount: CryptoAccount {
         .just(false)
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
@@ -71,7 +71,6 @@ public final class CryptoInterestAccount: CryptoAccount {
             .map { (fiatPrice, balance) in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
-            .asObservable()
     }
 
     public func balancePair(fiatCurrency: FiatCurrency, at date: Date) -> Single<MoneyValuePair> {

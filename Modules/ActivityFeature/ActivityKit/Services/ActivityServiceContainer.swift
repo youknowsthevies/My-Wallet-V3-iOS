@@ -96,6 +96,7 @@ final class ActivityServiceContainer: ActivityServiceContaining {
                     impossible("Unsupported Account Type \(String(reflecting: account))")
                 }
             }
+            .catchErrorJustReturn(.loading)
             .bindAndCatch(to: eventsRelay)
             .disposed(by: disposeBag)
     }()

@@ -35,14 +35,12 @@ final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
 
     init(
         sharedContainerUserDefaults: SharedContainerUserDefaults = SharedContainerUserDefaults.default,
-        balanceProviding: BalanceProviding = resolve(),
-        balanceChangeProviding: BalanceChangeProviding = resolve(),
-        fiatCurrencyProviding: FiatCurrencyServiceAPI = resolve()
+        coincore: CoincoreAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
         self.portfolioProviding = PortfolioProvider(
-            balanceProviding: balanceProviding,
-            balanceChangeProviding: balanceChangeProviding,
-            fiatCurrencyProviding: fiatCurrencyProviding
+            coincore: coincore,
+            fiatCurrencyService: fiatCurrencyService
         )
         self.container = sharedContainerUserDefaults
     }

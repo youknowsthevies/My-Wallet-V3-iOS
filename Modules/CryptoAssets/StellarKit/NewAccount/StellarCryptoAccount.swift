@@ -88,7 +88,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         }
     }
 
-    func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
+    func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
         Single
             .zip(
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
@@ -97,7 +97,6 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
             .map { (fiatPrice, balance) in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
-            .asObservable()
     }
 
     func updateLabel(_ newLabel: String) -> Completable {

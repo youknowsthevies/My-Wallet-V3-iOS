@@ -145,15 +145,6 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
                 accessibilityIdSuffix: ""
             )
             titleRelay.accept(cryptoCurrency.defaultWalletName)
-        case (.custodial(.exchange), .crypto(let cryptoCurrency)):
-            model = .template(
-                with: "ic-exchange-account",
-                templateColor: currency.brandColor,
-                backgroundColor: .white,
-                cornerRadius: .round,
-                accessibilityIdSuffix: ""
-            )
-            titleRelay.accept(cryptoCurrency.defaultTradingWalletName)
         case (.custodial(.trading), .crypto(let cryptoCurrency)):
             model = .template(
                 with: "ic-trading-account",

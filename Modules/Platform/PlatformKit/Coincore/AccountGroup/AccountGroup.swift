@@ -18,13 +18,13 @@ extension AccountGroup {
         return type
     }
 
-    public func fiatBalance(fiatCurrency: FiatCurrency) -> Observable<MoneyValue> {
-        let balances: [Observable<MoneyValue>] = accounts
+    public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
+        let balances: [Single<MoneyValue>] = accounts
             .map { account in
                 account
                     .fiatBalance(fiatCurrency: fiatCurrency)
             }
-        return Observable.combineLatest(balances)
+        return Single.zip(balances)
             .map { balances in
                 try balances.reduce(MoneyValue.zero(currency: fiatCurrency), +)
             }
@@ -42,14 +42,14 @@ extension AccountGroup {
             }
     }
 
-    public func balancePair(fiatCurrency: FiatCurrency) -> Observable<MoneyValuePair> {
-        let balancePairs: [Observable<MoneyValuePair>] = accounts
+    public func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
+        let balancePairs: [Single<MoneyValuePair>] = accounts
             .map { account in
                 account
                     .balancePair(fiatCurrency: fiatCurrency)
                     .catchErrorJustReturn(.zero(baseCurrency: account.currencyType, quoteCurrency: fiatCurrency.currency))
             }
-        return Observable.combineLatest(balancePairs)
+        return Single.zip(balancePairs)
             .map { [currencyType] pairs -> MoneyValuePair in
                 try pairs.reduce(.zero(baseCurrency: currencyType, quoteCurrency: fiatCurrency.currency), +)
             }

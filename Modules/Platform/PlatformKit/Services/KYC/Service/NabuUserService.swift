@@ -39,7 +39,7 @@ final class NabuUserService: NabuUserServiceAPI {
 
     private let cachedUser = CachedValue<NabuUser>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
 
     private let client: KYCClientAPI
     private let siftService: SiftServiceAPI

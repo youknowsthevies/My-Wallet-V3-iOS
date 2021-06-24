@@ -9,6 +9,11 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
 
     public typealias InteractionState = AssetBalanceViewModel.State.Interaction
 
+    enum Source {
+        case account(BlockchainAccount)
+        case asset(CryptoAsset)
+    }
+
     // MARK: - Exposed Properties
 
     public var state: Observable<InteractionState> {
@@ -19,15 +24,32 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
     private let fiatCurrencyService: FiatCurrencyServiceAPI
-
-    let account: SingleAccount
+    private let refreshRelay = BehaviorRelay<Void>(value: ())
+    private let account: Source
 
     // MARK: - Setup
 
+    private func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {
+        switch account {
+        case .account(let account):
+            return account.balancePair(fiatCurrency: fiatCurrency)
+        case .asset(let cryptoAsset):
+            return cryptoAsset.accountGroup(filter: .all)
+                .flatMap { accountGroup in
+                    accountGroup.balancePair(fiatCurrency: fiatCurrency)
+                }
+        }
+    }
+
     private lazy var setup: Void = {
-        fiatCurrencyService.fiatCurrencyObservable
-            .flatMap(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
-                self.account.balancePair(fiatCurrency: fiatCurrency)
+        Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                refreshRelay.asObservable()
+            )
+            .map { $0.0 }
+            .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
+                self.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }
             .map { moneyValuePair -> InteractionState in
                 InteractionState.loaded(
@@ -44,9 +66,23 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
             .disposed(by: disposeBag)
     }()
 
-    public init(account: SingleAccount,
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
-        self.account = account
+    public init(
+        account: BlockchainAccount,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
+        self.account = .account(account)
         self.fiatCurrencyService = fiatCurrencyService
+    }
+
+    public init(
+        cryptoAsset: CryptoAsset,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
+        self.account = .asset(cryptoAsset)
+        self.fiatCurrencyService = fiatCurrencyService
+    }
+
+    public func refresh() {
+        refreshRelay.accept(())
     }
 }

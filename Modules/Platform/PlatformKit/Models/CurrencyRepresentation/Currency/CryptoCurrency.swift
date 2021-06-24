@@ -4,7 +4,7 @@ import DIKit
 import Localization
 
 /// This is used to distinguish between different types of digital assets.
-public enum CryptoCurrency: Currency, Hashable, Codable {
+public enum CryptoCurrency: Currency, Hashable, Codable, CustomDebugStringConvertible {
     case bitcoin
     case ethereum
     case bitcoinCash
@@ -33,6 +33,10 @@ public enum CryptoCurrency: Currency, Hashable, Codable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(code)
+    }
+
+    public var debugDescription: String {
+        "CryptoCurrency.\(code)"
     }
 }
 

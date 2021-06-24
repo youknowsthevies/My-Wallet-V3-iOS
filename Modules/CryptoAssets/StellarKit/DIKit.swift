@@ -22,12 +22,7 @@ extension DependencyContainer {
             StellarWalletOptionsService()
         }
 
-        single { StellarWalletAccountRepository() }
-
-        factory { () -> StellarWalletAccountRepositoryAPI in
-            let service: StellarWalletAccountRepository = DIKit.resolve()
-            return service
-        }
+        single { StellarWalletAccountRepository() as StellarWalletAccountRepositoryAPI }
 
         factory(tag: CryptoCurrency.stellar) { StellarAsset() as CryptoAsset }
 

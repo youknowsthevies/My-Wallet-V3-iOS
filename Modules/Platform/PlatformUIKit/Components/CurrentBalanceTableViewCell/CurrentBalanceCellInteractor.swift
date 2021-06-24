@@ -2,31 +2,32 @@
 
 import DIKit
 import PlatformKit
+import ToolKit
 
 public protocol CurrentBalanceCellInteracting: AnyObject {
-    var assetBalanceViewInteractor: AssetBalanceTypeViewInteracting { get }
+    var assetBalanceViewInteractor: AssetBalanceViewInteracting { get }
     var accountType: SingleAccountType { get }
 }
 
 public final class CurrentBalanceCellInteractor: CurrentBalanceCellInteracting {
 
-    public let assetBalanceViewInteractor: AssetBalanceTypeViewInteracting
-
-    public var accountType: SingleAccountType {
-        assetBalanceViewInteractor.accountType
-    }
+    public let accountType: SingleAccountType
+    public let assetBalanceViewInteractor: AssetBalanceViewInteracting
 
     public init(account: BlockchainAccount) {
-        assetBalanceViewInteractor = AccountBalanceTypeViewInteractor(
+        assetBalanceViewInteractor = AccountBalanceViewInteractor(
             account: account
         )
-    }
-
-    public init(balanceFetching: AssetBalanceFetching,
-                accountType: SingleAccountType) {
-        assetBalanceViewInteractor = AssetBalanceTypeViewInteractor(
-            assetBalanceFetching: balanceFetching,
-            accountType: accountType
-        )
+        switch account {
+        case is CryptoInterestAccount:
+            accountType = .custodial(.savings)
+        case is TradingAccount,
+             is FiatAccount:
+            accountType = .custodial(.trading)
+        case is CryptoNonCustodialAccount:
+            accountType = .nonCustodial
+        default:
+            unimplemented("Unsupported account type: \(String(reflecting: account))")
+        }
     }
 }

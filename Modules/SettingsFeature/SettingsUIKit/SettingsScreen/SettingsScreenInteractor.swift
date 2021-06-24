@@ -55,7 +55,6 @@ final class SettingsScreenInteractor {
         settingsAuthenticating: AppSettingsAuthenticating = resolve(),
         tiersProviding: TierLimitsProviding = resolve(),
         wallet: WalletRecoveryVerifing,
-        balanceChangeProviding: BalanceChangeProviding,
         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
         authenticationCoordinator: AuthenticationCoordinating
     ) {

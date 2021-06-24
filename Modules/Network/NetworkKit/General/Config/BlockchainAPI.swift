@@ -55,19 +55,6 @@ public final class BlockchainAPI: NSObject {
         super.init()
     }
 
-    // MARK: - Temporary Objective-C bridging functions
-
-    // TODO: Remove these once migration is complete
-    @objc public func blockchainDotInfo() -> String {
-        Hosts.blockchainDotInfo.rawValue
-    }
-    @objc public func blockchainDotCom() -> String {
-        Hosts.blockchainDotCom.rawValue
-    }
-    @objc public func etherExplorer() -> String {
-        etherExplorerUrl
-    }
-
     // MARK: - Logging
 
     public var swiftyBeaverAppID: String {

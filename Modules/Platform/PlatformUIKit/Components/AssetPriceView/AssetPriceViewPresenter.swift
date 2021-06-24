@@ -28,7 +28,7 @@ public final class AssetPriceViewPresenter {
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
-        /// Map interaction state into presnetation state
+        /// Map interaction state into presentation state
         /// and bind it to `stateRelay`
         interactor.state
             .map(weak: self) { (self, state) -> PresentationState in
@@ -36,6 +36,7 @@ public final class AssetPriceViewPresenter {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
+
     }()
 
     private let descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors

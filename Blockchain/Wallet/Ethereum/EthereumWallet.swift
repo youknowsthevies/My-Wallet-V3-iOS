@@ -145,10 +145,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    var accountType: SingleAccountType {
-        .nonCustodial
-    }
-
     var history: Single<Void> {
         fetchHistory(fromCache: false)
     }
