@@ -108,7 +108,9 @@ extension PinRouter {
             self?.cleanup()
             self?.flow.logoutRouting?()
         }
-
+        let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
+            self?.effectHandling(effect)
+        }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            forwardRouting: forwardRouting,
@@ -143,7 +145,9 @@ extension PinRouter {
             self?.cleanup()
             self?.flow.logoutRouting?()
         }
-
+        let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
+            self?.effectHandling(effect)
+        }
         let presenter = PinScreenPresenter(useCase: .authenticateBeforeChanging,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
@@ -167,6 +171,9 @@ extension PinRouter {
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] input in
             self?.create(pin: input.pin!)
         }
+        let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
+            self?.effectHandling(effect)
+        }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,
                                            backwardRouting: backwardRouting,
@@ -184,6 +191,9 @@ extension PinRouter {
         }
         let forwardRouting: PinRouting.RoutingType.Forward = { [weak self] _ in
             self?.finish()
+        }
+        let effectHandling: PinRouting.RoutingType.Effect = { [weak self] effect in
+            self?.effectHandling(effect)
         }
         let presenter = PinScreenPresenter(useCase: useCase,
                                            flow: flow,

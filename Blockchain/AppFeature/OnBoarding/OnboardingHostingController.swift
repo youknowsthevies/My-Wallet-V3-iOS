@@ -103,8 +103,8 @@ final class OnboardingHostingController: UIViewController {
             .scope(state: \.passwordScreen, action: Onboarding.Action.passwordScreen)
             .ifLet(then: { [weak self] _ in
                 guard let self = self else { return }
-                let walletFetcher: (String) -> Void = { password in
-                    self.viewStore.send(.passwordScreen(.authenticate(password)))
+                let walletFetcher: (String) -> Void = { [weak self] password in
+                    self?.viewStore.send(.passwordScreen(.authenticate(password)))
                 }
                 let forgetWalletRouting: () -> Void = { [weak self] in
                     self?.viewStore.send(.passwordScreen(.forgetWallet))
@@ -270,7 +270,7 @@ extension OnboardingHostingController {
             preferredStyle: .alert
         )
         alertController.addAction(
-            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { _ in
+            UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { [weak self] _ in
 
                 let forgetWalletAlert = UIAlertController(
                     title: LocalizationConstants.Errors.warning,
@@ -287,7 +287,7 @@ extension OnboardingHostingController {
                         self?.viewStore.send(.forgetWallet)
                     }
                 )
-                self.present(forgetWalletAlert, animated: true)
+                self?.present(forgetWalletAlert, animated: true)
             }
         )
         alertController.addAction(

@@ -42,7 +42,8 @@ protocol LoggedInBridge: DrawerRouting,
                          TabControllerManagerProvider,
                          BackupFlowStarterAPI,
                          SettingsStarterAPI,
-                         LoggedInReloadAPI { }
+                         LoggedInReloadAPI,
+                         AuthenticationCoordinating { }
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
@@ -78,6 +79,8 @@ protocol LoggedInDependencyBridgeAPI: AnyObject {
     func resolveCurrencyRoutingAndTabSwapping() -> CurrencyRouting & TabSwapping
     /// Provides `WalletOperationsRouting` methods
     func resolveWalletOperationsRouting() -> WalletOperationsRouting
+    /// Provides `AuthenticationCoordinating` methods
+    func resolveAuthenticationCoordinating() -> AuthenticationCoordinating
 }
 
 final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
@@ -140,6 +143,10 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     func resolveWalletOperationsRouting() -> WalletOperationsRouting {
         resolve() as WalletOperationsRouting
+    }
+
+    func resolveAuthenticationCoordinating() -> AuthenticationCoordinating {
+        resolve() as AuthenticationCoordinating
     }
 
     /// Resolves the underlying bridge with a type

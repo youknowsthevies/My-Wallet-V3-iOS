@@ -41,6 +41,7 @@ public enum LoggedIn {
     }
 
     public enum WalletAction: Equatable {
+        case authenticateForBiometrics(password: String)
         case accountInfoAndExchangeRates
         case accountInfoAndExchangeRatesHandled
         case handleWalletBackup
@@ -87,6 +88,8 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
             handlePostAuthenticationLogic(environment: environment)
         )
     case .logout:
+        return .cancel(id: LoggedInIdentifier())
+    case .wallet(.authenticateForBiometrics):
         return .cancel(id: LoggedInIdentifier())
     case .wallet(.accountInfoAndExchangeRates):
         environment.loadingViewPresenter.hide()

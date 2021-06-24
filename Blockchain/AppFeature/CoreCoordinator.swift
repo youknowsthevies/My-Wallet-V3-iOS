@@ -123,6 +123,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.walletManager.wallet.fetch(with: password)
         return Effect(value: .authenticate)
     case .authenticate:
+        environment.loadingViewPresenter.showCircular()
         let appSettings = environment.blockchainSettings
         return .merge(
             environment.walletManager.didDecryptWallet
@@ -219,6 +220,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             Effect(value: CoreAppAction.onboarding(.walletUpgrade(.begin)))
         )
     case .proceedToLoggedIn:
+        environment.loadingViewPresenter.hide()
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
         return .merge(
@@ -275,6 +277,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(value: .onboarding(.passwordScreen(.start)))
     case .onboarding:
         return .none
+    case .loggedIn(.wallet(.authenticateForBiometrics(let password))):
+        return Effect(value: .fetchWallet(password))
     case .loggedIn:
         return .none
     case .none:

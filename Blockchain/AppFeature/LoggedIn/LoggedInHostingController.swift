@@ -8,6 +8,7 @@ import InterestUIKit
 import PlatformKit
 import PlatformUIKit
 import SettingsUIKit
+import ToolKit
 
 /// Acts as a container for the Home screen
 final class LoggedInHostingController: UIViewController, LoggedInBridge {
@@ -30,6 +31,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     var buyRouter: PlatformUIKit.RouterAPI!
     var sellRouter: PlatformUIKit.SellRouter!
     var backupRouter: DashboardUIKit.BackupRouterAPI?
+    var pinRouter: PinRouter?
 
     init(store: Store<LoggedIn.State, LoggedIn.Action>) {
         self.store = store
@@ -135,6 +137,40 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     private func showAlert(with content: AlertViewContent) {
         alertViewPresenter.notify(content: content, in: self)
+    }
+
+    // MARK: AuthenticationCoordinating
+
+    func enableBiometrics() {
+        guard let slidingViewController = slidingViewController else {
+            return
+        }
+        let logout = { [weak self] () -> Void in
+            self?.viewStore.send(.logout)
+        }
+        let boxedParent = UnretainedContentBox<UIViewController>(slidingViewController.topMostViewController)
+        let flow = PinRouting.Flow.enableBiometrics(parent: boxedParent, logoutRouting: logout)
+        pinRouter = PinRouter(flow: flow) { [weak self] input in
+            guard let password = input.password else { return }
+            self?.viewStore.send(.wallet(.authenticateForBiometrics(password: password)))
+            self?.pinRouter = nil
+        }
+        pinRouter?.execute()
+    }
+
+    func changePin() {
+        guard let slidingViewController = slidingViewController else {
+            return
+        }
+        let logout = { [weak self] () -> Void in
+            self?.viewStore.send(.logout)
+        }
+        let boxedParent = UnretainedContentBox<UIViewController>(slidingViewController.topMostViewController)
+        let flow = PinRouting.Flow.change(parent: boxedParent, logoutRouting: logout)
+        pinRouter = PinRouter(flow: flow) { [weak self] _ in
+            self?.pinRouter = nil
+        }
+        pinRouter?.execute()
     }
 }
 

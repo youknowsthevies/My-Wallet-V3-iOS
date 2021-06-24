@@ -119,8 +119,12 @@ extension DependencyContainer {
         single { AuthenticationCoordinator() }
 
         factory { () -> AuthenticationCoordinating in
-            let coordinator: AuthenticationCoordinator = DIKit.resolve()
-            return coordinator as AuthenticationCoordinating
+            guard useNewOnboarding() else {
+                let coordinator: AuthenticationCoordinator = DIKit.resolve()
+                return coordinator as AuthenticationCoordinating
+            }
+            let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
+            return bridge.resolveAuthenticationCoordinating() as AuthenticationCoordinating
         }
 
         // MARK: - Dashboard

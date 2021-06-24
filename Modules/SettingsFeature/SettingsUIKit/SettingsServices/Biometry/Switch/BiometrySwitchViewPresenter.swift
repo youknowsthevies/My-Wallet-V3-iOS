@@ -34,7 +34,11 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
                                                   authenticationCoordinator: authenticationCoordinator,
                                                   settingsAuthenticating: settingsAuthenticating)
 
-        Observable.combineLatest(viewModel.isSwitchedOnRelay,
+        let isSwitchedOn = viewModel.isSwitchedOnRelay
+            .asObservable()
+            .share(replay: 1, scope: .whileConnected)
+
+        Observable.combineLatest(isSwitchedOn,
                                  Observable.just(interactor.configurationStatus),
                                  Observable.just(interactor.supportedBiometryType))
             .flatMap(weak: self) { (self, values) -> Observable<Bool> in
@@ -43,13 +47,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
 
-        viewModel
-            .isSwitchedOnRelay
-            .bindAndCatch(to: interactor.switchTriggerRelay)
-            .disposed(by: disposeBag)
-
-        viewModel
-            .isSwitchedOnRelay
+        isSwitchedOn
             .bind { analyticsRecording.record(event: AnalyticsEvent.settingsBiometryAuthSwitch(value: $0)) }
             .disposed(by: disposeBag)
 
