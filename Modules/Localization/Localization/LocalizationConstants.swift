@@ -1006,7 +1006,7 @@ public enum LocalizationConstants {
             }
             public struct Transfer {
                 public static let title = NSLocalizedString("Send", comment: "Send")
-                public static let description = NSLocalizedString("Transfer Between Your %@ Wallets", comment: "Transfer Between Your %@ Wallets")
+                public static let description = NSLocalizedString("Transfer %@ to Any Wallet", comment: "Transfer %@ to Any Wallet")
             }
             public struct Interest {
                 public static let title = NSLocalizedString("Interest Summary", comment: "Interest Summary")
