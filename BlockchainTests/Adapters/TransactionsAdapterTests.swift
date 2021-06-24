@@ -28,14 +28,17 @@ final class TransactionsAdapterTests: XCTestCase {
 
     func test_routesTo_buyFlow_for_onboarding() throws {
         // WHEN: The adapter is asked to present the buy flow
-        let _: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: UIViewController())
+        let presenter = UIViewController()
+        let _: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: presenter)
         // THEN: It delegates to the Transaction's module router to do that
-        XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentBuyFlow.count, 1)
+        XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.count, 1)
+        XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.first?.presenter, presenter)
+        XCTAssertEqual(mockTransactionsRouter.recordedInvocations.presentTransactionFlow.first?.action, .buy(nil))
     }
 
     func test_converts_abandoned_result_for_onboarding() throws {
         // GIVEN: The flow completes with the user having abandoned it
-        mockTransactionsRouter.stubbedResults.presentBuyFlow = .just(.abandoned)
+        mockTransactionsRouter.stubbedResults.presentTransactionFlow = .just(.abandoned)
         // WHEN: The adapter is asked to present the buy flow
         let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: UIViewController())
         // THEN: The returned publisher completes with the corresponding result
@@ -52,7 +55,7 @@ final class TransactionsAdapterTests: XCTestCase {
 
     func test_converts_completed_result_for_onboarding() throws {
         // GIVEN: The buy flow completes with the user having abandoned it
-        mockTransactionsRouter.stubbedResults.presentBuyFlow = .just(.completed)
+        mockTransactionsRouter.stubbedResults.presentTransactionFlow = .just(.completed)
         // WHEN: The adapter is asked to present the buy flow
         let publisher: AnyPublisher<OnboardingResult, Never> = adapter.presentBuyFlow(from: UIViewController())
         // THEN: The returned publisher completes with the corresponding result
@@ -71,18 +74,18 @@ final class TransactionsAdapterTests: XCTestCase {
 final class MockTransactionsRouter: TransactionUIKit.TransactionsRouterAPI {
 
     struct RecordedInvocations {
-        var presentBuyFlow: [UIViewController] = []
+        var presentTransactionFlow: [(action: TransactionFlowAction, presenter: UIViewController)] = []
     }
 
     struct StubbedResults {
-        var presentBuyFlow: AnyPublisher<TransactionFlowResult, Never> = .just(.abandoned)
+        var presentTransactionFlow: AnyPublisher<TransactionFlowResult, Never> = .just(.abandoned)
     }
 
     private(set) var recordedInvocations = RecordedInvocations()
     var stubbedResults = StubbedResults()
 
-    func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
-        recordedInvocations.presentBuyFlow.append(presenter)
-        return stubbedResults.presentBuyFlow
+    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+        recordedInvocations.presentTransactionFlow.append((action, presenter))
+        return stubbedResults.presentTransactionFlow
     }
 }

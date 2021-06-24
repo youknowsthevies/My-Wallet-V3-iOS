@@ -534,8 +534,16 @@ extension DependencyContainer {
 
         // MARK: Transactions Module
 
+        factory { () -> TransactionsAdapterAPI in
+            TransactionsAdapter()
+        }
+
         factory { () -> PlatformUIKit.KYCRouting  in
             KYCAdapter()
+        }
+
+        factory { () -> TransactionUIKit.KYCSDDServiceAPI in
+            TransactionsKYCAdapter()
         }
     }
 }

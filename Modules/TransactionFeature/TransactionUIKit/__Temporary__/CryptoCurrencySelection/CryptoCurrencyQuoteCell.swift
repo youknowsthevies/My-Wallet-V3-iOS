@@ -3,6 +3,7 @@
 import ComposableArchitecture
 import PlatformUIKit // replace me with MoneyUIKit when available
 import SwiftUI
+import TransactionKit
 import UIComponentsKit
 
 enum CryptoCurrencyQuoteAction: Equatable {

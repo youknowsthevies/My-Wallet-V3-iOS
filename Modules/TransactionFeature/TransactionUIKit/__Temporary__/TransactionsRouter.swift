@@ -7,18 +7,115 @@ import PlatformKit
 import PlatformUIKit
 import SwiftUI
 import ToolKit
+import TransactionKit
 import UIComponentsKit
 
-public enum TransactionFlowResult {
+/// Represents all types of transactions the user can perform
+public enum TransactionFlowAction: Equatable {
+
+    /// Performs a buy. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case buy(CryptoCurrency?)
+}
+
+/// Represents the possible outcomes of going through the transaction flow
+public enum TransactionFlowResult: Equatable {
     case abandoned
     case completed
 }
 
+/// A protocol defining the API for the app's entry point to any `Transaction Flow`.
+/// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow. Non-recoverable errors should force the user to abandon the flow.
 public protocol TransactionsRouterAPI {
-    func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never>
+    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never>
 }
 
-public final class TransactionsRouter: TransactionsRouterAPI {
+public protocol KYCSDDServiceAPI {
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never>
+    func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never>
+}
+
+internal final class TransactionsRouter: TransactionsRouterAPI {
+
+    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let legacyBuyPresenter: LegacyBuyFlowPresenter
+
+    init(
+        featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+        legacyBuyPresenter: LegacyBuyFlowPresenter = .init()
+    ) {
+        self.featureFlagsService = featureFlagsService
+        self.legacyBuyPresenter = legacyBuyPresenter
+    }
+
+    func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+        switch action {
+        case .buy(let cryptoCurrency):
+            if featureFlagsService.isEnabled(.useTransactionsFlowToBuyCrypto) {
+                return presentTransactionFlow(toBuy: cryptoCurrency, from: presenter)
+            } else {
+                return presentLegacyTransactionFlow(toBuy: cryptoCurrency, from: presenter)
+            }
+        }
+    }
+}
+
+// MARK: - Buy
+
+extension TransactionsRouter {
+
+    struct PlaceholderBuyView: View {
+        let closeAction: () -> Void
+
+        var body: some View {
+            VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
+                Text("Buy Flow")
+                    .textStyle(.title)
+                SecondaryButton(title: "Close", action: closeAction)
+            }
+            .padding()
+        }
+    }
+
+    private func presentTransactionFlow(
+        toBuy cryptoCurrency: CryptoCurrency?,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        // TODO: IOS-4879 replace dummy implementation with new buy flow
+        let publisher = PassthroughSubject<TransactionFlowResult, Never>()
+        let dummyView = PlaceholderBuyView(closeAction: {
+            presenter.dismiss(animated: true) {
+                publisher.send(.abandoned)
+                publisher.send(completion: .finished)
+            }
+        })
+        presenter.present(dummyView)
+        return publisher.eraseToAnyPublisher()
+    }
+
+    private func presentLegacyTransactionFlow(
+        toBuy cryptoCurrency: CryptoCurrency?,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
+        // NOTE: right now the user locale is used to determine the fiat currency to use here but eventually we'll ask the user to provide that like we do for simple buy (IOS-4819)
+        let fiatCurrency: FiatCurrency = .locale
+
+        guard let cryptoCurrency = cryptoCurrency else {
+            return legacyBuyPresenter.presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+                from: presenter,
+                using: fiatCurrency
+            )
+        }
+        return legacyBuyPresenter.presentBuyScreen(
+            from: presenter,
+            targetCurrency: cryptoCurrency,
+            sourceCurrency: fiatCurrency
+        )
+    }
+}
+
+// MARK: - Legacy Buy Implementation
+
+class LegacyBuyFlowPresenter {
 
     private enum CrytoSelectionResult {
         case abandoned
@@ -26,21 +123,24 @@ public final class TransactionsRouter: TransactionsRouterAPI {
     }
 
     private let cryptoCurrenciesService: CryptoCurrenciesServiceAPI
-    private let kycService: KYCTiersServiceAPI
+    private let kycService: KYCSDDServiceAPI
 
     private var buyRouter: PlatformUIKit.Router! // reference stored otherwise the app crashes for some reason 😕
 
-    public init(
+    init(
         cryptoCurrenciesService: CryptoCurrenciesServiceAPI = resolve(),
-        kycService: KYCTiersServiceAPI = resolve()
+        kycService: KYCSDDServiceAPI = resolve()
     ) {
         self.cryptoCurrenciesService = cryptoCurrenciesService
         self.kycService = kycService
     }
 
-    public func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
+    func presentBuyFlowWithTargetCurrencySelectionIfNecessary(
+        from presenter: UIViewController,
+        using fiatCurrency: FiatCurrency
+    ) -> AnyPublisher<TransactionFlowResult, Never> {
         // Step 1. check SDD eligibility to understand which flow to show next
-        checkSDDElibility()
+        kycService.checkSimplifiedDueDiligenceEligibility()
             .receive(on: DispatchQueue.main)
             .flatMap { [weak self] userIsSDDEligible -> AnyPublisher<TransactionFlowResult, Never> in
                 guard let self = self else {
@@ -50,8 +150,6 @@ public final class TransactionsRouter: TransactionsRouterAPI {
                     // Step 2 (non-SDD eligible). Step Present present simple buy flow
                     return self.presentSimpleBuyScreen(from: presenter)
                 }
-                // NOTE: right now the user locale is used to determine the fiat currency to use here but eventually we'll ask the user to provide that like we do for simple buy (IOS-4819)
-                let fiatCurrency: FiatCurrency = .locale
                 // Step 2a. present currency selection screen
                 return self.presentCryptoCurrencySelectionScreen(from: presenter, fiatCurrency: fiatCurrency)
                     .flatMap { [weak self] result -> AnyPublisher<TransactionFlowResult, Never> in
@@ -70,13 +168,6 @@ public final class TransactionsRouter: TransactionsRouterAPI {
                     }
                     .eraseToAnyPublisher()
             }
-            .eraseToAnyPublisher()
-    }
-
-    private func checkSDDElibility() -> AnyPublisher<Bool, Never> {
-        kycService.checkSimplifiedDueDiligenceEligibility()
-            .asPublisher()
-            .replaceError(with: false)
             .eraseToAnyPublisher()
     }
 
@@ -123,7 +214,7 @@ public final class TransactionsRouter: TransactionsRouterAPI {
         )
     }
 
-    private func presentBuyScreen(
+    func presentBuyScreen(
         from presenter: UIViewController,
         targetCurrency: CryptoCurrency,
         sourceCurrency: FiatCurrency,

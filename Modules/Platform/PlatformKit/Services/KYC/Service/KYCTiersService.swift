@@ -13,11 +13,11 @@ public protocol KYCTiersServiceAPI: AnyObject {
     /// Fetches the tiers from remote
     func fetchTiers() -> Single<KYC.UserTiers>
 
-    /// Fetches Simplified Due Diligence Eligibility Status
-    func checkSimplifiedDueDiligenceEligibility() -> Single<Bool>
-
     /// Fetches the Simplified Due Diligence Eligibility Status returning the whole response
     func simplifiedDueDiligenceEligibility() -> Single<SimplifiedDueDiligenceResponse>
+
+    /// Fetches Simplified Due Diligence Eligibility Status
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never>
 
     /// Fetches the Simplified Due Diligence Verification Status. It pools the API until a valid result is available. If the check fails, it returns `false`.
     func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never>
@@ -81,9 +81,12 @@ final class KYCTiersService: KYCTiersServiceAPI {
             .asSingle()
     }
 
-    func checkSimplifiedDueDiligenceEligibility() -> Single<Bool> {
+    func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
         simplifiedDueDiligenceEligibility()
+            .asPublisher()
             .map(\.eligible)
+            .replaceError(with: false)
+            .eraseToAnyPublisher()
     }
 
     func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never> {

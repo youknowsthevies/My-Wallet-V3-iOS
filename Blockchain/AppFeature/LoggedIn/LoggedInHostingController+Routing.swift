@@ -10,6 +10,7 @@ import ToolKit
 // Provides necessary methods for several protocols and tab swapping
 // most, if not all, is copied over from `AppCoordinator`
 extension LoggedInHostingController {
+
     func handleAirdrops() {
         airdropRouter.presentAirdropCenterScreen()
     }
@@ -123,11 +124,10 @@ extension LoggedInHostingController {
 
     /// Starts Buy Crypto flow.
     func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
-        let builder = PlatformUIKit.Builder(
-            stateService: PlatformUIKit.StateService()
-        )
-        buyRouter = PlatformUIKit.Router(builder: builder, currency: currency)
-        buyRouter.start()
+        let presenter = topMostViewController ?? self
+        transactionsAdapter.presentTransactionFlow(to: .buy(currency), from: presenter) { result in
+            Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
+        }
     }
 
     /// Starts Sell Crypto flow
@@ -145,17 +145,7 @@ extension LoggedInHostingController {
     }
 
     func startSimpleBuyAtLogin() {
-        let stateService = PlatformUIKit.StateService()
-        guard !stateService.cache.value[.hasShownIntroScreen] else {
-            return
-        }
-
-        let builder = PlatformUIKit.Builder(
-            stateService: stateService
-        )
-
-        buyRouter = PlatformUIKit.Router(builder: builder)
-        buyRouter.start()
+        handleBuyCrypto()
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {

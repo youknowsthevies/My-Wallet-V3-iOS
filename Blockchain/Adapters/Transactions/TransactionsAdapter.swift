@@ -2,28 +2,64 @@
 
 import Combine
 import DIKit
-import OnboardingUIKit
+import PlatformKit // TODO: replace with MoneyKit when available
 import TransactionUIKit
 
-final class TransactionsAdapter {
+/// Represents all types of transactions the user can perform.
+enum TransactionType: Equatable {
 
-    let router: TransactionUIKit.TransactionsRouterAPI
+    /// Performs a buy. If `CrytoCurrency` is `nil`, the users will be presented with a crypto currency selector.
+    case buy(CryptoCurrency?)
+}
 
-    init(router: TransactionUIKit.TransactionsRouterAPI = resolve()) {
-        self.router = router
-    }
+/// Represents the possible outcomes of going through the transaction flow.
+enum TransactionResult: Equatable {
+    case abandoned
+    case completed
+}
 
-    func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
-        router.presentBuyFlow(from: presenter)
+/// A protocol defining the API for the app's entry point to any `Transaction Flow`. The app should only use this interface to let users perform any kind of transaction.
+/// NOTE: Presenting a Transaction Flow can never fail because it's expected for any error to be handled within the flow. Non-recoverable errors should force the user to abandon the flow.
+protocol TransactionsAdapterAPI {
+
+    /// Presents a Transactions Flow for the passed-in type of transaction to perform using the `presenter` as a starting point.
+    /// - Parameters:
+    ///   - transactionToPerform: The desireed type of transaction to be performed.
+    ///   - presenter: The `ViewController` used to present the Transaction Flow.
+    ///   - completion: A closure called when the user has completed or abandoned the Transaction Flow.
+    func presentTransactionFlow(
+        to transactionToPerform: TransactionType,
+        from presenter: UIViewController,
+        completion: @escaping (TransactionResult) -> Void
+    )
+
+    /// Presents a Transactions Flow for the passed-in type of transaction to perform using the `presenter` as a starting point.
+    /// - Parameters:
+    ///   - transactionToPerform: The desireed type of transaction to be performed.
+    ///   - presenter: The `ViewController` used to present the Transaction Flow.
+    /// - Returns: A `Combine.Publisher` that publishes a `TransactionResult` once and never fails.
+    func presentTransactionFlow(
+        to transactionToPerform: TransactionType,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionResult, Never>
+}
+
+// MARK: - Interface Implementation
+
+extension TransactionType {
+
+    fileprivate var transactionFlowActionValue: TransactionFlowAction {
+        switch self {
+        case .buy(let cryptoCurrency):
+            return .buy(cryptoCurrency)
+        }
     }
 }
 
-// MARK: - OnboardingUIKit.BuyCryptoRouterAPI
+extension TransactionResult {
 
-extension OnboardingResult {
-
-    init(_ transactionResult: TransactionFlowResult) {
-        switch transactionResult {
+    fileprivate init(_ transactionFlowResult: TransactionFlowResult) {
+        switch transactionFlowResult {
         case .abandoned:
             self = .abandoned
         case .completed:
@@ -32,11 +68,31 @@ extension OnboardingResult {
     }
 }
 
-extension TransactionsAdapter: OnboardingUIKit.BuyCryptoRouterAPI {
+final class TransactionsAdapter: TransactionsAdapterAPI {
 
-    func presentBuyFlow(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
-        presentBuyFlow(from: presenter)
-            .map(OnboardingResult.init)
+    private let router: TransactionUIKit.TransactionsRouterAPI
+    private var cancellables = Set<AnyCancellable>()
+
+    init(router: TransactionUIKit.TransactionsRouterAPI = resolve()) {
+        self.router = router
+    }
+
+    func presentTransactionFlow(
+        to transactionToPerform: TransactionType,
+        from presenter: UIViewController,
+        completion: @escaping (TransactionResult) -> Void
+    ) {
+        presentTransactionFlow(to: transactionToPerform, from: presenter)
+            .sink(receiveValue: completion)
+            .store(in: &cancellables)
+    }
+
+    func presentTransactionFlow(
+        to transactionToPerform: TransactionType,
+        from presenter: UIViewController
+    ) -> AnyPublisher<TransactionResult, Never> {
+        router.presentTransactionFlow(to: transactionToPerform.transactionFlowActionValue, from: presenter)
+            .map(TransactionResult.init)
             .eraseToAnyPublisher()
     }
 }

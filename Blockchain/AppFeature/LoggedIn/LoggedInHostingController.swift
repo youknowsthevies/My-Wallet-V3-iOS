@@ -12,6 +12,7 @@ import ToolKit
 
 /// Acts as a container for the Home screen
 final class LoggedInHostingController: UIViewController, LoggedInBridge {
+
     let store: Store<LoggedIn.State, LoggedIn.Action>
     let viewStore: ViewStore<LoggedIn.State, LoggedIn.Action>
     private var cancellables: Set<AnyCancellable> = []
@@ -32,6 +33,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     var sellRouter: PlatformUIKit.SellRouter!
     var backupRouter: DashboardUIKit.BackupRouterAPI?
     var pinRouter: PinRouter?
+
+    @LazyInject var transactionsAdapter: TransactionsAdapterAPI
 
     init(store: Store<LoggedIn.State, LoggedIn.Action>) {
         self.store = store

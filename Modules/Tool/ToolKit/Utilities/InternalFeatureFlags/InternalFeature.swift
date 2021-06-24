@@ -30,6 +30,9 @@ public enum InternalFeature: String, CaseIterable {
 
     /// Shows Email Verification, if needed, when a user tries to make a purchase
     case showEmailVerificationInBuyFlow
+
+    /// Uses the Transactions Flow implementation of Buy when enabled
+    case useTransactionsFlowToBuyCrypto
 }
 
 extension InternalFeature {

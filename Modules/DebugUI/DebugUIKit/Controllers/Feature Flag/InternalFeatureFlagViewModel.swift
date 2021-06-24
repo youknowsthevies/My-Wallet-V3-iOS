@@ -28,6 +28,8 @@ struct InternalFeatureItem: Equatable {
             return "Show Email Verification in Onboarding Flow"
         case .showEmailVerificationInBuyFlow:
             return "Show Email Verification in Buy Flow"
+        case .useTransactionsFlowToBuyCrypto:
+            return "Uses Transactions Flow to Buy Crypto"
         }
     }
 }

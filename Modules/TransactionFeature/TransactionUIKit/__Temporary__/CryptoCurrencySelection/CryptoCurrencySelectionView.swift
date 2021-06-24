@@ -5,6 +5,7 @@ import ComposableArchitecture
 import PlatformKit // replace with MoneyKit when available
 import SwiftUI
 import ToolKit
+import TransactionKit
 import UIComponentsKit
 
 struct CryptoCurrencySelectionState: Equatable {

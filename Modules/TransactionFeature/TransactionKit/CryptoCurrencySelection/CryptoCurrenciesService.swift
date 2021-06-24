@@ -61,7 +61,7 @@ public protocol CryptoCurrenciesServiceAPI {
     func fetchPurchasableCryptoCurrencies(using fiatCurrency: FiatCurrency) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError>
 }
 
-public final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
+internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
 
     // MARK: - Private Properties
 
@@ -70,14 +70,14 @@ public final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
 
     // MARK: - Init
 
-    public init(pairsService: SupportedPairsServiceAPI, priceService: PriceServiceAPI) {
+    init(pairsService: SupportedPairsServiceAPI, priceService: PriceServiceAPI) {
         self.pairsService = pairsService
         self.priceService = priceService
     }
 
     // MARK: - CryptoCurrenciesServiceAPI
 
-    public func fetchPurchasableCryptoCurrencies(
+    func fetchPurchasableCryptoCurrencies(
         using fiatCurrency: FiatCurrency
     ) -> AnyPublisher<[CryptoCurrencyQuote], CryptoCurrenciesServiceError> {
         // Step 1: Fetch all Crypto Currencies that can be purchased using the passed-in Fiat Currency

@@ -1435,6 +1435,8 @@ targets:
       path: TestKit/TestKit/Mocks/PlatformKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/TransactionKit
     templateAttributes:
       featureName: TransactionFeature
     templates:
@@ -1466,6 +1468,8 @@ targets:
     - target: TransactionUIKit
     sources:
     - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
+    - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/NetworkKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/PlatformKit
@@ -1474,7 +1478,9 @@ targets:
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/ToolKit
     - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/AnalyticsKit
+      path: TestKit/TestKit/Mocks/TransactionKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/TransactionUIKit
     templateAttributes:
       featureName: TransactionFeature
     templates:

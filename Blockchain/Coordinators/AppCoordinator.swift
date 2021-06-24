@@ -48,6 +48,7 @@ import WalletPayloadKit
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
     @LazyInject private var recorder: AnalyticsEventRecording
     @LazyInject private var secureChannelRouter: SecureChannelRouting
+    @LazyInject private var transactionsAdapter: TransactionsAdapterAPI
 
     @Inject var airdropRouter: AirdropRouterAPI
     private var settingsRouterAPI: SettingsRouterAPI?
@@ -321,7 +322,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             let lockboxViewController = LockboxViewController.makeFromStoryboard()
             lockboxViewController.modalPresentationStyle = .fullScreen
             lockboxViewController.modalTransitionStyle = .coverVertical
-            UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(lockboxViewController, animated: true)
+            topMostViewController.present(lockboxViewController, animated: true)
         }
     }
 
@@ -381,7 +382,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     private func handleAccountsAndAddresses() {
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
+        topMostViewController.present(
             createAccountsAndAddressesViewController(),
             animated: true
         )
@@ -422,7 +423,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         alert.addAction(
             UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
         )
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
+        topMostViewController.present(
             alert,
             animated: true
         )
@@ -440,7 +441,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             }
         )
         alert.addAction(UIAlertAction(title: LocalizationConstants.cancel, style: .cancel))
-        UIApplication.shared.keyWindow?.rootViewController?.topMostViewController?.present(
+        topMostViewController.present(
             alert,
             animated: true
         )
@@ -454,11 +455,9 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
 
     /// Starts Buy Crypto flow.
     func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
-        let builder = PlatformUIKit.Builder(
-            stateService: PlatformUIKit.StateService()
-        )
-        buyRouter = PlatformUIKit.Router(builder: builder, currency: currency)
-        buyRouter.start()
+        transactionsAdapter.presentTransactionFlow(to: .buy(currency), from: topMostViewController) { result in
+            Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
+        }
     }
 
     /// Starts Sell Crypto flow
@@ -476,17 +475,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     func startSimpleBuyAtLogin() {
-        let stateService = PlatformUIKit.StateService()
-        guard !stateService.cache.value[.hasShownIntroScreen] else {
-            return
-        }
-
-        let builder = PlatformUIKit.Builder(
-            stateService: stateService
-        )
-
-        buyRouter = PlatformUIKit.Router(builder: builder)
-        buyRouter.start()
+        handleBuyCrypto()
     }
 
     func showFundTrasferDetails(fiatCurrency: FiatCurrency, isOriginDeposit: Bool) {
@@ -501,6 +490,17 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             for: fiatCurrency,
             isOriginDeposit: isOriginDeposit
         )
+    }
+}
+
+extension AppCoordinator {
+
+    var topMostViewController: UIViewController {
+        let keyWindow = UIApplication.shared.windows.first(where: \.isKeyWindow)
+        guard let viewController = keyWindow?.topMostViewController else {
+            fatalError("The app's window is not properly configured: cannot find top-most UIViewController.")
+        }
+        return viewController
     }
 }
 

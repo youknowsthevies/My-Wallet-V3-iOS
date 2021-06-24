@@ -74,5 +74,12 @@ extension DependencyContainer {
         factory { BitPayService() as BitPayServiceAPI }
 
         factory { BlockchainNameResolutionService() as BlockchainNameResolutionServicing }
+
+        factory { () -> CryptoCurrenciesServiceAPI in
+            CryptoCurrenciesService(
+                pairsService: DIKit.resolve(),
+                priceService: DIKit.resolve()
+            )
+        }
     }
 }
