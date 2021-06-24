@@ -126,6 +126,8 @@ final class Coincore: CoincoreAPI {
                         )
                     }
                 }
+        case .buy:
+            unimplemented("WIP")
         case .deposit,
              .receive,
              .sell,
@@ -137,6 +139,8 @@ final class Coincore: CoincoreAPI {
 
     private static func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
         switch action {
+        case .buy:
+            unimplemented("WIP")
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:

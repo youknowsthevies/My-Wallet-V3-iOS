@@ -40,6 +40,7 @@ final class TransactionFlowDescriptor {
                 return prefix + source.label
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -69,6 +70,7 @@ final class TransactionFlowDescriptor {
                 return prefix + account.label
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -85,6 +87,7 @@ final class TransactionFlowDescriptor {
             case .deposit:
                 return LocalizedString.Deposit.linkedBanks
             case .receive,
+                 .buy,
                  .sell,
                  .send,
                  .viewActivity,
@@ -100,6 +103,7 @@ final class TransactionFlowDescriptor {
             case .withdraw,
                  .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .send,
                  .viewActivity:
@@ -115,6 +119,7 @@ final class TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdrawTo
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .send,
                  .viewActivity:
@@ -128,6 +133,7 @@ final class TransactionFlowDescriptor {
                 return LocalizedString.Swap.destinationAccountPicketSubtitle
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .send,
                  .viewActivity,
@@ -148,6 +154,7 @@ final class TransactionFlowDescriptor {
                 return LocalizedString.Withdraw.withdraw
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity:
                 unimplemented()
@@ -167,6 +174,7 @@ final class TransactionFlowDescriptor {
             return LocalizedString.Send.sendMax
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .viewActivity,
              .withdraw:
@@ -180,6 +188,7 @@ final class TransactionFlowDescriptor {
             return true
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .send,
              .viewActivity,
@@ -194,6 +203,7 @@ final class TransactionFlowDescriptor {
             return LocalizedString.Swap.confirmationDisclaimer
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .send,
              .viewActivity,

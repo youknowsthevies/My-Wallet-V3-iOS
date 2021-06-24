@@ -147,6 +147,7 @@ final class TransactionInteractor {
         case .withdraw:
             return linkedBanksFactory.linkedBanks.map { $0.map { $0 as SingleAccount } }
         case .receive,
+             .buy,
              .sell,
              .viewActivity:
             unimplemented()

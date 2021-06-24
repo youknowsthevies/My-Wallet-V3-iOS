@@ -60,7 +60,7 @@ final class TransactionsRouterTests: XCTestCase {
 
         // TODO: IOS-4879 update this as concrete implementation gets built...
         let presentedViewController = mockViewController.recordedInvocations.presentViewController.first
-        XCTAssertNotNil(presentedViewController as? UIHostingController<TransactionsRouter.PlaceholderBuyView>)
+        XCTAssertEqual(presentedViewController?.view.backgroundColor, .red)
         cancellable.cancel()
     }
 }

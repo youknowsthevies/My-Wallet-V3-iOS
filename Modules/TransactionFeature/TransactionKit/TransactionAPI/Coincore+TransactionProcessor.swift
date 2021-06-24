@@ -115,6 +115,8 @@ extension CoincoreAPI {
             return createTradingProcessorSwap(with: account, target: target)
         case .send:
             return createTradingProcessorSend(with: account, target: target)
+        case .buy:
+            unimplemented("WIP")
         case .sell:
             unimplemented() // CustodialSellTxEngine
         case .deposit, .receive, .viewActivity, .withdraw:

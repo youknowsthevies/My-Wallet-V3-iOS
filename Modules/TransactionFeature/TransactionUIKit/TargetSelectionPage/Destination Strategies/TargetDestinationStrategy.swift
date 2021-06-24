@@ -139,6 +139,7 @@ private func provideSectionHeader(action: AssetAction, title: TargetDestinationT
     case .deposit,
          .withdraw,
          .receive,
+         .buy,
          .sell,
          .viewActivity:
         unimplemented()

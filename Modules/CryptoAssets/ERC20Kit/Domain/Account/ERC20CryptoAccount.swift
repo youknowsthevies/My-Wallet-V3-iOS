@@ -77,6 +77,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         case .send:
             return .just(true)
         case .deposit,
+             .buy,
              .sell,
              .withdraw:
             return .just(false)

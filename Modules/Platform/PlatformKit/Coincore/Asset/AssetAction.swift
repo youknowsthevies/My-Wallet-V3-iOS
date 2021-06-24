@@ -5,6 +5,7 @@ import Foundation
 public enum AssetAction: Equatable {
     case viewActivity
     case deposit
+    case buy
     case sell
     case send
     case receive

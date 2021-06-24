@@ -12,6 +12,8 @@ extension AssetAction {
             return "Deposit."
         case .receive:
             return "Receive."
+        case .buy:
+            return "Buy."
         case .sell:
             return "Sell."
         case .send:

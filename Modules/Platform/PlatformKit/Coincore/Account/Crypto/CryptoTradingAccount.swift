@@ -184,6 +184,8 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 }
                 .recordErrors(on: errorRecorder)
                 .catchErrorJustReturn(false)
+        case .buy:
+            unimplemented("WIP")
         case .sell,
              .swap:
             return balance

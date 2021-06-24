@@ -5,6 +5,7 @@ import ComposableArchitecture
 import DIKit
 import PlatformKit
 import PlatformUIKit
+import RIBs
 import SwiftUI
 import ToolKit
 import TransactionKit
@@ -38,13 +39,19 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
 
     private let featureFlagsService: InternalFeatureFlagServiceAPI
     private let legacyBuyPresenter: LegacyBuyFlowPresenter
+    private let buyFlowBuilder: BuyFlowBuildable
+
+    // Since RIBs need to be attached to something but we're not, the router in use needs to be retained.
+    private var currentRIBRouter: RIBs.Routing?
 
     init(
         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
-        legacyBuyPresenter: LegacyBuyFlowPresenter = .init()
+        legacyBuyPresenter: LegacyBuyFlowPresenter = .init(),
+        buyFlowBuilder: BuyFlowBuildable = BuyFlowBuilder()
     ) {
         self.featureFlagsService = featureFlagsService
         self.legacyBuyPresenter = legacyBuyPresenter
+        self.buyFlowBuilder = buyFlowBuilder
     }
 
     func presentTransactionFlow(to action: TransactionFlowAction, from presenter: UIViewController) -> AnyPublisher<TransactionFlowResult, Never> {
@@ -59,37 +66,30 @@ internal final class TransactionsRouter: TransactionsRouterAPI {
     }
 }
 
+extension TransactionsRouter {
+
+    // since we're not attaching a RIB to a RootRouter we have to retain the router and manually activate it
+    private func mimicRIBAttachment(router: RIBs.Routing) {
+        currentRIBRouter?.interactable.deactivate()
+        currentRIBRouter = router
+        router.load()
+        router.interactable.activate()
+    }
+}
+
 // MARK: - Buy
 
 extension TransactionsRouter {
-
-    struct PlaceholderBuyView: View {
-        let closeAction: () -> Void
-
-        var body: some View {
-            VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
-                Text("Buy Flow")
-                    .textStyle(.title)
-                SecondaryButton(title: "Close", action: closeAction)
-            }
-            .padding()
-        }
-    }
 
     private func presentTransactionFlow(
         toBuy cryptoCurrency: CryptoCurrency?,
         from presenter: UIViewController
     ) -> AnyPublisher<TransactionFlowResult, Never> {
-        // TODO: IOS-4879 replace dummy implementation with new buy flow
-        let publisher = PassthroughSubject<TransactionFlowResult, Never>()
-        let dummyView = PlaceholderBuyView(closeAction: {
-            presenter.dismiss(animated: true) {
-                publisher.send(.abandoned)
-                publisher.send(completion: .finished)
-            }
-        })
-        presenter.present(dummyView)
-        return publisher.eraseToAnyPublisher()
+        let listener = BuyFlowListener()
+        let router = buyFlowBuilder.build(with: listener)
+        router.start(from: presenter)
+        mimicRIBAttachment(router: router)
+        return listener.publisher
     }
 
     private func presentLegacyTransactionFlow(

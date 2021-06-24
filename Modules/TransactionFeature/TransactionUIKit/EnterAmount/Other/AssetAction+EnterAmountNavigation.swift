@@ -3,11 +3,13 @@
 import PlatformKit
 
 extension AssetAction {
+
     var allowsBackButton: Bool {
         switch self {
         case .send,
              .deposit,
              .receive,
+             .buy,
              .sell,
              .swap,
              .withdraw,

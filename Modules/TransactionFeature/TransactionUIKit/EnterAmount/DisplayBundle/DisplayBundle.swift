@@ -78,6 +78,7 @@ struct DisplayBundle {
             return .send(sourceAccount: sourceAccount)
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .viewActivity:
             unimplemented()

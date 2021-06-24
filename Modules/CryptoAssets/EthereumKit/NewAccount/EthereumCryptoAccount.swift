@@ -73,6 +73,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
              .viewActivity:
             return .just(true)
         case .deposit,
+             .buy,
              .sell,
              .withdraw:
             return .just(false)

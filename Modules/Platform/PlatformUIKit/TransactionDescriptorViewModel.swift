@@ -185,6 +185,8 @@ private extension AssetAction {
             return "receive-icon"
         case .viewActivity:
             return "clock-icon"
+        case .buy:
+            return "plus-icon"
         case .sell:
             return "minus-icon"
         case .send:

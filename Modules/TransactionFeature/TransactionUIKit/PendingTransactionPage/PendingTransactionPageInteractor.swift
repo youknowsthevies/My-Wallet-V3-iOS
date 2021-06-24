@@ -262,6 +262,7 @@ extension PendingTransactionPageInteractor {
                 )
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -308,6 +309,7 @@ extension PendingTransactionPageInteractor {
                 )
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -382,6 +384,7 @@ extension PendingTransactionPageInteractor {
                 )
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -419,6 +422,7 @@ private extension TransactionErrorState {
                 return LocalizationConstants.Transaction.Swap.Completion.Failure.insufficientFundsForFees
             case .deposit,
                  .receive,
+                 .buy,
                  .sell,
                  .viewActivity,
                  .withdraw:
@@ -468,6 +472,7 @@ private extension TransactionErrorState {
             )
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .viewActivity,
              .withdraw:
@@ -492,6 +497,7 @@ private extension TransactionErrorState {
             )
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .viewActivity,
              .withdraw:
@@ -507,6 +513,7 @@ private extension TransactionErrorState {
             return LocalizationConstants.Transaction.Send.Completion.Failure.overGoldTierLimit
         case .deposit,
              .receive,
+             .buy,
              .sell,
              .viewActivity,
              .withdraw:
