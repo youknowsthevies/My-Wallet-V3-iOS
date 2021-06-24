@@ -35,16 +35,6 @@ import PlatformUIKit
                 amount: amount,
                 includeScheme: includeScheme
             )
-        case .aave,
-             .algorand,
-             .ether,
-             .pax,
-             .polkadot,
-             .stellar,
-             .tether,
-             .WDGLD,
-             .yearnFinance:
-            return nil
         }
     }
 }

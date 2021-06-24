@@ -1,30 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinChainKit
 import PlatformKit
 import RxSwift
 import ToolKit
 
-final class OrderTransactionLegacy: NSObject {
-    @objc let legacyAssetType: LegacyAssetType
-    @objc let from: Int32
-    @objc let to: String
-    @objc let amount: String
-    @objc var fees: String?
-
-    init(
-        legacyAssetType: LegacyAssetType,
-        from: Int32,
-        to: String,
-        amount: String,
-        fees: String?
-    ) {
-        self.legacyAssetType = legacyAssetType
-        self.from = from
-        self.to = to
-        self.amount = amount
-        self.fees = fees
-        super.init()
-    }
+/// An Bitcoin or Bitcoin Cash order that will be executed by JS Wallet.
+struct OrderTransactionLegacy {
+    let legacyAssetType: LegacyAssetType
+    let from: Int32
+    let to: String
+    let amount: String
+    let fees: String?
 }
 
 protocol LegacyWalletAPI: AnyObject {
@@ -60,9 +47,6 @@ protocol LegacyWalletAPI: AnyObject {
     )
 
     func needsSecondPassword() -> Bool
-
-    func getReceiveAddress(forAccount account: Int32,
-                           assetType: LegacyAssetType) -> String!
 }
 
 extension Wallet: LegacyWalletAPI {
@@ -89,8 +73,6 @@ extension Wallet: LegacyWalletAPI {
             tradeExecutionType = "bitcoin"
         case .bitcoinCash:
             tradeExecutionType = "bitcoinCash"
-        default:
-            unimplemented()
         }
         context.invokeOnce(
             valueFunctionBlock: { jsValue in
@@ -138,8 +120,6 @@ extension Wallet: LegacyWalletAPI {
             tradeExecutionType = "bitcoin"
         case .bitcoinCash:
             tradeExecutionType = "bitcoinCash"
-        default:
-            unimplemented()
         }
         context.invokeOnce(
             valueFunctionBlock: { jsValue in

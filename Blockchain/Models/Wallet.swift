@@ -76,8 +76,7 @@ extension Wallet {
             AlertViewPresenter.shared.internetConnection()
             return
         }
-        let cryptoCurrency = CryptoCurrency(legacyAssetType: assetType)
-        updateLabel(label, for: cryptoCurrency, index: index)
+        updateLabel(label, for: assetType.cryptoCurrency, index: index)
     }
 
     @objc func didSetLabelForAccount() {

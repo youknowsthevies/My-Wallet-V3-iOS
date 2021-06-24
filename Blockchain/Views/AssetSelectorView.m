@@ -15,44 +15,18 @@
 
 @implementation AssetSelectorView
 
-+ (NSArray<NSNumber *> *)availableAssets {
-    return @[
-        @(LegacyAssetTypeBitcoin),
-        @(LegacyAssetTypeEther),
-        @(LegacyAssetTypeBitcoinCash)
-    ];
-}
-
-- (instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (self) {
-        [self setupInParent:nil];
-    }
-    return self;
-}
-
-- (instancetype)initWithFrame:(CGRect)frame parentView:(UIView *)parentView
+- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray<NSNumber *> *)assets parentView:(UIView *)parentView
 {
     self = [super initWithFrame:frame];
     if (self) {
-        [self setupInParent:parentView];
+        [self setupInParent:parentView assets:assets];
     }
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame assets:(NSArray<NSNumber *> *)assets parentView:(UIView *)parentView
+- (void)setupInParent:(UIView *)parentView assets:(NSArray<NSNumber *> *)assets
 {
-    self = [self initWithFrame:frame parentView:parentView];
-    if (self) {
-        self.assets = assets;
-    }
-    return self;
-}
-
-- (void)setupInParent:(UIView *)parentView
-{
-    self.assets = [AssetSelectorView availableAssets];
+    self.assets = assets;
     self.clipsToBounds = YES;
 
     self.tableView = [[UITableView alloc] initWithFrame:self.bounds];

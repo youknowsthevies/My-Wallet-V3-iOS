@@ -12,7 +12,6 @@
 #import "ECSlidingViewController.h"
 #import "KeychainItemWrapper.h"
 #import "KeychainItemWrapper+Credentials.h"
-#import "KeychainItemWrapper+SwipeAddresses.h"
 #import "NSDateFormatter+TimeAgoString.h"
 #import "Reachability.h"
 #import "UIApplication+Suspend.h"

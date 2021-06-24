@@ -44,6 +44,9 @@ class EthereumWalletTests: XCTestCase {
     func test_wallet_name() {
         // Arrange
         let expectedName = "My ETH Wallet"
+        legacyWalletMock.underlyingGetLabelForEthereumAccount = { _, success, _ in
+            success(expectedName)
+        }
         let nameObservable: Observable<String> = subject
             .name
             .asObservable()
@@ -71,6 +74,9 @@ class EthereumWalletTests: XCTestCase {
     func test_wallet_address() {
         // Arrange
         let expectedAddress = EthereumAddress(stringLiteral: "address")
+        legacyWalletMock.underlyingGetEthereumAddress = { _, success, _ in
+            success("address")
+        }
         let addressObservable: Observable<EthereumAddress> = subject
             .address
             .asObservable()
@@ -102,6 +108,15 @@ class EthereumWalletTests: XCTestCase {
             accountAddress: "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e",
             name: "My ETH Wallet"
         )
+        let ethereumAccounts: [[String : Any]] = [
+            [
+                "addr": expectedAccount.accountAddress,
+                "label": expectedAccount.name
+            ]
+        ]
+        legacyWalletMock.underlyingEthereumAccounts = { _, success, _ in
+            success(ethereumAccounts)
+        }
 
         let accountObservable: Observable<EthereumAssetAccount> = subject
             .account
@@ -125,9 +140,10 @@ class EthereumWalletTests: XCTestCase {
 
     func test_wallet_not_initialised() {
         // Arrange
-        legacyWalletMock.ethereumAccountsCompletion = .failure(
-            MockLegacyEthereumWallet.MockLegacyEthereumWalletError.notInitialized
-        )
+
+        legacyWalletMock.underlyingEthereumAccounts = { _, _, error in
+            error("any error message")
+        }
 
         let walletObservable: Observable<EthereumAssetAccount> = subject
             .account

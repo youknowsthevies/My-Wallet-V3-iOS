@@ -3,36 +3,87 @@
 @testable import Blockchain
 import EthereumKit
 import PlatformKit
-import PlatformUIKit
 import RxSwift
+import ToolKit
 
 class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, MnemonicAccessAPI {
-
-    func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
-        .empty()
+    func checkIfEthereumAccountExists() -> Bool {
+        unimplemented()
     }
 
-    var initializationState: Single<WalletSetup.State> = .just(.initialized)
+    var underlyingEthereumAccounts: ((String?, ([[String : Any]]) -> Void, (String) -> Void) -> Void)?
+    func ethereumAccounts(
+        with secondPassword: String?,
+        success: @escaping ([[String : Any]]) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        underlyingEthereumAccounts!(secondPassword, success, error)
+    }
+
+    var underlyingGetLabelForEthereumAccount: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+    func getLabelForEthereumAccount(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        underlyingGetLabelForEthereumAccount!(secondPassword, success, error)
+    }
+
+    var underlyingGetEthereumAddress: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+    func getEthereumAddress(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        underlyingGetEthereumAddress!(secondPassword, success, error)
+    }
+
+    func getEthereumMemo(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        unimplemented()
+    }
 
     func setEthereumMemo(for transaction: String, memo: String?) {
-
+        unimplemented()
     }
 
-    func getEthereumMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
-        error("Not implemented")
+    func erc20Tokens(
+        with secondPassword: String?,
+        success: @escaping ([String : [String : Any]]) -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        unimplemented()
     }
 
-    func setEthereumMemo(for transaction: String, memo: String?, error: @escaping (String) -> Void) {
-        error("Not implemented")
+    func saveERC20Tokens(
+        with secondPassword: String?,
+        tokensJSONString: String,
+        success: @escaping () -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        unimplemented()
     }
 
-    // MARK: - LegacyWalletAPI
+    func recordLastEthereumTransaction(
+        transactionHash: String,
+        success: @escaping () -> Void,
+        error: @escaping (String) -> Void
+    ) {
+        unimplemented()
+    }
+
+    func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
+        unimplemented()
+    }
 
     func createOrderPayment(
         orderTransaction: OrderTransactionLegacy,
-        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+        completion: @escaping (Result<[AnyHashable: Any], Wallet.CreateOrderError>) -> Void
     ) {
-        completion(.success([:]))
+        unimplemented()
     }
 
     func sendOrderTransaction(
@@ -40,197 +91,22 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         secondPassword: String?,
         completion: @escaping (Result<String, Wallet.SendOrderError>) -> Void
     ) {
-        completion(.success(""))
+        unimplemented()
     }
 
-    var receiveAddress: String = "ReceiveAddress"
-    func getReceiveAddress(forAccount account: Int32, assetType: LegacyAssetType) -> String! {
-        receiveAddress
-    }
-
-    func signPayment(secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
-    }
-
-    // MARK: - LegacyEthereumWalletProtocol
-
-    enum MockLegacyEthereumWalletError: Error {
-        case notInitialized
-        case unknown
-    }
-
-    var password: String? = "password"
-
-    var checkIfEthereumAccountExistsValue = true
-    func checkIfEthereumAccountExists() -> Bool {
-        checkIfEthereumAccountExistsValue
-    }
-
-    func recordLastEthereumTransaction(transactionHash: String,
-                                       success: @escaping () -> Void,
-                                       error: @escaping (String) -> Void) {
-        success()
-    }
-
-    var needsSecondPasswordValue = false
     func needsSecondPassword() -> Bool {
-        needsSecondPasswordValue
+        unimplemented()
     }
 
-    static let legacyAccount = LegacyEthereumWalletAccount(
-        addr: "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e",
-        label: "My ETH Wallet"
-    )
-    static let ethereumAccounts: [[String : Any]] = [
-        [
-            "addr": legacyAccount.addr,
-            "label": legacyAccount.label
-        ]
-    ]
-    var ethereumAccountsCompletion: Result<[[String : Any]], MockLegacyEthereumWalletError> = .success(ethereumAccounts)
-    func ethereumAccounts(with secondPassword: String?,
-                          success: @escaping ([[String: Any]]) -> Void,
-                          error: @escaping (String) -> Void) {
-        switch ethereumAccountsCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    static let labelForAccount: String = "My ETH Wallet"
-    var getLabelForEthereumAccountCompletion: Result<String, MockLegacyEthereumWalletError> = .success(labelForAccount)
-    func getLabelForEthereumAccount(with secondPassword: String?,
-                                    success: @escaping (String) -> Void,
-                                    error: @escaping (String) -> Void) {
-        switch getLabelForEthereumAccountCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    var getEtherAddressCompletion: Result<String, MockLegacyEthereumWalletError> = .success("address")
-    func getEthereumAddress(with secondPassword: String?,
-                            success: @escaping (String) -> Void,
-                            error: @escaping (String) -> Void) {
-        switch getEtherAddressCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    static let ethBalanceValue: String = "1337"
-    var fetchEthereumBalanceCalled: Bool = false
-    var fetchEthereumBalancecCompletion: Result<String, MockLegacyEthereumWalletError> = .success(ethBalanceValue)
-    func fetchEthereumBalance(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        switch fetchEthereumBalancecCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    var fetchHistoryCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
-    func fetchHistory(with secondPassword: String?, success: @escaping () -> Void, error: @escaping (String) -> Void) {
-        switch fetchHistoryCompletion {
-        case .success:
-            success()
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    static let isWaitingOnTransactionValue: Bool = false
-    var isWaitingOnTransactionCompletion: Result<Bool, MockLegacyEthereumWalletError> = .success(isWaitingOnTransactionValue)
-    func isWaitingOnEthereumTransaction(with secondPassword: String?, success: @escaping (Bool) -> Void, error: @escaping (String) -> Void) {
-        switch isWaitingOnTransactionCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    var lastRecordedEtherTransactionHashAsync: String?
-    var recordLastEthereumTransactionCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
-    func recordLastEthereumTransaction(with secondPassword: String?,
-                                       transactionHash: String,
-                                       success: @escaping () -> Void,
-                                       error: @escaping (String) -> Void) {
-        lastRecordedEtherTransactionHashAsync = transactionHash
-        switch recordLastEthereumTransactionCompletion {
-        case .success:
-            success()
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    var getEtherTransactionNonceCompletion: Result<String, MockLegacyEthereumWalletError> = .success("1")
-    func getEthereumTransactionNonce(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        switch getEtherTransactionNonceCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    static let tokenAccounts: [String: [String: Any]] = [
-        "pax": [
-            "label": "My PAX Wallet",
-            "contract": "0x8E870D67F660D95d5be530380D0eC0bd388289E1",
-            "has_seen": false,
-            "tx_notes": [
-                "transaction_hash": "memo"
-            ]
-        ]
-    ]
-    var erc20TokensCompletion: Result<[String: [String: Any]], MockLegacyEthereumWalletError> = .success(tokenAccounts)
-    func erc20Tokens(with secondPassword: String?,
-                     success: @escaping ([String: [String: Any]]) -> Void,
-                     error: @escaping (String) -> Void) {
-        switch erc20TokensCompletion {
-        case .success(let value):
-            success(value)
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    var lastSavedTokensJSONString: String?
-    var saveERC20TokensCompletion: Result<Void, MockLegacyEthereumWalletError> = .success(())
-    func saveERC20Tokens(with secondPassword: String?,
-                         tokensJSONString: String,
-                         success: @escaping () -> Void,
-                         error: @escaping (String) -> Void) {
-        lastSavedTokensJSONString = tokensJSONString
-        switch erc20TokensCompletion {
-        case .success:
-            success()
-        case .failure(let e):
-            error(String(describing: e))
-        }
-    }
-
-    // MARK: - MnemonicAccessAPI
-
-    var mnemonicMaybe = Maybe.just("")
-    var mnemonic: Maybe<String> {
-        mnemonicMaybe
-    }
-
-    var mnemonicPromptingIfNeededMaybe = Maybe.just("")
-    var mnemonicPromptingIfNeeded: Maybe<String> {
-        mnemonicPromptingIfNeededMaybe
+    var mnemonic: Maybe<Mnemonic> {
+        unimplemented()
     }
 
     func mnemonic(with secondPassword: String?) -> Single<Mnemonic> {
-        .never()
+        unimplemented()
+    }
+
+    var mnemonicPromptingIfNeeded: Maybe<Mnemonic> {
+        unimplemented()
     }
 }

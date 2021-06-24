@@ -23,7 +23,6 @@
 
 @class JSValue,
        JSContext,
-       OrderTransactionLegacy,
        BitcoinWallet,
        EthereumWallet,
        WalletCryptoJS,
@@ -147,7 +146,6 @@
 
 - (void)createAccountWithLabel:(NSString *)label;
 - (void)generateNewKey;
-- (NSString *)getReceiveAddressForAccount:(int)account assetType:(LegacyAssetType)assetType;
 
 - (NSString *)getXpubForAccount:(int)accountIndex assetType:(LegacyAssetType)assetType;
 

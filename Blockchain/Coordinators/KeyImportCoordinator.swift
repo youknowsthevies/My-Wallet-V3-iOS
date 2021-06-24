@@ -108,7 +108,7 @@ struct PrivateKeyQRCodeTextViewModel: QRCodeScannerTextViewModel {
     // TODO: remove once LegacyPrivateKeyDelegate is deprecated
     @objc func start(with delegate: LegacyPrivateKeyDelegate,
                      in viewController: UIViewController,
-                     assetType: LegacyAssetType = .bitcoin,
+                     assetType: LegacyAssetType,
                      loadingText: String = LocalizationConstants.AddressAndKeyImport.loadingImportKey) {
 
         let privateKeyQRCodeParser = PrivateKeyQRCodeParser(

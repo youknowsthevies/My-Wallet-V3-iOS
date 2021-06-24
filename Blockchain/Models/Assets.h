@@ -3,18 +3,10 @@
 #ifndef Assets_h
 #define Assets_h
 
+/// LegacyAssetType is used by Wallet and other legacy ObjC code when dealing with Bitcoin or Bitcoin Cash.
 typedef NS_CLOSED_ENUM(NSInteger, LegacyAssetType) {
     LegacyAssetTypeBitcoin,
-    LegacyAssetTypeEther,
-    LegacyAssetTypeBitcoinCash,
-    LegacyAssetTypeStellar,
-    LegacyAssetTypePax,
-    LegacyAssetTypeAlgorand,
-    LegacyAssetTypeTether,
-    LegacyAssetTypeWDGLD,
-    LegacyAssetTypeYearnFinance,
-    LegacyAssetTypeAave,
-    LegacyAssetTypePolkadot
+    LegacyAssetTypeBitcoinCash
 };
 
 #endif /* Assets_h */

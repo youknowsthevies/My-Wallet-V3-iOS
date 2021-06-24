@@ -8,18 +8,10 @@ import ToolKit
     func didTapChevronButton()
 }
 
-// Cell shown for selecting an asset type from the drop-down
-// menu (AssetSelectorView).
+/// Cell shown for selecting an asset type from the drop-down menu (AssetSelectorView).
 @objc class AssetTypeCell: UITableViewCell {
 
-    @objc var legacyAssetType: LegacyAssetType {
-        guard let asset = cryptoCurrency else {
-            Logger.shared.error("Unknown asset type!")
-            return LegacyAssetType(rawValue: -1)!
-        }
-        return asset.legacy
-    }
-    private var cryptoCurrency: CryptoCurrency?
+    @objc var legacyAssetType: LegacyAssetType = .bitcoin
 
     @objc weak var delegate: AssetTypeCellDelegate?
 
@@ -36,11 +28,8 @@ import ToolKit
     }
 
     @objc func configure(with assetType: LegacyAssetType, showChevronButton: Bool) {
-        configure(with: CryptoCurrency(legacyAssetType: assetType), showChevronButton: showChevronButton)
-    }
-
-    private func configure(with cryptoCurrency: CryptoCurrency, showChevronButton: Bool) {
-        self.cryptoCurrency = cryptoCurrency
+        self.legacyAssetType = assetType
+        let cryptoCurrency = assetType.cryptoCurrency
         assetImageView.image = cryptoCurrency.whiteImageSmall
         label.text = cryptoCurrency.name
         chevronButton.isHidden = !showChevronButton
@@ -49,16 +38,6 @@ import ToolKit
 
     @IBAction private func chevronButtonTapped(_ sender: UIButton) {
         delegate?.didTapChevronButton()
-    }
-}
-
-@objc extension AssetTypeCell {
-    static func instanceFromNib() -> AssetTypeCell {
-        let nib = UINib(nibName: "AssetTypeCell", bundle: Bundle.main)
-        let contents = nib.instantiate(withOwner: nil, options: nil)
-        return contents.first { item -> Bool in
-            item is AssetTypeCell
-        } as! AssetTypeCell
     }
 }
 
@@ -77,7 +56,7 @@ import ToolKit
     }
 }
 
-// AssetTypeCell is a legacy component that is only used with BTC/BCH/ETH, so these are the only coins with added images.
+// AssetTypeCell is a legacy component that is only used with BTC/BCH, so these are the only coins with added images.
 fileprivate extension CryptoCurrency {
     private var whiteImageName: String? {
         switch self {
@@ -85,8 +64,6 @@ fileprivate extension CryptoCurrency {
             return "white_btc_small"
         case .bitcoinCash:
             return "white_bch_small"
-        case .ethereum:
-            return "white_eth_small"
         default:
             return nil
         }

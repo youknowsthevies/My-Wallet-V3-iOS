@@ -1834,21 +1834,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-- (NSString *)getReceiveAddressForAccount:(int)account assetType:(LegacyAssetType)assetType
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    if (assetType == LegacyAssetTypeBitcoin) {
-        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getReceivingAddressForAccount(%d)", account]] toString];
-    } else if (assetType == LegacyAssetTypeBitcoinCash) {
-        return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getReceivingAddressForAccount(%d)", account]] toString];
-    }
-    DLog(@"Warning: unknown asset type!");
-    return nil;
-}
-
 #pragma mark - Callbacks from JS to Obj-C for HD wallet
 
 - (void)reload
