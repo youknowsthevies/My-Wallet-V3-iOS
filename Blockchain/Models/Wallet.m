@@ -276,7 +276,7 @@ NSString * const kLockboxInvitation = @"lockbox";
     };
 
     self.context[@"objc_error_other_decrypting_wallet"] = ^(NSString *error, NSString *stack) {
-        [weakSelf error_other_decrypting_wallet:[NSString stringWithFormat:@"TypeError:%@", [LocalizationConstantsObjcBridge errorDecryptingWallet]] stack:stack];
+        [weakSelf error_other_decrypting_wallet:error stack:stack];
     };
 
     self.context[@"objc_loading_start_decrypt_wallet"] = ^(){
@@ -1228,42 +1228,66 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)error_other_decrypting_wallet:(NSString *)message stack:(NSString *)stack
 {
     DLog(@"error_other_decrypting_wallet");
-    
+
     if (message == nil || message.length == 0) {
         return;
     }
 
-    // This error message covers the case where the GUID is 36 characters long but is not valid. This can only be checked after JS has been loaded. To avoid multiple error messages, it finds a localized "identifier" substring in the error description. Currently, different manual pairing error messages are sent to both my-wallet.js and wallet-ios.js (in this case, also to the same error callback), so a cleaner approach that avoids a substring search would either require more distinguishable error callbacks (separated by scope) or thorough refactoring.
+    // This error message covers the case where the GUID is 36 characters long but is not valid.
+    // This can only be checked after JS has been loaded.
+    // To avoid multiple error messages, it finds a localized "identifier" substring in the error description.
+    // Currently, different manual pairing error messages are sent to both my-wallet.js and wallet-ios.js (in this case, also
+    //   to the same error callback), so a cleaner approach that avoids a substring search would either require more distinguishable
+    //   error callbacks (separated by scope) or thorough refactoring.
     
     NSRange identifierRange = [message rangeOfString:BC_STRING_IDENTIFIER options:NSCaseInsensitiveSearch range:NSMakeRange(0, message.length) locale:[NSLocale currentLocale]];
     NSRange connectivityErrorRange = [message rangeOfString:ERROR_FAILED_NETWORK_REQUEST options:NSCaseInsensitiveSearch range:NSMakeRange(0, message.length) locale:[NSLocale currentLocale]];
     if (identifierRange.location != NSNotFound) {
-        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR
+                                                   message:message
+                                                        in:nil
+                                                   handler:nil];
         [self error_restoring_wallet];
         return;
     } else if (connectivityErrorRange.location != NSNotFound) {
         dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC));
         dispatch_after(when, dispatch_get_main_queue(), ^{
-            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:[LocalizationConstantsObjcBridge requestFailedCheckConnection] in:nil handler:nil];
+            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR
+                                                       message:[LocalizationConstantsObjcBridge requestFailedCheckConnection]
+                                                            in:nil
+                                                       handler:nil];
         });
         [self error_restoring_wallet];
         return;
     }
     
     if (![KeychainItemWrapper guid]) {
-        // This error is used whe trying to login with incorrect passwords or when the account is locked, so present an alert if the app has no guid, since it currently conflicts with makeNotice when backgrounding after changing password in-app
-        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:message in:nil handler:nil];
+        // This error is used when trying to login with incorrect passwords or when the account is locked, so present an alert if the app
+        // has no guid, since it currently conflicts with makeNotice when backgrounding after changing password in-app
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR
+                                                   message:message
+                                                        in:nil
+                                                   handler:nil];
         return;
     }
-    
-    if ([message hasPrefix:@"TypeError:"]) {
-        dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC));
-        dispatch_after(when, dispatch_get_main_queue(), ^{
-            NSString *value = [message substringFromIndex:[@"TypeError:" length]];
-            [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:value in:nil handler:nil];
-        });
-        [self logJavaScriptTypeError:message stack:stack];
+
+    NSString *alertMessage = [LocalizationConstantsObjcBridge errorDecryptingWallet];
+    // If the message is not 'Something went wrong.' add it to the alert message.
+    if (![message isEqualToString:@"Something went wrong."]) {
+        alertMessage = [NSString stringWithFormat:@"%@ \n %@", [LocalizationConstantsObjcBridge errorDecryptingWallet], message];
     }
+
+    dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION_LONG * NSEC_PER_SEC));
+    dispatch_after(when, dispatch_get_main_queue(), ^{
+        // If no other alert was presented, show generic one.
+        [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR
+                                                   message:alertMessage
+                                                        in:nil
+                                                   handler:nil];
+    });
+
+    // And log the original error message we received.
+    [self logJavaScriptTypeError:message stack:stack];
 }
 
 - (void)error_restoring_wallet

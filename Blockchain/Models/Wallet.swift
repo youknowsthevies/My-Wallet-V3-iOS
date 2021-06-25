@@ -7,17 +7,18 @@ import RxSwift
 import ToolKit
 import WalletPayloadKit
 
-extension Wallet {
-    private enum WalletJavaScriptError: Error {
-        case typeError
-    }
+enum WalletJavaScriptError: Error {
+    case typeError(message: String, stack: String)
+}
 
+extension Wallet {
     @objc func logJavaScriptTypeError(_ message: String, stack: String?) {
         let messageRecorder: MessageRecording = resolve()
         let errorRecorder: ErrorRecording = resolve()
-        messageRecorder.record("JS Stack: \(stack ?? "not available")")
-        messageRecorder.record("JS Error: \(message)")
-        errorRecorder.error(WalletJavaScriptError.typeError)
+        let stack = stack ?? ""
+        messageRecorder.record("JS Stack: '\(stack)'")
+        messageRecorder.record("JS Error: '\(message)'")
+        errorRecorder.error(WalletJavaScriptError.typeError(message: message, stack: stack))
     }
 
     /// Updates an account label.

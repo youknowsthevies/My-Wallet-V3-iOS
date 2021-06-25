@@ -587,7 +587,7 @@ MyWalletPhone.login = function(user_guid, shared_key, resend_code, inputedPasswo
     };
 
     var other_error = function(e) {
-        console.log('login: other error: ' + e);
+        console.log('MyWalletPhone.login: other_error: error ' + e + ' stack ' + e.stack);
         objc_loading_stop();
         objc_error_other_decrypting_wallet(e, e.stack);
         return Promise.reject(e);
@@ -637,7 +637,6 @@ MyWalletPhone.login = function(user_guid, shared_key, resend_code, inputedPasswo
     }
 
     walletOptions.fetch().then(function() {
-        Blockchain.constants.SHAPE_SHIFT_KEY = walletOptions.getValue().shapeshift.apiKey;
         MyWallet.login(user_guid, inputedPassword, credentials, callbacks).then(success).catch(other_error);
     });
 };
@@ -646,6 +645,7 @@ MyWalletPhone.loginAfterPairing = function(password) {
 
     var other_error = function(e) {
         objc_loading_stop();
+        console.log('MyWalletPhone.loginAfterPairing: other_error: error ' + e + ' stack ' + e.stack);
         objc_error_other_decrypting_wallet(e, e.stack);
         return Promise.reject(e);
     };
