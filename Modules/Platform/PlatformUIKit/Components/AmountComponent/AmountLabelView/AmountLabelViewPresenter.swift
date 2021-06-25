@@ -72,7 +72,8 @@ public final class AmountLabelViewPresenter {
 
     private let disposeBag = DisposeBag()
 
-    public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide) {
+    public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide, isFocused: Bool = false) {
+        self.focusRelay.accept(isFocused)
         self.interactor = interactor
         self.currencyCodeSide = currencyCodeSide
 

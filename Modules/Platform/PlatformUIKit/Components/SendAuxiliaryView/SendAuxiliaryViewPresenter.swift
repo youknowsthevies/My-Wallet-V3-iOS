@@ -28,6 +28,14 @@ public final class SendAuxiliaryViewPresenter {
             self.availableBalanceTitle = availableBalanceTitle
             self.maxButtonTitle = maxButtonTitle
         }
+
+        public static let initial: State = .init(
+            maxButtonVisibility: .hidden,
+            networkFeeVisibility: .hidden,
+            bitpayVisibility: .hidden,
+            availableBalanceTitle: LocalizationConstants.Transaction.available,
+            maxButtonTitle: LocalizationConstants.Transaction.Swap.swapMax
+        )
     }
 
     // MARK: - Types
@@ -59,7 +67,7 @@ public final class SendAuxiliaryViewPresenter {
     // MARK: - Init
 
     public init(interactor: SendAuxiliaryViewInteractorAPI,
-                initialState: State) {
+                initialState: State = .initial) {
 
         // MARK: Setting up
 

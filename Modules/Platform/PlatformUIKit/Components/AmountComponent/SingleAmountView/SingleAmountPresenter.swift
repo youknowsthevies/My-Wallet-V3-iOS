@@ -10,14 +10,9 @@ import ToolKit
 /// NOTE: Currently this is only used in the `Withdraw` flow. If you
 /// are using this outside of `Withdraw` you must create a `DisplayBundle`
 /// type class that holds analytic events and localized strings. 
-public final class SingleAmountPresenter {
+public final class SingleAmountPresenter: AmountViewPresenting {
 
     // MARK: - Types
-
-    public enum Input {
-        case input(String)
-        case delete
-    }
 
     public enum State {
         case showLimitButton(CurrencyLabeledButtonViewModel)
@@ -41,13 +36,17 @@ public final class SingleAmountPresenter {
         self.interactor = interactor
 
         self.amountPresenter = InputAmountLabelPresenter(interactor: interactor.currencyInteractor,
-                                                         currencyCodeSide: .leading)
+                                                         currencyCodeSide: .leading,
+                                                         /// There is only one amount,
+                                                         /// so the label should appear as
+                                                         /// focused (larger font).
+                                                         isFocused: true)
     }
 
-    func connect(input: Driver<SingleAmountPresenter.Input>) -> Driver<State> {
+    public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         let input = input.filter { !$0.isEmpty }
         return interactor.connect(input: input.map(\.toInteractorInput))
-            .map { [weak self] state -> State in
+            .map { [weak self] state -> AmountPresenterState in
                 guard let self = self else { return .empty }
                 return self.setupButton(by: state)
             }
@@ -55,7 +54,7 @@ public final class SingleAmountPresenter {
 
     // MARK: - Private
 
-    private func setupButton(by state: SingleAmountInteractor.State) -> State {
+    private func setupButton(by state: AmountInteractorState) -> AmountPresenterState {
         let viewModel: CurrencyLabeledButtonViewModel
         switch state {
         case .empty, .inBounds:
@@ -73,7 +72,7 @@ public final class SingleAmountPresenter {
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
-        case .overMaxLimit(let maxValue):
+        case .maxLimitExceeded(let maxValue):
             viewModel = CurrencyLabeledButtonViewModel(
                 amount: maxValue.value,
                 format: LocalizedString.Withdraw.Max.useMax,
@@ -86,24 +85,19 @@ public final class SingleAmountPresenter {
                 })
                 .disposed(by: disposeBag)
             return .showLimitButton(viewModel)
+        case .warning,
+             .error:
+            unimplemented()
         }
     }
 }
 
-extension SingleAmountPresenter.Input {
-    internal var toInteractorInput: SingleAmountInteractor.Input {
-        switch self {
-        case .input(let value):
-            return .insert(value)
-        case .delete:
-            return .remove
-        }
-    }
+extension AmountPresenterInput {
 
     internal var isEmpty: Bool {
         switch self {
         case .input(let value):
-            return value.isEmpty
+            return "\(value)".isEmpty
         case .delete:
             return false
         }

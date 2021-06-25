@@ -134,12 +134,12 @@ extension WithdrawAmountValidationService.State {
         }
     }
 
-    var toAmountInteractorState: SingleAmountInteractor.State {
+    var toAmountInteractorState: AmountInteractorState {
         switch self {
         case .empty:
             return .empty
         case let .maxLimitExceeded(value):
-            return .overMaxLimit(value)
+            return .maxLimitExceeded(value)
         case let .minLimitNotReached(value):
             return .underMinLimit(value)
         case .valid:

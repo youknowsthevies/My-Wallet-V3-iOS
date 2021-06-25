@@ -27,7 +27,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     // MARK: - Properties
 
     private let topSelectionButtonView = SelectionButtonView()
-    private let amountView: AmountTranslationView
+    private let amountViewable: AmountViewable
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryView = UIView()
     private let continueButtonView = ButtonView()
@@ -57,21 +57,17 @@ final class EnterAmountViewController: BaseScreenViewController,
          digitPadViewModel: DigitPadViewModel,
          continueButtonViewModel: ButtonViewModel,
          topSelectionButtonViewModel: SelectionButtonViewModel,
-         amountViewProvider: @escaping () -> AmountTranslationView) {
+         amountViewProvider: AmountViewable) {
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
-        self.amountView = amountViewProvider()
+        self.amountViewable = amountViewProvider
         self.continueButtonTapped = continueButtonViewModel.tap
         super.init(nibName: nil, bundle: nil)
 
         digitPadView.viewModel = digitPadViewModel
         continueButtonView.viewModel = continueButtonViewModel
         topSelectionButtonView.viewModel = topSelectionButtonViewModel
-        bottomAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel(
-            title: "",
-            separatorColor: displayBundle.colors.bottomAuxiliaryItemSeparator,
-            accessibilityId: displayBundle.accessibilityIdentifiers.bottomAuxiliaryItemSeparatorTitle
-        )
+        bottomAuxiliaryItemSeparatorView.viewModel = TitledSeparatorViewModel()
 
         bottomAuxiliaryButtonViewHeightConstraint = bottomAuxiliaryView.layout(
             dimension: .height,
@@ -88,6 +84,7 @@ final class EnterAmountViewController: BaseScreenViewController,
 
         let digitPadTopSeparatorView = UIView()
 
+        let amountView = amountViewable.view
         view.addSubview(topSelectionButtonView)
         view.addSubview(amountView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
@@ -138,7 +135,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadView.layoutToSuperview(.bottom, usesSafeAreaLayoutGuide: true)
         digitPadHeightConstraint = digitPadView.layout(dimension: .height, to: 260, priority: .penultimateHigh)
 
-        digitPadTopSeparatorView.backgroundColor = displayBundle.colors.digitPadTopSeparator
+        digitPadTopSeparatorView.backgroundColor = .lightBorder
     }
 
     public override func viewDidDisappear(_ animated: Bool) {
@@ -161,7 +158,7 @@ final class EnterAmountViewController: BaseScreenViewController,
         }
     }
 
-    func connect(state: Driver<EnterAmountPageInteractor.State>) -> Driver<EnterAmountPageInteractor.Effects> {
+    func connect(state: Driver<EnterAmountPageInteractor.State>) -> Driver<EnterAmountPageInteractor.NavigationEffects> {
 
         let topSelection = state.map(\.topSelection)
 
@@ -228,11 +225,11 @@ final class EnterAmountViewController: BaseScreenViewController,
         let amountViewInputs = [
             digitInput
                 .compactMap(\.first)
-                .map { AmountTranslationPresenter.Input.input($0) },
-            deleteInput.map { AmountTranslationPresenter.Input.delete }
+                .map { AmountPresenterInput.input($0) },
+            deleteInput.map { AmountPresenterInput.delete }
         ]
 
-        amountView.connect(input: Driver.merge(amountViewInputs))
+        amountViewable.connect(input: Driver.merge(amountViewInputs))
             .drive()
             .disposed(by: disposeBag)
 
@@ -241,10 +238,10 @@ final class EnterAmountViewController: BaseScreenViewController,
             .disposed(by: disposeBag)
 
         let backTapped = backTriggered
-            .map { EnterAmountPageInteractor.Effects.back }
+            .map { EnterAmountPageInteractor.NavigationEffects.back }
 
         let closeTapped = closeTriggerred
-            .map { EnterAmountPageInteractor.Effects.close }
+            .map { EnterAmountPageInteractor.NavigationEffects.close }
 
         return Observable.merge(backTapped, closeTapped)
             .asDriver(onErrorJustReturn: .none)
@@ -269,7 +266,20 @@ final class EnterAmountViewController: BaseScreenViewController,
             subviewsToRemove = bottomAuxiliaryView.subviews
             height = 0.5
             visibility = .hidden
-        case .visible(let presenter):
+        case .account(let presenter):
+            subviewsToRemove = []
+            let accountAuxiliaryView: AccountAuxiliaryView
+            if let view = bottomAuxiliaryView.subviews.first(where: { $0 is AccountAuxiliaryView }) as? AccountAuxiliaryView {
+                accountAuxiliaryView = view
+            } else {
+                accountAuxiliaryView = AccountAuxiliaryView()
+                bottomAuxiliaryView.addSubview(accountAuxiliaryView)
+                accountAuxiliaryView.fillSuperview()
+            }
+            accountAuxiliaryView.presenter = presenter
+            visibility = .visible
+            height = Constant.Standard.topSelectionViewHeight
+        case .send(let presenter):
             subviewsToRemove = []
             let sendAuxiliaryView: SendAuxiliaryView
             if let view = bottomAuxiliaryView.subviews.first(where: { $0 is SendAuxiliaryView }) {

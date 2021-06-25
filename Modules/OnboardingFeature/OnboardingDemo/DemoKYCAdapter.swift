@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import OnboardingUIKit
 import KYCKit
 import KYCUIKit
+import OnboardingUIKit
 import SwiftUI
 import UIKit
 

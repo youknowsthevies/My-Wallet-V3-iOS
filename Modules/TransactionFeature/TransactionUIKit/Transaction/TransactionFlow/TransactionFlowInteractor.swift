@@ -16,7 +16,7 @@ protocol TransactionFlowRouting: Routing {
     func routeToConfirmation(transactionModel: TransactionModel)
     func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
-    func routeToInProgress(transactionModel: TransactionModel)
+    func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
     func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 }
@@ -143,7 +143,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             .subscribe(onSuccess: { [weak self] state in
                 switch state.step {
                 case .selectSource:
+                    /// Apply the source account
                     self?.didSelectSourceAccount(account: target as! BlockchainAccount)
+                    /// If the flow was started with a destination already, like if they
+                    /// are depositing into a `FiatAccount`, we apply the destination.
+                    /// This will route the user to the `Enter Amount` screen.
+                    if let destination = state.destination {
+                        self?.didSelectDestinationAccount(target: destination)
+                    }
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
                     if let selectedSource = state.source as? CryptoAccount,
@@ -244,7 +251,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         case .confirmDetail:
             router?.routeToConfirmation(transactionModel: transactionModel)
         case .inProgress:
-            router?.routeToInProgress(transactionModel: transactionModel)
+            router?.routeToInProgress(transactionModel: transactionModel, action: action)
         case .selectSource:
             router?.routeToSourceAccountPicker(transactionModel: transactionModel, action: action)
         case .enterAddress:

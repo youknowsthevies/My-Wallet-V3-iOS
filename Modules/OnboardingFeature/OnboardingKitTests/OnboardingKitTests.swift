@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import XCTest
 @testable import OnboardingKit
+import XCTest
 
 class OnboardingKitTests: XCTestCase {
 

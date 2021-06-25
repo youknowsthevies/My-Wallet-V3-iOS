@@ -2,8 +2,8 @@
 
 import Combine
 import PlatformKit
-@testable import TransactionUIKit
 import SwiftUI
+@testable import TransactionUIKit
 import XCTest
 
 final class TransactionsRouterTests: XCTestCase {

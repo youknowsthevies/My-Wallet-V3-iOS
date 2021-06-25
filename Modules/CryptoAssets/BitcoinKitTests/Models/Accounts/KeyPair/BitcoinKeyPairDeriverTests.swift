@@ -17,7 +17,6 @@ class BitcoinKeyPairDeriverTests: XCTestCase {
         super.tearDown()
     }
 
-
     func test_derive_passphrase() throws {
         // Arrange
         let expectedKeyPair = BitcoinKeyPair(

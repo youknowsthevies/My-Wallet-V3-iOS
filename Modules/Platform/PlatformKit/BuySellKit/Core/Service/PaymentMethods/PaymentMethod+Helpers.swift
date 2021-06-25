@@ -21,12 +21,21 @@ extension PaymentMethod {
                                           supportedFiatCurrencies: supportedFiatCurrencies) else {
             return nil
         }
-        let min = FiatValue.create(minor: method.limits.min, currency: currency)!
-        let max = FiatValue.create(minor: method.limits.max, currency: currency)!
+        let zero = FiatValue.zero(currency: currency)
+        let minValue = method.limits.min
+        let maxValue = method.limits.max
+        let maxDailyValue = method.limits.daily?.available ?? maxValue
+        let maxAnnualValue = method.limits.annual?.available ?? maxValue
+        let min = FiatValue.create(minor: minValue, currency: currency) ?? zero
+        let max = FiatValue.create(minor: maxValue, currency: currency) ?? zero
+        let maxDaily = FiatValue.create(minor: maxDailyValue, currency: currency) ?? zero
+        let maxAnnual = FiatValue.create(minor: maxAnnualValue, currency: currency) ?? zero
         self.init(
             type: methodType,
             max: max,
             min: min,
+            maxDaily: maxDaily,
+            maxAnnual: maxAnnual,
             isEligible: method.eligible,
             isVisible: method.visible
         )

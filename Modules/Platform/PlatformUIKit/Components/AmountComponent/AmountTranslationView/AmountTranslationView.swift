@@ -6,7 +6,11 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public final class AmountTranslationView: UIView {
+public final class AmountTranslationView: UIView, AmountViewable {
+
+    public var view: UIView {
+        self
+    }
 
     // MARK: - Types
 
@@ -209,7 +213,7 @@ public final class AmountTranslationView: UIView {
 
     // MARK: - Public Methods
 
-    public func connect(input: Driver<AmountTranslationPresenter.Input>) -> Driver<AmountTranslationPresenter.State> {
+    public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         Driver.combineLatest(presenter.connect(input: input), presenter.activeAmountInput)
             .map { (state: $0.0, activeAmountInput: $0.1) }
             .map { [weak self] value in
@@ -220,8 +224,8 @@ public final class AmountTranslationView: UIView {
 
     // MARK: - Private Methods
 
-    private func performEffect(state: AmountTranslationPresenter.State,
-                               activeAmountInput: ActiveAmountInput) -> AmountTranslationPresenter.State {
+    private func performEffect(state: AmountPresenterState,
+                               activeAmountInput: ActiveAmountInput) -> AmountPresenterState {
         let limitButtonVisibility: Visibility
         switch state {
         case .warning(let viewModel):
@@ -231,6 +235,8 @@ public final class AmountTranslationView: UIView {
              .empty:
             auxiliaryButton.viewModel = nil
             limitButtonVisibility = .hidden
+        case .showLimitButton:
+            unimplemented()
         }
 
         let fiatVisibility: Visibility

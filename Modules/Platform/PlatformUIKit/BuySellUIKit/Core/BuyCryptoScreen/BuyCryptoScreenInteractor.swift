@@ -188,13 +188,13 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
-            .flatMapLatest(weak: self) { (self, state) -> Observable<AmountTranslationInteractor.State> in
+            .flatMapLatest(weak: self) { (self, state) -> Observable<AmountInteractorState> in
                 Single
                     .zip(
                         self.amountTranslationInteractor.activeInputRelay.take(1).asSingle(),
                         cryptoCurrencySelectionService.cryptoCurrency
                     )
-                    .flatMap(weak: self) { (self, values) -> Single<AmountTranslationInteractor.State> in
+                    .flatMap(weak: self) { (self, values) -> Single<AmountInteractorState> in
                         let (activeInput, currency) = values
                         switch state {
                         case .tooHigh(max: let fiatValue),
@@ -205,12 +205,12 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                                     cryptoCurrency: currency,
                                     usesFiatAsBase: activeInput == .fiat
                                 )
-                                .map { pair -> AmountTranslationInteractor.State in
+                                .map { pair -> AmountInteractorState in
                                     switch state {
                                     case .tooHigh:
                                         return .maxLimitExceeded(pair.base)
                                     case .tooLow:
-                                        return .minLimitExceeded(pair.base)
+                                        return .underMinLimit(pair.base)
                                     case .empty:
                                         return .empty
                                     case .inBounds:
@@ -230,9 +230,9 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     effectRelay.accept(.failure(error))
                 }
             })
-            .catchError { error -> Observable<AmountTranslationInteractor.State> in
+            .catchError { error -> Observable<AmountInteractorState> in
                 .just(
-                    AmountTranslationInteractor.State.error(
+                    AmountInteractorState.error(
                         message: String(describing: error)
                     )
                 )
@@ -348,7 +348,7 @@ extension SelectionItemViewModel {
     }
 }
 
-extension AmountTranslationInteractor.Effect {
+extension AmountInteractorEffect {
     var toBuyCryptoInteractorEffect: BuyCryptoScreenInteractor.Effect {
         switch self {
         case .failure(let error):

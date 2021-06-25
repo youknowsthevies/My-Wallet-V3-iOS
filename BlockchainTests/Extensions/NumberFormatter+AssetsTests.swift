@@ -23,7 +23,6 @@ class NumberFormatterAssetsTests: XCTestCase {
         super.tearDown()
     }
 
-
     func testLocalCurrencyFormatterWithGroupingSeparator() {
         // Setup test
         let name = "localCurrencyFormatterWithGroupingSeparator"

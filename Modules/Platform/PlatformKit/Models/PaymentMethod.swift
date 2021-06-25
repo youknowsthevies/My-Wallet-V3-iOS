@@ -171,6 +171,14 @@ public struct PaymentMethod: Equatable, Comparable {
     /// The minimum value of payment using that method
     public let min: FiatValue
 
+    /// The maximum value of payment using that method
+    /// for a single day
+    public let maxDaily: FiatValue
+
+    /// The maximum value of payment using that method
+    /// for the year
+    public let maxAnnual: FiatValue
+
     public static func == (lhs: PaymentMethod, rhs: PaymentMethod) -> Bool {
         lhs.type == rhs.type
     }
@@ -183,12 +191,16 @@ public struct PaymentMethod: Equatable, Comparable {
         type: MethodType,
         max: FiatValue,
         min: FiatValue,
+        maxDaily: FiatValue? = nil,
+        maxAnnual: FiatValue? = nil,
         isEligible: Bool,
         isVisible: Bool
     ) {
         self.type = type
         self.max = max
         self.min = min
+        self.maxDaily = maxDaily ?? max
+        self.maxAnnual = maxAnnual ?? max
         self.isEligible = isEligible
         self.isVisible = isVisible
     }

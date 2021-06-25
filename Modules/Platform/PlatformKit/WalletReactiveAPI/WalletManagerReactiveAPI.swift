@@ -6,7 +6,7 @@ import CombineExt
 public protocol WalletManagerReactiveAPI {
 
     // MARK: WalletAuthDelegate
-    
+
     /// Reactive wrapper for delegate method `walletDidDecrypt(withSharedKey:guid:)`
     /// - Note: Returns a `WalletDecryption` instance containing info as received from the delegate method
     var didDecryptWallet: AnyPublisher<WalletDecryption, Error> { get }

@@ -2,13 +2,14 @@
 
 import RxCocoa
 import RxSwift
+import ToolKit
 import UIKit
 
-public protocol SingleAmountConnectable {
-    func connect(input: Driver<SingleAmountPresenter.Input>) -> Driver<SingleAmountPresenter.State>
-}
+public final class SingleAmountView: UIView, AmountViewable {
 
-public final class SingleAmountView: UIView, SingleAmountConnectable {
+    public var view: UIView {
+        self
+    }
 
     // MARK: - Properties
 
@@ -46,7 +47,7 @@ public final class SingleAmountView: UIView, SingleAmountConnectable {
         labeledButtonView.layoutToSuperview(.centerX)
     }
 
-    public func connect(input: Driver<SingleAmountPresenter.Input>) -> Driver<SingleAmountPresenter.State> {
+    public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         presenter.connect(input: input)
             .map { [weak self] state in
                 guard let self = self else { return .empty }
@@ -54,7 +55,7 @@ public final class SingleAmountView: UIView, SingleAmountConnectable {
             }
     }
 
-    private func performEffect(state: SingleAmountPresenter.State) -> SingleAmountPresenter.State {
+    private func performEffect(state: AmountPresenterState) -> AmountPresenterState {
         let limitButtonVisibility: Visibility
         switch state {
         case .showLimitButton(let viewModel):
@@ -62,6 +63,9 @@ public final class SingleAmountView: UIView, SingleAmountConnectable {
             limitButtonVisibility = .visible
         case .empty:
             limitButtonVisibility = .hidden
+        case .warning,
+             .showSecondaryAmountLabel:
+            unimplemented()
         }
         UIView.animate(
             withDuration: 0.15,

@@ -70,8 +70,7 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
 
     // MARK: - PendingTransactionPagePresentable
 
-    func connect(state: Driver<PendingTransactionPageInteractor.State>) -> Driver<PendingTransactionPageInteractor.Effects> {
-
+    func connect(state: Driver<PendingTransactionPageState>) -> Driver<PendingTransactionPageState.Effect> {
         state
             .map(\.title)
             .drive(titleLabel.rx.content)
@@ -99,12 +98,12 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
             .disposed(by: disposeBag)
 
         let closeTapped = closeTriggered
-            .map { PendingTransactionPageInteractor.Effects.close }
+            .map { PendingTransactionPageState.Effect.close }
 
         let tap = state
             .compactMap(\.buttonViewModel)
             .flatMap(\.tap)
-            .flatMap { state.map(\.effects) }
+            .flatMap { state.map(\.effect) }
             .asObservable()
 
         return Observable.merge(closeTapped, tap)

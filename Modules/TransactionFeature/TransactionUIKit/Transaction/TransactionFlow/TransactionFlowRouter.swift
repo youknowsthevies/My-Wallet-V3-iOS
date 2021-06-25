@@ -50,9 +50,13 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         viewController.push(viewController: viewControllable)
     }
 
-    func routeToInProgress(transactionModel: TransactionModel) {
+    func routeToInProgress(transactionModel: TransactionModel, action: AssetAction) {
         let builder = PendingTransactionPageBuilder()
-        let router = builder.build(withListener: interactor, transactionModel: transactionModel)
+        let router = builder.build(
+            withListener: interactor,
+            transactionModel: transactionModel,
+            action: action
+        )
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.push(viewController: viewControllable)

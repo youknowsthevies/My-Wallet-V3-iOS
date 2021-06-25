@@ -2,8 +2,8 @@
 
 import AnalyticsKit
 import DIKit
-import PlatformKit
 import Localization
+import PlatformKit
 import RIBs
 import RxCocoa
 import RxRelay

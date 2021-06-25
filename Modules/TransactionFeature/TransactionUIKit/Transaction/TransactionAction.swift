@@ -195,7 +195,6 @@ enum TransactionAction: MviAction {
         case .invalidateTransaction:
             return oldState
                 .update(keyPath: \.pendingTransaction, value: nil)
-                .update(keyPath: \.destination, value: nil)
                 .update(keyPath: \.nextEnabled, value: false)
                 .withUpdatedBackstack(oldState: oldState)
         }

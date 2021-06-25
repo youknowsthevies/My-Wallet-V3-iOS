@@ -4,6 +4,7 @@ import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
+import RxCombine
 import RxSwift
 import ToolKit
 
@@ -15,7 +16,8 @@ typealias TransactionKitClientAPI = CustodialQuoteAPI &
                                     OrderUpdateClientAPI &
                                     CustodialTransferClientAPI &
                                     BitPayClientAPI &
-                                    BlockchainNameResolutionAPI
+                                    BlockchainNameResolutionAPI &
+                                    BankTransferClientAPI
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
@@ -29,6 +31,7 @@ final class APIClient: TransactionKitClientAPI {
         static let product = "product"
         static let paymentMethod = "paymentMethod"
         static let orderDirection = "orderDirection"
+        static let payment = "payment"
         static let simpleBuy = "SIMPLEBUY"
         static let swap = "SWAP"
         static let `default` = "DEFAULT"
@@ -40,8 +43,9 @@ final class APIClient: TransactionKitClientAPI {
         static let availablePairs = ["custodial", "trades", "pairs"]
         static let fetchOrder = createOrder
         static let limits = ["trades", "limits"]
-        static let transfer = [ "payments", "withdrawals" ]
-        static let transferFees = [ "payments", "withdrawals", "fees" ]
+        static let transfer = ["payments", "withdrawals"]
+        static let bankTransfer = ["payments", "banktransfer"]
+        static let transferFees = ["payments", "withdrawals", "fees"]
         static let domainResolution = ["resolve"]
         static func updateOrder(transactionID: String) -> [String] {
             createOrder + [transactionID]
@@ -179,6 +183,58 @@ final class APIClient: TransactionKitClientAPI {
             headers: headers,
             authenticated: false
         )!
+        return retailNetworkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
+    }
+
+    // MARK: - BankTransferClientAPI
+
+    func startBankTransfer(id: String, amount: MoneyValue) -> AnyPublisher<BankTranferPaymentResponse, NetworkError> {
+        unimplemented()
+    }
+
+    func createWithdrawOrder(id: String, amount: MoneyValue) -> AnyPublisher<Never, NetworkError> {
+        unimplemented()
+    }
+
+    func startBankTransfer(id: String, amount: MoneyValue) -> Single<BankTranferPaymentResponse> {
+        let model = BankTransferPaymentRequest(
+            amountMinor: amount.minorString,
+            currency: amount.currencyCode,
+            attributes: nil
+        )
+
+        let request = retailRequestBuilder.post(
+            path: Path.bankTransfer + [id] + [Parameter.payment],
+            body: try? model.encode(),
+            authenticated: true
+        )!
+
+        return retailNetworkAdapter
+            .perform(
+                request: request,
+                errorResponseType: NabuNetworkError.self
+            )
+    }
+
+    func createWithdrawOrder(id: String, amount: MoneyValue) -> Completable {
+        let headers = [HttpHeaderField.blockchainOrigin: HttpHeaderValue.simpleBuy]
+        let body = WithdrawRequestBody(
+            beneficiary: id,
+            currency: amount.currencyCode,
+            amount: amount.minorString
+        )
+
+        let request = retailRequestBuilder.post(
+            path: Path.transfer,
+            body: try? body.encode(),
+            headers: headers,
+            authenticated: true
+        )!
+
         return retailNetworkAdapter
             .perform(
                 request: request,

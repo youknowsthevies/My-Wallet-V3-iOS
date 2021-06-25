@@ -157,7 +157,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
                 text: TransactionFlowDescriptor.confirmDisclaimerText(action: state.action),
                 font: .main(.medium, 12),
                 color: .descriptionText,
-                alignment: .center,
+                alignment: .left,
                 accessibility: .id("disclaimer")
             )
             disclaimer.append(.staticLabel(content))
@@ -178,7 +178,9 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         case .sell:
             return String(format: LocalizedString.Swap.sell, amount)
         case .deposit:
-            return String(format: LocalizedString.Swap.deposit, amount)
+            return [LocalizedString.Deposit.deposit, "\(state.amount.displayString)"].joined(separator: " ")
+        case .withdraw:
+            return LocalizedString.Withdraw.withdraw + " \(state.amount.displayString)"
         default:
             fatalError("ConfirmationPageContentReducer: \(state.action) not supported.")
         }

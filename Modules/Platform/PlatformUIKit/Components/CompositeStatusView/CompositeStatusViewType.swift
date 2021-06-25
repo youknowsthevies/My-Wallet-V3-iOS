@@ -5,6 +5,7 @@ public enum CompositeStatusViewType: Equatable {
 
     public struct Composite: Equatable {
         public enum BaseViewType: Equatable {
+            case badgeImageViewModel(BadgeImageViewModel)
             case image(String, Bundle)
             case templateImage(name: String, bundle: Bundle, templateColor: UIColor)
             case text(String)
@@ -60,7 +61,9 @@ public enum CompositeStatusViewType: Equatable {
         switch self {
         case .composite(let composite):
             return composite.cornerRadiusRatio
-        case .loader, .image, .none:
+        case .loader,
+             .image,
+             .none:
             return 0
         }
     }
@@ -69,7 +72,9 @@ public enum CompositeStatusViewType: Equatable {
         switch self {
         case .composite(let composite):
             return composite.backgroundColor
-        case .loader, .image, .none:
+        case .loader,
+             .image,
+             .none:
             return .clear
         }
     }

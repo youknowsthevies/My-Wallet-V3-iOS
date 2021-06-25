@@ -36,7 +36,7 @@ extension Array where Element == DerivationComponent {
     }
 }
 
-//extension BIP32Derivation {
+// extension BIP32Derivation {
 //    var component: DerivationComponent {
 //        switch self {
 //        case .normal(let value):
@@ -45,13 +45,13 @@ extension Array where Element == DerivationComponent {
 //            return .hardened(value)
 //        }
 //    }
-//}
+// }
 
-//extension BIP32Path {
+// extension BIP32Path {
 //    var derivationComponents: [DerivationComponent] {
 //        components.map { $0.component }
 //    }
-//}
+// }
 
 struct HDKeyPath: LosslessStringConvertible {
 

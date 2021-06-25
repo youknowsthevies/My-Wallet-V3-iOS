@@ -302,6 +302,33 @@ extension TransactionConfirmation.Model {
         }
     }
 
+    public struct FundsArrivalDate: TransactionConfirmationModelable {
+
+        /// Defaults to five days. Applies to both `deposit` and `withdraw`.
+        public static let `default`: FundsArrivalDate = .init()
+
+        public let date: Date
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public init(date: Date = (Calendar.current.date(byAdding: .day, value: 5, to: Date())) ?? Date()) {
+            self.date = date
+        }
+
+        public var formatted: (title: String, subtitle: String)? {
+            (LocalizedString.fundsArrivalDate, "\(DateFormatter.medium.string(from: date))")
+        }
+    }
+
+    public struct FiatTransactionFee: TransactionConfirmationModelable {
+        public let fee: MoneyValue
+        public let type: TransactionConfirmation.Kind = .readOnly
+
+        public var formatted: (title: String, subtitle: String)? {
+            (String(format: LocalizedString.transactionFee, fee.displayCode),
+             fee.displayString)
+        }
+    }
+
     public struct NetworkFee: TransactionConfirmationModelable {
         public enum FeeType {
             case depositFee

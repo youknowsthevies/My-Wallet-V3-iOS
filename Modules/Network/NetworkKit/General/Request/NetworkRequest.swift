@@ -32,7 +32,7 @@ public struct NetworkRequest {
         )
 
         request.httpMethod = method.rawValue
-        
+
         let requestHeaders = headers.merging(defaultHeaders)
         for (key, value) in requestHeaders {
             request.addValue(value, forHTTPHeaderField: key)

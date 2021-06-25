@@ -106,13 +106,13 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
     }
 
     func startDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?) {
-        dismissTopMost(weak: self) { (self) in
-            self.showDepositFlow(target: target, sourceAccount: sourceAccount)
-        }
+        showDepositFlow(target: target, sourceAccount: sourceAccount)
     }
 
     func routeToDeposit(target: FiatAccount, sourceAccount: LinkedBankAccount?) {
-        showDepositFlow(target: target, sourceAccount: sourceAccount)
+        dismissTopMost(weak: self) { (self) in
+            self.showDepositFlow(target: target, sourceAccount: sourceAccount)
+        }
     }
 
     func dismissTransactionFlow() {

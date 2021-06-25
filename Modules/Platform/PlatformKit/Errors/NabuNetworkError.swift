@@ -262,8 +262,8 @@ public enum NabuErrorCode: Int, Codable, Equatable {
     case invalidWithdrawalAmount = 90
     case exchangeRateFetchFailure = 91
     case minimumWithdrawalAmount = 92
-    case invalidCryptoCurrency = 93
-    case invalidCryptoAddress = 94
+    case invalidCryptoAddress = 93
+    case invalidCryptoCurrency = 94
     case tierTooLow = 98
     case invalidAddress = 99
     case invalidPostcode = 158
@@ -288,7 +288,7 @@ public enum NabuErrorCode: Int, Codable, Equatable {
 
     /// Custodial related
     case invalidDestinationAddress = 148
-    case invalidInputCurrency = 149
+    case invalidFiatCurrency = 149
     case orderDirectionDisabled = 151
     case addressGenerationFailure = 153
     case notFoundCustodialQuote = 155

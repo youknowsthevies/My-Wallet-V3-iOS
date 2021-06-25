@@ -6,51 +6,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-public enum ActiveAmountInput {
-    case fiat
-    case crypto
-
-    var inverted: ActiveAmountInput {
-        switch self {
-        case .fiat:
-            return .crypto
-        case .crypto:
-            return .fiat
-        }
-    }
-}
-
-public final class AmountTranslationInteractor {
-
-    // MARK: - Types
-
-    public enum Input {
-        case insert(Character)
-        case remove
-
-        var character: Character? {
-            switch self {
-            case .insert(let value):
-                return value
-            case .remove:
-                return nil
-            }
-        }
-    }
-
-    public enum State {
-        case empty
-        case inBounds
-        case warning(message: String, action: () -> Void)
-        case error(message: String)
-        case maxLimitExceeded(MoneyValue)
-        case minLimitExceeded(MoneyValue)
-    }
-
-    public enum Effect {
-        case failure(error: Error)
-        case none
-    }
+public final class AmountTranslationInteractor: AmountViewInteracting {
 
     // MARK: - Properties
 
@@ -75,12 +31,12 @@ public final class AmountTranslationInteractor {
     }
 
     /// The state of the component
-    public let stateRelay = BehaviorRelay<State>(value: .empty)
-    public var state: Observable<State> {
+    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .empty)
+    public var state: Observable<AmountInteractorState> {
         stateRelay.asObservable()
     }
 
-    public var effect: Observable<Effect> {
+    public var effect: Observable<AmountInteractorEffect> {
         effectRelay
             .asObservable()
             .distinctUntilChanged()
@@ -95,7 +51,7 @@ public final class AmountTranslationInteractor {
     /// A relay responsible for appending new characters to the active input
     public let appendNewRelay = PublishRelay<Character>()
 
-    /// The active input - streams distinct elements of `ActiveInput`
+    /// The active input - streams distinct elements of `AmountInteractorActiveInput`
     public var activeInput: Observable<ActiveAmountInput> {
         activeInputRelay
             .asObservable()
@@ -137,7 +93,7 @@ public final class AmountTranslationInteractor {
     private let cryptoAmountRelay: BehaviorRelay<MoneyValue>
 
     /// A relay that streams an effect, such as a failure
-    private let effectRelay = BehaviorRelay<Effect>(value: .none)
+    private let effectRelay = BehaviorRelay<AmountInteractorEffect>(value: .none)
 
     // MARK: - Injected
 
@@ -331,7 +287,7 @@ public final class AmountTranslationInteractor {
                 switch state {
                 case .empty, .inBounds:
                     return .valid
-                case .maxLimitExceeded, .minLimitExceeded, .warning, .error:
+                case .maxLimitExceeded, .underMinLimit, .warning, .error:
                     return .invalid
                 }
             }
@@ -361,7 +317,7 @@ public final class AmountTranslationInteractor {
             .disposed(by: disposeBag)
     }
 
-    public func connect(input: Driver<Input>) -> Driver<State> {
+    public func connect(input: Driver<AmountInteractorInput>) -> Driver<AmountInteractorState> {
         // Input Actions
         input
             .compactMap(\.character)
@@ -468,23 +424,23 @@ public final class AmountTranslationInteractor {
     }
 }
 
-extension AmountTranslationInteractor.State {
+extension AmountInteractorState {
     internal var toValidationState: ValidationState {
         switch self {
         case .inBounds:
             return .valid
         case .empty,
              .maxLimitExceeded,
-             .minLimitExceeded,
              .warning,
+             .underMinLimit,
              .error:
             return .invalid
         }
     }
 }
 
-extension AmountTranslationInteractor.Effect: Equatable {
-    public static func == (lhs: AmountTranslationInteractor.Effect, rhs: AmountTranslationInteractor.Effect) -> Bool {
+extension AmountInteractorEffect: Equatable {
+    public static func == (lhs: AmountInteractorEffect, rhs: AmountInteractorEffect) -> Bool {
         switch (lhs, rhs) {
         case (.failure, .failure):
             return true

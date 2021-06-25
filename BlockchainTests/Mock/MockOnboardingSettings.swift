@@ -4,7 +4,7 @@
 
 class MockOnboardingSettings: OnboardingSettingsAPI {
 
-    var walletIntroLatestLocation: WalletIntroductionLocation? = nil
+    var walletIntroLatestLocation: WalletIntroductionLocation?
     var firstRun: Bool = false
 
     var resetCalled = false

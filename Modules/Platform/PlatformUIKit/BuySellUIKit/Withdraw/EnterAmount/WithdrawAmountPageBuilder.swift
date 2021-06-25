@@ -28,9 +28,7 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
         let singleViewInteractor = SingleAmountInteractor(currencyService: fiatCurrencyService,
                                                           inputCurrency: currency)
         let singleViewPresenter = SingleAmountPresenter(interactor: singleViewInteractor)
-        let amountViewProvider = {
-            SingleAmountView(presenter: singleViewPresenter)
-        }
+        let amountView = SingleAmountView(presenter: singleViewPresenter)
 
         let digitPadViewModel = provideDigitPadViewModel()
         let continueButtonViewModel = ButtonViewModel.primary(with: displayBundle.strings.ctaButton)
@@ -41,7 +39,7 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
                                                           digitPadViewModel: digitPadViewModel,
                                                           continueButtonViewModel: continueButtonViewModel,
                                                           topSelectionButtonViewModel: topSelectionButtonViewModel,
-                                                          amountViewProvider: amountViewProvider)
+                                                          amountViewProvider: amountView)
 
         let validationService = WithdrawAmountValidationService(fiatCurrency: currency,
                                                                 beneficiary: beneficiary)

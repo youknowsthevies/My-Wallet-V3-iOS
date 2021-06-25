@@ -139,8 +139,8 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         let amountViewInputs = [
             digitInput
                 .compactMap(\.first)
-                .map { AmountTranslationPresenter.Input.input($0) },
-            deleteInput.map { AmountTranslationPresenter.Input.delete }
+                .map { AmountPresenterInput.input($0) },
+            deleteInput.map { AmountPresenterInput.delete }
         ]
 
         amountTranslationView.connect(input: Driver.merge(amountViewInputs))

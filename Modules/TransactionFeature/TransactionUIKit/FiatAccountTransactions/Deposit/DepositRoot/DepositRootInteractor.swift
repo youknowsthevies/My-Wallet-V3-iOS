@@ -109,7 +109,7 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
                         fiatCurrency: fiatCurrency
                     )
                 } else {
-                    self.router?.routeToDeposit(
+                    self.router?.startDeposit(
                         target: self.targetAccount,
                         sourceAccount: linkedBanks.count > 1 ? nil : linkedBanks.first
                     )

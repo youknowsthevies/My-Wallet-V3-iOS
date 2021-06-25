@@ -15,31 +15,8 @@ extension DisplayBundle {
     static func send(sourceAccount: SingleAccount) -> DisplayBundle {
         typealias LocalizedString = LocalizationConstants.Transaction
 
-        let colors = Colors(
-            digitPadTopSeparator: .lightBorder,
-            bottomAuxiliaryItemSeparator: .clear
-        )
-
-        // TODO: Add correct Analytics Event
-        let events = Events(
-            didAppear: AnalyticsEvents.New.Send.sendReceiveViewed(type: .send),
-            confirmSuccess: SendAnalyticsEvent(),
-            confirmFailure: SendAnalyticsEvent(),
-            confirmTapped: { _, _, _ in SendAnalyticsEvent() },
-            sourceAccountChanged: { _ in SendAnalyticsEvent() }
-        )
-
-        let accessibilityIdentifiers = AccessibilityIdentifiers(
-            bottomAuxiliaryItemSeparatorTitle: "",
-            topSelectionFromIdentifier: "Send.From.Selection",
-            topSelectionToIdentifier: "Send.To.Selection"
-        )
-
         return DisplayBundle(
             title: LocalizedString.Send.send,
-            colors: colors,
-            events: events,
-            accessibilityIdentifiers: accessibilityIdentifiers,
             amountDisplayBundle: .init(
                 events: .init(
                     min: SendAnalyticsEvent(),

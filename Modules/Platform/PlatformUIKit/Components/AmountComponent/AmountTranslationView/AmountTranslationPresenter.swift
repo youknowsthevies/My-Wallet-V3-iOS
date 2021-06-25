@@ -18,7 +18,7 @@ extension Accessibility.Identifier {
     }
 }
 
-public final class AmountTranslationPresenter {
+public final class AmountTranslationPresenter: AmountViewPresenting {
 
     // MARK: - Types
 
@@ -67,12 +67,6 @@ public final class AmountTranslationPresenter {
         case delete
     }
 
-    public enum State {
-        case empty
-        case warning(ButtonViewModel)
-        case showSecondaryAmountLabel
-    }
-
     private typealias LocalizedString = LocalizationConstants.SimpleBuy.BuyCryptoScreen.LimitView
     private typealias AccessibilityId = Accessibility.Identifier.Amount
 
@@ -86,7 +80,7 @@ public final class AmountTranslationPresenter {
         interactor.activeInputRelay.asDriver()
     }
 
-    var state: Driver<State> {
+    var state: Driver<AmountPresenterState> {
         stateRelay.asDriver()
     }
 
@@ -107,7 +101,7 @@ public final class AmountTranslationPresenter {
 
     // MARK: - Accessors
 
-    private let stateRelay = BehaviorRelay<State>(value: .showSecondaryAmountLabel)
+    private let stateRelay = BehaviorRelay<AmountPresenterState>(value: .showSecondaryAmountLabel)
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -141,17 +135,17 @@ public final class AmountTranslationPresenter {
             .disposed(by: disposeBag)
     }
 
-    public func connect(input: Driver<AmountTranslationPresenter.Input>) -> Driver<State> {
+    public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {
         interactor.connect(input: input.map(\.toInteractorInput))
-            .map { [weak self] state -> State in
+            .map { [weak self] state -> AmountPresenterState in
                 guard let self = self else { return .empty }
 
                 return self.setupButton(by: state, activeInput: self.interactor.activeInputRelay.value)
             }
     }
 
-    private func setupButton(by state: AmountTranslationInteractor.State,
-                             activeInput: ActiveAmountInput) -> State {
+    private func setupButton(by state: AmountInteractorState,
+                             activeInput: ActiveAmountInput) -> AmountPresenterState {
         switch state {
         case .empty, .inBounds:
             return .showSecondaryAmountLabel
@@ -195,7 +189,7 @@ public final class AmountTranslationPresenter {
                 })
                 .disposed(by: disposeBag)
             return .warning(viewModel)
-        case .minLimitExceeded(let minValue):
+        case .underMinLimit(let minValue):
             /// The min/max string value can include one parameter. If it does not
             /// just show the localized string.
             var message = ""
@@ -221,8 +215,8 @@ public final class AmountTranslationPresenter {
     }
 }
 
-extension AmountTranslationPresenter.Input {
-    internal var toInteractorInput: AmountTranslationInteractor.Input {
+extension AmountPresenterInput {
+    internal var toInteractorInput: AmountInteractorInput {
         switch self {
         case .input(let value):
             return .insert(value)

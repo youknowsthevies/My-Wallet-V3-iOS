@@ -18,7 +18,6 @@ extension CryptoCurrency {
     }
 }
 
-
 extension LegacyAssetType {
     var cryptoCurrency: CryptoCurrency {
         switch self {

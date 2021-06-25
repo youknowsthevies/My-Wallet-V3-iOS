@@ -241,11 +241,11 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         state
-            .flatMapLatest { state -> Observable<AmountTranslationInteractor.State> in
+            .flatMapLatest { state -> Observable<AmountInteractorState> in
                 amountTranslationInteractor.activeInputRelay
                     .take(1)
                     .asSingle()
-                    .flatMap { activeInput -> Single<AmountTranslationInteractor.State> in
+                    .flatMap { activeInput -> Single<AmountInteractorState> in
                         switch state {
                         case .tooLow(min: let moneyValue),
                              .tooHigh(max: let moneyValue):
@@ -255,10 +255,10 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                                     cryptoCurrency: sourceAccountCurrency.cryptoCurrency!,
                                     usesFiatAsBase: activeInput == .fiat
                                 )
-                                .map { pair -> AmountTranslationInteractor.State in
+                                .map { pair -> AmountInteractorState in
                                     switch state {
                                     case .tooLow:
-                                        return .minLimitExceeded(pair.base)
+                                        return .underMinLimit(pair.base)
                                     case .tooHigh:
                                         return .maxLimitExceeded(pair.base)
                                     case .empty:

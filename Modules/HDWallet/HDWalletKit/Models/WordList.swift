@@ -12,7 +12,7 @@ public struct WordList {
 
 }
 
-fileprivate enum BIP39Words {
+private enum BIP39Words {
     static let english: [String] = [
         "abandon",
         "ability",

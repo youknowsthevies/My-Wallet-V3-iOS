@@ -160,6 +160,8 @@ public final class CompositeStatusView: UIView {
                         self.setupLoadingView()
                     case .composite(let composite):
                         switch composite.baseViewType {
+                        case let .badgeImageViewModel(viewModel):
+                            self.setupBadgeImageView(with: viewModel)
                         case let .image(name, bundle):
                             self.setupImageView(with: name, bundle: bundle)
                         case let .templateImage(name, bundle, color):
@@ -224,6 +226,12 @@ public final class CompositeStatusView: UIView {
 
         add(view: loadingView)
         loadingView.animate()
+    }
+
+    private func setupBadgeImageView(with viewModel: BadgeImageViewModel) {
+        let badgeImageView = BadgeImageView()
+        badgeImageView.viewModel = viewModel
+        add(view: badgeImageView)
     }
 
     private func setupImageView(with name: String, bundle: Bundle) {

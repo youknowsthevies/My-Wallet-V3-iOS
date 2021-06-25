@@ -13,6 +13,8 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
     case feeSelection(TransactionConfirmation.Model.FeeSelection)
     case largeTransactionWarning(TransactionConfirmation.Model.AnyBoolOption<MoneyValue>)
     case memo(TransactionConfirmation.Model.Memo)
+    case transactionFee(TransactionConfirmation.Model.FiatTransactionFee)
+    case arrivalDate(TransactionConfirmation.Model.FundsArrivalDate)
     case networkFee(TransactionConfirmation.Model.NetworkFee)
     case sendDestinationValue(TransactionConfirmation.Model.SendDestinationValue)
     case source(TransactionConfirmation.Model.Source)
@@ -23,6 +25,10 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
 
     public var type: TransactionConfirmation.Kind {
         switch self {
+        case .arrivalDate(let value):
+            return value.type
+        case .transactionFee(let value):
+            return value.type
         case .bitpayCountdown(let value):
             return value.type
         case .description(let value):
@@ -60,6 +66,10 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
 
     public var formatted: (title: String, subtitle: String)? {
         switch self {
+        case .arrivalDate(let value):
+            return value.formatted
+        case .transactionFee(let value):
+            return value.formatted
         case .bitpayCountdown(let value):
             return value.formatted
         case .description(let value):
@@ -113,7 +123,9 @@ public enum TransactionConfirmation: TransactionConfirmationModelable {
              (.swapDestinationValue, .swapDestinationValue),
              (.swapExchangeRate, .swapExchangeRate),
              (.swapSourceValue, .swapSourceValue),
-             (.total, .total):
+             (.total, .total),
+             (.transactionFee, .transactionFee),
+             (.arrivalDate, .arrivalDate):
             return true
         default:
             return false

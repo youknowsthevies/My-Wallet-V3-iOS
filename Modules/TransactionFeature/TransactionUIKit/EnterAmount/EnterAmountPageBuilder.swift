@@ -41,32 +41,47 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
                action: AssetAction,
                navigationModel: ScreenNavigationModel) -> EnterAmountPageRouter {
         let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
-        let defaultCryptoCurrency: CryptoCurrency = sourceAccount.currencyType.cryptoCurrency!
 
         let initialActiveInput: ActiveAmountInput
+        let amountViewable: AmountViewable
+        let amountViewInteracting: AmountViewInteracting
+        let amountViewPresenting: AmountViewPresenting
         switch action {
         case .swap,
              .send:
             initialActiveInput = .fiat
+            guard let crypto = sourceAccount.currencyType.cryptoCurrency else {
+                fatalError("Expected a crypto as a source account.")
+            }
+            amountViewInteracting = AmountTranslationInteractor(
+                fiatCurrencyService: fiatCurrencyService,
+                cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
+                priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
+                defaultCryptoCurrency: crypto,
+                initialActiveInput: initialActiveInput
+            )
+
+            amountViewPresenting = AmountTranslationPresenter(
+                interactor: amountViewInteracting as! AmountTranslationInteractor,
+                analyticsRecorder: analyticsEventRecorder,
+                displayBundle: displayBundle.amountDisplayBundle
+            )
+
+            amountViewable = AmountTranslationView(presenter: amountViewPresenting as! AmountTranslationPresenter)
+        case .deposit,
+             .withdraw:
+            amountViewInteracting = SingleAmountInteractor(
+                currencyService: fiatCurrencyService,
+                inputCurrency: sourceAccount.currencyType
+            )
+
+            amountViewPresenting = SingleAmountPresenter(
+                interactor: amountViewInteracting as! SingleAmountInteractor
+            )
+
+            amountViewable = SingleAmountView(presenter: amountViewPresenting as! SingleAmountPresenter)
         default:
             unimplemented()
-        }
-        let amountTranslationInteractor = AmountTranslationInteractor(
-            fiatCurrencyService: fiatCurrencyService,
-            cryptoCurrencyService: DefaultCryptoCurrencyService(currencyType: sourceAccount.currencyType),
-            priceProvider: AmountTranslationPriceProvider(transactionModel: transactionModel),
-            defaultCryptoCurrency: defaultCryptoCurrency,
-            initialActiveInput: initialActiveInput
-        )
-
-        let amountTranslationPresenter = AmountTranslationPresenter(
-            interactor: amountTranslationInteractor,
-            displayBundle: displayBundle.amountDisplayBundle,
-            inputTypeToggleVisiblity: .visible
-        )
-
-        let amountViewProvider = {
-            AmountTranslationView(presenter: amountTranslationPresenter)
         }
 
         let digitPadViewModel = provideDigitPadViewModel()
@@ -79,13 +94,13 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             digitPadViewModel: digitPadViewModel,
             continueButtonViewModel: continueButtonViewModel,
             topSelectionButtonViewModel: topSelectionButtonViewModel,
-            amountViewProvider: amountViewProvider
+            amountViewProvider: amountViewable
         )
 
         let interactor = EnterAmountPageInteractor(
             transactionModel: transactionModel,
             presenter: viewController,
-            amountInteractor: amountTranslationInteractor,
+            amountInteractor: amountViewInteracting,
             action: action,
             navigationModel: navigationModel
         )

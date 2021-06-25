@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxSwift
 import RxRelay
+import RxSwift
 
 /// A Helper object for `CacheValue`
 struct CachedValueRefreshControl {

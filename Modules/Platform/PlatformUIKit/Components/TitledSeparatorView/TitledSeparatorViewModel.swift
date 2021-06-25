@@ -5,7 +5,7 @@ public struct TitledSeparatorViewModel {
     let separatorColor: Color
     let accessibility: Accessibility
 
-    public init(title: String, separatorColor: Color, accessibilityId: String) {
+    public init(title: String = "", separatorColor: Color = .clear, accessibilityId: String = "") {
         titleLabelContent = LabelContent(
             text: title,
             font: .main(.semibold, 12),

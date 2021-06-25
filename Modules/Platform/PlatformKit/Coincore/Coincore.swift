@@ -169,7 +169,7 @@ extension CoincoreAPI {
     public func initializePublisher() -> AnyPublisher<Never, Never> {
         initialize()
             .asPublisher()
-            .catch { error -> AnyPublisher<Never, Never> in
+            .catch { _ -> AnyPublisher<Never, Never> in
                 impossible()
             }
             .ignoreFailure()

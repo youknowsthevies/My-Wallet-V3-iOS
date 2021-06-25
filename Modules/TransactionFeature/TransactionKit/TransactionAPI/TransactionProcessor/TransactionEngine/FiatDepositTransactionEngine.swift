@@ -14,6 +14,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let priceService: PriceServiceAPI
     let requireSecondPassword: Bool = false
+    let canTransactFiat: Bool = true
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -26,12 +27,29 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     var targetAsset: FiatCurrency { target.fiatCurrency }
     var sourceAsset: FiatCurrency { sourceBankAccount.fiatCurrency }
 
+    // MARK: - Private Properties
+
+    private var paymentMethodTypes: Single<[PaymentMethodType]> {
+        fiatCurrencyService
+            .fiatCurrency
+            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[PaymentMethodType]> in
+                self.linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
+            }
+    }
+
+    private let linkedBanksFactory: LinkedBanksFactoryAPI
+    private let bankTransferService: BankTransferServiceAPI
+
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve()) {
+         priceService: PriceServiceAPI = resolve(),
+         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+         bankTransferService: BankTransferServiceAPI = resolve()) {
+        self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
+        self.bankTransferService = bankTransferService
     }
 
     // MARK: - TransactionEngine
@@ -50,13 +68,15 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .map(weak: self) { (self, paymentLimits) -> PendingTransaction in
                 PendingTransaction(
                     amount: .zero(currency: self.sourceAsset),
-                    available: .zero(currency: self.sourceAsset),
+                    available: paymentLimits.max.transactional.moneyValue,
                     feeAmount: .zero(currency: self.sourceAsset),
                     feeForFullAvailable: .zero(currency: self.sourceAsset),
                     feeSelection: .init(selectedLevel: .none, availableLevels: []),
                     selectedFiatCurrency: paymentLimits.min.currencyType,
                     minimumLimit: paymentLimits.min.moneyValue,
-                    maximumLimit: paymentLimits.max.moneyValue
+                    maximumLimit: paymentLimits.max.transactional.moneyValue,
+                    maximumDailyLimit: paymentLimits.max.daily.moneyValue,
+                    maximumAnnualLimit: paymentLimits.max.annual.moneyValue
                 )
             }
     }
@@ -67,8 +87,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
                     confirmations: [
                         .source(.init(value: sourceAccount.label)),
                         .destination(.init(value: target.label)),
-                        // TODO: Fee
-                        // TODO: EstimatedWithdrawalCompletion
+                        .transactionFee(.init(fee: pendingTransaction.feeAmount)),
+                        .arrivalDate(.default),
                         .total(.init(total: pendingTransaction.amount))
                     ]
                 )
@@ -96,14 +116,16 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         sourceAccount
             .receiveAddress
-            .flatMapCompletable(weak: self) { (_, _) -> Completable in
-                // TODO: Submit bank transfer
-                // TODO: Check if OB currency
-                unimplemented()
+            .map(\.address)
+            .flatMap(weak: self) { (self, identifier) -> Single<String> in
+                // TODO: Handle OB
+                self.bankTransferService
+                    .startBankTransfer(
+                        id: identifier,
+                        amount: pendingTransaction.amount
+                    )
             }
-            .flatMapSingle {
-                .just(TransactionResult.unHashed(amount: pendingTransaction.amount))
-            }
+            .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
@@ -119,7 +141,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
 
     private func fetchBankTransferLimits(fiatCurrency: FiatCurrency) -> Single<PaymentLimits> {
-        unimplemented()
+        linkedBanksFactory
+            .bankTransferLimits(for: fiatCurrency)
     }
 
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
@@ -131,21 +154,12 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             guard !pendingTransaction.amount.isZero else {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
-            guard try pendingTransaction.amount < minLimit else {
+            guard try pendingTransaction.amount >= minLimit else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit)
             }
-            guard try pendingTransaction.amount > maxLimit else {
+            guard try pendingTransaction.amount <= maxLimit else {
                 throw TransactionValidationFailure(state: .overMaximumLimit)
             }
-            guard try pendingTransaction.available < pendingTransaction.amount else {
-                throw TransactionValidationFailure(state: .insufficientFunds)
-            }
         }
-    }
-
-    // TODO: Remove. This is just a placeholder.
-    private struct PaymentLimits {
-        let min: FiatValue
-        let max: FiatValue
     }
 }

@@ -47,6 +47,8 @@ public struct PendingTransaction: Equatable {
     public private(set) var confirmations: [TransactionConfirmation] = []
     public var minimumLimit: MoneyValue?
     public var maximumLimit: MoneyValue?
+    public var maximumDailyLimit: MoneyValue?
+    public var maximumAnnualLimit: MoneyValue?
     public var minimumApiLimit: MoneyValue?
     public var validationState: TransactionValidationState = .uninitialized
     public var engineState: [EngineStateKey: Any] = [:]
@@ -58,7 +60,9 @@ public struct PendingTransaction: Equatable {
                 feeSelection: FeeSelection,
                 selectedFiatCurrency: FiatCurrency,
                 minimumLimit: MoneyValue? = nil,
-                maximumLimit: MoneyValue? = nil) {
+                maximumLimit: MoneyValue? = nil,
+                maximumDailyLimit: MoneyValue? = nil,
+                maximumAnnualLimit: MoneyValue? = nil) {
         self.amount = amount
         self.available = available
         self.feeAmount = feeAmount
@@ -67,6 +71,8 @@ public struct PendingTransaction: Equatable {
         self.selectedFiatCurrency = selectedFiatCurrency
         self.minimumLimit = minimumLimit
         self.maximumLimit = maximumLimit
+        self.maximumDailyLimit = maximumDailyLimit
+        self.maximumAnnualLimit = maximumAnnualLimit
     }
 
     public func update(validationState: TransactionValidationState) -> PendingTransaction {
@@ -172,6 +178,8 @@ public struct PendingTransaction: Equatable {
             && lhs.minimumApiLimit == rhs.minimumApiLimit
             && lhs.maximumLimit == rhs.maximumLimit
             && lhs.validationState == rhs.validationState
+            && lhs.maximumDailyLimit == rhs.maximumDailyLimit
+            && lhs.maximumAnnualLimit == rhs.maximumAnnualLimit
     }
 }
 

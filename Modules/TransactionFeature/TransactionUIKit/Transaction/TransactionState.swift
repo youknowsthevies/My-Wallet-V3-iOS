@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
 import ToolKit
 import TransactionKit
@@ -80,8 +81,15 @@ struct TransactionState: Equatable, StateType {
         pendingTransaction?.amount ?? .zero(currency: asset)
     }
 
+    /// The minimum spending limit
     var minSpendable: MoneyValue {
         pendingTransaction?.minimumLimit ?? .zero(currency: asset)
+    }
+
+    /// The maximum amount the user can use daily for the given transaction.
+    /// This is a different value than the spendable amount (and usually higher)
+    var maxDaily: MoneyValue {
+        pendingTransaction?.maximumDailyLimit ?? .zero(currency: asset)
     }
 
     /// The maximum amount the user can spend. We compare the amount entered to the
@@ -97,7 +105,9 @@ struct TransactionState: Equatable, StateType {
 
     func moneyValueFromSource() -> Result<MoneyValue, TransactionUIKitError> {
         guard let rate = sourceToFiatPair else {
-            return .success(.zero(currency: asset))
+            /// A `sourceToFiatPair` is not provided for transactions like a
+            /// deposit or a withdraw.
+            return .success(amount)
         }
         guard let currencyType = rate.base.cryptoValue?.currencyType else {
             return .failure(.unexpectedMoneyValueType(rate.base))
@@ -190,6 +200,109 @@ struct TransactionState: Equatable, StateType {
             return .zero(currency: amount.currency)
         }
         return try available.convert(using: rate.quote)
+    }
+}
+
+extension TransactionState {
+
+    private typealias LocalizationIds = LocalizationConstants.Transaction.Error
+
+    var transactionErrorDescription: String {
+        switch errorState {
+        case .none:
+            fatalError("Expected a `transactionErrorDescription`")
+        case .addressIsContract:
+            return LocalizationIds.addressIsContract
+        case .belowMinimumLimit:
+            return String(format: LocalizationIds.tradingBelowMin, action.name)
+        case .insufficientFunds:
+            return LocalizationIds.insufficientFunds
+        case .insufficientGas:
+            return LocalizationIds.insufficientGas
+        case .insufficientFundsForFees:
+            return String(format: LocalizationIds.insufficientFundsForFees, amount.currency.name)
+        case .invalidAddress:
+            return LocalizationIds.invalidAddress
+        case .invalidAmount:
+            return LocalizationIds.invalidAmount
+        case .invalidPassword:
+            return LocalizationIds.invalidPassword
+        case .optionInvalid:
+            return LocalizationIds.optionInvalid
+        case .overGoldTierLimit,
+             .overMaximumLimit,
+             .overSilverTierLimit:
+            return LocalizationIds.overMaximumLimit
+        case .pendingOrdersLimitReached:
+            return LocalizationIds.pendingOrderLimitReached
+        case .transactionInFlight:
+            return LocalizationIds.transactionInFlight
+        case .fatalError(let fatalTransactionError):
+            switch fatalTransactionError {
+            case .generic(let error):
+                guard let networkError = error as? NabuNetworkError else {
+                    return LocalizationIds.unknownError
+                }
+                guard case let .nabuError(nabu) = networkError else {
+                    return LocalizationIds.unknownError
+                }
+
+                return transactionErrorDescriptionForError(nabu.code)
+            case .rxError:
+                return LocalizationIds.unknownError
+            }
+        case .unknownError:
+            return LocalizationIds.unknownError
+        case .nabuError(let error):
+            return transactionErrorDescriptionForError(error.code)
+        }
+    }
+
+    private func transactionErrorDescriptionForError(_ code: NabuErrorCode) -> String {
+        switch code {
+        case .orderBelowMinLimit:
+            return String(format: LocalizationIds.tradingBelowMin, action.name)
+        case .orderAboveMaxLimit:
+            return String(format: LocalizationIds.tradingAboveMax, action.name)
+        case .dailyLimitExceeded:
+            return String(format: LocalizationIds.tradingDailyExceeded, action.name)
+        case .weeklyLimitExceeded:
+            return String(format: LocalizationIds.tradingWeeklyExceeded, action.name)
+        case .annualLimitExceeded:
+            return String(format: LocalizationIds.tradingYearlyExceeded, action.name)
+        case .tradingDisabled:
+            return LocalizationIds.tradingServiceDisabled
+        case .pendingOrdersLimitReached:
+            return LocalizationIds.pendingOrderLimitReached
+        case .invalidCryptoAddress:
+            return LocalizationIds.tradingInvalidAddress
+        case .invalidCryptoCurrency:
+            return LocalizationIds.tradingInvalidCurrency
+        case .invalidFiatCurrency:
+            return LocalizationIds.tradingInvalidFiat
+        case .orderDirectionDisabled:
+            return LocalizationIds.tradingDirectionDisabled
+        case .userNotEligibleForSwap:
+            return LocalizationIds.tradingIneligibleForSwap
+        case .invalidDestinationAddress:
+            return LocalizationIds.tradingInvalidAddress
+        case .notFoundCustodialQuote:
+            return LocalizationIds.tradingQuoteInvalidOrExpired
+        case .orderAmountNegative:
+            return LocalizationIds.tradingInvalidDestinationAmount
+        case .withdrawalForbidden:
+            return LocalizationIds.pendingWithdraw
+        case .withdrawalLocked:
+            return LocalizationIds.withdrawBalanceLocked
+        case .insufficientBalance:
+            return String(format: LocalizationIds.tradingInsufficientBalance, action.name)
+        case .albertExecutionError:
+            return LocalizationIds.tradingAlbertError
+        case .orderInProgress:
+            return String(format: LocalizationIds.tooManyTransaction, action.name)
+        default:
+            return LocalizationIds.unknownError
+        }
     }
 }
 

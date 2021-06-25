@@ -38,12 +38,17 @@ final class TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + source.label
-            case .deposit,
-                 .receive,
+            case .withdraw:
+                guard let source = state.source as? FiatAccount else {
+                    fatalError("Expected a FiatAccount")
+                }
+                return "\(source.fiatCurrency.code) " + LocalizedString.Withdraw.account
+            case .deposit:
+                return LocalizedString.Deposit.dailyLimit
+            case .receive,
                  .buy,
                  .sell,
-                 .viewActivity,
-                 .withdraw:
+                 .viewActivity:
                 unimplemented()
             }
         }
@@ -68,12 +73,14 @@ final class TransactionFlowDescriptor {
                     return prefix
                 }
                 return prefix + account.label
-            case .deposit,
-                 .receive,
+            case .withdraw:
+                return formatForHeader(moneyValue: state.availableBalance)
+            case .deposit:
+                return "\(state.maxDaily.displayString)"
+            case .receive,
                  .buy,
                  .sell,
-                 .viewActivity,
-                 .withdraw:
+                 .viewActivity:
                 unimplemented()
             }
         }
@@ -167,32 +174,20 @@ final class TransactionFlowDescriptor {
     static let maxButtonTitle = LocalizedString.Swap.swapMax
 
     static func maxButtonTitle(action: AssetAction) -> String {
-        switch action {
-        case .swap:
-            return LocalizedString.Swap.swapMax
-        case .send:
-            return LocalizedString.Send.sendMax
-        case .deposit,
-             .receive,
-             .buy,
-             .sell,
-             .viewActivity,
-             .withdraw:
-            unimplemented()
-        }
+        action.name + " \(LocalizedString.max)"
     }
 
     static func confirmDisclaimerVisibility(action: AssetAction) -> Bool {
         switch action {
-        case .swap:
+        case .swap,
+             .withdraw:
             return true
         case .deposit,
              .receive,
              .buy,
              .sell,
              .send,
-             .viewActivity,
-             .withdraw:
+             .viewActivity:
             return false
         }
     }
@@ -201,13 +196,14 @@ final class TransactionFlowDescriptor {
         switch action {
         case .swap:
             return LocalizedString.Swap.confirmationDisclaimer
+        case .withdraw:
+            return LocalizedString.Withdraw.confirmationDisclaimer
         case .deposit,
              .receive,
              .buy,
              .sell,
              .send,
-             .viewActivity,
-             .withdraw:
+             .viewActivity:
             return ""
         }
     }

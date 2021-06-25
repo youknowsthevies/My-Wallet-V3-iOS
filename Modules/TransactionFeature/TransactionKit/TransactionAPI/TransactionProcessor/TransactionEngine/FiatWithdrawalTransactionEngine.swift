@@ -14,6 +14,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let priceService: PriceServiceAPI
     let requireSecondPassword: Bool = false
+    let canTransactFiat: Bool = true
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -26,12 +27,18 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     var targetAsset: FiatCurrency { target.fiatCurrency }
     var sourceAsset: FiatCurrency { sourceTradingAccount.fiatCurrency }
 
+    // MARK: - Private Properties
+
+    private let fiatWithdrawService: FiatWithdrawServiceAPI
+
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve()) {
+         priceService: PriceServiceAPI = resolve(),
+         fiatWithdrawService: FiatWithdrawServiceAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
+        self.fiatWithdrawService = fiatWithdrawService
     }
 
     // MARK: - TransactionEngine
@@ -73,8 +80,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                     confirmations: [
                         .source(.init(value: sourceAccount.label)),
                         .destination(.init(value: target.label)),
-                        // TODO: Fee
-                        // TODO: EstimatedWithdrawalCompletion
+                        .transactionFee(.init(fee: pendingTransaction.feeAmount)),
+                        .arrivalDate(.default),
                         .total(.init(total: pendingTransaction.amount))
                     ]
                 )
@@ -102,9 +109,10 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
         target
             .receiveAddress
-            .flatMapCompletable(weak: self) { (_, _) -> Completable in
-                // TODO: Create withdraw order
-                unimplemented()
+            .map(\.address)
+            .flatMapCompletable(weak: self) { (self, address) -> Completable in
+                self.fiatWithdrawService
+                    .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
             }
             .flatMapSingle {
                 .just(TransactionResult.unHashed(amount: pendingTransaction.amount))
@@ -112,7 +120,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     }
 
     func doPostExecute(transactionResult: TransactionResult) -> Completable {
-        unimplemented()
+        .empty()
     }
 
     func doUpdateFeeLevel(pendingTransaction: PendingTransaction, level: FeeLevel, customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
@@ -128,13 +136,13 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
                   let minLimit = pendingTransaction.minimumLimit else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
-            guard try pendingTransaction.amount < minLimit else {
+            guard try pendingTransaction.amount >= minLimit else {
                 throw TransactionValidationFailure(state: .belowMinimumLimit)
             }
-            guard try pendingTransaction.amount > maxLimit else {
+            guard try pendingTransaction.amount <= maxLimit else {
                 throw TransactionValidationFailure(state: .overMaximumLimit)
             }
-            guard try pendingTransaction.available < pendingTransaction.amount else {
+            guard try pendingTransaction.available >= pendingTransaction.amount else {
                 throw TransactionValidationFailure(state: .insufficientFunds)
             }
         }

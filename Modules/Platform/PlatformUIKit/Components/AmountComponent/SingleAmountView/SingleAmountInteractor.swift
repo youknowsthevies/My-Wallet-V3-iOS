@@ -5,25 +5,16 @@ import RxCocoa
 import RxSwift
 import ToolKit
 
-public final class SingleAmountInteractor {
-
-    public enum Input {
-        case insert(String)
-        case remove
-    }
-
-    public enum State {
-        case empty
-        case inBounds
-        case overMaxLimit(MoneyValue)
-        case underMinLimit(MoneyValue)
-    }
+public final class SingleAmountInteractor: AmountViewInteracting {
 
     // MARK: - Properties
 
+    public let effect: Observable<AmountInteractorEffect> = .just(.none)
+    public let activeInput: Observable<ActiveAmountInput>
+
     /// The state of the component
-    public let stateRelay = BehaviorRelay<State>(value: .empty)
-    public var state: Observable<State> {
+    public let stateRelay = BehaviorRelay<AmountInteractorState>(value: .empty)
+    public var state: Observable<AmountInteractorState> {
         stateRelay.asObservable()
             .share(replay: 1, scope: .whileConnected)
     }
@@ -41,6 +32,7 @@ public final class SingleAmountInteractor {
 
     public init(currencyService: CurrencyServiceAPI,
                 inputCurrency: Currency) {
+        self.activeInput = .just(inputCurrency.isFiatCurrency ? .fiat : .crypto)
         self.currencyService = currencyService
         self.inputCurrency = inputCurrency
         self.currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
@@ -56,7 +48,7 @@ public final class SingleAmountInteractor {
             .share(replay: 1, scope: .whileConnected)
     }
 
-    public func connect(input: Driver<Input>) -> Driver<State> {
+    public func connect(input: Driver<AmountInteractorInput>) -> Driver<AmountInteractorState> {
         // Input Actions
         input.map(\.toInputScannerAction)
             .asObservable()
@@ -85,24 +77,13 @@ public final class SingleAmountInteractor {
     }
 }
 
-extension SingleAmountInteractor.Input {
+extension AmountInteractorInput {
     internal var toInputScannerAction: MoneyValueInputScanner.Action {
         switch self {
         case .insert(let value):
-            return .insert(Character(value))
+            return .insert(value)
         case .remove:
             return .remove
-        }
-    }
-}
-
-extension SingleAmountInteractor.State {
-    internal var toValidationState: ValidationState {
-        switch self {
-        case .inBounds:
-            return .valid
-        case .empty, .overMaxLimit, .underMinLimit:
-            return .invalid
         }
     }
 }

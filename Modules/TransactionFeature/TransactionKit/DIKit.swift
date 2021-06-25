@@ -46,6 +46,11 @@ extension DependencyContainer {
             return client as BitPayClientAPI
         }
 
+        factory { () -> BankTransferClientAPI in
+            let client: TransactionKitClientAPI = DIKit.resolve()
+            return client as BankTransferClientAPI
+        }
+
         factory { () -> BlockchainNameResolutionAPI in
             let client: TransactionKitClientAPI = DIKit.resolve()
             return client as BlockchainNameResolutionAPI
@@ -54,6 +59,10 @@ extension DependencyContainer {
         factory { CryptoTargetPayloadFactory() as CryptoTargetPayloadFactoryAPI }
 
         factory { APIClient() as TransactionKitClientAPI }
+
+        factory { FiatWithdrawService() as FiatWithdrawServiceAPI }
+
+        factory { BankTransferService() as BankTransferServiceAPI }
 
         factory { CustodialTransferService() as CustodialTransferServiceAPI }
 

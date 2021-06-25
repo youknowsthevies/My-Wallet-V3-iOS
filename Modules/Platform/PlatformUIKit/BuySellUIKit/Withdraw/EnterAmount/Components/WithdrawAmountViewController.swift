@@ -25,7 +25,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
     // MARK: - Properties
 
     private let topSelectionButtonView = SelectionButtonView()
-    private let amountView: SingleAmountView
+    private let amountViewable: AmountViewable
     private let bottomAuxiliaryItemSeparatorView = TitledSeparatorView()
     private let bottomAuxiliaryView = UIView()
     private let continueButtonView = ButtonView()
@@ -57,10 +57,10 @@ final class WithdrawAmountViewController: BaseScreenViewController,
          digitPadViewModel: DigitPadViewModel,
          continueButtonViewModel: ButtonViewModel,
          topSelectionButtonViewModel: SelectionButtonViewModel,
-         amountViewProvider: @escaping () -> SingleAmountView) {
+         amountViewProvider: AmountViewable) {
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
-        self.amountView = amountViewProvider()
+        self.amountViewable = amountViewProvider
         self.continueButtonTapped = continueButtonViewModel.tap
         super.init(nibName: nil, bundle: nil)
 
@@ -87,6 +87,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
         let digitPadTopSeparatorView = UIView()
 
+        let amountView = amountViewable.view
         view.addSubview(topSelectionButtonView)
         view.addSubview(amountView)
         view.addSubview(bottomAuxiliaryItemSeparatorView)
@@ -202,6 +203,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
         let digitInput = digitPadView.viewModel
             .valueObservable
+            .map { Character($0) }
             .asDriverCatchError()
 
         let deleteInput = digitPadView.viewModel
@@ -209,11 +211,11 @@ final class WithdrawAmountViewController: BaseScreenViewController,
             .asDriverCatchError()
 
         let amountViewInputs = [
-            digitInput.map(SingleAmountPresenter.Input.input),
-            deleteInput.map { SingleAmountPresenter.Input.delete }
+            digitInput.map(AmountPresenterInput.input),
+            deleteInput.map { AmountPresenterInput.delete }
         ]
 
-        amountView.connect(input: Driver.merge(amountViewInputs))
+        amountViewable.connect(input: Driver.merge(amountViewInputs))
             .drive()
             .disposed(by: disposeBag)
 
