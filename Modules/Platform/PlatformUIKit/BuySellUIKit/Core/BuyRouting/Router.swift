@@ -60,6 +60,8 @@ public final class Router: RouterAPI {
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
+
     // MARK: - Setup
 
     public init(
@@ -72,7 +74,9 @@ public final class Router: RouterAPI {
         tiersService: KYCTiersServiceAPI = resolve(),
         alertViewPresenter: AlertViewPresenterAPI = resolve(),
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
-        newKYCRouter: KYCRouting = resolve()
+        newKYCRouter: KYCRouting = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -83,6 +87,7 @@ public final class Router: RouterAPI {
         self.kycRouter = kycRouter
         self.newKYCRouter = newKYCRouter
         self.builder = builder
+        self.analyticsRecorder = analyticsRecorder
 
         let cryptoSelectionService = CryptoCurrencySelectionService(
             service: supportedPairsInteractor,
@@ -254,10 +259,7 @@ public final class Router: RouterAPI {
         let viewController = SelectionScreenViewController(presenter: presenter)
         viewController.isModalInPresentation = true
 
-        do {
-            let analytics: AnalyticsEventRecorderAPI = resolve()
-            analytics.record(event: AnalyticsEvent.sbCurrencySelectScreen)
-        }
+        analyticsRecorder.record(event: AnalyticsEvent.sbCurrencySelectScreen)
 
         let navigationController = UINavigationController(rootViewController: viewController)
         navigationRouter.navigationControllerAPI?.present(navigationController, animated: true, completion: nil)
@@ -280,7 +282,7 @@ public final class Router: RouterAPI {
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: currency.code))
 
                     self.stateService.previousRelay.accept(())
                 })
@@ -341,7 +343,7 @@ public final class Router: RouterAPI {
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.analytics.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
+                    self.analyticsRecorder.record(event: AnalyticsEvent.sbCurrencySelected(currencyCode: value.0.code))
 
                     let isFiatCurrencySupported = value.1
                     let currency = value.0
@@ -399,6 +401,7 @@ public final class Router: RouterAPI {
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
         }
+        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .buy))
         router.startFlow()
             .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
             .skipWhile { $0.shouldSkipEffect }
@@ -423,7 +426,7 @@ public final class Router: RouterAPI {
         let controller = IneligibleCurrencyViewController(presenter: presenter)
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
-        analytics.record(event: AnalyticsEvent.sbCurrencyUnsupported)
+        analyticsRecorder.record(event: AnalyticsEvent.sbCurrencyUnsupported)
         navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
     }
 
@@ -638,9 +641,5 @@ public final class Router: RouterAPI {
 
     private lazy var sheetPresenter: BottomSheetPresenting = {
         BottomSheetPresenting(ignoresBackroundTouches: true)
-    }()
-
-    private lazy var analytics: AnalyticsEventRecorderAPI = { () -> AnalyticsEventRecorderAPI in
-        DIKit.resolve()
     }()
 }

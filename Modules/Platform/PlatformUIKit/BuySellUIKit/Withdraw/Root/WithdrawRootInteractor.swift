@@ -68,7 +68,10 @@ public final class WithdrawRootInteractor: Interactor,
 
     // MARK: - Private methods
     private func startFlow() {
-        analyticsRecorder.record(event: AnalyticsEvents.FiatWithdrawal.formShown)
+        analyticsRecorder.record(events: [
+            AnalyticsEvents.FiatWithdrawal.formShown,
+            AnalyticsEvents.New.Withdrawal.withdrawalViewed
+        ])
         router?.routeToFlowRoot()
     }
 

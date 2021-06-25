@@ -59,16 +59,13 @@ extension AnalyticsEvents.New {
     public enum AccountType: String, StringRawRepresentable {
         case trading = "TRADING"
         case userKey = "USERKEY"
-        case unknown = "UNKNOWN"
 
         public init(_ account: BlockchainAccount) {
             switch account {
             case is CryptoNonCustodialAccount:
                 self = .userKey
-            case is CryptoTradingAccount:
-                self = .trading
             default:
-                self = .unknown
+                self = .trading
             }
         }
     }

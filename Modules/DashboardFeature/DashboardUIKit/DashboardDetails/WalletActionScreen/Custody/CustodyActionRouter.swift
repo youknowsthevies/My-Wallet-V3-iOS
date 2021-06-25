@@ -45,7 +45,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
     private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
-    private let disposeBag = DisposeBag()
+    private let analyticsRecoder: AnalyticsEventRecorderAPI
+    private var disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
     /// - note: This is needed in order for the reference to be kept in memory,
@@ -68,7 +69,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
+        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+        analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
@@ -81,6 +83,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
         self.tabSwapping = tabSwapping
         self.internalFeatureFlagService = internalFeatureFlagService
+        self.analyticsRecoder = analyticsRecoder
 
         backupRouterAPI
             .completionRelay
@@ -172,6 +175,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 self.custodyWithdrawalRouter.start(with: currency)
             }
         case .withdrawalFiat(let isKYCApproved):
+            analyticsRecoder.record(event: AnalyticsEvents.New.Withdrawal.withdrawalClicked(orign: .currencyPage))
             if isKYCApproved {
                 guard case let .fiat(currency) = currency else { return }
                 showWithdrawFiatScreen(currency: currency)
@@ -305,11 +309,10 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             let withdrawBuilder = withdrawRouter.withdrawalBuilder(for: currency)
             let (router, controller) = withdrawBuilder.build()
             withdrawFiatRouter = router
-            let flowDimissed: () -> Void = { [weak self] in
+            withdrawFiatRouter?.startFlow { [weak self] in
                 guard let self = self else { return }
                 self.withdrawFiatRouter = nil
             }
-            router.startFlow(flowDismissed: flowDimissed)
             dismissTopMost { [weak navigationRouter] in
                 navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
             }

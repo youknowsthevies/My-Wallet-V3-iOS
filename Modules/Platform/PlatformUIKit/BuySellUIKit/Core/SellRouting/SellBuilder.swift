@@ -93,6 +93,12 @@ public final class SellBuilder: SellBuilderAPI {
         )
         let didSelect: AccountPickerDidSelect = { [weak self] account in
             self?.accountSelectionService.record(selection: account)
+            if let account = account as? CryptoAccount {
+                self?.analyticsRecorder.record(event:
+                    AnalyticsEvents.New.Sell.sellFromSelected(fromAccountType: .init(account),
+                                                              inputCurrency: account.currencyType.code)
+                )
+            }
         }
         let router = builder.build(
             listener: .simple(didSelect),
@@ -130,7 +136,6 @@ public final class SellBuilder: SellBuilderAPI {
             initialActiveInput: .fiat
         )
         let presenter = SellCryptoScreenPresenter(
-            analyticsRecorder: analyticsRecorder,
             interactor: interactor,
             routerInteractor: routerInteractor,
             backwardsNavigation: { [weak routerInteractor] () -> Void in

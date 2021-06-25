@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -27,13 +28,16 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
     private var paymentMethodRouter: ViewableRouting?
     private var linkBankFlowRouter: LinkBankFlowStarter?
     private let topMostViewControllerProviding: TopMostViewControllerProviding
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
     init(interactor: DepositRootInteractable,
-         topMostViewControllerProviding: TopMostViewControllerProviding = resolve()) {
+         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
+        self.analyticsRecorder = analyticsRecorder
         super.init(interactor: interactor)
         interactor.router = self
     }
@@ -49,7 +53,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     func routeToLinkABank() {
         dismissTopMost(weak: self) { (self) in
-            self.showLinkABankFlow()
+            self.showLinkBankFlow()
         }
     }
 
@@ -78,7 +82,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
     }
 
     func startWithLinkABank() {
-        showLinkABankFlow()
+        showLinkBankFlow()
     }
 
     func startWithWireInstructions(currency: FiatCurrency) {
@@ -141,11 +145,11 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
         }
     }
 
-    private func showLinkABankFlow() {
+    private func showLinkBankFlow() {
         let builder = LinkBankFlowRootBuilder()
         let router = builder.build()
         linkBankFlowRouter = router
-
+        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .deposit))
         router.startFlow()
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }

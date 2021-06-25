@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import PlatformKit
 import RxRelay
@@ -104,6 +105,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         value: .invalid(.empty)
     )
 
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let stateRelay: BehaviorRelay<State>
     private let disposeBag = DisposeBag()
 
@@ -117,12 +119,14 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
          initialActiveInput: ActiveAmountInput,
-         orderCreationService: OrderCreationServiceAPI = resolve()) {
+         orderCreationService: OrderCreationServiceAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.eligibilityService = eligibilityService
         self.pairsService = pairsService
         self.kycTiersService = kycTiersService
         self.orderCreationService = orderCreationService
         self.data = data
+        self.analyticsRecorder = analyticsRecorder
         stateRelay = BehaviorRelay(value: .empty)
         auxiliaryViewInteractor = SendAuxiliaryViewInteractor(
             availableBalance: AvailableBalanceContentInteractor(account: data.source)
@@ -157,11 +161,17 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 #warning("This will break once we enable input using either fiat or crypto")
                 amountTranslationInteractor.set(amount: quote)
             })
-            .map { (base, quote) -> State in
+            .map { [weak self] (base, quote) -> State in
+                guard let self = self else { return .empty }
                 guard !quote.isZero else { return .empty }
                 guard let fiat = quote.fiatValue else { return .empty }
                 guard let crypto = base.cryptoValue else { return .empty }
 
+                self.analyticsRecorder.record(event:
+                    AnalyticsEvents.New.Sell.sellAmountMaxClicked(fromAccountType: .init(self.data.source),
+                                                                  inputCurrency: crypto.currencyCode,
+                                                                  outputCurrency: fiat.currencyCode)
+                )
                 let data = CandidateOrderDetails.sell(
                     fiatValue: fiat,
                     destinationFiatCurrency: destinationAccountCurrency.fiatCurrency!,

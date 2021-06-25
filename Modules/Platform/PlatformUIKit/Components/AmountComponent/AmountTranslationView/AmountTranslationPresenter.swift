@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import DIKit
 import Localization
 import PlatformKit
 import RxCocoa
@@ -102,7 +103,7 @@ public final class AmountTranslationPresenter {
     let cryptoPresenter: InputAmountLabelPresenter
     let displayBundle: DisplayBundle
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Accessors
 
@@ -112,7 +113,7 @@ public final class AmountTranslationPresenter {
     // MARK: - Setup
 
     public init(interactor: AmountTranslationInteractor,
-                analyticsRecorder: AnalyticsEventRecording,
+                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 displayBundle: DisplayBundle,
                 inputTypeToggleVisiblity: Visibility = .hidden) {
         self.displayBundle = displayBundle
@@ -212,7 +213,7 @@ public final class AmountTranslationPresenter {
                 .emit(onNext: { [minValue, weak self] in
                     guard let self = self else { return }
                     self.analyticsRecorder.record(event: self.displayBundle.events.minTappedAnalyticsEvent)
-                    self.interactor.set(amount: minValue)
+                    self.interactor.set(minAmount: minValue)
                 })
                 .disposed(by: disposeBag)
             return .warning(viewModel)

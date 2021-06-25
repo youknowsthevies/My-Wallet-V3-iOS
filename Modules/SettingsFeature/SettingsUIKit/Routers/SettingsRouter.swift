@@ -67,8 +67,8 @@ final class SettingsRouter: SettingsRouterAPI {
     private let wallet: WalletRecoveryVerifing
     private let repository: DataRepositoryAPI
     private let pitConnectionAPI: PITConnectionStatusProviding
-
     private let builder: SettingsBuilding
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     /// The router for linking a new bank
     private var linkBankFlowRouter: LinkBankFlowStarter?
@@ -93,7 +93,8 @@ final class SettingsRouter: SettingsRouterAPI {
         currencyRouter: CurrencyRouting = resolve(),
         tabSwapping: TabSwapping = resolve(),
         passwordRepository: PasswordRepositoryAPI = resolve(),
-        repository: DataRepositoryAPI = resolve()
+        repository: DataRepositoryAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.wallet = wallet
         self.appCoordinator = appCoordinator
@@ -111,6 +112,7 @@ final class SettingsRouter: SettingsRouterAPI {
         self.pitConnectionAPI = pitConnectionAPI
         self.passwordRepository = passwordRepository
         self.repository = repository
+        self.analyticsRecorder = analyticsRecorder
 
         previousRelay
             .bindAndCatch(weak: self) { (self) in
@@ -313,6 +315,7 @@ final class SettingsRouter: SettingsRouterAPI {
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
         }
+        analyticsRecorder.record(event: AnalyticsEvents.New.Withdrawal.linkBankClicked(origin: .settings))
         router.startFlow()
             .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
             .skipWhile { $0.shouldSkipEffect }

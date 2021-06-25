@@ -37,6 +37,9 @@ final class TransactionAnalyticsHook {
                                                        inputType: .init(account))
             ])
         case .send:
+            guard let account = account as? CryptoAccount else {
+                return
+            }
             analyticsRecorder.record(event:
                 NewSendAnalyticsEvent.sendFromSelected(currency: account.currencyType.code, fromAccountType: .init(account))
             )
@@ -110,10 +113,10 @@ final class TransactionAnalyticsHook {
                                                            outputType: .init(target))
             ])
         case .send:
-            guard let source = state.source as? CryptoAccount else {
+            guard let source = state.source as? CryptoAccount,
+                  let target = state.destination as? CryptoAccount else {
                 return
             }
-            let target = state.destination as? CryptoAccount
             analyticsRecorder.record(event: NewSendAnalyticsEvent.sendAmountMaxClicked(currency: source.currencyType.code,
                                                                                        fromAccountType: .init(source),
                                                                                        toAccountType: .init(target)))

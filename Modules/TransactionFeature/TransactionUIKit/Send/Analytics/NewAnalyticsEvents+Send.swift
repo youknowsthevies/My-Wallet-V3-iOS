@@ -13,17 +13,17 @@ extension AnalyticsEvents.New {
                                 type: Type)
         case sendReceiveViewed(type: Type)
         case sendAmountMaxClicked(currency: String,
-                                  fromAccountType: FromAccountType,
+                                  fromAccountType: FromAccountType?,
                                   toAccountType: ToAccountType)
         case sendFeeRateSelected(currency: String,
                                  feeRate: FeeRate,
-                                 fromAccountType: FromAccountType,
+                                 fromAccountType: FromAccountType?,
                                  toAccountType: ToAccountType)
         case sendFromSelected(currency: String,
-                              fromAccountType: FromAccountType)
+                              fromAccountType: FromAccountType?)
         case sendSubmitted(currency: String,
                            feeRate: FeeRate,
-                           fromAccountType: FromAccountType,
+                           fromAccountType: FromAccountType?,
                            toAccountType: ToAccountType)
 
         public enum Origin: String, StringRawRepresentable {
@@ -39,9 +39,8 @@ extension AnalyticsEvents.New {
             case savings = "SAVINGS"
             case trading = "TRADING"
             case userKey = "USERKEY"
-            case unknown = "UNKNOWN"
 
-            public init(_ account: BlockchainAccount) {
+            public init?(_ account: CryptoAccount) {
                 switch account {
                 case is CryptoNonCustodialAccount:
                     self = .userKey
@@ -50,7 +49,7 @@ extension AnalyticsEvents.New {
                 case is CryptoTradingAccount:
                     self = .trading
                 default:
-                    self = .unknown
+                    return nil
                 }
             }
         }
@@ -60,9 +59,9 @@ extension AnalyticsEvents.New {
             case savings = "SAVINGS"
             case trading = "TRADING"
             case userKey = "USERKEY"
-            case unknown = "UNKNOWN"
+            case exchange = "EXCHANGE"
 
-            public init(_ account: BlockchainAccount?) {
+            public init(_ account: CryptoAccount) {
                 switch account {
                 case is CryptoNonCustodialAccount:
                     self = .userKey
@@ -70,10 +69,10 @@ extension AnalyticsEvents.New {
                     self = .savings
                 case is CryptoTradingAccount:
                     self = .trading
-                case nil:
-                    self = .external
+                case is CryptoExchangeAccount:
+                    self = .exchange
                 default:
-                    self = .unknown
+                    self = .external
                 }
             }
         }
