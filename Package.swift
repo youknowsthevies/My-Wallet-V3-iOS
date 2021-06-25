@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "AnalyticsKit",
+    name: "Blockchain",
     platforms: [
         .iOS(.v13)
     ],

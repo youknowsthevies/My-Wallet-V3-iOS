@@ -2,7 +2,7 @@
 
 import Combine
 
-public protocol NabuAnalyticsEventsRepositoryAPI {
+protocol NabuAnalyticsEventsRepositoryAPI {
     func publish<Events: Encodable>(
         events: Events
     ) -> AnyPublisher<Void, URLError>
