@@ -388,6 +388,8 @@ targets:
     templates:
     - ModuleTests
   AnalyticsKit:
+    dependencies:
+    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:

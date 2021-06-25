@@ -2,6 +2,7 @@
 
 import UIKit
 import Combine
+import CombineExt
 import Foundation
 
 public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
