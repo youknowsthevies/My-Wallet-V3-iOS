@@ -135,6 +135,9 @@ let emailVerificationReducer = Reducer.combine(
         case .didReceiveEmailVerficationResponse(let response):
             switch response {
             case .success(let object):
+                guard state.flowStep != .editEmailAddress else {
+                    return .none
+                }
                 return Effect(value: .presentStep(object.status == .verified ? .emailVerifiedPrompt : .verifyEmailPrompt))
 
             case .failure(let error):

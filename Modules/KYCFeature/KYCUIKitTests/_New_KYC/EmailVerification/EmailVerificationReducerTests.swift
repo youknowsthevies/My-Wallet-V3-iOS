@@ -91,6 +91,31 @@ final class EmailVerificationReducerTests: XCTestCase {
         )
     }
 
+    func test_polling_verificationStatus_doesNot_redirectTo_anotherStep_when_editingEmail() throws {
+        // poll currently set to 5 seconds
+        testStore.assert(
+            .send(.didAppear),
+            .do {
+                // nothing should happen after 1 second
+                self.testPollingQueue.advance(by: 1)
+            },
+            .send(.presentStep(.editEmailAddress)) {
+                $0.flowStep = .editEmailAddress
+            },
+            .do {
+                // poll should happen after 4 more seconds (5 seconds in total)
+                self.testPollingQueue.advance(by: 4)
+            },
+            .receive(.loadVerificationState),
+            .receive(.didReceiveEmailVerficationResponse(.success(.init(emailAddress: "test@example.com", status: .unverified)))),
+            .send(.didDisappear),
+            .do {
+                // no more actions should be received after view disappears
+                self.testPollingQueue.advance(by: 15)
+            }
+        )
+    }
+
     func test_loads_verificationStatus_when_app_opened_unverified() throws {
         testStore.assert(
             .send(.didEnterForeground),
