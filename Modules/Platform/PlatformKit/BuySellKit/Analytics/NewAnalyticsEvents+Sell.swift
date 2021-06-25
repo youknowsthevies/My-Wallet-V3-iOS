@@ -10,17 +10,17 @@ extension AnalyticsEvents.New {
             .new
         }
 
-        case sellAmountEntered(fromAccountType: FromAccountType,
+        case sellAmountEntered(fromAccountType: FromAccountType?,
                                inputAmount: Double,
                                inputCurrency: String,
                                outputCurrency: String)
-        case sellAmountMaxClicked(fromAccountType: FromAccountType,
+        case sellAmountMaxClicked(fromAccountType: FromAccountType?,
                                   inputCurrency: String,
                                   outputCurrency: String)
-        case sellAmountMinClicked(fromAccountType: FromAccountType,
+        case sellAmountMinClicked(fromAccountType: FromAccountType?,
                                   inputCurrency: String,
                                   outputCurrency: String)
-        case sellFromSelected(fromAccountType: FromAccountType,
+        case sellFromSelected(fromAccountType: FromAccountType?,
                               inputCurrency: String)
 
         public enum FromAccountType: String, StringRawRepresentable {

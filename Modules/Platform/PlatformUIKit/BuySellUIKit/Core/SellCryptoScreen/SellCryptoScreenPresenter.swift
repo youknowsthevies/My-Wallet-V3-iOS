@@ -24,26 +24,23 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     // MARK: - Setup
 
     init(
-        analyticsRecorder: AnalyticsEventRecorderAPI,
         interactor: SellCryptoScreenInteractor,
         routerInteractor: SellRouterInteractor,
         backwardsNavigation: @escaping () -> Void
     ) {
         self.routerInteractor = routerInteractor
         self.interactor = interactor
-        let auxiliaryPresenterState = SendAuxiliaryViewPresenter.State(
-            maxButtonVisibility: .visible,
-            networkFeeVisibility: .hidden,
-            bitpayVisibility: .hidden,
-            availableBalanceTitle: LocalizedString.available,
-            maxButtonTitle: LocalizedString.useMax
-        )
-        auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+        self.auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: interactor.auxiliaryViewInteractor,
-            initialState: auxiliaryPresenterState
+            initialState: SendAuxiliaryViewPresenter.State(
+                maxButtonVisibility: .visible,
+                networkFeeVisibility: .hidden,
+                bitpayVisibility: .hidden,
+                availableBalanceTitle: LocalizedString.available,
+                maxButtonTitle: LocalizedString.useMax
+            )
         )
         super.init(
-            analyticsRecorder: analyticsRecorder,
             inputTypeToggleVisibility: .hidden,
             backwardsNavigation: backwardsNavigation,
             displayBundle: .sell(cryptoCurrency: interactor.data.source.currencyType.cryptoCurrency!),
@@ -53,6 +50,15 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        interactor.amountTranslationInteractor.minAmountSelectedRelay
+            .map { [interactor] _ in
+                AnalyticsEvents.New.Sell.sellAmountMinClicked(fromAccountType: .init(interactor.data.source),
+                                                              inputCurrency: interactor.data.source.currencyType.code,
+                                                              outputCurrency: interactor.data.destination.currencyType.code)
+            }
+            .subscribe(onNext: analyticsRecorder.record(event:))
+            .disposed(by: disposeBag)
+
         topSelectionButtonViewModel.isButtonEnabledRelay.accept(false)
         topSelectionButtonViewModel.trailingContentRelay.accept(.empty)
         bottomAuxiliaryViewModelStateRelay.accept(.maxAvailable(auxiliaryViewPresenter))
@@ -79,13 +85,19 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                     interactor.currentKycState.asObservable(),
                     interactor.currentEligibilityState
                 )
-                .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+                .map { [weak self] (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
                     switch (currentKycState, currentEligibilityState) {
                     case (.success(let kycState), .success(let isSimpleBuyEligible)):
                         let ctaData = CTAData(
                             kycState: kycState,
                             isSimpleBuyEligible: isSimpleBuyEligible,
                             candidateOrderDetails: candidateOrderDetails
+                        )
+                        self?.analyticsRecorder.record(event:
+                            AnalyticsEvents.New.Sell.sellAmountEntered(fromAccountType: .init(interactor.data.source),
+                                                                       inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
+                                                                       inputCurrency: candidateOrderDetails.cryptoCurrency.code,
+                                                                       outputCurrency: candidateOrderDetails.fiatCurrency.code)
                         )
                         return .success(ctaData)
                     case (.failure(let error), .success):
@@ -100,30 +112,30 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .share()
 
         ctaObservable
-        .observeOn(MainScheduler.instance)
-        .bindAndCatch(weak: self) { (self, result) in
-            switch result {
-            case .success(let data):
-                switch (data.kycState, data.isSimpleBuyEligible) {
-                case (.completed, false):
-                    self.loader.hide()
-                    // TODO: inelligible
-                case (.completed, true):
-                    self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                        self?.loader.hide()
-                        self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(weak: self) { (self, result) in
+                switch result {
+                case .success(let data):
+                    switch (data.kycState, data.isSimpleBuyEligible) {
+                    case (.completed, false):
+                        self.loader.hide()
+                        // TODO: inelligible
+                    case (.completed, true):
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
+                            self?.loader.hide()
+                            self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
+                        }
+                    case (.shouldComplete, _):
+                        self.createOrder(from: data.candidateOrderDetails) { [weak self] _ in
+                            self?.loader.hide()
+                            // TODO: KYC with checkout data
+                        }
                     }
-                case (.shouldComplete, _):
-                    self.createOrder(from: data.candidateOrderDetails) { [weak self] _ in
-                        self?.loader.hide()
-                        // TODO: KYC with checkout data
-                    }
+                case .failure(let error):
+                    self.handle(error)
                 }
-            case .failure(let error):
-                self.handle(error)
             }
-        }
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Private methods

@@ -398,6 +398,13 @@ public final class AmountTranslationInteractor {
             .disposed(by: disposeBag)
     }
 
+    public let minAmountSelectedRelay = PublishRelay<Void>()
+
+    public func set(minAmount: MoneyValue) {
+        minAmountSelectedRelay.accept(())
+        set(amount: minAmount)
+    }
+
     private func invertInputIfNeeded(for amount: MoneyValue) -> Completable {
         activeInput.take(1)
             .asSingle()

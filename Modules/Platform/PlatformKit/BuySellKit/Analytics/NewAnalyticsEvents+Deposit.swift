@@ -10,13 +10,13 @@ extension AnalyticsEvents.New {
             .new
         }
 
+        case depositClicked(origin: Origin = .currencyPage)
+        case depositViewed
         case depositAmountEntered(amount: Double,
                                   currency: String,
                                   depositMethod: Method)
-        case depositClicked(origin: Origin = .currencyPage)
         case depositMethodSelected(currency: String,
                                    depositMethod: Method)
-        case depositViewed
 
         public enum Method: String, StringRawRepresentable {
             case bankTransfer = "BANK_TRANSFER"

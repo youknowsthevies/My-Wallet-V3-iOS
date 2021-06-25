@@ -46,7 +46,7 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
 
     override func didBecomeActive() {
         super.didBecomeActive()
-        record(event: AnalyticsEvent.checkout(.shown(currencyCode: checkoutData.currency.code)))
+        analyticsRecorder.record(event: AnalyticsEvent.checkout(.shown(currencyCode: checkoutData.currency.code)))
 
         let checkoutDataAction = Driver.deferred { [weak self] () -> Driver<Action> in
             guard let self = self else { return .empty() }
@@ -55,9 +55,15 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
 
         presenter.continueButtonTapped
             .asObservable()
-            .do(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                self.record(event: AnalyticsEvent.checkout(.confirm(currencyCode: self.checkoutData.currency.code)))
+            .do(onNext: { [analyticsRecorder, checkoutData] _ in
+                analyticsRecorder.record(events: [
+                    AnalyticsEvent.checkout(.confirm(currencyCode: checkoutData.currency.code)),
+                    AnalyticsEvents.New.Withdrawal.withdrawalAmountEntered(currency: checkoutData.currency.code,
+                                                                           inputAmount: checkoutData.amount.displayMajorValue.doubleValue,
+                                                                           outputAmount: checkoutData.amount.displayMajorValue.doubleValue -
+                                                                            checkoutData.fee.displayMajorValue.doubleValue,
+                                                                           withdrawalMethod: .bankAccount)
+                ])
             })
             .flatMapLatest(weak: self) { (self, _) -> Observable<Result<FiatValue, Error>> in
                 self.withdrawalService.withdrawal(for: self.checkoutData)
@@ -67,14 +73,14 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
                         self.router?.route(to: .loading(amount: self.checkoutData.amount))
                     })
             }
-            .subscribe(onNext: { result in
+            .subscribe(onNext: { [analyticsRecorder, router] result in
                 switch result {
                 case .success(let amount):
-                    self.record(event: AnalyticsEvent.withdrawSuccess(currencyCode: self.checkoutData.currency.code))
-                    self.router?.route(to: .confirmation(amount: amount))
+                    analyticsRecorder.record(event: AnalyticsEvent.withdrawSuccess(currencyCode: self.checkoutData.currency.code))
+                    router?.route(to: .confirmation(amount: amount))
                 case let .failure(error):
-                    self.record(event: AnalyticsEvent.withdrawFailure(currencyCode: self.checkoutData.currency.code))
-                    self.router?.route(to: .failure(self.checkoutData.currency.currency, error))
+                    analyticsRecorder.record(event: AnalyticsEvent.withdrawFailure(currencyCode: self.checkoutData.currency.code))
+                    router?.route(to: .failure(self.checkoutData.currency.currency, error))
                 }
             })
             .disposeOnDeactivate(interactor: self)
@@ -87,7 +93,7 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
     func handle(effect: Effects) {
         switch effect {
         case .close:
-            record(event: AnalyticsEvent.checkout(.cancel(currencyCode: checkoutData.currency.code)))
+            analyticsRecorder.record(event: AnalyticsEvent.checkout(.cancel(currencyCode: checkoutData.currency.code)))
             listener?.closeFlow()
         case .back:
             listener?.checkoutDidTapBack()
@@ -99,10 +105,6 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
         case .closeFlow:
             handle(effect: .close)
         }
-    }
-
-    private func record(event: AnalyticsEvent) {
-        analyticsRecorder.record(event: event)
     }
 }
 

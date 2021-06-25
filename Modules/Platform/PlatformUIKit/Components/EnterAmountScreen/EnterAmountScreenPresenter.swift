@@ -98,7 +98,6 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         )
         amountTranslationPresenter = AmountTranslationPresenter(
             interactor: interactor.amountTranslationInteractor,
-            analyticsRecorder: analyticsRecorder,
             displayBundle: displayBundle.amountDisplayBundle,
             inputTypeToggleVisiblity: inputTypeToggleVisibility
         )

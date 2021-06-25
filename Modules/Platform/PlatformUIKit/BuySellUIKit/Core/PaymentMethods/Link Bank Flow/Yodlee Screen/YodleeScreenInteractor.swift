@@ -240,7 +240,9 @@ final class YodleeScreenInteractor: PresentableInteractor<YodleeScreenPresentabl
     private func recordAnalytics(for state: YodleeActivateService.State) {
         switch state {
         case .active:
-            analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbBankLinkSuccess(partner: .ach))
+            analyticsRecorder.record(events: [
+                AnalyticsEvents.SimpleBuy.sbBankLinkSuccess(partner: .ach)
+            ])
         case .inactive(let error):
             guard let error = error else {
                  return

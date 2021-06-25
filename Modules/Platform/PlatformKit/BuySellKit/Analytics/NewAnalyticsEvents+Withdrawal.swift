@@ -10,7 +10,7 @@ extension AnalyticsEvents.New {
             .new
         }
 
-        /**/case linkBankClicked(origin: LinkBank.Origin)
+        case linkBankClicked(origin: LinkBank.Origin)
         case linkBankConditionsApproved(bankName: String,
                                         partner: LinkBank.Partner,
                                         provider: LinkBank.Provider)
@@ -26,10 +26,10 @@ extension AnalyticsEvents.New {
         case withdrawalAmountMinClicked(amountCurrency: String?,
                                         currency: String,
                                         withdrawalMethod: Withdrawal.Method)
-        /**/case withdrawalClicked(orign: Withdrawal.Origin)
+        case withdrawalClicked(orign: Withdrawal.Origin)
         case withdrawalMethodSelected(currency: String,
                                       withdrawalMethod: Withdrawal.Method)
-        /**/case withdrawalViewed
+        case withdrawalViewed
 
         public enum LinkBank {
             public enum Origin: String, StringRawRepresentable {
