@@ -17,10 +17,10 @@ struct SettingsCellViewModel {
     let cellType: SettingsSectionType.CellType
 
     /// The analytics recorder that records tap events.
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(cellType: SettingsSectionType.CellType,
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.cellType = cellType
     }

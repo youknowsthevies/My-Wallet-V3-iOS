@@ -4,7 +4,6 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import Firebase
-import NabuAnalyticsDataKit
 import PlatformKit
 import SettingsKit
 import ToolKit
@@ -87,9 +86,6 @@ func defineDependencies() {
         DependencyContainer.blockchain;
         DependencyContainer.settingsKit;
         DependencyContainer.settingsUIKit;
-        DependencyContainer.analyticsKit;
-        DependencyContainer.nabuAnalyticsDataKit;
-        DependencyContainer.nabuAnalyticsKit;
         DependencyContainer.remoteNotificationsKit;
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit;

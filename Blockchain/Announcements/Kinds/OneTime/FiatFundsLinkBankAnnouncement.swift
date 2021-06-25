@@ -60,7 +60,7 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
     }
 
     let type = AnnouncementType.fiatFundsKYC
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -75,7 +75,7 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
 
     init(shouldShowLinkBankAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

@@ -56,7 +56,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
     }
 
     let type = AnnouncementType.exchangeLinking
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -71,7 +71,7 @@ final class ExchangeLinkingAnnouncement: OneTimeAnnouncement & ActionableAnnounc
 
     init(shouldShowExchangeAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

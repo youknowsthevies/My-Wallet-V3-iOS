@@ -62,7 +62,7 @@ final class KYCPendingPresenter: RibBridgePresenter, PendingStatePresenterAPI {
 
         interactor.verificationState
             .map { $0.analyticsEvent }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         interactor

@@ -44,7 +44,7 @@ public extension CameraPrompting where Self: MicrophonePrompting {
 }
 
 public protocol CameraPromptingDelegate: AnyObject {
-    var analyticsRecorder: AnalyticsEventRecording { get }
+    var analyticsRecorder: AnalyticsEventRecorderAPI { get }
     func showCameraPermissionsDenied()
     func promptToAcceptCameraPermissions(confirmHandler: @escaping (() -> Void))
 }

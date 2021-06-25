@@ -51,7 +51,7 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
     }
 
     let type = AnnouncementType.backupFunds
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -68,7 +68,7 @@ final class BackupFundsAnnouncement: PeriodicAnnouncement & ActionableAnnounceme
     init(shouldBackupFunds: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

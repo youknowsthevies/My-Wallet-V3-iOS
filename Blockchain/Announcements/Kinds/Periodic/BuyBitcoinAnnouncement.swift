@@ -54,7 +54,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     }
 
     let type = AnnouncementType.buyBitcoin
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
@@ -69,7 +69,7 @@ final class BuyBitcoinAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     init(isEnabled: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

@@ -89,14 +89,14 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
     private let disposeBag = DisposeBag()
 
     private let interactor: CardDetailsScreenInteractor
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
     private let cardNumberValidator: CardNumberValidator
     private let loadingViewPresenter: LoadingViewPresenting
 
     // MARK: - Setup
 
     init(interactor: CardDetailsScreenInteractor,
-         eventRecorder: AnalyticsEventRecording = resolve(),
+         eventRecorder: AnalyticsEventRecorderAPI = resolve(),
          messageRecorder: MessageRecording = resolve(),
          loadingViewPresenter: LoadingViewPresenting = resolve()) {
         self.interactor = interactor

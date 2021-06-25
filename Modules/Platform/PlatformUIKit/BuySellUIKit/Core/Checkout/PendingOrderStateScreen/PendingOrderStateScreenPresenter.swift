@@ -25,7 +25,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     private let viewModelRelay = BehaviorRelay<PendingStateViewModel?>(value: nil)
     private let routingInteractor: PendingOrderRoutingInteracting
     private let interactor: PendingOrderStateScreenInteractor
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let tabSwapping: TabSwapping
     private let topMostViewControllerProviding: TopMostViewControllerProviding
     private let disposeBag = DisposeBag()
@@ -44,7 +44,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
          interactor: PendingOrderStateScreenInteractor,
          topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
          tabSwapping: TabSwapping = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
         self.tabSwapping = tabSwapping
         self.analyticsRecorder = analyticsRecorder

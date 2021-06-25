@@ -31,7 +31,7 @@ final class TabControllerManager: NSObject {
     private var depositRouter: DepositRootRouting!
     private var withdrawRouter: WithdrawRootRouting!
 
-    private var analyticsEventRecorder: AnalyticsEventRecording
+    private var analyticsEventRecorder: AnalyticsEventRecorderAPI
     private let drawerRouter: DrawerRouting
     private let receiveCoordinator: ReceiveCoordinator
     private let featureConfigurator: FeatureConfiguring
@@ -41,7 +41,7 @@ final class TabControllerManager: NSObject {
     @LazyInject private var walletManager: WalletManager
 
     init(receiveCoordinator: ReceiveCoordinator = resolve(),
-         analyticsEventRecorder: AnalyticsEventRecording = resolve(),
+         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
          featureConfigurator: FeatureConfiguring = resolve(),
          internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
          coincore: CoincoreAPI = resolve(),

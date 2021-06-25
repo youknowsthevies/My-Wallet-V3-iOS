@@ -40,7 +40,7 @@ final class OrdersService: OrdersServiceAPI {
 
     // MARK: - Injected
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: OrderDetailsClientAPI
 
     private lazy var setup: Void = {
@@ -56,7 +56,7 @@ final class OrdersService: OrdersServiceAPI {
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          client: OrderDetailsClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client

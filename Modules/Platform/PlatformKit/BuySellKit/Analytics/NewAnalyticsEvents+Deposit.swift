@@ -6,9 +6,7 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Deposit: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case depositClicked(origin: Origin = .currencyPage)
         case depositViewed

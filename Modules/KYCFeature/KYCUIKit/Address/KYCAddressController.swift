@@ -35,7 +35,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     @IBOutlet fileprivate var primaryButtonContainer: PrimaryButtonContainer!
 
     private let webViewService: WebViewServiceAPI = resolve()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: - Public IBOutlets
 

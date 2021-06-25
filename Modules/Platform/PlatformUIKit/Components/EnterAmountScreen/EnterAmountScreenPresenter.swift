@@ -150,7 +150,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
 
         interactor.selectedCurrencyType
             .map { displayBundle.events.sourceAccountChanged($0.code) }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         topSelectionButtonViewModel.trailingContentRelay.accept(

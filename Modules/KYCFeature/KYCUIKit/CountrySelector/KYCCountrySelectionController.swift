@@ -30,7 +30,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
         KYCCountrySelectionPresenter(view: self)
     }()
 
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     private let generalInformationService: GeneralInformationServiceAPI = resolve()
 
     private let disposeBag = DisposeBag()

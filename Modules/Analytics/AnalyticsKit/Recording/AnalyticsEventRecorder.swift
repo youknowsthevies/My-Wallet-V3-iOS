@@ -1,34 +1,20 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
 import Foundation
-import RxRelay
-import RxSwift
 
-public typealias AnalyticsEventRecorderAPI = AnalyticsEventRecording & AnalyticsEventRelayRecording
-
-final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
+public final class AnalyticsEventRecorder: AnalyticsEventRecorderAPI {
 
     // MARK: - Properties
 
-    let recordRelay = PublishRelay<AnalyticsEvent>()
-
-    private let analyticsServiceProviders: [AnalyticsServiceProviding]
-    private let disposeBag = DisposeBag()
+    private let analyticsServiceProviders: [AnalyticsServiceProviderAPI]
 
     // MARK: - Setup
 
-    init(analyticsServiceProviders: [AnalyticsServiceProviding] = resolve()) {
+    public init(analyticsServiceProviders: [AnalyticsServiceProviderAPI]) {
         self.analyticsServiceProviders = analyticsServiceProviders
-
-        recordRelay
-            .subscribe(onNext: { [weak self] event in
-                self?.record(event: event)
-            })
-            .disposed(by: disposeBag)
     }
 
-    func record(event: AnalyticsEvent) {
+    public func record(event: AnalyticsEvent) {
         analyticsServiceProviders
             .filter { $0.isEventSupported(event) }
             .forEach {

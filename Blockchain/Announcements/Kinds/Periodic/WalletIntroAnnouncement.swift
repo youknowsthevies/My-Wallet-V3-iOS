@@ -59,7 +59,7 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
     }
 
     let type = AnnouncementType.walletIntro
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -73,7 +73,7 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
 
     init(cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction,
          dismiss: @escaping CardAnnouncementAction) {

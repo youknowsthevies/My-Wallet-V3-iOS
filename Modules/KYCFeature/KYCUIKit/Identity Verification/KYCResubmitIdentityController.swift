@@ -51,7 +51,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    let analyticsRecorder: AnalyticsEventRecording = resolve()
+    let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: - KYCRouterDelegate
 

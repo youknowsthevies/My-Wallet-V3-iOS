@@ -159,7 +159,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     return self.displayBundle.events.confirmFailure
                 }
             }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         ctaObservable

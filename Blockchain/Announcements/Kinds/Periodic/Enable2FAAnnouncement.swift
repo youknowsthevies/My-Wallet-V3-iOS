@@ -54,7 +54,7 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
     }
 
     let type = AnnouncementType.twoFA
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -71,7 +71,7 @@ final class Enable2FAAnnouncement: PeriodicAnnouncement & ActionableAnnouncement
     init(shouldEnable2FA: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

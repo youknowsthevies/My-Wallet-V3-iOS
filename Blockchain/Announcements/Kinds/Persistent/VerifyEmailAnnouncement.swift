@@ -45,7 +45,7 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
     }
 
     let type = AnnouncementType.verifyEmail
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let action: CardAnnouncementAction
 
@@ -55,7 +55,7 @@ final class VerifyEmailAnnouncement: PersistentAnnouncement & ActionableAnnounce
     // MARK: - Setup
 
     init(isEmailVerified: Bool,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.isEmailVerified = isEmailVerified

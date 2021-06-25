@@ -8,9 +8,9 @@ import ToolKit
 
 /// Factory for constructing a KYCBaseViewController
 class KYCPageViewFactory {
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve()) {
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
     }
 

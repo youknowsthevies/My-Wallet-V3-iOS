@@ -11,7 +11,7 @@ public protocol AnalyticsEvent {
 
 public extension AnalyticsEvent {
     var type: AnalyticsEventType {
-        .old
+        .firebase
     }
 
     var timestamp: Date? {
@@ -23,7 +23,7 @@ public extension AnalyticsEvent {
     }
 
     var params: [String: Any]? {
-        guard type == .new else {
+        guard type == .nabu else {
             return nil
         }
         var params = [String: Any]()

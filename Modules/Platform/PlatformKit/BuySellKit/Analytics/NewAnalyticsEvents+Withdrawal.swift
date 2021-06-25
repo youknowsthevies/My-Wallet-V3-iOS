@@ -6,9 +6,7 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Withdrawal: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case linkBankClicked(origin: LinkBank.Origin)
         case linkBankConditionsApproved(bankName: String,

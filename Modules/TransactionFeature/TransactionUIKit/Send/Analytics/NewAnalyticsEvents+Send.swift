@@ -7,7 +7,7 @@ import TransactionKit
 
 extension AnalyticsEvents.New {
     public enum Send: AnalyticsEvent {
-        public var type: AnalyticsEventType { .new }
+        public var type: AnalyticsEventType { .nabu }
 
         case sendReceiveClicked(origin: Origin = .navigation,
                                 type: Type)

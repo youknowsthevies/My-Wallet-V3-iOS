@@ -26,7 +26,7 @@ final class RecoverWalletInteractor: RegisterWalletScreenInteracting {
     // MARK: - Injected
 
     private let reachability: InternetReachabilityAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let wallet: Wallet
     private let walletManager: WalletManager
 
@@ -38,7 +38,7 @@ final class RecoverWalletInteractor: RegisterWalletScreenInteracting {
     // MARK: - Setup
 
     init(passphrase: String,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          reachability: InternetReachabilityAPI = InternetReachability(),
          walletManager: WalletManager = resolve()) {
         self.passphrase = passphrase

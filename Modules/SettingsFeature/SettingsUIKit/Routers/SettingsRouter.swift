@@ -51,7 +51,7 @@ final class SettingsRouter: SettingsRouterAPI {
     // MARK: - Private
 
     private let guidRepositoryAPI: GuidRepositoryAPI
-    private let analyticsRecording: AnalyticsEventRecording
+    private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
 
@@ -85,7 +85,7 @@ final class SettingsRouter: SettingsRouterAPI {
         exchangeCoordinator: ExchangeCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),
         navigationRouter: NavigationRouterAPI = resolve(),
-        analyticsRecording: AnalyticsEventRecording = resolve(),
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve(),
         alertPresenter: AlertViewPresenter = resolve(),
         cardListService: CardListServiceAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),

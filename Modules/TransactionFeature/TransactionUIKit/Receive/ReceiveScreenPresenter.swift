@@ -38,7 +38,7 @@ final class ReceiveScreenPresenter {
 
     // MARK: Private Properties
 
-    private var eventsRecorder: AnalyticsEventRecording
+    private var eventsRecorder: AnalyticsEventRecorderAPI
     private let qrCodeRelay = BehaviorRelay<UIImage?>(value: nil)
     private let interactor: ReceiveScreenInteractor
     private let disposeBag = DisposeBag()
@@ -46,7 +46,7 @@ final class ReceiveScreenPresenter {
     // MARK: Setup
 
     init(pasteboard: Pasteboarding = resolve(),
-         eventsRecorder: AnalyticsEventRecording = resolve(),
+         eventsRecorder: AnalyticsEventRecorderAPI = resolve(),
          interactor: ReceiveScreenInteractor) {
         self.interactor = interactor
         self.eventsRecorder = eventsRecorder

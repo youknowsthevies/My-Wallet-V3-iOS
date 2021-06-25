@@ -37,7 +37,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
     }
 
     let type = AnnouncementType.bitpay
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -45,7 +45,7 @@ final class BitpayAnnouncement: OneTimeAnnouncement {
     // MARK: - Setup
 
     init(cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction) {
         self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)

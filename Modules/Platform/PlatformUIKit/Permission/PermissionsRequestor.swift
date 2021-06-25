@@ -18,10 +18,10 @@ public class PermissionsRequestor {
         case microphone
     }
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let settings: PermissionSettingsAPI
 
-    public init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+    public init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 settings: PermissionSettingsAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.settings = settings

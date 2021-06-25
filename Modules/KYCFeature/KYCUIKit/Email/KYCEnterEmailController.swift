@@ -36,7 +36,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
     }()
 
     @Inject
-    private var analyticsRecorder: AnalyticsEventRecording
+    private var analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: KYCBaseViewController
 

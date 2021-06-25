@@ -9,6 +9,10 @@ public final class NabuTokenStore {
         .just(sessionTokenData.value)
     }
 
+    public var sessionToken: String? {
+        sessionTokenData.value?.token
+    }
+
     var requiresRefresh: AnyPublisher<Bool, Never> {
         .just(sessionTokenData.value == nil)
     }

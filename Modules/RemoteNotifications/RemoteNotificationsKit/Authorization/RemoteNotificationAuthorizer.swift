@@ -32,7 +32,7 @@ final class RemoteNotificationAuthorizer {
     // MARK: - Private Properties
 
     private let application: UIApplicationRemoteNotificationsAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let userNotificationCenter: UNUserNotificationCenterAPI
     private let options: UNAuthorizationOptions
 
@@ -41,7 +41,7 @@ final class RemoteNotificationAuthorizer {
     // MARK: - Setup
 
     init(application: UIApplicationRemoteNotificationsAPI = UIApplication.shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
          options: UNAuthorizationOptions = [.alert, .badge, .sound]) {
         self.application = application

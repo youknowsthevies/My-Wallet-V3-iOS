@@ -36,7 +36,7 @@ final class IneligibleCurrencyScreenPresenter {
 
     init(currency: FiatCurrency,
          stateService: StateServiceAPI,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
+         analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
         self.stateService = stateService
         titleLabelContent = .init(
             text: "\(currency.name) \(LocalizationString.title)",
@@ -60,7 +60,9 @@ final class IneligibleCurrencyScreenPresenter {
         )
 
         viewHomeButtonViewModel.tapRelay
-            .record(analyticsEvent: AnalyticsEvent.sbUnsupportedViewHome, using: analyticsRecording)
+            .do(onNext: { _ in
+                analyticsRecording.record(event: AnalyticsEvent.sbUnsupportedViewHome)
+            })
             .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
 
@@ -70,7 +72,9 @@ final class IneligibleCurrencyScreenPresenter {
         )
 
         changeCurrencyButtonViewModel.tapRelay
-            .record(analyticsEvent: AnalyticsEvent.sbUnsupportedChangeCurrency, using: analyticsRecording)
+            .do(onNext: { _ in
+                analyticsRecording.record(event: AnalyticsEvent.sbUnsupportedChangeCurrency)
+            })
             .bindAndCatch(to: restartRelay)
             .disposed(by: disposeBag)
     }

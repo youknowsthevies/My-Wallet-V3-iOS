@@ -23,7 +23,7 @@ final class AutoPairingScreenInteractor {
 
     private let walletFetcher: PairingWalletFetching
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let errorRelay = PublishRelay<Error>()
 
     private let disposeBag = DisposeBag()
@@ -34,7 +34,7 @@ final class AutoPairingScreenInteractor {
             repository: WalletManager.shared.repository
          ),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder
         self.walletFetcher = walletFetcher

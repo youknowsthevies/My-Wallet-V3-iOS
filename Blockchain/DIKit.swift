@@ -11,7 +11,7 @@ import ERC20Kit
 import EthereumKit
 import KYCKit
 import KYCUIKit
-import NabuAnalyticsKit
+import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
 import PlatformKit
@@ -89,8 +89,6 @@ extension DependencyContainer {
         factory { DeepLinkRouter() as DeepLinkRouting }
 
         factory { UIDevice.current as DeviceInfo }
-
-        single { [FirebaseAnalyticsService(), AnalyticsProvider()] as [AnalyticsServiceProviding] }
 
         factory { CrashlyticsRecorder() as MessageRecording }
 
@@ -546,6 +544,22 @@ extension DependencyContainer {
 
         factory { () -> TransactionUIKit.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
+        }
+
+        // MARK: Analytics
+
+        single { () -> AnalyticsEventRecorderAPI in
+            let firebaseAnalyticsServiceProvider = FirebaseAnalyticsServiceProvider()
+            let userAgent = UserAgentProvider().userAgent ?? ""
+            let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(platform: .wallet,
+                                                                     basePath: BlockchainAPI.shared.apiUrl,
+                                                                     userAgent: userAgent,
+                                                                     tokenRepository: TokenRepository(),
+                                                                     guidProvider: GuidProvider())
+            return AnalyticsEventRecorder(analyticsServiceProviders: [
+                firebaseAnalyticsServiceProvider,
+                nabuAnalyticsServiceProvider
+            ])
         }
     }
 }

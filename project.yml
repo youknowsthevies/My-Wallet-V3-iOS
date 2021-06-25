@@ -88,10 +88,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: AnalyticsKitTests
         randomExecutionOrder: true
-      - name: NabuAnalyticsDataKitTests
-        randomExecutionOrder: true
-      - name: NabuAnalyticsKitTests
-        randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
       - name: AuthenticationKitTests
@@ -403,43 +399,6 @@ targets:
       featureName: Analytics
     templates:
     - ModuleTests
-  NabuAnalyticsKit:
-    dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
-    - target: AnalyticsKit
-    - target: SettingsKit
-    - target: SharedPackagesKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
-  NabuAnalyticsKitTests:
-    dependencies:
-    - target: NabuAnalyticsKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
-  NabuAnalyticsDataKit:
-    dependencies:
-    - target: NabuAnalyticsKit
-    - target: NetworkKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - NabuAnalyticsDataKitTests
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
-  NabuAnalyticsDataKitTests:
-    dependencies:
-    - target: NabuAnalyticsDataKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
   BitcoinCashKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
@@ -612,8 +571,6 @@ targets:
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
-    - target: NabuAnalyticsKit
-    - target: NabuAnalyticsDataKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit

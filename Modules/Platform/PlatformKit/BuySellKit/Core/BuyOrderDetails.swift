@@ -25,7 +25,7 @@ public struct BuyOrderDetails {
 
     // MARK: - Setup
 
-    init?(recorder: AnalyticsEventRecording, response: OrderPayload.Response) {
+    init?(recorder: AnalyticsEventRecorderAPI, response: OrderPayload.Response) {
         guard let state = State(rawValue: response.state) else {
             return nil
         }

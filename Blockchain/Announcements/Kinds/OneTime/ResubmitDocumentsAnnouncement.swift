@@ -54,7 +54,7 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
     }
 
     let type = AnnouncementType.resubmitDocuments
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     var dismiss: CardAnnouncementAction
     var recorder: AnnouncementRecorder
@@ -68,7 +68,7 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
 
     init(user: NabuUser,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

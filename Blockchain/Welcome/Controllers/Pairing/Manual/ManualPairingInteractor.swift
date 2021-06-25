@@ -178,10 +178,10 @@ extension ManualPairingInteractor {
 
         // MARK: - General dependencies
 
-        fileprivate let analyticsRecorder: AnalyticsEventRecording
+        fileprivate let analyticsRecorder: AnalyticsEventRecorderAPI
         fileprivate let errorRecorder: ErrorRecording
 
-        init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+        init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
              errorRecorder: ErrorRecording = CrashlyticsRecorder(),
              walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
              twoFAWalletClient: TwoFAWalletClientAPI = TwoFAWalletClient(),

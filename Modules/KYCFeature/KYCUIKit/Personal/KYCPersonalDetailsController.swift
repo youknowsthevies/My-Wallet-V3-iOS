@@ -40,7 +40,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
     // MARK: Private Properties
 
     fileprivate var detailsCoordinator: PersonalDetailsCoordinator!
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     private var user: NabuUser?
 

@@ -49,7 +49,7 @@ class SideMenuPresenter {
     private let walletService: WalletOptionsAPI
     private let reactiveWallet: ReactiveWalletAPI
     private let secureChannelConfiguration: AppFeatureConfiguration
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
 
@@ -60,7 +60,7 @@ class SideMenuPresenter {
         appFeatureConfigurator: AppFeatureConfigurator = resolve(),
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         onboardingSettings: OnboardingSettings = resolve(),
-        analyticsRecorder: AnalyticsEventRecording = resolve()
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.wallet = wallet
         self.walletService = walletService

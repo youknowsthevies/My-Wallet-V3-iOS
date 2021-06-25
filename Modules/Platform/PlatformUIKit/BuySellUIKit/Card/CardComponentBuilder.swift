@@ -24,13 +24,13 @@ public protocol CardComponentBuilderAPI: AnyObject {
 public final class CardComponentBuilder: CardComponentBuilderAPI {
 
     private let routingInteractor: CardRouterInteractor
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let messageRecorder: MessageRecording
     private let paymentMethodTypesService: PaymentMethodTypesServiceAPI
 
     public init(routingInteractor: CardRouterInteractor,
                 paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-                analyticsRecorder: AnalyticsEventRecording = resolve(),
+                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 messageRecorder: MessageRecording = resolve()) {
         self.paymentMethodTypesService = paymentMethodTypesService
         self.routingInteractor = routingInteractor

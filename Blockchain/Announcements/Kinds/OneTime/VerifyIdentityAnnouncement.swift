@@ -57,7 +57,7 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
     }
 
     let type = AnnouncementType.verifyIdentity
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -73,7 +73,7 @@ final class VerifyIdentityAnnouncement: OneTimeAnnouncement & ActionableAnnounce
     init(user: NabuUserSunriverAirdropRegistering,
          isCompletingKyc: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

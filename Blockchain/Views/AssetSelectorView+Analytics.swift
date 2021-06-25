@@ -6,7 +6,7 @@ import PlatformKit
 
 extension AssetSelectorView {
 
-    private var analyticsEventRecorder: AnalyticsEventRecording { resolve() }
+    private var analyticsEventRecorder: AnalyticsEventRecorderAPI { resolve() }
 
     @objc
     func reportOpen() {

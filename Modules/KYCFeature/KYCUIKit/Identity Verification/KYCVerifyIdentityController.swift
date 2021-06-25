@@ -58,7 +58,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     private var presenter: KYCVerifyIdentityPresenter!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    let analyticsRecorder: AnalyticsEventRecording = resolve()
+    let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     private var countrySupportedTrigger: ActionableTrigger!
 

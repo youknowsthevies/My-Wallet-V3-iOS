@@ -72,7 +72,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     }
 
     let type = AnnouncementType.simpleBuyPendingTransaction
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let action: CardAnnouncementAction
 
@@ -82,7 +82,7 @@ final class SimpleBuyPendingTransactionAnnouncement: PersistentAnnouncement & Ac
     // MARK: - Setup
 
     init(order: OrderDetails?,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.order = order
