@@ -90,7 +90,8 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
     func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
         presenter.refresh()
-        DataProvider.default.exchange.refresh()
+        let exchangeProvider: ExchangeProviding = resolve()
+        exchangeProvider.refresh()
         completionHandler(NCUpdateResult.newData)
     }
 

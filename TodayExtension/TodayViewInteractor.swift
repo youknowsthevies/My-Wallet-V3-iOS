@@ -41,9 +41,11 @@ final class TodayViewInteractor {
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let disposeBag = DisposeBag()
 
-    init(historicalProvider: HistoricalFiatPriceProviding = DataProvider.default.historicalPrices,
-         container: SharedContainerUserDefaults = .default,
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
+    init(
+        historicalProvider: HistoricalFiatPriceProviding = resolve(),
+        container: SharedContainerUserDefaults = .default,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+    ) {
         self.container = container
         self.historicalProvider = historicalProvider
         self.enabledCurrenciesService = enabledCurrenciesService

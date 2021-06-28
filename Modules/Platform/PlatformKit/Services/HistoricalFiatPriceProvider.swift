@@ -15,34 +15,12 @@ public final class HistoricalFiatPriceProvider: HistoricalFiatPriceProviding {
 
     // MARK: - Services
 
-    private var services: [CryptoCurrency: HistoricalFiatPriceServiceAPI] = [:]
+    private let services: [CryptoCurrency: HistoricalFiatPriceServiceAPI]
 
     // MARK: - Setup
 
-    public init(
-        aave: HistoricalFiatPriceServiceAPI,
-        algorand: HistoricalFiatPriceServiceAPI,
-        bitcoin: HistoricalFiatPriceServiceAPI,
-        bitcoinCash: HistoricalFiatPriceServiceAPI,
-        ether: HistoricalFiatPriceServiceAPI,
-        pax: HistoricalFiatPriceServiceAPI,
-        polkadot: HistoricalFiatPriceServiceAPI,
-        stellar: HistoricalFiatPriceServiceAPI,
-        tether: HistoricalFiatPriceServiceAPI,
-        wDGLD: HistoricalFiatPriceServiceAPI,
-        yearnFinance: HistoricalFiatPriceServiceAPI
-    ) {
-        services[.algorand] = algorand
-        services[.bitcoin] = bitcoin
-        services[.bitcoinCash] = bitcoinCash
-        services[.ethereum] = ether
-        services[.polkadot] = polkadot
-        services[.stellar] = stellar
-        services[.erc20(.aave)] = aave
-        services[.erc20(.pax)] = pax
-        services[.erc20(.tether)] = tether
-        services[.erc20(.wdgld)] = wDGLD
-        services[.erc20(.yearnFinance)] = yearnFinance
+    public init(services: [CryptoCurrency: HistoricalFiatPriceServiceAPI]) {
+        self.services = services
         refresh()
     }
 

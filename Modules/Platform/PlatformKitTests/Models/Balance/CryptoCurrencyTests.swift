@@ -33,7 +33,8 @@ class CryptoCurrencyTests: XCTestCase {
     }
 
     func testSortedCryptoCurrencyArrayIsInCorrectOrder() {
-//        XCTAssertTrue(CryptoCurrency.allCases.sorted() == cryptoCurrencyDesiredOrder,
-//                      "CryptoCurrency.allCases.sorted() is not as expected.")
+        let sut =    EnabledCurrenciesService.init(featureFlagService: InternalFeatureFlagServiceMock())
+        XCTAssertTrue(sut.allEnabledCryptoCurrencies.sorted() == cryptoCurrencyDesiredOrder,
+                      "sut.allEnabledCryptoCurrencies.sorted() is not as expected.")
     }
 }

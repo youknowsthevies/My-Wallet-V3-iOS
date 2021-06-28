@@ -4,7 +4,7 @@ import DIKit
 import Localization
 
 /// This is used to distinguish between different types of digital assets.
-public enum CryptoCurrency: Currency, Hashable, Codable, CustomDebugStringConvertible {
+public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible {
     case bitcoin
     case ethereum
     case bitcoinCash
