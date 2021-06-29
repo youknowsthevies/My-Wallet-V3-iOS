@@ -28,8 +28,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Exposed Properties
 
     var tiers: Single<KYC.UserTiers> {
-        _ = setup
-        return Single.create(weak: self) { (self, observer) -> Disposable in
+        Single.create(weak: self) { (self, observer) -> Disposable in
             guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
                 observer(.error(ToolKitError.timedOut))
                 return Disposables.create()
@@ -43,6 +42,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
                         observer(.error(value))
                     }
                 }
+
             return Disposables.create {
                 disposable.dispose()
                 self.semaphore.signal()
@@ -56,23 +56,19 @@ final class KYCTiersService: KYCTiersServiceAPI {
     private let client: KYCClientAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
-
-    private lazy var setup: Void = {
-        cachedTiers.setFetch(weak: self) { (self) in
-            self.client.tiers()
-        }
-    }()
+    private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     // MARK: - Setup
 
     init(client: KYCClientAPI = resolve()) {
         self.client = client
+        cachedTiers.setFetch(weak: self) { (self) in
+            self.client.tiers()
+        }
     }
 
     func fetchTiers() -> Single<KYC.UserTiers> {
-        _  = setup
-        return cachedTiers.fetchValue
+        cachedTiers.fetchValue
     }
 
     func simplifiedDueDiligenceEligibility() -> Single<SimplifiedDueDiligenceResponse> {

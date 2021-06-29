@@ -11,7 +11,6 @@ protocol ExchangeAccountAuthenticatorAPI {
     typealias LinkID = String
     var exchangeLinkID: Single<LinkID> { get }
     var exchangeURL: Single<URL> { get }
-    var nabuUser: Observable<NabuUser> { get }
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable
 }
 
@@ -35,7 +34,7 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
 
     var exchangeURL: Single<URL> {
         Single
-            .zip(blockchainRepository.fetchNabuUser(), exchangeLinkID)
+            .zip(blockchainRepository.nabuUserSingle, exchangeLinkID)
             .flatMap(weak: self, { (self, payload) -> Single<URL> in
                 let user = payload.0
                 let linkID = payload.1
@@ -58,16 +57,6 @@ class ExchangeAccountAuthenticator: ExchangeAccountAuthenticatorAPI {
 
                 return Single.just(endpoint)
             })
-    }
-
-    var nabuUser: Observable<NabuUser> {
-        Observable<Int>.interval(
-            3,
-            scheduler: MainScheduler.asyncInstance
-        )
-        .flatMap(weak: self, selector: { (self, _) -> Observable<NabuUser> in
-            self.blockchainRepository.fetchNabuUser().asObservable()
-        })
     }
 
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable {

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -54,8 +55,8 @@ final class DashboardScreenInteractor {
     }
 
     func refresh() {
-        reactiveWallet.waitUntilInitialized
-            .bind { [weak self] _ in
+        reactiveWallet.waitUntilInitializedSingle
+            .subscribe(onSuccess: { [weak self] _ in
                 guard let self = self else { return }
 
                 for interactor in self.historicalBalanceInteractors {
@@ -67,7 +68,7 @@ final class DashboardScreenInteractor {
 
                 /// Record user properties once wallet is initialized
                 self.userPropertyInteractor.record()
-            }
+            })
             .disposed(by: disposeBag)
     }
 }

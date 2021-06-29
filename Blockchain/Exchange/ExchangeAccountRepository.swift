@@ -39,7 +39,7 @@ final class ExchangeAccountRepository: ExchangeAccountRepositoryAPI {
 
     var hasLinkedExchangeAccount: Single<Bool> {
         blockchainRepository
-            .fetchNabuUser()
+            .nabuUserSingle
             .map(\.hasLinkedExchangeAccount)
     }
 

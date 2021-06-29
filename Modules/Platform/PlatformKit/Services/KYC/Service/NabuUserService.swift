@@ -14,8 +14,7 @@ final class NabuUserService: NabuUserServiceAPI {
     // MARK: - Exposed Properties
 
     var user: Single<NabuUser> {
-        _ = setup
-        return Single.create(weak: self) { (self, observer) -> Disposable in
+        Single.create(weak: self) { (self, observer) -> Disposable in
             guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
                 observer(.error(ToolKitError.timedOut))
                 return Disposables.create()
@@ -39,19 +38,10 @@ final class NabuUserService: NabuUserServiceAPI {
 
     private let cachedUser = CachedValue<NabuUser>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
+    private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     private let client: KYCClientAPI
     private let siftService: SiftServiceAPI
-
-    private lazy var setup: Void = {
-        cachedUser.setFetch(weak: self) { (self) in
-            self.client.user()
-                .do(onSuccess: { nabuUser in
-                    self.siftService.set(userId: nabuUser.identifier)
-                })
-        }
-    }()
 
     // MARK: - Setup
 
@@ -59,10 +49,18 @@ final class NabuUserService: NabuUserServiceAPI {
          siftService: SiftServiceAPI = resolve()) {
         self.client = client
         self.siftService = siftService
+
+        cachedUser.setFetch(weak: self) { (self) in
+            self.client.user()
+                .do(
+                    onSuccess: { [weak self] nabuUser in
+                        self?.siftService.set(userId: nabuUser.identifier)
+                    }
+                )
+        }
     }
 
     func fetchUser() -> Single<NabuUser> {
-        _  = setup
-        return cachedUser.fetchValue
+        cachedUser.fetchValue
     }
 }

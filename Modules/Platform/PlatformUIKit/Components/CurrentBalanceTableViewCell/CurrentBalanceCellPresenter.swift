@@ -71,6 +71,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             .state
             .compactMap { $0.value }
             .map { $0.pendingValue.isZero ? .hidden : .visible }
+            .catchErrorJustReturn(.hidden)
             .bindAndCatch(to: pendingLabelVisibilityRelay)
             .disposed(by: disposeBag)
     }()

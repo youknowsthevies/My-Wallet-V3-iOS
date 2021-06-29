@@ -35,7 +35,7 @@ final class SettingsService: SettingsServiceAPI {
 
     private let settingsRelay = BehaviorRelay<WalletSettings?>(value: nil)
     private let disposeBag = DisposeBag()
-    private let scheduler = ConcurrentDispatchQueueScheduler(qos: .background)
+    private let scheduler = SerialDispatchQueueScheduler(qos: .default)
     private let semaphore = DispatchSemaphore(value: 1)
 
     // MARK: - Setup
