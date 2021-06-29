@@ -10,10 +10,9 @@ public final class Cache<Key: Hashable, Value> {
         let expirationDate: Date
     }
 
-    private var items: [Key: Item] = [:]
+    private var items = Atomic<[Key: Item]>([:])
     private let dateProvider: () -> Date
     private let entryLifetime: TimeInterval
-    private let writingQueue: DispatchQueue
 
     /// Default initalizer
     /// - Parameters:
@@ -25,7 +24,6 @@ public final class Cache<Key: Hashable, Value> {
     ) {
         self.dateProvider = dateProvider
         self.entryLifetime = entryLifetime
-        self.writingQueue = DispatchQueue(label: String(describing: Self.self))
     }
 
     /// Stores a value for a given key.
@@ -34,16 +32,14 @@ public final class Cache<Key: Hashable, Value> {
     ///   - key: An identifier that can be later used to retrieve the value.
     public func set(_ value: Value, forKey key: Key) {
         let expirationDate = dateProvider().addingTimeInterval(entryLifetime)
-        writingQueue.sync { [weak self] in
-            self?.items[key] = Item(value: value, expirationDate: expirationDate)
-        }
+        items.mutate { $0[key] = Item(value: value, expirationDate: expirationDate) }
     }
 
     /// Retrieves a value, if any is stored, for a given key.
     /// - Parameter key: The identifier for the value to be retreived
     /// - Returns: `nil` if no value was stored for the passed-in `key` or if the value has expired. Otherwise, the stored value is returned.
     public func value(forKey key: Key) -> Value? {
-        guard let entry = items[key] else {
+        guard let entry = items.value[key] else {
             return nil
         }
 
@@ -61,15 +57,13 @@ public final class Cache<Key: Hashable, Value> {
     /// - Returns: The value removed or `nil` if no value was found for the passed-in key.
     @discardableResult
     public func removeValue(forKey key: Key) -> Value? {
-        writingQueue.sync {
-            items.removeValue(forKey: key)?.value
-        }
+        let item = items.value[key]
+        items.mutate { $0[key] = nil }
+        return item?.value
     }
 
     /// Remove all items in the cache
     public func removeAll() {
-        writingQueue.sync {
-            items.removeAll()
-        }
+        items.mutate { $0 = [:] }
     }
 }
