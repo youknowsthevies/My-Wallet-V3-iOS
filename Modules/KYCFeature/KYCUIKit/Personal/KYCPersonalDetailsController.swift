@@ -59,9 +59,8 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
         self.user = user
 
-        firstNameField.text = user.personalDetails.firstName
-        lastNameField.text = user.personalDetails.lastName
-
+        firstNameField.text = firstNameField.text ?? user.personalDetails.firstName
+        lastNameField.text = lastNameField.text ?? user.personalDetails.lastName
         firstNameField.contentType = .givenName
         lastNameField.contentType = .familyName
 

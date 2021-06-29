@@ -65,7 +65,7 @@ public class PrimaryButtonContainer: NibBasedView {
         primaryButton.accessibility = .id(Accessibility.Identifier.General.mainCTAButton)
     }
 
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style = .whiteLarge {
+    public var activityIndicatorStyle: UIActivityIndicatorView.Style = .large {
         didSet {
             activityIndicator.style = activityIndicatorStyle
         }
@@ -86,9 +86,12 @@ public class PrimaryButtonContainer: NibBasedView {
         }
     }
 
-    @IBInspectable public var buttonTitleColor: UIColor = UIColor.white {
-        didSet {
-            primaryButton.setTitleColor(buttonTitleColor, for: .normal)
+    @IBInspectable public var buttonTitleColor: UIColor {
+        get {
+            primaryButton.titleColor(for: .normal) ?? .clear
+        }
+        set {
+            primaryButton.setTitleColor(newValue, for: .normal)
         }
     }
 
@@ -97,19 +100,25 @@ public class PrimaryButtonContainer: NibBasedView {
     @IBInspectable public var isLoading: Bool = false {
         didSet {
             isLoading == true ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
-            isLoading == true ? primaryButton.setTitle(nil, for: .normal) : primaryButton.setTitle(title, for: .normal)
+            primaryButton.setTitleColor(isLoading ? buttonBackgroundColor : buttonTitleColor, for: .normal)
         }
     }
 
-    @IBInspectable public var title: String = "" {
-        didSet {
-            primaryButton.setTitle(title, for: .normal)
+    @IBInspectable public var title: String {
+        get {
+            primaryButton.title(for: .normal) ?? ""
+        }
+        set {
+            primaryButton.setTitle(newValue, for: .normal)
         }
     }
 
-    @IBInspectable public var attributedTitle: NSAttributedString = NSAttributedString(string: "") {
-        didSet {
-            primaryButton.setAttributedTitle(attributedTitle, for: .normal)
+    @IBInspectable public var attributedTitle: NSAttributedString {
+        get {
+            primaryButton.attributedTitle(for: .normal) ?? NSAttributedString(string: title)
+        }
+        set {
+            primaryButton.setAttributedTitle(newValue, for: .normal)
         }
     }
 
@@ -123,9 +132,7 @@ public class PrimaryButtonContainer: NibBasedView {
     // MARK: Actions
 
     @IBAction func primaryButtonTapped(_ sender: UIButton) {
-        if let block = actionBlock {
-            block()
-        }
+        actionBlock?()
     }
 }
 
