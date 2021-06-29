@@ -590,6 +590,7 @@ targets:
     - target: InterestKit
     - target: InterestUIKit
     - target: TransactionKit
+    - target: TransactionDataKit
     - target: TransactionUIKit
     - target: WalletPayloadKit
     - target: ToolKit
@@ -1437,6 +1438,31 @@ targets:
       path: TestKit/TestKit/Mocks/ToolKit
     - createIntermediateGroups: true
       path: TestKit/TestKit/Mocks/TransactionKit
+    templateAttributes:
+      featureName: TransactionFeature
+    templates:
+    - ModuleTests
+  TransactionDataKit:
+    dependencies:
+    - target: TransactionKit
+    - target: PlatformKit
+    - target: NetworkKit
+    - target: ToolKit
+    scheme:
+      testTargets:
+      - TransactionDataKitTests
+    templateAttributes:
+      featureName: TransactionFeature
+    templates:
+      - Module
+  TransactionDataKitTests:
+    dependencies:
+    - target: TransactionDataKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/NetworkKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: TransactionFeature
     templates:

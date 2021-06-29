@@ -1,25 +1,23 @@
-//
-//  BlockchainNameResolutionAPI.swift
-//  ActivityKit
-//
-//  Created by Paulo on 27/04/2021.
-//  Copyright © 2021 Blockchain Luxembourg S.A. All rights reserved.
-//
+//  Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
 import DIKit
 import NetworkKit
 
-struct DomainResolutionRequest: Encodable {
-    let currency: String
-    let name: String
-}
-
-struct DomainResolutionResponse: Decodable {
+public struct DomainResolution {
     let currency: String
     let address: String
+
+    public init(currency: String, address: String) {
+        self.currency = currency
+        self.address = address
+    }
 }
 
-protocol BlockchainNameResolutionAPI {
-    func resolve(domainName: String, currency: String) -> AnyPublisher<DomainResolutionResponse, NetworkError>
+public protocol BlockchainNameResolutionRepositoryAPI {
+
+    func resolve(
+        domainName: String,
+        currency: String
+    ) -> AnyPublisher<DomainResolution, NetworkError>
 }

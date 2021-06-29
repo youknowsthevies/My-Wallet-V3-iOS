@@ -29,7 +29,7 @@ final class BitPayTransactionEngine: TransactionEngine {
     private static let timeoutStop: TimeInterval = 1
 
     private let onChainEngine: OnChainTransactionEngine
-    private let bitpayService: BitPayServiceAPI
+    private let bitpayRepository: BitPayRepositoryAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private var bitpayInvoice: BitPayInvoiceTarget {
         transactionTarget as! BitPayInvoiceTarget
@@ -44,10 +44,10 @@ final class BitPayTransactionEngine: TransactionEngine {
     private let stopCountdown = PublishSubject<Void>()
 
     init(onChainEngine: OnChainTransactionEngine,
-         bitpayService: BitPayServiceAPI = resolve(),
+         bitpayRepository: BitPayRepositoryAPI = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.onChainEngine = onChainEngine
-        self.bitpayService = bitpayService
+        self.bitpayRepository = bitpayRepository
         self.analyticsRecorder = analyticsRecorder
     }
 
@@ -171,22 +171,22 @@ final class BitPayTransactionEngine: TransactionEngine {
     // MARK: - Private Functions
 
     private func doExecuteTransaction(invoiceId: String, transaction: EngineTransaction) -> Single<String> {
-        bitpayService
+        bitpayRepository
             .verifySignedTransaction(
-                invoiceID: invoiceId,
+                invoiceId: invoiceId,
                 currency: sourceCryptoCurrency,
                 transactionHex: transaction.txHash,
                 transactionSize: transaction.msgSize
             )
             .delay(.seconds(3), scheduler: MainScheduler.instance)
             .andThen(
-                bitpayService
-                        .submitBitPayPayment(
-                            invoiceID: invoiceId,
-                            currency: sourceCryptoCurrency,
-                            transactionHex: transaction.txHash,
-                            transactionSize: transaction.msgSize
-                        )
+                bitpayRepository
+                    .submitBitPayPayment(
+                        invoiceId: invoiceId,
+                        currency: sourceCryptoCurrency,
+                        transactionHex: transaction.txHash,
+                        transactionSize: transaction.msgSize
+                    )
             )
             .map(\.memo)
     }

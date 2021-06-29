@@ -23,6 +23,7 @@ import RxSwift
 import SettingsKit
 import ToolKit
 import TransactionUIKit
+import TransactionDataKit
 import WalletPayloadKit
 
 @available(*, deprecated, message: "This is being replaced by newer AppDelegate @see App.swift file")
@@ -68,41 +69,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         FirebaseApp.configure()
 
-        // swiftlint:disable trailing_semicolon
-        DependencyContainer.defined(by: modules {
-            DependencyContainer.toolKit;
-            DependencyContainer.networkKit;
-            DependencyContainer.walletPayloadKit;
-            DependencyContainer.platformKit;
-            DependencyContainer.interestKit;
-            DependencyContainer.platformUIKit;
-            DependencyContainer.algorandKit;
-            DependencyContainer.polkadotKit;
-            DependencyContainer.ethereumKit;
-            DependencyContainer.erc20Kit;
-            DependencyContainer.bitcoinChainKit;
-            DependencyContainer.bitcoinKit;
-            DependencyContainer.bitcoinCashKit;
-            DependencyContainer.stellarKit;
-            DependencyContainer.transactionKit;
-            DependencyContainer.transactionUIKit;
-            DependencyContainer.buySellKit;
-            DependencyContainer.activityKit;
-            DependencyContainer.activityUIKit;
-            DependencyContainer.kycKit;
-            DependencyContainer.kycUIKit;
-            DependencyContainer.blockchain;
-            DependencyContainer.settingsKit;
-            DependencyContainer.settingsUIKit;
-            DependencyContainer.analyticsKit;
-            DependencyContainer.nabuAnalyticsDataKit;
-            DependencyContainer.nabuAnalyticsKit;
-            DependencyContainer.remoteNotificationsKit;
-            #if INTERNAL_BUILD
-            DependencyContainer.debugUIKit;
-            #endif
-        })
-        // swiftlint:enable trailing_semicolon
+        defineDependencies()
     }
 
     // MARK: - Lifecycle Methods

@@ -6,32 +6,6 @@ import RxTest
 @testable import TransactionKit
 import XCTest
 
-final class SwapQuotesEngineMock {
-    private let service: OrderQuoteServiceAPI
-    private let amount = BehaviorSubject<BigInt>(value: .zero)
-    private var amountObservable: Observable<BigInt> {
-        amount
-            .asObservable()
-    }
-    init(service: OrderQuoteServiceAPI = OrderQuoteServiceMock()) {
-        self.service = service
-    }
-
-    func getRate(direction: OrderDirection = .internal, pair: OrderPair) -> Observable<BigInt> {
-        Observable.combineLatest(
-            service
-                .latestQuote
-                .asObservable(),
-            amountObservable
-        )
-        .map { PricesInterpolator(prices: $0.0.quote.priceTiers).rate(amount: $0.1) }
-    }
-
-    func updateAmount(_ amount: BigInt) {
-        self.amount.onNext(amount)
-    }
-}
-
 final class ExchangeRateTests: XCTestCase {
 
     var scheduler: TestScheduler!
@@ -41,7 +15,7 @@ final class ExchangeRateTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        subject = .init(service: OrderQuoteServiceMock())
+        subject = .init(service: OrderQuoteRepositoryMock())
         scheduler = TestScheduler(initialClock: 0)
         disposeBag = DisposeBag()
     }

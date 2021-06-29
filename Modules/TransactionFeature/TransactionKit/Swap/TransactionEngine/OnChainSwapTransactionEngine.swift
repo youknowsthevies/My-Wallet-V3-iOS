@@ -11,16 +11,16 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
     let onChainEngine: OnChainTransactionEngine
-    let orderCreationService: OrderCreationServiceAPI
+    let orderCreationRepository: OrderCreationRepositoryAPI
     var orderDirection: OrderDirection {
         target is TradingAccount ? .fromUserKey : .onChain
     }
-    let orderQuoteService: OrderQuoteServiceAPI
-    let orderUpdateService: OrderUpdateServiceAPI
+    let orderQuoteRepository: OrderQuoteRepositoryAPI
+    let orderUpdateRepository: OrderUpdateRepositoryAPI
     let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool
-    let tradeLimitsService: TransactionLimitsServiceAPI
+    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
@@ -28,20 +28,20 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
     init(quotesEngine: SwapQuotesEngine,
          requireSecondPassword: Bool,
          onChainEngine: OnChainTransactionEngine,
-         orderQuoteService: OrderQuoteServiceAPI = resolve(),
-         orderCreationService: OrderCreationServiceAPI = resolve(),
-         orderUpdateService: OrderUpdateServiceAPI = resolve(),
-         tradeLimitsService: TransactionLimitsServiceAPI = resolve(),
+         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
+         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
+         orderUpdateRepository: OrderUpdateRepositoryAPI = resolve(),
+         tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
          receiveAddressFactory: CryptoReceiveAddressFactoryService = resolve()) {
         self.quotesEngine = quotesEngine
         self.requireSecondPassword = requireSecondPassword
-        self.orderQuoteService = orderQuoteService
-        self.orderCreationService = orderCreationService
-        self.orderUpdateService = orderUpdateService
-        self.tradeLimitsService = tradeLimitsService
+        self.orderQuoteRepository = orderQuoteRepository
+        self.orderCreationRepository = orderCreationRepository
+        self.orderUpdateRepository = orderUpdateRepository
+        self.tradeLimitsRepository = tradeLimitsRepository
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
         self.priceService = priceService
@@ -175,13 +175,13 @@ final class OnChainSwapTransactionEngine: SwapTransactionEngine {
                         self.onChainEngine
                             .execute(pendingTransaction: pendingTransaction, secondPassword: secondPassword)
                             .catchError(weak: self) { (self, error) -> Single<TransactionResult> in
-                                self.orderUpdateService
+                                self.orderUpdateRepository
                                     .updateOrder(identifier: swapOrder.identifier, success: false)
                                     .catchError { _ in .empty() }
                                     .andThen(.error(error))
                             }
                             .flatMap(weak: self) { (self, result) -> Single<TransactionResult> in
-                                self.orderUpdateService
+                                self.orderUpdateRepository
                                     .updateOrder(identifier: swapOrder.identifier, success: true)
                                     .catchError { _ in .empty() }
                                     .andThen(.just(result))

@@ -38,18 +38,18 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     private let linkedBanksFactory: LinkedBanksFactoryAPI
-    private let bankTransferService: BankTransferServiceAPI
+    private let bankTransferRepository: BankTransferRepositoryAPI
 
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
          linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-         bankTransferService: BankTransferServiceAPI = resolve()) {
+         bankTransferRepository: BankTransferRepositoryAPI = resolve()) {
         self.linkedBanksFactory = linkedBanksFactory
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
-        self.bankTransferService = bankTransferService
+        self.bankTransferRepository = bankTransferRepository
     }
 
     // MARK: - TransactionEngine
@@ -119,11 +119,12 @@ final class FiatDepositTransactionEngine: TransactionEngine {
             .map(\.address)
             .flatMap(weak: self) { (self, identifier) -> Single<String> in
                 // TODO: Handle OB
-                self.bankTransferService
+                self.bankTransferRepository
                     .startBankTransfer(
                         id: identifier,
                         amount: pendingTransaction.amount
                     )
+                    .map(\.paymentId)
             }
             .map { TransactionResult.hashed(txHash: $0, amount: pendingTransaction.amount) }
     }

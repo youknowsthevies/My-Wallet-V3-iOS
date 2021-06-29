@@ -58,13 +58,32 @@ public protocol NetworkAdapterRxAPI {
 public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
 
     /// Performs a request and maps the response or error response
+    /// - Parameters:
     /// - Parameter request: the request to perform
+    /// - Returns: `Void` in case of success or `NetworkError` for failure
+    func perform(request: NetworkRequest) -> AnyPublisher<Void, NetworkError>
+
+    /// Performs a request and maps the response or error response
+    /// - Parameters:
+    /// - Parameter request: the request to perform
+    /// - Returns: `Void` on success or decodes the error
+    ///              into a `FromNetworkErrorConvertible` conforming type.
+    func perform<ErrorResponseType: FromNetworkErrorConvertible>(
+        request: NetworkRequest
+    ) -> AnyPublisher<Void, ErrorResponseType>
+
+    /// Performs a request and maps the response or error response
+    /// - Parameter request: the request to perform
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, ErrorResponseType>
 
     /// Performs a request and maps the response or error response
     /// - Parameter request: the request to perform
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            `NetworkError` for the error case.
     func perform<ResponseType: Decodable>(
         request: NetworkRequest
     ) -> AnyPublisher<ResponseType, NetworkError>
@@ -73,6 +92,8 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameters:
     /// - Parameter request: the request to perform
     ///   - responseType: the type of the response to map to
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
@@ -82,6 +103,8 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameters:
     /// - Parameter request: the request to perform
     ///   - responseType: the type of the response to map to
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            `NetworkError` for the error case.
     func perform<ResponseType: Decodable>(
         request: NetworkRequest,
         responseType: ResponseType.Type
@@ -91,6 +114,8 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameters:
     /// - Parameter request: the request to perform
     ///   - errorResponseType: the type of the error response to map to
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         errorResponseType: ErrorResponseType.Type
@@ -101,6 +126,8 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
     /// - Parameter request: the request to perform
     ///   - responseType: the type of the response to map to
     ///   - errorResponseType: the type of the error response to map to
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type,
@@ -109,20 +136,27 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
 
     /// Performs a request and if there is content maps the response and always maps the error type
     /// - Parameters:
+    ///   - request: the request to perform
     ///   - responseType: the type of the response to map to
-    ///   - errorResponseType: the type of the error response to map to
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,
         responseType: ResponseType.Type
     ) -> AnyPublisher<ResponseType?, ErrorResponseType>
 
-    /// Performs a request and maps response to `Void` and returns any errors.
+    /// Performs a request and if there is content maps the response and always maps the error type
+    /// - Parameters:
+    ///   - request: the request to perform
+    /// - Returns: attempts to decode the success into `ResponseType` or
+    ///            into a `FromNetworkErrorConvertible` conforming type for the error case.
     func performOptional(
         request: NetworkRequest
     ) -> AnyPublisher<Void, NetworkError>
 
-    /// Performs a request and if there is content maps the response and returns any errors
+    /// Performs a request and if there is content maps the response and always maps the error type
     /// - Parameters:
+    ///   - request: the request to perform
     ///   - responseType: the type of the response to map to
     func performOptional<ResponseType: Decodable>(
         request: NetworkRequest,
@@ -131,6 +165,7 @@ public protocol NetworkAdapterAPI: NetworkAdapterRxAPI {
 
     /// Performs a request and if there is content maps the response and always maps the error type
     /// - Parameters:
+    ///   - request: the request to perform
     ///   - responseType: the type of the response to map to
     ///   - errorResponseType: the type of the error response to map to
     func performOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
@@ -261,6 +296,24 @@ extension NetworkAdapterAPI {
 }
 
 extension NetworkAdapterAPI {
+
+    func perform(request: NetworkRequest) -> AnyPublisher<Void, NetworkError> {
+        perform(request: request)
+            .map { (response: EmptyNetworkResponse) -> Void in
+                ()
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func perform<ErrorResponseType: FromNetworkErrorConvertible>(
+        request: NetworkRequest
+    ) -> AnyPublisher<Void, ErrorResponseType> {
+        perform(request: request)
+            .map { (response: EmptyNetworkResponse) -> Void in
+                ()
+            }
+            .eraseToAnyPublisher()
+    }
 
     func perform<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         request: NetworkRequest,

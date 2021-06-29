@@ -1,5 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-struct BitPayMemo: Decodable {
+public struct BitPayMemo {
     let memo: String
+
+    public init(memo: String) {
+        self.memo = memo
+    }
 }

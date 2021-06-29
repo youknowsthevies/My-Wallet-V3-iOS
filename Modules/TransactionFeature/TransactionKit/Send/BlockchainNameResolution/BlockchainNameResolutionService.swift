@@ -10,26 +10,33 @@ import Combine
 import DIKit
 import PlatformKit
 
-public protocol BlockchainNameResolutionServicing {
-    func validate(domainName: String, currency: CryptoCurrency) -> AnyPublisher<ReceiveAddress?, Never>
+public protocol BlockchainNameResolutionServiceAPI {
+
+    func validate(
+        domainName: String,
+        currency: CryptoCurrency
+    ) -> AnyPublisher<ReceiveAddress?, Never>
 }
 
-final class BlockchainNameResolutionService: BlockchainNameResolutionServicing {
+final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI {
 
-    private let client: BlockchainNameResolutionAPI
+    private let repository: BlockchainNameResolutionRepositoryAPI
     private let factory: CryptoReceiveAddressFactoryService
 
-    init(client: BlockchainNameResolutionAPI = resolve(),
+    init(repository: BlockchainNameResolutionRepositoryAPI = resolve(),
          factory: CryptoReceiveAddressFactoryService = resolve()) {
-        self.client = client
+        self.repository = repository
         self.factory = factory
     }
 
-    func validate(domainName: String, currency: CryptoCurrency) -> AnyPublisher<ReceiveAddress?, Never> {
+    func validate(
+        domainName: String,
+        currency: CryptoCurrency
+    ) -> AnyPublisher<ReceiveAddress?, Never> {
         guard preValidate(domainName: domainName) else {
             return .just(nil)
         }
-        return client
+        return repository
             .resolve(domainName: domainName, currency: currency.code.lowercased())
             .eraseError()
             .flatMap { [factory] response -> AnyPublisher<ReceiveAddress?, Error> in

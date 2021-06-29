@@ -11,9 +11,9 @@ protocol SwapTransactionEngine: TransactionEngine {
 
     var orderDirection: OrderDirection { get }
     var quotesEngine: SwapQuotesEngine { get }
-    var orderCreationService: OrderCreationServiceAPI { get }
-    var orderQuoteService: OrderQuoteServiceAPI { get }
-    var tradeLimitsService: TransactionLimitsServiceAPI { get }
+    var orderCreationRepository: OrderCreationRepositoryAPI { get }
+    var orderQuoteRepository: OrderQuoteRepositoryAPI { get }
+    var tradeLimitsRepository: TransactionLimitsRepositoryAPI { get }
     var fiatCurrencyService: FiatCurrencyServiceAPI { get }
     var kycTiersService: KYCTiersServiceAPI { get }
     var priceService: PriceServiceAPI { get }
@@ -106,7 +106,7 @@ extension SwapTransactionEngine {
         Single
             .zip(
                 kycTiersService.tiers,
-                tradeLimitsService.fetchTransactionLimits(
+                tradeLimitsRepository.fetchTransactionLimits(
                     currency: fiatCurrency.currency,
                     networkFee: targetAsset.currency,
                     product: .swap(orderDirection)
@@ -254,7 +254,7 @@ extension SwapTransactionEngine {
             .map { ($0.0.address, $0.1.address) }
             .flatMap(weak: self) { (self, addresses) -> Single<SwapOrder> in
                 let (destinationAddress, refundAddress) = addresses
-                return self.orderQuoteService
+                return self.orderQuoteRepository
                     .fetchQuote(
                         direction: self.orderDirection,
                         sourceCurrencyType: self.sourceAsset,
@@ -263,7 +263,7 @@ extension SwapTransactionEngine {
                     .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
                         let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress : nil
                         let refund = self.orderDirection.requiresRefundAddress ? refundAddress : nil
-                        return self.orderCreationService
+                        return self.orderCreationRepository
                             .createOrder(
                                 direction: self.orderDirection,
                                 quoteIdentifier: quote.identifier,

@@ -17,7 +17,7 @@ final class SwapQuotesEngine {
     // MARK: - Private Properties
 
     private let stopSubject = PublishSubject<Void>()
-    private let service: OrderQuoteServiceAPI
+    private let repository: OrderQuoteRepositoryAPI
     private let amount = BehaviorSubject<BigInt>(value: .zero)
     private var amountObservable: Observable<BigInt> {
         amount.asObservable()
@@ -25,8 +25,8 @@ final class SwapQuotesEngine {
 
     // MARK: - Init
 
-    init(service: OrderQuoteServiceAPI = resolve()) {
-        self.service = service
+    init(repository: OrderQuoteRepositoryAPI = resolve()) {
+        self.repository = repository
     }
 
     // MARK: - Public Functions
@@ -58,14 +58,14 @@ final class SwapQuotesEngine {
 
     // MARK: - Private Functions
 
-    private func quote(direction: OrderDirection, pair: OrderPair) -> Observable<OrderQuoteResponse> {
+    private func quote(direction: OrderDirection, pair: OrderPair) -> Observable<OrderQuotePayload> {
         fetchQuote(direction: direction, pair: pair)
             .asObservable()
-            .flatMap(weak: self) { (self, quote) -> Observable<OrderQuoteResponse> in
+            .flatMap(weak: self) { (self, quote) -> Observable<OrderQuotePayload> in
                 let delay = Int(quote.expiresAt.timeIntervalSince(quote.createdAt))
                 return Observable
                     .timer(.seconds(delay), period: .seconds(delay), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-                    .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuoteResponse> in
+                    .flatMap(weak: self) { (self, _: Int) -> Observable<OrderQuotePayload> in
                         self.fetchQuote(direction: direction, pair: pair).asObservable()
                     }
                     .startWith(quote)
@@ -73,8 +73,8 @@ final class SwapQuotesEngine {
             .takeUntil(stopSubject)
     }
 
-    private func fetchQuote(direction: OrderDirection, pair: OrderPair) -> Single<OrderQuoteResponse> {
-        service
+    private func fetchQuote(direction: OrderDirection, pair: OrderPair) -> Single<OrderQuotePayload> {
+        repository
             .fetchQuote(
                 direction: direction,
                 sourceCurrencyType: pair.sourceCurrencyType,

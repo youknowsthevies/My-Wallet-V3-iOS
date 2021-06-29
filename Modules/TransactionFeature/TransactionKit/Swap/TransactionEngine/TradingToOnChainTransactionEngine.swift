@@ -43,21 +43,21 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     // MARK: - Private Properties
 
     private let feeCache: CachedValue<CustodialTransferFee>
-    private let transferService: CustodialTransferServiceAPI
+    private let transferRepository: CustodialTransferRepositoryAPI
 
     // MARK: - Init
 
     init(isNoteSupported: Bool = false,
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
-         transferService: CustodialTransferServiceAPI = resolve()) {
+         transferRepository: CustodialTransferRepositoryAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.isNoteSupported = isNoteSupported
-        self.transferService = transferService
+        self.transferRepository = transferRepository
         feeCache = CachedValue(configuration: .periodic(20))
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
-            self.transferService.fees()
+            self.transferRepository.fees()
         }
     }
 
@@ -137,7 +137,7 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        transferService
+        transferRepository
             .transfer(
                 moneyValue: pendingTransaction.amount,
                 destination: target.address,

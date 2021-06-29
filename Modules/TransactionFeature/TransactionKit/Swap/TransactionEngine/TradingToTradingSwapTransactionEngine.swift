@@ -9,28 +9,28 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
 
     let fiatCurrencyService: FiatCurrencyServiceAPI
     let kycTiersService: KYCTiersServiceAPI
-    let orderCreationService: OrderCreationServiceAPI
+    let orderCreationRepository: OrderCreationRepositoryAPI
     let orderDirection: OrderDirection = .internal
-    let orderQuoteService: OrderQuoteServiceAPI
+    let orderQuoteRepository: OrderQuoteRepositoryAPI
     let priceService: PriceServiceAPI
     let quotesEngine: SwapQuotesEngine
     let requireSecondPassword: Bool = false
-    let tradeLimitsService: TransactionLimitsServiceAPI
+    let tradeLimitsRepository: TransactionLimitsRepositoryAPI
     var askForRefreshConfirmation: ((Bool) -> Completable)!
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
     init(quotesEngine: SwapQuotesEngine,
-         orderQuoteService: OrderQuoteServiceAPI = resolve(),
-         orderCreationService: OrderCreationServiceAPI = resolve(),
-         tradeLimitsService: TransactionLimitsServiceAPI = resolve(),
+         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
+         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
+         tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
          fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve()) {
         self.quotesEngine = quotesEngine
-        self.orderQuoteService = orderQuoteService
-        self.orderCreationService = orderCreationService
-        self.tradeLimitsService = tradeLimitsService
+        self.orderQuoteRepository = orderQuoteRepository
+        self.orderCreationRepository = orderCreationRepository
+        self.tradeLimitsRepository = tradeLimitsRepository
         self.fiatCurrencyService = fiatCurrencyService
         self.kycTiersService = kycTiersService
         self.priceService = priceService

@@ -21,11 +21,11 @@ final class PendingSwapCompletionService: PendingSwapCompletionServiceAPI {
     }
 
     private let pollService: PollService<SwapActivityItemEvent>
-    private let ordersService: OrderFetchingServiceAPI
+    private let ordersService: OrderFetchingRepositoryAPI
 
     // MARK: - Setup
 
-    init(ordersService: OrderFetchingServiceAPI = resolve()) {
+    init(ordersService: OrderFetchingRepositoryAPI = resolve()) {
         self.ordersService = ordersService
         pollService = .init(matcher: { $0.status == .complete })
     }

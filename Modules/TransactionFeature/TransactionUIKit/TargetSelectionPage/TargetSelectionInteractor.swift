@@ -11,10 +11,10 @@ final class TargetSelectionInteractor {
     private let coincore: CoincoreAPI
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let featureFetcher: FeatureFetching
-    private let nameResolutionService: BlockchainNameResolutionServicing
+    private let nameResolutionService: BlockchainNameResolutionServiceAPI
 
     init(coincore: CoincoreAPI = resolve(),
-         nameResolutionService: BlockchainNameResolutionServicing = resolve(),
+         nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
          featureFetcher: FeatureFetching = resolve(),
          linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
         self.coincore = coincore

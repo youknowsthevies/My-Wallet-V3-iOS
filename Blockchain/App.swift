@@ -58,18 +58,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     }
 }
 
-// MARK: - Private Methods
-
-/// Initial configuration for the app.
-/// Takes cares of configuring Firebase and
-/// defines the dependencies required by the app
-private func bootstrap() {
-    FirebaseApp.configure()
-    defineDependencies()
-}
+// MARK: - Functions
 
 /// Registers the dependencies from each module in the `DependencyContainer` of `DIKit`
-private func defineDependencies() {
+func defineDependencies() {
     // swiftlint:disable trailing_semicolon
     DependencyContainer.defined(by: modules {
         DependencyContainer.toolKit;
@@ -87,6 +79,7 @@ private func defineDependencies() {
         DependencyContainer.bitcoinCashKit;
         DependencyContainer.stellarKit;
         DependencyContainer.transactionKit;
+        DependencyContainer.transactionDataKit;
         DependencyContainer.transactionUIKit;
         DependencyContainer.buySellKit;
         DependencyContainer.activityKit;
@@ -105,6 +98,16 @@ private func defineDependencies() {
         #endif
     })
     // swiftlint:enable trailing_semicolon
+}
+
+// MARK: - Private functions
+
+/// Initial configuration for the app.
+/// Takes cares of configuring Firebase and
+/// defines the dependencies required by the app
+private func bootstrap() {
+    FirebaseApp.configure()
+    defineDependencies()
 }
 
 func useNewOnboarding() -> Bool {

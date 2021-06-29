@@ -29,16 +29,16 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     // MARK: - Private Properties
 
-    private let fiatWithdrawService: FiatWithdrawServiceAPI
+    private let fiatWithdrawRepository: FiatWithdrawRepositoryAPI
 
     // MARK: - Init
 
     init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
          priceService: PriceServiceAPI = resolve(),
-         fiatWithdrawService: FiatWithdrawServiceAPI = resolve()) {
+         fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
-        self.fiatWithdrawService = fiatWithdrawService
+        self.fiatWithdrawRepository = fiatWithdrawRepository
     }
 
     // MARK: - TransactionEngine
@@ -111,7 +111,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
             .receiveAddress
             .map(\.address)
             .flatMapCompletable(weak: self) { (self, address) -> Completable in
-                self.fiatWithdrawService
+                self.fiatWithdrawRepository
                     .createWithdrawOrder(id: address, amount: pendingTransaction.amount)
             }
             .flatMapSingle {
