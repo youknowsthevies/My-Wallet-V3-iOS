@@ -39,6 +39,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     private let checkoutRouting: CheckoutRoutingInteracting
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
+    private let errorRecorder: ErrorRecording
 
     // MARK: - Private Properties
 
@@ -50,9 +51,11 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     init(checkoutRouting: CheckoutRoutingInteracting,
          contentReducer: CheckoutScreenContentReducing,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+         errorRecorder: ErrorRecording = resolve(),
          loader: LoadingViewPresenting = resolve(),
          alert: AlertViewPresenterAPI = resolve(),
          interactor: CheckoutScreenInteractor) {
+        self.errorRecorder = errorRecorder
         self.analyticsRecorder = analyticsRecorder
         self.checkoutRouting = checkoutRouting
         self.loader = loader
@@ -84,8 +87,9 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                 switch result {
                 case .success(let data):
                     self.checkoutRouting.actionRelay.accept(.confirm(data.0, isOrderNew: data.1))
-                case .failure:
-                    self.alert.error(in: nil, action: nil)
+                case .failure(let failure):
+                    self.recordError(failure)
+                    self.showAlertWithErrorMessage(String(describing: failure))
                 }
             }
             .disposed(by: disposeBag)
@@ -117,8 +121,8 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
                     )
                     self.contentReducer.setupDidSucceed(with: data)
                 },
-                onError: { [weak self] _ in
-                    self?.setupDidFail()
+                onError: { [weak self] error in
+                    self?.setupDidFail(with: error)
                 }
             )
             .disposed(by: disposeBag)
@@ -158,8 +162,28 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
     }
 
     /// Is called as the interaction setup fails
-    private func setupDidFail() {
-        alert.error(in: nil) { [weak self] in
+    /// Record the error and then show an alert. After an alert
+    /// the flow returns to the prior screen.
+    private func setupDidFail(with error: Error) {
+        recordError(error)
+        showAlertWithErrorMessageAndCancelTransaction(String(describing: error))
+    }
+
+    private func recordError(_ error: Error) {
+        Logger.shared.error(error)
+        errorRecorder.error(error)
+    }
+
+    private func showAlertWithErrorMessage(_ message: String?) {
+        alert.error(
+            in: nil,
+            message: message,
+            action: nil
+        )
+    }
+
+    private func showAlertWithErrorMessageAndCancelTransaction(_ message: String?) {
+        alert.error(in: nil, message: message) { [weak self] in
             self?.cancel()
         }
     }

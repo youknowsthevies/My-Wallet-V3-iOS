@@ -70,11 +70,13 @@ public final class AlertViewPresenter: NSObject, AlertViewPresenterAPI {
     // MARK: - Error
 
     /// Notify the user on error that occurred
-    public func error(in viewController: UIViewController? = nil, action: (() -> Void)? = nil) {
+    public func error(in viewController: UIViewController? = nil,
+                      message: String? = nil,
+                      action: (() -> Void)? = nil) {
         typealias AlertString = LocalizationConstants.ErrorAlert
         standardNotify(
             title: AlertString.title,
-            message: AlertString.message,
+            message: (message ?? AlertString.message),
             actions: [
                 UIAlertAction(
                     title: AlertString.button,

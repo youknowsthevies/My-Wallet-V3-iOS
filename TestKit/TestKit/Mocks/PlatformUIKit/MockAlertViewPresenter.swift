@@ -9,7 +9,7 @@ class MockAlertViewPresenter: AlertViewPresenterAPI {
     }
 
     var errorCalled: Bool = false
-    func error(in viewController: UIViewController?, action: (() -> Void)?) {
+    func error(in viewController: UIViewController?, message: String?, action: (() -> Void)?) {
         errorCalled = true
     }
 }
