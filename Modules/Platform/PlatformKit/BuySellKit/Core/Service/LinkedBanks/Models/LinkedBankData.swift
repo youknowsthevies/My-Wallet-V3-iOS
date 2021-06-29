@@ -9,12 +9,8 @@ public struct LinkedBankData {
     }
 
     public struct Account {
-        public enum AccountType {
-            case savings
-            case checking
-        }
         public let name: String
-        public let type: AccountType
+        public let type: LinkedBankAccountType
         public let bankName: String
         public let number: String
 
@@ -26,7 +22,7 @@ public struct LinkedBankData {
                 return nil
             }
             name = accountName
-            type = AccountType(from: accountType)
+            type = LinkedBankAccountType(from: accountType)
             bankName = response.name
             number = accountNumber.replacingOccurrences(of: "x", with: "")
         }
@@ -67,26 +63,6 @@ public struct LinkedBankData {
         }
         self.currency = currency
         topLimit = .zero(currency: .USD)
-    }
-}
-
-extension LinkedBankData.Account.AccountType {
-    public var title: String {
-        switch self {
-        case .checking:
-            return LocalizationConstants.SimpleBuy.LinkedBank.AccountType.checking
-        case .savings:
-            return LocalizationConstants.SimpleBuy.LinkedBank.AccountType.savings
-        }
-    }
-
-    init(from type: LinkedBankResponse.AccountType) {
-        switch type {
-        case .savings:
-            self = .savings
-        case .checking:
-            self = .checking
-        }
     }
 }
 

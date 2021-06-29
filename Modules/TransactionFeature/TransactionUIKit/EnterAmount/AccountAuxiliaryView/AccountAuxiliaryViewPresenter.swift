@@ -12,17 +12,24 @@ final class AccountAuxiliaryViewPresenter {
     let badgeImageViewModel: Driver<BadgeImageViewModel>
     let titleLabel: Driver<LabelContent>
     let subtitleLabel: Driver<LabelContent>
+    let tapRelay = PublishRelay<Void>()
 
     // MARK: - Private Properties
 
+    private let disposeBag = DisposeBag()
     private let interactor: AccountAuxiliaryViewInteractor
 
     init(interactor: AccountAuxiliaryViewInteractor) {
         self.interactor = interactor
+
+        tapRelay
+            .asSignal()
+            .emit(to: interactor.auxiliaryViewTappedRelay)
+            .disposed(by: disposeBag)
+
         badgeImageViewModel = interactor
-            .blockchainAccountRelay
-            .compactMap { $0 as? LinkedBankAccount }
-            .map(\.logoResource)
+            .stateRelay
+            .map(\.imageResource)
             .map(\.local)
             .map {
                 BadgeImageViewModel.default(
@@ -35,8 +42,8 @@ final class AccountAuxiliaryViewPresenter {
             .asDriverCatchError()
 
         titleLabel = interactor
-            .blockchainAccountRelay
-            .map(\.label)
+            .stateRelay
+            .map(\.title)
             .map {
                 LabelContent(
                     text: $0,
@@ -49,9 +56,8 @@ final class AccountAuxiliaryViewPresenter {
             .asDriverCatchError()
 
         subtitleLabel = interactor
-            .blockchainAccountRelay
-            .compactMap { $0 as? LinkedBankAccount }
-            .map(\.accountNumber)
+            .stateRelay
+            .map(\.subtitle)
             .map {
                 LabelContent(
                     text: $0,

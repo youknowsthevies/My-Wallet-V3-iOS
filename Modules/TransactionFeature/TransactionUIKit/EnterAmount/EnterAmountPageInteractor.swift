@@ -166,6 +166,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .connect(stream: bank)
             .disposeOnDeactivate(interactor: self)
 
+        accountAuxiliaryViewInteractor
+            .auxiliaryViewTapped
+            .subscribe(onNext: { [weak self] _ in
+                self?.transactionModel.process(action: .returnToPreviousStep)
+            })
+            .disposeOnDeactivate(interactor: self)
+
         sendAuxiliaryViewInteractor
             .connect(fee: fee)
             .disposeOnDeactivate(interactor: self)

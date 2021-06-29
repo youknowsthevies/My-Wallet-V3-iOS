@@ -34,6 +34,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         label: data.account?.name ?? "",
                         accountNumber: data.account?.number ?? "",
                         accountId: data.identifier,
+                        accountType: data.account?.type ?? .checking,
                         currency: data.currency,
                         paymentType: data.paymentMethodType
                     )
@@ -56,6 +57,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                         label: data.account?.name ?? "",
                         accountNumber: data.account?.number ?? "",
                         accountId: data.identifier,
+                        accountType: data.account?.type ?? .checking,
                         currency: data.currency,
                         paymentType: data.paymentMethodType
                     )

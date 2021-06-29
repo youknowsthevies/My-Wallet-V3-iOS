@@ -168,6 +168,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                     return presenters
                 }
                 presenters.append(DefaultWalletActionCellPresenter(currencyType: fiatCurrency.currency, action: .withdraw))
+                presenters.append(DefaultWalletActionCellPresenter(currencyType: fiatCurrency.currency, action: .activity))
                 return presenters
             }
     }

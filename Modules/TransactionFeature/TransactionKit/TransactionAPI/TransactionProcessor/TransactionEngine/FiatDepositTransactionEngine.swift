@@ -83,7 +83,7 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction
-                .insert(
+                .update(
                     confirmations: [
                         .source(.init(value: sourceAccount.label)),
                         .destination(.init(value: target.label)),

@@ -168,6 +168,10 @@ public extension LocalizationConstants.Transaction {
 
     static let max = NSLocalizedString("Max", comment: "Max")
 
+    static let savings = NSLocalizedString("Savings", comment: "Savings")
+    static let checking = NSLocalizedString("Checking", comment: "Checking")
+    static let account = NSLocalizedString("Account", comment: "Account")
+
     static let next = NSLocalizedString(
         "Next",
         comment: "Next"

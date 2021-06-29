@@ -53,6 +53,7 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
     public let label: String
     public let accountId: String
     public let accountNumber: String
+    public let accountType: LinkedBankAccountType
     public let paymentType: PaymentMethodPayloadType
 
     // MARK: - Private Properties
@@ -65,12 +66,14 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         label: String,
         accountNumber: String,
         accountId: String,
+        accountType: LinkedBankAccountType,
         currency: FiatCurrency,
         paymentType: PaymentMethodPayloadType,
         withdrawServiceAPI: WithdrawalServiceAPI = resolve()
     ) {
         self.label = label
         self.accountId = accountId
+        self.accountType = accountType
         self.accountNumber = accountNumber
         self.fiatCurrency = currency
         self.paymentType = paymentType

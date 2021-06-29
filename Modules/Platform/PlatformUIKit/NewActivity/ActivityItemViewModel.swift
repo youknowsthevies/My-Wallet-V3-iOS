@@ -147,11 +147,21 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
 
             return event.pair.inputCurrencyType.brandColor
         case .fiat(let event):
-            if event.status == .failed || event.status == .rejected {
+            switch event.status {
+            case .failed,
+                 .rejected:
                 return .destructive
+            case .manualReview,
+                 .fraudReview,
+                 .pending,
+                 .created,
+                 .unidentified:
+                return .mutedText
+            case .complete,
+                 .cleared,
+                 .refunded:
+                return .fiat
             }
-
-            return .fiat
         case .transactional(let event):
             switch event.status {
             case .complete:
@@ -177,18 +187,27 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
 
             return value.isBuy ? "plus-icon" : "minus-icon"
         case .fiat(let event):
-            if event.status == .failed || event.status == .rejected {
+            switch event.status {
+            case .failed,
+                 .rejected:
                 return "activity-failed-icon"
-            }
-
-            let type = event.type
-            switch type {
-            case .deposit:
-                return "deposit-icon"
-            case .withdrawal:
-                return "withdraw-icon"
-            case .unknown:
-                return ""
+            case .manualReview,
+                 .fraudReview,
+                 .pending,
+                 .created,
+                 .unidentified:
+                return "clock-icon"
+            case .complete,
+                 .cleared,
+                 .refunded:
+                switch event.type {
+                case .deposit:
+                    return "deposit-icon"
+                case .withdrawal:
+                    return "withdraw-icon"
+                case .unknown:
+                    return ""
+                }
             }
         case .swap(let event):
             if event.status == .failed {

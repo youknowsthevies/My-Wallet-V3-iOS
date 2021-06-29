@@ -20,7 +20,7 @@ final class CheckoutScreenPresenter: DetailsScreenPresenterAPI {
 
     let reloadRelay: PublishRelay<Void> = .init()
 
-    var navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .defaultDark
+    let navigationBarAppearance: DetailsScreen.NavigationBarAppearance = .defaultDark
 
     let titleViewRelay: BehaviorRelay<Screen.Style.TitleView> = .init(value: .none)
 

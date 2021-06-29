@@ -1002,17 +1002,4 @@ extension LocalizationConstants.SimpleBuy {
             }
         }
     }
-
-    public enum LinkedBank {
-        public enum AccountType {
-            public static let savings = NSLocalizedString(
-                "Savings",
-                comment: "Savings account type"
-            )
-            public static let checking = NSLocalizedString(
-                "Checking",
-                comment: "Checking account type"
-            )
-        }
-    }
 }
