@@ -53,4 +53,6 @@ protocol SettingsClientAPI: AnyObject {
     func emailNotifications(enabled: Bool, guid: String, sharedKey: String) -> Completable
 
     func update(currency: String, context: FlowContext, guid: String, sharedKey: String) -> Completable
+
+    func updatePublisher(currency: String, context: FlowContext, guid: String, sharedKey: String) -> AnyPublisher<Void, CurrencyUpdateError>
 }

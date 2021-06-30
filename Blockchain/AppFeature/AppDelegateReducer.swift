@@ -43,6 +43,10 @@ struct AppDelegateEnvironment {
 /// The state of the app delegate
 struct AppDelegateState: Equatable {
     var window: UIWindow?
+    /// `true` if a user activiy was handled, such as universal links, otherwise `false`
+    var userActivityHandled: Bool = false
+    /// `true` if a deep link was handled, otherwise `false`
+    var urlHandled: Bool = false
 }
 
 /// The reducer of the app delegate that describes the effects for each action.

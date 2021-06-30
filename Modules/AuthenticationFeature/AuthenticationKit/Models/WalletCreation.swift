@@ -35,7 +35,7 @@ public enum WalletCreationContext: Equatable {
     /// Determines the wallet created is new
     case new
     /// Determines the wallet created through recovery
-    case recovered
+    case recovery
     /// Determines the wallet already exists and it will be fetched
     case existing
 
@@ -43,7 +43,7 @@ public enum WalletCreationContext: Equatable {
         switch self {
         case .new:
             return true
-        case .recovered, .existing:
+        case .recovery, .existing:
             return false
         }
     }

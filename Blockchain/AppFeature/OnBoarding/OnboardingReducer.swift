@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import AuthenticationUIKit
 import Combine
 import ComposableArchitecture
@@ -31,6 +32,8 @@ public enum Onboarding {
         var displayAlert: Alert?
         var showLegacyCreateWalletScreen: Bool = false
         var showLegacyRecoverWalletScreen: Bool = false
+        var deeplinkContent: URIContent?
+        var walletCreationContext: WalletCreationContext?
 
         /// Helper method to toggle any visible legacy screen if needed
         /// ugly, yeah, I know, but we need to check which current screen is presented
@@ -108,15 +111,22 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             return .none
         case .createAccountScreenClosed:
             state.showLegacyCreateWalletScreen = false
+            state.walletCreationContext = nil
             return .none
         case .recoverWalletScreenClosed:
             state.showLegacyRecoverWalletScreen = false
+            state.walletCreationContext = nil
             return .none
         case .welcomeScreen(.createAccount):
             state.showLegacyCreateWalletScreen = true
+            state.walletCreationContext = .new
             return .none
         case .welcomeScreen(.recoverFunds):
             state.showLegacyRecoverWalletScreen = true
+            state.walletCreationContext = .recovery
+            return .none
+        case .welcomeScreen(.setLoginVisible(let isVisible)):
+            state.walletCreationContext = isVisible ? .existing : nil
             return .none
         case .welcomeScreen:
             return .none

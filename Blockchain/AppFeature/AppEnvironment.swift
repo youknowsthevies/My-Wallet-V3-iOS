@@ -24,11 +24,13 @@ public struct AppEnvironment {
     var certificatePinner: CertificatePinnerAPI
     var siftService: SiftServiceAPI
     var alertViewPresenter: AlertViewPresenterAPI
-    var userActivityHandler: UserActivityHandler
-    var deeplinkAppHandler: DeeplinkAppHandler
+    var deeplinkAppHandler: AppDeeplinkHandlerAPI
+    var deeplinkHandler: DeepLinkHandling
+    var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandler
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI
+    var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
 
     var sharedContainer: SharedContainerUserDefaults
     var analyticsRecorder: AnalyticsEventRecorderAPI

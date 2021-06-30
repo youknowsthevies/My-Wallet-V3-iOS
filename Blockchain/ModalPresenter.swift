@@ -10,7 +10,18 @@ typealias OnModalDismissed = () -> Void
 
 typealias OnModalResumed = () -> Void
 
-@objc class ModalPresenter: NSObject {
+@objc protocol ModalPresenterAPI {
+    func closeAllModals()
+    func closeModal(withTransition transition: String)
+    func showModal(withContent content: UIView,
+                   closeType: ModalCloseType,
+                   showHeader: Bool,
+                   headerText: String,
+                   onDismiss: OnModalDismissed?,
+                   onResume: OnModalResumed?)
+}
+
+@objc class ModalPresenter: NSObject, ModalPresenterAPI {
 
     static let shared = ModalPresenter()
     // class function declared so that the ModalPresenter singleton can be accessed from obj-C

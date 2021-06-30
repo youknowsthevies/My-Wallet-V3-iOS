@@ -69,6 +69,10 @@ extension DependencyContainer {
             return router as OnboardingRouterStateProviding
         }
 
+        single { () -> ModalPresenterAPI in
+            ModalPresenter.shared as ModalPresenterAPI
+        }
+
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }
@@ -104,6 +108,19 @@ extension DependencyContainer {
         single { SecondPasswordPrompter() as SecondPasswordPromptable }
 
         single { SecondPasswordStore() as SecondPasswordStorable }
+
+        single { () -> AppDeeplinkHandlerAPI in
+            let appSettings: BlockchainSettings.App = DIKit.resolve()
+            let isPinSet: () -> Bool = { appSettings.isPinSet }
+            let deeplinkHandler = CoreDeeplinkHandler(isPinSet: isPinSet)
+            let blockchainHandler = BlockchainLinksHandler(validHosts: BlockchainLinks.validLinks,
+                                                           validRoutes: BlockchainLinks.validRoutes)
+            return AppDeeplinkHandler(
+                deeplinkHandler: deeplinkHandler,
+                blockchainHandler: blockchainHandler,
+                firebaseHandler: FirebaseDeeplinkHandler()
+            )
+        }
 
         // MARK: ExchangeCoordinator
 

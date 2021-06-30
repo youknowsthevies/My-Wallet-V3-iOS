@@ -3,12 +3,16 @@
 import Combine
 import ComposableArchitecture
 import DIKit
+import PlatformUIKit
 import UIKit
 
 /// Acts as the main controller for onboarding and logged in states
 final class AppHostingController: UIViewController {
     let store: Store<CoreAppState, CoreAppAction>
+    let viewStore: ViewStore<CoreAppState, CoreAppAction>
     private var cancellables: Set<AnyCancellable> = []
+
+    @LazyInject var alertViewPresenter: AlertViewPresenterAPI
 
     private var onboardingController: OnboardingHostingController?
     private var loggedInController: LoggedInHostingController?
@@ -17,6 +21,7 @@ final class AppHostingController: UIViewController {
     init(store: Store<CoreAppState, CoreAppAction>,
          loggedInDependencyBridge: LoggedInDependencyBridgeAPI = resolve()) {
         self.store = store
+        self.viewStore = ViewStore(store)
         self.loggedInDependencyBridge = loggedInDependencyBridge
         super.init(nibName: nil, bundle: nil)
     }
@@ -27,9 +32,19 @@ final class AppHostingController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
+        view.backgroundColor = #colorLiteral(red: 0.0431372549, green: 0.1019607843, blue: 0.2784313725, alpha: 1)
 
-        self.store
+        viewStore.publisher
+            .alertContent
+            .compactMap { $0 }
+            .removeDuplicates()
+            .sink { [weak self] content in
+                guard let self = self else { return }
+                self.showAlert(with: content)
+            }
+            .store(in: &cancellables)
+
+        store
             .scope(state: \.onboarding, action: CoreAppAction.onboarding)
             .ifLet(then: { [weak self] onboardingStore in
                 guard let self = self else { return }
@@ -48,7 +63,7 @@ final class AppHostingController: UIViewController {
             })
             .store(in: &cancellables)
 
-        self.store
+        store
             .scope(state: \.loggedIn, action: CoreAppAction.loggedIn)
             .ifLet(then: { [weak self] loggedInScope in
                 guard let self = self else { return }
@@ -67,5 +82,9 @@ final class AppHostingController: UIViewController {
                 self.onboardingController = nil
             })
             .store(in: &cancellables)
+    }
+
+    private func showAlert(with content: AlertViewContent) {
+        alertViewPresenter.notify(content: content, in: self)
     }
 }

@@ -25,6 +25,11 @@ class LoggedInReducerTests: XCTestCase {
     var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!
     var onboardingSettings: MockOnboardingSettings!
+    var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
+    var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    var mockDeepLinkRouter: MockDeepLinkRouter!
+    var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
+    var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
 
     var testStore: TestStore<
         LoggedIn.State,
@@ -57,11 +62,17 @@ class LoggedInReducerTests: XCTestCase {
         mockCoincore = MockCoincore()
         mockAnalyticsRecorder = MockAnalyticsRecorder()
         onboardingSettings = MockOnboardingSettings()
+        mockAppDeeplinkHandler = MockAppDeeplinkHandler()
+        mockMainQueue = DispatchQueue.test
+        mockDeepLinkRouter = MockDeepLinkRouter()
+        mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
+        fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
 
         testStore = TestStore(
             initialState: LoggedIn.State(),
             reducer: loggedInReducer,
             environment: LoggedIn.Environment(
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 analyticsRecorder: mockAnalyticsRecorder,
                 loadingViewPresenter: LoadingViewPresenter(),
                 exchangeRepository: mockExchangeAccountRepository,
@@ -69,7 +80,10 @@ class LoggedInReducerTests: XCTestCase {
                 remoteNotificationAuthorizer: mockRemoteNotificationServiceContainer.authorizer,
                 walletManager: mockWalletManager,
                 coincore: mockCoincore,
-                appSettings: mockSettingsApp
+                appSettings: mockSettingsApp,
+                deeplinkRouter: mockDeepLinkRouter,
+                internalFeatureService: mockInternalFeatureFlagService,
+                fiatCurrencySettingsService: fiatCurrencySettingsServiceMock
             )
         )
     }
@@ -82,7 +96,7 @@ class LoggedInReducerTests: XCTestCase {
     }
 
     func test_verify_start_action_observers_symbol_changes() {
-        testStore.send(.start)
+        testStore.send(.start(.none))
 
         mockSettingsApp.symbolLocal = true
 
@@ -96,7 +110,7 @@ class LoggedInReducerTests: XCTestCase {
     }
 
     func test_verify_sending_wallet_accountInfoAndExchangeRates_updates_the_state() {
-        testStore.send(.start)
+        testStore.send(.start(.none))
 
         testStore.send(.wallet(.accountInfoAndExchangeRates)) { state in
             state.reloadAfterMultiAddressResponse = true
@@ -108,7 +122,7 @@ class LoggedInReducerTests: XCTestCase {
     }
 
     func test_verify_sending_wallet_handleWalletBackup() {
-        testStore.send(.start)
+        testStore.send(.start(.none))
 
         testStore.send(.wallet(.handleWalletBackup))
 
@@ -116,7 +130,7 @@ class LoggedInReducerTests: XCTestCase {
     }
 
     func test_verify_sending_wallet_handleFailToLoadHistory() {
-        testStore.send(.start)
+        testStore.send(.start(.none))
 
         // when sending an non nil error
         testStore.send(.wallet(.handleFailToLoadHistory(nil))) { state in
@@ -134,6 +148,5 @@ class LoggedInReducerTests: XCTestCase {
                 message: LocalizationConstants.Errors.balancesGeneric
             )
         }
-
     }
 }

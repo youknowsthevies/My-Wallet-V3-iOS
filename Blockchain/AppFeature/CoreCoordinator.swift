@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationUIKit
 import Combine
 import ComposableArchitecture
 import DIKit
@@ -8,6 +9,7 @@ import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
 import SettingsKit
+import ToolKit
 import UIKit
 import WalletPayloadKit
 
@@ -20,17 +22,22 @@ private struct WalletCancelations {
 }
 
 struct CoreAppState: Equatable {
-    var window: UIWindow?
     var onboarding: Onboarding.State? = .init()
     var loggedIn: LoggedIn.State?
+    var alertContent: AlertViewContent?
+
+    var isLoggedIn: Bool {
+        onboarding == nil && loggedIn != nil
+    }
 }
 
 public enum CoreAppAction: Equatable {
-    case start(window: UIWindow)
+    case start
     case loggedIn(LoggedIn.Action)
     case onboarding(Onboarding.Action)
     case proceedToLoggedIn
     case appForegrounded
+    case deeplink(DeeplinkOutcome)
     // Wallet Related Actions
     case walletInitialized
     case fetchWallet(String)
@@ -46,8 +53,12 @@ public enum CoreAppAction: Equatable {
 
 struct CoreAppEnvironment {
     var loadingViewPresenter: LoadingViewPresenting
+    var deeplinkHandler: DeepLinkHandling
+    var deeplinkRouter: DeepLinkRouting
     var walletManager: WalletManager
     var appFeatureConfigurator: FeatureConfiguratorAPI
+    var internalFeatureService: InternalFeatureFlagServiceAPI
+    var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
     var alertPresenter: AlertViewPresenterAPI
@@ -83,6 +94,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
             action: /CoreAppAction.loggedIn,
             environment: { environment -> LoggedIn.Environment in
                 LoggedIn.Environment(
+                    mainQueue: .main,
                     analyticsRecorder: environment.analyticsRecorder,
                     loadingViewPresenter: environment.loadingViewPresenter,
                     exchangeRepository: environment.exchangeRepository,
@@ -90,7 +102,10 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     remoteNotificationAuthorizer: environment.remoteNotificationServiceContainer.authorizer,
                     walletManager: environment.walletManager,
                     coincore: environment.coincore,
-                    appSettings: environment.blockchainSettings
+                    appSettings: environment.blockchainSettings,
+                    deeplinkRouter: environment.deeplinkRouter,
+                    internalFeatureService: environment.internalFeatureService,
+                    fiatCurrencySettingsService: environment.fiatCurrencySettingsService
                 )
             }),
     mainAppReducerCore
@@ -98,8 +113,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
 
 let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment> { state, action, environment in
     switch action {
-    case .start(let window):
-        state.window = window
+    case .start:
         return .merge(
             .fireAndForget {
                 environment.appFeatureConfigurator.initialize()
@@ -118,6 +132,61 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             state.onboarding = .init()
             return Effect(value: .onboarding(.start))
         }
+        return .none
+    case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
+        // for context this performs side-effect to values in the appSettings
+        // it'll then be up to the `DeeplinkRouter` to capture any of these changes
+        // and route if needed, the router is handled once we're in a logged-in state
+        environment.deeplinkHandler.handle(deepLink: content.url.absoluteString)
+        return .none
+    case .deeplink(.handleLink(let content)) where content.context.usableOnlyDuringAuthentication:
+        guard let onboarding = state.onboarding else {
+            return .none
+        }
+        // check if we're on the authentication state and the deeplink
+        // currently we only support only one deeplink for login, so being naive here
+        guard let authState = onboarding.authenticationState,
+              content.context == .blockchainLinks(.login) else {
+            return .none
+        }
+        // Pass content to welcomeScreen to be handled
+        return Effect(value: .onboarding(.welcomeScreen(.verifyDevice(content.url))))
+    case .deeplink(.handleLink(let content)):
+        // we first check if we're logged in, if not we need to defer the deeplink routing
+        guard state.isLoggedIn else {
+            // continue if we're on the onboarding state
+            guard let onboarding = state.onboarding else {
+                return .none
+            }
+            // check if we're on the pinState and we need the user to enter their pin
+            if let pinState = onboarding.pinState,
+                  pinState.requiresPinAuthentication,
+                  !content.context.usableOnlyDuringAuthentication {
+                // defer the deeplink until we handle the `.proceedToLoggedIn` action
+                state.onboarding?.deeplinkContent = content
+            }
+            return .none
+        }
+        // continue with the deeplink
+        return Effect(value: .loggedIn(.deeplink(content)))
+    case .deeplink(.informAppNeedsUpdate):
+        // TODO: This is ugly, rethink how we handle alert actions
+        let actions = [
+            UIAlertAction(
+                title: LocalizationConstants.DeepLink.updateNow,
+                style: .default,
+                handler: { _ in
+                    UIApplication.shared.openAppStore()
+                }),
+            UIAlertAction(title: LocalizationConstants.cancel, style: .cancel)
+        ]
+        state.alertContent = AlertViewContent(
+            title: LocalizationConstants.DeepLink.deepLinkUpdateTitle,
+            message: LocalizationConstants.DeepLink.deepLinkUpdateMessage,
+            actions: actions
+        )
+        return .none
+    case .deeplink(.ignore):
         return .none
     case .fetchWallet(let password):
         environment.walletManager.wallet.fetch(with: password)
@@ -212,6 +281,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         guard shouldUpgrade else {
             return Effect(value: CoreAppAction.proceedToLoggedIn)
         }
+        environment.loadingViewPresenter.hide()
         state.onboarding?.pinState = nil
         state.onboarding?.walletUpgradeState = WalletUpgrade.State()
         return .merge(
@@ -221,22 +291,35 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         )
     case .proceedToLoggedIn:
         environment.loadingViewPresenter.hide()
+        // prepare the context for logged in state, if required
+        var context: LoggedIn.Context = .none
+        if let deeplinkContent = state.onboarding?.deeplinkContent {
+            context = .deeplink(deeplinkContent)
+        }
+        if let walletContext = state.onboarding?.walletCreationContext {
+            context = .wallet(walletContext)
+        }
         state.loggedIn = LoggedIn.State()
         state.onboarding = nil
         return .merge(
             .cancel(id: WalletCancelations.InitializationId()),
             .cancel(id: WalletCancelations.UpgradeId()),
             Effect(
-                value: CoreAppAction.loggedIn(.start)
+                value: CoreAppAction.loggedIn(.start(context))
             )
         )
-    case .onboarding(.welcomeScreen(.createAccount)),
-         .onboarding(.welcomeScreen(.recoverFunds)):
+    case .onboarding(.welcomeScreen(.createAccount)):
         // send `authenticate` action so that we can listen for wallet creation or recovery
+        environment.loadingViewPresenter.showCircular()
+        return Effect(value: .authenticate)
+    case .onboarding(.welcomeScreen(.recoverFunds)):
+        // send `authenticate` action so that we can listen for wallet creation or recovery
+        environment.loadingViewPresenter.showCircular()
         return Effect(value: .authenticate)
     case .onboarding(.createAccountScreenClosed),
          .onboarding(.recoverWalletScreenClosed):
         // cancel any authentication publishers in case the create wallet is closed
+        environment.loadingViewPresenter.hide()
         return .merge(
             .cancel(id: WalletCancelations.DecryptId()),
             .cancel(id: WalletCancelations.AuthenticationId())

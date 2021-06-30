@@ -5,6 +5,23 @@ import DIKit
 import NetworkKit
 import RxSwift
 
+public enum CurrencyUpdateError: LocalizedError {
+    case credentialsError(MissingCredentialsError)
+    case clientError(NetworkError)
+    case fetchError(SettingsServiceError)
+
+    public var errorDescription: String? {
+        switch self {
+        case .credentialsError(let error):
+            return error.localizedDescription
+        case .clientError(let error):
+            return error.localizedDescription
+        case .fetchError(let error):
+            return error.localizedDescription
+        }
+    }
+}
+
 final class SettingsClient: SettingsClientAPI {
 
     /// Enumerates the API methods supported by the wallet settings endpoint.
@@ -84,6 +101,22 @@ final class SettingsClient: SettingsClientAPI {
             payload: currency,
             context: context
         )
+    }
+
+    func updatePublisher(currency: String,
+                         context: FlowContext,
+                         guid: String,
+                         sharedKey: String) -> AnyPublisher<Void, CurrencyUpdateError> {
+        update(
+            guid: guid,
+            sharedKey: sharedKey,
+            method: .updateCurrency,
+            payload: currency,
+            context: context
+        )
+        .mapToVoid()
+        .mapError(CurrencyUpdateError.clientError)
+        .eraseToAnyPublisher()
     }
 
     /// Updates the user's email.
@@ -170,6 +203,22 @@ final class SettingsClient: SettingsClientAPI {
                         method: Method,
                         payload: String,
                         context: FlowContext? = nil) -> Completable {
+        networkAdapter.perform(
+            request: request(
+                guid: guid,
+                sharedKey: sharedKey,
+                method: method,
+                payload: payload,
+                context: context
+            )
+        )
+    }
+
+    private func update(guid: String,
+                        sharedKey: String,
+                        method: Method,
+                        payload: String,
+                        context: FlowContext? = nil) -> AnyPublisher<String, NetworkError> {
         networkAdapter.perform(
             request: request(
                 guid: guid,

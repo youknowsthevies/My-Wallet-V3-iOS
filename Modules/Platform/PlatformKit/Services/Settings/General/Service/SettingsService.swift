@@ -191,6 +191,26 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
             .asCompletable()
     }
 
+    func update(currency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
+        let fetch = fetchPublisher(force: true)
+        return credentialsRepository.fetchCredentials()
+            .mapError(CurrencyUpdateError.credentialsError)
+            .flatMap { [client] (guid: String, sharedKey: String) in
+                client.updatePublisher(
+                    currency: currency.code,
+                    context: context,
+                    guid: guid,
+                    sharedKey: sharedKey
+                )
+            }
+            .flatMap { _ in
+                fetch
+                    .mapToVoid()
+                    .mapError(CurrencyUpdateError.fetchError)
+            }
+            .eraseToAnyPublisher()
+    }
+
     @available(*, deprecated, message: "Do not use this. Instead use `FiatCurrencyServiceAPI`")
     var legacyCurrency: FiatCurrency? {
         settingsRelay.value?.currency

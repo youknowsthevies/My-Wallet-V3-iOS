@@ -30,6 +30,10 @@ class MainAppReducerTests: XCTestCase {
     var mockSiftService: MockSiftService!
     var onboardingSettings: MockOnboardingSettings!
     var mockMainQueue: TestSchedulerOf<DispatchQueue>!
+    var mockDeepLinkHandler: MockDeepLinkHandler!
+    var mockDeepLinkRouter: MockDeepLinkRouter!
+    var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
+    var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
 
     var testStore: TestStore<
         CoreAppState,
@@ -67,14 +71,22 @@ class MainAppReducerTests: XCTestCase {
         mockSiftService = MockSiftService()
         onboardingSettings = MockOnboardingSettings()
         mockMainQueue = DispatchQueue.test
+        mockDeepLinkHandler = MockDeepLinkHandler()
+        mockDeepLinkRouter = MockDeepLinkRouter()
+        mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
+        mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
 
         testStore = TestStore(
             initialState: CoreAppState(),
             reducer: mainAppReducer,
             environment: CoreAppEnvironment(
                 loadingViewPresenter: LoadingViewPresenter(),
+                deeplinkHandler: mockDeepLinkHandler,
+                deeplinkRouter: mockDeepLinkRouter,
                 walletManager: mockWalletManager,
                 appFeatureConfigurator: mockFeatureConfigurator,
+                internalFeatureService: mockInternalFeatureFlagService,
+                fiatCurrencySettingsService: mockFiatCurrencySettingsService,
                 blockchainSettings: mockSettingsApp,
                 credentialsStore: mockCredentialsStore,
                 alertPresenter: mockAlertPresenter,
@@ -93,7 +105,6 @@ class MainAppReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = CoreAppState()
-        XCTAssertNil(state.window)
         XCTAssertNotNil(state.onboarding)
         XCTAssertNil(state.loggedIn)
     }
@@ -148,10 +159,9 @@ class MainAppReducerTests: XCTestCase {
     func test_sending_start_should_correct_outputs() {
         let window = UIWindow()
 
-        testStore.send(.start(window: window)) { state in
+        testStore.send(.start) { state in
             state.onboarding = Onboarding.State()
             state.loggedIn = nil
-            state.window = window
         }
         XCTAssertTrue(mockFeatureConfigurator.initializeCalled)
     }
@@ -235,6 +245,7 @@ class MainAppReducerTests: XCTestCase {
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
         testStore.send(.onboarding(.welcomeScreen(.createAccount))) { state in
+            state.onboarding?.walletCreationContext = .new
             state.onboarding?.showLegacyCreateWalletScreen = true
         }
 
@@ -275,6 +286,7 @@ class MainAppReducerTests: XCTestCase {
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
         testStore.send(.onboarding(.welcomeScreen(.recoverFunds))) { state in
+            state.onboarding?.walletCreationContext = .recovery
             state.onboarding?.showLegacyRecoverWalletScreen = true
         }
 
@@ -307,7 +319,7 @@ class MainAppReducerTests: XCTestCase {
             state.onboarding = nil
         }
 
-        testStore.receive(.loggedIn(.start))
+        testStore.receive(.loggedIn(.start(.none)))
 
         testStore.send(.loggedIn(.logout)) { state in
             state.loggedIn = nil
@@ -376,7 +388,7 @@ class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start))
+        testStore.receive(.loggedIn(.start(.none)))
     }
 
     func test_sending_walletInitialized_should_proceed_to_logged_in_when_no_upgrade_needed() {
@@ -388,7 +400,7 @@ class MainAppReducerTests: XCTestCase {
             state.loggedIn = LoggedIn.State()
             state.onboarding = nil
         }
-        testStore.receive(.loggedIn(.start))
+        testStore.receive(.loggedIn(.start(.none)))
     }
 
     func test_clearPinIfNeeded_correctly_clears_pin() {

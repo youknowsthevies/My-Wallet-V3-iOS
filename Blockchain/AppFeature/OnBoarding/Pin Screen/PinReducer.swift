@@ -24,6 +24,11 @@ public enum PinCore {
     public struct State: Equatable {
         var creating: Bool = false
         var authenticate: Bool = false
+
+        /// Determines if the state requires Pin
+        var requiresPinAuthentication: Bool {
+            authenticate
+        }
     }
 
     public struct Environment {

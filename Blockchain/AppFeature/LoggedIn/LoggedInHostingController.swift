@@ -5,6 +5,7 @@ import ComposableArchitecture
 import DashboardUIKit
 import DIKit
 import InterestUIKit
+import OnboardingUIKit
 import PlatformKit
 import PlatformUIKit
 import SettingsUIKit
@@ -28,17 +29,21 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     @LazyInject var secureChannelRouter: SecureChannelRouting
     @Inject var airdropRouter: AirdropRouterAPI
 
+    private let onboardingRouter: OnboardingUIKit.OnboardingRouterAPI
+
     var settingsRouterAPI: SettingsRouterAPI?
-    var buyRouter: PlatformUIKit.RouterAPI!
-    var sellRouter: PlatformUIKit.SellRouter!
+    var buyRouter: PlatformUIKit.RouterAPI?
+    var sellRouter: PlatformUIKit.SellRouter?
     var backupRouter: DashboardUIKit.BackupRouterAPI?
     var pinRouter: PinRouter?
 
     @LazyInject var transactionsAdapter: TransactionsAdapterAPI
 
-    init(store: Store<LoggedIn.State, LoggedIn.Action>) {
+    init(store: Store<LoggedIn.State, LoggedIn.Action>,
+         onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve()) {
         self.store = store
         self.viewStore = ViewStore(store)
+        self.onboardingRouter = onboardingRouter
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -49,6 +54,33 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let sideMenu = sideMenuProvider()
+        let tabController = tabControllerProvider()
+        let slidingViewController = slidingControllerProvider(sideMenuController: sideMenu, tabController: tabController)
+        add(child: slidingViewController)
+        self.slidingViewController = slidingViewController
+        sideMenuViewController = sideMenu
+        tabControllerManager = tabController
+
+        sideMenuViewController?.tabControllerManager = tabControllerManager
+        sideMenuViewController?.slidingViewController = slidingViewController
+
+        setupBindings()
+    }
+
+    func clear() {
+        cancellables.forEach { $0.cancel() }
+        sideMenuViewController?.delegate = nil
+        sideMenuViewController?.createGestureRecognizers = nil
+        sideMenuViewController = nil
+        tabControllerManager = nil
+        slidingViewController?.remove()
+        slidingViewController = nil
+    }
+
+    // MARK: Private
+
+    private func setupBindings() {
         viewStore.publisher
             .reloadAfterMultiAddressResponse
             .filter { $0 }
@@ -75,29 +107,30 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
             }
             .store(in: &cancellables)
 
-        let sideMenu = sideMenuProvider()
-        let tabController = tabControllerProvider()
-        let slidingViewController = slidingControllerProvider(sideMenuController: sideMenu, tabController: tabController)
-        add(child: slidingViewController)
-        self.slidingViewController = slidingViewController
-        sideMenuViewController = sideMenu
-        tabControllerManager = tabController
+        viewStore.publisher
+            .displaySendCryptoScreen
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.switchToSend()
+            }
+            .store(in: &cancellables)
 
-        sideMenuViewController?.tabControllerManager = tabControllerManager
-        sideMenuViewController?.slidingViewController = slidingViewController
+        viewStore.publisher
+            .displayOnboardingFlow
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.presentOnboardingFlow()
+            }
+            .store(in: &cancellables)
+
+        viewStore.publisher
+            .displayLegacyBuyFlow
+            .filter { $0 }
+            .sink { [weak self] _ in
+                self?.startSimpleBuyAtLogin()
+            }
+            .store(in: &cancellables)
     }
-
-    func clear() {
-        cancellables.forEach { $0.cancel() }
-        sideMenuViewController?.delegate = nil
-        sideMenuViewController?.createGestureRecognizers = nil
-        sideMenuViewController = nil
-        tabControllerManager = nil
-        slidingViewController?.remove()
-        slidingViewController = nil
-    }
-
-    // MARK: Private
 
     private func sideMenuProvider() -> SideMenuViewController {
         let sideMenuController = SideMenuViewController.makeFromStoryboard()
@@ -174,6 +207,20 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
             self?.pinRouter = nil
         }
         pinRouter?.execute()
+    }
+
+    // MARK: Email Verification
+
+    private func presentOnboardingFlow() {
+        guard let viewController = slidingViewController?.topMostViewController else {
+            fatalError("🔴 Could not present Email Verification Flow: topMostViewController is nil!")
+        }
+        onboardingRouter.presentOnboarding(from: viewController)
+            .sink { onboardingResult in
+                Logger.shared.debug("[AuthenticationCoordinator] Onboarding completed with result: \(onboardingResult)")
+                viewController.dismiss(animated: true, completion: nil)
+            }
+            .store(in: &cancellables)
     }
 }
 

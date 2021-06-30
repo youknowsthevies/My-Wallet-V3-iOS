@@ -141,7 +141,7 @@ extension LoggedInHostingController {
             routerInteractor: interactor
         )
         sellRouter = PlatformUIKit.SellRouter(builder: builder)
-        sellRouter.load()
+        sellRouter?.load()
     }
 
     func startSimpleBuyAtLogin() {
@@ -155,7 +155,7 @@ extension LoggedInHostingController {
         )
 
         buyRouter = PlatformUIKit.Router(builder: builder)
-        buyRouter.setup(startImmediately: false)
+        buyRouter?.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
             for: fiatCurrency,
             isOriginDeposit: isOriginDeposit

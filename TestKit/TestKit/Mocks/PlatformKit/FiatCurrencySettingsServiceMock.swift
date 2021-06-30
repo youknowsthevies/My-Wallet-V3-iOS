@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
 import RxRelay
 import RxSwift
@@ -23,6 +24,11 @@ final class FiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceAPI {
     func update(currency: FiatCurrency, context: FlowContext) -> Completable {
         fiatCurrencyRelay.accept(currency)
         return .empty()
+    }
+
+    func update(currency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
+        fiatCurrencyRelay.accept(currency)
+        return .just(())
     }
 
     init(expectedCurrency: FiatCurrency) {

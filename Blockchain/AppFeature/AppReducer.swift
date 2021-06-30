@@ -4,14 +4,13 @@ import ComposableArchitecture
 import DIKit
 import SettingsKit
 
+struct AppCancellations {
+    struct DeeplinkId: Hashable {}
+}
+
 public struct AppState: Equatable {
     var appSettings: AppDelegateState = .init()
     var coreState: CoreAppState = .init()
-
-    /// `true` if a user activiy was handled, such as universal links, otherwise `false`
-    var userActivityHandled: Bool = false
-    /// `true` if a deep link was handled, otherwise `false`
-    var urlHandled: Bool = false
 }
 
 public enum AppAction: Equatable {
@@ -45,8 +44,12 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
             environment: {
                 CoreAppEnvironment(
                     loadingViewPresenter: $0.loadingViewPresenter,
+                    deeplinkHandler: $0.deeplinkHandler,
+                    deeplinkRouter: $0.deeplinkRouter,
                     walletManager: $0.walletManager,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
+                    internalFeatureService: $0.internalFeatureService,
+                    fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
                     blockchainSettings:  $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,
                     alertPresenter: resolve(),
@@ -68,7 +71,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
         guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
-            return .init(value: .core(.start(window: window)))
+            return .init(value: .core(.start))
         }
         return .fireAndForget {
             environment.appCoordinator.window = window
@@ -86,11 +89,29 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             handleWillEnterForeground(coordinator: environment.appCoordinator)
         }
     case .appDelegate(.userActivity(let activity)):
-        state.userActivityHandled = environment.userActivityHandler.handle(userActivity: activity)
-        return .none
+        state.appSettings.userActivityHandled = environment.deeplinkAppHandler.canHandle(deeplink: .userActivity(activity))
+        return environment.deeplinkAppHandler
+            .handle(deeplink: .userActivity(activity))
+            .catchToEffect()
+            .cancellable(id: AppCancellations.DeeplinkId())
+            .map { result in
+                guard let data = result.successData else {
+                    return AppAction.core(.none)
+                }
+                return AppAction.core(.deeplink(data))
+            }
     case .appDelegate(.open(let url)):
-        state.urlHandled = environment.deeplinkAppHandler.handle(url: url)
-        return .none
+        state.appSettings.urlHandled = environment.deeplinkAppHandler.canHandle(deeplink: .url(url))
+        return environment.deeplinkAppHandler
+            .handle(deeplink: .url(url))
+            .catchToEffect()
+            .cancellable(id: AppCancellations.DeeplinkId())
+            .map { result in
+                guard let data = result.successData else {
+                    return AppAction.core(.none)
+                }
+                return AppAction.core(.deeplink(data))
+            }
     case .core(.start):
         return .init(value: .core(.onboarding(.start)))
     default:

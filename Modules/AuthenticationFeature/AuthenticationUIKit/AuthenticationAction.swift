@@ -17,6 +17,8 @@ public enum AuthenticationAction: Equatable {
     // MARK: - Verify Device Screen
     case setVerifyDeviceVisible(Bool)
 
+    case verifyDevice(URL)
+
     // MARK: - Password Login Screen
     case setPasswordLoginVisible(Bool)
     case didChangePassword(String)

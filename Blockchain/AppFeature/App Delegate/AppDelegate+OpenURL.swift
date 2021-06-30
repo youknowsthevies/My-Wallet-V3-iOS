@@ -5,6 +5,6 @@ import UIKit
 extension AppDelegate {
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
         viewStore.send(.appDelegate(.open(url)))
-        return viewStore.urlHandled
+        return viewStore.appSettings.urlHandled
     }
 }

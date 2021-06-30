@@ -22,6 +22,9 @@ public let authenticationReducer = Reducer<AuthenticationState, AuthenticationAc
     case .emailVerified(let isVerified):
         state.isEmailVerified = isVerified
         return .none
+    case .verifyDevice(let url):
+        // TODO: Extract the base64 from the url's fragment and process the data
+        return .none
     case .didRetrievedWalletAddress(let walletAddress):
         state.walletAddress = walletAddress
         return .none

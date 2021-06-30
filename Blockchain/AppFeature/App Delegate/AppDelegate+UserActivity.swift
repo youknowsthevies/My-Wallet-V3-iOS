@@ -9,6 +9,6 @@ extension AppDelegate {
         restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         viewStore.send(.appDelegate(.userActivity(userActivity)))
-        return viewStore.state.userActivityHandled
+        return viewStore.appSettings.userActivityHandled
     }
 }
