@@ -203,6 +203,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
         let digitInput = digitPadView.viewModel
             .valueObservable
+            .filter { !$0.isEmpty }
             .map { Character($0) }
             .asDriverCatchError()
 
