@@ -54,14 +54,19 @@ final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Private Properties
 
     private let client: KYCClientAPI
+    private let featureFlagsService: InternalFeatureFlagServiceAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     // MARK: - Setup
 
-    init(client: KYCClientAPI = resolve()) {
+    init(
+        client: KYCClientAPI = resolve(),
+        featureFlagsService: InternalFeatureFlagServiceAPI = resolve()
+    ) {
         self.client = client
+        self.featureFlagsService = featureFlagsService
         cachedTiers.setFetch(weak: self) { (self) in
             self.client.tiers()
         }
@@ -72,7 +77,10 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func simplifiedDueDiligenceEligibility() -> Single<SimplifiedDueDiligenceResponse> {
-        client.checkSimplifiedDueDiligenceEligibility()
+        guard featureFlagsService.isEnabled(.sddEnabled) else {
+            return .just(SimplifiedDueDiligenceResponse(eligible: false, tier: KYC.Tier.tier0.rawValue))
+        }
+        return client.checkSimplifiedDueDiligenceEligibility()
             .asObservable()
             .asSingle()
     }
@@ -86,6 +94,10 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never> {
+        guard featureFlagsService.isEnabled(.sddEnabled) else {
+            return .just(false)
+        }
+
         func pollingHelper(attemptsCount: Int = 1) -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
             // Poll the API every 5 seconds until `taskComplete` is `true` or an error is returned from the upstream for a maximum of 10 times
             client.checkSimplifiedDueDiligenceVerification()

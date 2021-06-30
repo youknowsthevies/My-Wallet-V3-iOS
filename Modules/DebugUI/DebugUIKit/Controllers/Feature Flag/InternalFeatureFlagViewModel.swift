@@ -30,6 +30,8 @@ struct InternalFeatureItem: Equatable {
             return "Show Email Verification in Buy Flow"
         case .useTransactionsFlowToBuyCrypto:
             return "Uses Transactions Flow to Buy Crypto"
+        case .sddEnabled:
+            return "Enable Simplified Due Diligence"
         }
     }
 }

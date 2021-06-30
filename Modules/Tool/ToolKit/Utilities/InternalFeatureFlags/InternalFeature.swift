@@ -33,6 +33,9 @@ public enum InternalFeature: String, CaseIterable {
 
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
+
+    /// Enables SDD checks. If `false`, all checks immediately fail
+    case sddEnabled
 }
 
 extension InternalFeature {
