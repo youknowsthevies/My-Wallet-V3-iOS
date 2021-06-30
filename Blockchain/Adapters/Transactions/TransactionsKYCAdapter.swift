@@ -23,6 +23,6 @@ extension TransactionsKYCAdapter: TransactionUIKit.KYCSDDServiceAPI {
     }
 
     func checkSimplifiedDueDiligenceVerification() -> AnyPublisher<Bool, Never> {
-        kycTiersService.checkSimplifiedDueDiligenceVerification()
+        kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: true)
     }
 }

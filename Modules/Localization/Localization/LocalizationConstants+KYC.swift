@@ -31,6 +31,10 @@ extension LocalizationConstants {
             "Verification in Progress",
             comment: "Text displayed when KYC verification is in progress."
         )
+        public static let verificationInProgressWait = NSLocalizedString(
+            "This may take a few minutes to complete. Please wait.",
+            comment: "Text displayed when KYC verification is in progress."
+        )
         public static let verificationInProgressDescription = NSLocalizedString(
             "Your information is being reviewed. When all looks good, you’re clear to exchange. You should receive a notification within 5 minutes.",
             comment: "Description for when KYC verification is in progress."

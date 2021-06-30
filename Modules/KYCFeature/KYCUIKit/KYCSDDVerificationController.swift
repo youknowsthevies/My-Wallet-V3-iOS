@@ -55,7 +55,7 @@ final class KYCSDDVerificationController: KYCBaseViewController {
     }
 
     private func checkForSDDVerification(completion: @escaping (Bool) -> Void) {
-        kycTiersService.checkSimplifiedDueDiligenceVerification()
+        kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: true)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: completion)
             .store(in: &cancellabes)
@@ -67,8 +67,12 @@ struct KYCSDDVerificationLoadingView: View {
     var body: some View {
         VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
             ActivityIndicatorView()
-            Text(LocalizationConstants.KYC.verificationInProgress)
-                .textStyle(.body)
+            VStack(spacing: 0) {
+                Text(LocalizationConstants.KYC.verificationInProgress)
+                    .textStyle(.heading)
+                Text(LocalizationConstants.KYC.verificationInProgressWait)
+                    .textStyle(.body)
+            }
         }
         .background(Color.viewPrimaryBackground)
     }

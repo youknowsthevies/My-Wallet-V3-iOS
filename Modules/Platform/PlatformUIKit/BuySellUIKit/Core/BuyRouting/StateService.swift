@@ -394,13 +394,9 @@ public final class StateService: StateServiceAPI {
     }
 
     private func checkTier3Verification() -> Single<Bool> {
-        Single.zip(
-            kycTiersService.fetchTiers(),
-            kycTiersService.checkSimplifiedDueDiligenceVerification().asObservable().asSingle()
-        )
-        .map { (userTiers, isSDDVerified) in
-            userTiers.latestApprovedTier == .tier1 && isSDDVerified
-        }
+        kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: false)
+            .asObservable()
+            .asSingle()
     }
 
     private func checkSDDVerificationAndContinue(with data: CheckoutData) {

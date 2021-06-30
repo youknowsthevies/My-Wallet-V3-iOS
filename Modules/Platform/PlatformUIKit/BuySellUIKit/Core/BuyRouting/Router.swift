@@ -578,13 +578,9 @@ public final class Router: RouterAPI {
         let sddVerificationCheck = stopped
             // when kyc is stopped and the user is not Tier 2 verified
             .filter { $0 != .tier2 }
-            // first check if they are Tier 1 verified and SDD verified
+            // first check if the user is SDD verified
             .flatMap(weak: self) { (self, tier) -> Observable<Bool> in
-                // only Tier 1 users can be SDD verified
-                guard tier == .tier1 else {
-                    return .just(false)
-                }
-                return self.tiersService.checkSimplifiedDueDiligenceVerification()
+                self.tiersService.checkSimplifiedDueDiligenceVerification(for: tier, pollUntilComplete: false)
                     .asObservable()
             }
             // ensure we can subscribe for multiple scenarios

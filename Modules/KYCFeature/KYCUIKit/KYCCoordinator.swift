@@ -164,16 +164,29 @@ final class KYCCoordinator: KYCRouterAPI {
         }
 
         loadingViewPresenter.show(with: LocalizationConstants.loading)
-        let postTierObservable = post(tier: tier).asObservable()
         let userObservable = dataRepository.fetchNabuUser().asObservable()
-        let isSDDEligible = tiersService.checkSimplifiedDueDiligenceEligibility().asObservable()
-        let isSDDVerified = tiersService.checkSimplifiedDueDiligenceVerification().asObservable()
+        let postTierObservable = post(tier: tier).asObservable()
+            .flatMap { [tiersService] tiersResponse in
+                Observable.zip(
+                    Observable.just(tiersResponse),
+                    tiersService
+                        .checkSimplifiedDueDiligenceEligibility(for: tiersResponse.latestApprovedTier)
+                        .asObservable(),
+                    tiersService
+                        .checkSimplifiedDueDiligenceVerification(
+                            for: tiersResponse.latestApprovedTier,
+                            pollUntilComplete: false
+                        )
+                        .asObservable()
+                )
+            }
 
-        let disposable = Observable.zip(userObservable, postTierObservable, isSDDEligible, isSDDVerified)
+        let disposable = Observable.zip(userObservable, postTierObservable)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
-            .subscribe(onNext: { [weak self] (user, tiersResponse, isSDDEligible, isSDDVerified) in
+            .subscribe(onNext: { [weak self] (user, tiersTuple) in
+                let (tiersResponse, isSDDEligible, isSDDVerified) = tiersTuple
                 self?.pager = KYCPager(tier: tier, tiersResponse: tiersResponse)
                 Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
                 guard let strongSelf = self else {
