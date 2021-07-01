@@ -6,6 +6,8 @@ app_identifier(
         "com.rainydayapps.Blockchain.dev.TodayExtension",
         "com.rainydayapps.Blockchain.staging",
         "com.rainydayapps.Blockchain.staging.TodayExtension",
+        "com.rainydayapps.Blockchain.dogfooding",
+        "com.rainydayapps.Blockchain.dogfooding.TodayExtension",
     ]
 )
 git_url(ENV["CREDENTIALS_REPO"])

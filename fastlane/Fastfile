@@ -44,6 +44,17 @@ platform :ios do
     )
   end
 
+  desc "Builds using the production environment but a different bundle ID and enabling internal features"
+  lane :dogfooding do
+    build_app(
+      clean: true,
+      include_bitcode: true,
+      include_symbols: true,
+      scheme: "Blockchain (Dogfooding)",
+      workspace: "Blockchain.xcworkspace"
+    )
+  end
+
   desc "Runs all unit tests on Blockchain (Staging) scheme"
   lane :execute_tests do
     scan

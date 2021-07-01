@@ -17,6 +17,10 @@ for_lane :staging do
   app_identifier "com.rainydayapps.Blockchain.staging"
 end
 
+for_lane :dogfooding do
+  app_identifier "com.rainydayapps.Blockchain.dogfooding"
+end
+
 for_lane :production do
   app_identifier "com.rainydayapps.Blockchain"
 end

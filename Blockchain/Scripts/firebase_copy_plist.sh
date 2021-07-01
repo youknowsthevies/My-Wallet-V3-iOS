@@ -18,6 +18,7 @@ PLIST_DESTINATION=${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app
 GOOGLESERVICE_INFO_DEV=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Dev/${PLIST_FILENAME}
 GOOGLESERVICE_INFO_PROD=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Prod/${PLIST_FILENAME}
 GOOGLESERVICE_INFO_STAG=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Staging/${PLIST_FILENAME}
+GOOGLESERVICE_INFO_DOGFOOD=${PROJECT_DIR}/${TARGET_NAME}/Firebase/Dogfooding/${PLIST_FILENAME}
 
 # Will hold reference to choosen resource.
 GOOGLESERVICE_INFO=""
@@ -34,13 +35,20 @@ fi
 # Staging exists:
 echo "Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_STAG}"
 if [ ! -f $GOOGLESERVICE_INFO_STAG ]; then
-    echo "No Production ${PLIST_FILENAME} found. Please ensure it's in the proper directory."
+    echo "No Staging ${PLIST_FILENAME} found. Please ensure it's in the proper directory."
     exit 1
 fi
 
 # Prod exists:
 echo "Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_PROD}"
 if [ ! -f $GOOGLESERVICE_INFO_PROD ]; then
+    echo "No Production ${PLIST_FILENAME} found. Please ensure it's in the proper directory."
+    exit 1
+fi
+
+# Dogfooding exists:
+echo "Looking for ${PLIST_FILENAME} in ${GOOGLESERVICE_INFO_DOGFOOD}"
+if [ ! -f $GOOGLESERVICE_INFO_DOGFOOD ]; then
     echo "No Production ${PLIST_FILENAME} found. Please ensure it's in the proper directory."
     exit 1
 fi
@@ -53,6 +61,8 @@ elif [ "${CONFIGURATION}" == "Debug Staging" ] || [ "${CONFIGURATION}" == "Relea
     GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_STAG}
 elif [ "${CONFIGURATION}" == "Debug Production" ] || [ "${CONFIGURATION}" == "Release" ] || [ "${CONFIGURATION}" == "Release Internal" ]; then
     GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_PROD}
+elif [ "${CONFIGURATION}" == "Debug Dogfooding" ] || [ "${CONFIGURATION}" == "Release Dogfooding" ]; then
+    GOOGLESERVICE_INFO=${GOOGLESERVICE_INFO_DOGFOOD}
 else
     echo "Unexpected configuration: ${CONFIGURATION}. Aborting."
     exit 1
