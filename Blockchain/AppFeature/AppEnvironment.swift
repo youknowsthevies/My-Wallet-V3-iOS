@@ -27,7 +27,7 @@ public struct AppEnvironment {
     var deeplinkAppHandler: AppDeeplinkHandlerAPI
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
-    var backgroundAppHandler: BackgroundAppHandler
+    var backgroundAppHandler: BackgroundAppHandlerAPI
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
     var internalFeatureService: InternalFeatureFlagServiceAPI
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
@@ -45,5 +45,6 @@ public struct AppEnvironment {
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
 
+    var urlSession: URLSession
     var mainQueue: AnySchedulerOf<DispatchQueue>
 }

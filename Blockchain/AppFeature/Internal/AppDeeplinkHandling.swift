@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BitcoinChainKit
-import DIKit
 import Combine
+import DIKit
 import FirebaseDynamicLinks
 import Foundation
 import Localization

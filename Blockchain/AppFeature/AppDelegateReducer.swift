@@ -13,6 +13,9 @@ import UIKit
 
 typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 
+/// Used to cancel the background task if needed
+struct BackgroundTaskId: Hashable { }
+
 /// The actions to be performed by the AppDelegate
 public enum AppDelegateAction: Equatable {
     case didFinishLaunching(window: UIWindow)
@@ -37,7 +40,7 @@ struct AppDelegateEnvironment {
     var certificatePinner: CertificatePinnerAPI
     var siftService: SiftServiceAPI
     var blurEffectHandler: BlurVisualEffectHandler
-    var backgroundAppHandler: BackgroundAppHandler
+    var backgroundAppHandler: BackgroundAppHandlerAPI
 }
 
 /// The state of the app delegate
@@ -84,19 +87,21 @@ let appDelegateReducer = Reducer<
         )
     case .willEnterForeground(let application):
         return .merge(
-            .fireAndForget {
-                environment.backgroundAppHandler
-                    .handleAppEnteredForeground(application)
-            },
+            .cancel(id: BackgroundTaskId()),
+            environment.backgroundAppHandler
+                .appEnteredForeground(application)
+                .eraseToEffect()
+                .fireAndForget(),
             updateAppBecameActiveCount(appSettings: environment.appSettings)
         )
     case .didEnterBackground(let application):
-        return .fireAndForget {
-            environment.backgroundAppHandler
-                .handleAppEnteredBackground(application)
-        }
+        return environment.backgroundAppHandler
+            .appEnteredBackground(application)
+            .eraseToEffect()
+            .cancellable(id: BackgroundTaskId(), cancelInFlight: true)
+            .map { _ in .handleDelayedEnterBackground }
     case .handleDelayedEnterBackground:
-        return .none
+        return .cancel(id: BackgroundTaskId())
     case .didBecomeActive:
         return .merge(
             removeBlurFilter(

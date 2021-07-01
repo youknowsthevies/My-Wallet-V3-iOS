@@ -73,6 +73,15 @@ extension DependencyContainer {
             ModalPresenter.shared as ModalPresenterAPI
         }
 
+        single { () -> BackgroundAppHandlerAPI in
+            let timer = BackgroundTaskTimer(
+                invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
+                    identifier: UIBackgroundTaskIdentifier.invalid
+                )
+            )
+            return BackgroundAppHandler(backgroundTaskTimer: timer)
+        }
+
         factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
 
         factory { AirdropRouter() as AirdropRouterAPI }

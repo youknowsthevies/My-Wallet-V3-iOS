@@ -128,6 +128,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .appForegrounded:
         // check if we need to display the pin for authentication
         guard environment.walletManager.wallet.isInitialized() else {
+            // do nothing if we're on the authentication state,
+            // meaning we either need to register, login or recover
+            guard let onboarding = state.onboarding,
+                  onboarding.authenticationState == nil else {
+                return .none
+            }
             state.loggedIn = nil
             state.onboarding = .init()
             return Effect(value: .onboarding(.start))
@@ -192,7 +198,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         environment.walletManager.wallet.fetch(with: password)
         return Effect(value: .authenticate)
     case .authenticate:
-        environment.loadingViewPresenter.showCircular()
         let appSettings = environment.blockchainSettings
         return .merge(
             environment.walletManager.didDecryptWallet
@@ -219,6 +224,11 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 }
         )
     case .didDecryptWallet(let decryption):
+        // defer showing the loading spinner, we should find a better way of dealing with this
+        // for context the underlying implementation of showing the circular loader
+        // relies on attaching the loader to the top window's view!!, this is error-prone and there are cases
+        // where the loader would not show above a presented view controller...
+        environment.loadingViewPresenter.showCircular()
         environment.blockchainSettings.guid = decryption.guid
         environment.blockchainSettings.sharedKey = decryption.sharedKey
 
@@ -309,12 +319,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             )
         )
     case .onboarding(.welcomeScreen(.createAccount)):
-        // send `authenticate` action so that we can listen for wallet creation or recovery
-        environment.loadingViewPresenter.showCircular()
+        // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
     case .onboarding(.welcomeScreen(.recoverFunds)):
         // send `authenticate` action so that we can listen for wallet creation or recovery
-        environment.loadingViewPresenter.showCircular()
         return Effect(value: .authenticate)
     case .onboarding(.createAccountScreenClosed),
          .onboarding(.recoverWalletScreenClosed):

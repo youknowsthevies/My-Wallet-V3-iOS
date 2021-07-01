@@ -3,6 +3,7 @@
 import ComposableArchitecture
 import DIKit
 import SettingsKit
+import ToolKit
 
 struct AppCancellations {
     struct DeeplinkId: Hashable {}
@@ -88,6 +89,23 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         return .fireAndForget {
             handleWillEnterForeground(coordinator: environment.appCoordinator)
         }
+    case .appDelegate(.handleDelayedEnterBackground):
+        NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
+        return .merge(
+            .fireAndForget {
+                if environment.walletManager.wallet.isInitialized() {
+                    if environment.blockchainSettings.guid != nil && environment.blockchainSettings.sharedKey != nil {
+                        environment.blockchainSettings.hasEndedFirstSession = true
+                    }
+                    environment.walletManager.close()
+                }
+            },
+            .fireAndForget {
+                environment.urlSession.reset {
+                    Logger.shared.debug("URLSession reset completed.")
+                }
+            }
+        )
     case .appDelegate(.userActivity(let activity)):
         state.appSettings.userActivityHandled = environment.deeplinkAppHandler.canHandle(deeplink: .userActivity(activity))
         return environment.deeplinkAppHandler

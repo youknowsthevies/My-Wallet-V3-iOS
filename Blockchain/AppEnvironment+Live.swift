@@ -5,6 +5,7 @@ import ComposableArchitecture
 import DebugUIKit
 import DIKit
 import PlatformKit
+import ToolKit
 
 extension AppEnvironment {
     static var live: AppEnvironment {
@@ -22,7 +23,7 @@ extension AppEnvironment {
             deeplinkAppHandler: resolve(),
             deeplinkHandler: resolve(),
             deeplinkRouter: resolve(),
-            backgroundAppHandler: .init(),
+            backgroundAppHandler: resolve(),
             portfolioSyncingService: resolve(),
             internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
@@ -35,6 +36,7 @@ extension AppEnvironment {
             appFeatureConfigurator: resolve(),
             blockchainSettings: .shared,
             credentialsStore: resolve(),
+            urlSession: resolve(),
             mainQueue: .main
         )
     }
