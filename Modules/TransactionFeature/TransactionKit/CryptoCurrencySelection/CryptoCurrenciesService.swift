@@ -112,6 +112,9 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                     }
                 )
                 .collect()
+                .map { quotes in
+                    quotes.sorted { $0.cryptoCurrency < $1.cryptoCurrency }
+                }
                 .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
