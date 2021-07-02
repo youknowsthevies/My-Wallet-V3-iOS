@@ -109,8 +109,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             .subscribe()
             .disposed(by: disposeBag)
 
-        BlockchainSettings.App.shared.appBecameActiveCount += 1
-
         // MARK: - Global Appearance
 
         //: Navigation Bar
@@ -154,17 +152,12 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         let appSettings = BlockchainSettings.App.shared
         let wallet = WalletManager.shared.wallet
 
-        NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
-
         if wallet.isInitialized() {
             if appSettings.guid != nil && appSettings.sharedKey != nil {
                 appSettings.hasEndedFirstSession = true
             }
             WalletManager.shared.close()
         }
-
-        // UI-related background actions
-        ModalPresenter.shared.closeAllModals()
 
         /// TODO: Remove this - we don't want any such logic in `AppDelegate`
         /// We have to make sure the 2FA alerts (email / auth app) are still showing
@@ -196,8 +189,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillEnterForeground(_ application: UIApplication) {
         backgroundTaskTimer.stop(application)
         Logger.shared.debug("applicationWillEnterForeground")
-
-        BlockchainSettings.App.shared.appBecameActiveCount += 1
 
         if !WalletManager.shared.wallet.isInitialized() {
             if BlockchainSettings.App.shared.guid != nil && BlockchainSettings.App.shared.sharedKey != nil {
@@ -239,7 +230,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if urlScheme == AssetConstants.URLSchemes.blockchain {
-            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             return true
         }
 
@@ -249,7 +239,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         let authenticated = isInitialized && hasGuid && hasSharedKey
 
         if BitPayLinkRouter.isBitPayURL(url) {
-            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             BitpayService.shared.contentRelay.accept(url)
             guard authenticated else { return true }
             return bitpayRouter.routeIfNeeded()
@@ -257,14 +246,12 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
         // Handle "bitcoin://" scheme
         if BitcoinURLPayload(url: url) != nil {
-            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             AuthenticationCoordinator.shared.postAuthenticationRoute = .sendCoins
             // TODO: Send P3: Handle deeplinks.
             return true
         }
 
         if authenticated {
-            ModalPresenter.shared.closeModal(withTransition: CATransitionType.fade.rawValue)
             deepLinkRouter.routeIfNeeded()
             return true
         }

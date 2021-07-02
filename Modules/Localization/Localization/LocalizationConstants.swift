@@ -710,36 +710,16 @@ public enum LocalizationConstants {
     }
 
     public struct AddressAndKeyImport {
-
-        public static let nonSpendable = NSLocalizedString("Non-Spendable", comment: "Text displayed to indicate that part of the funds in the user’s wallet is not spendable.")
-
         public static let copyWalletId = NSLocalizedString("Copy Wallet ID", comment: "")
-
         public static let copyCTA = NSLocalizedString("Copy to clipboard", comment: "")
         public static let copyWarning = NSLocalizedString(
-        """
-        Warning: Your wallet identifier is sensitive information. Copying it may compromise the security of your wallet.
-        """, comment: "")
-
-        public static let importedWatchOnlyAddressArgument = NSLocalizedString("Imported watch-only address %@", comment: "")
-        public static let importedPrivateKeyArgument = NSLocalizedString("Imported Private Key %@", comment: "")
-        public static let loadingImportKey = NSLocalizedString("Importing key", comment: "")
-        public static let loadingProcessingKey = NSLocalizedString("Processing key", comment: "")
-        public static let importedKeyButForIncorrectAddress = NSLocalizedString("You’ve successfully imported a private key.", comment: "")
-        public static let importedKeyDoesNotCorrespondToAddress = NSLocalizedString("NOTE: The scanned private key does not correspond to this watch-only address. If you want to spend from this address, make sure that you scan the correct private key.", comment: "")
-        public static let importedKeySuccess = NSLocalizedString("You can now spend from this address.", comment: "")
-        public static let incorrectPrivateKey = NSLocalizedString("Incorrect private key", comment: "Incorrect private key")
-        public static let keyAlreadyImported = NSLocalizedString("Key already imported", comment: "")
-        public static let keyNeedsBip38Password = NSLocalizedString("Needs BIP38 Password", comment: "")
-        public static let incorrectBip38Password = NSLocalizedString("Wrong BIP38 Password", comment: "")
-        public static let unknownErrorPrivateKey = NSLocalizedString("There was an error importing this private key.", comment: "")
-        public static let addressNotPresentInWallet = NSLocalizedString("Your wallet does not contain this address.", comment: "")
-        public static let addressNotWatchOnly = NSLocalizedString("This address is not watch-only.", comment: "")
-        public static let keyBelongsToOtherAddressNotWatchOnly = NSLocalizedString("This private key belongs to another address that is not watch only", comment: "")
-        public static let unknownKeyFormat = NSLocalizedString("Unknown key format", comment: "")
-        public static let unsupportedPrivateKey = NSLocalizedString("Unsupported Private Key Format", comment: "")
-        public static let addWatchOnlyAddressWarning = NSLocalizedString("You are about to import a non-spendable address, an address (or public key script) stored in the wallet without the corresponding private key. This means that the funds can be spent ONLY if you have the private key stored elsewhere. If you do not have the private key stored, do NOT instruct anyone to send you bitcoin to the non-spendable address. These options are recommended for advanced users only. Continue?", comment: "")
-        public static let addWatchOnlyAddressWarningPrompt = NSLocalizedString("These options are recommended for advanced users only. Continue?", comment: "")
+            "Warning: Your wallet identifier is sensitive information. Copying it may compromise the security of your wallet.",
+            comment: ""
+        )
+        public static let nonSpendable = NSLocalizedString(
+            "Non-Spendable",
+            comment: "Text displayed to indicate that part of the funds in the user’s wallet is not spendable."
+        )
     }
 
     public struct SendAsset {

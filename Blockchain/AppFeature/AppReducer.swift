@@ -90,7 +90,6 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             handleWillEnterForeground(coordinator: environment.appCoordinator)
         }
     case .appDelegate(.handleDelayedEnterBackground):
-        NotificationCenter.default.post(name: Constants.NotificationKeys.appEnteredBackground, object: nil)
         return .merge(
             .fireAndForget {
                 if environment.walletManager.wallet.isInitialized() {

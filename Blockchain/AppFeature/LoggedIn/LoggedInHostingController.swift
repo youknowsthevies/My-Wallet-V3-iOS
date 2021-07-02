@@ -258,17 +258,6 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
     func reload() {
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
-
-        NotificationCenter.default.post(
-            name: Constants.NotificationKeys.reloadToDismissViews,
-            object: nil
-        )
-
-        // Legacy code for generating new addresses
-        NotificationCenter.default.post(
-            name: Constants.NotificationKeys.newAddress,
-            object: nil
-        )
     }
 }
 
@@ -378,9 +367,5 @@ extension LoggedInHostingController {
         }
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
-
-        NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
-        NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
-        NotificationCenter.default.post(name: Constants.NotificationKeys.multiAddressResponseReload, object: nil)
     }
 }

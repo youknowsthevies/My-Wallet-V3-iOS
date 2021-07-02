@@ -60,24 +60,6 @@ public final class BlockchainSettings: NSObject {
 
         // MARK: - Properties
 
-        /**
-         Determines if the application should *ask the system* to show the app review prompt.
-
-         - Note:
-         This value increments whenever the application is launched or enters the foreground.
-
-         - Important:
-         This setting **should** be set reset upon logging the user out of the application.
-         */
-        public var appBecameActiveCount: Int {
-            get {
-                defaults.integer(forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.appBecameActiveCount.rawValue)
-            }
-        }
-
         public var didRequestCameraPermissions: Bool {
             get {
                 defaults.bool(forKey: UserDefaults.Keys.didRequestCameraPermissions.rawValue)
@@ -302,21 +284,6 @@ public final class BlockchainSettings: NSObject {
         }
 
         /**
-         Determines if the application should never prompt the user to write an app review.
-
-         - Note:
-         This value is set to `true` if the user has chosen to write an app review or not to be asked again.
-         */
-        public var dontAskUserToShowAppReviewPrompt: Bool {
-            get {
-                defaults.bool(forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
-            }
-            set {
-                defaults.set(newValue, forKey: UserDefaults.Keys.dontAskUserToShowAppReviewPrompt.rawValue)
-            }
-        }
-
-        /**
          Determines if the user deep linked into the app using the airdrop dynamic link. This value is used in various
          places to handle the airdrop flow (e.g. prompt the user to KYC to finish the airdrop, to continue KYC'ing if
          they have already gone through the KYC flow, etc.)
@@ -414,7 +381,6 @@ public final class BlockchainSettings: NSObject {
             // TICKET: IOS-1365 - Finish UserDefaults refactor (tickets, documentation, linter issues)
             // TODO: - reset all appropriate settings upon logging out
             clearPin()
-            appBecameActiveCount = 0
             custodySendInterstitialViewed = false
             didTapOnAirdropDeepLink = false
             didTapOnExchangeDeepLink = false

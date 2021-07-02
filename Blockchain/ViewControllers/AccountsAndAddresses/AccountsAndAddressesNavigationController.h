@@ -5,8 +5,6 @@
 
 @interface AccountsAndAddressesNavigationController : UINavigationController
 
-- (AssetSelectorView *)assetSelectorView;
-- (void)didGenerateNewAddress;
 - (void)reload;
 
 @end

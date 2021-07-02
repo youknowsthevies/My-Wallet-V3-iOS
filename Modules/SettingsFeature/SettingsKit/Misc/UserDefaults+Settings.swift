@@ -5,7 +5,6 @@ import ToolKit
 
 extension UserDefaults {
     enum Keys: String {
-        case appBecameActiveCount
         case didRequestCameraPermissions
         case didRequestMicrophonePermissions
         case didRequestNotificationPermissions
@@ -19,7 +18,6 @@ extension UserDefaults {
         case biometryEnabled
         case cloudBackupEnabled
         case defaultAccountLabelledAddressesCount
-        case dontAskUserToShowAppReviewPrompt
         case didTapOnAirdropDeepLink
         case didAttemptToRouteForAirdrop
         case exchangeLinkIdentifier = "pitLinkIdentifier"

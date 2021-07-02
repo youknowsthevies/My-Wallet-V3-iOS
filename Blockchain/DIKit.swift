@@ -69,10 +69,6 @@ extension DependencyContainer {
             return router as OnboardingRouterStateProviding
         }
 
-        single { () -> ModalPresenterAPI in
-            ModalPresenter.shared as ModalPresenterAPI
-        }
-
         single { () -> BackgroundAppHandlerAPI in
             let timer = BackgroundTaskTimer(
                 invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(

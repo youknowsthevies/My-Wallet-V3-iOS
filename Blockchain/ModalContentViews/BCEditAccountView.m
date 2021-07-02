@@ -78,8 +78,6 @@
         [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     }
 
-    [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
-
     [self performSelector:@selector(changeAccountName:) withObject:label afterDelay:ANIMATION_DURATION];
 }
 

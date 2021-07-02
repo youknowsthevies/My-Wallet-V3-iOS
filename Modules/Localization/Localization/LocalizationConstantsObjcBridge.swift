@@ -62,19 +62,7 @@ import Foundation
 
     @objc public class func syncingWallet() -> String { LocalizationConstants.syncingWallet }
 
-    @objc public class func loadingImportKey() -> String { LocalizationConstants.AddressAndKeyImport.loadingImportKey }
-
-    @objc public class func loadingProcessingKey() -> String { LocalizationConstants.AddressAndKeyImport.loadingProcessingKey }
-
-    @objc public class func incorrectBip38Password() -> String { LocalizationConstants.AddressAndKeyImport.incorrectBip38Password }
-
-    @objc public class func scanQRCode() -> String { LocalizationConstants.scanQRCode }
-
     @objc public class func nameAlreadyInUse() -> String { LocalizationConstants.Errors.nameAlreadyInUse }
-
-    @objc public class func unknownKeyFormat() -> String { LocalizationConstants.AddressAndKeyImport.unknownKeyFormat }
-
-    @objc public class func unsupportedPrivateKey() -> String { LocalizationConstants.AddressAndKeyImport.unsupportedPrivateKey }
 
     @objc public class func cookiePolicy() -> String { LocalizationConstants.Settings.cookiePolicy }
 

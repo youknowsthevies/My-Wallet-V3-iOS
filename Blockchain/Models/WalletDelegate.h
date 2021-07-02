@@ -16,7 +16,6 @@
 - (void)didFailGetHistory:(NSString *_Nullable)error;
 - (void)didFailRecovery;
 - (void)didFetchBitcoinCashHistory;
-- (void)didGenerateNewAddress;
 - (void)didGetMultiAddressResponse:(MultiAddressResponse *)response;
 - (void)didRecoverWallet;
 - (void)didSetDefaultAccount;

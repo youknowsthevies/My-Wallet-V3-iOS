@@ -66,9 +66,7 @@
     [WalletManager.sharedInstance.wallet setLabel:label forLegacyAddress:addr];
     
     [self.labelTextField resignFirstResponder];
-    
-    [[ModalPresenter sharedInstance] closeModalWithTransition:kCATransitionFade];
-    
+
     if (WalletManager.sharedInstance.wallet.isSyncing) {
         [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
     }

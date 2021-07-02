@@ -268,27 +268,6 @@ MyWalletPhone.upgradeToV3 = function(firstAccountName) {
     }
 };
 
-MyWalletPhone.createAccount = function(label) {
-    var success = function () {
-        console.log('Created new account');
-
-        objc_on_add_new_account();
-    };
-
-    var error = function (error) {
-        objc_on_error_add_new_account(error);
-    }
-
-    if (MyWallet.wallet.isDoubleEncrypted) {
-        MyWalletPhone.getSecondPassword(function (pw) {
-          MyWallet.wallet.newAccount(label, pw, null, success);
-        });
-    }
-    else {
-        MyWallet.wallet.newAccount(label, null, null, success);
-    }
-};
-
 MyWalletPhone.getActiveAccounts = function() {
     if (!MyWallet.wallet.isUpgradedToHD) {
         console.log('Warning: Getting accounts when wallet has not upgraded!');
@@ -377,10 +356,6 @@ MyWalletPhone.getActiveAccountsCount = function() {
 
     return activeAccounts.length;
 };
-
-MyWalletPhone.getAllTransactionsCount = function() {
-    return MyWallet.wallet.txList.transactionsForIOS().length;
-}
 
 MyWalletPhone.getAllAccountsCount = function() {
     if (!MyWallet.wallet.isUpgradedToHD) {
@@ -729,15 +704,6 @@ MyWalletPhone.newAccount = function(password, email, firstAccountName) {
     MyWallet.createNewWallet(email, password, firstAccountName, null, null, success, error);
 };
 
-MyWalletPhone.detectPrivateKeyFormat = function(privateKeyString) {
-    try {
-        var format = Helpers.detectPrivateKeyFormat(privateKeyString);
-        return format == null ? '' : format;
-    } catch(e) {
-        return null;
-    }
-};
-
 MyWalletPhone.setSyncPubKeys = function(syncPubKeys) {
     MyWallet.setSyncPubKeys(syncPubKeys);
 };
@@ -787,97 +753,6 @@ MyWalletPhone.getSecondPassword = function(callback, dismiss, helperText) {
     objc_get_second_password(function(pw) {
         callback(pw);
     }, dismiss, helperText);
-};
-
-MyWalletPhone.addKey = function(keyString) {
-    var success = function(address) {
-        console.log('Add private key success');
-
-        objc_on_add_key(address.address);
-    };
-    var error = function(e) {
-        console.log('Add private key Error');
-        console.log(e);
-
-        objc_on_error_adding_private_key(e);
-    };
-
-    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(keyString) === 'bip38';
-
-    if (needsBip38Passsword) {
-        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
-          if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, bip38Pass);
-              promise.then(success, error);
-            });
-          } else {
-            objc_on_add_private_key_start();
-            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, bip38Pass);
-            promise.then(success, error);
-          }
-        });
-    }
-    else {
-        if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              var promise = MyWallet.wallet.importLegacyAddress(keyString, null, pw, null);
-              promise.then(success, error);
-            });
-        } else {
-            objc_on_add_private_key_start();
-            var promise = MyWallet.wallet.importLegacyAddress(keyString, null, null, null);
-            promise.then(success, error);
-        }
-    }
-};
-
-MyWalletPhone.addKeyToLegacyAddress = function(privateKeyString, legacyAddress) {
-
-    var success = function(address) {
-        console.log('Add private key success:');
-        console.log(address.address);
-
-        if (address.address != legacyAddress) {
-            objc_on_add_incorrect_private_key(legacyAddress);
-        } else {
-            objc_on_add_private_key_to_legacy_address(legacyAddress);
-        }
-    };
-    var error = function(message) {
-        console.log('Add private key Error: ' + message);
-
-        objc_on_error_adding_private_key_watch_only(message);
-    };
-
-    var needsBip38Passsword = Helpers.detectPrivateKeyFormat(privateKeyString) === 'bip38';
-
-    if (needsBip38Passsword) {
-        MyWalletPhone.getPrivateKeyPassword(function (bip38Pass) {
-          if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, bip38Pass).then(success).catch(error);
-            });
-          } else {
-            objc_on_add_private_key_start();
-            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, bip38Pass).then(success).catch(error);
-          }
-        });
-    }
-    else {
-        if (MyWallet.wallet.isDoubleEncrypted) {
-            objc_on_add_private_key_start();
-            MyWalletPhone.getSecondPassword(function (pw) {
-              MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, pw, null).then(success).catch(error);
-            });
-        } else {
-            objc_on_add_private_key_start();
-            MyWallet.wallet.addKeyToLegacyAddress(privateKeyString, legacyAddress, null, null).then(success).catch(error);
-        }
-    }
 };
 
 // Settings
@@ -961,34 +836,6 @@ MyWalletPhone.getPasswordStrength = function(password) {
     var strength = Helpers.scorePassword(password);
     return strength;
 }
-
-MyWalletPhone.generateNewAddress = function() {
-    MyWallet.getWallet(function() {
-      objc_loading_start_create_new_address();
-      var label = null;
-
-      var success = function () {
-        console.log('Success creating new address');
-        MyWalletPhone.get_history();
-        objc_on_generate_key();
-        objc_loading_stop();
-      };
-
-      var error = function (e) {
-        console.log('Error creating new address: ' + e);
-        objc_loading_stop();
-        objc_on_error_creating_new_address(e);
-      };
-
-      if (MyWallet.wallet.isDoubleEncrypted) {
-        MyWalletPhone.getSecondPassword(function (pw) {
-          MyWallet.wallet.newLegacyAddress(label, pw, success, error);
-        });
-      } else {
-        MyWallet.wallet.newLegacyAddress(label, '', success, error);
-      }
-    });
-};
 
 MyWalletPhone.checkIfWalletHasAddress = function(address) {
     return (MyWallet.wallet.addresses.indexOf(address) > -1);

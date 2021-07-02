@@ -9,7 +9,6 @@ import XCTest
 class CoreDeeplinkHandlerTests: XCTestCase {
 
     var isPinSetMock = false
-    var mockModalPresenter: MockModalPresenter!
     var sut: CoreDeeplinkHandler!
 
     var cancellables: Set<AnyCancellable>!
@@ -17,9 +16,7 @@ class CoreDeeplinkHandlerTests: XCTestCase {
     override func setUp() {
         cancellables = []
         isPinSetMock = false
-        mockModalPresenter = MockModalPresenter()
         sut = CoreDeeplinkHandler(
-            modalPresenter: mockModalPresenter,
             bitpayService: BitpayService.shared,
             isPinSet: { [unowned self] in self.isPinSetMock }
         )
@@ -117,7 +114,6 @@ class CoreDeeplinkHandlerTests: XCTestCase {
 
         XCTAssertNotNil(expectedOutcome)
         XCTAssert(expectedOutcome == .ignore)
-        XCTAssertTrue(mockModalPresenter.closeModalCalled)
     }
 
     func test_sends_correct_outputs_for_bitpay_urls() {
@@ -147,7 +143,6 @@ class CoreDeeplinkHandlerTests: XCTestCase {
             URIContent(url: url, context: .executeDeeplinkRouting)
         )
         XCTAssert(expectedOutcome == outcome)
-        XCTAssertTrue(mockModalPresenter.closeModalCalled)
     }
 
     func test_sends_correct_outputs_for_bitcoin_url() {
@@ -177,6 +172,5 @@ class CoreDeeplinkHandlerTests: XCTestCase {
             URIContent(url: url, context: .sendCrypto)
         )
         XCTAssert(expectedOutcome == outcome)
-        XCTAssertTrue(mockModalPresenter.closeModalCalled)
     }
 }

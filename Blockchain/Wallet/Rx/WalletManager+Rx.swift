@@ -110,24 +110,10 @@ extension Reactive where Base: WalletManager {
 
     // MARK: WalletAddressesDelegate
 
-    /// Reactive wrapper for delegate method `didGenerateNewAddress`
-    /// - Note: Method invoked when generating a new address (V2/legacy wallet only)
-    var didGenerateNewAddress: Completable {
-        base.rx.methodInvoked(#selector(WalletManager.didGenerateNewAddress))
-            .ignoreElements()
-    }
-
     /// Reactive wrapper for delegate method `returnToAddressesScreen`
     /// - Note: Method invoked when finding a null account or address when checking if archived
     var returnToAddressesScreen: Completable {
         base.rx.methodInvoked(#selector(WalletManager.returnToAddressesScreen))
-            .ignoreElements()
-    }
-
-    /// Reactive wrapper for delegate method `didSetDefaultAccount`
-    /// - Note: Method invoked when the default account for an asset has been changed
-    var didSetDefaultAccount: Completable {
-        base.rx.methodInvoked(#selector(WalletManager.didSetDefaultAccount))
             .ignoreElements()
     }
 

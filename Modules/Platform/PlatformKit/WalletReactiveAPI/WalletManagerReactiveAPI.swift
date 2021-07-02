@@ -26,17 +26,9 @@ public protocol WalletManagerReactiveAPI {
 
     // MARK: WalletAddressesDelegate
 
-    /// Reactive wrapper for delegate method `didGenerateNewAddress`
-    /// - Note: Method invoked when generating a new address (V2/legacy wallet only)
-    var newAddressGenerated: AnyPublisher<Void, Error> { get }
-
     /// Reactive wrapper for delegate method `returnToAddressesScreen`
     /// - Note: Method invoked when finding a null account or address when checking if archived
     var shouldReturnToAddressesScreen: AnyPublisher<Void, Error> { get }
-
-    /// Reactive wrapper for delegate method `didSetDefaultAccount`
-    /// - Note: Method invoked when the default account for an asset has been changed
-    var defaultAccountSet: AnyPublisher<Void, Error> { get }
 
     // MARK: WalletRecoveryDelegate
 

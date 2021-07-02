@@ -90,9 +90,6 @@
 
 - (BOOL)isWatchOnlyLegacyAddress:(NSString*)address;
 
-- (BOOL)addKey:(NSString *)privateKeyString;
-- (BOOL)addKey:(NSString*)privateKeyString toWatchOnlyAddress:(NSString *)watchOnlyAddress;
-
 // Fetch String Array Of Addresses
 - (NSArray *)activeLegacyAddresses:(LegacyAssetType)assetType;
 - (NSArray *)allLegacyAddresses:(LegacyAssetType)assetType;
@@ -108,12 +105,9 @@
 
 - (id)getLegacyAddressBalance:(NSString *)address assetType:(LegacyAssetType)assetType;
 
-- (NSString *)detectPrivateKeyFormat:(NSString *)privateKeyString;
-
 - (void)newAccount:(NSString *)password email:(NSString *)email;
 
 - (int)getIndexOfActiveAccount:(int)account assetType:(LegacyAssetType)assetType;
-- (int)getAllTransactionsCount;
 
 # pragma mark - HD Wallet
 
@@ -143,9 +137,6 @@
 - (id)getBalanceForAccount:(int)account assetType:(LegacyAssetType)assetType;
 
 - (NSString *)getLabelForAccount:(int)account assetType:(LegacyAssetType)assetType;
-
-- (void)createAccountWithLabel:(NSString *)label;
-- (void)generateNewKey;
 
 - (NSString *)getXpubForAccount:(int)accountIndex assetType:(LegacyAssetType)assetType;
 

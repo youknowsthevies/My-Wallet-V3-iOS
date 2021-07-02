@@ -220,21 +220,9 @@ extension WalletManager: WalletDelegate {
 
     // MARK: - Addresses
 
-    func didGenerateNewAddress() {
-        DispatchQueue.main.async { [unowned self] in
-            self.addressesDelegate?.didGenerateNewAddress()
-        }
-    }
-
     func returnToAddressesScreen() {
         DispatchQueue.main.async { [unowned self] in
-            self.addressesDelegate?.didGenerateNewAddress()
-        }
-    }
-
-    func didSetDefaultAccount() {
-        DispatchQueue.main.async { [unowned self] in
-            self.addressesDelegate?.didSetDefaultAccount()
+            self.addressesDelegate?.returnToAddressesScreen()
         }
     }
 

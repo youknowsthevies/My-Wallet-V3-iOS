@@ -61,7 +61,6 @@ let appDelegateReducer = Reducer<
         state.window = window
         return .merge(
             migrateAnnouncements(),
-            updateAppBecameActiveCount(appSettings: environment.appSettings),
 
             environment.remoteNotificationAuthorizer
                 .registerForRemoteNotificationsIfAuthorized()
@@ -91,8 +90,7 @@ let appDelegateReducer = Reducer<
             environment.backgroundAppHandler
                 .appEnteredForeground(application)
                 .eraseToEffect()
-                .fireAndForget(),
-            updateAppBecameActiveCount(appSettings: environment.appSettings)
+                .fireAndForget()
         )
     case .didEnterBackground(let application):
         return environment.backgroundAppHandler
@@ -171,12 +169,6 @@ private func applyGlobalNavigationAppearance(using barStyle: Screen.Style.Bar) -
         navigationBarAppearance.titleTextAttributes = barStyle.titleTextAttributes
         navigationBarAppearance.barTintColor = barStyle.backgroundColor
         navigationBarAppearance.tintColor = barStyle.tintColor
-    }
-}
-
-private func updateAppBecameActiveCount(appSettings: BlockchainSettings.App) -> AppDelegateEffect {
-    Effect.fireAndForget {
-        appSettings.appBecameActiveCount += 1
     }
 }
 

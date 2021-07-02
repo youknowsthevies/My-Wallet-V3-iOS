@@ -43,7 +43,7 @@
 
     self.tableView.translatesAutoresizingMaskIntoConstraints = false;
 
-    CGFloat height = [ConstantsObjcBridge assetTypeCellHeight] * self.assets.count;
+    CGFloat height = [ConstantsObjcBridge assetSelectorHeight] * self.assets.count;
     [NSLayoutConstraint activateConstraints:@[
         [self.tableView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
         [self.tableView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
@@ -63,7 +63,7 @@
         [parentView addSubview:self];
     }
 
-    CGFloat height = [ConstantsObjcBridge assetTypeCellHeight];
+    CGFloat height = [ConstantsObjcBridge assetSelectorHeight];
     self.heightConstraint = [self.heightAnchor constraintEqualToConstant:height];
     [NSLayoutConstraint activateConstraints:@[
         [parentView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
@@ -105,7 +105,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [ConstantsObjcBridge assetTypeCellHeight];
+    return [ConstantsObjcBridge assetSelectorHeight];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -128,7 +128,7 @@
 {
     [self.superview layoutIfNeeded];
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
-        self.heightConstraint.constant = [ConstantsObjcBridge assetTypeCellHeight];
+        self.heightConstraint.constant = [ConstantsObjcBridge assetSelectorHeight];
         [self.superview layoutIfNeeded];
     }];
 }
@@ -142,7 +142,7 @@
     [self.tableView reloadData];
     [self.superview layoutIfNeeded];
     [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
-        self.heightConstraint.constant = [ConstantsObjcBridge assetTypeCellHeight] * self.assets.count;
+        self.heightConstraint.constant = [ConstantsObjcBridge assetSelectorHeight] * self.assets.count;
         [self.superview layoutIfNeeded];
     } completion:nil];
 }
@@ -158,7 +158,7 @@
         [self.tableView reloadData];
         [self.superview layoutIfNeeded];
         [UIView animateWithDuration:ANIMATION_DURATION delay:0 options:UIViewAnimationOptionLayoutSubviews animations:^{
-            self.heightConstraint.constant = [ConstantsObjcBridge assetTypeCellHeight];
+            self.heightConstraint.constant = [ConstantsObjcBridge assetSelectorHeight];
             [self.superview layoutIfNeeded];
         } completion:nil];
     }

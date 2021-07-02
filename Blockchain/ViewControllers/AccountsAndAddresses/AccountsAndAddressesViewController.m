@@ -3,7 +3,6 @@
 #import "AccountsAndAddressesViewController.h"
 #import "AccountsAndAddressesDetailViewController.h"
 #import "ReceiveTableCell.h"
-#import "BCCreateAccountView.h"
 #import "UIViewController+AutoDismiss.h"
 #import "Blockchain-Swift.h"
 #import "UIView+ChangeFrameAttribute.h"
@@ -13,53 +12,50 @@
 
 #define CELL_HEIGHT_DEFAULT 44.0f
 
-@interface AccountsAndAddressesViewController () <AssetSelectorViewDelegate, UITableViewDelegate, UITableViewDataSource, LegacyPrivateKeyDelegate>
-@property (nonatomic) BOOL isOpeningSelector;
-@property (nonatomic) NSString *clickedAddress;
-@property (nonatomic) int clickedAccount;
-@property (nonatomic) AccountsAndAddressesNavigationController *accountsAndAddressesNavigationController;
+@interface AccountsAndAddressesViewController () <AssetSelectorViewDelegate, UITableViewDelegate, UITableViewDataSource>
+
+@property (nonatomic, assign) BOOL isOpeningSelector;
+@property (nonatomic, copy) NSString *clickedAddress;
+@property (nonatomic, assign) int clickedAccount;
+@property (nonatomic, copy) NSArray *allKeys;
+
 @end
 
 @implementation AccountsAndAddressesViewController
-
-@synthesize allKeys;
 
 #pragma mark - Lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
-    CGFloat assetSelectorHeight = [ConstantsObjcBridge assetSelectorHeight];
-    CGFloat safeAreaInsetTop = rootViewController.view.safeAreaInsets.top;
-    CGRect layoutFrame = rootViewController.view.safeAreaLayoutGuide.layoutFrame;
-    self.view.frame = CGRectMake(0, assetSelectorHeight, layoutFrame.size.width, layoutFrame.size.height);
-
-
     self.view.backgroundColor = UIColor.lightGray;
-    self.accountsAndAddressesNavigationController = (AccountsAndAddressesNavigationController *)self.navigationController;
     self.title = BC_STRING_ADDRESSES;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                    initWithImage:[UIImage imageNamed:@"close"]
-                                    style:UIBarButtonItemStylePlain
-                                    target:self action:@selector(closeButtonClicked:)];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    
-    CGFloat navBarHeight = [ConstantsObjcBridge defaultNavigationBarHeight];
+                                              initWithImage:[UIImage imageNamed:@"close"]
+                                              style:UIBarButtonItemStylePlain
+                                              target:self
+                                              action:@selector(closeButtonClicked:)];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@""
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
+
     CGRect selectorFrame = CGRectMake(0,
-                                      safeAreaInsetTop + navBarHeight,
+                                      0,
                                       self.view.frame.size.width,
-                                      [ConstantsObjcBridge assetTypeCellHeight]);
+                                      [ConstantsObjcBridge assetSelectorHeight]);
     
     self.assetSelectorView = [[AssetSelectorView alloc]
                               initWithFrame:selectorFrame
-                              assets:@[@(LegacyAssetTypeBitcoin),
-                                       @(LegacyAssetTypeBitcoinCash)]
-                              parentView: self.view];
+                              assets:@[@(LegacyAssetTypeBitcoin), @(LegacyAssetTypeBitcoinCash)]
+                              parentView:self.view];
     self.assetSelectorView.delegate = self;
-    
-    CGRect frame = CGRectMake(self.view.frame.origin.x, self.assetSelectorView.frame.origin.x + self.assetSelectorView.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - assetSelectorHeight - safeAreaInsetTop);
+
+    CGRect frame = CGRectMake(self.view.frame.origin.x,
+                              self.assetSelectorView.frame.origin.x + self.assetSelectorView.frame.size.height,
+                              self.view.frame.size.width,
+                              self.view.frame.size.height - [ConstantsObjcBridge assetSelectorHeight]);
     self.tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStyleGrouped];
     self.tableView.backgroundColor = UIColor.lightGray;
     [self.view insertSubview:self.tableView belowSubview: self.assetSelectorView];
@@ -67,18 +63,13 @@
     self.tableView.dataSource = self;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:NOTIFICATION_KEY_RELOAD_ACCOUNTS_AND_ADDRESSES object:nil];
     [self reload];
-}
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [self.accountsAndAddressesNavigationController.assetSelectorView show];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.accountsAndAddressesNavigationController.assetSelectorView hide];
+    [self.assetSelectorView close];
 }
 
 - (void)dealloc
@@ -88,7 +79,7 @@
 
 - (void)reload
 {
-    allKeys = [WalletManager.sharedInstance.wallet allLegacyAddresses:self.assetType];
+    self.allKeys = [WalletManager.sharedInstance.wallet allLegacyAddresses:self.assetType];
     [self.tableView reloadData];
 }
 
@@ -143,112 +134,15 @@
 
 - (void)didSelectAsset:(LegacyAssetType)assetType
 {
-    [self.containerView changeYPosition:8 + [ConstantsObjcBridge assetTypeCellHeight]];
+    [self.containerView changeYPosition:8 + [ConstantsObjcBridge assetSelectorHeight]];
     self.assetType = assetType;
 }
 
 - (void)didOpenSelector
 {
     self.isOpeningSelector = YES;
-    [self.containerView changeYPosition:8 + [ConstantsObjcBridge assetTypeCellHeight]*self.assetSelectorView.assets.count];
+    [self.containerView changeYPosition:8 + [ConstantsObjcBridge assetSelectorHeight]*self.assetSelectorView.assets.count];
     self.isOpeningSelector = NO;
-}
-
-#pragma mark - Helpers
-
-- (void)newAccountClicked:(id)sender
-{
-    BCCreateAccountView *createAccountView = [[BCCreateAccountView alloc] init];
-    
-    [[ModalPresenter sharedInstance] showModalWithContent:createAccountView closeType:ModalCloseTypeClose showHeader:true headerText:BC_STRING_CREATE onDismiss:nil onResume:nil];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [createAccountView.labelTextField becomeFirstResponder];
-    });
-}
-
-- (void)newAddressClicked:(id)sender
-{
-    if ([WalletManager.sharedInstance.wallet didUpgradeToHd]) {
-        [self importAddress];
-    } else {
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:BC_STRING_NEW_ADDRESS message:nil preferredStyle:UIAlertControllerStyleAlert];
-
-        UIAlertAction *generateNewAddressAction = [UIAlertAction actionWithTitle:BC_STRING_NEW_ADDRESS_CREATE_NEW style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self generateNewAddress];
-        }];
-        UIAlertAction *importAddressAction = [UIAlertAction actionWithTitle:BC_STRING_IMPORT_ADDRESS style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self importAddress];
-        }];
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:BC_STRING_CANCEL style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        }];
-
-        [alertController addAction:generateNewAddressAction];
-        [alertController addAction:importAddressAction];
-        [alertController addAction:cancelAction];
-
-        [self presentViewController:alertController animated:YES completion:^{
-            [[NSNotificationCenter defaultCenter] addObserver:alertController
-                                                     selector:@selector(autoDismiss)
-                                                         name:ConstantsObjcBridge.notificationKeyReloadToDismissViews
-                                                       object:nil];
-        }];
-    }
-}
-
-- (void)generateNewAddress
-{
-    if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.shared internetConnection];
-        return;
-    }
-    
-    [WalletManager.sharedInstance.wallet generateNewKey];
-}
-
-- (void)didGenerateNewAddress
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(promptForLabelAfterGenerate)
-                                                 name:ConstantsObjcBridge.notificationKeyNewAddress object:nil];
-}
-
-- (void)promptForLabelAfterGenerate
-{
-    //: Newest address is the last object in activeKeys
-    self.clickedAddress = [allKeys lastObject];
-    [self didSelectAddress:self.clickedAddress];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ConstantsObjcBridge.notificationKeyNewAddress
-                                                  object:nil];
-}
-
-#pragma mark - LegacyPrivateKeyDelegate
-
-- (void)didFinishScanning:(NSString *)privateKey {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(promptForLabelAfterScan) name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
-    [WalletManager.sharedInstance.wallet addKey:privateKey];
-}
-
-- (void)importAddress
-{
-    if (!Reachability.hasInternetConnection) {
-        [AlertViewPresenter.shared internetConnection];
-        return;
-    }
-
-    [[KeyImportCoordinator sharedInstance] startWith:self
-                                                  in:self
-                                           assetType:self.assetType
-                                         loadingText:[LocalizationConstantsObjcBridge loadingImportKey]];
-}
-
-- (void)promptForLabelAfterScan
-{
-    //: Newest address is the last object in activeKeys
-    self.clickedAddress = [allKeys lastObject];
-    [self didSelectAddress:self.clickedAddress];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:[ConstantsObjcBridge notificationKeyBackupSuccess] object:nil];
 }
 
 #pragma mark - Table View Delegate
@@ -312,16 +206,18 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0)
-        return [WalletManager.sharedInstance.wallet getAllAccountsCount:self.assetType];
-    else if (section == 1) {
-        if (self.assetType == LegacyAssetTypeBitcoin) {
-            return [allKeys count];
-        } else {
-            return [allKeys count] > 0 ? 1 : 0;
-        }
+    switch (section) {
+        case 0:
+            return [WalletManager.sharedInstance.wallet getAllAccountsCount:self.assetType];
+        case 1:
+            if (self.assetType == LegacyAssetTypeBitcoin) {
+                return self.allKeys.count;
+            } else {
+                return self.allKeys.count > 0 ? 1 : 0;
+            }
+        default:
+            return 0;
     }
-    return 0;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -335,132 +231,130 @@
     if (indexPath.section == 0) {
         [self didSelectAccount:(int)indexPath.row];
     } else if (indexPath.section == 1) {
-        if (self.assetType == LegacyAssetTypeBitcoin) [self didSelectAddress:allKeys[indexPath.row]];
+        if (self.assetType == LegacyAssetTypeBitcoin) [self didSelectAddress:self.allKeys[indexPath.row]];
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)_tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.section == 0) {
-        int accountIndex = (int) indexPath.row;
-        NSString *accountLabelString = [WalletManager.sharedInstance.wallet getLabelForAccount:accountIndex assetType:self.assetType];
-        
-        ReceiveTableCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"receiveAccount"];
-        
-        if (cell == nil) {
-            cell = [[[NSBundle mainBundle] loadNibNamed:@"ReceiveCell" owner:nil options:nil] objectAtIndex:0];
-            cell.backgroundColor = [UIColor whiteColor];
-            cell.balanceLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_LIGHT size:FONT_SIZE_EXTRA_SMALL];
+- (UITableViewCell *)tableView:(UITableView *)tableView sectionZeroCellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    int accountIndex = (int) indexPath.row;
+    NSString *accountLabelString = [WalletManager.sharedInstance.wallet getLabelForAccount:accountIndex assetType:self.assetType];
 
-            if ([WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType] == accountIndex) {
-                
-                cell.labelLabel.autoresizingMask = UIViewAutoresizingNone;
-                cell.balanceLabel.autoresizingMask = UIViewAutoresizingNone;
-                cell.balanceButton.autoresizingMask = UIViewAutoresizingNone;
-                cell.watchLabel.autoresizingMask = UIViewAutoresizingNone;
-                
-                CGFloat labelLabelCenterY = cell.labelLabel.center.y;
-                cell.labelLabel.text = accountLabelString;
-                [cell.labelLabel sizeToFit];
-                [cell.labelLabel changeXPosition:20];
-                cell.labelLabel.center = CGPointMake(cell.labelLabel.center.x, labelLabelCenterY);
-                
-                cell.watchLabel.hidden = NO;
-                cell.watchLabel.text = BC_STRING_DEFAULT;
-                CGFloat watchLabelCenterY = cell.watchLabel.center.y;
-                [cell.watchLabel sizeToFit];
-                [cell.watchLabel changeXPosition:cell.labelLabel.frame.origin.x + cell.labelLabel.frame.size.width + 8];
-                cell.watchLabel.center = CGPointMake(cell.watchLabel.center.x, watchLabelCenterY);
-                cell.watchLabel.textColor = [UIColor grayColor];
-                
-                CGFloat minimumBalanceButtonOriginX = IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 235 : 194;
-                CGFloat watchLabelEndX = cell.watchLabel.frame.origin.x + cell.watchLabel.frame.size.width + 8;
-                
-                if (watchLabelEndX > minimumBalanceButtonOriginX) {
-                    CGFloat smallestDefaultLabelWidth = 18;
-                    CGFloat difference = cell.watchLabel.frame.size.width - (watchLabelEndX - minimumBalanceButtonOriginX);
-                    CGFloat newWidth = difference > smallestDefaultLabelWidth ? difference : smallestDefaultLabelWidth;
-                    [cell.watchLabel changeWidth:newWidth];
-                }
-                
-                CGFloat windowWidth = [UIApplication sharedApplication].keyWindow.frame.size.width;
-                cell.balanceLabel.frame = CGRectMake(minimumBalanceButtonOriginX, 11, windowWidth - minimumBalanceButtonOriginX - 20, 21);
-                cell.balanceButton.frame = CGRectMake(minimumBalanceButtonOriginX, 0, windowWidth - minimumBalanceButtonOriginX, CELL_HEIGHT_DEFAULT);
-            } else {
-                // Don't show the watch only tag and resize the label and balance labels to use up the freed up space
-                cell.labelLabel.frame = CGRectMake(20, 11, 185, 21);
-                cell.balanceLabel.frame = CGRectMake(217, 11, 120, 21);
-                UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 217, cell.frame.size.height-(cell.frame.size.height-cell.balanceLabel.frame.origin.y-cell.balanceLabel.frame.size.height), 0);
-                cell.balanceButton.frame = UIEdgeInsetsInsetRect(cell.contentView.frame, contentInsets);
-                
-                cell.watchLabel.hidden = YES;
-                cell.watchLabel.text = BC_STRING_WATCH_ONLY;
-                cell.watchLabel.textColor = UIColor.error;
+    ReceiveTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"receiveAccount"];
+
+    if (cell == nil) {
+        cell = [[NSBundle mainBundle] loadNibNamed:@"ReceiveTableCell" owner:nil options:nil].firstObject;
+        cell.backgroundColor = [UIColor whiteColor];
+        cell.balanceLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_LIGHT size:FONT_SIZE_EXTRA_SMALL];
+
+        if ([WalletManager.sharedInstance.wallet getDefaultAccountIndexForAssetType:self.assetType] == accountIndex) {
+            cell.labelLabel.autoresizingMask = UIViewAutoresizingNone;
+            cell.balanceLabel.autoresizingMask = UIViewAutoresizingNone;
+            cell.balanceButton.autoresizingMask = UIViewAutoresizingNone;
+            cell.watchLabel.autoresizingMask = UIViewAutoresizingNone;
+
+            CGFloat labelLabelCenterY = cell.labelLabel.center.y;
+            cell.labelLabel.text = accountLabelString;
+            [cell.labelLabel sizeToFit];
+            [cell.labelLabel changeXPosition:20];
+            cell.labelLabel.center = CGPointMake(cell.labelLabel.center.x, labelLabelCenterY);
+
+            cell.watchLabel.hidden = NO;
+            cell.watchLabel.text = BC_STRING_DEFAULT;
+            CGFloat watchLabelCenterY = cell.watchLabel.center.y;
+            [cell.watchLabel sizeToFit];
+            [cell.watchLabel changeXPosition:cell.labelLabel.frame.origin.x + cell.labelLabel.frame.size.width + 8];
+            cell.watchLabel.center = CGPointMake(cell.watchLabel.center.x, watchLabelCenterY);
+            cell.watchLabel.textColor = [UIColor grayColor];
+
+            CGFloat minimumBalanceButtonOriginX = IS_USING_SCREEN_SIZE_LARGER_THAN_SE ? 235 : 194;
+            CGFloat watchLabelEndX = cell.watchLabel.frame.origin.x + cell.watchLabel.frame.size.width + 8;
+
+            if (watchLabelEndX > minimumBalanceButtonOriginX) {
+                CGFloat smallestDefaultLabelWidth = 18;
+                CGFloat difference = cell.watchLabel.frame.size.width - (watchLabelEndX - minimumBalanceButtonOriginX);
+                CGFloat newWidth = difference > smallestDefaultLabelWidth ? difference : smallestDefaultLabelWidth;
+                [cell.watchLabel changeWidth:newWidth];
             }
-        }
-        
-        cell.labelLabel.text = accountLabelString;
-        cell.addressLabel.text = @"";
-        
-        uint64_t balance = [[WalletManager.sharedInstance.wallet getBalanceForAccount:accountIndex assetType:self.assetType] longLongValue];
-        
-        // Selected cell color
-        UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width,cell.frame.size.height)];
-        [v setBackgroundColor:UIColor.brandPrimary];
-        [cell setSelectedBackgroundView:v];
-        
-        if ([WalletManager.sharedInstance.wallet isAccountArchived:accountIndex assetType:self.assetType]) {
-            cell.balanceLabel.text = BC_STRING_ARCHIVED;
-            cell.balanceLabel.textColor = UIColor.brandSecondary;
+
+            CGFloat windowWidth = tableView.frame.size.width;
+            cell.balanceLabel.frame = CGRectMake(minimumBalanceButtonOriginX, 11, windowWidth - minimumBalanceButtonOriginX - 20, 21);
+            cell.balanceButton.frame = CGRectMake(minimumBalanceButtonOriginX, 0, windowWidth - minimumBalanceButtonOriginX, CELL_HEIGHT_DEFAULT);
         } else {
-            cell.balanceLabel.text = self.assetType == LegacyAssetTypeBitcoin ? [NSNumberFormatter formatMoney:balance] : [NSNumberFormatter formatBCHAmountInAutomaticLocalCurrency:balance];
-            cell.balanceLabel.textColor = UIColor.green;
+            // Don't show the watch only tag and resize the label and balance labels to use up the freed up space
+            cell.labelLabel.frame = CGRectMake(20, 11, 185, 21);
+            cell.balanceLabel.frame = CGRectMake(217, 11, 120, 21);
+            UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 217, cell.frame.size.height-(cell.frame.size.height-cell.balanceLabel.frame.origin.y-cell.balanceLabel.frame.size.height), 0);
+            cell.balanceButton.frame = UIEdgeInsetsInsetRect(cell.contentView.frame, contentInsets);
+
+            cell.watchLabel.hidden = YES;
+            cell.watchLabel.text = BC_STRING_WATCH_ONLY;
+            cell.watchLabel.textColor = UIColor.error;
         }
-        cell.balanceLabel.minimumScaleFactor = 0.75f;
-        [cell.balanceLabel setAdjustsFontSizeToFitWidth:YES];
-        
-        [cell.balanceButton addTarget:self action:@selector(toggleSymbol) forControlEvents:UIControlEventTouchUpInside];
-        
-        return cell;
     }
 
+    cell.labelLabel.text = accountLabelString;
+    cell.addressLabel.text = @"";
+
+    uint64_t balance = [[WalletManager.sharedInstance.wallet getBalanceForAccount:accountIndex assetType:self.assetType] longLongValue];
+
+    // Selected cell color
+    UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width,cell.frame.size.height)];
+    [v setBackgroundColor:UIColor.brandPrimary];
+    [cell setSelectedBackgroundView:v];
+
+    if ([WalletManager.sharedInstance.wallet isAccountArchived:accountIndex assetType:self.assetType]) {
+        cell.balanceLabel.text = BC_STRING_ARCHIVED;
+        cell.balanceLabel.textColor = UIColor.brandSecondary;
+    } else {
+        cell.balanceLabel.text = self.assetType == LegacyAssetTypeBitcoin ? [NSNumberFormatter formatMoney:balance] : [NSNumberFormatter formatBCHAmountInAutomaticLocalCurrency:balance];
+        cell.balanceLabel.textColor = UIColor.green;
+    }
+    cell.balanceLabel.minimumScaleFactor = 0.75f;
+    [cell.balanceLabel setAdjustsFontSizeToFitWidth:YES];
+
+    [cell.balanceButton addTarget:self action:@selector(toggleSymbol) forControlEvents:UIControlEventTouchUpInside];
+
+    return cell;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView sectionOneCellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
     // Imported addresses
-    
-    NSString *addr = [allKeys objectAtIndex:[indexPath row]];
-    
+
+    NSString *addr = self.allKeys[indexPath.row];
+
     Boolean isWatchOnlyLegacyAddress = [WalletManager.sharedInstance.wallet isWatchOnlyLegacyAddress:addr];
-    
+
     ReceiveTableCell *cell;
     if (isWatchOnlyLegacyAddress) {
         cell = [self.tableView dequeueReusableCellWithIdentifier:@"receiveWatchOnly"];
-    }
-    else {
+    } else {
         cell = [self.tableView dequeueReusableCellWithIdentifier:@"receiveNormal"];
     }
-    
+
     if (cell == nil) {
-        cell = [[[NSBundle mainBundle] loadNibNamed:@"ReceiveCell" owner:nil options:nil] objectAtIndex:0];
+        cell = [[NSBundle mainBundle] loadNibNamed:@"ReceiveTableCell" owner:nil options:nil].firstObject;
         cell.backgroundColor = [UIColor whiteColor];
         cell.balanceLabel.font = [UIFont fontWithName:FONT_MONTSERRAT_LIGHT size:FONT_SIZE_EXTRA_SMALL];
 
         if (isWatchOnlyLegacyAddress) {
             // Show the watch only tag and resize the label and balance labels so there is enough space
             cell.labelLabel.frame = CGRectMake(20, 11, 110, 21);
-            
+
             cell.balanceLabel.frame = CGRectMake(254, 11, 83, 21);
             UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 254, cell.frame.size.height-(cell.frame.size.height-cell.balanceLabel.frame.origin.y-cell.balanceLabel.frame.size.height), 0);
             cell.balanceButton.frame = UIEdgeInsetsInsetRect(cell.contentView.frame, contentInsets);
-            
+
             [cell.watchLabel setHidden:FALSE];
         }
         else {
             // Don't show the watch only tag and resize the label and balance labels to use up the freed up space
             cell.labelLabel.frame = CGRectMake(20, 11, 185, 21);
-            
+
             cell.balanceLabel.frame = CGRectMake(217, 11, 120, 21);
             UIEdgeInsets contentInsets = UIEdgeInsetsMake(0, 217, cell.frame.size.height-(cell.frame.size.height-cell.balanceLabel.frame.origin.y-cell.balanceLabel.frame.size.height), 0);
             cell.balanceButton.frame = UIEdgeInsetsInsetRect(cell.contentView.frame, contentInsets);
-            
+
             [cell.watchLabel setHidden:TRUE];
 
             // Disable cell highlighting for BCH imported addresses
@@ -471,23 +365,23 @@
             }
         }
     }
-    
+
     NSString *label = self.assetType == LegacyAssetTypeBitcoin ? [WalletManager.sharedInstance.wallet labelForLegacyAddress:addr assetType:self.assetType] : BC_STRING_IMPORTED_ADDRESSES;
-    
+
     if (label) {
         cell.labelLabel.text = label;
     } else {
         cell.labelLabel.text = BC_STRING_NO_LABEL;
     }
-    
+
     cell.addressLabel.text = self.assetType == LegacyAssetTypeBitcoin ? addr : nil;
-    
+
     uint64_t balance = self.assetType == LegacyAssetTypeBitcoin ? [[WalletManager.sharedInstance.wallet getLegacyAddressBalance:addr assetType:self.assetType] longLongValue] : [WalletManager.sharedInstance.wallet getTotalBalanceForActiveLegacyAddresses:self.assetType];
 
     UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0,0,cell.frame.size.width,cell.frame.size.height)];
     [v setBackgroundColor:UIColor.brandPrimary];
     [cell setSelectedBackgroundView:v];
-    
+
     if ([WalletManager.sharedInstance.wallet isAddressArchived:addr]) {
         cell.balanceLabel.text = BC_STRING_ARCHIVED;
         cell.balanceLabel.textColor = UIColor.brandSecondary;
@@ -497,10 +391,22 @@
     }
     cell.balanceLabel.minimumScaleFactor = 0.75f;
     [cell.balanceLabel setAdjustsFontSizeToFitWidth:YES];
-    
+
     [cell.balanceButton addTarget:self action:@selector(toggleSymbol) forControlEvents:UIControlEventTouchUpInside];
-    
+
     return cell;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath 
+{
+    switch (indexPath.section) {
+        case 0:
+            return [self tableView:tableView sectionZeroCellForRowAtIndexPath:indexPath];
+        case 1:
+            return [self tableView:tableView sectionOneCellForRowAtIndexPath:indexPath];
+        default:
+            return nil;
+    }
 }
 
 - (void)toggleSymbol

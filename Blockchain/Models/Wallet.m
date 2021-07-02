@@ -354,56 +354,8 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf crypto_scrypt:_password salt:salt n:N r:r p:p dkLen:derivedKeyLen success:success error:error];
     };
 
-    self.context[@"objc_loading_start_create_new_address"] = ^() {
-        [weakSelf loading_start_create_new_address];
-    };
-
-    self.context[@"objc_on_error_creating_new_address"] = ^(NSString *error) {
-        [weakSelf on_error_creating_new_address:error];
-    };
-
-    self.context[@"objc_on_generate_key"] = ^() {
-        [weakSelf on_generate_key];
-    };
-
-    self.context[@"objc_on_add_new_account"] = ^() {
-        [weakSelf on_add_new_account];
-    };
-
-    self.context[@"objc_on_error_add_new_account"] = ^(NSString *error) {
-        [weakSelf on_error_add_new_account:error];
-    };
-
     self.context[@"objc_loading_start_new_account"] = ^() {
         [weakSelf loading_start_new_account];
-    };
-
-    self.context[@"objc_on_add_private_key_start"] = ^() {
-        [weakSelf on_add_private_key_start];
-    };
-
-    self.context[@"objc_on_add_incorrect_private_key"] = ^(NSString *address) {
-        [weakSelf on_add_incorrect_private_key:address];
-    };
-
-    self.context[@"objc_on_add_private_key_to_legacy_address"] = ^(NSString *address) {
-        [weakSelf on_add_private_key_to_legacy_address:address];
-    };
-
-    self.context[@"objc_on_add_key"] = ^(NSString *key) {
-        [weakSelf on_add_key:key];
-    };
-
-    self.context[@"objc_on_error_adding_private_key"] = ^(NSString *error) {
-        [weakSelf on_error_adding_private_key:error];
-    };
-
-    self.context[@"objc_on_add_incorrect_private_key"] = ^(NSString *key) {
-        [weakSelf on_add_incorrect_private_key:key];
-    };
-
-    self.context[@"objc_on_error_adding_private_key_watch_only"] = ^(NSString *key) {
-        [weakSelf on_error_adding_private_key_watch_only:key];
     };
 
     self.context[@"objc_did_archive_or_unarchive"] = ^() {
@@ -521,7 +473,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     } else {
         DLog(@"Error: delegate of class %@ does not respond to selector walletDidLoad!", [delegate class]);
     }
-
 }
 
 /// Called after recovering wallet with mnemonic
@@ -598,15 +549,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     if ([self isInitialized]) {
         [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getHistoryForAllAssets()"];
     }
-}
-
-- (int)getAllTransactionsCount
-{
-    if (![self isInitialized]) {
-        return 0;
-    }
-
-    return [[[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.getAllTransactionsCount()"] toNumber] intValue];
 }
 
 - (void)changeLocalCurrency:(NSString *)currencyCode
@@ -814,42 +756,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getBalanceForAddress(\"%@\")", [address escapedForJS]]] toNumber];
     }
     return 0;
-}
-
-- (BOOL)addKey:(NSString*)privateKeyString
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.addKey(\"%@\")", [privateKeyString escapedForJS]]] toBool];
-}
-
-- (BOOL)addKey:(NSString*)privateKeyString toWatchOnlyAddress:(NSString *)watchOnlyAddress
-{
-    if (![self isInitialized]) {
-        return NO;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.addKeyToLegacyAddress(\"%@\", \"%@\")", [privateKeyString escapedForJS], [watchOnlyAddress escapedForJS]]] toBool];
-}
-
-- (NSString*)detectPrivateKeyFormat:(NSString*)privateKeyString
-{
-    if (![self isInitialized]) {
-        return nil;
-    }
-
-    return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.detectPrivateKeyFormat(\"%@\")", [privateKeyString escapedForJS]]] toString];
-}
-
-- (void)generateNewKey
-{
-    if (![self isInitialized]) {
-        return;
-    }
-
-    [self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.generateNewAddress()"];
 }
 
 - (BOOL)checkIfWalletHasAddress:(NSString *)address
@@ -1092,19 +998,9 @@ NSString * const kLockboxInvitation = @"lockbox";
     [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_LOADING_TRANSACTIONS];
 }
 
-- (void)loading_start_create_account
-{
-    [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_CREATING];
-}
-
 - (void)loading_start_new_account
 {
     [LoadingViewPresenter.shared showCircularWith:LocalizationConstantsObjcBridge.loadingWallet];
-}
-
-- (void)loading_start_create_new_address
-{
-    [LoadingViewPresenter.shared showWith:BC_STRING_LOADING_CREATING_NEW_ADDRESS];
 }
 
 - (void)loading_start_generate_uuids
@@ -1345,46 +1241,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     }
 }
 
-/* Begin Key Importer */
-
-- (void)on_add_key:(NSString*)address
-{
-    // TODO: call Swift `importKey` directly once available
-    [[KeyImportCoordinator sharedInstance] on_add_keyWithAddress:address];
-}
-
-- (void)on_add_incorrect_private_key:(NSString *)address
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_add_incorrect_private_keyWithAddress:address];
-}
-
-- (void)on_add_private_key_start
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_add_private_key_start];
-}
-
-- (void)on_add_private_key_to_legacy_address:(NSString *)address
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_add_private_key_to_legacy_addressWithAddress:address];
-}
-
-- (void)on_error_adding_private_key:(NSString*)error
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_error_adding_private_keyWithError:error];
-}
-
-- (void)on_error_adding_private_key_watch_only:(NSString*)error
-{
-    // TODO: remove bridging function call
-    [[KeyImportCoordinator sharedInstance] on_error_adding_private_key_watch_onlyWithError:error];
-}
-
-/* End Key Importer */
-
 - (void)on_error_creating_new_account:(NSString*)message
 {
     DLog(@"on_error_creating_new_account:");
@@ -1504,37 +1360,6 @@ NSString * const kLockboxInvitation = @"lockbox";
 - (void)on_get_history_success
 {
     DLog(@"on_get_history_success");
-}
-
-- (void)on_generate_key
-{
-    DLog(@"on_generate_key");
-    if ([delegate respondsToSelector:@selector(didGenerateNewAddress)]) {
-        [delegate didGenerateNewAddress];
-    } else {
-        DLog(@"Error: delegate of class %@ does not respond to selector didGenerateNewAddress!", [delegate class]);
-    }
-}
-
-- (void)on_error_creating_new_address:(NSString*)error
-{
-    DLog(@"on_error_creating_new_address");
-    [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
-}
-
-- (void)on_add_new_account
-{
-    DLog(@"on_add_new_account");
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [LoadingViewPresenter.shared showWith:[LocalizationConstantsObjcBridge syncingWallet]];
-    });
-}
-
-- (void)on_error_add_new_account:(NSString*)error
-{
-    DLog(@"on_error_generating_new_address");
-    [AlertViewPresenter.shared standardNotifyWithTitle:BC_STRING_ERROR message:error in:nil handler:nil];
 }
 
 - (void)on_success_recover_with_passphrase:(NSDictionary *)recoveredWalletDictionary
@@ -1841,21 +1666,6 @@ NSString * const kLockboxInvitation = @"lockbox";
         return [[self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.bch.getLabelForAccount(%d)", account]] toString];
     }
     return nil;
-}
-
-- (void)createAccountWithLabel:(NSString *)label
-{
-    if ([self isInitialized] && Reachability.hasInternetConnection) {
-        // Show loading text
-        [self loading_start_create_account];
-
-        self.isSyncing = YES;
-
-        // Wait a little bit to make sure the loading text is showing - then execute the blocking and kind of long create account
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ANIMATION_DURATION * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.createAccount(\"%@\")", [label escapedForJS]]];
-        });
-    }
 }
 
 #pragma mark - Callbacks from JS to Obj-C for HD wallet

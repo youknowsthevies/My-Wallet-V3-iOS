@@ -16,7 +16,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.frame = [UIView rootViewSafeAreaFrameWithNavigationBar:YES tabBar:NO assetSelector:YES];
     WalletManager.sharedInstance.addressesDelegate = self;
 }
 
@@ -36,30 +35,9 @@
 
 #pragma mark WalletAddressesDelegate
 
-- (void)didSetDefaultAccount
-{
-
-}
-
-- (void)didGenerateNewAddress
-{
-    if ([self.visibleViewController isMemberOfClass:[AccountsAndAddressesViewController class]]) {
-        AccountsAndAddressesViewController *accountsAndAddressesViewController = (AccountsAndAddressesViewController *)self.visibleViewController;
-        [accountsAndAddressesViewController didGenerateNewAddress];
-    }
-}
-
 - (void)returnToAddressesScreen
 {
     [self popToRootViewControllerAnimated:YES];
-}
-
-- (AssetSelectorView *)assetSelectorView {
-    if ([self.visibleViewController isMemberOfClass:[AccountsAndAddressesViewController class]]) {
-        AccountsAndAddressesViewController *vc = (AccountsAndAddressesViewController *)self.visibleViewController;
-        return vc.assetSelectorView;
-    }
-    return nil;
 }
 
 @end

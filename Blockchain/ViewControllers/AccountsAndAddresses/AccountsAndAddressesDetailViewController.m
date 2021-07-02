@@ -382,17 +382,13 @@ typedef enum {
     int sectionMain = 0;
     int sectionArchived = 1;
 
+    BOOL isArchived = [self isArchived];
     if (indexPath.section == sectionMain) {
         switch (indexPath.row) {
             case 0: {
-                if ([self isArchived]) {
-                    if ([self isArchived]) {
-                        cell.textLabel.text = BC_STRING_UNARCHIVE;
-                        cell.textLabel.textColor = UIColor.brandSecondary;
-                    } else {
-                        cell.textLabel.text = BC_STRING_ARCHIVE;
-                        cell.textLabel.textColor = UIColor.error;
-                    }
+                if (isArchived) {
+                    cell.textLabel.text = BC_STRING_UNARCHIVE;
+                    cell.textLabel.textColor = UIColor.brandSecondary;
                 } else {
                     cell.textLabel.text = self.address? BC_STRING_LABEL : BC_STRING_NAME;
                     cell.textLabel.textColor = UIColor.gray5;
@@ -426,7 +422,7 @@ typedef enum {
                         cell.textLabel.textColor = UIColor.brandSecondary;
                         cell.accessoryType = UITableViewCellAccessoryNone;
                     } else {
-                        if ([self isArchived]) {
+                        if (isArchived) {
                             cell.textLabel.text = BC_STRING_UNARCHIVE;
                             cell.textLabel.textColor = UIColor.brandSecondary;
                         } else {
@@ -445,7 +441,7 @@ typedef enum {
         }
     }
     if (indexPath.section == sectionArchived) {
-        if ([self isArchived]) {
+        if (isArchived) {
             cell.textLabel.text = BC_STRING_UNARCHIVE;
             cell.textLabel.textColor = UIColor.brandSecondary;
         } else {

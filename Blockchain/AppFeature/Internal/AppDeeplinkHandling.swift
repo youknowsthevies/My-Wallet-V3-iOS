@@ -208,14 +208,10 @@ final class CoreDeeplinkHandler: URIHandlingAPI {
 
     private let isPinSet: () -> Bool
 
-    // I'm adding these here as I don't want to pollute reducers with these legacy code
-    private let modalPresenter: ModalPresenterAPI
     private let bitpayService: BitpayServiceProtocol
 
-    init(modalPresenter: ModalPresenterAPI = resolve(),
-         bitpayService: BitpayServiceProtocol = BitpayService.shared,
+    init(bitpayService: BitpayServiceProtocol = BitpayService.shared,
          isPinSet: @escaping () -> Bool) {
-        self.modalPresenter = modalPresenter
         self.bitpayService = bitpayService
         self.isPinSet = isPinSet
     }
@@ -233,19 +229,16 @@ final class CoreDeeplinkHandler: URIHandlingAPI {
             return .just(.ignore)
         }
         if scheme == AssetConstants.URLSchemes.blockchain {
-            modalPresenter.closeModal(withTransition: CATransitionType.fade.rawValue)
             return .just(.ignore)
         }
 
         if BitPayLinkRouter.isBitPayURL(url) {
-            modalPresenter.closeModal(withTransition: CATransitionType.fade.rawValue)
             bitpayService.contentRelay.accept(url)
             let content = URIContent(url: url, context: .executeDeeplinkRouting)
             return .just(.handleLink(content))
         }
 
         if BitcoinURLPayload(url: url) != nil {
-            modalPresenter.closeModal(withTransition: CATransitionType.fade.rawValue)
             let content = URIContent(url: url, context: .sendCrypto)
             return .just(.handleLink(content))
         }

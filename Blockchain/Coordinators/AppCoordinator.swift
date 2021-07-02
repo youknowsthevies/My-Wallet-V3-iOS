@@ -18,7 +18,6 @@ import WalletPayloadKit
 /// as late as possible and also would be deallocated when is no longer in use
 /// TICKET: IOS-2619
 @objc class AppCoordinator: NSObject,
-                            Coordinator,
                             MainFlowProviding,
                             BackupFlowStarterAPI,
                             SettingsStarterAPI,
@@ -185,11 +184,6 @@ import WalletPayloadKit
     @objc func reload() {
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
-
-        NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
-
-        // Legacy code for generating new addresses
-        NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
     }
 
     /// Method to "cleanup" state when the app is backgrounded.
@@ -212,10 +206,6 @@ import WalletPayloadKit
         }
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()
-
-        NotificationCenter.default.post(name: Constants.NotificationKeys.reloadToDismissViews, object: nil)
-        NotificationCenter.default.post(name: Constants.NotificationKeys.newAddress, object: nil)
-        NotificationCenter.default.post(name: Constants.NotificationKeys.multiAddressResponseReload, object: nil)
     }
 
     private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
