@@ -67,10 +67,10 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         return eligibilityService.isEligible
             .flatMap { $0 ? custodialAccounts : nonCustodialAccounts }
             .catchError { _ in nonCustodialAccounts }
-            .map { accounts -> [SwapTrendingPairViewModel] in
+            .map { [pax] accounts -> [SwapTrendingPairViewModel] in
                 var pairs: [(CryptoCurrency, CryptoCurrency)] = [
                     (.bitcoin, .ethereum),
-                    (.bitcoin, .erc20(.pax)),
+                    (.bitcoin, pax),
                     (.bitcoin, .stellar)
                 ]
                 switch DevicePresenter.type {
@@ -80,7 +80,7 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
                     pairs.append((.bitcoin, .bitcoinCash))
                 case .max:
                     pairs.append((.bitcoin, .bitcoinCash))
-                    pairs.append((.ethereum, .erc20(.pax)))
+                    pairs.append((.ethereum, pax))
                 }
                 return pairs
                     .compactMap { pair -> SwapTrendingPair? in
@@ -95,18 +95,25 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
             .share(replay: 1, scope: .whileConnected)
     }
 
+    private lazy var pax: CryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies
+        .first(where: { $0.code == LegacyERC20Code.pax.rawValue })!
     private let accountProviding: BlockchainAccountProviding
     private let eligibilityService: EligibilityServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
+    private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
 
     // MARK: - Init
 
-    init(presenter: SwapLandingPresentable,
-         accountProviding: BlockchainAccountProviding = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve()) {
+    init(
+        presenter: SwapLandingPresentable,
+        accountProviding: BlockchainAccountProviding = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+    ) {
         self.accountProviding = accountProviding
         self.eligibilityService = eligibilityService
+        self.enabledCurrenciesService = enabledCurrenciesService
         self.analyticsRecorder = analyticsRecorder
         super.init(presenter: presenter)
         presenter.listener = self

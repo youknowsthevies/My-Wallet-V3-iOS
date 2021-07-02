@@ -17,7 +17,7 @@ extension DependencyContainer {
             Atomic<[String: Bool]>([:])
         }
 
-        factory(tag: ERC20AssetModel.typeTag) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
+        factory(tag: AssetModelType.erc20) { ERC20ExternalAssetAddressFactory() as CryptoReceiveAddressFactory }
 
         factory { ERC20AssetFactory() as ERC20AssetFactoryAPI }
 

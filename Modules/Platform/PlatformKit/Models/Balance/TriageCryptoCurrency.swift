@@ -53,7 +53,7 @@ public enum TriageCryptoCurrency: Equatable {
     public var maxDisplayableDecimalPlaces: Int {
         switch self {
         case .supported(let currency):
-            return currency.maxDecimalPlaces
+            return currency.maxDisplayableDecimalPlaces
         case .blockstack:
             return 7
         }

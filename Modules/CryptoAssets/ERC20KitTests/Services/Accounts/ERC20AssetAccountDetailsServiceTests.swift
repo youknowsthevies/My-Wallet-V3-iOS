@@ -14,7 +14,7 @@ class ERC20AccountDetailsServiceAPITests: XCTestCase {
     var bridge: ERC20EthereumWalletBridgeMock!
     var accountClient: ERC20AccountAPIClientMock!
     var disposeBag: DisposeBag!
-    let pax = CryptoCurrency.erc20(.pax)
+    let pax = CryptoCurrency.mockERC20(name: "111", sortIndex: 0)
 
     override func setUp() {
         super.setUp()

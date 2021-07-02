@@ -179,8 +179,6 @@ final class AnnouncementPresenter {
                 )
             case .newSwap:
                 announcement = newSwap(using: preliminaryData, reappearanceTimeInterval: metadata.interval)
-            case .aaveYfiDot:
-                announcement = aaveYfiDot
             case .sendToDomains:
                 announcement = sendToDomains(hasWalletBalance: preliminaryData.hasAnyWalletBalance)
             }
@@ -334,18 +332,6 @@ extension AnnouncementPresenter {
             },
             action: { [weak exchangeCoordinator] in
                 exchangeCoordinator?.start()
-            }
-        )
-    }
-
-    /// Computes Aave Yfi Dot card announcement
-    private var aaveYfiDot: Announcement {
-        AaveYfiDotAnnouncement(
-            dismiss: { [weak self] in
-                self?.hideAnnouncement()
-            },
-            action: { [weak self] in
-                self?.handleBuyCrypto(currency: .erc20(.aave))
             }
         )
     }

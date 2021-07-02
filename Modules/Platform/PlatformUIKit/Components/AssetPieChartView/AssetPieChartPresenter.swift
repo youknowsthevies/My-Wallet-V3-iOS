@@ -43,4 +43,8 @@ public final class AssetPieChartPresenter {
         self.edge = edge
         self.interactor = interactor
     }
+
+    public func refresh() {
+        interactor.refresh()
+    }
 }

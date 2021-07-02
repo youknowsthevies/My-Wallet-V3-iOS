@@ -26,25 +26,28 @@ extension CryptoCurrency {
             return .polkadot
         case .stellar:
             return .stellar
-        case .erc20(.aave):
-            return .aave
-        case .erc20(.pax):
-            return .usdd
-        case .erc20(.tether):
-            return .tether
-        case .erc20(.wdgld):
-            return .black
-        case .erc20(.yearnFinance):
-            return .yearnFinance
-        case .erc20:
-            return .ethereum
+        case .erc20(let model):
+            switch model.code {
+            case LegacyERC20Code.aave.rawValue:
+                return .aave
+            case LegacyERC20Code.pax.rawValue:
+                return .usdd
+            case LegacyERC20Code.tether.rawValue:
+                return .tether
+            case LegacyERC20Code.wdgld.rawValue:
+                return .black
+            case LegacyERC20Code.yearnFinance.rawValue:
+                return .yearnFinance
+            default:
+                return .ethereum
+            }
         }
     }
 
     /// Defaults to brand color with 15% opacity.
     public var accentColor: UIColor {
         switch self {
-        case .erc20(.wdgld):
+        case .erc20(let model) where model.code == LegacyERC20Code.wdgld.rawValue:
             return UIColor.wdgld.withAlphaComponent(0.15)
         default:
             return brandColor.withAlphaComponent(0.15)
@@ -67,18 +70,22 @@ extension CryptoCurrency {
             return .local(name: "filled_dot_large", bundle: .platformUIKit)
         case .stellar:
             return .local(name: "filled_xlm_large", bundle: .platformUIKit)
-        case .erc20(.aave):
-            return .local(name: "filled_aave_large", bundle: .platformUIKit)
-        case .erc20(.pax):
-            return .local(name: "filled_pax_large", bundle: .platformUIKit)
-        case .erc20(.tether):
-            return .local(name: "filled_usdt_large", bundle: .platformUIKit)
-        case .erc20(.wdgld):
-            return .local(name: "filled_wdgld_large", bundle: .platformUIKit)
-        case .erc20(.yearnFinance):
-            return .local(name: "filled_yfi_large", bundle: .platformUIKit)
-        case .erc20:
-            fatalError("Unsupported, to add remote case.")
+        case .erc20(let model):
+            switch model.code {
+            case LegacyERC20Code.aave.rawValue:
+                return .local(name: "filled_aave_large", bundle: .platformUIKit)
+            case LegacyERC20Code.pax.rawValue:
+                return .local(name: "filled_pax_large", bundle: .platformUIKit)
+            case LegacyERC20Code.tether.rawValue:
+                return .local(name: "filled_usdt_large", bundle: .platformUIKit)
+            case LegacyERC20Code.wdgld.rawValue:
+                return .local(name: "filled_wdgld_large", bundle: .platformUIKit)
+            case LegacyERC20Code.yearnFinance.rawValue:
+                return .local(name: "filled_yfi_large", bundle: .platformUIKit)
+            default:
+                // TODO: These should use `model.logoPngUrl`.
+                return .local(name: "filled_eth_large", bundle: .platformUIKit)
+            }
         }
     }
 }

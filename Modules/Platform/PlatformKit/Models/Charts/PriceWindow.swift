@@ -19,7 +19,7 @@ public enum PriceWindow: Equatable {
 }
 
 public extension PriceWindow {
-    static func ==(lhs: PriceWindow, rhs: PriceWindow) -> Bool {
+    static func == (lhs: PriceWindow, rhs: PriceWindow) -> Bool {
         switch (lhs, rhs) {
         case (.day(let left), .day(let right)):
             return left == right
@@ -95,27 +95,6 @@ public extension PriceWindow.TimelineInterval {
             return 86400
         case .fiveDays:
             return 432000
-        }
-    }
-}
-
-public extension CryptoCurrency {
-    var maxStartDate: TimeInterval {
-        switch self {
-        case .algorand:
-            return 1560211225
-        case .bitcoin:
-            return 1282089600
-        case .bitcoinCash:
-            return 1500854400
-        case .ethereum:
-            return 1438992000
-        case .polkadot:
-            return 1615831200
-        case .stellar:
-            return 1525716000
-        case .erc20(let model):
-            return model.maxStartDate
         }
     }
 }

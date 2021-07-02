@@ -146,20 +146,6 @@ extension LocalizationConstants {
                 comment: "Finish identity verification announcement card CTA button title"
             )
         }
-        public enum AaveYfiDot {
-            public static let title = NSLocalizedString(
-                "Aave, YFI and Polkadot available!",
-                comment: "Aave Yfi Dot announcement card title"
-            )
-            public static let description = NSLocalizedString(
-                "Aave, YFI and Polkadot tokens are now available to Buy, Sell and Swap in your Wallet.",
-                comment: "Aave Yfi Dot announcement card description"
-            )
-            public static let ctaButton = NSLocalizedString(
-                "Buy Now",
-                comment: "Aave Yfi Dot announcement card CTA button title"
-            )
-        }
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",

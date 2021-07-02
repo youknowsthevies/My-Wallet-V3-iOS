@@ -8,15 +8,6 @@ import RxSwift
 import ToolKit
 import TransactionKit
 
-extension ERC20AssetModel {
-    var contractAddress: EthereumAddress {
-        guard case let .erc20(contract, _) = kind else {
-            preconditionFailure()
-        }
-        return EthereumAddress(address: contract)!
-    }
-}
-
 final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
 
     typealias AskForRefreshConfirmations = (Bool) -> Completable

@@ -300,6 +300,7 @@ final class DashboardScreenPresenter {
         announcementPresenter.refresh()
         noticePresenter.refresh()
         fiatBalancePresenter.refresh()
+        totalBalancePresenter.refresh()
     }
 
     /// Given the cell index, returns the historical balance presenter

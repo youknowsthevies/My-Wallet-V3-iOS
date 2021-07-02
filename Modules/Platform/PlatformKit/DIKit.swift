@@ -149,6 +149,12 @@ extension DependencyContainer {
             )
         }
 
+        factory { SupportedAssetsLocalFilePathProvider() as SupportedAssetsLocalFilePathProviderAPI }
+
+        factory { SupportedAssetsLocalService() as SupportedAssetsLocalServiceAPI }
+
+        single { SupportedAssetsRepository() as SupportedAssetsRepositoryAPI }
+
         single { FiatPriceService() as FiatPriceServiceAPI }
 
         single { ReactiveWallet() as ReactiveWalletAPI }

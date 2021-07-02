@@ -1,9 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import BigInt
-import XCTest
+// swiftlint:disable all
 
+import BigInt
 @testable import PlatformKit
+import XCTest
 
 class CryptoValueTests: XCTestCase {
 
@@ -119,79 +120,79 @@ class CryptoValueTests: XCTestCase {
         let decimalPlaces = CryptoCurrency.ethereum.maxDecimalPlaces
         XCTAssertEqual(
             BigInt(1) * BigInt(10).power(decimalPlaces),
-            CryptoValue.create(major: "1", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12) * BigInt(10).power(decimalPlaces-1),
-            CryptoValue.create(major: "1.2", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123) * BigInt(10).power(decimalPlaces-2),
-            CryptoValue.create(major: "1.23", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234) * BigInt(10).power(decimalPlaces-3),
-            CryptoValue.create(major: "1.234", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12345) * BigInt(10).power(decimalPlaces-4),
-            CryptoValue.create(major: "1.2345", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2345", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123456) * BigInt(10).power(decimalPlaces-5),
-            CryptoValue.create(major: "1.23456", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23456", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234567) * BigInt(10).power(decimalPlaces-6),
-            CryptoValue.create(major: "1.234567", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234567", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12345678) * BigInt(10).power(decimalPlaces-7),
-            CryptoValue.create(major: "1.2345678", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2345678", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123456789) * BigInt(10).power(decimalPlaces-8),
-            CryptoValue.create(major: "1.23456789", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23456789", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234567890) * BigInt(10).power(decimalPlaces-9),
-            CryptoValue.create(major: "1.234567890", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234567890", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12345678901) * BigInt(10).power(decimalPlaces-10),
-            CryptoValue.create(major: "1.2345678901", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2345678901", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123456789012) * BigInt(10).power(decimalPlaces-11),
-            CryptoValue.create(major: "1.23456789012", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23456789012", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234567890123) * BigInt(10).power(decimalPlaces-12),
-            CryptoValue.create(major: "1.234567890123", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234567890123", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12345678901234) * BigInt(10).power(decimalPlaces-13),
-            CryptoValue.create(major: "1.2345678901234", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2345678901234", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123456789012345) * BigInt(10).power(decimalPlaces-14),
-            CryptoValue.create(major: "1.23456789012345", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23456789012345", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234567890123456) * BigInt(10).power(decimalPlaces-15),
-            CryptoValue.create(major: "1.234567890123456", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234567890123456", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(12345678901234567) * BigInt(10).power(decimalPlaces-16),
-            CryptoValue.create(major: "1.2345678901234567", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.2345678901234567", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(123456789012345678) * BigInt(10).power(decimalPlaces-17),
-            CryptoValue.create(major: "1.23456789012345678", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.23456789012345678", currency: .ethereum)!.amount
         )
         XCTAssertEqual(
             BigInt(1234567890123456789),
-            CryptoValue.create(major: "1.234567890123456789", currency: .erc20(.pax))!.amount
+            CryptoValue.create(major: "1.234567890123456789", currency: .ethereum)!.amount
         )
     }
 

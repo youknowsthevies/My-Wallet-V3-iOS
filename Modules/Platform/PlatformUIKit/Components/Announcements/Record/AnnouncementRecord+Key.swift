@@ -24,7 +24,6 @@ extension AnnouncementRecord {
         // MARK: - One Time
 
         case sendToDomains = "announcement-cache-send-to-domains"
-        case aaveYfiDot = "announcement-cache-aave-yfi-dot-received"
         case blockstackAirdropReceived = "announcement-cache-kyc-stx-airdrop-received"
         case identityVerification = "announcement-cache-identity-verification"
         case exchange = "announcement-cache-pit"

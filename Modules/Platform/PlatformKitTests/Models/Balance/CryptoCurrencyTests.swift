@@ -13,28 +13,18 @@ class CryptoCurrencyTests: XCTestCase {
             .stellar,
             .algorand,
             .polkadot,
-            .erc20(.aave),
-            .erc20(.yearnFinance),
-            .erc20(.wdgld),
-            .erc20(.pax),
-            .erc20(.tether)
+            CryptoCurrency.mockERC20(name: "111", sortIndex: 0),
+            CryptoCurrency.mockERC20(name: "222", sortIndex: 1),
+            CryptoCurrency.mockERC20(name: "333", sortIndex: 2),
+            CryptoCurrency.mockERC20(name: "444", sortIndex: 3),
+            CryptoCurrency.mockERC20(name: "555", sortIndex: 4)
         ]
     }
 
-    // TODO: decide on how to order enum cases
-    /// Test that CryptoCurrency.allCases is in the correct expected order.
-    ///
-    /// The synthesised allCases collection provides the cases in order of their declaration, this test assures
-    /// us that the declaration order follows the expected order. Read about it on
-    /// [CaseIterable Doc](https:developer.apple.com/documentation/swift/caseiterable)
-    func testAllCasesIsInCorrectOrder() {
-//        XCTAssertTrue(CryptoCurrency.allCases == cryptoCurrencyDesiredOrder,
-//                      "CryptoCurrency.allCases is not as expected.")
-    }
-
     func testSortedCryptoCurrencyArrayIsInCorrectOrder() {
-        let sut =    EnabledCurrenciesService.init(featureFlagService: InternalFeatureFlagServiceMock())
-        XCTAssertTrue(sut.allEnabledCryptoCurrencies.sorted() == cryptoCurrencyDesiredOrder,
-                      "sut.allEnabledCryptoCurrencies.sorted() is not as expected.")
+        XCTAssertTrue(
+            cryptoCurrencyDesiredOrder.shuffled().sorted() == cryptoCurrencyDesiredOrder,
+            "sut.allEnabledCryptoCurrencies.sorted() is not as expected."
+        )
     }
 }

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import BigInt
+import DIKit
 import EthereumKit
 import PlatformKit
 
@@ -34,7 +35,16 @@ public struct ERC20ContractGasActivityModel {
     }
 
     private static func token(address: EthereumAddress) -> CryptoCurrency? {
-        let knownERC20: [ERC20AssetModel] = [.aave, .pax, .tether, .wdgld, .yearnFinance]
+        let service: EnabledCurrenciesServiceAPI = resolve()
+        let knownERC20: [ERC20AssetModel] = service.allEnabledCryptoCurrencies
+            .compactMap { currency in
+                switch currency {
+                case .erc20(let model):
+                    return model
+                default:
+                    return nil
+                }
+            }
         let publicKey = address.publicKey.lowercased()
         for token in knownERC20 {
             if publicKey.compare(token.contractAddress.publicKey, options: .caseInsensitive) == .orderedSame {

@@ -16,7 +16,12 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
-        fiatCurrencyService.fiatCurrencyObservable
+        Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                refreshRelay.asObservable()
+            )
+            .map { $0.0 }
             .flatMapLatest { [coincore] fiatCurrency -> Observable<AssetPieChart.State.Interaction> in
                 let cryptoStreams: [Observable<MoneyValuePair>] = coincore.cryptoAssets.map { asset in
                     asset.accountGroup(filter: .all)
@@ -59,6 +64,7 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     private let disposeBag = DisposeBag()
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let stateRelay = BehaviorRelay<AssetPieChart.State.Interaction>(value: .loading)
+    private let refreshRelay = BehaviorRelay<Void>(value: ())
 
     // MARK: - Setup
 
@@ -68,5 +74,9 @@ public final class AssetPieChartInteractor: AssetPieChartInteracting {
     ) {
         self.coincore = coincore
         self.fiatCurrencyService = fiatCurrencyService
+    }
+
+    public func refresh() {
+        refreshRelay.accept(())
     }
 }

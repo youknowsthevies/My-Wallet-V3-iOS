@@ -31,13 +31,13 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     // TODO: Use ERC20AssetModel.products field to dictate if swap is enabled for this currency.
-    private let legacySwapEnabledCurrencies: [ERC20AssetModel] = [.aave, .pax, .tether, .wdgld, .yearnFinance]
+    private let legacySwapEnabledCurrencies: [String] = LegacyERC20Code.allCases.map(\.rawValue)
 
     var actions: Single<AvailableActions> {
         isFunded
             .map { [erc20Token, legacySwapEnabledCurrencies] isFunded -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
-                if legacySwapEnabledCurrencies.contains(erc20Token), isFunded {
+                if legacySwapEnabledCurrencies.contains(erc20Token.code), isFunded {
                     base.insert(.swap)
                 }
                 return base
@@ -83,7 +83,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
              .withdraw:
             return .just(false)
         case .swap:
-            guard legacySwapEnabledCurrencies.contains(erc20Token) else {
+            guard legacySwapEnabledCurrencies.contains(erc20Token.code) else {
                 return .just(false)
             }
             return isFunded

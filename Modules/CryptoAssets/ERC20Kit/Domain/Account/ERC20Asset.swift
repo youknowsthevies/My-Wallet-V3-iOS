@@ -87,19 +87,33 @@ final class ERC20Asset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-        .just(
+        guard isCustodialSupported else {
+            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        }
+        return .just(
             CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)])
         )
     }
 
     private var interestGroup: Single<AccountGroup> {
-        .just(
+        guard isCustodialSupported else {
+            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        }
+        return .just(
             CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoInterestAccount(asset: asset)])
         )
     }
 
+    /// Helper to decided if we should support custodial Accounts.
+    /// In the future this should use the `AssetModel.products` field to make this decision.
+    private lazy var isCustodialSupported: Bool = {
+        LegacyERC20Code.allCases.map(\.rawValue).contains(asset.code)
+    }()
+
     private var exchangeGroup: Single<AccountGroup> {
-        let asset = self.asset
+        guard isCustodialSupported else {
+            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+        }
         return exchangeAccountProvider
             .account(for: asset)
             .optional()
@@ -119,7 +133,7 @@ final class ERC20Asset: CryptoAsset {
                     return Single.just(nil)
                 }
             }
-            .map { account in
+            .map { [asset] account in
                 guard let account = account else {
                     return CryptoAccountCustodialGroup(asset: asset, accounts: [])
                 }

@@ -4,12 +4,11 @@ import PlatformKit
 
 extension CryptoCurrency {
     var contractAddress: String? {
-        guard case .erc20(let model) = self else {
+        switch self {
+        case .erc20(let model):
+            return model.erc20Address
+        default:
             return nil
         }
-        guard case .erc20(let contractAddress, _) = model.kind else {
-            return nil
-        }
-        return contractAddress
     }
 }
