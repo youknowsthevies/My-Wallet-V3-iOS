@@ -38,7 +38,7 @@ struct MockEthereumWalletTestData {
 extension EthereumTransactionCandidate {
     static var defaultMock: EthereumTransactionCandidate {
         EthereumTransactionCandidate(
-            to: EthereumAddress(stringLiteral: MockEthereumWalletTestData.Transaction.to),
+            to: EthereumAddress(address: MockEthereumWalletTestData.Transaction.to)!,
             gasPrice: MockEthereumWalletTestData.Transaction.gasPrice,
             gasLimit: MockEthereumWalletTestData.Transaction.gasLimit,
             value: MockEthereumWalletTestData.Transaction.value,

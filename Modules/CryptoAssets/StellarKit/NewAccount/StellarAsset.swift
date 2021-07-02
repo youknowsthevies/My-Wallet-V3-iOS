@@ -65,6 +65,7 @@ final class StellarAsset: CryptoAsset {
                 label: address,
                 onTxCompleted: { _ in Completable.empty() }
             )
+            .get()
         return .just(result)
     }
 

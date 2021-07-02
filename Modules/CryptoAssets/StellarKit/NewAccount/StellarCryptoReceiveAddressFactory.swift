@@ -12,17 +12,17 @@ final class StellarCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress {
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         guard !address.isEmpty else {
-            throw TransactionValidationFailure(state: .invalidAddress)
+            return .failure(.invalidAddress)
         }
         if let fromSimpleAddress = parseFromSimpleAddress(address: address, label: label, onTxCompleted: onTxCompleted) {
-            return fromSimpleAddress
+            return .success(fromSimpleAddress)
         }
         if let fromStellarURL = parseFromStellarURL(address: address, label: label, onTxCompleted: onTxCompleted) {
-            return fromStellarURL
+            return .success(fromStellarURL)
         }
-        throw TransactionValidationFailure(state: .invalidAddress)
+        return .failure(.invalidAddress)
     }
 
     /// Try parsing address in format 'web+stellar:pay?destination=<address>&memo=<memo>'

@@ -10,7 +10,7 @@ final class AlgorandCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress {
-        AlgorandReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        .success(AlgorandReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted))
     }
 }

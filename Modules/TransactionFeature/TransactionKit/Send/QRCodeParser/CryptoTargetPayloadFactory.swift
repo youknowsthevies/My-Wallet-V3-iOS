@@ -14,18 +14,20 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
 
     // MARK: - Private Properties
 
-    private let assetPayloadFactory: AssetURLPayloadFactoryAPI
+    private let receiveAddressService: CryptoReceiveAddressFactoryService
 
     // MARK: - Init
 
-    init(assetPayloadFactory: AssetURLPayloadFactoryAPI = resolve()) {
-        self.assetPayloadFactory = assetPayloadFactory
+    init(receiveAddressService: CryptoReceiveAddressFactoryService = resolve()) {
+        self.receiveAddressService = receiveAddressService
     }
 
     // MARK: - CryptoTargetPayloadFactoryAPI
 
     func create(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
-        guard let data = string else { return .error(CryptoTargetPayloadError.invalidStringData) }
+        guard let data = string else {
+            return .error(CryptoTargetPayloadError.invalidStringData)
+        }
         let metadata = makeCryptoQRMetaData(fromString: data, asset: asset)
         return BitPayInvoiceTarget
             /// Check if the data is a BitPay payload.
@@ -57,14 +59,16 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
 
     // MARK: - Private Functions
 
-    private func makeCryptoQRMetaData(fromString string: String?, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
-        Single.create(weak: self) { (self, observer) -> Disposable in
-            guard let metadata = self.assetPayloadFactory.create(fromString: string, asset: asset) else {
-                observer(.error(CryptoTargetPayloadError.invalidStringData))
-                return Disposables.create()
-            }
-            observer(.success(.metadata(metadata)))
-            return Disposables.create()
-        }
+    private func makeCryptoQRMetaData(fromString string: String, asset: CryptoCurrency) -> Single<CryptoTargetQRCodeParser.Target> {
+        receiveAddressService
+            .makeExternalAssetAddress(
+                asset: asset,
+                address: string,
+                label: string,
+                onTxCompleted: { _ in .empty() }
+            )
+            .map(CryptoTargetQRCodeParser.Target.address)
+            .replaceError(with: CryptoTargetPayloadError.invalidStringData)
+            .single
     }
 }

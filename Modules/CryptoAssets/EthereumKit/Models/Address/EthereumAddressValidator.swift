@@ -46,4 +46,8 @@ struct EthereumAddressValidator {
             throw AddressValidationError.invalidLength
         }
     }
+
+    static func isValid(address: String) -> Bool {
+        isAlphanumericOnly(address) && hasCorrectLength(address)
+    }
 }

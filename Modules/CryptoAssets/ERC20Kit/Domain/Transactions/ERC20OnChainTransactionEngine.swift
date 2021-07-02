@@ -9,11 +9,11 @@ import ToolKit
 import TransactionKit
 
 extension ERC20AssetModel {
-    var contractAddress: EthereumContractAddress {
+    var contractAddress: EthereumAddress {
         guard case let .erc20(contract, _) = kind else {
             preconditionFailure()
         }
-        return EthereumContractAddress(stringLiteral: contract)
+        return EthereumAddress(address: contract)!
     }
 }
 
@@ -224,10 +224,10 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 let (fee, address) = values
                 return self.transactionBuildingService.buildTransaction(
                     amount: pendingTransaction.amount,
-                    to: EthereumAddress(stringLiteral: address),
+                    to: EthereumAddress(address: address)!,
                     feeLevel: pendingTransaction.feeLevel,
                     fee: fee,
-                    contractAddress: self.erc20Token.contractAddress.ethereumAddress
+                    contractAddress: self.erc20Token.contractAddress
                 )
             }
             .flatMap(weak: self) { (self, candidate) -> Single<EthereumTransactionPublished> in

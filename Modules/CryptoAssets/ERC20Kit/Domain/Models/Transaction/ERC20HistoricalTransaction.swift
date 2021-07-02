@@ -61,10 +61,10 @@ public struct ERC20HistoricalTransaction: HistoricalTransaction, Tokenized, Hash
         } else {
             createdAt = Date()
         }
-        let fromAddress = EthereumAddress(stringLiteral: response.from)
+        let fromAddress = EthereumAddress(address: response.from)!
         self.init(
             fromAddress: fromAddress,
-            toAddress: EthereumAddress(stringLiteral: response.to),
+            toAddress: EthereumAddress(address: response.to)!,
             direction: fromAddress == source ? .credit : .debit,
             amount: CryptoValue.create(minor: response.value, currency: cryptoCurrency) ?? .zero(currency: cryptoCurrency),
             transactionHash: response.transactionHash,

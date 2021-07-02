@@ -2,22 +2,33 @@
 
 import PlatformKit
 import RxSwift
+import ToolKit
 import TransactionKit
+import WalletCore
 
-final class BitcoinChainExternalAssetAddressFactory<Token: BitcoinChainToken>: CryptoReceiveAddressFactory {
+final class BitcoinChainExternalAssetAddressFactory: CryptoReceiveAddressFactory {
 
     func makeExternalAssetAddress(
         asset: CryptoCurrency,
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress {
-        switch Token.coin {
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        switch asset {
         case .bitcoin:
-            return BitcoinChainReceiveAddress<BitcoinToken>(address: address, label: label, onTxCompleted: onTxCompleted)
+            let address = address.removing(prefix: "\(AssetConstants.URLSchemes.bitcoin):")
+            guard WalletCore.CoinType.bitcoin.validate(address: address) else {
+                return .failure(.invalidAddress)
+            }
+            return .success(BitcoinChainReceiveAddress<BitcoinToken>(address: address, label: label, onTxCompleted: onTxCompleted))
         case .bitcoinCash:
             let address = address.removing(prefix: "\(AssetConstants.URLSchemes.bitcoinCash):")
-            return BitcoinChainReceiveAddress<BitcoinCashToken>(address: address, label: label, onTxCompleted: onTxCompleted)
+            guard WalletCore.CoinType.bitcoinCash.validate(address: address) else {
+                return .failure(.invalidAddress)
+            }
+            return .success(BitcoinChainReceiveAddress<BitcoinCashToken>(address: address, label: label, onTxCompleted: onTxCompleted))
+        default:
+            impossible()
         }
     }
 }

@@ -25,6 +25,7 @@ final class ERC20Asset: CryptoAsset {
     }
 
     let kycTiersService: KYCTiersServiceAPI
+    private let addressFactory: ERC20ExternalAssetAddressFactory
     private let erc20Token: ERC20AssetModel
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let walletAccountBridge: EthereumWalletAccountBridgeAPI
@@ -35,9 +36,11 @@ final class ERC20Asset: CryptoAsset {
         walletAccountBridge: EthereumWalletAccountBridgeAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        addressFactory: ERC20ExternalAssetAddressFactory = .init()
     ) {
         self.asset = erc20Token.cryptoCurrency
+        self.addressFactory = addressFactory
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge
         self.errorRecorder = errorRecorder
@@ -59,21 +62,15 @@ final class ERC20Asset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        guard !address.isEmpty else {
-            return .just(nil)
-        }
-        let validated = EthereumAddress(stringLiteral: address)
-        guard validated.isValid else {
-            return .just(nil)
-        }
-        return .just(
-            ERC20ReceiveAddress(
+        let receiveAddress = try? addressFactory
+            .makeExternalAssetAddress(
                 asset: asset,
                 address: address,
                 label: address,
-                onTxCompleted: { _ in Completable.empty() }
+                onTxCompleted: { _ in .empty() }
             )
-        )
+            .get()
+        return .just(receiveAddress)
     }
 
     // MARK: - Helpers

@@ -21,5 +21,4 @@ class EthereumAddressValidatorTests: XCTestCase {
             XCTAssertEqual(EthereumAddressValidator.toChecksumAddress(pair.testcase), pair.result)
         }
     }
-
 }

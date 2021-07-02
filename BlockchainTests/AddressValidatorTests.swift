@@ -43,6 +43,13 @@ class AddressValidatorTests: XCTestCase {
         XCTAssertTrue(addressValidator!.validate(bitcoinAddress: "bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"), "Expected address to be valid.")
     }
 
+    func testAddressValidatorWithValidBech32SegWitAddressPrefixed() {
+        XCTAssertFalse(
+            addressValidator!.validate(bitcoinAddress: "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"),
+            "Expected address to be invalid."
+        )
+    }
+
     // MARK: - Bitcoin Address Validation
 
     func testAddressValidatorWithShortBitcoinAddress() {

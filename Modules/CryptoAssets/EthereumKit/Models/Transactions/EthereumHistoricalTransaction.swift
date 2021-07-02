@@ -60,8 +60,8 @@ public struct EthereumHistoricalTransaction: HistoricalTransaction {
                 accountAddress: String,
                 latestBlock: Int) {
         self.identifier = response.hash
-        self.fromAddress = EthereumAddress(stringLiteral: response.from)
-        self.toAddress = EthereumAddress(stringLiteral: response.to)
+        self.fromAddress = EthereumAddress(address: response.from)!
+        self.toAddress = EthereumAddress(address: response.to)!
         self.direction = EthereumHistoricalTransaction.direction(
             to: response.to,
             from: response.from,

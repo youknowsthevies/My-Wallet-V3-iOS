@@ -32,10 +32,6 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
         .empty()
     }
 
-    func validateBitcoin(address: String) -> Bool {
-        true
-    }
-
     var defaultWalletValue: Single<BitcoinWalletAccount> = Single.error(MockError.error)
     var defaultWallet: Single<BitcoinWalletAccount> {
         defaultWalletValue

@@ -3,15 +3,15 @@
 @testable import EthereumKit
 import XCTest
 
-class EthereumAccountAddressTests: XCTestCase {
+class EthereumAddressTests: XCTestCase {
 
     func test_address_validation_fails_for_truncated_address() {
         var address = MockEthereumWalletTestData.account
         address.removeLast()
 
-        XCTAssertNil(EthereumAccountAddress(rawValue: address))
+        XCTAssertNil(EthereumAddress(address: address))
 
-        XCTAssertThrowsError(try EthereumAccountAddress(string: address)) { (error) in
+        XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
             XCTAssertEqual(error as? AddressValidationError, .invalidLength)
         }
     }
@@ -24,8 +24,8 @@ class EthereumAccountAddressTests: XCTestCase {
         }
 
         for address in invalidAddresses {
-            XCTAssertNil(EthereumAccountAddress(rawValue: address))
-            XCTAssertThrowsError(try EthereumAccountAddress(string: address)) { (error) in
+            XCTAssertNil(EthereumAddress(address: address))
+            XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
                 XCTAssertEqual(error as? AddressValidationError, .containsInvalidCharacters)
             }
         }
@@ -39,8 +39,8 @@ class EthereumAccountAddressTests: XCTestCase {
         }
 
         for address in invalidAddresses {
-            XCTAssertNil(EthereumAccountAddress(rawValue: address))
-            XCTAssertThrowsError(try EthereumAccountAddress(string: address)) { (error) in
+            XCTAssertNil(EthereumAddress(address: address))
+            XCTAssertThrowsError(try EthereumAddress(string: address)) { (error) in
                 XCTAssertEqual(error as? AddressValidationError, .invalidLength)
             }
         }

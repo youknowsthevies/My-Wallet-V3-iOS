@@ -82,8 +82,6 @@ extension DependencyContainer {
             return BackgroundAppHandler(backgroundTaskTimer: timer)
         }
 
-        factory { AssetURLPayloadFactory() as AssetURLPayloadFactoryAPI }
-
         factory { AirdropRouter() as AirdropRouterAPI }
 
         factory { AirdropCenterClient() as AirdropCenterClientAPI }
@@ -473,14 +471,6 @@ extension DependencyContainer {
         // MARK: - Stellar Wallet
 
         factory { StellarWallet() as StellarWalletBridgeAPI }
-
-        // MARK: - BitcoinCash Wallet
-
-        factory { BitcoinCashAddressValidator() as BitcoinCashAddressValidatorAPI }
-
-        // MARK: - Bitcoin Wallet
-
-        factory { BitcoinAddressValidator() as BitcoinAddressValidatorAPI }
 
         factory { () -> BitcoinWalletBridgeAPI in
             let walletManager: WalletManager = DIKit.resolve()

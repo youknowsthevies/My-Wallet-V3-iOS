@@ -212,8 +212,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
         let address = receiveAddress
             .map(\.address)
-            .map { try EthereumAccountAddress(string: $0) }
-            .map { $0.ethereumAddress }
+            .map { try EthereumAddress(string: $0) }
         return Single.zip(feeCache.valueSingle, address)
             .flatMap(weak: self) { (self, values) -> Single<EthereumTransactionCandidate> in
                 let (fee, address) = values

@@ -4,7 +4,6 @@
 #import "AccountsAndAddressesDetailViewController.h"
 #import "BCEditAccountView.h"
 #import "BCEditAddressView.h"
-#import "BCQRCodeView.h"
 #import "UIViewController+AutoDismiss.h"
 #import "Blockchain-Swift.h"
 
@@ -203,26 +202,20 @@ typedef enum {
         [editAccountView.labelTextField becomeFirstResponder];
         [segue.destinationViewController.navigationItem setTitle:BC_STRING_NAME];
     } else if (detailType == DetailTypeShowExtendedPublicKey) {
-
-        BCQRCodeView *qrCodeView = [[BCQRCodeView alloc] initWithFrame:self.view.frame qrHeaderText:BC_STRING_EXTENDED_PUBLIC_KEY_DETAIL_HEADER_TITLE addAddressPrefix:YES assetType:self.assetType];
-        qrCodeView.address = [WalletManager.sharedInstance.wallet getXpubForAccount:self.account assetType:self.assetType];
-        qrCodeView.doneButton.hidden = YES;
-
-        [self setupModalView:qrCodeView inViewController:segue.destinationViewController];
-
-        qrCodeView.qrCodeFooterLabel.text = BC_STRING_COPY_XPUB;
+        AddressesQRCodeView *view = [[AddressesQRCodeView alloc] initWithFrame:self.view.frame];
+        NSString *address = [WalletManager.sharedInstance.wallet getXpubForAccount:self.account assetType:self.assetType];
+        NSString *header = BC_STRING_EXTENDED_PUBLIC_KEY_DETAIL_HEADER_TITLE;
+        NSString *copyButton = BC_STRING_COPY_XPUB;
+        [view configureWithAddress:address header:header copyButton:copyButton];
+        [self setupModalView:view inViewController:segue.destinationViewController];
         [segue.destinationViewController.navigationItem setTitle:BC_STRING_EXTENDED_PUBLIC_KEY];
-
     } else if (detailType == DetailTypeShowAddress) {
-
-        BCQRCodeView *qrCodeView = [[BCQRCodeView alloc] initWithFrame:self.view.frame];
-        qrCodeView.address = self.address;
-        qrCodeView.doneButton.hidden = YES;
-        qrCodeView.assetType = self.assetType;
-
-        [self setupModalView:qrCodeView inViewController:segue.destinationViewController];
-
-        qrCodeView.qrCodeFooterLabel.text = BC_STRING_COPY_ADDRESS;
+        AddressesQRCodeView *view = [[AddressesQRCodeView alloc] initWithFrame:self.view.frame];
+        NSString *address = self.address;
+        NSString *header = @"";
+        NSString *copyButton = BC_STRING_COPY_ADDRESS;
+        [view configureWithAddress:address header:header copyButton:copyButton];
+        [self setupModalView:view inViewController:segue.destinationViewController];
         [segue.destinationViewController.navigationItem setTitle:BC_STRING_ADDRESS];
     }
 }

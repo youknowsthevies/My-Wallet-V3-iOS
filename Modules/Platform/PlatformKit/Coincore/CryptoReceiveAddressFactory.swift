@@ -3,6 +3,10 @@
 import DIKit
 import RxSwift
 
+public enum CryptoReceiveAddressFactoryError: Error {
+    case invalidAddress
+}
+
 /// Resolve this protocol with a `CryptoCurrency.typeTag` to receive a factory that builds `CryptoReceiveAddress`.
 public protocol CryptoReceiveAddressFactory {
 
@@ -13,7 +17,7 @@ public protocol CryptoReceiveAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError>
 }
 
 public final class CryptoReceiveAddressFactoryService {
@@ -23,18 +27,13 @@ public final class CryptoReceiveAddressFactoryService {
         address: String,
         label: String,
         onTxCompleted: @escaping (TransactionResult) -> Completable
-    ) -> Result<CryptoReceiveAddress, Error> {
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         let factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset.typeTag) }()
-        do {
-            let address = try factory.makeExternalAssetAddress(
-                asset: asset,
-                address: address,
-                label: label,
-                onTxCompleted: onTxCompleted
-            )
-            return .success(address)
-        } catch {
-            return .failure(error)
-        }
+        return factory.makeExternalAssetAddress(
+            asset: asset,
+            address: address,
+            label: label,
+            onTxCompleted: onTxCompleted
+        )
     }
 }

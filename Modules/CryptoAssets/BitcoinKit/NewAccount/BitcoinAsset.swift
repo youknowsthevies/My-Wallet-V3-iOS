@@ -21,22 +21,24 @@ final class BitcoinAsset: CryptoAsset {
     }
 
     let kycTiersService: KYCTiersServiceAPI
+    private let addressFactory: CryptoReceiveAddressFactory
+    private let errorRecorder: ErrorRecording
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: BitcoinWalletAccountRepository
-    private let errorRecorder: ErrorRecording
-    private let addressValidator: BitcoinAddressValidatorAPI
 
-    init(repository: BitcoinWalletAccountRepository = resolve(),
-         errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         addressValidator: BitcoinAddressValidatorAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
-        self.exchangeAccountProvider = exchangeAccountProvider
-        self.repository = repository
+    init(
+        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CryptoCurrency.bitcoin),
+        errorRecorder: ErrorRecording = resolve(),
+        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        repository: BitcoinWalletAccountRepository = resolve()
+    ) {
+        self.addressFactory = addressFactory
         self.errorRecorder = errorRecorder
-        self.addressValidator = addressValidator
+        self.exchangeAccountProvider = exchangeAccountProvider
         self.kycTiersService = kycTiersService
-   }
+        self.repository = repository
+    }
 
     func initialize() -> Completable {
         // Run wallet renaming procedure on initialization.
@@ -61,17 +63,15 @@ final class BitcoinAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        addressValidator.validate(address: address)
-            .andThen(
-                .just(
-                    BitcoinChainReceiveAddress<BitcoinToken>(
-                        address: address,
-                        label: address,
-                        onTxCompleted: { _ in Completable.empty() }
-                    )
-                )
+        let externalAddress = try? addressFactory
+            .makeExternalAssetAddress(
+                asset: asset,
+                address: address,
+                label: address,
+                onTxCompleted: { _ in Completable.empty() }
             )
-            .catchErrorJustReturn(nil)
+            .get()
+        return .just(externalAddress)
     }
 
     // MARK: - Helpers

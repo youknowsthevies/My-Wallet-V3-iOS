@@ -2,21 +2,20 @@
 
 import PlatformKit
 
-public struct EthereumAddress: EthereumAddressProtocols, AssetAddress {
+public struct EthereumAddress: AssetAddress, Hashable {
 
     public let publicKey: String
     public let cryptoCurrency: CryptoCurrency = .ethereum
 
-    public init(stringLiteral value: String) {
-        publicKey = EthereumAddressValidator.toChecksumAddress(value)!
+    public init(string address: String) throws {
+        try EthereumAddressValidator.validate(address: address)
+        guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
+            throw AddressValidationError.eip55ChecksumFailed
+        }
+        self.publicKey = eip55Address
     }
 
-    public var isValid: Bool {
-        do {
-            try EthereumAddressValidator.validate(address: publicKey)
-            return true
-        } catch {
-            return false
-        }
+    public init?(address: String) {
+        try? self.init(string: address)
     }
 }

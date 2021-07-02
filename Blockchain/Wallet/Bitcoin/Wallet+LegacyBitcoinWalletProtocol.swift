@@ -17,8 +17,6 @@ protocol LegacyBitcoinWalletProtocol: AnyObject {
 
     func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError>
 
-    func validateBitcoin(address: String) -> Bool
-
     func getSignedBitcoinPayment(with secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void)
 }
 
@@ -58,12 +56,6 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             script = "\(function)()"
         }
         context.evaluateScriptCheckIsOnMainQueue(script)
-    }
-
-    func validateBitcoin(address: String) -> Bool {
-        let escapedString = address.escapedForJS()
-        guard let result = context.evaluateScriptCheckIsOnMainQueue("Helpers.isBitcoinAddress(\"\(escapedString)\");") else { return false }
-        return result.toBool()
     }
 
     func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError> {

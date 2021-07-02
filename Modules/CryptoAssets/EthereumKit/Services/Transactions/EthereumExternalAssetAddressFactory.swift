@@ -11,7 +11,10 @@ final class EthereumExternalAssetAddressFactory: CryptoReceiveAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress {
-        EthereumReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        guard EthereumAddress(address: address) != nil else {
+             return .failure(.invalidAddress)
+         }
+        return .success(EthereumReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted))
     }
 }

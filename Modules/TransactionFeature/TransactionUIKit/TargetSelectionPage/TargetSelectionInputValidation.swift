@@ -57,9 +57,8 @@ enum TargetSelectionInputValidation: Equatable {
 
     var requiresValidation: Bool {
         switch self {
-        case .QR:
-            return true
-        case .account,
+        case .QR,
+             .account,
              .empty,
              .text:
             return false
@@ -111,16 +110,15 @@ enum TargetSelectionInputValidation: Equatable {
     enum QRInput: Equatable {
         /// The user has not scanned anything
         case empty
-        /// TODO: Accomodate an amount, memo,
-        /// and the address
-        case valid(String)
+        /// TODO: Accommodate an amount, memo, and the address
+        case valid(CryptoReceiveAddress)
 
         var text: String {
             switch self {
             case .empty:
                 return ""
             case .valid(let value):
-                return value
+                return value.address
             }
         }
 
@@ -136,7 +134,7 @@ enum TargetSelectionInputValidation: Equatable {
 }
 
 extension TargetSelectionInputValidation.TextInput {
-    static func ==(lhs: TargetSelectionInputValidation.TextInput, rhs: TargetSelectionInputValidation.TextInput) -> Bool {
+    static func == (lhs: TargetSelectionInputValidation.TextInput, rhs: TargetSelectionInputValidation.TextInput) -> Bool {
         switch (lhs, rhs) {
         case (.valid(let leftAddress), .valid(let rightAddress)):
             return leftAddress.address == rightAddress.address
@@ -150,10 +148,11 @@ extension TargetSelectionInputValidation.TextInput {
 }
 
 extension TargetSelectionInputValidation.QRInput {
-    static func ==(lhs: TargetSelectionInputValidation.QRInput, rhs: TargetSelectionInputValidation.QRInput) -> Bool {
+    static func == (lhs: TargetSelectionInputValidation.QRInput, rhs: TargetSelectionInputValidation.QRInput) -> Bool {
         switch (lhs, rhs) {
         case (.valid(let leftAddress), .valid(let rightAddress)):
-            return leftAddress == rightAddress
+            return leftAddress.address == rightAddress.address
+            && leftAddress.memo == rightAddress.memo
         case (.empty, .empty):
             return true
         default:
@@ -163,7 +162,7 @@ extension TargetSelectionInputValidation.QRInput {
 }
 
 extension TargetSelectionInputValidation.Account {
-    static func ==(lhs: TargetSelectionInputValidation.Account, rhs: TargetSelectionInputValidation.Account) -> Bool {
+    static func == (lhs: TargetSelectionInputValidation.Account, rhs: TargetSelectionInputValidation.Account) -> Bool {
         switch (lhs, rhs) {
         case (.account(let left), .account(let right)):
             return left.label == right.label

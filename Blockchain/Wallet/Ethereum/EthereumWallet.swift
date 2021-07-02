@@ -164,7 +164,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
                 self.address(secondPassword: secondPassword)
             }
-            .map { EthereumAddress(stringLiteral: $0) }
+            .map { try EthereumAddress(string: $0) }
     }
 
     var account: Single<EthereumAssetAccount> {

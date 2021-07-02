@@ -28,6 +28,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
     }
     func testAddressOnly() throws {
@@ -39,6 +40,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -55,6 +57,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -71,6 +74,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.addressColonMemo,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -87,6 +91,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -103,6 +108,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.urlStringWithMemo,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -119,6 +125,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -135,6 +142,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)
@@ -151,6 +159,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                     label: StellarTestData.label,
                     onTxCompleted: { _ in .empty() }
                 )
+                .get()
         )
 
         XCTAssertEqual(address.address, StellarTestData.address)

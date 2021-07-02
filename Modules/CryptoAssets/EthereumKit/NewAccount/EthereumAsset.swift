@@ -22,14 +22,17 @@ final class EthereumAsset: CryptoAsset {
     }
 
     let kycTiersService: KYCTiersServiceAPI
+    private let addressFactory: EthereumExternalAssetAddressFactory
     private let exchangeAccountProvider: ExchangeAccountsProviderAPI
     private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
     init(repository: EthereumWalletAccountRepositoryAPI = resolve(),
+         addressFactory: EthereumExternalAssetAddressFactory = .init(),
          errorRecorder: ErrorRecording = resolve(),
          exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
          kycTiersService: KYCTiersServiceAPI = resolve()) {
+        self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
         self.errorRecorder = errorRecorder
@@ -59,20 +62,15 @@ final class EthereumAsset: CryptoAsset {
     }
 
     func parse(address: String) -> Single<ReceiveAddress?> {
-        guard !address.isEmpty else {
-            return .just(nil)
-        }
-        let validated = EthereumAddress(stringLiteral: address)
-        guard validated.isValid else {
-            return .just(nil)
-        }
-        return .just(
-            EthereumReceiveAddress(
+        let receiveAddress = try? addressFactory
+            .makeExternalAssetAddress(
+                asset: asset,
                 address: address,
                 label: address,
-                onTxCompleted: { _ in Completable.empty() }
+                onTxCompleted: { _ in .empty() }
             )
-        )
+            .get()
+        return .just(receiveAddress)
     }
 
     // MARK: - Helpers

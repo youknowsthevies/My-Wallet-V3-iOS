@@ -10,7 +10,7 @@ final class PolkadotCryptoReceiveAddressFactory: CryptoReceiveAddressFactory {
         address: String,
         label: String,
         onTxCompleted: @escaping TxCompleted
-    ) throws -> CryptoReceiveAddress {
-        PolkadotReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted)
+    ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
+        .success(PolkadotReceiveAddress(address: address, label: label, onTxCompleted: onTxCompleted))
     }
 }

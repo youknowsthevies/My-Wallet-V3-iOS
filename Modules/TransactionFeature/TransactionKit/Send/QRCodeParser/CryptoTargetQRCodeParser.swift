@@ -17,7 +17,7 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
     }
 
     public enum Target {
-        case metadata(CryptoAssetQRMetadata)
+        case address(CryptoReceiveAddress)
         case bitpay(String)
     }
 

@@ -7,7 +7,7 @@ enum TargetSelectionAction: MviAction {
     case sourceAccountSelected(BlockchainAccount, AssetAction)
     case availableTargets([BlockchainAccount])
     case destinationDeselected
-    case validateQRScanner(String)
+    case validateQRScanner(CryptoReceiveAddress)
     case validateAddress(String, BlockchainAccount)
     case destinationSelected(BlockchainAccount)
     case validateBitPayPayload(String, CryptoCurrency)
@@ -45,9 +45,11 @@ enum TargetSelectionAction: MviAction {
         case .destinationConfirmed:
             return oldState
                 .update(keyPath: \.step, value: .complete)
-        case .validateQRScanner(let address):
+        case .validateQRScanner(let cryptoReceiveAddress):
             return oldState
-                .update(keyPath: \.inputValidated, value: .QR(.valid(address)))
+                .update(keyPath: \.inputValidated, value: .QR(.valid(cryptoReceiveAddress)))
+                .update(keyPath: \.destination, value: cryptoReceiveAddress)
+                .update(keyPath: \.nextEnabled, value: true)
                 .withUpdatedBackstack(oldState: oldState)
         case .validateAddress(let address, _):
             return oldState

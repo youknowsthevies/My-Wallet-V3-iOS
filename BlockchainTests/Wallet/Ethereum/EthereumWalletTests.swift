@@ -73,9 +73,9 @@ class EthereumWalletTests: XCTestCase {
 
     func test_wallet_address() {
         // Arrange
-        let expectedAddress = EthereumAddress(stringLiteral: "address")
+        let expectedAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
         legacyWalletMock.underlyingGetEthereumAddress = { _, success, _ in
-            success("address")
+            success("0x3535353535353535353535353535353535353535")
         }
         let addressObservable: Observable<EthereumAddress> = subject
             .address

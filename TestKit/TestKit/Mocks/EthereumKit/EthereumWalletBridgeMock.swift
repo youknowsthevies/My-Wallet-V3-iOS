@@ -59,7 +59,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         nameValue
     }
 
-    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(stringLiteral: MockEthereumWalletTestData.account))
+    var addressValue: Single<EthereumAddress> = .just(EthereumAddress(address: MockEthereumWalletTestData.account)!)
     var address: Single<EthereumAddress> {
         addressValue
     }

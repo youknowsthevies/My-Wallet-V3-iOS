@@ -50,6 +50,7 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
                     .map { $0 as ReceiveAddress }
                     .publisher
                     .eraseToAnyPublisher()
+                    .eraseError()
             }
             .replaceError(with: nil)
             .eraseToAnyPublisher()

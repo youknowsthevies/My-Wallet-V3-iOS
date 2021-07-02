@@ -51,5 +51,4 @@ public final class AddressValidator: NSObject {
         guard let result = context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.isEthAddress(\"\(escapedString)\");") else { return false }
         return result.toBool()
     }
-
 }

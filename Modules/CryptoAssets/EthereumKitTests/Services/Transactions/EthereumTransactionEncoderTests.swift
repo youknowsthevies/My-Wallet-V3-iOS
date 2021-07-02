@@ -32,7 +32,7 @@ class EthereumTransactionEncoderTests: XCTestCase {
 
         let keyPair = MockEthereumWalletTestData.keyPair
         let candidate = EthereumTransactionCandidate(
-            to: "0x3535353535353535353535353535353535353535",
+            to: EthereumAddress(address: "0x3535353535353535353535353535353535353535")!,
             gasPrice: 23,
             gasLimit: 21_000,
             value: BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
