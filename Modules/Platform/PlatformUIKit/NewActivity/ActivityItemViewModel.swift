@@ -241,7 +241,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
 }
 
 extension ActivityItemViewModel: Equatable {
-    public static func ==(lhs: ActivityItemViewModel, rhs: ActivityItemViewModel) -> Bool {
+    public static func == (lhs: ActivityItemViewModel, rhs: ActivityItemViewModel) -> Bool {
         lhs.event == rhs.event
     }
 }

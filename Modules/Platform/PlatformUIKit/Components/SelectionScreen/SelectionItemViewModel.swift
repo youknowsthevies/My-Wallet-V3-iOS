@@ -3,7 +3,7 @@
 public struct SelectionItemViewModel {
 
     public enum Thumb {
-        case name(String, Bundle)
+        case image(ImageResource)
         case emoji(String)
         case none
     }

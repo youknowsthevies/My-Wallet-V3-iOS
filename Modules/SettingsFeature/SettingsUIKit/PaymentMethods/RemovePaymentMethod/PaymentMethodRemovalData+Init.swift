@@ -10,9 +10,8 @@ extension PaymentMethodRemovalData {
             id: cardData.identifier,
             title: cardData.type.name,
             description: "•••• \(cardData.suffix)",
-            image: cardData.type.thumbnail ?? "icon-card",
             event: .sbRemoveCard,
-            type: .card
+            type: .card(cardData.type)
         )
     }
 
@@ -21,7 +20,6 @@ extension PaymentMethodRemovalData {
             id: beneficiary.identifier,
             title: beneficiary.name,
             description: beneficiary.account,
-            image: "icon-bank",
             event: .sbRemoveBank,
             type: .beneficiary(beneficiary.type)
         )

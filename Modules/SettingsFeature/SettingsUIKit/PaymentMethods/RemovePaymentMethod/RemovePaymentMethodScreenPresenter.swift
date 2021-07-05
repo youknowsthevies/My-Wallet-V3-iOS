@@ -54,8 +54,15 @@ final class RemovePaymentMethodScreenPresenter {
             accessibility: .id(AccessibilityIDs.description)
         )
 
-        badgeImageViewModel = .default(
-            with: interactor.data.image,
+        let imageResource: ImageResource
+        switch interactor.data.type {
+        case .beneficiary:
+            imageResource = .local(name: "icon-bank", bundle: .platformUIKit)
+        case .card(let type):
+            imageResource = type.thumbnail ?? .local(name: "icon-card", bundle: .platformUIKit)
+        }
+        badgeImageViewModel = BadgeImageViewModel.default(
+            image: imageResource,
             accessibilityIdSuffix: AccessibilityIDs.badge
         )
         badgeImageViewModel.marginOffsetRelay.accept(Spacing.standard)

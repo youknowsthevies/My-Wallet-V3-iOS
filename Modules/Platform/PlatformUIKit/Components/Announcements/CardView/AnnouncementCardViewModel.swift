@@ -79,7 +79,7 @@ public final class AnnouncementCardViewModel {
         case hidden
         case visible(BadgeImageViewModel, CGSize)
 
-        public init(imageName: String,
+        public init(image: ImageResource,
                     contentColor: UIColor = .defaultBadge,
                     backgroundColor: UIColor = .lightBadgeBackground,
                     cornerRadius: BadgeImageViewModel.CornerRadius = .value(8.0),
@@ -87,7 +87,7 @@ public final class AnnouncementCardViewModel {
                     size: CGSize) {
             self = .visible(
                 .template(
-                    with: imageName,
+                    image: image,
                     templateColor: contentColor,
                     backgroundColor: backgroundColor,
                     accessibilityIdSuffix: accessibilitySuffix

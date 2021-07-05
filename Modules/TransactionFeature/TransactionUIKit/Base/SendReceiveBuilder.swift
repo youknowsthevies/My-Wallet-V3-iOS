@@ -20,10 +20,9 @@ public final class ReceiveBuilder {
             title: LocalizedReceive.Header.receiveCryptoNow,
             subtitle: LocalizedReceive.Header.chooseAWalletToReceiveTo,
             imageContent: .init(
-                imageName: ImageAsset.iconReceive.rawValue,
+                imageResource: ImageAsset.iconReceive.imageResource,
                 accessibility: .none,
-                renderingMode: .normal,
-                bundle: .transactionUIKit
+                renderingMode: .normal
             )
         )
         let navigationModel = ScreenNavigationModel(

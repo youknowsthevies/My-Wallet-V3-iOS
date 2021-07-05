@@ -139,6 +139,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         shareButton.viewModel = presenter.shareButton
 
         presenter.assetImage
+            .map(\.localImage)
             .drive(assetImageView.rx.image)
             .disposed(by: disposeBag)
     }
@@ -206,7 +207,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         thumbImageView.layout(dimension: .height, to: 24)
         thumbImageView.layoutToSuperview(.trailing, offset: -24)
         thumbImageView.layoutToSuperview(.top, offset: 20)
-        thumbImageView.image = ImageAsset.iconReceiveGray.image
+        thumbImageView.image = ImageAsset.iconReceiveGray.imageResource.localImage
 
         // MARK: Asset Image
         assetImageView.layout(dimension: .width, to: 32)

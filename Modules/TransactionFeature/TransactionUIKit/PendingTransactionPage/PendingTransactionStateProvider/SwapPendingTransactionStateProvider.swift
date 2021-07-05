@@ -2,6 +2,7 @@
 
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -42,7 +43,10 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             compositeViewType: .composite(
                 .init(
                     baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),
-                    sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.success.imageResource),
+                        position: .radiusDistanceFromCenter
+                    ),
                     cornerRadiusRatio: 0.5
                 )
             ),
@@ -107,7 +111,10 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
             compositeViewType: .composite(
                 .init(
                     baseViewType: .templateImage(name: "swap-icon", bundle: .platformUIKit, templateColor: .white),
-                    sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
+                        position: .radiusDistanceFromCenter
+                    ),
                     backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )

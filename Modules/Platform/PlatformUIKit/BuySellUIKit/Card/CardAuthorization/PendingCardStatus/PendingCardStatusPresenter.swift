@@ -76,7 +76,7 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.name, .platformUIKit),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.imageResource),
                 title: LocalizationConstants.ErrorScreen.title,
                 subtitle: LocalizationConstants.ErrorScreen.subtitle,
                 button: button
@@ -90,7 +90,7 @@ final class PendingCardStatusPresenter: RibBridgePresenter, PendingStatePresente
                 }
                 .disposed(by: disposeBag)
             let viewModel = PendingStateViewModel(
-                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.name, .platformUIKit),
+                compositeStatusViewType: .image(PendingStateViewModel.Image.circleError.imageResource),
                 title: LocalizationConstants.ErrorScreen.title,
                 subtitle: LocalizationConstants.ErrorScreen.subtitle,
                 button: button

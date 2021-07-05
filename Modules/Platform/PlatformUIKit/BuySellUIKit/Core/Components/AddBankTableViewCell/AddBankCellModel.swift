@@ -18,7 +18,7 @@ final class AddBankCellModel {
         self.fiatCurrency = fiatCurrency
 
         badgeImageViewModel = .template(
-            with: "icon-bank",
+            image: .local(name: "icon-bank", bundle: .platformUIKit),
             templateColor: .secondary,
             backgroundColor: .clear,
             cornerRadius: .value(0),

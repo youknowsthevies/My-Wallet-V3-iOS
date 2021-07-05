@@ -29,11 +29,9 @@ struct AirdropTypeCellPresenter {
 
     init(interactor: AirdropTypeCellInteractor) {
         self.interactor = interactor
-        let imageResource = interactor.cryptoCurrency.logoResource.local
         image = ImageViewContent(
-            imageName: imageResource.name,
-            accessibility: .id(AccessibilityId.image),
-            bundle: imageResource.bundle
+            imageResource: interactor.cryptoCurrency.logoResource,
+            accessibility: .id(AccessibilityId.image)
         )
         let title: String
         if let value = interactor.fiatValue {

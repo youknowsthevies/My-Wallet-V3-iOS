@@ -45,10 +45,9 @@ extension SecureChannelDetailsPresenter {
                 title: title,
                 subtitle: subtitle,
                 imageContent: .init(
-                    imageName: "icon-laptop",
+                    imageResource: .local(name: "icon-laptop", bundle: .platformUIKit),
                     accessibility: .none,
-                    renderingMode: .normal,
-                    bundle: .platformUIKit
+                    renderingMode: .normal
                 ),
                 tableTitle: nil
             )

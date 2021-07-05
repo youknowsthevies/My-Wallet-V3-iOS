@@ -41,7 +41,7 @@ final class ActivityMessageViewModel {
         )
 
         badgeImageViewModel = .template(
-            with: imageName,
+            image: .local(name: imageName, bundle: .platformUIKit),
             templateColor: currency.brandColor,
             backgroundColor: currency.accentColor,
             accessibilityIdSuffix: ""
@@ -69,10 +69,9 @@ final class ActivityMessageViewModel {
         image = QRCode(string: url)?.image
 
         logoImage = .init(
-            imageName: "logo-blockchain",
+            imageResource: .local(name: "logo-blockchain", bundle: .main),
             accessibility: .none,
-            renderingMode: .normal,
-            bundle: .main
+            renderingMode: .normal
         )
         cryptoAmountLabelContent = .init(
             text: event.amount.toDisplayString(includeSymbol: true),

@@ -71,7 +71,7 @@ final class SellIdentityIntroductionPresenter {
         ]
         announcement = .init(
             badgeImage: .init(
-                imageName: "minus-icon",
+                image: .local(name: "minus-icon", bundle: .platformUIKit),
                 contentColor: .white,
                 backgroundColor: .primaryButton,
                 cornerRadius: .round,

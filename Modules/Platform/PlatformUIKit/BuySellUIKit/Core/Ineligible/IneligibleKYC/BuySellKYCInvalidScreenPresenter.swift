@@ -55,7 +55,7 @@ final class BuySellKYCInvalidScreenPresenter {
         ]
         announcement = .init(
             badgeImage: .init(
-                imageName: "Icon-User",
+                image: .local(name: "Icon-User", bundle: .platformUIKit),
                 contentColor: .primaryButton,
                 backgroundColor: .clear,
                 cornerRadius: .value(0.0),

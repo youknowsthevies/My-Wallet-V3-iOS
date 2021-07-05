@@ -40,10 +40,10 @@ public final class RadioAccountCellPresenter: IdentifiableType {
                     return nil
                 }
                 return ImageViewContent(
-                    imageName: name,
+                    imageResource: .local(name: name, bundle: .platformUIKit),
                     accessibility: .id("\(accessibilityPrefix)\(name)"),
-                    renderingMode: .normal,
-                    bundle: .platformUIKit)
+                    renderingMode: .normal
+                )
             }
     }
 }

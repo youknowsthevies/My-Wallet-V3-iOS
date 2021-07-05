@@ -186,10 +186,9 @@ extension SwapLandingInteractor {
             title: LocalizationId.Header.title,
             subtitle: LocalizationId.Header.description,
             imageContent: .init(
-                imageName: "icon_swap_transaction",
+                imageResource: .local(name: "icon_swap_transaction", bundle: .transactionUIKit),
                 accessibility: .none,
-                renderingMode: .normal,
-                bundle: .transactionUIKit
+                renderingMode: .normal
             ),
             tableTitle: LocalizationId.trending
         )

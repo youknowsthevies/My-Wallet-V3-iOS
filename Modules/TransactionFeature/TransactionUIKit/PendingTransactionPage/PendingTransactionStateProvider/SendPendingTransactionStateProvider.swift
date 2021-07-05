@@ -2,6 +2,7 @@
 
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -32,7 +33,6 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
     private func success(state: TransactionState) -> PendingTransactionPageState {
         let amount = state.amount
         let asset = amount.currency
-        let localImage = asset.logoResource.local
         return .init(
             title: String(
                 format: LocalizationIds.Success.title,
@@ -44,8 +44,11 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
             ),
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .image(localImage.name, localImage.bundle),
-                    sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter),
+                    baseViewType: .image(asset.logoResource),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.success.imageResource),
+                        position: .radiusDistanceFromCenter
+                    ),
                     cornerRadiusRatio: 0.5
                 )
             ),
@@ -56,7 +59,6 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     private func pending(state: TransactionState) -> PendingTransactionPageState {
         let sent = state.amount
-        let logo = sent.currency.logoResource
         var title = String(
             format: LocalizationIds.Pending.title,
             sent.displayString
@@ -73,7 +75,7 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
             subtitle: LocalizationIds.Pending.description,
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .image(logo.local.name, logo.local.bundle),
+                    baseViewType: .image(sent.currency.logoResource),
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
                 )
@@ -84,14 +86,16 @@ final class SendPendingTransactionStateProvider: PendingTransactionStateProvidin
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         let currency = state.amount.currency
-        let localImage = currency.logoResource.local
         return .init(
             title: state.transactionErrorDescription,
             subtitle: LocalizationIds.Failure.description,
             compositeViewType: .composite(
                 .init(
-                    baseViewType: .image(localImage.name, localImage.bundle),
-                    sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter),
+                    baseViewType: .image(currency.logoResource),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
+                        position: .radiusDistanceFromCenter
+                    ),
                     cornerRadiusRatio: 0.5
                 )
             ),

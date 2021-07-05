@@ -22,7 +22,7 @@ extension SelectionButtonViewModel {
             case .card:
                 leadingContent = .image(
                     .init(
-                        name: "icon-card",
+                        image: .local(name: "icon-card", bundle: .platformUIKit),
                         background: .lightBlueBackground,
                         offset: 4,
                         cornerRadius: .round,
@@ -33,7 +33,7 @@ extension SelectionButtonViewModel {
             case .funds:
                 leadingContent = .image(
                     .init(
-                        name: "icon-deposit-cash",
+                        image: .local(name: "icon-deposit-cash", bundle: .platformUIKit),
                         background: .lightBlueBackground,
                         offset: 8,
                         cornerRadius: .round,
@@ -43,10 +43,11 @@ extension SelectionButtonViewModel {
                 title = LocalizedString.DepositCash.title
             case .bankTransfer:
                 leadingContent = .image(
-                    .init(name: "icon-bank",
-                          background: .lightBlueBackground,
-                          cornerRadius: .round,
-                          size: .init(edge: 32))
+                    .init(
+                        image: .local(name: "icon-bank", bundle: .platformUIKit),
+                        background: .lightBlueBackground,
+                        cornerRadius: .round,
+                        size: .init(edge: 32))
                 )
                 title = LocalizedString.Types.bankAccount
             case .bankAccount:
@@ -61,7 +62,7 @@ extension SelectionButtonViewModel {
             if let thumbnail = data.type.thumbnail {
                 leadingContent = .image(
                     .init(
-                        name: thumbnail,
+                        image: thumbnail,
                         background: .background,
                         offset: 0,
                         cornerRadius: .value(4),
@@ -79,11 +80,9 @@ extension SelectionButtonViewModel {
             let limit = "\(data.topLimitDisplayValue) \(LocalizedString.Types.limitSubtitle)"
             subtitleRelay.accept(limit)
         case .some(.account(let data)):
-            let localImage = data.topLimit.currency.logoResource.local
             leadingContent = .image(
                 .init(
-                    name: localImage.name,
-                    bundle: localImage.bundle,
+                    image: data.topLimit.currency.logoResource,
                     background: .fiat,
                     offset: 4,
                     cornerRadius: .value(8),
@@ -98,11 +97,12 @@ extension SelectionButtonViewModel {
             )
         case .some(.linkedBank(let data)):
             leadingContent = .image(
-                .init(name: "icon-bank",
-                      background: .lightBlueBackground,
-                      cornerRadius: .round,
-                      size: .init(edge: 32),
-                      renderingMode: .template(.defaultBadge))
+                .init(
+                    image: .local(name: "icon-bank", bundle: .platformUIKit),
+                    background: .lightBlueBackground,
+                    cornerRadius: .round,
+                    size: .init(edge: 32),
+                    renderingMode: .template(.defaultBadge))
             )
             title = LocalizedString.Types.bankAccount
             let bankName = data.account?.bankName ?? ""
@@ -117,7 +117,7 @@ extension SelectionButtonViewModel {
         case .none: // No preferred payment method type
             leadingContent = .image(
                 .init(
-                    name: "icon-plus",
+                    image: .local(name: "icon-plus", bundle: .platformUIKit),
                     background: .lightBlueBackground,
                     offset: 4,
                     cornerRadius: .round,

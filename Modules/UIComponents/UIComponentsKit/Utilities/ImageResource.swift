@@ -2,21 +2,17 @@
 
 import UIKit
 
-public enum ImageResource {
+public enum ImageResource: Hashable {
     case local(name: String, bundle: Bundle)
-    // case remote(url: String)
+    case remote(url: String)
 
-    public var local: (name: String, bundle: Bundle) {
-        switch self {
-        case let .local(name, bundle):
-            return (name, bundle)
-        }
-    }
-
+    // TODO: IOS-4958: Remove this property.
     public var localImage: UIImage? {
         switch self {
         case let .local(name, bundle):
             return UIImage(named: name, in: bundle, with: nil)
+        case .remote:
+            return nil
         }
     }
 }

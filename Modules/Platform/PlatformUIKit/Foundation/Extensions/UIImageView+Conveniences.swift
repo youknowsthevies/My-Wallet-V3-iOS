@@ -24,7 +24,7 @@ public struct ImageViewContent {
     }
 
     public var isEmpty: Bool {
-        imageName == nil
+        imageResource == nil
     }
 
     var templateColor: UIColor? {
@@ -32,39 +32,40 @@ public struct ImageViewContent {
     }
 
     var image: UIImage? {
-        guard let imageName = imageName else { return nil }
-
-        switch renderingMode {
-        case .normal:
-            return UIImage(named: imageName, in: bundle, compatibleWith: .none)
-        case .template:
-            let image = UIImage(named: imageName, in: bundle, compatibleWith: .none)
-            return image?.withRenderingMode(.alwaysTemplate)
+        switch imageResource {
+        case .local(name: let imageName, bundle: let bundle):
+            switch renderingMode {
+            case .normal:
+                return UIImage(named: imageName, in: bundle, compatibleWith: .none)
+            case .template:
+                let image = UIImage(named: imageName, in: bundle, compatibleWith: .none)
+                return image?.withRenderingMode(.alwaysTemplate)
+            }
+        case .remote:
+            // TODO: IOS-4958: Remote loaded resources.
+            return nil
+        case nil:
+            return nil
         }
     }
 
-    let imageName: String?
     let accessibility: Accessibility
-
+    private let imageResource: ImageResource?
     private let renderingMode: RenderingMode
-    private let bundle: Bundle
 
-    public init(imageName: String? = nil,
+    public init(imageResource: ImageResource? = nil,
                 accessibility: Accessibility = .none,
-                renderingMode: RenderingMode = .normal,
-                bundle: Bundle = .main) {
-        self.imageName = imageName
+                renderingMode: RenderingMode = .normal) {
+        self.imageResource = imageResource
         self.accessibility = accessibility
         self.renderingMode = renderingMode
-        self.bundle = bundle
     }
 }
 
 extension ImageViewContent: Equatable {
     public static func == (lhs: ImageViewContent, rhs: ImageViewContent) -> Bool {
-        lhs.imageName == rhs.imageName &&
-               lhs.accessibility == rhs.accessibility &&
-               lhs.bundle.bundleIdentifier == rhs.bundle.bundleIdentifier
+        lhs.imageResource == rhs.imageResource &&
+               lhs.accessibility == rhs.accessibility
     }
 }
 

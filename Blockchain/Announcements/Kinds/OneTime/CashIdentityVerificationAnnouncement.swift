@@ -35,7 +35,7 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
         return .init(
             type: type,
             badgeImage: .init(
-                imageName: "icon-gbp",
+                image: .local(name: "icon-gbp", bundle: .platformUIKit),
                 contentColor: .white,
                 backgroundColor: .fiat,
                 cornerRadius: .value(4.0),

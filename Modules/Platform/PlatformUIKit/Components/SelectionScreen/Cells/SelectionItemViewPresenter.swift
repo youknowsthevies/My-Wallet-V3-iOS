@@ -45,12 +45,11 @@ final class SelectionItemViewPresenter {
         let item = interactor.item
         accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
         switch item.thumb {
-        case let .name(name, bundle):
+        case let .image(imageResource):
             thumb = .image(
                 ImageViewContent(
-                    imageName: name,
-                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)"),
-                    bundle: bundle
+                    imageResource: imageResource,
+                    accessibility: .id("\(AccessibilityId.imageViewPrefix)\(item.accessibilityId)")
                 )
             )
         case .emoji(let value):
@@ -88,7 +87,7 @@ final class SelectionItemViewPresenter {
                 guard isSelected else { return .empty }
                 let item = self.interactor.item
                 return ImageViewContent(
-                    imageName: "v-selection-icon",
+                    imageResource: .local(name: "v-selection-icon", bundle: .platformUIKit),
                     accessibility: .id("\(AccessibilityId.selectionImageViewPrefix)\(item.accessibilityId)")
                 )
             }

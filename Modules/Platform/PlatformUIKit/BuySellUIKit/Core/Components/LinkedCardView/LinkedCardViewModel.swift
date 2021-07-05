@@ -94,7 +94,7 @@ final class LinkedCardViewModel {
 
     init(type: CardType) {
         self.badgeImageViewModel = .default(
-            with: type.thumbnail ?? "",
+            image: type.thumbnail,
             cornerRadius: .value(4),
             accessibilityIdSuffix: type.name
         )

@@ -37,10 +37,9 @@ final class ReceiveKYCPresenter: DetailsScreenPresenterAPI {
             title: LocalizedString.KYC.title,
             subtitle: LocalizedString.KYC.subtitle,
             imageContent: .init(
-                imageName: ImageAsset.iconVerified.rawValue,
+                imageResource: ImageAsset.iconVerified.imageResource,
                 accessibility: .none,
-                renderingMode: .normal,
-                bundle: .transactionUIKit
+                renderingMode: .normal
             ),
             tableTitle: nil
         )

@@ -34,7 +34,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
         self.router = router
         announcement = .init(
             badgeImage: .init(
-                imageName: "icon_interest",
+                image: .local(name: "icon_interest", bundle: .platformUIKit),
                 contentColor: .white,
                 backgroundColor: .defaultBadge,
                 cornerRadius: .round,

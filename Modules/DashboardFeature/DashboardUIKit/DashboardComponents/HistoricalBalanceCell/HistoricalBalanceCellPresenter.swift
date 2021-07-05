@@ -11,12 +11,10 @@ final class HistoricalBalanceCellPresenter {
     private typealias AccessibilityId = Accessibility.Identifier.Dashboard.AssetCell
 
     var thumbnail: Driver<ImageViewContent> {
-        let localImage = cryptoCurrency.logoResource.local
-        return .just(
+        .just(
             .init(
-                imageName: localImage.name,
-                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)"),
-                bundle: localImage.bundle
+                imageResource: cryptoCurrency.logoResource,
+                accessibility: .id("\(AccessibilityId.assetImageView)\(interactor.cryptoCurrency.displayCode)")
             )
         )
     }

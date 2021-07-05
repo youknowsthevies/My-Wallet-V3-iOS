@@ -49,8 +49,8 @@ final class LinkBankFailureScreenPresenter: RibBridgePresenter, PendingStatePres
     private func errorViewModel(buttonModel: ButtonViewModel, canceButtonModel: ButtonViewModel) -> PendingStateViewModel {
         PendingStateViewModel(compositeStatusViewType: .composite(
             .init(
-                baseViewType: .image("large-bank-icon", .platformUIKit),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .rightCorner)
+                baseViewType: .image(.local(name: "large-bank-icon", bundle: .platformUIKit)),
+                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner)
             )
         ),
         title: LocalizedString.GenericFailure.title,

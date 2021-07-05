@@ -64,20 +64,16 @@ public struct TransactionDescriptorViewModel {
                 var model: BadgeImageViewModel
                 switch attributes.isFiat {
                 case true:
-                    let localImage = attributes.imageResource.local
                     model = BadgeImageViewModel.primary(
-                        with: localImage.name,
-                        bundle: localImage.bundle,
+                        image: attributes.imageResource,
                         contentColor: .white,
                         backgroundColor: attributes.brandColor,
                         cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                         accessibilityIdSuffix: ""
                     )
                 case false:
-                    let localImage = attributes.imageResource.local
                     model = BadgeImageViewModel.default(
-                        with: localImage.name,
-                        bundle: localImage.bundle,
+                        image: attributes.imageResource,
                         cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                         accessibilityIdSuffix: ""
                     )
@@ -95,10 +91,8 @@ public struct TransactionDescriptorViewModel {
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
             .map { (attributes) -> BadgeImageViewModel in
-                let localImage = attributes.imageResource.local
                 let model = BadgeImageViewModel.default(
-                    with: localImage.name,
-                    bundle: localImage.bundle,
+                    image: attributes.imageResource,
                     cornerRadius: attributes.isFiat ? .value(8.0) : .round,
                     accessibilityIdSuffix: ""
                 )
@@ -166,7 +160,7 @@ public struct TransactionDescriptorViewModel {
 
     private func provideBadgeImageViewModel(accentColor: UIColor, backgroundColor: UIColor) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel.template(
-            with: assetAction.assetImageName,
+            image: .local(name: assetAction.assetImageName, bundle: .platformUIKit),
             templateColor: accentColor,
             backgroundColor: backgroundColor,
             accessibilityIdSuffix: ""

@@ -122,12 +122,10 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         interactor
             .selectedCurrencyType
             .map(\.logoResource)
-            .map(\.local)
-            .map { localResource in
+            .map { logoResource in
                 .image(
                     .init(
-                        name: localResource.name,
-                        bundle: localResource.bundle,
+                        image: logoResource,
                         background: .clear,
                         offset: 0,
                         cornerRadius: .round,
@@ -158,7 +156,7 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
         topSelectionButtonViewModel.trailingContentRelay.accept(
             .image(
                 ImageViewContent(
-                    imageName: "icon-disclosure-down-small"
+                    imageResource: .local(name: "icon-disclosure-down-small", bundle: .platformUIKit)
                 )
             )
         )

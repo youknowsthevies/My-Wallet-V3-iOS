@@ -205,20 +205,19 @@ extension AddNewBankAccountPagePresenter {
                     (
                         title: FundsString.Notice.BankTransferOnly.title,
                         description: FundsString.Notice.BankTransferOnly.description,
-                        imageName: "icon-bank"
+                        image: ImageResource.local(name: "icon-bank", bundle: .platformUIKit)
                     ),
                     (
                         title: FundsString.Notice.ProcessingTime.title,
                         description: processingTimeNoticeDescription,
-                        imageName: "clock-icon"
+                        image: ImageResource.local(name: "clock-icon", bundle: .platformUIKit)
                     )
                 ]
                 .map {
                     NoticeViewModel(
                         imageViewContent: ImageViewContent(
-                            imageName: $0.imageName,
-                            renderingMode: .template(.titleText),
-                            bundle: .platformUIKit
+                            imageResource: $0.image,
+                            renderingMode: .template(.titleText)
                         ),
                         labelContents: [
                             LabelContent(

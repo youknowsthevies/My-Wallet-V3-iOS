@@ -5,6 +5,18 @@ import PlatformKit
 
 final class YodleeScreenContentReducer {
 
+    private enum Image {
+        static var filledBlockchainLogo: ImageResource {
+            .local(name: "filled_blockchain_logo", bundle: .platformUIKit)
+        }
+        static var largeBankIcon: ImageResource {
+            .local(name: "large-bank-icon", bundle: .platformUIKit)
+        }
+        static var filledYodleeLogo: ImageResource {
+            .local(name: "filled_yodlee_logo", bundle: .platformUIKit)
+        }
+    }
+
     // MARK: Pending Content
 
     typealias LocalizedStrings = LocalizationConstants.SimpleBuy.YodleeWebScreen
@@ -42,8 +54,13 @@ final class YodleeScreenContentReducer {
         }
         return YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("large-bank-icon", .platformUIKit),
-                      sideViewAttributes: .init(type: .image("v-success-icon"), position: .rightCorner))
+                .init(
+                    baseViewType: .image(Image.largeBankIcon),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.success.imageResource),
+                        position: .rightCorner
+                    )
+                )
             ),
             mainTitleContent: .init(text: LocalizedStrings.WebViewSuccessContent.title,
                                     font: .main(.bold, 20),
@@ -59,8 +76,10 @@ final class YodleeScreenContentReducer {
     func webviewPendingContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_yodlee_logo", .platformUIKit),
-                      sideViewAttributes: .init(type: .loader, position: .rightCorner))
+                .init(
+                    baseViewType: .image(Image.filledYodleeLogo),
+                    sideViewAttributes: .init(type: .loader, position: .rightCorner)
+                )
             ),
             mainTitleContent: .init(text: LocalizedStrings.WebViewPendingContent.title,
                                     font: .main(.bold, 20),
@@ -76,8 +95,13 @@ final class YodleeScreenContentReducer {
     func webviewFailureContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
-                      sideViewAttributes: .init(type: .image("circular-error-icon"), position: .rightCorner))
+                .init(
+                    baseViewType: .image(Image.filledBlockchainLogo),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
+                        position: .rightCorner
+                    )
+                )
             ),
             mainTitleContent: .init(text: LocalizedStrings.FailurePendingContent.Generic.title,
                                     font: .main(.bold, 20),
@@ -98,8 +122,10 @@ final class YodleeScreenContentReducer {
     func linkingBankPendingContent() -> YodleePendingContent {
         YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
-                      sideViewAttributes: .init(type: .loader, position: .rightCorner))
+                .init(
+                    baseViewType: .image(Image.filledBlockchainLogo),
+                    sideViewAttributes: .init(type: .loader, position: .rightCorner)
+                )
             ),
             mainTitleContent: .init(text: LocalizedStrings.LinkingPendingContent.title,
                                     font: .main(.bold, 20),
@@ -115,8 +141,13 @@ final class YodleeScreenContentReducer {
         let buttonContent = linkingBankFailureButtonContent(from: error)
         return YodleePendingContent(
             compositeViewType: .composite(
-                .init(baseViewType: .image("filled_blockchain_logo", .platformUIKit),
-                      sideViewAttributes: .init(type: .image("circular-error-icon"), position: .rightCorner))
+                .init(
+                    baseViewType: .image(Image.filledBlockchainLogo),
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
+                        position: .rightCorner
+                    )
+                )
             ),
             mainTitleContent: .init(text: failureTitles.title,
                                     font: .main(.bold, 20),

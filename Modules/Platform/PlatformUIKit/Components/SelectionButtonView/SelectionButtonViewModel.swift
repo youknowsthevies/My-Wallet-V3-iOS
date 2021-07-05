@@ -65,23 +65,20 @@ public final class SelectionButtonViewModel: IdentifiableType {
 
     public enum LeadingContentType {
         public struct Image {
-            let name: String
-            let bundle: Bundle
+            let image: ImageResource
             let background: Color
             let cornerRadius: BadgeImageViewModel.CornerRadius
             let offset: CGFloat
             let size: CGSize
             let renderingMode: ImageViewContent.RenderingMode
 
-            public init(name: String,
-                        bundle: Bundle = .platformUIKit,
+            public init(image: ImageResource,
                         background: Color,
                         offset: CGFloat = 4,
                         cornerRadius: BadgeImageViewModel.CornerRadius,
                         size: CGSize,
                         renderingMode: ImageViewContent.RenderingMode = .normal) {
-                self.name = name
-                self.bundle = bundle
+                self.image = image
                 self.background = background
                 self.offset = offset
                 self.cornerRadius = cornerRadius
@@ -271,9 +268,8 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 switch type {
                 case .image(let image):
                     let imageViewContent = ImageViewContent(
-                        imageName: image.name,
-                        renderingMode: image.renderingMode,
-                        bundle: image.bundle
+                        imageResource: image.image,
+                        renderingMode: image.renderingMode
                     )
                     let badgeViewModel = BadgeImageViewModel()
                     badgeViewModel.marginOffsetRelay.accept(image.offset)

@@ -10,22 +10,22 @@ public struct PendingStateViewModel {
         case region
         case circleError
         case success
-        case custom(String, Bundle)
+        case custom(ImageResource)
 
-        public var name: String {
+        public var imageResource: ImageResource {
             switch self {
             case .circleError:
-                return "circular-error-icon"
+                return .local(name: "circular-error-icon", bundle: .platformUIKit)
             case .region:
-                return "region-error-icon"
+                return .local(name: "region-error-icon", bundle: .platformUIKit)
             case .triangleError:
-                return "triangle-error-icon"
+                return .local(name: "triangle-error-icon", bundle: .platformUIKit)
             case .clock:
-                return "clock-error-icon"
+                return .local(name: "clock-error-icon", bundle: .platformUIKit)
             case .success:
-                return "v-success-icon"
-            case .custom(let name, _):
-                return name
+                return .local(name: "v-success-icon", bundle: .platformUIKit)
+            case .custom(let imageResource):
+                return imageResource
             }
         }
     }

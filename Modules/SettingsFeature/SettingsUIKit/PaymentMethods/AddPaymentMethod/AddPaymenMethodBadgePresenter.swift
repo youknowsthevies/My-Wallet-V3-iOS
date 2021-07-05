@@ -46,19 +46,19 @@ final class AddPaymenMethodBadgePresenter: BadgeImageAssetPresenting {
 private extension BadgeImageViewModel {
 
     static let bank: BadgeImageViewModel = .primary(
-        with: "icon-bank",
+        image: .local(name: "icon-bank", bundle: .platformUIKit),
         cornerRadius: .round,
         accessibilityIdSuffix: ""
     )
 
     static let card: BadgeImageViewModel = .primary(
-        with: "Icon-Creditcard",
+        image: .local(name: "Icon-Creditcard", bundle: .platformUIKit),
         cornerRadius: .round,
         accessibilityIdSuffix: ""
     )
 
     static let info: BadgeImageViewModel = .default(
-        with: "Icon-Info",
+        image: .local(name: "Icon-Info", bundle: .platformUIKit),
         cornerRadius: .round,
         accessibilityIdSuffix: ""
     )

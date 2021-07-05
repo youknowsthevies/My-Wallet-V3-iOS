@@ -58,12 +58,11 @@ final class CryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI {
 
 fileprivate extension CryptoCurrency {
     var selectionItem: SelectionItemViewModel {
-        let image = logoResource.local
-        return SelectionItemViewModel(
+        SelectionItemViewModel(
             id: code,
             title: name,
             subtitle: displayCode,
-            thumb: .name(image.name, image.bundle)
+            thumb: .image(logoResource)
         )
     }
 }

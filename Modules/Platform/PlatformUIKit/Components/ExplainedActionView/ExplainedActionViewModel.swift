@@ -44,7 +44,7 @@ public struct ExplainedActionViewModel {
                 badgeTitle: String?,
                 uniqueAccessibilityIdentifier: String) {
         thumbBadgeImageViewModel = .primary(
-            with: thumbImage,
+            image: .local(name: thumbImage, bundle: .platformUIKit),
             cornerRadius: .round,
             accessibilityIdSuffix: uniqueAccessibilityIdentifier
         )

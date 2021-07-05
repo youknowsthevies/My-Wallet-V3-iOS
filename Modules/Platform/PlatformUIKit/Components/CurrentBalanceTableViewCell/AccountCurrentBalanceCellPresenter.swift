@@ -94,10 +94,8 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
 
         switch account.currencyType {
         case .fiat(let fiatCurrency):
-            let image = fiatCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .primary(
-                with: image.name,
-                bundle: image.bundle,
+                image: fiatCurrency.logoResource,
                 contentColor: .white,
                 backgroundColor: .fiat,
                 accessibilityIdSuffix: "\(AccessibilityId.badgeImageView)"
@@ -105,10 +103,8 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             badgeImageViewModel.marginOffsetRelay.accept(0)
             badgeRelay.accept(badgeImageViewModel)
         case .crypto(let cryptoCurrency):
-            let image = cryptoCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .default(
-                with: image.name,
-                bundle: image.bundle,
+                image: cryptoCurrency.logoResource,
                 cornerRadius: .round,
                 accessibilityIdSuffix: "\(AccessibilityId.badgeImageView)"
             )
@@ -120,7 +116,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
         switch account {
         case is BankAccount:
             model = .template(
-                with: "ic-trading-account",
+                image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .red,
                 cornerRadius: .round,
@@ -128,7 +124,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             )
         case is TradingAccount:
             model = .template(
-                with: "ic-trading-account",
+                image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -136,7 +132,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             )
         case is CryptoInterestAccount:
             model = .template(
-                with: "ic-interest-account",
+                image: .local(name: "ic-interest-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -144,7 +140,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             )
         case is ExchangeAccount:
             model = .template(
-                with: "ic-exchange-account",
+                image: .local(name: "ic-exchange-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -152,7 +148,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             )
         case is NonCustodialAccount:
             model = .template(
-                with: "ic-private-account",
+                image: .local(name: "ic-private-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -160,7 +156,7 @@ public final class AccountCurrentBalanceCellPresenter: CurrentBalanceCellPresent
             )
         case is FiatAccount:
             model = .template(
-                with: "ic-trading-account",
+                image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: account.currencyType.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,

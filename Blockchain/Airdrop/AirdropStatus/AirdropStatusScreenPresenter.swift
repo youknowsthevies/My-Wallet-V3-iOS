@@ -214,12 +214,10 @@ final class AirdropStatusScreenPresenter {
             )
         )
 
-        let localImage = imageResource.local
         imageRelay.accept(
             ImageViewContent(
-                imageName: localImage.name,
-                accessibility: .id(AccessibilityId.thumbImageView),
-                bundle: localImage.bundle
+                imageResource: imageResource,
+                accessibility: .id(AccessibilityId.thumbImageView)
             )
         )
     }

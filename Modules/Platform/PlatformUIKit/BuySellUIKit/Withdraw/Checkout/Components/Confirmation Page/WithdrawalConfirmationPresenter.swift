@@ -68,7 +68,7 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
         PendingStateViewModel(compositeStatusViewType: .composite(
             .init(
                 baseViewType: .text(amount.currencyType.symbol),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.success.name), position: .radiusDistanceFromCenter),
+                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.success.imageResource), position: .radiusDistanceFromCenter),
                 backgroundColor: .fiat,
                 cornerRadiusRatio: 0.2
             )
@@ -84,7 +84,7 @@ final class WithdrawalConfirmationPresenter: RibBridgePresenter, PendingStatePre
         PendingStateViewModel(compositeStatusViewType: .composite(
             .init(
                 baseViewType: .text(currencyType.symbol),
-                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.name), position: .rightCorner),
+                sideViewAttributes: .init(type: .image(PendingStateViewModel.Image.circleError.imageResource), position: .rightCorner),
                 backgroundColor: .fiat,
                 cornerRadiusRatio: 0.2
             )

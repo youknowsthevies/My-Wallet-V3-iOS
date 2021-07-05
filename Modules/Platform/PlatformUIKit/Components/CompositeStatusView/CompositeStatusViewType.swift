@@ -6,14 +6,14 @@ public enum CompositeStatusViewType: Equatable {
     public struct Composite: Equatable {
         public enum BaseViewType: Equatable {
             case badgeImageViewModel(BadgeImageViewModel)
-            case image(String, Bundle)
+            case image(ImageResource)
             case templateImage(name: String, bundle: Bundle, templateColor: UIColor)
             case text(String)
         }
 
         public struct SideViewAttributes: Equatable {
             public enum ViewType: Equatable {
-                case image(String)
+                case image(ImageResource)
                 case loader
                 case none
             }
@@ -53,7 +53,7 @@ public enum CompositeStatusViewType: Equatable {
     }
 
     case loader
-    case image(String, Bundle)
+    case image(ImageResource)
     case composite(Composite)
     case none
 

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -33,7 +34,6 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
         let value = DateFormatter.medium.string(from: date)
         let amount = state.amount
         let currency = amount.currency
-        let logo = currency.logoResource
         return .init(
             title: String(
                 format: LocalizationIds.Success.title,
@@ -47,8 +47,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 .init(
                     baseViewType: .badgeImageViewModel(
                         .primary(
-                            with: logo.local.name,
-                            bundle: logo.local.bundle,
+                            image: currency.logoResource,
                             contentColor: .white,
                             backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                             cornerRadius: currency.isFiatCurrency ? .value(8.0) : .round,
@@ -56,7 +55,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         )
                     ),
                     sideViewAttributes: .init(
-                        type: .image("v-success-icon"),
+                        type: .image(PendingStateViewModel.Image.success.imageResource),
                         position: .radiusDistanceFromCenter
                     )
                 )
@@ -69,7 +68,6 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
     private func pending(state: TransactionState) -> PendingTransactionPageState {
         let amount = state.amount
         let currency = amount.currency
-        let logo = currency.logoResource
         return .init(
             title: String(
                 format: LocalizationIds.Pending.title,
@@ -80,8 +78,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 .init(
                     baseViewType: .badgeImageViewModel(
                         .primary(
-                            with: logo.local.name,
-                            bundle: logo.local.bundle,
+                            image: currency.logoResource,
                             contentColor: .white,
                             backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                             cornerRadius: currency.isFiatCurrency ? .value(8.0) : .round,
@@ -99,7 +96,6 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         let amount = state.amount
         let currency = amount.currency
-        let logo = currency.logoResource
         return .init(
             title: state.transactionErrorDescription,
             subtitle: LocalizationIds.Failure.description,
@@ -107,8 +103,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                 .init(
                     baseViewType: .badgeImageViewModel(
                         .primary(
-                            with: logo.local.name,
-                            bundle: logo.local.bundle,
+                            image: currency.logoResource,
                             contentColor: .white,
                             backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                             cornerRadius: currency.isFiatCurrency ? .value(8.0) : .round,
@@ -116,7 +111,7 @@ final class WithdrawPendingTransactionStateProvider: PendingTransactionStateProv
                         )
                     ),
                     sideViewAttributes: .init(
-                        type: .image("circular-error-icon"),
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
                         position: .radiusDistanceFromCenter
                     )
                 )

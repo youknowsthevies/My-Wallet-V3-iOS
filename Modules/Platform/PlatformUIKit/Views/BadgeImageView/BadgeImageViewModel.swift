@@ -86,12 +86,12 @@ extension BadgeImageViewModel {
         BadgeImageViewModel()
     }
 
-    /// Returns a default badge with an image. It uses the standard
-    /// `background` color and does not apply a tintColor to the image.
+    /// Returns a default badge with an image.
+    ///
+    /// It uses the standard `background` color and does not apply a tintColor to the image.
     /// It has rounded corners.
     public static func `default`(
-        with imageName: String,
-        bundle: Bundle = .platformUIKit,
+        image: ImageResource?,
         cornerRadius: CornerRadius = .value(8),
         accessibilityIdSuffix: String) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
@@ -99,10 +99,9 @@ extension BadgeImageViewModel {
             theme: Theme(
                 backgroundColor: .background,
                 imageViewContent: ImageViewContent(
-                    imageName: imageName,
+                    imageResource: image,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .normal,
-                    bundle: bundle
+                    renderingMode: .normal
                 )
             )
         )
@@ -110,8 +109,7 @@ extension BadgeImageViewModel {
     }
 
     public static func template(
-        with imageName: String,
-        bundle: Bundle = .platformUIKit,
+        image: ImageResource,
         templateColor: UIColor,
         backgroundColor: UIColor,
         cornerRadius: CornerRadius = .round,
@@ -121,23 +119,21 @@ extension BadgeImageViewModel {
             theme: Theme(
                 backgroundColor: backgroundColor,
                 imageViewContent: ImageViewContent(
-                    imageName: imageName,
+                    imageResource: image,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .template(templateColor),
-                    bundle: bundle
+                    renderingMode: .template(templateColor)
                 )
             )
         )
         return viewModel
     }
 
-    /// Returns a primary badge with an image. It uses the standard
-    /// `defaultBadge` color for the content
-    ///  and applies a `lightBadgeBackground` to the background.
+    /// Returns a primary badge with an image.
+    ///
+    /// It uses the standard `defaultBadge` color for the content and applies a `lightBadgeBackground` to the background.
     /// It has rounded corners, though you can apply a `cornerRadius`
     public static func primary(
-        with imageName: String,
-        bundle: Bundle = .platformUIKit,
+        image: ImageResource,
         contentColor: UIColor = .defaultBadge,
         backgroundColor: UIColor = .lightBadgeBackground,
         cornerRadius: CornerRadius = .value(8),
@@ -147,10 +143,9 @@ extension BadgeImageViewModel {
             theme: Theme(
                 backgroundColor: backgroundColor,
                 imageViewContent: ImageViewContent(
-                    imageName: imageName,
+                    imageResource: image,
                     accessibility: .id("\(AccessibilityId.prefix)\(accessibilityIdSuffix)"),
-                    renderingMode: .template(contentColor),
-                    bundle: bundle
+                    renderingMode: .template(contentColor)
                 )
             )
         )

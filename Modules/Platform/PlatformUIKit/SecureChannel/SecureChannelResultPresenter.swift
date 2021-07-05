@@ -62,12 +62,12 @@ extension SecureChannelResultPresenter {
             }
         }
 
-        var sideImage: String {
+        var sideImage: ImageResource {
             switch self {
             case .approved:
-                return PendingStateViewModel.Image.success.name
+                return PendingStateViewModel.Image.success.imageResource
             case .denied, .error:
-                return "Icon-Close-Circle-Red"
+                return .local(name: "Icon-Close-Circle-Red", bundle: .platformUIKit)
             }
         }
 
@@ -75,7 +75,7 @@ extension SecureChannelResultPresenter {
             PendingStateViewModel(
                 compositeStatusViewType: .composite(
                     .init(
-                        baseViewType: .image("icon-laptop", .platformUIKit),
+                        baseViewType: .image(.local(name: "icon-laptop", bundle: .platformUIKit)),
                         sideViewAttributes: .init(type: .image(sideImage), position: .rightCorner)
                     )
                 ),

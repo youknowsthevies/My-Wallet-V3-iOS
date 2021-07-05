@@ -5,20 +5,20 @@ import PlatformKit
 
 extension CardType {
 
-    public var thumbnail: String? {
+    public var thumbnail: ImageResource? {
         switch self {
         case .visa:
-            return "logo-visa"
+            return .local(name: "logo-visa", bundle: .platformUIKit)
         case .mastercard:
-            return "logo-mastercard"
+            return .local(name: "logo-mastercard", bundle: .platformUIKit)
         case .amex:
-            return "logo-amex"
+            return .local(name: "logo-amex", bundle: .platformUIKit)
         case .diners:
-            return "logo-diners"
+            return .local(name: "logo-diners", bundle: .platformUIKit)
         case .discover:
-            return "logo-disover"
+            return .local(name: "logo-discover", bundle: .platformUIKit)
         case .jcb:
-            return "logo-jcb"
+            return .local(name: "logo-jcb", bundle: .platformUIKit)
         case .unknown:
             return nil
         }

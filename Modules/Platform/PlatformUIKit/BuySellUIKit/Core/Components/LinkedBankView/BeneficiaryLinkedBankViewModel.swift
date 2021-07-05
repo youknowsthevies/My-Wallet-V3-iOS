@@ -39,7 +39,7 @@ public final class BeneficiaryLinkedBankViewModel: LinkedBankViewModelAPI {
         self.data = data
 
         badgeImageViewModel = .template(
-            with: "icon-bank",
+            image: .local(name: "icon-bank", bundle: .platformUIKit),
             templateColor: .secondary,
             backgroundColor: .lightBlueBackground,
             cornerRadius: .round,

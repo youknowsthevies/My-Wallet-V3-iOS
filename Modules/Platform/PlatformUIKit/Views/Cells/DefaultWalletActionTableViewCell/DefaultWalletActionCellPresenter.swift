@@ -26,7 +26,7 @@ public final class DefaultWalletActionCellPresenter {
             accentColor = UIColor.fiat.withAlphaComponent(0.15)
         }
         self.badgeImageViewModel = .template(
-            with: action.imageName,
+            image: .local(name: action.imageName, bundle: .platformUIKit),
             templateColor: templateColor,
             backgroundColor: accentColor,
             accessibilityIdSuffix: "\(action.accessibilityId)"

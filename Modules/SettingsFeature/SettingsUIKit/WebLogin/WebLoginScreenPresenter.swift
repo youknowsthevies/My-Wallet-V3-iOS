@@ -83,7 +83,7 @@ public final class WebLoginScreenPresenter {
             accessibility: .id(AccessibilityIDs.notice)
         )
         noticeViewModel = NoticeViewModel(
-            imageViewContent: .init(imageName: "icon-alert"),
+            imageViewContent: .init(imageResource: .local(name: "icon-alert", bundle: .settingsUIKit)),
             imageViewSize: .edge(40),
             labelContents: noticeLabel,
             verticalAlignment: .center

@@ -45,9 +45,8 @@ final class DashboardNoticePresenter {
         typealias AccessibilityId = Accessibility.Identifier.Dashboard.Notice
         let viewModel = NoticeViewModel(
             imageViewContent: .init(
-                imageName: "lockbox-icon",
-                accessibility: .id(AccessibilityId.imageView),
-                bundle: .platformUIKit
+                imageResource: .local(name: "lockbox-icon", bundle: .platformUIKit),
+                accessibility: .id(AccessibilityId.imageView)
             ),
             labelContents: .init(
                 text: LocalizedString.lockboxNotice,

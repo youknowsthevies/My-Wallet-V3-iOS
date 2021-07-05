@@ -22,10 +22,9 @@ final class WalletViewViewModel {
     init(account: SingleAccount, descriptor: Descriptors) {
         let currency = account.currencyType
         identifier = account.identifier
-        let localImage = currency.logoResource.local
+
         badgeImageViewModel = .default(
-            with: account is LinkedBankAccount ? "icon-bank" : localImage.name,
-            bundle: account is LinkedBankAccount ? .platformUIKit : localImage.bundle,
+            image: account is LinkedBankAccount ? .local(name: "icon-bank", bundle: .platformUIKit) : currency.logoResource,
             cornerRadius: .round,
             accessibilityIdSuffix: ""
         )
@@ -45,7 +44,7 @@ final class WalletViewViewModel {
             accountTypeBadge = .empty
         case (is ExchangeAccount, .crypto):
             accountTypeBadge = .template(
-                with: "ic-exchange-account",
+                image: .local(name: "ic-exchange-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -53,7 +52,7 @@ final class WalletViewViewModel {
             )
         case (is NonCustodialAccount, .crypto):
             accountTypeBadge = .template(
-                with: "ic-private-account",
+                image: .local(name: "ic-private-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -61,7 +60,7 @@ final class WalletViewViewModel {
             )
         case (is TradingAccount, .crypto):
             accountTypeBadge = .template(
-                with: "ic-trading-account",
+                image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -69,7 +68,7 @@ final class WalletViewViewModel {
             )
         case (is CryptoInterestAccount, .crypto):
             accountTypeBadge = .template(
-                with: "ic-interest-account",
+                image: .local(name: "ic-interest-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,

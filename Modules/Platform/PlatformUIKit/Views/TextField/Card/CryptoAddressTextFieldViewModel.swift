@@ -18,11 +18,8 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
             validator: validator,
             messageRecorder: messageRecorder
         )
-
         let content = ImageViewContent(
-            imageName: "Icon-qr",
-            accessibility: .none,
-            bundle: .platformUIKit
+            imageResource: .local(name: "Icon-qr", bundle: .platformUIKit)
         )
         let viewModel = BadgeImageViewModel(cornerRadius: .value(4))
         viewModel.sizingTypeRelay.accept(.constant(CGSize(width: 32, height: 20)))

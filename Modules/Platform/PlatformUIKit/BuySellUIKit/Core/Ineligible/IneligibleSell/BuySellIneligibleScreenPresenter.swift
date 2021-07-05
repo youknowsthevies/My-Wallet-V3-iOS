@@ -40,8 +40,7 @@ public final class BuySellIneligibleScreenPresenter {
     var imageViewContent: Driver<ImageViewContent> {
         Driver.just(
             ImageViewContent(
-                imageName: "region-error-icon",
-                bundle: .platformUIKit
+                imageResource: .local(name: "region-error-icon", bundle: .platformUIKit)
             )
         )
     }

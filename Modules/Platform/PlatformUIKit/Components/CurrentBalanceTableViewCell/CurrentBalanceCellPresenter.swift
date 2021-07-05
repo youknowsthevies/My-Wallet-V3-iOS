@@ -110,10 +110,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
 
         switch currency {
         case .fiat(let fiatCurrency):
-            let image = fiatCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .primary(
-                with: image.name,
-                bundle: image.bundle,
+                image: fiatCurrency.logoResource,
                 contentColor: .white,
                 backgroundColor: .fiat,
                 accessibilityIdSuffix: ""
@@ -121,10 +119,8 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             badgeImageViewModel.marginOffsetRelay.accept(0)
             badgeRelay.accept(badgeImageViewModel)
         case .crypto(let cryptoCurrency):
-            let image = cryptoCurrency.logoResource.local
             let badgeImageViewModel: BadgeImageViewModel = .default(
-                with: image.name,
-                bundle: image.bundle,
+                image: cryptoCurrency.logoResource,
                 cornerRadius: .round,
                 accessibilityIdSuffix: ""
             )
@@ -139,7 +135,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             titleRelay.accept(fiatCurrency.defaultWalletName)
         case (.nonCustodial, .crypto(let cryptoCurrency)):
             model = .template(
-                with: "ic-private-account",
+                image: .local(name: "ic-private-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -148,7 +144,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             titleRelay.accept(cryptoCurrency.defaultWalletName)
         case (.custodial(.trading), .crypto(let cryptoCurrency)):
             model = .template(
-                with: "ic-trading-account",
+                image: .local(name: "ic-trading-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,
@@ -157,7 +153,7 @@ public final class CurrentBalanceCellPresenter: CurrentBalanceCellPresenting {
             titleRelay.accept(cryptoCurrency.defaultTradingWalletName)
         case (.custodial(.savings), .crypto(let cryptoCurrency)):
             model = .template(
-                with: "ic-interest-account",
+                image: .local(name: "ic-interest-account", bundle: .platformUIKit),
                 templateColor: currency.brandColor,
                 backgroundColor: .white,
                 cornerRadius: .round,

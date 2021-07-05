@@ -40,9 +40,8 @@ final class BuyIntroScreenPresenter {
         self.stateService = stateService
 
         themeBackgroundImageViewContent = .init(
-            imageName: "sb-intro-bg-theme",
-            accessibility: .id(AccessibilityId.themeBackgroundImageView),
-            bundle: .platformUIKit
+            imageResource: .local(name: "sb-intro-bg-theme", bundle: .platformUIKit),
+            accessibility: .id(AccessibilityId.themeBackgroundImageView)
         )
 
         // Card setup

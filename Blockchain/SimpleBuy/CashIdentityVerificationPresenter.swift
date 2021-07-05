@@ -54,7 +54,7 @@ final class CashIdentityVerificationPresenter {
         ]
         announcement = .init(
             badgeImage: .init(
-                imageName: "icon-gbp",
+                image: .local(name: "icon-gbp", bundle: .platformUIKit),
                 contentColor: .white,
                 backgroundColor: .fiat,
                 cornerRadius: .value(4.0),

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Localization
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -33,7 +34,6 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
         let value = DateFormatter.medium.string(from: date)
         let amount = state.amount
         let currency = amount.currency
-        let logo = currency.logoResource
         return .init(
             title: String(format: LocalizationIds.Success.title, amount.displayString),
             subtitle: String(
@@ -45,14 +45,16 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(with: logo.local.name,
-                                 bundle: logo.local.bundle,
+                        .primary(image: currency.logoResource,
                                  contentColor: .white,
                                  backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                                  cornerRadius: .value(8.0),
                                  accessibilityIdSuffix: "PendingTransactionSuccessBadge")
                     ),
-                    sideViewAttributes: .init(type: .image("v-success-icon"), position: .radiusDistanceFromCenter)
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.success.imageResource),
+                        position: .radiusDistanceFromCenter
+                    )
                 )
             ),
             effect: .close,
@@ -63,7 +65,6 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
     private func pending(state: TransactionState) -> PendingTransactionPageState {
         let amount = state.amount
         let currency = amount.currency
-        let logo = amount.currency.logoResource
         return .init(
             title: String(
                 format: LocalizationIds.Pending.title,
@@ -73,8 +74,7 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(with: logo.local.name,
-                                 bundle: logo.local.bundle,
+                        .primary(image: amount.currency.logoResource,
                                  contentColor: .white,
                                  backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                                  cornerRadius: .value(8.0),
@@ -90,21 +90,22 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
 
     private func failed(state: TransactionState) -> PendingTransactionPageState {
         let currency = state.amount.currency
-        let logo = currency.logoResource
         return .init(
             title: state.transactionErrorDescription,
             subtitle: LocalizationIds.Failure.description,
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(with: logo.local.name,
-                                 bundle: logo.local.bundle,
+                        .primary(image: currency.logoResource,
                                  contentColor: .white,
                                  backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
                                  cornerRadius: .value(8.0),
                                  accessibilityIdSuffix: "PendingTransactionFailureBadge")
                     ),
-                    sideViewAttributes: .init(type: .image("circular-error-icon"), position: .radiusDistanceFromCenter)
+                    sideViewAttributes: .init(
+                        type: .image(PendingStateViewModel.Image.circleError.imageResource),
+                        position: .radiusDistanceFromCenter
+                    )
                 )
             ),
             effect: .close,

@@ -128,8 +128,8 @@ final class LinkBankSplashScreenContentReducer {
         )
 
         let partnerLogoImageContent = ImageViewContent(
-            imageName: "yodlee-logo",
-            bundle: .platformUIKit)
+            imageResource: .local(name: "yodlee-logo", bundle: .platformUIKit)
+        )
 
         let detailsTitleContent = LabelContent(
             text: String(format: LocalizedStrings.detailsTitle, partnerName),

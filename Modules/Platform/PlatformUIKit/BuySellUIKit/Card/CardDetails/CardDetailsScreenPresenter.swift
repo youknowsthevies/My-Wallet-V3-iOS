@@ -156,9 +156,8 @@ final class CardDetailsScreenPresenter: RibBridgePresenter {
 
         noticeViewModel = NoticeViewModel(
             imageViewContent: .init(
-                imageName: "lock-icon",
-                accessibility: .id(AccessibilityId.noticeImage),
-                bundle: .platformUIKit
+                imageResource: .local(name: "lock-icon", bundle: .platformUIKit),
+                accessibility: .id(AccessibilityId.noticeImage)
             ),
             labelContents: .init(
                 text: LocalizedString.notice,

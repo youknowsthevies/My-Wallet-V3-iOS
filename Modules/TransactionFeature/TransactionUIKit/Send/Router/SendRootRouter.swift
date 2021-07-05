@@ -39,10 +39,9 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
             title: LocalizedSend.Header.sendCryptoNow,
             subtitle: LocalizedSend.Header.chooseAWalletToSendFrom,
             imageContent: .init(
-                imageName: ImageAsset.iconSend.rawValue,
+                imageResource: ImageAsset.iconSend.imageResource,
                 accessibility: .none,
-                renderingMode: .normal,
-                bundle: .transactionUIKit
+                renderingMode: .normal
             )
         )
         let navigationModel = ScreenNavigationModel(

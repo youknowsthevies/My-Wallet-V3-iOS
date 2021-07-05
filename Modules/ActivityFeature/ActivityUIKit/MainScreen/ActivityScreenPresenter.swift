@@ -135,12 +135,12 @@ final class ActivityScreenPresenter {
                 switch account {
                 case is AccountGroup:
                     return .init(
-                        imageName: "icon-disclosure-down-small",
+                        imageResource: .local(name: "icon-disclosure-down-small", bundle: .platformUIKit),
                         renderingMode: .template(.descriptionText)
                     )
                 default:
                     return .init(
-                        imageName: "icon-disclosure-down-small",
+                        imageResource: .local(name: "icon-disclosure-down-small", bundle: .platformUIKit),
                         accessibility: .none,
                         renderingMode: .template(.descriptionText)
                     )
@@ -194,18 +194,17 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
         switch account {
         case is AccountGroup:
             return .image(
-                .init(name: "icon-card",
-                      background: .lightBadgeBackground,
-                      cornerRadius: .round,
-                      size: .edge(32)
+                .init(
+                    image: .local(name: "icon-card", bundle: .platformUIKit),
+                    background: .lightBadgeBackground,
+                    cornerRadius: .round,
+                    size: .edge(32)
                 )
             )
         case is FiatAccount:
-            let localImage = account.currencyType.logoResource.local
             return .image(
                 .init(
-                    name: localImage.name,
-                    bundle: localImage.bundle,
+                    image: account.currencyType.logoResource,
                     background: .fiat,
                     offset: 0,
                     cornerRadius: .value(8.0),
@@ -213,11 +212,9 @@ fileprivate extension SelectionButtonViewModel.LeadingContent {
                 )
             )
         default:
-            let localImage = account.currencyType.logoResource.local
             return .image(
                 .init(
-                    name: localImage.name,
-                    bundle: localImage.bundle,
+                    image: account.currencyType.logoResource,
                     background: .clear,
                     offset: 0,
                     cornerRadius: .round,

@@ -2,13 +2,13 @@
 
 import PlatformUIKit
 
-enum ImageAsset: String, PlatformUIKit.ImageAsset {
+enum ImageAsset: String {
     case iconSend = "icon_send"
     case iconReceive = "icon_receive"
     case iconReceiveGray = "icon_receive_gray"
     case iconVerified = "icon_verified"
 
-    var image: UIImage {
-        UIImage(named: rawValue, in: .transactionUIKit, compatibleWith: nil)!
+    var imageResource: ImageResource {
+        .local(name: rawValue, bundle: .transactionUIKit)
     }
 }

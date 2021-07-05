@@ -95,9 +95,8 @@ final class BankTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
         let notice = NoticeViewModel(
             imageViewContent: .init(
-                imageName: "disclaimer-icon",
-                accessibility: .id(AccessibilityId.disclaimerImage),
-                bundle: .platformUIKit
+                imageResource: .local(name: "disclaimer-icon", bundle: .platformUIKit),
+                accessibility: .id(AccessibilityId.disclaimerImage)
             ),
             labelContents: .init(
                 text: LocalizedString.disclaimer,

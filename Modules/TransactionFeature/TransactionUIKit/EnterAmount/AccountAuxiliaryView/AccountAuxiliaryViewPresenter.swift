@@ -30,11 +30,9 @@ final class AccountAuxiliaryViewPresenter {
         badgeImageViewModel = interactor
             .stateRelay
             .map(\.imageResource)
-            .map(\.local)
             .map {
                 BadgeImageViewModel.default(
-                    with: $0.name,
-                    bundle: .platformUIKit,
+                    image: $0,
                     cornerRadius: .round,
                     accessibilityIdSuffix: "AccountAuxiliaryViewBadge"
                 )

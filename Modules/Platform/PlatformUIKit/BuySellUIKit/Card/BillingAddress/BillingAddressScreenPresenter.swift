@@ -166,7 +166,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
         selectionButtonViewModel.trailingContentRelay.accept(
             .image(
                 ImageViewContent(
-                    imageName: "icon-disclosure-down-small"
+                    imageResource: .local(name: "icon-disclosure-down-small", bundle: .platformUIKit)
                 )
             )
         )

@@ -52,7 +52,7 @@ public final class LinkedBankAccountCellPresenter {
                   alignment: .left,
                   accessibility: .none)
         )
-        badgeImageViewModel = .just(.default(with: "icon-bank",
+        badgeImageViewModel = .just(.default(image: .local(name: "icon-bank", bundle: .platformUIKit),
                                              cornerRadius: .round,
                                              accessibilityIdSuffix: ""))
     }

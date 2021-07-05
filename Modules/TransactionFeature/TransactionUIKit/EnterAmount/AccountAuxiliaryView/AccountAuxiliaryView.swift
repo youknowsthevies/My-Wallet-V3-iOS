@@ -68,7 +68,7 @@ final class AccountAuxiliaryView: UIView {
 
         disclosureImageView.set(
             ImageViewContent(
-                imageName: "icon-disclosure-small"
+                imageResource: .local(name: "icon-disclosure-small", bundle: .platformUIKit)
             )
         )
 

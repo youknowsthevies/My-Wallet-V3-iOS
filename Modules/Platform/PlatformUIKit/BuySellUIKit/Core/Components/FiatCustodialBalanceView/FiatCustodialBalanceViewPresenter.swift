@@ -77,11 +77,9 @@ final class FiatCustodialBalanceViewPresenter: Equatable {
         interactor
             .fiatCurrency
             .map(\.logoResource)
-            .map(\.local)
-            .map { localResource in
+            .map { logoResource in
                 .primary(
-                    with: localResource.name,
-                    bundle: localResource.bundle,
+                    image: logoResource,
                     contentColor: .white,
                     backgroundColor: .fiat,
                     cornerRadius: .value(8.0),

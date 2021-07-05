@@ -270,7 +270,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         // the payment selection modal
         if methodCount > 1 {
             trailingImageViewContent = ImageViewContent(
-                imageName: "icon-disclosure-small"
+                imageResource: .local(name: "icon-disclosure-small", bundle: .platformUIKit)
             )
             viewModel.isButtonEnabledRelay.accept(true)
         } else {

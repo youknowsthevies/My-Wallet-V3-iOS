@@ -44,8 +44,8 @@ public final class CompositeStatusView: UIView {
                         switch attributes.type {
                         case .loader:
                             self.setupLoadingView()
-                        case .image(let name):
-                            self.setupImageView(with: name)
+                        case .image(let imageResource):
+                            self.setupImageView(with: imageResource)
                         case .none:
                             break
                         }
@@ -55,7 +55,7 @@ public final class CompositeStatusView: UIView {
 
         @available(*, unavailable)
         required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
+            nil
         }
 
         override func layoutSubviews() {
@@ -63,8 +63,8 @@ public final class CompositeStatusView: UIView {
             layer.cornerRadius = min(bounds.width, bounds.height) * 0.5
         }
 
-        private func setupImageView(with name: String) {
-            let image = UIImage(named: name, in: .platformUIKit, compatibleWith: .none)!
+        private func setupImageView(with imageResource: ImageResource) {
+            let image = imageResource.localImage
             let imageView = UIImageView(image: image)
             add(view: imageView)
         }
@@ -154,16 +154,16 @@ public final class CompositeStatusView: UIView {
                     self.mainContainerView.removeSubviews()
                     self.sideContainerView.removeSubviews()
                     switch type {
-                    case let .image(name, bundle):
-                        self.setupImageView(with: name, bundle: bundle)
+                    case let .image(imageResource):
+                        self.setupImageView(with: imageResource)
                     case .loader:
                         self.setupLoadingView()
                     case .composite(let composite):
                         switch composite.baseViewType {
                         case let .badgeImageViewModel(viewModel):
                             self.setupBadgeImageView(with: viewModel)
-                        case let .image(name, bundle):
-                            self.setupImageView(with: name, bundle: bundle)
+                        case let .image(imageResource):
+                            self.setupImageView(with: imageResource)
                         case let .templateImage(name, bundle, color):
                             self.setupTemplateImageView(with: name, bundle: bundle, templateColor: color)
                         case .text(let text):
@@ -234,8 +234,8 @@ public final class CompositeStatusView: UIView {
         add(view: badgeImageView)
     }
 
-    private func setupImageView(with name: String, bundle: Bundle) {
-        let image = UIImage(named: name, in: bundle, compatibleWith: .none)!
+    private func setupImageView(with imageResource: ImageResource) {
+        let image = imageResource.localImage
         let imageView = UIImageView(image: image)
         add(view: imageView)
     }

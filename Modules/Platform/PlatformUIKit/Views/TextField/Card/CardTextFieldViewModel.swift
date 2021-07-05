@@ -19,9 +19,8 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
             .map { type in
                 guard type.isKnown else { return nil }
                 let content = ImageViewContent(
-                    imageName: type.thumbnail,
-                    accessibility: .id(type.name),
-                    bundle: .platformUIKit
+                    imageResource: type.thumbnail,
+                    accessibility: .id(type.name)
                 )
                 let viewModel = BadgeImageViewModel(cornerRadius: .value(4))
                 viewModel.sizingTypeRelay.accept(.constant(CGSize(width: 32, height: 20)))

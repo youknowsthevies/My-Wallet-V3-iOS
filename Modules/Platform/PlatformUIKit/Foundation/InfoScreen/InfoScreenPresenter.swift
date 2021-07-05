@@ -6,7 +6,7 @@ import RxSwift
 /// Raw content for into screen.
 /// Should be implemented by a concrete type
 public protocol InfoScreenContent {
-    var image: String { get }
+    var image: ImageResource { get }
     var title: String { get }
     var description: String { get }
     var disclaimerInputs: [InteractableTextViewModel.Input] { get }
@@ -32,8 +32,8 @@ public struct InfoScreenPresenter {
     // MARK: - Setup
 
     public init(with content: InfoScreenContent, action: @escaping () -> Void) {
-        imageViewContent = .init(
-            imageName: content.image,
+        imageViewContent = ImageViewContent(
+            imageResource: content.image,
             accessibility: .id(AccessibilityId.imageView)
         )
         titleLabelContent = .init(
