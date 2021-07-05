@@ -5,22 +5,45 @@
 #  https://docs.fastlane.tools/advanced/#appfile
 #
 
-for_lane :upload do
-  app_identifier "com.rainydayapps.Blockchain"
+# Define app identifier groups for each type of app we have
+app_identifiers_alpha = [
+  "com.rainydayapps.Blockchain.alpha",
+  "com.rainydayapps.Blockchain.alpha.TodayExtension"
+]
+app_identifiers_dev = [
+  "com.rainydayapps.Blockchain.dev",
+  "com.rainydayapps.Blockchain.dev.TodayExtension"
+]
+app_identifiers_staging = [
+  "com.rainydayapps.Blockchain.staging",
+  "com.rainydayapps.Blockchain.staging.TodayExtension"
+]
+app_identifiers_production = [
+  "com.rainydayapps.Blockchain",
+  "com.rainydayapps.Blockchain.TodayExtension"
+]
+# The '|' operator combines multiple arrays together merging them as a set of unique entries
+app_identifiers_all = app_identifiers_dev | app_identifiers_staging | app_identifiers_alpha | app_identifiers_production
+
+# Set the app identifiers for lanes
+app_identifier app_identifiers_all
+
+for_lane :alpha do
+  app_identifier app_identifiers_alpha
 end
 
 for_lane :dev do
-  app_identifier "com.rainydayapps.Blockchain.dev"
+  app_identifier app_identifiers_dev
+end
+
+for_lane :interal_release do
+  app_identifier app_identifiers_production
 end
 
 for_lane :staging do
-  app_identifier "com.rainydayapps.Blockchain.staging"
+  app_identifier app_identifiers_staging
 end
 
-for_lane :dogfooding do
-  app_identifier "com.rainydayapps.Blockchain.dogfooding"
-end
-
-for_lane :production do
-  app_identifier "com.rainydayapps.Blockchain"
+for_lane :release do
+  app_identifier app_identifiers_production
 end

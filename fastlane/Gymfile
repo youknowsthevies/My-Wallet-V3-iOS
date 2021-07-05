@@ -1,11 +1,29 @@
-clean(true)
-include_bitcode(true)
-include_symbols(true)
-skip_profile_detection(true)
-export_options(
-  method: "app-store",
-  provisioningProfiles: { 
-    "com.rainydayapps.Blockchain" => "match AppStore com.rainydayapps.Blockchain",
-  }
-)
-workspace("Blockchain.xcworkspace")
+archive_path "output/Blockchain.xcarchive"
+clean true
+export_method "ad-hoc"
+include_bitcode true
+include_symbols true
+output_directory "output"
+scheme "Blockchain"
+skip_profile_detection true
+workspace "Blockchain.xcworkspace"
+
+for_lane :alpha do
+    scheme "Blockchain (Alpha)"
+end
+
+for_lane :dev do
+    scheme "Blockchain (Dev)"
+end
+
+for_lane :interal_release do
+    scheme Blockchain (Internal Production)
+end
+
+for_lane :staging do
+    scheme "Blockchain (Staging)"
+end
+
+for_lane :release do
+    export_method "app-store"
+end

@@ -1,15 +1,8 @@
-app_identifier(
-    [
-        "com.rainydayapps.Blockchain",
-        "com.rainydayapps.Blockchain.TodayExtension",
-        "com.rainydayapps.Blockchain.dev",
-        "com.rainydayapps.Blockchain.dev.TodayExtension",
-        "com.rainydayapps.Blockchain.staging",
-        "com.rainydayapps.Blockchain.staging.TodayExtension",
-        "com.rainydayapps.Blockchain.dogfooding",
-        "com.rainydayapps.Blockchain.dogfooding.TodayExtension",
-    ]
-)
 git_url(ENV["CREDENTIALS_REPO"])
-type("appstore")
 username(ENV["FASTLANE_USER"])
+
+type "adhoc"
+
+for_lane :release do
+    type "appstore"
+end

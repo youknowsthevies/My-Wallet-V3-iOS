@@ -2,81 +2,89 @@ opt_out_usage
 
 default_platform(:ios)
 platform :ios do
-
+  
   before_all do
     # This is required to setup the temporary keychain
     setup_circle_ci
   end
-
-  desc "Builds using the dev environment"
-  lane :dev do
-    key_id = ENV["APPSTORE_CONNECT_API_KEY_ID"]
-    issuer_id = ENV["APPSTORE_CONNECT_API_ISSUER_ID"]
-    key_content = ENV["APPSTORE_CONNECT_API_KEY_CONTENT"]
-    api_key = app_store_connect_api_key(
-      key_id: key_id,
-      issuer_id: issuer_id,
-      key_content: key_content
+  
+  desc "Builds and uploads the app using the dev environment."
+  desc "Builds are uploaded to AppCenter."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  lane :dev do | options |
+    final_options = options.merge(
+      {
+        environment: "Dev",
+      }
     )
-    sync_code_signing(type: "appstore", readonly: true, key_id: key_id)
-    build_app(
-      clean: true,
-      export_method: "app-store",
-      include_bitcode: true,
-      include_symbols: true,
-      scheme: "Blockchain (Dev)",
-      workspace: "Blockchain.xcworkspace"
+    produce_build(final_options)
+  end
+  
+  desc "Builds and uploads the app using the staging environment."
+  desc "Builds are uploaded to AppCenter."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  lane :staging do | options |
+    final_options = options.merge(
+      {
+        environment: "Staging",
+      }
     )
-    if is_ci?
-      # Send Slack notification to #ios-ci channel
-      # slack(message: "App successfully build!")
-    end
+    produce_build(final_options)
+  end
+  
+  desc "Builds and uploads the app using the production environment but a different bundle ID and enabling internal features."
+  desc "Builds are uploaded to AppCenter."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  lane :alpha do | options |
+    final_options = options.merge(
+      {
+        environment: "Alpha",
+      }
+    )
+    produce_build(final_options)
+  end
+  
+  desc "Builds and uploads the app using the production environment. This version can toggle internal feature flags."
+  desc "Builds are uploaded to AppCenter."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  lane :internal_release do | options |
+    final_options = options.merge(
+      {
+        environment: "Prod"
+      }
+    )
+    produce_build(final_options)
   end
 
-  desc "Builds using the staging environment"
-  lane :staging do
-    build_app(
-      clean: true,
-      include_bitcode: true,
-      include_symbols: true,
-      scheme: "Blockchain (Staging)",
-      workspace: "Blockchain.xcworkspace"
+  desc "Builds and uploads the app using the production environment."
+  desc "Builds are uploaded to TestFlight."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  lane :release do | options |
+    final_options = options.merge(
+      {
+        environment: "Prod",
+        build_type: "appstore"
+      }
     )
+    produce_build(final_options)
   end
-
-  desc "Builds using the production environment but a different bundle ID and enabling internal features"
-  lane :dogfooding do
-    build_app(
-      clean: true,
-      include_bitcode: true,
-      include_symbols: true,
-      scheme: "Blockchain (Dogfooding)",
-      workspace: "Blockchain.xcworkspace"
-    )
-  end
-
+  
   desc "Runs all unit tests on Blockchain (Staging) scheme"
   lane :execute_tests do
     scan
   end
-
+  
   desc "Updates code signing on the current machine"
   lane :code_signing do
     # Global parameters are loaded from the Matchfile
-    match(type: "appstore", readonly: true)
+    match(type: "appstore", readonly: is_ci?)
     match(type: "adhoc", force_for_new_devices: true)
+    match(type: "development", force_for_new_devices: true)
   end
-
+  
   desc "Upload to TestFlight"
   lane :upload do
-    key_id = ENV["APPSTORE_CONNECT_API_KEY_ID"]
-    issuer_id = ENV["APPSTORE_CONNECT_API_ISSUER_ID"]
-    key_content = ENV["APPSTORE_CONNECT_API_KEY_CONTENT"]
-    api_key = app_store_connect_api_key(
-      key_id: key_id,
-      issuer_id: issuer_id,
-      key_content: key_content
-    )
+    api_key = fetch_app_store_connect_api_key
     match(type: "appstore", readonly: true, api_key: api_key)
     upload_to_testflight(
       api_key: api_key,
@@ -85,26 +93,113 @@ platform :ios do
       skip_waiting_for_build_processing: true
     )
   end
- 
+  
+  desc "Zips all dSYM files required for Crashlytics in the output folder."
+  desc "This lane expects a build archive to be present in the output folder."
+  lane :gather_dsyms do | options |
+    sh "../scripts/gather-dsyms.sh"
+  end
+
   desc "Upload dsyms zip file to Crashlytics. Optional isStaging parameter (defaults to false)."
   lane :upload_dsyms do |options|
-    environment = (options[:isStaging] ? "Staging" : "Prod")
+    environment = options[:environment] || "Prod"
     # Assumes there is a 'blockchain-dsyms.zip' file in `./output` directory.
-    # To create the zip file, execute the following commands:
-    # cd $BITRISE_SOURCE_DIR/output/Blockchain.xcarchive/dSYMs/
-    # zip -r $BITRISE_SOURCE_DIR/output/blockchain-dsyms.zip . 
+    # To create the zip file, execute the following command `fastlane gather_dsyms`
+    puts "Uploading dSYMs for environment '#{environment}'"
     upload_symbols_to_crashlytics(
       binary_path: "./scripts/crashlytics/upload-symbols",
       dsym_path: "./output/blockchain-dsyms.zip",
       gsp_path: "./Blockchain/Firebase/#{environment}/GoogleService-Info.plist"
     )
   end
-
+  
   desc "Upload IPA to AppCenter."
   lane :upload_to_appcenter do
-  	#  Expected env vars: 
-  	#  APPCENTER_API_TOKEN, APPCENTER_DISTRIBUTE_FILE, APPCENTER_OWNER_NAME,
-  	#  APPCENTER_DISTRIBUTE_DESTINATIONS, APPCENTER_DISTRIBUTE_RELEASE_NOTES and APPCENTER_APP_NAME
-  	appcenter_upload
+    #  Expected env vars: 
+    #  APPCENTER_API_TOKEN, APPCENTER_DISTRIBUTE_FILE, APPCENTER_OWNER_NAME,
+    #  APPCENTER_DISTRIBUTE_DESTINATIONS, APPCENTER_DISTRIBUTE_RELEASE_NOTES and APPCENTER_APP_NAME
+    appcenter_upload(
+      file: "output/Blockchain.ipa"
+    )
+  end
+  
+  # ==== PRIVATE LANES ====
+
+  desc "Performs the entire workflow of running tests, creating a build, and deploying it alongside any supporting metadata."
+  desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
+  private_lane :produce_build do | options |
+    run_tests_if_needed(options)
+    update_code_signing(options)
+    build_and_archive(options)
+    upload_dsyms_if_needed(options)
+    upload_build_if_needed(options)
+    clean_up(options)
+  end
+
+  desc "Runs Match for the current configuration."
+  private_lane :update_code_signing do | options |
+    puts "🔏  Updating Code Signing"
+    match(force_for_new_devices: is_ci?)
+  end
+
+  desc "Runs Gym for the current configuration."
+  private_lane :build_and_archive do | options |
+    puts "🏗  Building App"
+    build_app
+  end
+  
+  private_lane :run_tests_if_needed do | options |
+    skip_tests = options.fetch(:skip_tests, not(is_ci?))
+    unless skip_tests
+      puts "🧪  Running tests"
+      execute_tests
+    else
+      puts "🧪  Skipping tests"
+    end
+  end
+  
+  private_lane :upload_dsyms_if_needed do | options |
+    skip_dsym_upload = options.fetch(:skip_dsym_upload, not(is_ci?))
+    unless skip_dsym_upload
+      puts "🐛  Uploading dSYMs"
+      gather_dsyms(options)
+      upload_dsyms(options)
+    else
+      puts "🐛  Skipping dSYMs upload"
+    end
+  end
+  
+  private_lane :upload_build_if_needed do | options |
+    skip_build_upload = options.fetch(:skip_build_upload, not(is_ci?))
+    unless skip_build_upload
+      puts "🚀  Uploading build"
+      if is_adhoc_build = is_adhoc_build_type?(options)
+        upload_to_appcenter
+      else
+        upload
+      end
+    else
+      puts "🚀  Skipping build upload"
+    end
+  end
+
+  private_lane :clean_up do | options |
+    # On CI, remove Xcode's build archive so it doesn't pollute stored artifacts
+    sh "rm -rf ../output/Blockchain.xcarchive" if is_ci?
+  end
+  
+  # ==== Helper Functions ====
+  
+  def is_adhoc_build_type?(options)
+    build_type = options[:build_type] || "adhoc"
+    build_type == "adhoc"
+  end
+  
+  def fetch_app_store_connect_api_key
+    app_store_connect_api_key(
+      key_id: ENV["APPSTORE_CONNECT_API_KEY_ID"],
+      issuer_id: ENV["APPSTORE_CONNECT_API_ISSUER_ID"],
+      key_content: ENV["APPSTORE_CONNECT_API_KEY_CONTENT"]
+    )
   end
 end

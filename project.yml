@@ -4,8 +4,8 @@ configs:
   Debug Dev: debug
   Debug Production: debug
   Debug Staging: debug
-  Debug Dogfooding: debug
-  Release Dogfooding: release
+  Debug Alpha: debug
+  Release Alpha: release
   Release: release
   Release Internal: release
   Release Staging: release
@@ -131,10 +131,10 @@ schemes:
       bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
-  Blockchain (Dogfooding):
+  Blockchain (Alpha):
     templateAttributes:
-      debugConfig: Debug Dogfooding
-      releaseConfig: Release Dogfooding
+      debugConfig: Debug Alpha
+      releaseConfig: Release Alpha
       bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
@@ -163,19 +163,19 @@ settingGroups:
   release_signing_staging:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.staging
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.staging
     groups:
     - base_signing
-  debug_signing_dogfooding:
+  debug_signing_alpha:
     base:
       CODE_SIGN_IDENTITY: iPhone Developer
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.dogfooding
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.alpha
     groups:
     - base_signing
-  release_signing_dogfooding:
+  release_signing_alpha:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.dogfooding
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.alpha
     groups:
     - base_signing
   debug_signing:
@@ -215,21 +215,21 @@ settingGroups:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
       PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.staging.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.staging.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.staging.TodayExtension
     groups:
     - base_signing_today_extension
-  debug_signing_today_extension_dogfooding:
+  debug_signing_today_extension_alpha:
     base:
       CODE_SIGN_IDENTITY: iPhone Developer
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.dogfooding.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.dogfooding.TodayExtension
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.alpha.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.alpha.TodayExtension
     groups:
     - base_signing_today_extension
-  release_signing_today_extension_dogfooding:
+  release_signing_today_extension_alpha:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
-      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.dogfooding.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.dogfooding.TodayExtension
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.alpha.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.alpha.TodayExtension
     groups:
     - base_signing_today_extension
   debug_signing_today_extension:
@@ -261,13 +261,13 @@ settings:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Debug Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
-    Debug Dogfooding:
+    Debug Alpha:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Internal:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
-    Release Dogfooding:
+    Release Alpha:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
 targetTemplates:
   Module:
@@ -566,11 +566,11 @@ targets:
       Debug Dev: Config/BlockchainConfig/Blockchain-Dev.xcconfig
       Debug Production: Config/BlockchainConfig/Blockchain-Production.xcconfig
       Debug Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
-      Debug Dogfooding: Config/BlockchainConfig/Blockchain-Dogfooding.xcconfig
+      Debug Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
       Release: Config/BlockchainConfig/Blockchain-Production.xcconfig
       Release Internal: Config/BlockchainConfig/Blockchain-Production.xcconfig
       Release Staging: Config/BlockchainConfig/Blockchain-Staging.xcconfig
-      Release Dogfooding: Config/BlockchainConfig/Blockchain-Dogfooding.xcconfig
+      Release Alpha: Config/BlockchainConfig/Blockchain-Alpha.xcconfig
     dependencies:
     - sdk: libicucore.tbd
     - framework: Carthage/Build/BigInt.xcframework
@@ -711,13 +711,13 @@ targets:
           groups:
           - release_signing_staging
           - base_ios
-        Debug Dogfooding:
+        Debug Alpha:
           groups:
-          - debug_signing_dogfooding
+          - debug_signing_alpha
           - base_ios
-        Release Dogfooding:
+        Release Alpha:
           groups:
-          - release_signing_dogfooding
+          - release_signing_alpha
           - base_ios
         Debug Production:
           groups:
@@ -1092,11 +1092,11 @@ targets:
       Debug Dev: Config/NetworkKitConfig/NetworkKit-Dev.xcconfig
       Debug Production: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Debug Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
-      Debug Dogfooding: Config/NetworkKitConfig/NetworkKit-Dogfooding.xcconfig
+      Debug Alpha: Config/NetworkKitConfig/NetworkKit-Alpha.xcconfig
       Release: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Release Internal: Config/NetworkKitConfig/NetworkKit-Production.xcconfig
       Release Staging: Config/NetworkKitConfig/NetworkKit-Staging.xcconfig
-      Release Dogfooding: Config/NetworkKitConfig/NetworkKit-Dogfooding.xcconfig
+      Release Alpha: Config/NetworkKitConfig/NetworkKit-Alpha.xcconfig
     dependencies:
     - framework: Carthage/Build/RxSwift.xcframework
     - framework: Carthage/Build/RxCombine.xcframework
@@ -1425,12 +1425,12 @@ targets:
         Release Staging:
           groups:
           - release_signing_today_extension_staging
-        Debug Dogfooding:
+        Debug Alpha:
           groups:
-          - debug_signing_today_extension_dogfooding
-        Release Dogfooding:
+          - debug_signing_today_extension_alpha
+        Release Alpha:
           groups:
-          - release_signing_today_extension_dogfooding
+          - release_signing_today_extension_alpha
         Debug Production:
           groups:
           - debug_signing_today_extension
