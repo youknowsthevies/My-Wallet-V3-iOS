@@ -184,6 +184,12 @@ settingGroups:
       PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain
     groups:
     - base_signing
+  release_signing_internal:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain
+    groups:
+    - base_signing
   release_signing:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
@@ -237,6 +243,13 @@ settingGroups:
       CODE_SIGN_IDENTITY: iPhone Developer
       PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
       PROVISIONING_PROFILE_SPECIFIER: match Development com.rainydayapps.Blockchain.TodayExtension
+    groups:
+    - base_signing_today_extension
+  release_signing_today_extension_internal:
+    base:
+      CODE_SIGN_IDENTITY: iPhone Distribution
+      PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.TodayExtension
     groups:
     - base_signing_today_extension
   release_signing_today_extension:
@@ -693,7 +706,7 @@ targets:
           - base_ios
         Release Internal:
           groups:
-          - release_signing
+          - release_signing_internal
           - base_ios
     sources:
     - group: Blockchain/JavaScript
@@ -1375,7 +1388,7 @@ targets:
           - release_signing_today_extension
         Release Internal:
           groups:
-          - release_signing_today_extension
+          - release_signing_today_extension_internal
     sources:
     - TodayExtension
     type: app-extension

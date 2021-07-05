@@ -16,8 +16,8 @@ for_lane :dev do
     scheme "Blockchain (Dev)"
 end
 
-for_lane :interal_release do
-    scheme Blockchain (Internal Production)
+for_lane :internal_release do
+    scheme "Blockchain (Internal Production)"
 end
 
 for_lane :staging do
