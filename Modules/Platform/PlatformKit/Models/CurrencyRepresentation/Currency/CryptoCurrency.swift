@@ -2,6 +2,7 @@
 
 import DIKit
 import Localization
+import ToolKit
 
 /// This is used to distinguish between different types of digital assets.
 public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebugStringConvertible {
@@ -10,8 +11,7 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
     case ethereum
     case bitcoinCash
     case stellar
-    case algorand
-    case polkadot
+    case other(CoinAssetModel)
     case erc20(ERC20AssetModel)
 
     public init?(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
@@ -49,12 +49,7 @@ extension CryptoCurrency {
 
     /// Sort currencies, first non ERC20 coins following `integerValue` value, then ERC20 coins sorted as we received them.
     public static func < (lhs: CryptoCurrency, rhs: CryptoCurrency) -> Bool {
-        switch (lhs, rhs) {
-        case let (.erc20(lhsModel), .erc20(rhsModel)):
-            return lhsModel.sortIndex < rhsModel.sortIndex
-        default:
-            return lhs.integerValue < rhs.integerValue
-        }
+        lhs.integerValue < rhs.integerValue
     }
 
     /// Helper value for `Comparable` conformance.
@@ -68,12 +63,10 @@ extension CryptoCurrency {
             return 2
         case .stellar:
             return 3
-        case .algorand:
-            return 4
-        case .polkadot:
-            return 5
-        case .erc20:
-            return 6
+        case .other(let model):
+            return 100_000 + model.sortIndex
+        case .erc20(let model):
+            return 200_000 + model.sortIndex
         }
     }
 
@@ -81,15 +74,13 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialReceiveSupport: Bool {
         switch self {
-        case .algorand,
-             .polkadot:
+        case .other:
             return false
         case.bitcoin,
             .bitcoinCash,
             .ethereum,
-            .stellar:
-            return true
-        case .erc20:
+            .stellar,
+            .erc20:
             return true
         }
     }
@@ -98,15 +89,13 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialWithdrawalSupport: Bool {
         switch self {
-        case .algorand,
-             .polkadot:
+        case .other:
             return false
-        case .bitcoin,
-             .bitcoinCash,
-             .ethereum,
-             .stellar:
-            return true
-        case .erc20:
+        case.bitcoin,
+            .bitcoinCash,
+            .ethereum,
+            .stellar,
+            .erc20:
             return true
         }
     }
@@ -115,15 +104,13 @@ extension CryptoCurrency {
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialSupport: Bool {
         switch self {
-        case .algorand,
-             .polkadot:
+        case .other:
             return false
-        case .bitcoin,
-             .bitcoinCash,
-             .ethereum,
-             .stellar:
-            return true
-        case .erc20:
+        case.bitcoin,
+            .bitcoinCash,
+            .ethereum,
+            .stellar,
+            .erc20:
             return true
         }
     }
@@ -136,21 +123,19 @@ extension CryptoCurrency {
 
     public var name: String {
         switch self {
-        case .algorand:
-            return "Algorand"
         case .bitcoin:
             return "Bitcoin"
         case .bitcoinCash:
             return "Bitcoin Cash"
         case .ethereum:
             return "Ether"
-        case .polkadot:
-            return "Polkadot"
         case .stellar:
             return "Stellar"
         case let .erc20(model) where model.code == LegacyERC20Code.pax.rawValue:
             return "USD \(LocalizationConstants.digital)"
         case .erc20(let model):
+            return model.name
+        case .other(let model):
             return model.name
         }
     }
@@ -160,18 +145,16 @@ extension CryptoCurrency {
 
     public var code: String {
         switch self {
-        case .algorand:
-            return "ALGO"
         case .bitcoin:
             return "BTC"
         case .bitcoinCash:
             return "BCH"
         case .erc20(let model):
             return model.code
+        case .other(let model):
+            return model.code
         case .ethereum:
             return "ETH"
-        case .polkadot:
-            return "DOT"
         case .stellar:
             return "XLM"
         }
@@ -179,13 +162,13 @@ extension CryptoCurrency {
 
     public var displayCode: String {
         switch self {
-        case .algorand,
-             .bitcoin,
+        case .bitcoin,
              .bitcoinCash,
              .ethereum,
-             .polkadot,
              .stellar:
             return code
+        case .other(let model):
+            return model.code
         case let .erc20(model) where model.code == LegacyERC20Code.pax.rawValue:
             return "USD-D"
         case let .erc20(model) where model.code == LegacyERC20Code.wdgld.rawValue:
@@ -197,18 +180,16 @@ extension CryptoCurrency {
 
     public var maxDecimalPlaces: Int {
         switch self {
-        case .algorand:
-            return 6
         case .stellar:
             return 7
         case .bitcoin,
              .bitcoinCash:
             return 8
-        case .polkadot:
-            return 10
         case .ethereum:
             return 18
         case .erc20(let model):
+            return model.precision
+        case .other(let model):
             return model.precision
         }
     }
@@ -222,7 +203,17 @@ extension CryptoCurrency {
         switch self {
         case .erc20:
             return true
-        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .polkadot, .stellar:
+        case .bitcoin, .bitcoinCash, .ethereum, .stellar, .other:
+            return false
+        }
+    }
+
+    /// Returns `true` for any ERC20 asset
+    public var isOther: Bool {
+        switch self {
+        case .other:
+            return true
+        case .bitcoin, .bitcoinCash, .ethereum, .stellar, .erc20:
             return false
         }
     }
@@ -232,23 +223,21 @@ extension CryptoCurrency {
         switch self {
         case .erc20(let model):
             return model.typeTag
-        case .algorand, .bitcoin, .bitcoinCash, .ethereum, .polkadot, .stellar:
+        case .other(let model):
+            return model.typeTag
+        case .bitcoin, .bitcoinCash, .ethereum, .stellar:
             return self
         }
     }
 
     public var maxStartDate: TimeInterval {
         switch self {
-        case .algorand:
-            return 1560211225
         case .bitcoin:
             return 1282089600
         case .bitcoinCash:
             return 1500854400
         case .ethereum:
             return 1438992000
-        case .polkadot:
-            return 1615831200
         case .stellar:
             return 1525716000
         case let .erc20(model) where model.code == LegacyERC20Code.aave.rawValue:
@@ -262,7 +251,15 @@ extension CryptoCurrency {
         case let .erc20(model) where model.code == LegacyERC20Code.yearnFinance.rawValue:
             return 1615831200
         case .erc20:
+            // TODO: IOS-4958: Use correct date from model.
             return CryptoCurrency.ethereum.maxStartDate
+        case let .other(model) where model.code == "DOT":
+            return 1615831200
+        case let .other(model) where model.code == "ALGO":
+            return 1560211225
+        case .other:
+            // TODO: IOS-4958: Use correct date from model.
+            return 1625097600
         }
     }
 }

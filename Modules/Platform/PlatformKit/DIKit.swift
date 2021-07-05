@@ -127,11 +127,16 @@ extension DependencyContainer {
         single { () -> CoincoreAPI in
             let provider: EnabledCurrenciesServiceAPI = DIKit.resolve()
             let allEnabledCryptoCurrencies = provider.allEnabledCryptoCurrencies
-            let nonERC20 = allEnabledCryptoCurrencies
-                .filter { !$0.isERC20 }
+            let base = allEnabledCryptoCurrencies
+                .filter { !$0.isERC20 && !$0.isOther }
                 .map { cryptoCurrency -> CryptoAsset in
                     let asset: CryptoAsset = DIKit.resolve(tag: cryptoCurrency)
                     return asset
+                }
+            let other = allEnabledCryptoCurrencies
+                .filter { $0.isOther }
+                .map { cryptoCurrency -> CryptoAsset in
+                    CustodialCryptoAsset(asset: cryptoCurrency)
                 }
             let erc20Factory: ERC20AssetFactoryAPI = DIKit.resolve()
             let erc20 = allEnabledCryptoCurrencies
@@ -145,7 +150,7 @@ extension DependencyContainer {
                 .compactMap { erc20Factory.erc20Asset(erc20AssetModel: $0) }
 
             return Coincore(
-                cryptoAssets: nonERC20 + erc20
+                cryptoAssets: base + other + erc20
             )
         }
 

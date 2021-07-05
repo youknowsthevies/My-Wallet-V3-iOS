@@ -65,9 +65,7 @@ extension Wallet {
         case .ethereum:
             context.evaluateScriptCheckIsOnMainQueue("MyWallet.wallet.eth.accounts[\(index)].label = \"\(label)\"")
             getHistory()
-        case .algorand,
-             .erc20,
-             .polkadot:
+        default:
             impossible()
         }
     }

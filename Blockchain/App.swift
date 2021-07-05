@@ -70,8 +70,6 @@ func defineDependencies() {
         DependencyContainer.platformKit;
         DependencyContainer.interestKit;
         DependencyContainer.platformUIKit;
-        DependencyContainer.algorandKit;
-        DependencyContainer.polkadotKit;
         DependencyContainer.ethereumKit;
         DependencyContainer.erc20Kit;
         DependencyContainer.bitcoinChainKit;

@@ -6,5 +6,5 @@ import PlatformKit
 public protocol EIP67URI: CryptoAssetQRMetadata {
     init?(address: String, amount: String?, gas: String?)
     init?(url: URL)
-    init?(rawValue: String)
+    init?(urlString: String)
 }

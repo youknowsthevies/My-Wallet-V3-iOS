@@ -162,7 +162,7 @@ struct SDDIntroBuyView_Previews: PreviewProvider {
             timestamp: Date()
         ),
         CryptoCurrencyQuote(
-            cryptoCurrency: .polkadot,
+            cryptoCurrency: .bitcoinCash,
             fiatCurrency: .USD,
             quote: 100,
             formattedQuote: "$1,00",

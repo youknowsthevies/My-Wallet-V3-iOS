@@ -2,22 +2,19 @@
 
 import PlatformKit
 
-public class EthereumURLPayload: EIP67URI {
+public struct EthereumURLPayload: EIP67URI {
 
     private enum QueryItemKeys: String {
         case value
         case gas
     }
 
-    public static var scheme: String {
-        AssetConstants.URLSchemes.ethereum
-    }
+    private static let scheme: String = "ethereum"
 
     public let cryptoCurrency: CryptoCurrency = .ethereum
     public let address: String
     public private(set) var amount: String?
     public private(set) var gas: String?
-    public private(set) var paymentRequestUrl: String?
     public let includeScheme: Bool = false
 
     public var absoluteString: String {
@@ -30,7 +27,7 @@ public class EthereumURLPayload: EIP67URI {
 
     private let components: URLComponents
 
-    required public init?(address: String, amount: String? = nil, gas: String? = nil) {
+    public init?(address: String, amount: String? = nil, gas: String? = nil) {
         let components = EthereumURLPayload.urlComponents(from: address, amount: amount, gas: gas)
         guard EthereumURLPayload.valid(components: components) else {
             return nil
@@ -41,12 +38,12 @@ public class EthereumURLPayload: EIP67URI {
         self.gas = gas
     }
 
-    required convenience public init?(url: URL) {
-        self.init(rawValue: url.absoluteString)
+    public init?(url: URL) {
+        self.init(urlString: url.absoluteString)
     }
 
-    required public init?(rawValue: String) {
-        guard let components: URLComponents = URLComponents(string: rawValue) else {
+    public init?(urlString: String) {
+        guard let components: URLComponents = URLComponents(string: urlString) else {
             return nil
         }
 
@@ -72,12 +69,12 @@ public class EthereumURLPayload: EIP67URI {
     }
 
     private static func valid(components: URLComponents) -> Bool {
-        components.scheme == EthereumURLPayload.scheme && components.path.count == 42
+        components.scheme == Self.scheme && components.path.count == 42
     }
 
     private static func urlComponents(from address: String, amount: String?, gas: String?) -> URLComponents {
         var components = URLComponents()
-        components.scheme = EthereumURLPayload.scheme
+        components.scheme = Self.scheme
         components.path = address
 
         var queryItems: [URLQueryItem] = []

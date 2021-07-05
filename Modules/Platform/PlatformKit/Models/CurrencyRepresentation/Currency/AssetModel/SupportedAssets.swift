@@ -14,7 +14,7 @@ struct SupportedAssets {
             .compactMap { index, asset -> AssetModel? in
                 switch asset.type.name {
                 case SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue:
-                    return CoinAssetModel(assetResponse: asset)
+                    return CoinAssetModel(assetResponse: asset, sortIndex: index)
                 case SupportedAssetsResponse.Asset.AssetType.Name.erc20.rawValue:
                     return ERC20AssetModel(assetResponse: asset, sortIndex: index)
                 case SupportedAssetsResponse.Asset.AssetType.Name.fiat.rawValue:

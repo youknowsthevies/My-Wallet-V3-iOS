@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 @testable import BitcoinChainKit
+import PlatformKit
 import XCTest
 
 class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
@@ -18,12 +19,14 @@ class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
         "1W3hBBAnECvpmpFXcBrWoBXXihJAEkTmA",
         "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
         "bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq",
-        "1K43HTP8ayuJjfqAHG7azwVDDQaDwLtqtK"
+        "1K43HTP8ayuJjfqAHG7azwVDDQaDwLtqtK",
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"
     ]
 
     func testValid() {
         for testcase in Self.validTestCases {
-            XCTAssertTrue(sut.validate(address: testcase), testcase)
+            let result = sut.makeExternalAssetAddress(asset: .bitcoin, address: testcase, label: "", onTxCompleted: { _ in .empty() })
+            XCTAssertNoThrow(try result.get())
         }
     }
 
@@ -35,12 +38,26 @@ class BitcoinChainExternalAssetAddressFactoryTests: XCTestCase {
         "ThisBitcoinAddressIsWayTooLongToBeValid",
         "",
         "DoNotSendYourMoneyToThisAddress",
-        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq"
+        "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsm"
     ]
 
     func testInvalid() {
         for testcase in Self.invalidTestCases {
-            XCTAssertFalse(sut.validate(address: testcase), testcase)
+            let result = sut.makeExternalAssetAddress(asset: .bitcoin, address: testcase, label: "", onTxCompleted: { _ in .empty() })
+            XCTAssertThrowsError(try result.get(), "\(testcase)")
         }
+    }
+
+    func testValidWithPrefix() {
+        let result = sut.makeExternalAssetAddress(
+            asset: .bitcoin,
+            address: "bitcoin:bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq",
+            label: "label",
+            onTxCompleted: { _ in .empty() }
+        )
+        var address: CryptoReceiveAddress!
+        XCTAssertNoThrow(address = try result.get())
+        XCTAssertEqual(address.address, "bc1qzf9j339nc5qs58usysm3zhgpsev6gacsmapnzq")
+        XCTAssertEqual(address.label, "label")
     }
 }

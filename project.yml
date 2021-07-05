@@ -50,13 +50,13 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: PlatformUIKitTests
         randomExecutionOrder: true
-      - name: AlgorandKitTests
-        randomExecutionOrder: true
-      - name: PolkadotKitTests
-        randomExecutionOrder: true
       - name: ActivityKitTests
         randomExecutionOrder: true
       - name: BitcoinKitTests
+        randomExecutionOrder: true
+      - name: BitcoinChainKitTests
+        randomExecutionOrder: true
+      - name: BitcoinCashKitTests
         randomExecutionOrder: true
       - name: DashboardKitTests
         randomExecutionOrder: true
@@ -315,14 +315,11 @@ targets:
   ActivityKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
-    - target: AlgorandKit
     - target: BitcoinCashKit
     - target: BitcoinKit
     - target: ERC20Kit
     - target: EthereumKit
     - target: NetworkKit
-    - target: PlatformKit
-    - target: PolkadotKit
     - target: StellarKit
     - target: ToolKit
     scheme:
@@ -379,37 +376,6 @@ targets:
       path: TestKit/TestKit/Mocks/ToolKit
     templateAttributes:
       featureName: ActivityFeature
-    templates:
-    - ModuleTests
-  AlgorandKit:
-    dependencies:
-    - framework: Carthage/Build/BigInt.xcframework
-    - framework: Carthage/Build/DIKit.xcframework
-    - framework: Carthage/Build/RxRelay.xcframework
-    - framework: Carthage/Build/RxSwift.xcframework
-    - target: Localization
-    - target: NetworkKit
-    - target: PlatformKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - AlgorandKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  AlgorandKitTests:
-    dependencies:
-    - target: AlgorandKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
-    templateAttributes:
-      featureName: CryptoAssets
     templates:
     - ModuleTests
   AnalyticsKit:
@@ -636,8 +602,6 @@ targets:
     - target: WalletPayloadKit
     - target: ToolKit
     - target: NetworkKit
-    - target: AlgorandKit
-    - target: PolkadotKit
     - target: StellarKit
     - target: EthereumKit
     - target: ERC20Kit
@@ -1280,34 +1244,6 @@ targets:
       path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: Platform
-    templates:
-    - ModuleTests
-  PolkadotKit:
-    dependencies:
-    - framework: Carthage/Build/BigInt.xcframework
-    - target: Localization
-    - target: NetworkKit
-    - target: PlatformKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - PolkadotKitTests
-    templateAttributes:
-      featureName: CryptoAssets
-    templates:
-    - Module
-  PolkadotKitTests:
-    dependencies:
-    - target: PolkadotKit
-    sources:
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/NetworkKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/PlatformKit
-    - createIntermediateGroups: true
-      path: TestKit/TestKit/Mocks/ToolKit
-    templateAttributes:
-      featureName: CryptoAssets
     templates:
     - ModuleTests
   SettingsKit:

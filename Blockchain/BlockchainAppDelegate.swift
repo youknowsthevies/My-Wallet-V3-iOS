@@ -2,7 +2,6 @@
 
 import ActivityKit
 import ActivityUIKit
-import AlgorandKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -16,7 +15,6 @@ import KYCUIKit
 import NetworkKit
 import PlatformKit
 import PlatformUIKit
-import PolkadotKit
 import RemoteNotificationsKit
 import RIBs
 import RxSwift

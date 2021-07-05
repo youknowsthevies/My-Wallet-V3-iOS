@@ -169,11 +169,11 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .viewActivity:
             return .just(true)
         case .send:
+            guard asset.hasNonCustodialReceiveSupport else {
+                return .just(false)
+            }
             return balance
                 .map(\.isPositive)
-                .map { [asset] isPositive in
-                    isPositive && asset.hasNonCustodialWithdrawalSupport
-                }
                 .catchError { [label, asset] error in
                     throw Error.loadingFailed(
                         asset: asset.code,

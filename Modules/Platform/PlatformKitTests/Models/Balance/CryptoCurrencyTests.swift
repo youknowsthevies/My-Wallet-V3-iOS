@@ -11,13 +11,15 @@ class CryptoCurrencyTests: XCTestCase {
             .ethereum,
             .bitcoinCash,
             .stellar,
-            .algorand,
-            .polkadot,
-            CryptoCurrency.mockERC20(name: "111", sortIndex: 0),
-            CryptoCurrency.mockERC20(name: "222", sortIndex: 1),
-            CryptoCurrency.mockERC20(name: "333", sortIndex: 2),
-            CryptoCurrency.mockERC20(name: "444", sortIndex: 3),
-            CryptoCurrency.mockERC20(name: "555", sortIndex: 4)
+            .other(.mock(name: "Custodial 1", sortIndex: 0)),
+            .other(.mock(name: "Custodial 2", sortIndex: 1)),
+            .other(.mock(name: "Custodial 3", sortIndex: 2)),
+            .other(.mock(name: "Custodial 4", sortIndex: 3)),
+            .erc20(.mock(name: "ERC20 1", sortIndex: 0)),
+            .erc20(.mock(name: "ERC20 2", sortIndex: 1)),
+            .erc20(.mock(name: "ERC20 3", sortIndex: 2)),
+            .erc20(.mock(name: "ERC20 4", sortIndex: 3)),
+            .erc20(.mock(name: "ERC20 5", sortIndex: 4))
         ]
     }
 

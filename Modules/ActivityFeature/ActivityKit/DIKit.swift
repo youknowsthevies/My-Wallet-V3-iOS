@@ -1,13 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AlgorandKit
 import BitcoinCashKit
 import BitcoinKit
 import DIKit
 import ERC20Kit
 import EthereumKit
 import PlatformKit
-import PolkadotKit
 import StellarKit
 
 extension DependencyContainer {
@@ -53,10 +51,16 @@ extension DependencyContainer {
 
             let allEnabledCryptoCurrencies = enabledCurrenciesService.allEnabledCryptoCurrencies
             let nonERC20 = allEnabledCryptoCurrencies
-                .filter { !$0.isERC20 }
+                .filter { !$0.isERC20 && !$0.isOther }
                 .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
                     let component: CryptoItemEventServiceAPI = DIKit.resolve(tag: cryptoCurrency)
                     result[cryptoCurrency] = component
+                }
+
+            let other = allEnabledCryptoCurrencies
+                .filter { $0.isOther }
+                .reduce(into: [CryptoCurrency: CryptoItemEventServiceAPI]()) { (result, cryptoCurrency) in
+                    result[cryptoCurrency] = CryptoEventService.custodial(currency: cryptoCurrency)
                 }
 
             let erc20 = allEnabledCryptoCurrencies
@@ -81,14 +85,6 @@ extension DependencyContainer {
         factory { EmptySwapActivityItemEventService() }
 
         factory { CryptoItemEventServiceERC20Factory() }
-
-        factory(tag: CryptoCurrency.algorand) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.algorand()
-        }
-
-        factory(tag: CryptoCurrency.polkadot) { () -> CryptoItemEventServiceAPI in
-            CryptoEventService.polkadot()
-        }
 
         factory(tag: CryptoCurrency.bitcoin) { () -> CryptoItemEventServiceAPI in
             CryptoEventService.bitcoin()
@@ -116,10 +112,6 @@ class CryptoItemEventServiceERC20Factory {
 }
 
 extension CryptoEventService {
-    fileprivate static func algorand() -> CryptoItemEventServiceAPI {
-        custodial(currency: .algorand)
-    }
-
     fileprivate static func bitcoin(eventsService: BitcoinTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
         custodialNonCustodial(currency: .bitcoin, eventsService: eventsService)
     }
@@ -130,10 +122,6 @@ extension CryptoEventService {
 
     fileprivate static func ethereum(eventsService: EthereumTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
         custodialNonCustodial(currency: .ethereum, eventsService: eventsService)
-    }
-
-    fileprivate static func polkadot() -> CryptoItemEventServiceAPI {
-        custodial(currency: .polkadot)
     }
 
     fileprivate static func stellar(eventsService: StellarTransactionalActivityItemEventsService = resolve()) -> CryptoItemEventServiceAPI {
@@ -147,7 +135,7 @@ extension CryptoEventService {
     }
 
     /// Returns a CryptoItemEventServiceAPI for a custodial only currency.
-    private static func custodial(
+    fileprivate static func custodial(
         currency: CryptoCurrency,
         transactionalService: EmptyTransactionalActivityItemEventService = resolve()
     ) -> CryptoItemEventServiceAPI {

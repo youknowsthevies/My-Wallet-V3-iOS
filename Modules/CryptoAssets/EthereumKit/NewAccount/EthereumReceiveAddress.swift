@@ -11,7 +11,7 @@ struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProvid
     let onTxCompleted: TxCompleted
 
     var metadata: CryptoAssetQRMetadata {
-        EthereumURLPayload(address: address, amount: nil)!
+        EthereumURLPayload(address: address)!
     }
 
     init(address: String, label: String, onTxCompleted: @escaping TxCompleted) {

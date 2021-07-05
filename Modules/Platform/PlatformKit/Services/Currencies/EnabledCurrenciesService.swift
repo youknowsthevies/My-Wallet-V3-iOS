@@ -19,8 +19,8 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
         .ethereum,
         .bitcoinCash,
         .stellar,
-        .algorand,
-        .polkadot
+        .other(.algorand),
+        .other(.polkadot)
     ].sorted()
 
     private var erc20Currencies: [CryptoCurrency] {

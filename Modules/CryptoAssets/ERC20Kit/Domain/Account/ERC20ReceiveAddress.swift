@@ -13,7 +13,7 @@ struct ERC20ReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding
     let onTxCompleted: TxCompleted
 
     var metadata: CryptoAssetQRMetadata {
-        EthereumURLPayload(address: address, amount: nil)!
+        EthereumURLPayload(address: address)!
     }
 
     init(asset: CryptoCurrency,

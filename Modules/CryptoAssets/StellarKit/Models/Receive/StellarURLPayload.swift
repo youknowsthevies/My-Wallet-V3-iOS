@@ -3,20 +3,17 @@
 import PlatformKit
 import stellarsdk
 
-public struct StellarURLPayload: SEP7URI {
+struct StellarURLPayload: SEP7URI {
 
-    public static var scheme: String {
-        AssetConstants.URLSchemes.stellar
-    }
+    private static let scheme: String = "web+stellar"
 
-    public let cryptoCurrency: CryptoCurrency = .stellar
-    public let address: String
-    public let amount: String?
-    public let paymentRequestUrl: String? = nil
-    public let includeScheme: Bool = true
-    public let memo: String?
+    let cryptoCurrency: CryptoCurrency = .stellar
+    let address: String
+    let amount: String?
+    let includeScheme: Bool = true
+    let memo: String?
 
-    public var absoluteString: String {
+    var absoluteString: String {
         var amountInDecimal: Decimal?
         if let amount = amount {
             amountInDecimal = Decimal(string: amount)
@@ -24,20 +21,20 @@ public struct StellarURLPayload: SEP7URI {
         return URIScheme().getPayOperationURI(accountID: address, amount: amountInDecimal, memo: memo)
     }
 
-    public init(address: String, amount: String?, memo: String?) {
+    init(address: String, amount: String?, memo: String?) {
         self.address = address
         self.amount = amount
         self.memo = memo
     }
 
-    public init?(url: URL) {
+    init?(url: URL) {
         // Scheme must 'be web+stellar'
-        guard StellarURLPayload.scheme == url.scheme else {
+        guard Self.scheme == url.scheme else {
             return nil
         }
 
         // Get query arguments after "web+stellar:pay?". We do not support actions other than 'pay'.
-        guard let arguments = url.absoluteString.components(separatedBy: "\(StellarURLPayload.scheme):\(PayOperation)").last else {
+        guard let arguments = url.absoluteString.components(separatedBy: "\(Self.scheme):\(PayOperation)").last else {
             return nil
         }
         let queryArguments = arguments.queryArgs
