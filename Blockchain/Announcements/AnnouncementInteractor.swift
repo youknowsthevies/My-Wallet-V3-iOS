@@ -21,6 +21,9 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
         let nabuUser = dataRepository.nabuUserSingle
         let tiers = tiersService.tiers
+        let sddEligibility = tiersService.checkSimplifiedDueDiligenceEligibility()
+            .asObservable()
+            .asSingle()
         let countries = infoService.countries
         let simpleBuyOrderDetails = pendingOrderDetailsService.pendingActionOrderDetails
 
@@ -41,6 +44,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         return Single.zip(
             nabuUser,
             tiers,
+            sddEligibility,
             countries,
             repository.authenticatorType,
             hasAnyWalletBalance,
@@ -54,6 +58,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
         .map { payload -> AnnouncementPreliminaryData in
             let (user,
                  tiers,
+                 isSDDEligible,
                  countries,
                  authenticatorType,
                  hasAnyWalletBalance,
@@ -61,6 +66,7 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             return AnnouncementPreliminaryData(
                 user: user,
                 tiers: tiers,
+                isSDDEligible: isSDDEligible,
                 hasLinkedBanks: hasLinkedBanks,
                 countries: countries,
                 authenticatorType: authenticatorType,

@@ -124,9 +124,17 @@ final class AnnouncementPresenter {
     /// Resolves the first valid announcement according by the provided types and preliminary data
     private func resolve(metadata: AnnouncementsMetadata,
                          preliminaryData: AnnouncementPreliminaryData) -> AnnouncementDisplayAction {
+        // For other users, keep the current logic in place
         for type in metadata.order {
             let announcement: Announcement
             switch type {
+            case .sddUsersFirstBuy:
+                announcement = sddUsersFirstBuy(
+                    tiers: preliminaryData.tiers,
+                    isSDDEligible: preliminaryData.isSDDEligible,
+                    hasAnyWalletBalance: preliminaryData.hasAnyWalletBalance,
+                    reappearanceTimeInterval: metadata.interval
+                )
             case .cloudBackup:
                 announcement = cloudBackupAnnouncement
             case .interestFunds:
@@ -406,6 +414,26 @@ extension AnnouncementPresenter {
             action: {
                 // TODO: Route to bank linking
             })
+    }
+
+    /// Computes SDD Users Buy announcement
+    private func sddUsersFirstBuy(
+        tiers: KYC.UserTiers,
+        isSDDEligible: Bool,
+        hasAnyWalletBalance: Bool,
+        reappearanceTimeInterval: TimeInterval
+    ) -> Announcement {
+        // For now, we want to target non-KYCed SDD eligible users specifically, but we're going to review all announcements soon for Onboarding
+        BuyBitcoinAnnouncement(
+            isEnabled: tiers.isTier0 && isSDDEligible && !hasAnyWalletBalance,
+            reappearanceTimeInterval: reappearanceTimeInterval,
+            dismiss: { [weak self] in
+                self?.hideAnnouncement()
+            },
+            action: { [weak self] in
+                self?.handleBuyCrypto(currency: .bitcoin)
+            }
+        )
     }
 
     /// Computes Buy BTC announcement

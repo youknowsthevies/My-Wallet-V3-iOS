@@ -6,6 +6,7 @@ extension AnnouncementRecord {
 
         // MARK: - Persistent
 
+        case sddUsersFirstBuy = "announcement-cache-sdd-users-buy"
         case walletIntro = "announcement-cache-wallet-intro"
         case verifyEmail = "announcement-cache-email-verification"
         case blockstackAirdropRegisteredMini = "announcement-cache-stx-registered-airdrop-mini"

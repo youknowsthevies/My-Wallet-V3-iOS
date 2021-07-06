@@ -12,6 +12,9 @@ struct AnnouncementPreliminaryData {
     /// User tiers information
     let tiers: KYC.UserTiers
 
+    /// User Simplified Due Diligence Eligibility
+    let isSDDEligible: Bool
+
     let hasLinkedBanks: Bool
 
     let country: CountryData?
@@ -47,6 +50,7 @@ struct AnnouncementPreliminaryData {
 
     init(user: NabuUser,
          tiers: KYC.UserTiers,
+         isSDDEligible: Bool,
          hasLinkedBanks: Bool,
          countries: [CountryData],
          simpleBuyEventCache: EventCache = resolve(),
@@ -57,6 +61,7 @@ struct AnnouncementPreliminaryData {
          hasAnyWalletBalance: Bool) {
         self.user = user
         self.tiers = tiers
+        self.isSDDEligible = isSDDEligible
         self.hasLinkedBanks = hasLinkedBanks
         self.simpleBuyEventCache = simpleBuyEventCache
         self.authenticatorType = authenticatorType

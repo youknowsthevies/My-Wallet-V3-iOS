@@ -365,7 +365,8 @@ public final class AnnouncementCardViewModel {
 }
 
 extension AnnouncementCardViewModel: Equatable {
-    public static func ==(lhs: AnnouncementCardViewModel, rhs: AnnouncementCardViewModel) -> Bool {
+
+    public static func == (lhs: AnnouncementCardViewModel, rhs: AnnouncementCardViewModel) -> Bool {
         lhs.type == rhs.type
     }
 }
