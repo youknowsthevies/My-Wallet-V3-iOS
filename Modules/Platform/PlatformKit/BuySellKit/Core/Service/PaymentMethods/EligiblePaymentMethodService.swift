@@ -22,16 +22,19 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
     private let tiersService: KYCTiersServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
+    private let featureFlagsService: InternalFeatureFlagServiceAPI
 
     // MARK: - Setup
 
     init(eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
          tiersService: KYCTiersServiceAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
+         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
+        self.featureFlagsService = featureFlagsService
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledCurrenciesService = enabledCurrenciesService
 
@@ -55,13 +58,16 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         ) ? sddEligility.tier : nil
                     )
                 }
-                .map { methods in
-                    Array<PaymentMethod>.init(
+                .map { [featureFlagsService] methods -> [PaymentMethod] in
+                    let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
                         supportedFiatCurrencies: enabledFiatCurrencies
                     )
-                    .filter(\.isVisible) // only visible payment methods should be shown to the user
+                    guard featureFlagsService.isEnabled(.sddEnabled) else {
+                        return paymentMethods
+                    }
+                    return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user
                 }
                 .map { paymentMethods in
                     paymentMethods.filter { paymentMethod in
