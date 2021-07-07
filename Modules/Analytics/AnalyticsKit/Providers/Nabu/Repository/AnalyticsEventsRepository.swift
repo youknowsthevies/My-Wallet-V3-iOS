@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
+import Foundation
 
 protocol NabuAnalyticsEventsRepositoryAPI {
     func publish<Events: Encodable>(
