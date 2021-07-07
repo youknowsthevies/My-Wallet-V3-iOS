@@ -27,8 +27,24 @@ extension LocalizationConstants {
             "By hitting \"Begin Now\", you agree to Blockchain’s %@ & %@",
             comment: "Text displayed to the user notifying them that they implicitly agree to Blockchain’s terms of service and privacy policy when they start the KYC process."
         )
+        public static let retryAction = NSLocalizedString(
+            "Try Again",
+            comment: "Action displayed when the SDD verification check completes but the user goes back to the same screen."
+        )
+        public static let verificationCompletedTitle = NSLocalizedString(
+            "Verification complete",
+            comment: "Text displayed when the SDD verification check completes but the user goes back to the same screen."
+        )
+        public static let verificationCompletedMessage = NSLocalizedString(
+            "If you think something is wrong, you can try again or go back to the previous screen to update your info.",
+            comment: "Text displayed when the SDD verification check completes but the user goes back to the same screen."
+        )
         public static let verificationInProgress = NSLocalizedString(
             "Verification in Progress",
+            comment: "Text displayed when KYC verification is in progress."
+        )
+        public static let verificationInProgressWait = NSLocalizedString(
+            "This may take a few minutes to complete. Please wait.",
             comment: "Text displayed when KYC verification is in progress."
         )
         public static let verificationInProgressDescription = NSLocalizedString(
