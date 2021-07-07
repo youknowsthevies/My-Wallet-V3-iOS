@@ -18,10 +18,12 @@ let package = Package(
     targets: [
         .target(
             name: "AnalyticsKit",
+            dependencies: ["CombineExt"],
             path: "Modules/Analytics/AnalyticsKit"
         ),
         .testTarget(
             name: "AnalyticsKitTests",
+            dependencies: ["CombineExt"],
             path: "Modules/Analytics/AnalyticsKitTests"
         )
     ],
