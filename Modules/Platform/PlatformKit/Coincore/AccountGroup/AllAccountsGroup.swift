@@ -39,7 +39,14 @@ public final class AllAccountsGroup: AccountGroup {
     }
 
     public var balance: Single<MoneyValue> {
-        unimplemented()
+        if accounts.isEmpty {
+            return .just(.zero(currency: currencyType))
+        }
+        let asset = self.currencyType
+        return Single.zip(accounts.map(\.balance))
+            .map { values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: asset), +)
+            }
     }
 
     public var actionableBalance: Single<MoneyValue> {
