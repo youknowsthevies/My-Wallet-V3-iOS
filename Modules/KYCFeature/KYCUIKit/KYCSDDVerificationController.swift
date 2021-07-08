@@ -59,7 +59,7 @@ final class KYCSDDVerificationController: KYCBaseViewController {
     }
 
     private func checkForSDDVerification(completion: @escaping (Bool) -> Void) {
-        kycTiersService.checkSimplifiedDueDiligenceVerification()
+        kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: true)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: completion)
             .store(in: &cancellabes)
