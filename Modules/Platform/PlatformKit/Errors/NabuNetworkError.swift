@@ -5,6 +5,7 @@ import NetworkKit
 import ToolKit
 
 public struct NabuErrorDecodingFailure: Error {
+    let id: String?
     let code: NabuErrorCode?
     let type: NabuErrorType?
     let description: String?
@@ -13,6 +14,7 @@ public struct NabuErrorDecodingFailure: Error {
 public enum NabuNetworkError: Error, Decodable {
 
     enum CodingKeys: CodingKey {
+        case id
         case code
         case type
         case description
@@ -24,13 +26,14 @@ public enum NabuNetworkError: Error, Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
+        let id = try values.decodeIfPresent(String.self, forKey: .id)
         var code: NabuErrorCode = .unknown
         var type: NabuErrorType = .unknown
         let description = try values.decodeIfPresent(String.self, forKey: .description)
 
         do {
-            code = try values.decode(NabuErrorCode.self, forKey: .code)
-            type = try values.decode(NabuErrorType.self, forKey: .type)
+            code = try values.decodeIfPresent(NabuErrorCode.self, forKey: .code) ?? .unknown
+            type = try values.decodeIfPresent(NabuErrorType.self, forKey: .type) ?? .unknown
         } catch {
             #if INTERNAL_BUILD
             Self.crashOnUnknownCodeOrType(code: code, type: type, values: values)
@@ -40,13 +43,13 @@ public enum NabuNetworkError: Error, Decodable {
             }
             #endif
             throw NabuErrorDecodingFailure(
+                id: id,
                 code: code,
                 type: type,
                 description: description
             )
         }
-
-        self = .nabuError(NabuError(code: code, type: type, description: description))
+        self = .nabuError(NabuError(id: id, code: code, type: type, description: description))
     }
 
     public init(from communicatorError: NetworkError) {
@@ -110,14 +113,16 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 }
 
 /// Describes an error returned by Nabu
-public struct NabuError: Error, Codable, Equatable {
+public struct NabuError: Error, Codable, Equatable, Identifiable {
 
     private enum CodingKeys : String, CodingKey {
+        case id = "id"
         case code
         case type
         case serverDescription = "description"
     }
 
+    public let id: String
     public let code: NabuErrorCode
     public let type: NabuErrorType
     public let serverDescription: String?
@@ -126,14 +131,28 @@ public struct NabuError: Error, Codable, Equatable {
         description
     }
 
-    public init(
-        code: NabuErrorCode,
-        type: NabuErrorType,
-        description: String?
-    ) {
+    public init(id: String?,
+                code: NabuErrorCode,
+                type: NabuErrorType,
+                description: String?) {
+        self.id = id ?? Self.missingId()
         self.code = code
         self.type = type
         self.serverDescription = description
+    }
+
+    public init(id: String,
+                code: NabuErrorCode,
+                type: NabuErrorType,
+                description: String?) {
+        self.id = id
+        self.code = code
+        self.type = type
+        self.serverDescription = description
+    }
+
+    private static func missingId() -> String {
+        "MISSING_ID_" + UUID().uuidString
     }
 }
 

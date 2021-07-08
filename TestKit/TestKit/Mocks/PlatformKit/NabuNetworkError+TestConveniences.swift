@@ -3,5 +3,12 @@
 import PlatformKit
 
 extension NabuNetworkError {
-    static let mockError: NabuNetworkError = .nabuError(NabuError(code: .badMethod, type: .badMethod, description: nil))
+    static let mockError: NabuNetworkError = .nabuError(
+        NabuError(
+            id: UUID().uuidString,
+            code: .badMethod,
+            type: .badMethod,
+            description: nil
+        )
+    )
 }
