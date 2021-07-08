@@ -13,6 +13,7 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     var kycTiersService: KYCTiersServiceAPI = resolve()
     private var cancellabes = Set<AnyCancellable>()
+    private var loadingView = KYCSDDVerificationLoadingView()
 
     override class func make(with coordinator: KYCCoordinator) -> KYCSDDVerificationController {
         let controller = KYCSDDVerificationController()
@@ -23,12 +24,13 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        embed(KYCSDDVerificationLoadingView())
+        loadingView.retryCallback = performVerificationCheck
+        embed(loadingView)
+        performVerificationCheck()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        performVerificationCheck()
         hideNavigationBarItems() // required as super resets the navigation bar items
     }
 
@@ -49,13 +51,15 @@ final class KYCSDDVerificationController: KYCBaseViewController {
     // MARK: - SDD Verification
 
     private func performVerificationCheck() {
-        checkForSDDVerification { [coordinator, pageType] isVerified in
+        loadingView.loading = true
+        checkForSDDVerification { [coordinator, pageType, loadingView] isVerified in
             coordinator?.handle(event: .nextPageFromPageType(pageType, .sddVerification(isVerified: isVerified)))
+            loadingView.loading = false
         }
     }
 
     private func checkForSDDVerification(completion: @escaping (Bool) -> Void) {
-        kycTiersService.checkSimplifiedDueDiligenceVerification(pollUntilComplete: true)
+        kycTiersService.checkSimplifiedDueDiligenceVerification()
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: completion)
             .store(in: &cancellabes)
@@ -64,16 +68,32 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
 struct KYCSDDVerificationLoadingView: View {
 
+    @State var loading: Bool = false
+    var retryCallback: (() -> Void)?
+
     var body: some View {
         VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
-            ActivityIndicatorView()
-            VStack(spacing: 0) {
-                Text(LocalizationConstants.KYC.verificationInProgress)
-                    .textStyle(.heading)
-                Text(LocalizationConstants.KYC.verificationInProgressWait)
-                    .textStyle(.body)
+            if loading {
+                ActivityIndicatorView()
+                VStack(spacing: 0) {
+                    Text(LocalizationConstants.KYC.verificationInProgress)
+                        .textStyle(.heading)
+                    Text(LocalizationConstants.KYC.verificationInProgressWait)
+                        .textStyle(.body)
+                }
+            } else {
+                VStack(spacing: 0) {
+                    Text(LocalizationConstants.KYC.verificationCompletedTitle)
+                        .textStyle(.heading)
+                    Text(LocalizationConstants.KYC.verificationCompletedMessage)
+                        .textStyle(.body)
+                }
+                SecondaryButton(title: LocalizationConstants.KYC.retryAction) {
+                    retryCallback?()
+                }
             }
         }
+        .padding()
         .background(Color.viewPrimaryBackground)
     }
 }
