@@ -15,6 +15,8 @@ platform :ios do
     final_options = options.merge(
       {
         environment: "Dev",
+        app_center_app_name: ENV["APPCENTER_APP_NAME_DEV"],
+        app_center_app_owner: ENV["APPCENTER_OWNER_NAME_DEV"],
       }
     )
     produce_build(final_options)
@@ -27,6 +29,8 @@ platform :ios do
     final_options = options.merge(
       {
         environment: "Staging",
+        app_center_app_name: ENV["APPCENTER_APP_NAME_STAGING"],
+        app_center_app_owner: ENV["APPCENTER_OWNER_NAME_STAGING"],
       }
     )
     produce_build(final_options)
@@ -39,6 +43,8 @@ platform :ios do
     final_options = options.merge(
       {
         environment: "Alpha",
+        app_center_app_name: ENV["APPCENTER_APP_NAME_ALPHA"],
+        app_center_app_owner: ENV["APPCENTER_OWNER_NAME_ALPHA"],
       }
     )
     produce_build(final_options)
@@ -50,7 +56,9 @@ platform :ios do
   lane :internal_release do | options |
     final_options = options.merge(
       {
-        environment: "Prod"
+        environment: "Prod",
+        app_center_app_name: ENV["APPCENTER_APP_NAME"],
+        app_center_app_owner: ENV["APPCENTER_OWNER_NAME"],
       }
     )
     produce_build(final_options)
@@ -114,12 +122,15 @@ platform :ios do
   end
   
   desc "Upload IPA to AppCenter."
-  lane :upload_to_appcenter do
+  desc "Available options: app_center_app_name | app_center_app_owner."
+  lane :upload_to_appcenter do | options |
     #  Expected env vars: 
     #  APPCENTER_API_TOKEN, APPCENTER_DISTRIBUTE_FILE, APPCENTER_OWNER_NAME,
     #  APPCENTER_DISTRIBUTE_DESTINATIONS, APPCENTER_DISTRIBUTE_RELEASE_NOTES and APPCENTER_APP_NAME
     appcenter_upload(
-      file: "output/Blockchain.ipa"
+      file: "output/Blockchain.ipa",
+      app_name: options[:app_center_app_name],
+      owner_name: options[:app_center_app_owner]
     )
   end
   
@@ -174,7 +185,7 @@ platform :ios do
     unless skip_build_upload
       puts "🚀  Uploading build"
       if is_adhoc_build = is_adhoc_build_type?(options)
-        upload_to_appcenter
+        upload_to_appcenter(options)
       else
         upload
       end
