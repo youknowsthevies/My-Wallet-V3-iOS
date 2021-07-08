@@ -169,7 +169,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
             .subscribe(onNext: { [weak self] _ in
-                self?.transactionModel.process(action: .returnToPreviousStep)
+                self?.transactionModel.process(action: .showTargetSelection)
             })
             .disposeOnDeactivate(interactor: self)
 

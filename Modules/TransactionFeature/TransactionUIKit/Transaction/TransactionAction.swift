@@ -36,6 +36,7 @@ enum TransactionAction: MviAction {
     case fatalTransactionError(Error)
     case validateTransaction
     case resetFlow
+    case showTargetSelection
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
     case modifyTransactionConfirmation(TransactionConfirmation)
@@ -130,6 +131,8 @@ enum TransactionAction: MviAction {
             newState.sourceDestinationPair = nil
             newState.sourceToFiatPair = nil
             newState.destinationToFiatPair = nil
+            // TODO: In `Buy`, the user would be going back
+            // if the `stepsBackStack` contains `.enterAmount`
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateAmount:
             // Amount is updated after validation.
@@ -152,6 +155,13 @@ enum TransactionAction: MviAction {
             newState.nextEnabled = pendingTransaction.validationState == .canExecute
             newState.errorState = pendingTransaction.validationState.mapToTransactionErrorState
             return newState.withUpdatedBackstack(oldState: oldState)
+        case .showTargetSelection:
+            // TODO: If the user is going through `Buy`, the user
+            // is not going back. The target selection screen should be presented modally.
+
+            return oldState
+                .update(keyPath: \.step, value: .selectTarget)
+                .update(keyPath: \.isGoingBack, value: true)
         case .prepareTransaction:
             var newState = oldState
             newState.nextEnabled = false // Don't enable until we get a validated pendingTx from the interactor

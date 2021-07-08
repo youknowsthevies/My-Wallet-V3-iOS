@@ -43,6 +43,12 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: Public Properties
 
+    var state: Observable<State> {
+        stateRelay
+            .asObservable()
+            .share(replay: 1, scope: .whileConnected)
+    }
+
     let stateRelay = PublishRelay<State>()
 
     // MARK: - Connect API

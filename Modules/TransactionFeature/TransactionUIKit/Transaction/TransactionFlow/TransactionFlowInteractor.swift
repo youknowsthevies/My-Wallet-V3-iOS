@@ -9,16 +9,52 @@ import RxSwift
 import ToolKit
 
 protocol TransactionFlowRouting: Routing {
+
+    /// Pop the current screen off the stack.
     func pop()
+
+    /// Dismiss the top most screen. Currently not called but should be used when
+    /// a picker is presented over the `Enter Amount` screen. This is different from
+    /// going back.
+    func dismiss()
+
+    /// Exit the flow. This occurs usually when the user taps the close button
+    /// on the top right of the screen.
     func closeFlow()
+
+    /// Show the failure screen. Sometimes an error is thrown when selecting an
+    /// account or entering in transaction details. If this error occurs, we should
+    /// show a failure screen.
     func showFailure()
+
+    /// The back button was tapped.
     func didTapBack()
+
+    /// Show the confirmation screen. This pushes onto the prior screen.
     func routeToConfirmation(transactionModel: TransactionModel)
+
+    /// Show the target selection screen (currently only used in `Send`).
+    /// This pushes onto the prior screen.
     func routeToTargetSelectionPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Show the destination account picker without routing from a prior screen
+    func showDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Route to the destination account picker from the target selection screen
     func routeToDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Present the destination account picker modally over the current screen
+    func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Route to the in progress screen. This pushes onto the navigation stack.
     func routeToInProgress(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Show the `EnterAmount` screen. This pushes onto the prior screen.
+    /// For `Buy` we should set this as the root.
     func routeToPriceInput(source: BlockchainAccount, transactionModel: TransactionModel, action: AssetAction)
-    func routeToSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
+
+    /// Show the `source` selection screen. This replaces the root.
+    func showSourceAccountPicker(transactionModel: TransactionModel, action: AssetAction)
 }
 
 protocol TransactionFlowListener: AnyObject {
@@ -155,9 +191,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                     self?.didSelectDestinationAccount(target: target)
                     if let selectedSource = state.source as? CryptoAccount,
                        let target = target as? CryptoAccount {
-                        self?.analyticsHook.onReceiveAccountSelected(selectedSource,
-                                                                     target: target,
-                                                                     action: state.action)
+                        self?.analyticsHook.onReceiveAccountSelected(
+                            selectedSource,
+                            target: target,
+                            action: state.action
+                        )
                     }
 
                 default:
@@ -172,6 +210,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     }
 
     func didTapClose() {
+        // TODO: For `Buy`, the user may tap `close` on the target selection
+        // screen, which is presented modally over the `EnterAmount` screen.
+        // If this is the case we need to `process(action: .returnToPreviousStep)`
         router?.closeFlow()
         analyticsHook.onClose(action: action)
     }
@@ -213,6 +254,11 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     // MARK: - Private Functions
 
+    private func doCloseFlow() {
+        router?.closeFlow()
+        analyticsHook.onClose(action: action)
+    }
+
     private func handleStateChange(newState: TransactionState) {
         if !initialStep, newState.step == TransactionStep.initial {
             finishFlow()
@@ -229,6 +275,9 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
 
     private func showFlowStep(newState: TransactionState) {
         guard !newState.isGoingBack else {
+            // TODO: If the user is dismissing a modally presented screen,
+            // we should not call `didTapBack()`, but rather `.dismiss()`
+            // as the user is only dismissing a single screen.
             router?.didTapBack()
             return
         }
@@ -243,19 +292,59 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
             /// `TargetSelectionViewController` should only be shown for `SendP2`
             /// and `.send`. Otherwise we should show the account picker to select
             /// the destination/target.
-            if action == .send {
-                router?.routeToTargetSelectionPicker(transactionModel: transactionModel, action: action)
-                return
+            switch action {
+            case .send:
+                // `Send` supports the target selection screen rather than a
+                // destination selection screen.
+                router?.routeToTargetSelectionPicker(
+                    transactionModel: transactionModel,
+                    action: action
+                )
+            case .buy:
+                // `Buy` should present the destination picker
+                // above the `Enter Amount` screen.
+                guard newState.stepsBackStack.contains(.enterAmount) else {
+                    fatalError("Expected to present over Enter Amount")
+                }
+                router?.presentDestinationAccountPicker(
+                    transactionModel: transactionModel,
+                    action: action
+                )
+            case .withdraw:
+                // `Withdraw` shows the destination screen modally. It does not
+                // present over another screen (and thus replaces the root).
+                router?.showDestinationAccountPicker(
+                    transactionModel: transactionModel,
+                    action: action
+                )
+            case .viewActivity,
+                 .deposit,
+                 .sell,
+                 .receive,
+                 .swap:
+                // This pushes on the destination screen.
+                router?.routeToDestinationAccountPicker(
+                    transactionModel: transactionModel,
+                    action: action
+                )
             }
-            router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
         case .confirmDetail:
             router?.routeToConfirmation(transactionModel: transactionModel)
         case .inProgress:
-            router?.routeToInProgress(transactionModel: transactionModel, action: action)
+            router?.routeToInProgress(
+                transactionModel: transactionModel,
+                action: action
+            )
         case .selectSource:
-            router?.routeToSourceAccountPicker(transactionModel: transactionModel, action: action)
+            router?.showSourceAccountPicker(
+                transactionModel: transactionModel,
+                action: action
+            )
         case .enterAddress:
-            router?.routeToDestinationAccountPicker(transactionModel: transactionModel, action: action)
+            router?.routeToDestinationAccountPicker(
+                transactionModel: transactionModel,
+                action: action
+            )
         case .closed:
             transactionModel.destroy()
         }

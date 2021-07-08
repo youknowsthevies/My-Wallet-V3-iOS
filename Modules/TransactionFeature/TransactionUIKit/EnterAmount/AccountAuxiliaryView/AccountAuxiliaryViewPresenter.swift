@@ -28,7 +28,7 @@ final class AccountAuxiliaryViewPresenter {
             .disposed(by: disposeBag)
 
         badgeImageViewModel = interactor
-            .stateRelay
+            .state
             .map(\.imageResource)
             .map {
                 BadgeImageViewModel.default(
@@ -40,7 +40,7 @@ final class AccountAuxiliaryViewPresenter {
             .asDriverCatchError()
 
         titleLabel = interactor
-            .stateRelay
+            .state
             .map(\.title)
             .map {
                 LabelContent(
@@ -54,7 +54,7 @@ final class AccountAuxiliaryViewPresenter {
             .asDriverCatchError()
 
         subtitleLabel = interactor
-            .stateRelay
+            .state
             .map(\.subtitle)
             .map {
                 LabelContent(

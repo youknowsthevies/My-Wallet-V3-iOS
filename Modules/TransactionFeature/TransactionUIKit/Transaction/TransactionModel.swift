@@ -136,6 +136,8 @@ final class TransactionModel {
             return processModifyTransactionConfirmation(confirmation: confirmation)
         case .invalidateTransaction:
             return processInvalidateTransaction()
+        case .showTargetSelection:
+            return nil
         }
     }
 

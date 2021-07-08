@@ -46,6 +46,19 @@ final class TransactionFlowViewController: UINavigationController, TransactionFl
         setViewControllers([viewController.uiviewController], animated: animated)
     }
 
+    func present(viewController: ViewControllable?, animated: Bool) {
+        guard let viewController = viewController else {
+            return
+        }
+        let navigationController: UINavigationController
+        if let navController = viewController as? UINavigationController {
+            navigationController = navController
+        } else {
+            navigationController = UINavigationController(rootViewController: viewController.uiviewController)
+        }
+        present(navigationController, animated: animated, completion: nil)
+    }
+
     func push(viewController: ViewControllable?) {
         guard let viewController = viewController else {
             return

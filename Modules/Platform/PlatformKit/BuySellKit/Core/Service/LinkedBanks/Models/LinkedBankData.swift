@@ -17,11 +17,10 @@ public struct LinkedBankData {
         init?(response: LinkedBankResponse) {
             guard
                 let accountType = response.bankAccountType,
-                let accountName = response.accountName,
                 let accountNumber = response.accountNumber else {
                 return nil
             }
-            name = accountName
+            name = response.name
             type = LinkedBankAccountType(from: accountType)
             bankName = response.name
             number = accountNumber.replacingOccurrences(of: "x", with: "")
