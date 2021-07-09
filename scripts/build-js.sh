@@ -10,8 +10,4 @@ rm -rf build dist
 echo "Building..."
 npm run build
 
-# Required for overriding methods in Objective-C
-echo "Patching BitcoinJS..."
-sed -i '' '/validateMnemonic: validateMnemonic/s/$/, salt: salt/' dist/my-wallet.js
-
 echo "Build success"

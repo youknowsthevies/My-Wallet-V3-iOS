@@ -93,56 +93,6 @@ extension Wallet: LegacyEthereumWalletAPI {
         )
     }
 
-    public func erc20Tokens(with secondPassword: String?, success: @escaping ([String: [String: Any]]) -> Void, error: @escaping (String) -> Void) {
-        guard isInitialized() else {
-            error("Wallet is not yet initialized.")
-            return
-        }
-        ethereum.interopDispatcher.getERC20Tokens.addObserver { result in
-            switch result {
-            case .success(let tokens):
-                success(tokens)
-            case .failure(let errorMessage):
-                error(String(describing: errorMessage))
-            }
-        }
-        let function: String = "MyWalletPhone.getERC20TokensAsync"
-        let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
-            script = "\(function)(\(escapedSecondPassword))"
-        } else {
-            script = "\(function)()"
-        }
-        context.evaluateScriptCheckIsOnMainQueue(script)
-    }
-
-    public func saveERC20Tokens(with secondPassword: String?,
-                                tokensJSONString: String,
-                                success: @escaping () -> Void,
-                                error: @escaping (String) -> Void) {
-        guard isInitialized() else {
-            error("Wallet is not yet initialized.")
-            return
-        }
-        ethereum.interopDispatcher.saveERC20Tokens.addObserver { result in
-            switch result {
-            case .success:
-                success()
-            case .failure(let errorMessage):
-                error(String(describing: errorMessage))
-            }
-        }
-        let function: String = "MyWalletPhone.setERC20TokensAsync"
-        let escapedTokens = tokensJSONString
-        let script: String
-        if let escapedSecondPassword = secondPassword?.escapedForJS(wrapInQuotes: true) {
-            script = "\(function)(\'\(escapedTokens)\', \(escapedSecondPassword))"
-        } else {
-            script = "\(function)(\'\(escapedTokens)\')"
-        }
-        context.evaluateScriptCheckIsOnMainQueue(script)
-    }
-
     @objc public func checkIfEthereumAccountExists() -> Bool {
         guard isInitialized() else { return false }
         return context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.ethereumAccountExists()").toBool()

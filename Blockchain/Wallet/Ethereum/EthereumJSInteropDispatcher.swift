@@ -13,20 +13,12 @@ public enum EthereumJSInteropDispatcherError: Error {
     func didGetAccounts(_ accounts: JSValue)
     func didFailToGetAccounts(errorMessage: JSValue)
 
-    func didGetAddress(_ address: JSValue)
-    func didFailToGetAddress(errorMessage: JSValue)
-
     func didRecordLastTransaction()
     func didFailToRecordLastTransaction(errorMessage: JSValue)
 }
 
 public protocol EthereumJSInteropDispatcherAPI {
     var getAccounts: Dispatcher<[[String: Any]]> { get }
-    var getAddress: Dispatcher<String> { get }
-
-    var getERC20Tokens: Dispatcher<[String: [String: Any]]> { get }
-    var saveERC20Tokens: Dispatcher<Void> { get }
-
     var recordLastTransaction: Dispatcher<Void> { get }
 }
 
@@ -36,11 +28,6 @@ public class EthereumJSInteropDispatcher: EthereumJSInteropDispatcherAPI {
     public let getAccounts = Dispatcher<[[String: Any]]>()
 
     public let recordLastTransaction = Dispatcher<Void>()
-
-    public let getAddress = Dispatcher<String>()
-
-    public let getERC20Tokens = Dispatcher<[String: [String: Any]]>()
-    public let saveERC20Tokens = Dispatcher<Void>()
 }
 
 extension EthereumJSInteropDispatcher: EthereumJSInteropDelegateAPI {
@@ -62,38 +49,6 @@ extension EthereumJSInteropDispatcher: EthereumJSInteropDelegateAPI {
 
     public func didFailToGetAccounts(errorMessage: JSValue) {
         sendFailure(dispatcher: getAccounts, errorMessage: errorMessage)
-    }
-
-    public func didGetAddress(_ address: JSValue) {
-        guard let address = address.toString() else {
-            getAddress.sendFailure(.unknown)
-            return
-        }
-        getAddress.sendSuccess(with: address)
-    }
-
-    public func didFailToGetAddress(errorMessage: JSValue) {
-        sendFailure(dispatcher: getAddress, errorMessage: errorMessage)
-    }
-
-    public func didGetERC20Tokens(_ tokens: JSValue) {
-        guard let tokensDictionaries = tokens.toDictionary() as? [String: [String: Any]] else {
-            getERC20Tokens.sendFailure(.unknown)
-            return
-        }
-        getERC20Tokens.sendSuccess(with: tokensDictionaries)
-    }
-
-    public func didFailToGetERC20Tokens(errorMessage: JSValue) {
-        sendFailure(dispatcher: getERC20Tokens, errorMessage: errorMessage)
-    }
-
-    public func didSaveERC20Tokens() {
-        saveERC20Tokens.sendSuccess(with: ())
-    }
-
-    public func didFailToSaveERC20Tokens(errorMessage: JSValue) {
-        sendFailure(dispatcher: saveERC20Tokens, errorMessage: errorMessage)
     }
 
     private func sendFailure<T>(dispatcher: Dispatcher<T>, errorMessage: JSValue) {

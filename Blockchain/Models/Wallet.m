@@ -406,7 +406,14 @@ NSString * const kLockboxInvitation = @"lockbox";
         [weakSelf on_error_recover_with_passphrase:error];
     };
 
-    self.context[@"objc_on_progress_recover_with_passphrase_finalBalance"] = ^(NSString *totalReceived, NSString *finalBalance) {
+    self.context[@"objc_on_progress_recover_with_metadata"] = ^(JSValue *totalReceivedValue, JSValue *finalBalanceValue) {
+        NSString *totalReceived = totalReceivedValue.isString ? totalReceivedValue.toString : @"";
+        NSString *finalBalance = finalBalanceValue.isString ? finalBalanceValue.toString : @"";
+        [weakSelf on_progress_recover_with_passphrase:totalReceived finalBalance:finalBalance];
+    };
+    self.context[@"objc_on_progress_recover_with_passphrase"] = ^(JSValue *totalReceivedValue, JSValue *finalBalanceValue) {
+        NSString *totalReceived = totalReceivedValue.isString ? totalReceivedValue.toString : @"";
+        NSString *finalBalance = finalBalanceValue.isString ? finalBalanceValue.toString : @"";
         [weakSelf on_progress_recover_with_passphrase:totalReceived finalBalance:finalBalance];
     };
 
@@ -788,11 +795,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateServerURL(\"%@\")", [newURL escapedForJS]]];
 }
 
-- (void)updateWebSocketURL:(NSString *)newURL
-{
-    [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateWebsocketURL(\"%@\")", [newURL escapedForJS]]];
-}
-
 - (void)updateAPIURL:(NSString *)newURL
 {
     [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.updateAPIURL(\"%@\")", [newURL escapedForJS]]];
@@ -894,30 +896,6 @@ NSString * const kLockboxInvitation = @"lockbox";
     [self.context invokeOnceWithFunctionBlock:success forJsFunctionName:@"objc_xlmSaveAccount_success"];
     [self.context invokeOnceWithStringFunctionBlock:error forJsFunctionName:@"objc_xlmSaveAccount_error"];
     [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.xlm.saveAccount(\"%@\", \"%@\")", [publicKey escapedForJS], [label escapedForJS]]];
-}
-
-# pragma mark - Ethereum
-
-- (nullable NSString *)getEtherAddress
-{
-    if ([self isInitialized]) {
-        NSString *setupHelperText = [LocalizationConstantsObjcBridge etherSecondPasswordPrompt];
-        JSValue *result = [self.context evaluateScriptCheckIsOnMainQueue:[NSString stringWithFormat:@"MyWalletPhone.getEtherAddress(\"%@\")", [setupHelperText escapedForJS]]];
-        if ([result isUndefined]) return nil;
-        NSString *etherAddress = [result toString];
-        return etherAddress;
-    }
-
-    return nil;
-}
-
-- (BOOL)hasEthAccount
-{
-    if ([self isInitialized]) {
-        return [[self.context evaluateScriptCheckIsOnMainQueue:@"MyWalletPhone.hasEthAccount()"] toBool];
-    }
-
-    return NO;
 }
 
 # pragma mark - Bitcoin cash

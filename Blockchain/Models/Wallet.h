@@ -150,11 +150,6 @@
 - (NSString *)getMobileMessage;
 - (void)getAccountInfoAndExchangeRates;
 
-# pragma mark - Ethereum
-
-- (nullable NSString *)getEtherAddress __deprecated_msg("Use `getEthereumAddressWithSuccess:error` instead.");
-- (BOOL)hasEthAccount;
-
 # pragma mark - Bitcoin Cash
 
 - (NSString *)fromBitcoinCash:(NSString *)address;

@@ -77,20 +77,12 @@ class EthereumWallet: NSObject {
     }
 
     @objc func setup(with context: JSContext) {
-        context.setJsFunction(named: "objc_on_get_ether_address_success" as NSString) { [weak self] address in
-            self?.delegate.didGetAddress(address)
-        }
-        context.setJsFunction(named: "objc_on_get_ether_address_error" as NSString) { [weak self] errorMessage in
-            self?.delegate.didFailToGetAddress(errorMessage: errorMessage)
-        }
-
         context.setJsFunction(named: "objc_on_didGetEtherAccountsAsync" as NSString) { [weak self] accounts in
             self?.delegate.didGetAccounts(accounts)
         }
         context.setJsFunction(named: "objc_on_error_gettingEtherAccountsAsync" as NSString) { [weak self] errorMessage in
             self?.delegate.didFailToGetAccounts(errorMessage: errorMessage)
         }
-
         context.setJsFunction(named: "objc_on_recordLastTransactionAsync_success" as NSString) { [weak self] in
             self?.delegate.didRecordLastTransaction()
         }
