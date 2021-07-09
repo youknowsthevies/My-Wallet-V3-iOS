@@ -171,7 +171,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     private func handleTimeout(order: OrderDetails) {
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
-            .map { .pending(order) }
+            .map { .completed }
             .bindAndCatch(to: routingInteractor.stateRelay)
             .disposed(by: disposeBag)
         var title = ""
