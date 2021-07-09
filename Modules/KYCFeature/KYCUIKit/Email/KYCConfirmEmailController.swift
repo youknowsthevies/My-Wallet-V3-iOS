@@ -64,6 +64,7 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
         labelSubHeader.text = LocalizationConstants.KYC.confirmEmailExplanation
         validationTextFieldEmail.text = email
         validationTextFieldEmail.isEnabled = false
+        validationTextFieldEmail.accessibilityIdentifier = "kyc.email_field"
         // swiftlint:disable line_length
         let attributedTitle = NSMutableAttributedString(string: LocalizationConstants.KYC.didntGetTheEmail + " " + LocalizationConstants.KYC.sendAgain)
         attributedTitle.addForegroundColor(buttonDidntGetEmail.buttonTitleColor, to: LocalizationConstants.KYC.didntGetTheEmail)

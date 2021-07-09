@@ -47,6 +47,7 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
+        searchBar.searchTextField.accessibilityIdentifier = "kyc.states.search_bar"
 
         guard let country = country else {
             Logger.shared.error("Country not set.")
@@ -103,6 +104,7 @@ extension KYCStateSelectionController: UITableViewDataSource, UITableViewDelegat
         }
 
         stateCell.textLabel?.text = state.name
+        stateCell.accessibilityIdentifier = "kyc.state.\(state.name.snakeCased)"
 
         return stateCell
     }

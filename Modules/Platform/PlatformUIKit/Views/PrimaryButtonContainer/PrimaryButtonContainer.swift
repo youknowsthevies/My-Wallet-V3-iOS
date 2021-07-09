@@ -62,6 +62,8 @@ public class PrimaryButtonContainer: NibBasedView {
 
     private func setup() {
         primaryButton.layer.cornerRadius = 4.0
+        buttonBackgroundColor = .brandSecondary
+        buttonTitleColor = .primaryButtonTitle
         primaryButton.accessibility = .id(Accessibility.Identifier.General.mainCTAButton)
     }
 
@@ -80,22 +82,19 @@ public class PrimaryButtonContainer: NibBasedView {
         }
     }
 
-    @IBInspectable public var buttonBackgroundColor: UIColor = UIColor.brandSecondary {
+    @IBInspectable public var buttonBackgroundColor: UIColor = .brandSecondary {
         didSet {
             primaryButton.backgroundColor = buttonBackgroundColor
         }
     }
 
-    @IBInspectable public var buttonTitleColor: UIColor {
-        get {
-            primaryButton.titleColor(for: .normal) ?? .clear
-        }
-        set {
-            primaryButton.setTitleColor(newValue, for: .normal)
+    @IBInspectable public var buttonTitleColor: UIColor = .primaryButtonTitle {
+        didSet {
+            primaryButton.setTitleColor(buttonTitleColor, for: .normal)
         }
     }
 
-    @IBInspectable public var disabledButtonBackgroundColor: UIColor = UIColor.brandSecondary
+    @IBInspectable public var disabledButtonBackgroundColor: UIColor = .brandSecondary
 
     @IBInspectable public var isLoading: Bool = false {
         didSet {

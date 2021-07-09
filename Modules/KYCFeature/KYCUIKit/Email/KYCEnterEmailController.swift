@@ -51,6 +51,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
         guard case let .email(user) = model else { return }
 
         validationTextFieldEmail.text = user.email.address
+        validationTextFieldEmail.accessibilityIdentifier = "kyc.email_field"
     }
 
     // MARK: - UIViewController Lifecycle Methods

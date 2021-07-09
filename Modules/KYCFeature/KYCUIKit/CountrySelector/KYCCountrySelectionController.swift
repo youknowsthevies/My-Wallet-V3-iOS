@@ -52,6 +52,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
         tableView.dataSource = self
         tableView.delegate = self
         searchBar.delegate = self
+        searchBar.searchTextField.accessibilityIdentifier = "kyc.countries.search_bar"
         fetchListOfCountries()
     }
 
@@ -95,6 +96,7 @@ extension KYCCountrySelectionController: UITableViewDataSource, UITableViewDeleg
         }
 
         countryCell.textLabel?.text = country.name
+        countryCell.accessibilityIdentifier = "kyc.country.\(country.name.snakeCased)"
 
         return countryCell
     }

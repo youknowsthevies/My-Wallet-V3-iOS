@@ -212,6 +212,8 @@ extension UIColor {
     public static let tertiaryButton = grey900
     public static let linkableText = blue600
 
+    public static let primaryButtonTitle = white
+
     public static let iconDefault = grey400
     public static let iconSelected = grey400
     public static let iconWarning = orange600

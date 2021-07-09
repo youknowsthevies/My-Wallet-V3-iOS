@@ -15,7 +15,8 @@ enum ValidationResult {
 }
 
 extension ValidationResult {
-    static func ==(lhs: ValidationResult, rhs: ValidationResult) -> Bool {
+
+    static func == (lhs: ValidationResult, rhs: ValidationResult) -> Bool {
         switch (lhs, rhs) {
         case (.valid, .valid):
             return true
@@ -149,6 +150,12 @@ class ValidationTextField: NibBasedView {
         }
         set {
             textField.isEnabled = newValue
+        }
+    }
+
+    override var accessibilityIdentifier: String? {
+        didSet {
+            textField.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 

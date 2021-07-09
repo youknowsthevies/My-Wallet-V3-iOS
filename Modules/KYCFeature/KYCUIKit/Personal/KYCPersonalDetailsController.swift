@@ -64,6 +64,10 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
         firstNameField.contentType = .givenName
         lastNameField.contentType = .familyName
 
+        firstNameField.accessibilityIdentifier = "kyc.info.first_name_field"
+        lastNameField.accessibilityIdentifier = "kyc.info.last_name_field"
+        birthdayField.accessibilityIdentifier = "kyc.info.dob_field"
+
         birthdayField.maximumDate = NabuUser.minimumAge
         if let birthday = user.personalDetails.birthday {
             birthdayField.selectedDate = birthday

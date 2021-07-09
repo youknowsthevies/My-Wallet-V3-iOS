@@ -126,4 +126,10 @@ public extension String {
     var withoutHex: String {
         hasHexPrefix ? String(self[index(startIndex, offsetBy: 2)...]) : self
     }
+
+    var snakeCased: String {
+        lowercased()
+            .replacingOccurrences(of: " ", with: "_")
+            .replacingOccurrences(of: "-", with: "_")
+    }
 }

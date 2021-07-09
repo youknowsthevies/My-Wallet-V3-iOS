@@ -109,6 +109,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
         super.viewDidLoad()
         locationCoordinator = LocationSuggestionCoordinator(self, interface: self)
         dataProvider = LocationDataProvider(with: tableView)
+        searchBar.searchTextField.accessibilityIdentifier = "kyc.address.search_bar"
         searchBar.delegate = self
         tableView.delegate = self
         scrollView.alwaysBounceVertical = true
@@ -118,6 +119,13 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
         progressView.tintColor = .green
         requiredLabel.text = LocalizationConstants.KYC.required + "*"
+
+        addressTextField.accessibilityIdentifier = "kyc.address.street_field"
+        apartmentTextField.accessibilityIdentifier = "kyc.address.apartment_field"
+        cityTextField.accessibilityIdentifier = "kyc.address.city_field"
+        stateTextField.accessibilityIdentifier = "kyc.address.state_field"
+        regionTextField.accessibilityIdentifier = "kyc.address.country_field"
+        postalCodeTextField.accessibilityIdentifier = "kyc.address.postcode_field"
 
         initFooter()
         validationFieldsSetup()
