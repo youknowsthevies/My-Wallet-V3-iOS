@@ -100,8 +100,12 @@ final class KYCCoordinator: KYCRouterAPI {
             .mapToVoid()
     }
 
-    var kycStopped: Observable<KYC.Tier> {
+    var kycFinished: Observable<KYC.Tier> {
         kycFinishedRelay.asObservable()
+    }
+
+    var kycStopped: Observable<Void> {
+        kycStoppedRelay.asObservable()
     }
 
     init(
@@ -128,8 +132,6 @@ final class KYCCoordinator: KYCRouterAPI {
         self.kycSettings = kycSettings
         self.loadingViewPresenter = loadingViewPresenter
         self.networkAdapter = networkAdapter
-
-        registerForKYCFinish()
     }
 
     deinit {
@@ -239,35 +241,39 @@ final class KYCCoordinator: KYCRouterAPI {
         disposables.insertWithDiscardableResult(disposable)
     }
 
-    private func registerForKYCFinish() {
-        kycStoppedRelay
-            .flatMap(weak: self) { (self, _) -> Observable<KYC.UserTiers> in
-                self.tiersService.fetchTiers().asObservable()
-            }
-            .map { $0 }
-            .catchErrorJustReturn(nil)
-            .compactMap { (tiers: KYC.UserTiers?) in
-                tiers?.latestTier ?? nil
-            }
-            .bindAndCatch(to: kycFinishedRelay)
-            .disposed(by: disposeBag)
-    }
-
     // Called when the entire KYC process has been completed.
     func finish() {
-        stop()
+        dismiss { [tiersService, kycFinishedRelay, disposeBag] in
+            tiersService.fetchTiers()
+                .asObservable()
+                .map { $0.latestApprovedTier }
+                .catchErrorJustReturn(.tier0)
+                .bindAndCatch(to: kycFinishedRelay)
+                .disposed(by: disposeBag)
+            NotificationCenter.default.post(
+                name: Constants.NotificationKeys.kycFinished,
+                object: nil
+            )
+        }
     }
 
-    // Called when the KYC process is completed or stopped before completing.
+    // Called when the KYC process is stopped before completing.
     func stop() {
-        if navController == nil { return }
-        navController.dismiss(animated: true) { [weak self] in
-            self?.kycStoppedRelay.accept(())
+        dismiss { [kycStoppedRelay] in
+            kycStoppedRelay.accept(())
             NotificationCenter.default.post(
                 name: Constants.NotificationKeys.kycStopped,
                 object: nil
             )
         }
+    }
+
+    private func dismiss(completion: @escaping () -> Void) {
+        guard navController != nil else {
+            completion()
+            return
+        }
+        navController.dismiss(animated: true, completion: completion)
     }
 
     func handle(event: KYCEvent) {

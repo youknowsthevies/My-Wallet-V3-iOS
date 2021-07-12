@@ -108,6 +108,12 @@ public final class KYCTiersViewController: UIViewController {
     }
 
     fileprivate func registerForNotifications() {
+        NotificationCenter.when(Constants.NotificationKeys.kycFinished) { [weak self] _ in
+            guard let this = self else { return }
+            this.coordinator.refreshViewModel(
+                suppressCTA: this.pageModel.header.suppressDismissCTA
+            )
+        }
         NotificationCenter.when(Constants.NotificationKeys.kycStopped) { [weak self] _ in
             guard let this = self else { return }
             this.coordinator.refreshViewModel(

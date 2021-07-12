@@ -562,20 +562,26 @@ public final class Router: RouterAPI {
         }
 
         kycDisposeBag = DisposeBag()
-        let stopped = kycRouter.kycStopped
+        kycRouter.kycStopped
+            .take(1)
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(to: stateService.previousRelay)
+            .disposed(by: kycDisposeBag)
+
+        let finished = kycRouter.kycFinished
             .take(1)
             .observeOn(MainScheduler.instance)
             .share()
 
         // tier 2, silver +, etc. can buy. Only tier 0 and 1 can't.
         // so, observe KYC and check for a valid tier that can buy and move forward or backward accordingly.
-        stopped
+        finished
             .filter { $0 == .tier2 }
             .mapToVoid()
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: kycDisposeBag)
 
-        let sddVerificationCheck = stopped
+        let sddVerificationCheck = finished
             // when kyc is stopped and the user is not Tier 2 verified
             .filter { $0 != .tier2 }
             // first check if the user is SDD verified

@@ -133,12 +133,18 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
 
     private func showKYC() {
         kycDisposeBag = DisposeBag()
-        let stopped = kycRouter.kycStopped
+        kycRouter.kycStopped
+            .take(1)
+            .observeOn(MainScheduler.instance)
+            .bindAndCatch(to: interactor.previousRelay)
+            .disposed(by: kycDisposeBag)
+
+        let finished = kycRouter.kycFinished
             .take(1)
             .observeOn(MainScheduler.instance)
             .share()
 
-        stopped
+        finished
             .filter { $0 == .tier2 }
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
@@ -146,7 +152,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             }
             .disposed(by: kycDisposeBag)
 
-        stopped
+        finished
             .filter { $0 != .tier2 }
             .mapToVoid()
             .bindAndCatch(to: interactor.previousRelay)

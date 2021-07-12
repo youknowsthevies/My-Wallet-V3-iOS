@@ -5,6 +5,7 @@ import UIKit
 struct Constants {
     struct NotificationKeys {
         static let kycStopped = NSNotification.Name("kycStopped")
+        static let kycFinished = NSNotification.Name("kycFinished")
     }
     struct Measurements {
         static let ScreenHeightIphone5S: CGFloat = 568.0
