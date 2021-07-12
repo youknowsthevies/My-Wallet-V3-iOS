@@ -31,7 +31,7 @@ final class AssetPriceCellPresenter {
             accessibility: .none
         )
         descriptionLabelContent = .init(
-            text: currency.code,
+            text: currency.displayCode,
             font: .systemFont(ofSize: 12.0, weight: .semibold),
             color: .descriptionText,
             alignment: .left,

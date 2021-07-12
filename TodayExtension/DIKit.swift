@@ -28,23 +28,15 @@ extension DependencyContainer {
             let dataProvider: DataProvider = DIKit.resolve()
             return dataProvider.exchange as ExchangeProviding
         }
+
+        factory { FiatCurrencyService() as FiatCurrencyServiceAPI }
+
+        factory { ErrorRecorderMock() as ErrorRecording }
     }
 }
 
 extension UIDevice: DeviceInfo {
     public var uuidString: String {
         UIDevice.current.identifierForVendor?.uuidString ?? ""
-    }
-}
-
-final class AnalyticsServiceMock: AnalyticsEventRecorderAPI {
-    func record(events: [AnalyticsEvent]) {
-        // NOOP
-    }
-
-    let recordRelay = PublishRelay<AnalyticsEvent>()
-
-    func record(event: AnalyticsEvent) {
-        // NOOP
     }
 }
