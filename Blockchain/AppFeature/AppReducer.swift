@@ -48,6 +48,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     deeplinkHandler: $0.deeplinkHandler,
                     deeplinkRouter: $0.deeplinkRouter,
                     walletManager: $0.walletManager,
+                    featureFlagsService: $0.featureFlagsService,
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     internalFeatureService: $0.internalFeatureService,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,

@@ -2,6 +2,7 @@
 
 import PlatformKit
 import RxSwift
+import ToolKit
 
 final class MockFeatureFetcher: FeatureFetching {
 

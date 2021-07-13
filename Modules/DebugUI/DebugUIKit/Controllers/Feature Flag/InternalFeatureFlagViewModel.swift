@@ -22,16 +22,8 @@ struct InternalFeatureItem: Equatable {
             return "New Pin/Onboarding (experimental)"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
-        case .showOnboardingAfterSignUp:
-            return "Show Onboarding after creating Wallet"
-        case .showEmailVerificationInOnboarding:
-            return "Show Email Verification in Onboarding Flow"
-        case .showEmailVerificationInBuyFlow:
-            return "Show Email Verification in Buy Flow"
         case .useTransactionsFlowToBuyCrypto:
             return "Uses Transactions Flow to Buy Crypto"
-        case .sddEnabled:
-            return "Enable Simplified Due Diligence"
         }
     }
 }

@@ -6,6 +6,7 @@ import RxSwift
 import ToolKit
 
 final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
+
     // MARK: - Public properties
 
     let paymentMethods: Observable<[PaymentMethod]>
@@ -22,19 +23,16 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
     private let tiersService: KYCTiersServiceAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
 
     // MARK: - Setup
 
     init(eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
          tiersService: KYCTiersServiceAPI = resolve(),
          reactiveWallet: ReactiveWalletAPI = resolve(),
-         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
          enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
-        self.featureFlagsService = featureFlagsService
         self.fiatCurrencyService = fiatCurrencyService
         self.enabledCurrenciesService = enabledCurrenciesService
 
@@ -49,7 +47,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }
-                .flatMap { (tiersResult, sddEligility) -> Single<[PaymentMethodsResponse.Method]> in
+                .flatMap { (tiersResult, sddEligility) -> Single<([PaymentMethodsResponse.Method], Bool)> in
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
@@ -57,14 +55,15 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                             (tiersResult.isTier0 || tiersResult.isTier1Approved) && sddEligility.eligible
                         ) ? sddEligility.tier : nil
                     )
+                    .map { ($0, sddEligility.eligible) }
                 }
-                .map { [featureFlagsService] methods -> [PaymentMethod] in
+                .map { (methods, sddEligible) -> [PaymentMethod] in
                     let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,
                         supportedFiatCurrencies: enabledFiatCurrencies
                     )
-                    guard featureFlagsService.isEnabled(.sddEnabled) else {
+                    guard sddEligible else {
                         return paymentMethods
                     }
                     return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user

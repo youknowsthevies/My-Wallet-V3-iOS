@@ -29,6 +29,22 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable resolving a domain name when sending crypto.
     case sendToDomainName
+
+    // MARK: Onboarding (After Login)
+
+    /// Shows Email Verification insted of Simple Buy at Login
+    case showOnboardingAfterSignUp
+
+    /// Shows Email Verification in Onboarding, otherwise just show the buy flow
+    case showEmailVerificationInOnboarding
+
+    /// Shows Email Verification, if needed, when a user tries to make a purchase
+    case showEmailVerificationInBuyFlow
+
+    // MARK: SDD
+
+    /// Enables SDD checks. If `false`, all checks immediately fail
+    case sddEnabled
 }
 
 extension AppFeature {
@@ -49,6 +65,14 @@ extension AppFeature {
             return "send_to_domain_name_ios"
         case .biometry:
             return nil
+        case .showOnboardingAfterSignUp:
+            return "show_onboarding_after_sign_up_ios"
+        case .showEmailVerificationInOnboarding:
+            return "show_email_verification_in_onboarding_ios"
+        case .showEmailVerificationInBuyFlow:
+            return "show_email_verification_in_buy_flow_ios"
+        case .sddEnabled:
+            return "sdd_enabled_ios"
         }
     }
 }

@@ -29,7 +29,8 @@ public struct AppEnvironment {
     var deeplinkRouter: DeepLinkRouting
     var backgroundAppHandler: BackgroundAppHandlerAPI
     var portfolioSyncingService: BalanceSharingSettingsServiceAPI
-    var internalFeatureService: InternalFeatureFlagServiceAPI
+    var featureFlagsService: FeatureFlagsServiceAPI
+    var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
 
     var sharedContainer: SharedContainerUserDefaults
@@ -41,7 +42,7 @@ public struct AppEnvironment {
     var walletUpgradeService: WalletUpgradeServicing
     var exchangeRepository: ExchangeAccountRepositoryAPI
 
-    var appFeatureConfigurator: FeatureConfiguratorAPI
+    var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
 

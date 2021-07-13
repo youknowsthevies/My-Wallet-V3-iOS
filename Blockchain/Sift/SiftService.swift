@@ -3,6 +3,7 @@
 import DIKit
 import PlatformKit
 import Sift
+import ToolKit
 
 final class SiftService: SiftServiceAPI {
 

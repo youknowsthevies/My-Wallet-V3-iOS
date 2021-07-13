@@ -26,13 +26,13 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     private let disposeBag = DisposeBag()
 
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     init(
         router: RouterAPI,
         stateService: CheckoutServiceAPI,
         interactor: BuyCryptoScreenInteractor,
-        featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
         self.interactor = interactor
@@ -106,16 +106,20 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     // TODO: present new KYC depending on feature flag (IOS-4471)
                     return self.performLegacyKYCCheck(for: candidateOrderDetails)
                 }
-                guard featureFlagsService.isEnabled(.showEmailVerificationInBuyFlow) else {
-                    return performKYCChecks()
-                }
-                return router.presentEmailVerificationIfNeeded()
+                return featureFlagsService.isEnabled(.remote(.showEmailVerificationInBuyFlow))
                     .asObservable()
-                    .flatMap { _ in
-                        performKYCChecks()
-                    }
-                    .catchError { error in
-                        .just(.failure(error))
+                    .flatMap { shouldShowEmailVerification -> Observable<Result<CTAData, Error>> in
+                        guard shouldShowEmailVerification else {
+                            return performKYCChecks()
+                        }
+                        return router.presentEmailVerificationIfNeeded()
+                            .asObservable()
+                            .flatMap { _ in
+                                performKYCChecks()
+                            }
+                            .catchError { error in
+                                .just(.failure(error))
+                            }
                     }
             }
             .observeOn(MainScheduler.asyncInstance)

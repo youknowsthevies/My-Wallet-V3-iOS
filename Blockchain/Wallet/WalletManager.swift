@@ -177,7 +177,7 @@ extension WalletManager: WalletDelegate {
     func walletDidDecrypt(withSharedKey sharedKey: String?, guid: String?) {
         Logger.shared.info("walletDidDecrypt()")
 
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async {
             self.authDelegate?.didDecryptWallet(
                 guid: guid,
                 sharedKey: sharedKey,
@@ -191,14 +191,14 @@ extension WalletManager: WalletDelegate {
     func walletDidFinishLoad() {
         Logger.shared.info("walletDidFinishLoad()")
 
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async {
             self.authDelegate?.authenticationCompleted()
         }
     }
 
     func walletFailedToDecrypt() {
         Logger.shared.info("walletFailedToDecrypt()")
-        DispatchQueue.main.async { [unowned self] in
+        DispatchQueue.main.async {
             self.authDelegate?.authenticationError(error:
                 AuthenticationError(
                     code: .errorDecryptingWallet

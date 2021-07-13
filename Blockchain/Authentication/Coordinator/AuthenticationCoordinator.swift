@@ -61,7 +61,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     private let deepLinkRouter: DeepLinkRouting
 
     private let onboardingRouter: OnboardingUIKit.OnboardingRouterAPI
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
 
     private var exchangeRepository: ExchangeAccountRepositoryAPI!
     private lazy var supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve()
@@ -95,7 +95,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
          dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
          deepLinkRouter: DeepLinkRouting = resolve(),
          onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
-         featureFlagsService: InternalFeatureFlagServiceAPI = resolve(),
+         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
          remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
@@ -184,11 +184,11 @@ extension AuthenticationCoordinator: PairingWalletFetching {
         analyticsRecoder.record(event: AnalyticsEvents.New.Navigation.signedIn)
 
         if isCreatingWallet {
-            if featureFlagsService.isEnabled(.showOnboardingAfterSignUp) {
-                presentOnboardingFlow()
-            } else {
-                presentSimpleBuyFlow()
-            }
+            featureFlagsService.isEnabled(.remote(.showOnboardingAfterSignUp))
+                .sink(receiveValue: { [presentOnboardingFlow, presentSimpleBuyFlow] showOnboardingAfterSignUp in
+                    showOnboardingAfterSignUp ? presentOnboardingFlow() : presentSimpleBuyFlow()
+                })
+                .store(in: &cancellables)
         }
 
         if let route = postAuthenticationRoute {

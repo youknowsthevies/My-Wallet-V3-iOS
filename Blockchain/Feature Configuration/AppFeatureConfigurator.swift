@@ -4,6 +4,7 @@ import DIKit
 import FirebaseRemoteConfig
 import PlatformKit
 import RxSwift
+import ToolKit
 
 @objc class AppFeatureConfigurator: NSObject, FeatureConfiguratorAPI {
 

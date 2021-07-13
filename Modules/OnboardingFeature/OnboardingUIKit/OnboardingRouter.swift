@@ -19,14 +19,14 @@ public class OnboardingRouter: OnboardingRouterAPI {
 
     let buyCryptoRouter: BuyCryptoRouterAPI
     let emailVerificationRouter: EmailVerificationRouterAPI
-    let featureFlagsService: InternalFeatureFlagServiceAPI
+    let featureFlagsService: FeatureFlagsServiceAPI
 
     // MARK: - Init
 
     public init(
         buyCryptoRouter: BuyCryptoRouterAPI = resolve(),
         emailVerificationRouter: EmailVerificationRouterAPI = resolve(),
-        featureFlagsService: InternalFeatureFlagServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.buyCryptoRouter = buyCryptoRouter
         self.emailVerificationRouter = emailVerificationRouter
@@ -63,10 +63,14 @@ public class OnboardingRouter: OnboardingRouterAPI {
     // MARK: - Helper Methods
 
     private func presentEmailVerification(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {
-        guard featureFlagsService.isEnabled(.showEmailVerificationInOnboarding) else {
-            return .just(.completed)
-        }
-        return emailVerificationRouter.presentEmailVerification(from: presenter)
+        featureFlagsService.isEnabled(.remote(.showEmailVerificationInOnboarding))
+            .flatMap { [emailVerificationRouter] shouldShowEmailVerification -> AnyPublisher<OnboardingResult, Never> in
+                guard shouldShowEmailVerification else {
+                    return .just(.completed)
+                }
+                return emailVerificationRouter.presentEmailVerification(from: presenter)
+            }
+            .eraseToAnyPublisher()
     }
 
     private func presentOnboardingToBuyingCrypto(from presenter: UIViewController) -> AnyPublisher<OnboardingResult, Never> {

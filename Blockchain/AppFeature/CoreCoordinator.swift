@@ -56,8 +56,9 @@ struct CoreAppEnvironment {
     var deeplinkHandler: DeepLinkHandling
     var deeplinkRouter: DeepLinkRouting
     var walletManager: WalletManager
-    var appFeatureConfigurator: FeatureConfiguratorAPI
-    var internalFeatureService: InternalFeatureFlagServiceAPI
+    var featureFlagsService: FeatureFlagsServiceAPI
+    var appFeatureConfigurator: FeatureConfiguratorAPI // TODO: deprecated, use featureFlagsService instead
+    var internalFeatureService: InternalFeatureFlagServiceAPI // TODO: deprecated, use featureFlagsService instead
     var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     var blockchainSettings: BlockchainSettings.App
     var credentialsStore: CredentialsStoreAPI
@@ -104,7 +105,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     coincore: environment.coincore,
                     appSettings: environment.blockchainSettings,
                     deeplinkRouter: environment.deeplinkRouter,
-                    internalFeatureService: environment.internalFeatureService,
+                    featureFlagsService: environment.featureFlagsService,
                     fiatCurrencySettingsService: environment.fiatCurrencySettingsService
                 )
             }),

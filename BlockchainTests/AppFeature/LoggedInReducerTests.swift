@@ -13,7 +13,8 @@ import XCTest
 
 @testable import Blockchain
 
-class LoggedInReducerTests: XCTestCase {
+final class LoggedInReducerTests: XCTestCase {
+
     var mockWalletManager: WalletManager!
     var mockWallet: MockWallet! = MockWallet()
     var mockReactiveWallet = MockReactiveWallet()
@@ -28,7 +29,7 @@ class LoggedInReducerTests: XCTestCase {
     var mockAppDeeplinkHandler: MockAppDeeplinkHandler!
     var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     var mockDeepLinkRouter: MockDeepLinkRouter!
-    var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
+    var mockFeatureFlagsService: MockFeatureFlagsService!
     var fiatCurrencySettingsServiceMock: FiatCurrencySettingsServiceMock!
 
     var testStore: TestStore<
@@ -39,7 +40,9 @@ class LoggedInReducerTests: XCTestCase {
         LoggedIn.Environment
     >!
 
-    override func setUp() {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+
         mockSettingsApp = MockBlockchainSettingsApp(
             enabledCurrenciesService: MockEnabledCurrenciesService(),
             keychainItemWrapper: MockKeychainItemWrapping(),
@@ -65,7 +68,7 @@ class LoggedInReducerTests: XCTestCase {
         mockAppDeeplinkHandler = MockAppDeeplinkHandler()
         mockMainQueue = DispatchQueue.test
         mockDeepLinkRouter = MockDeepLinkRouter()
-        mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
+        mockFeatureFlagsService = MockFeatureFlagsService()
         fiatCurrencySettingsServiceMock = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
 
         testStore = TestStore(
@@ -82,11 +85,33 @@ class LoggedInReducerTests: XCTestCase {
                 coincore: mockCoincore,
                 appSettings: mockSettingsApp,
                 deeplinkRouter: mockDeepLinkRouter,
-                internalFeatureService: mockInternalFeatureFlagService,
+                featureFlagsService: mockFeatureFlagsService,
                 fiatCurrencySettingsService: fiatCurrencySettingsServiceMock
             )
         )
     }
+
+    // TODO: Tests fail when the mock instances are deallocated at the end of the test
+//    override func tearDownWithError() throws {
+//        mockSettingsApp = nil
+//        mockWalletManager = nil
+//        mockAlertPresenter = nil
+//        mockExchangeAccountRepository = nil
+//        mockRemoteNotificationAuthorizer = nil
+//        mockRemoteNotificationServiceContainer = nil
+//        mockCoincore = nil
+//        mockAnalyticsRecorder = nil
+//        onboardingSettings = nil
+//        mockAppDeeplinkHandler = nil
+//        mockMainQueue = nil
+//        mockDeepLinkRouter = nil
+//        mockFeatureFlagsService = nil
+//        fiatCurrencySettingsServiceMock = nil
+//
+//        testStore = nil
+//
+//        try super.tearDownWithError()
+//    }
 
     func test_verify_initial_state_is_correct() {
         let state = LoggedIn.State()
@@ -98,7 +123,8 @@ class LoggedInReducerTests: XCTestCase {
     func test_verify_start_action_observers_symbol_changes() {
         testStore.send(.start(.none))
 
-        mockSettingsApp.symbolLocal = true
+        mockSettingsApp.symbolLocal = false
+        mockSettingsApp.symbolLocal = true // needs to change to trigger action
 
         testStore.receive(.symbolChanged) { state in
             state.reloadAfterSymbolChanged = true

@@ -2,6 +2,7 @@
 
 import Foundation
 import PlatformKit
+import ToolKit
 
 class MockFeatureConfigurator: FeatureConfiguratorAPI {
 

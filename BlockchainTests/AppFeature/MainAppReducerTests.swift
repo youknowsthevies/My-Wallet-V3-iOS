@@ -13,7 +13,8 @@ import XCTest
 
 @testable import Blockchain
 
-class MainAppReducerTests: XCTestCase {
+final class MainAppReducerTests: XCTestCase {
+
     var mockWalletManager: WalletManager!
     var mockWallet: MockWallet! = MockWallet()
     var mockReactiveWallet = MockReactiveWallet()
@@ -32,6 +33,7 @@ class MainAppReducerTests: XCTestCase {
     var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     var mockDeepLinkHandler: MockDeepLinkHandler!
     var mockDeepLinkRouter: MockDeepLinkRouter!
+    var mockFeatureFlagsService: MockFeatureFlagsService!
     var mockInternalFeatureFlagService: InternalFeatureFlagServiceMock!
     var mockFiatCurrencySettingsService: FiatCurrencySettingsServiceMock!
 
@@ -43,7 +45,9 @@ class MainAppReducerTests: XCTestCase {
         CoreAppEnvironment
     >!
 
-    override func setUp() {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+
         mockSettingsApp = MockBlockchainSettingsApp(
             enabledCurrenciesService: MockEnabledCurrenciesService(),
             keychainItemWrapper: MockKeychainItemWrapping(),
@@ -73,6 +77,7 @@ class MainAppReducerTests: XCTestCase {
         mockMainQueue = DispatchQueue.test
         mockDeepLinkHandler = MockDeepLinkHandler()
         mockDeepLinkRouter = MockDeepLinkRouter()
+        mockFeatureFlagsService = MockFeatureFlagsService()
         mockInternalFeatureFlagService = InternalFeatureFlagServiceMock()
         mockFiatCurrencySettingsService = FiatCurrencySettingsServiceMock(expectedCurrency: .USD)
 
@@ -84,6 +89,7 @@ class MainAppReducerTests: XCTestCase {
                 deeplinkHandler: mockDeepLinkHandler,
                 deeplinkRouter: mockDeepLinkRouter,
                 walletManager: mockWalletManager,
+                featureFlagsService: mockFeatureFlagsService,
                 appFeatureConfigurator: mockFeatureConfigurator,
                 internalFeatureService: mockInternalFeatureFlagService,
                 fiatCurrencySettingsService: mockFiatCurrencySettingsService,
@@ -102,6 +108,33 @@ class MainAppReducerTests: XCTestCase {
             )
         )
     }
+
+    // TODO: Tests fail when the mock instances are deallocated at the end of the test
+//    override func tearDownWithError() throws {
+//        mockSettingsApp = nil
+//        mockWalletManager = nil
+//        mockCredentialsStore = nil
+//        mockAlertPresenter = nil
+//        mockWalletUpgradeService = nil
+//        mockExchangeAccountRepository = nil
+//        mockRemoteNotificationAuthorizer = nil
+//        mockRemoteNotificationServiceContainer = nil
+//        mockCoincore = nil
+//        mockFeatureConfigurator = nil
+//        mockAnalyticsRecorder = nil
+//        mockSiftService = nil
+//        onboardingSettings = nil
+//        mockMainQueue = nil
+//        mockDeepLinkHandler = nil
+//        mockDeepLinkRouter = nil
+//        mockFeatureFlagsService = nil
+//        mockInternalFeatureFlagService = nil
+//        mockFiatCurrencySettingsService = nil
+//
+//        testStore = nil
+//
+//        try super .tearDownWithError()
+//    }
 
     func test_verify_initial_state_is_correct() {
         let state = CoreAppState()

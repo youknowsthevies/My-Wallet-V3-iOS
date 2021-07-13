@@ -8,6 +8,7 @@ import PlatformKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
+import ToolKit
 
 /// Describes the announcement visual. Plays as a presenter / provide for announcements,
 /// By creating a list of pending announcements, on which subscribers can be informed.

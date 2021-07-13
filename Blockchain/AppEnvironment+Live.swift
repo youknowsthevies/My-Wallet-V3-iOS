@@ -25,6 +25,7 @@ extension AppEnvironment {
             deeplinkRouter: resolve(),
             backgroundAppHandler: resolve(),
             portfolioSyncingService: resolve(),
+            featureFlagsService: resolve(),
             internalFeatureService: resolve(),
             fiatCurrencySettingsService: resolve(),
             sharedContainer: .default,

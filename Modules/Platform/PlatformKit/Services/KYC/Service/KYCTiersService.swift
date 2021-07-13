@@ -66,7 +66,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
 
     // MARK: - Private Properties
     private let client: KYCClientAPI
-    private let featureFlagsService: InternalFeatureFlagServiceAPI
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
     private let semaphore = DispatchSemaphore(value: 1)
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
@@ -74,7 +74,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     // MARK: - Setup
     init(
         client: KYCClientAPI = resolve(),
-        featureFlagsService: InternalFeatureFlagServiceAPI = resolve()
+        featureFlagsService: FeatureFlagsServiceAPI = resolve()
     ) {
         self.client = client
         self.featureFlagsService = featureFlagsService
@@ -100,33 +100,38 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func simplifiedDueDiligenceEligibility(for tier: KYC.Tier) -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> {
-        guard featureFlagsService.isEnabled(.sddEnabled) else {
-            return .just(SimplifiedDueDiligenceResponse(eligible: false, tier: KYC.Tier.tier0.rawValue))
-        }
         guard tier != .tier2 else {
             // Tier2 (Gold) verified users should be treated as SDD eligible
             return .just(SimplifiedDueDiligenceResponse(eligible: true, tier: tier.rawValue))
         }
-        return client.checkSimplifiedDueDiligenceEligibility()
-            .replaceError(with: SimplifiedDueDiligenceResponse(eligible: false, tier: tier.rawValue))
+        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+            .flatMap { [client] sddEnabled -> AnyPublisher<SimplifiedDueDiligenceResponse, Never> in
+                guard sddEnabled else {
+                    return .just(SimplifiedDueDiligenceResponse(eligible: false, tier: KYC.Tier.tier0.rawValue))
+                }
+                return client.checkSimplifiedDueDiligenceEligibility()
+                    .replaceError(with: SimplifiedDueDiligenceResponse(eligible: false, tier: tier.rawValue))
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 
     func checkSimplifiedDueDiligenceEligibility() -> AnyPublisher<Bool, Never> {
-        guard featureFlagsService.isEnabled(.sddEnabled) else {
-            return .just(false)
-        }
-        return fetchTiersPublisher()
-            .flatMap { [weak self] userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
-                guard let self = self else {
+        featureFlagsService.isEnabled(.remote(.sddEnabled))
+            .flatMap { [fetchTiersPublisher, simplifiedDueDiligenceEligibility] sddEnabled -> AnyPublisher<Bool, Never> in
+                guard sddEnabled else {
                     return .just(false)
                 }
-                return self.simplifiedDueDiligenceEligibility(for: userTiers.latestApprovedTier)
-                    .map(\.eligible)
-                    .setFailureType(to: KYCTierServiceError.self)
+                return fetchTiersPublisher()
+                    .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
+                        return simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
+                            .map(\.eligible)
+                            .setFailureType(to: KYCTierServiceError.self)
+                            .eraseToAnyPublisher()
+                    }
+                    .replaceError(with: false)
                     .eraseToAnyPublisher()
             }
-            .replaceError(with: false)
             .eraseToAnyPublisher()
     }
 
@@ -137,53 +142,57 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     func checkSimplifiedDueDiligenceVerification(for tier: KYC.Tier, pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
-        guard featureFlagsService.isEnabled(.sddEnabled) else {
-            return .just(false)
-        }
         guard tier != .tier2 else {
             // Tier 2 (Gold) verified users should be treated as SDD verified
             return .just(true)
         }
+
         let timeout = Date(timeIntervalSinceNow: .minutes(2))
-        func pollingHelper() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
+        func pollingPublisher() -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> {
             // Poll the API every 5 seconds until `taskComplete` is `true` or an error is returned from the upstream until timeout.
             // This should only take a couple of seconds in reality.
             client.checkSimplifiedDueDiligenceVerification()
-                .flatMap { [pollingHelper] result -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> in
+                .flatMap { [pollingPublisher] result -> AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> in
                     let shouldRetry = pollUntilComplete && !result.taskComplete && Date() < timeout
                     guard shouldRetry else {
                         return .just(result)
                     }
-                    return pollingHelper()
+                    return pollingPublisher()
                         .delay(for: 5, scheduler: DispatchQueue.global(qos: .userInitiated))
                         .eraseToAnyPublisher()
                 }
                 .eraseToAnyPublisher()
         }
 
-        return pollingHelper()
-            .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
-            .map(\.verified)
+        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+            .flatMap { [pollingPublisher] sddEnabled -> AnyPublisher<Bool, Never> in
+                guard sddEnabled else {
+                    return .just(false)
+                }
+                return pollingPublisher()
+                    .replaceError(with: SimplifiedDueDiligenceVerificationResponse(verified: false, taskComplete: true))
+                    .map(\.verified)
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 
     func checkSimplifiedDueDiligenceVerification(pollUntilComplete: Bool) -> AnyPublisher<Bool, Never> {
-        guard featureFlagsService.isEnabled(.sddEnabled) else {
-            return .just(false)
-        }
-        return fetchTiersPublisher()
-            .flatMap { [weak self] userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
-                guard let self = self else {
+        let sddVerificationCheck = checkSimplifiedDueDiligenceVerification(for:pollUntilComplete:)
+        return featureFlagsService.isEnabled(.remote(.sddEnabled))
+            .flatMap { [fetchTiersPublisher, sddVerificationCheck] sddEnabled -> AnyPublisher<Bool, Never> in
+                guard sddEnabled else {
                     return .just(false)
                 }
-                return self.checkSimplifiedDueDiligenceVerification(
-                    for: userTiers.latestApprovedTier,
-                    pollUntilComplete: pollUntilComplete
-                )
-                .setFailureType(to: KYCTierServiceError.self)
-                .eraseToAnyPublisher()
+                return fetchTiersPublisher()
+                    .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
+                        return sddVerificationCheck(userTiers.latestApprovedTier, pollUntilComplete)
+                            .setFailureType(to: KYCTierServiceError.self)
+                            .eraseToAnyPublisher()
+                    }
+                    .replaceError(with: false)
+                    .eraseToAnyPublisher()
             }
-            .replaceError(with: false)
             .eraseToAnyPublisher()
     }
 }

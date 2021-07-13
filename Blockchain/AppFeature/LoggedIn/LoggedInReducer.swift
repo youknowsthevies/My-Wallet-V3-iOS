@@ -31,6 +31,7 @@ public enum LoggedIn {
         // wallet related actions
         case wallet(WalletAction)
         case handleNewWalletCreation
+        case showOnboarding
         case showLegacyBuyFlow
         // symbol change actions, used by old address screen
         case symbolChanged
@@ -57,7 +58,7 @@ public enum LoggedIn {
         var coincore: CoincoreAPI
         var appSettings: BlockchainSettings.App
         var deeplinkRouter: DeepLinkRouting
-        var internalFeatureService: InternalFeatureFlagServiceAPI
+        var featureFlagsService: FeatureFlagsServiceAPI
         var fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI
     }
 
@@ -145,19 +146,25 @@ let loggedInReducer = Reducer<LoggedIn.State, LoggedIn.Action, LoggedIn.Environm
         state.displaySendCryptoScreen = false
         return .none
     case .handleNewWalletCreation:
-        guard environment.internalFeatureService.isEnabled(.showOnboardingAfterSignUp) else {
-            // display old buy flow
-            return environment.fiatCurrencySettingsService
-                .update(currency: .locale, context: .walletCreation)
-                .receive(on: environment.mainQueue)
-                .catchToEffect()
-                .map { result -> LoggedIn.Action in
-                    guard case .success = result else {
-                        return .none
-                    }
-                    return .showLegacyBuyFlow
+        return environment.featureFlagsService.isEnabled(.remote(.showOnboardingAfterSignUp))
+            .flatMap { shouldShowOnboarding -> Effect<LoggedIn.Action, Never> in
+                guard shouldShowOnboarding else {
+                    // display old buy flow
+                    return environment.fiatCurrencySettingsService
+                        .update(currency: .locale, context: .walletCreation)
+                        .receive(on: environment.mainQueue)
+                        .catchToEffect()
+                        .map { result -> LoggedIn.Action in
+                            guard case .success = result else {
+                                return .none
+                            }
+                            return .showLegacyBuyFlow
+                        }
                 }
-        }
+                return Effect(value: .showOnboarding)
+            }
+            .eraseToEffect()
+    case .showOnboarding:
         // display new onboarding flow
         state.displayOnboardingFlow = true
         return .none

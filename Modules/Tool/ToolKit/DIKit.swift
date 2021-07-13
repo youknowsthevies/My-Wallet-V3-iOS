@@ -13,5 +13,7 @@ extension DependencyContainer {
         // MARK: - Internal Feature Flag
 
         factory { InternalFeatureFlagService(defaultsProvider: provideInternalUserDefaults) as InternalFeatureFlagServiceAPI }
+
+        factory { FeatureFlagsService() as FeatureFlagsServiceAPI }
     }
 }
