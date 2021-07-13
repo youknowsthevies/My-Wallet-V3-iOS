@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "top-screen-pattern.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

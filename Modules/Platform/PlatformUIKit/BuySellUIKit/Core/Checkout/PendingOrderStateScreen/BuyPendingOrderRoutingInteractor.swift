@@ -46,6 +46,8 @@ public final class BuyPendingOrderRoutingInteractor: PendingOrderRoutingInteract
             stateService.orderPending(with: orderDetails)
         case .completed:
             stateService.orderCompleted()
+        case .upgrade:
+            stateService.promptTierUpgrade()
         }
     }
 

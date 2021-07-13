@@ -8,6 +8,7 @@ import ToolKit
 public enum PendingOrderState {
     case pending(OrderDetails)
     case completed
+    case upgrade
 }
 
 public protocol PendingOrderStateAPI {

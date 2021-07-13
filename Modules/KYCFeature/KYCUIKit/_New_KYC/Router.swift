@@ -3,6 +3,7 @@
 import Combine
 import ComposableArchitecture
 import KYCKit
+import UIComponentsKit
 import UIKit
 
 public enum FlowResult {
@@ -30,6 +31,11 @@ public protocol Routing {
     ///   - presenter: The `ViewController` presenting the KYC Flow
     ///   - flowCompletion: A closure called after the KYC Flow completes successully (with the email address being verified).
     func routeToKYC(from presenter: UIViewController, flowCompletion: @escaping (FlowResult) -> Void)
+
+    /// Presents a screen prompting the user to upgrade to Gold Tier
+    /// - Parameter presenter: The `ViewController` that will present the screen
+    /// - Returns: A `Combine.Publisher` sending a single value before completing.
+    func presentPromptToUnlockMoreTrading(from presenter: UIViewController) -> AnyPublisher<FlowResult, Never>
 
     // Convenience Combine APIs
 
@@ -119,6 +125,32 @@ public class Router: Routing {
         // step 1: check KYC status.
         // TODO: check KYC status and present KYC Flow if needed (IOS-4471)
         fatalError("Unimplemented")
+    }
+
+    public func presentPromptToUnlockMoreTrading(from presenter: UIViewController) -> AnyPublisher<FlowResult, Never> {
+        let publisher = PassthroughSubject<FlowResult, Never>()
+        let view = UnlockTradingView(
+            store: .init(
+                initialState: UnlockTradingState(
+                    viewModel: .unlockGoldTier
+                ),
+                reducer: unloackTradingReducer,
+                environment: UnlockTradingEnvironment(
+                    dismiss: {
+                        presenter.dismiss(animated: true, completion: {
+                            publisher.send(.abandoned)
+                            publisher.send(completion: .finished)
+                        })
+                    },
+                    unlock: {
+                        // TODO: present KYC Flow (IOS-4471)
+                        publisher.send(.completed)
+                    }
+                )
+            )
+        )
+        presenter.present(view)
+        return publisher.eraseToAnyPublisher()
     }
 
     // MARK: - Helpers

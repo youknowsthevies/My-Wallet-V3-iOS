@@ -6,12 +6,21 @@ public enum NavigationButton {
     case back
     case close
 
-    var iconName: String {
+    private var iconName: String {
         switch self {
         case .back:
             return "back_chevron_icon"
         case .close:
             return "cancel_icon"
+        }
+    }
+}
+
+extension NavigationButton {
+
+    public func button(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(iconName, bundle: .current)
         }
     }
 }
@@ -34,22 +43,18 @@ extension View {
         }
     }
 
-    public func leadingNavigationButton(_ button: NavigationButton, action: @escaping () -> Void) -> some View {
+    public func leadingNavigationButton(_ navigationButton: NavigationButton, action: @escaping () -> Void) -> some View {
         navigationBarItems(
             leading: HStack {
-                Button(action: action) {
-                    Image(button.iconName, bundle: .current)
-                }
+                navigationButton.button(action: action)
             }
         )
     }
 
-    public func trailingNavigationButton(_ button: NavigationButton, action: @escaping () -> Void) -> some View {
+    public func trailingNavigationButton(_ navigationButton: NavigationButton, action: @escaping () -> Void) -> some View {
         navigationBarItems(
             trailing: HStack {
-                Button(action: action) {
-                    Image(button.iconName, bundle: .current)
-                }
+                navigationButton.button(action: action)
             }
         )
     }

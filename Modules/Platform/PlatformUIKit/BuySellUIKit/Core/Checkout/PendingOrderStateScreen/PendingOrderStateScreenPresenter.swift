@@ -168,7 +168,18 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
         viewModelRelay.accept(viewModel)
     }
 
-    private func handleTimeout(order: OrderDetails) {
+    private func handleTimeout(order: OrderDetails, canUpgradeTier: Bool) {
+        let supplementaryButton: ButtonViewModel?
+        if canUpgradeTier {
+            supplementaryButton = ButtonViewModel.secondary(with: LocalizedString.Success.Buy.buyMore)
+            supplementaryButton?.tapRelay
+                .map { .upgrade }
+                .bindAndCatch(to: routingInteractor.stateRelay)
+                .disposed(by: disposeBag)
+        } else {
+            supplementaryButton = nil
+        }
+
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
             .map { .completed }
@@ -201,12 +212,24 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             title: "\(amount) \(title)",
             subtitle: subtitle,
             button: button,
+            supplementaryButton: supplementaryButton,
             displayCloseButton: true
         )
         viewModelRelay.accept(viewModel)
     }
 
-    private func handleSuccess() {
+    private func handleSuccess(canUpgradeTier: Bool) {
+        let supplementaryButton: ButtonViewModel?
+        if canUpgradeTier {
+            supplementaryButton = ButtonViewModel.secondary(with: LocalizedString.Success.Buy.buyMore)
+            supplementaryButton?.tapRelay
+                .map { .upgrade }
+                .bindAndCatch(to: routingInteractor.stateRelay)
+                .disposed(by: disposeBag)
+        } else {
+            supplementaryButton = nil
+        }
+
         let button = ButtonViewModel.primary(with: LocalizedString.button)
         button.tapRelay
             .map { .completed }
@@ -237,7 +260,8 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             subtitle: subtitle,
             interactibleText: interactibleText,
             url: url,
-            button: button
+            button: button,
+            supplementaryButton: supplementaryButton
         )
         self.viewModelRelay.accept(viewModel)
     }
@@ -252,7 +276,15 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
                 showError(localizedDescription: "")
             case .finished:
                 analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbCheckoutCompleted(status: .success))
-                handleSuccess()
+                interactor.fetchTierUpgradeEligility()
+                    .subscribe { [handleSuccess] canUpgradeTier in
+                        handleSuccess(canUpgradeTier)
+                    } onError: { [handleSuccess] error in
+                        Logger.shared.error(String(describing: error))
+                        handleSuccess(false)
+                    }
+                    .disposed(by: disposeBag)
+
             case .pendingConfirmation, .pendingDeposit, .depositMatched:
                 // This state is practically not possible by design since the app polls until
                 // the order is in one of the final states (success / error).
@@ -260,7 +292,14 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             }
         case .timeout(let order):
             analyticsRecorder.record(event: AnalyticsEvents.SimpleBuy.sbCheckoutCompleted(status: .timeout))
-            handleTimeout(order: order)
+            interactor.fetchTierUpgradeEligility()
+                .subscribe { [handleTimeout] canUpgradeTier in
+                    handleTimeout(order, canUpgradeTier)
+                } onError: { [handleTimeout] error in
+                    Logger.shared.error(String(describing: error))
+                    handleTimeout(order, false)
+                }
+                .disposed(by: disposeBag)
         case .cancel:
             break
         }

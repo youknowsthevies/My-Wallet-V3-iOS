@@ -6,6 +6,11 @@ import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
+import UIKit
+
+public protocol TierUpgradeRouterAPI {
+    func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void)
+}
 
 public final class StateService: StateServiceAPI {
 
@@ -157,6 +162,7 @@ public final class StateService: StateServiceAPI {
     private let loader: LoadingViewPresenting
     private let alert: AlertViewPresenterAPI
     private let messageRecorder: MessageRecording
+    private let tierUpgradeRouter: TierUpgradeRouterAPI
 
     private let disposeBag = DisposeBag()
 
@@ -169,6 +175,7 @@ public final class StateService: StateServiceAPI {
                 cache: EventCache = resolve(),
                 loader: LoadingViewPresenting = resolve(),
                 alert: AlertViewPresenterAPI = resolve(),
+                tierUpgradeRouter: TierUpgradeRouterAPI = resolve(),
                 messageRecorder: MessageRecording = resolve()) {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.paymentAccountService = paymentAccountService
@@ -178,6 +185,7 @@ public final class StateService: StateServiceAPI {
         self.loader = loader
         self.alert = alert
         self.messageRecorder = messageRecorder
+        self.tierUpgradeRouter = tierUpgradeRouter
 
         nextRelay
             .observeOn(MainScheduler.instance)
@@ -251,6 +259,12 @@ public final class StateService: StateServiceAPI {
 
     private func previous() {
         let last = statesRelay.value.current
+        if case .pendingOrderCompleted = last {
+            // Cannot go back once the order is completed.
+            // This fixes an issue with performing KYC after a successful order.
+            return
+        }
+
         let states = statesByRemovingLast()
         let current = states.current
         let action: Action
@@ -426,18 +440,18 @@ public final class StateService: StateServiceAPI {
         // After KYC - add card if necessary or link a bank flow for bank transfer
         let state: State
         switch data.order.paymentMethod {
-        case .bankAccount:
-            state = .checkout(data)
-        case .card:
-            state = .addCard(data)
         case .funds:
             state = .fundsTransferDetails(
                 currency: data.order.inputValue.currencyType,
                 isOriginPaymentMethods: false,
                 isOriginDeposit: false
             )
-        case .bankTransfer:
+        case .card where !data.isPaymentMethodFinalized:
+            state = .addCard(data)
+        case .bankTransfer where !data.isPaymentMethodFinalized:
             state = .linkBank
+        default:
+            state = .checkout(data)
         }
         apply(
             action: .next(to: state),
@@ -703,6 +717,12 @@ extension StateService {
                 action: .next(to: state),
                 states: self.states(byAppending: state)
             )
+        }
+    }
+
+    public func promptTierUpgrade() {
+        tierUpgradeRouter.presentPromptToUpgradeTier(from: nil) { [weak self] in
+            self?.orderCompleted()
         }
     }
 }

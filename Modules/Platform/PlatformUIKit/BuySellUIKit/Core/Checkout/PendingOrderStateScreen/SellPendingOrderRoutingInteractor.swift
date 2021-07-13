@@ -39,6 +39,8 @@ public final class SellPendingOrderRoutingInteractor: PendingOrderRoutingInterac
             interactor.orderPending(with: orderDetails)
         case .completed:
             interactor.orderCompleted()
+        case .upgrade:
+            impossible("You can only upgrade Tier while buying for now")
         }
     }
 }

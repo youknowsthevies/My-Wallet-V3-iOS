@@ -5,7 +5,9 @@ import DIKit
 import KYCKit
 import KYCUIKit
 import OnboardingUIKit
+import PlatformKit
 import PlatformUIKit // sadly, transactions logic is currently stored here
+import RxSwift
 import ToolKit
 
 final class KYCAdapter {
@@ -13,11 +15,18 @@ final class KYCAdapter {
     // MARK: - Properties
 
     private let router: KYCUIKit.Routing
+    private let legacyRouter: PlatformUIKit.KYCRouterAPI
+
+    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Init
 
-    init(router: KYCUIKit.Routing = resolve()) {
+    init(
+        router: KYCUIKit.Routing = resolve(),
+        legacyRouter: PlatformUIKit.KYCRouterAPI = resolve()
+    ) {
         self.router = router
+        self.legacyRouter = legacyRouter
     }
 
     // MARK: - Public Interface
@@ -101,5 +110,47 @@ extension KYCAdapter: OnboardingUIKit.EmailVerificationRouterAPI {
             .map(OnboardingResult.init)
             .replaceError(with: OnboardingResult.completed)
             .eraseToAnyPublisher()
+    }
+}
+
+extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
+
+    func presentPromptToUpgradeTier(from presenter: UIViewController?, completion: @escaping () -> Void) {
+        guard let presenter = presenter ?? UIApplication.shared.topMostViewController else {
+            fatalError("A view controller was expected to exist to run \(#function) in \(#file)")
+        }
+        router.presentPromptToUnlockMoreTrading(from: presenter)
+            .setFailureType(to: Error.self) // to make the following code compile
+            .flatMap { [legacyRouter] result -> AnyPublisher<Void, Error> in
+                switch result {
+                case .abandoned:
+                    return Empty(
+                        completeImmediately: true,
+                        outputType: Void.self,
+                        failureType: Error.self
+                    ) // simply return to the prompt.
+                    .eraseToAnyPublisher()
+                case .completed:
+                    legacyRouter.start(tier: .tier2)
+                    return Observable.merge(
+                        legacyRouter.kycStopped,
+                        legacyRouter.kycFinished
+                            .mapToVoid()
+                    )
+                    .asPublisher()
+                }
+            }
+            .receive(on: DispatchQueue.main)
+            .sink(receiveCompletion: { result in
+                // if the result is a successful completion, do nothing
+                // we should have called the completion block aready on receive value
+                guard case .failure = result else {
+                    return
+                }
+                completion()
+            }, receiveValue: { _ in
+                completion()
+            })
+            .store(in: &cancellables)
     }
 }

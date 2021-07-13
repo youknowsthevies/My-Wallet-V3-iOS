@@ -10,6 +10,7 @@ extension LayoutConstants {
 
     public struct VerticalSpacing {
         public static let betweenContentGroups: CGFloat = 16
+        public static let betweenContentGroupsLarge: CGFloat = 24
         public static let withinButtonsGroup: CGFloat = 16
         public static let withinFormGroup: CGFloat = 4
     }

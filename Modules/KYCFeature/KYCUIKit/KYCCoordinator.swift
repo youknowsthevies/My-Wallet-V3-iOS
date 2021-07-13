@@ -145,7 +145,7 @@ final class KYCCoordinator: KYCRouterAPI {
     }
 
     func start(tier: KYC.Tier) {
-        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
+        guard let rootViewController = UIApplication.shared.topMostViewController else {
             Logger.shared.warning("Cannot start KYC. rootViewController is nil.")
             return
         }
@@ -199,15 +199,17 @@ final class KYCCoordinator: KYCRouterAPI {
 
                 // SDD Eligible users can buy but we only need to check for SDD during the buy flow.
                 // This is to avoid breaking Tier 2 upgrade paths (e.g., from Settings)
-                let shouldCheckForSDDVerification = parentFlow == .simpleBuy ? isSDDEligible : false
+                let shouldUseSDDFlags = parentFlow == .simpleBuy
+                let shouldCheckForSDDEligibility = shouldUseSDDFlags ? isSDDEligible : false
+                let shouldCheckForSDDVerification = shouldUseSDDFlags ? isSDDVerified : false
 
                 let startingPage = user.isSunriverAirdropRegistered == true ?
                     KYCPageType.welcome :
                     KYCPageType.startingPage(
                         forUser: user,
                         tiersResponse: tiersResponse,
-                        isSDDEligible: shouldCheckForSDDVerification,
-                        isSDDVerified: isSDDVerified
+                        isSDDEligible: shouldCheckForSDDEligibility,
+                        isSDDVerified: shouldCheckForSDDVerification
                     )
                 if startingPage != .accountStatus {
                     /// If the starting page is accountStatus, they do not have any additional
@@ -219,13 +221,13 @@ final class KYCCoordinator: KYCRouterAPI {
                     viewController,
                     user: user,
                     tier: tier,
-                    isSDDEligible: shouldCheckForSDDVerification,
-                    isSDDVerified: isSDDVerified
+                    isSDDEligible: shouldCheckForSDDEligibility,
+                    isSDDVerified: shouldCheckForSDDVerification
                 )
                 strongSelf.restoreToMostRecentPageIfNeeded(
                     tier: tier,
                     isSDDEligible: isSDDEligible,
-                    isSDDVerified: isSDDVerified
+                    isSDDVerified: shouldCheckForSDDVerification
                 )
             }, onError: { [alertPresenter, errorRecorder] error in
                 Logger.shared.error("Failed to get user: \(String(describing: error))")

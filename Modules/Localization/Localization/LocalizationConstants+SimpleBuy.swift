@@ -649,6 +649,7 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "Simple buy: final screen title suffix: E.G 0.0052568 BTC Purchased"
                     )
                     public static let learnMore = NSLocalizedString("Learn more", comment: "Learn more")
+                    public static let buyMore = NSLocalizedString("Want to buy more?", comment: "CTA to upgrade to a higher tier.")
                 }
                 public enum Sell {
                     public static let titleSuffix = NSLocalizedString(

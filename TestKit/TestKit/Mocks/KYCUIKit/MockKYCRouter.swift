@@ -12,12 +12,14 @@ public final class MockKYCRouter: KYCUIKit.Routing {
         public var presentEmailVerificationAndKYCIfNeeded: [(UIViewController)] = []
         public var presentEmailVerificationIfNeeded: [(UIViewController)] = []
         public var presentKYCIfNeeded: [(UIViewController)] = []
+        public var presentPromptToUnlockMoreTrading: [(UIViewController)] = []
     }
 
     public struct StubbedResults {
         public var presentEmailVerificationAndKYCIfNeeded: AnyPublisher<FlowResult, RouterError> = .failure(.emailVerificationFailed)
         public var presentEmailVerificationIfNeeded: AnyPublisher<FlowResult, RouterError> = .failure(.emailVerificationFailed)
         public var presentKYCIfNeeded: AnyPublisher<FlowResult, RouterError> = .failure(.kycVerificationFailed)
+        public var presentPromptToUnlockMoreTrading: AnyPublisher<FlowResult, Never> = .empty()
     }
 
     private(set) public var recordedInvocations = RecordedInvocations()
@@ -44,5 +46,10 @@ public final class MockKYCRouter: KYCUIKit.Routing {
     public func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<FlowResult, RouterError> {
         recordedInvocations.presentKYCIfNeeded.append((presenter))
         return stubbedResults.presentKYCIfNeeded
+    }
+
+    public func presentPromptToUnlockMoreTrading(from presenter: UIViewController) -> AnyPublisher<FlowResult, Never> {
+        recordedInvocations.presentPromptToUnlockMoreTrading.append(presenter)
+        return stubbedResults.presentPromptToUnlockMoreTrading
     }
 }

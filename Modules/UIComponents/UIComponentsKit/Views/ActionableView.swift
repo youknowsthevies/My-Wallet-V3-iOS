@@ -45,13 +45,14 @@ public struct ActionableView<Content: View>: View {
     public let content: Content
     public let buttons: [ButtonState]
 
+    // TODO: make content builder a trailing closure
     public init(@ViewBuilder content: () -> Content, buttons: [ButtonState] = []) {
         self.content = content()
         self.buttons = buttons
     }
 
     public var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             content
             VStack(spacing: LayoutConstants.VerticalSpacing.withinButtonsGroup) {
                 ForEach(buttons, id: \.title) { button in

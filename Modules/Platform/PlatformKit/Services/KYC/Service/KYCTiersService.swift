@@ -140,10 +140,6 @@ final class KYCTiersService: KYCTiersServiceAPI {
         guard featureFlagsService.isEnabled(.sddEnabled) else {
             return .just(false)
         }
-        guard tier > .tier0 else {
-            // A Tier 0 user cannot be SDD verified. Only Tier 1+ users can be.
-            return .just(false)
-        }
         guard tier != .tier2 else {
             // Tier 2 (Gold) verified users should be treated as SDD verified
             return .just(true)

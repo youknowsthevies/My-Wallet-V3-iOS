@@ -519,6 +519,10 @@ extension DependencyContainer {
             EmailVerificationAdapter(settingsService: DIKit.resolve())
         }
 
+        factory { () -> PlatformUIKit.TierUpgradeRouterAPI in
+            KYCAdapter()
+        }
+
         // MARK: Onboarding Module
 
         // this must be kept in memory because of how PlatformUIKit.Router works, otherwise the flow crashes.

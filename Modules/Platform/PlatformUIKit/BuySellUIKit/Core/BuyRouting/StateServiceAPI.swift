@@ -26,6 +26,7 @@ public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     func changeCurrency()
     func currencySelected()
     func reselectCurrency()
+    func promptTierUpgrade()
 }
 
 public protocol PaymentMethodsStateAPI: RoutingPreviousStateEmitterAPI {
