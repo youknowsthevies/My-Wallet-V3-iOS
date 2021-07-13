@@ -11,9 +11,11 @@ import UIKit
 
 final class KYCSDDVerificationController: KYCBaseViewController {
 
-    var kycTiersService: KYCTiersServiceAPI = resolve()
+    private var kycTiersService: KYCTiersServiceAPI = resolve()
     private var cancellabes = Set<AnyCancellable>()
-    private var loadingView = KYCSDDVerificationLoadingView()
+    private var loadingView: KYCSDDVerificationLoadingView!
+
+    private var viewLoadingObject = KYCSDDVerificationLoadingView.LoadingObservable()
 
     override class func make(with coordinator: KYCCoordinator) -> KYCSDDVerificationController {
         let controller = KYCSDDVerificationController()
@@ -24,7 +26,10 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadingView.retryCallback = performVerificationCheck
+        loadingView = KYCSDDVerificationLoadingView(
+            loadingObject: viewLoadingObject,
+            retryCallback: performVerificationCheck
+        )
         embed(loadingView)
         performVerificationCheck()
     }
@@ -51,10 +56,10 @@ final class KYCSDDVerificationController: KYCBaseViewController {
     // MARK: - SDD Verification
 
     private func performVerificationCheck() {
-        loadingView.loading = true
-        checkForSDDVerification { [coordinator, pageType, loadingView] isVerified in
+        viewLoadingObject.loading = true
+        checkForSDDVerification { [coordinator, pageType, viewLoadingObject] isVerified in
             coordinator?.handle(event: .nextPageFromPageType(pageType, .sddVerification(isVerified: isVerified)))
-            loadingView.loading = false
+            viewLoadingObject.loading = false
         }
     }
 
@@ -68,12 +73,16 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
 struct KYCSDDVerificationLoadingView: View {
 
-    @State var loading: Bool = false
-    var retryCallback: (() -> Void)?
+    class LoadingObservable: ObservableObject {
+        var loading: Bool = false
+    }
+
+    @ObservedObject var loadingObject: LoadingObservable
+    let retryCallback: (() -> Void)?
 
     var body: some View {
         VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
-            if loading {
+            if loadingObject.loading {
                 ActivityIndicatorView()
                 VStack(spacing: 0) {
                     Text(LocalizationConstants.KYC.verificationInProgress)
@@ -95,5 +104,6 @@ struct KYCSDDVerificationLoadingView: View {
         }
         .padding()
         .background(Color.viewPrimaryBackground)
+        .multilineTextAlignment(.center)
     }
 }
