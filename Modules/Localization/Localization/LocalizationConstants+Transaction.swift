@@ -2,6 +2,8 @@
 
 import Foundation
 
+// swiftlint:disable file_length
+
 extension LocalizationConstants {
     public enum Transaction {
         public enum TargetSource {

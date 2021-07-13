@@ -12,6 +12,8 @@ public struct WordList {
 
 }
 
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
 private enum BIP39Words {
     static let english: [String] = [
         "abandon",

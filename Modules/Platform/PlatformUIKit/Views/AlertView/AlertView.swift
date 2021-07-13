@@ -2,6 +2,8 @@
 
 import Foundation
 
+// swiftlint:disable type_body_length
+
 public class AlertView: UIView {
 
     // MARK: Private Static Properties

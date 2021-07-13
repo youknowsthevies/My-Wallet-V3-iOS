@@ -35,6 +35,8 @@ public protocol KYCCoordinating: AnyObject {
 
 }
 
+// swiftlint:disable type_body_length
+
 /// Coordinates the KYC flow. This component can be used to start a new KYC flow, or if
 /// the user drops off mid-KYC and decides to continue through it again, the coordinator
 /// will handle recovering where they left off.

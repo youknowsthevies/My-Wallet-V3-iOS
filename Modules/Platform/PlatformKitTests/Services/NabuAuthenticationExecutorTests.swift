@@ -7,6 +7,8 @@ import CombineExt
 import ToolKit
 import XCTest
 
+// swiftlint:disable type_body_length
+
 class NabuAuthenticationExecutorTests: XCTestCase {
 
     private var cancellables: Set<AnyCancellable>!

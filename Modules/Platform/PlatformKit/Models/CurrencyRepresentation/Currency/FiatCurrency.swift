@@ -17,6 +17,8 @@ print(s + "\n}")
 ```
 */
 
+// swiftlint:disable type_body_length
+
 /// An implementation of `ISO 4217` currency codes
 public enum FiatCurrency: String, Currency, Codable, CaseIterable {
 

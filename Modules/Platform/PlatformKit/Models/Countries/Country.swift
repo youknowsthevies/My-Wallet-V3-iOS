@@ -19,6 +19,8 @@ print(s + "\n}")
 ```
 */
 
+// swiftlint:disable type_body_length
+
 public enum Country: String, Codable {
 
     /// Ascension Island

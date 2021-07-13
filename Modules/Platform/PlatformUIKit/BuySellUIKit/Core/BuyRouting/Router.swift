@@ -25,6 +25,8 @@ public protocol RouterAPI: AnyObject {
     func presentKYCIfNeeded() -> AnyPublisher<Void, RouterError>
 }
 
+// swiftlint:disable type_body_length
+
 /// This object is used as a router for Simple-Buy flow
 public final class Router: RouterAPI {
 
