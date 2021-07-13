@@ -22,7 +22,7 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
         topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: { [weak self] in
             guard let self = self else { return }
             guard startKYC else { return }
-            self.router.start()
+            self.router.start(parentFlow: .announcement)
         })
     }
 

@@ -44,7 +44,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCConfirmPhoneNumberController {
+    override class func make(with coordinator: KYCRouter) -> KYCConfirmPhoneNumberController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .confirmPhone
@@ -73,7 +73,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
         validationTextFieldConfirmationCode.becomeFocused()
     }
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .phone(user) = model else { return }

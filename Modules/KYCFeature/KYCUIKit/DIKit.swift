@@ -8,7 +8,7 @@ extension DependencyContainer {
     // MARK: - Blockchain Module
 
     public static let kycUIKit = module {
-        single { KYCCoordinator() as KYCRouterAPI }
+        single { KYCRouter() as KYCRouterAPI }
 
         factory { KYCTiersPageModelFactory() as KYCTiersPageModelFactoryAPI }
     }

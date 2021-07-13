@@ -610,10 +610,10 @@ public final class Router: RouterAPI {
 
         if afterDismissal {
             navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+                self?.kycRouter.start(tier: .tier2, parentFlow: .simpleBuy, from: kycRootViewController)
             }
         } else {
-            kycRouter.start(from: kycRootViewController, tier: .tier2, parentFlow: .simpleBuy)
+            kycRouter.start(tier: .tier2, parentFlow: .simpleBuy, from: kycRootViewController)
         }
     }
 

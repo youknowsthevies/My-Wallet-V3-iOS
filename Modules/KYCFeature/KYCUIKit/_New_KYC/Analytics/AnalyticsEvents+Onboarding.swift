@@ -10,7 +10,7 @@ extension AnalyticsEvents.New {
         }
 
         case emailVerificationRequested(origin: EmailVerificationOrigin)
-        case upgradeVerificationClicked(origin: UpgradeVerificationOrigin)
+        case upgradeVerificationClicked(origin: UpgradeVerificationOrigin, tier: Int)
 
         public enum EmailVerificationOrigin: String, StringRawRepresentable {
             case signUp = "SIGN_UP"

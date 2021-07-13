@@ -10,7 +10,7 @@ final class KYCApplicationCompleteController: KYCBaseViewController, Progressabl
     var barColor: UIColor = .green
     var startingValue: Float = 1.0
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCApplicationCompleteController {
+    override class func make(with coordinator: KYCRouter) -> KYCApplicationCompleteController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .applicationComplete

@@ -26,13 +26,8 @@ enum KYCEvent {
     case failurePageForPageType(KYCPageType, KYCPageError)
 }
 
-protocol KYCCoordinatorDelegate: AnyObject {
+protocol KYCRouterDelegate: AnyObject {
     func apply(model: KYCPageModel)
-}
-
-public protocol KYCCoordinating: AnyObject {
-    func start()
-
 }
 
 // swiftlint:disable type_body_length
@@ -40,11 +35,11 @@ public protocol KYCCoordinating: AnyObject {
 /// Coordinates the KYC flow. This component can be used to start a new KYC flow, or if
 /// the user drops off mid-KYC and decides to continue through it again, the coordinator
 /// will handle recovering where they left off.
-final class KYCCoordinator: KYCRouterAPI {
+final class KYCRouter: KYCRouterAPI {
 
     // MARK: - Public Properties
 
-    weak var delegate: KYCCoordinatorDelegate?
+    weak var delegate: KYCRouterDelegate?
 
     // MARK: - Private Properties
 
@@ -83,7 +78,7 @@ final class KYCCoordinator: KYCRouterAPI {
     private let kycStoppedRelay = PublishRelay<Void>()
     private let kycFinishedRelay = PublishRelay<KYC.Tier>()
 
-    private var parentFlow = KYCParentFlow.none
+    private var parentFlow: KYCParentFlow?
 
     private var errorRecorder: ErrorRecording
     private var alertPresenter: AlertViewPresenterAPI
@@ -142,20 +137,21 @@ final class KYCCoordinator: KYCRouterAPI {
 
     // MARK: Public
 
-    func start() {
-        start(tier: .tier1)
+    func start(parentFlow: KYCParentFlow) {
+        start(tier: .tier2, parentFlow: parentFlow, from: nil)
+    }
+    func start(tier: KYC.Tier, parentFlow: KYCParentFlow) {
+        start(tier: tier, parentFlow: parentFlow, from: nil)
     }
 
-    func start(tier: KYC.Tier) {
-        guard let rootViewController = UIApplication.shared.topMostViewController else {
+    func start(tier: KYC.Tier,
+               parentFlow: KYCParentFlow,
+               from viewController: UIViewController?) {
+        self.parentFlow = parentFlow
+        guard let viewController = viewController ?? UIApplication.shared.topMostViewController else {
             Logger.shared.warning("Cannot start KYC. rootViewController is nil.")
             return
         }
-        start(from: rootViewController, tier: tier, parentFlow: .none)
-    }
-
-    func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCParentFlow) {
-        self.parentFlow = parentFlow
         rootViewController = viewController
 
         switch tier {
@@ -166,6 +162,29 @@ final class KYCCoordinator: KYCRouterAPI {
         case .tier2:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Start)
         }
+
+        let origin: AnalyticsEvents.New.Onboarding.UpgradeVerificationOrigin
+        switch parentFlow {
+        case .simpleBuy:
+            origin = .simplebuy
+        case .swap:
+            origin = .swap
+        case .settings:
+            origin = .settings
+        case .announcement:
+            origin = .dashboardPromo
+        case .resubmission:
+            origin = .resubmission
+        case .onboarding:
+            origin = .onboarding
+        case .receive:
+            origin = .unknown
+        case .airdrop:
+            origin = .airdrop
+        case .cash:
+            origin = .fiatFunds
+        }
+        analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.upgradeVerificationClicked(origin: origin, tier: tier.rawValue))
 
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let userObservable = dataRepository.fetchNabuUser().asObservable()

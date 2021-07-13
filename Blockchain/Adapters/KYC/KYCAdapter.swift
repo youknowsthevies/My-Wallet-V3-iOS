@@ -131,7 +131,7 @@ extension KYCAdapter: PlatformUIKit.TierUpgradeRouterAPI {
                     ) // simply return to the prompt.
                     .eraseToAnyPublisher()
                 case .completed:
-                    legacyRouter.start(tier: .tier2)
+                    legacyRouter.start(tier: .tier2, parentFlow: .simpleBuy)
                     return Observable.merge(
                         legacyRouter.kycStopped,
                         legacyRouter.kycFinished

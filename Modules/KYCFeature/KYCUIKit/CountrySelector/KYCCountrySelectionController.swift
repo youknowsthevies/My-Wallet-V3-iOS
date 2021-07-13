@@ -37,7 +37,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
 
     // MARK: - Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCCountrySelectionController {
+    override class func make(with coordinator: KYCRouter) -> KYCCountrySelectionController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .country

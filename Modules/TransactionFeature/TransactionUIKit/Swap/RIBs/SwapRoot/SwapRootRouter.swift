@@ -59,7 +59,7 @@ final class SwapRootRouter: ViewableRouter<SwapRootInteractor, SwapRootViewContr
     }
 
     func routeToSwapTiers(model: KYCTiersPageModel, present: Bool) {
-        let controller = KYCTiersViewController(pageModel: model)
+        let controller = KYCTiersViewController(pageModel: model, parentFlow: .swap)
         if present {
             let nav = UINavigationController(rootViewController: controller)
             viewController.present(viewController: nav)

@@ -35,7 +35,7 @@ final class KYCInformationController: KYCBaseViewController {
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCInformationController {
+    override class func make(with coordinator: KYCRouter) -> KYCInformationController {
         let controller: KYCInformationController = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .accountStatus

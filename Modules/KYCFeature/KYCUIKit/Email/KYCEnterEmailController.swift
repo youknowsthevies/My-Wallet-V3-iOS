@@ -40,7 +40,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
 
     // MARK: KYCBaseViewController
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCBaseViewController {
+    override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .enterEmail

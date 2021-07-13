@@ -45,7 +45,7 @@ class KYCConfirmEmailController: KYCBaseViewController, BottomButtonContainerVie
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCConfirmEmailController {
+    override class func make(with coordinator: KYCRouter) -> KYCConfirmEmailController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .confirmEmail

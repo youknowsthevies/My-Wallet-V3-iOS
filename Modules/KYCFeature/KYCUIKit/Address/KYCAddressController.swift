@@ -43,7 +43,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCAddressController {
+    override class func make(with coordinator: KYCRouter) -> KYCAddressController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .address
@@ -78,7 +78,7 @@ class KYCAddressController: KYCBaseViewController, ValidationFormView, Progressa
     private var country: CountryData?
     private var states: [KYCState] = []
 
-    // MARK: KYCCoordinatorDelegate
+    // MARK: KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .address(user, country, states) = model else { return }

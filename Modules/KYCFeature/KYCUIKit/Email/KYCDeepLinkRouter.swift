@@ -35,7 +35,7 @@ public final class KYCDeepLinkRouter: DeepLinkRouting {
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController else {
             return false
         }
-        kycRouter.start(from: viewController, tier: .tier1, parentFlow: .none)
+        kycRouter.start(tier: .tier1, parentFlow: .onboarding, from: viewController)
         return true
     }
 }

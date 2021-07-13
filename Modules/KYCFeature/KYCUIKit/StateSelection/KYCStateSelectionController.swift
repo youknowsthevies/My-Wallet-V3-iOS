@@ -32,7 +32,7 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
     // MARK: - Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCStateSelectionController {
+    override class func make(with coordinator: KYCRouter) -> KYCStateSelectionController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .states

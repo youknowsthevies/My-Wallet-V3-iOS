@@ -17,7 +17,7 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     private var viewLoadingObject = KYCSDDVerificationLoadingView.LoadingObservable()
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCSDDVerificationController {
+    override class func make(with coordinator: KYCRouter) -> KYCSDDVerificationController {
         let controller = KYCSDDVerificationController()
         controller.coordinator = coordinator
         controller.pageType = .sddVerificationCheck

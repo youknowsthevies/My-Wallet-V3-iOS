@@ -1,7 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
+import DIKit
 import KYCKit
 
 /// The `master` `State` for the Email Verification Flow
@@ -53,6 +55,7 @@ enum EmailVerificationAction: Equatable {
 /// The `master` `Environment` for the Email Verification Flow
 struct EmailVerificationEnvironment {
 
+    let recorder: AnalyticsEventRecorderAPI
     let emailVerificationService: EmailVerificationServiceAPI
     let flowCompletionCallback: ((FlowResult) -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
@@ -60,12 +63,14 @@ struct EmailVerificationEnvironment {
     let openMailApp: () -> Effect<Bool, Never>
 
     init(
+        recorder: AnalyticsEventRecorderAPI = resolve(),
         emailVerificationService: EmailVerificationServiceAPI,
         flowCompletionCallback: ((FlowResult) -> Void)?,
         openMailApp: @escaping () -> Effect<Bool, Never>,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         pollingQueue: AnySchedulerOf<DispatchQueue> = DispatchQueue.global(qos: .background).eraseToAnyScheduler()
     ) {
+        self.recorder = recorder
         self.emailVerificationService = emailVerificationService
         self.flowCompletionCallback = flowCompletionCallback
         self.mainQueue = mainQueue
@@ -196,7 +201,8 @@ let emailVerificationReducer = Reducer.combine(
                 default:
                     break
                 }
-
+            case .sendVerificationEmail:
+                environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
             default:
                 break
             }
@@ -215,7 +221,8 @@ let emailVerificationReducer = Reducer.combine(
                 default:
                     break
                 }
-
+            case .didChangeEmailAddress:
+                environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
             default:
                 break
             }

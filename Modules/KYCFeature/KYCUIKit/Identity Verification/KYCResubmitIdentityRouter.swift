@@ -28,7 +28,7 @@ public final class KYCResubmitIdentityRouter: DeepLinkRouting {
         guard let viewController = UIApplication.shared.keyWindow?.rootViewController else {
             return false
         }
-        kycRouter.start(from: viewController, tier: .tier2, parentFlow: .none)
+        kycRouter.start(tier: .tier2, parentFlow: .resubmission, from: viewController)
         return true
     }
 }

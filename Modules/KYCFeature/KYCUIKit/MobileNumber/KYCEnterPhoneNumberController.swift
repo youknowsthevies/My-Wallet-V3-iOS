@@ -41,14 +41,14 @@ final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonCo
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCEnterPhoneNumberController {
+    override class func make(with coordinator: KYCRouter) -> KYCEnterPhoneNumberController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .enterPhone
         return controller
     }
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .phone(user) = model else { return }

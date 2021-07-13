@@ -24,7 +24,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCResubmitIdentityController {
+    override class func make(with coordinator: KYCRouter) -> KYCResubmitIdentityController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .verifyIdentity
@@ -53,7 +53,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
     let analyticsRecorder: AnalyticsEventRecording = resolve()
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .verifyIdentity(countryCode) = model else { return }

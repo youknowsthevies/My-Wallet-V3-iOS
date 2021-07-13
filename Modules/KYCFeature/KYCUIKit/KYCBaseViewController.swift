@@ -8,13 +8,13 @@ import PlatformUIKit
 import SafariServices
 import ToolKit
 
-class KYCBaseViewController: UIViewController, KYCCoordinatorDelegate, KYCOnboardingNavigationControllerDelegate {
+class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingNavigationControllerDelegate {
 
     private let webViewService: WebViewServiceAPI = resolve()
-    var coordinator: KYCCoordinator!
+    var coordinator: KYCRouter!
     var pageType: KYCPageType = .welcome
 
-    class func make(with coordinator: KYCCoordinator) -> KYCBaseViewController {
+    class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         assertionFailure("Should be implemented by subclasses")
         return KYCBaseViewController()
     }

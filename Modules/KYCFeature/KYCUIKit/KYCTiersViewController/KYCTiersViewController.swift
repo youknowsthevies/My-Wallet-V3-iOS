@@ -38,9 +38,11 @@ public final class KYCTiersViewController: UIViewController {
 
     private var pageModel: KYCTiersPageModel
     public var selectedTier: ((KYC.Tier) -> Void)?
+    public let parentFlow: KYCParentFlow
 
-    public init(pageModel: KYCTiersPageModel, title: String = LocalizationConstants.KYC.accountLimits) {
+    public init(pageModel: KYCTiersPageModel, parentFlow: KYCParentFlow, title: String = LocalizationConstants.KYC.accountLimits) {
         self.pageModel = pageModel
+        self.parentFlow = parentFlow
         super.init(nibName: nil, bundle: nil)
         self.title = title
     }
@@ -272,7 +274,7 @@ extension KYCTiersViewController: KYCTierCellDelegate {
         } else {
             let kycRouter: KYCRouterAPI = resolve()
             guard let viewController = UIApplication.shared.keyWindow?.rootViewController?.topMostViewController else { return }
-            kycRouter.start(from: viewController, tier: selectedTier, parentFlow: .none)
+            kycRouter.start(tier: selectedTier, parentFlow: parentFlow, from: viewController)
         }
     }
 }
@@ -335,7 +337,7 @@ extension KYCTiersViewController {
         tiersPageModel()
             .observeOn(MainScheduler.instance)
             .subscribe(onSuccess: { model in
-                let controller = KYCTiersViewController(pageModel: model)
+                let controller = KYCTiersViewController(pageModel: model, parentFlow: .settings)
                 if let from = fromViewController as? UINavigationController {
                     from.pushViewController(controller, animated: true)
                     return

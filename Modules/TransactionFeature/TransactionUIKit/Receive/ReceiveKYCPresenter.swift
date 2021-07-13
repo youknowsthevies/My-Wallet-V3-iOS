@@ -72,7 +72,7 @@ final class ReceiveKYCPresenter: DetailsScreenPresenterAPI {
             .tap
             .emit { (_) in
                 let kycRouter: KYCRouterAPI = resolve()
-                kycRouter.start()
+                kycRouter.start(parentFlow: .receive)
             }
             .disposed(by: disposeBag)
     }

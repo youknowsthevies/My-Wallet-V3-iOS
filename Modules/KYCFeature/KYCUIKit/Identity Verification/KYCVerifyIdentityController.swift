@@ -64,14 +64,14 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCVerifyIdentityController {
+    override class func make(with coordinator: KYCRouter) -> KYCVerifyIdentityController {
         let controller = makeFromStoryboard()
         controller.coordinator = coordinator
         controller.pageType = .verifyIdentity
         return controller
     }
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .verifyIdentity(countryCode) = model else { return }
