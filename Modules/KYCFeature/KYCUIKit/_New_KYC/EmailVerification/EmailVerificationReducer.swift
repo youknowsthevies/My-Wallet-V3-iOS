@@ -55,7 +55,7 @@ enum EmailVerificationAction: Equatable {
 /// The `master` `Environment` for the Email Verification Flow
 struct EmailVerificationEnvironment {
 
-    let recorder: AnalyticsEventRecorderAPI
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let emailVerificationService: EmailVerificationServiceAPI
     let flowCompletionCallback: ((FlowResult) -> Void)?
     let mainQueue: AnySchedulerOf<DispatchQueue>
@@ -63,14 +63,14 @@ struct EmailVerificationEnvironment {
     let openMailApp: () -> Effect<Bool, Never>
 
     init(
-        recorder: AnalyticsEventRecorderAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         emailVerificationService: EmailVerificationServiceAPI,
         flowCompletionCallback: ((FlowResult) -> Void)?,
         openMailApp: @escaping () -> Effect<Bool, Never>,
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
         pollingQueue: AnySchedulerOf<DispatchQueue> = DispatchQueue.global(qos: .background).eraseToAnyScheduler()
     ) {
-        self.recorder = recorder
+        self.analyticsRecorder = analyticsRecorder
         self.emailVerificationService = emailVerificationService
         self.flowCompletionCallback = flowCompletionCallback
         self.mainQueue = mainQueue
@@ -122,7 +122,7 @@ let emailVerificationReducer = Reducer.combine(
         switch action {
         case .closeButtonTapped:
             environment.flowCompletionCallback?(.abandoned)
-            environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationSkipped(origin: .signUp))
+            environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationSkipped(origin: .signUp))
             return .none
 
         case .didAppear:
@@ -203,7 +203,7 @@ let emailVerificationReducer = Reducer.combine(
                     break
                 }
             case .sendVerificationEmail:
-                environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
+                environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
             default:
                 break
             }
@@ -223,7 +223,7 @@ let emailVerificationReducer = Reducer.combine(
                     break
                 }
             case .didChangeEmailAddress:
-                environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
+                environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
             default:
                 break
             }

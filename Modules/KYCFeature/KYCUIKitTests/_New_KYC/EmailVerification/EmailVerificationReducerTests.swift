@@ -423,6 +423,7 @@ final class EmailVerificationReducerTests: XCTestCase {
             initialState: EmailVerificationState(emailAddress: emailAddress),
             reducer: emailVerificationReducer,
             environment: EmailVerificationEnvironment(
+                analyticsRecorder: MockAnalyticsRecorder(),
                 emailVerificationService: MockEmailVerificationService(),
                 flowCompletionCallback: { [weak self] result in
                     self?.recordedInvocations.flowCompletionCallback.append(result)

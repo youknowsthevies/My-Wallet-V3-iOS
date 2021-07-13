@@ -505,6 +505,7 @@ extension DependencyContainer {
             let emailVerificationService: KYCKit.EmailVerificationServiceAPI = DIKit.resolve()
             let externalAppOpener: ExternalAppOpener = DIKit.resolve()
             return KYCUIKit.Router(
+                analyticsRecorder: DIKit.resolve(),
                 emailVerificationService: emailVerificationService,
                 openMailApp: externalAppOpener.openMailApp
             )
