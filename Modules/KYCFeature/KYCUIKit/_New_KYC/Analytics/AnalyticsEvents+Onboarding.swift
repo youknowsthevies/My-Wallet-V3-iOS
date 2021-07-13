@@ -9,6 +9,7 @@ extension AnalyticsEvents.New {
             .new
         }
 
+        case emailVerificationSkipped(origin: EmailVerificationOrigin)
         case emailVerificationRequested(origin: EmailVerificationOrigin)
         case upgradeVerificationClicked(origin: UpgradeVerificationOrigin, tier: Int)
 

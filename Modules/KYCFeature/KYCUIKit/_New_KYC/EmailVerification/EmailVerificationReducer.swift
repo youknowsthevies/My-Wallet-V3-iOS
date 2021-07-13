@@ -122,6 +122,7 @@ let emailVerificationReducer = Reducer.combine(
         switch action {
         case .closeButtonTapped:
             environment.flowCompletionCallback?(.abandoned)
+            environment.recorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationSkipped(origin: .signUp))
             return .none
 
         case .didAppear:
