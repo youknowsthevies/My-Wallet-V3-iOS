@@ -3,7 +3,6 @@
 #if DEBUG
 import RxRelay
 import RxSwift
-import ToolKit
 
 /// An empty implementation of `AnalyticsEventRecorderAPI` to support Unit Tests, SwiftUI previews, etc.
 public final class NoOpAnalyticsRecorder: AnalyticsEventRecorderAPI {
