@@ -4,7 +4,7 @@ import Combine
 import Foundation
 
 protocol NetworkAdapterAPI {
-    func performRequest(request: Request) -> AnyPublisher<Void, URLError>
+    func performRequest(request: Request) -> AnyPublisher<Never, URLError>
 }
 
 class NetworkAdapter: NetworkAdapterAPI {
@@ -14,12 +14,9 @@ class NetworkAdapter: NetworkAdapterAPI {
         self.session = session
     }
 
-    func performRequest(request: Request) -> AnyPublisher<Void, URLError> {
+    func performRequest(request: Request) -> AnyPublisher<Never, URLError> {
         session.dataTaskPublisher(for: request.asURLRequest())
-            .map { output in
-                print(String(data: output.data, encoding: .utf8) ?? "")
-                return ()
-            }
+            .ignoreOutput()
             .eraseToAnyPublisher()
     }
 }

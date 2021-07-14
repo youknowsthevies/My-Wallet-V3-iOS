@@ -401,6 +401,20 @@ targets:
       featureName: Analytics
     templates:
     - ModuleTests
+  RxAnalyticsKit:
+    dependencies:
+    - target: AnalyticsKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - Module
+  AnalyticsKitTests:
+    dependencies:
+    - target: AnalyticsKit
+    templateAttributes:
+      featureName: Analytics
+    templates:
+    - ModuleTests
   BitcoinCashKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
@@ -1166,6 +1180,7 @@ targets:
     - target: ToolKit
     - target: WalletPayloadKit
     - target: SharedPackagesKit
+    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformKitTests

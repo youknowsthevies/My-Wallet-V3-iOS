@@ -3,8 +3,8 @@
 import Combine
 import Foundation
 
-/// Interace that exposes local JWT token that will embeded in request's Authorization header.
-/// This is used by backend to identify logged in user.
+/// Interface that exposes local JWT token which will embeded in the request's Authorization header.
+/// This is used by the backend to identify logged in user.
 public protocol TokenRepositoryAPI {
-    var token: String? { get }
+    var sessionToken: String? { get }
 }

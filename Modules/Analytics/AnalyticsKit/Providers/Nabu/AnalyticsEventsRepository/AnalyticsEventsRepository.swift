@@ -6,7 +6,7 @@ import Foundation
 protocol NabuAnalyticsEventsRepositoryAPI {
     func publish<Events: Encodable>(
         events: Events
-    ) -> AnyPublisher<Void, URLError>
+    ) -> AnyPublisher<Never, URLError>
 }
 
 final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
@@ -28,8 +28,8 @@ final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
 
     func publish<Events: Encodable>(
         events: Events
-    ) -> AnyPublisher<Void, URLError> {
-        client.publish(events: events, token: tokenRepository.token)
+    ) -> AnyPublisher<Never, URLError> {
+        client.publish(events: events, token: tokenRepository.sessionToken)
             .eraseToAnyPublisher()
     }
 }

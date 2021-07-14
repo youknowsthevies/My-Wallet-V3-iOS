@@ -7,7 +7,7 @@ protocol EventSendingAPI {
     func publish<Events: Encodable>(
         events: Events,
         token: String?
-    ) -> AnyPublisher<Void, URLError>
+    ) -> AnyPublisher<Never, URLError>
 }
 
 final class APIClient: EventSendingAPI {
@@ -47,7 +47,7 @@ final class APIClient: EventSendingAPI {
     func publish<Events: Encodable>(
         events: Events,
         token: String?
-    ) -> AnyPublisher<Void, URLError> {
+    ) -> AnyPublisher<Never, URLError> {
         var headers = [String: String]()
         if let token = token {
             headers["Authorization"] = "Bearer \(token)"

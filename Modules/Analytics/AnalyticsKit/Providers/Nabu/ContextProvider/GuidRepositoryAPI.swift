@@ -3,6 +3,6 @@
 import Foundation
 
 /// Interface for unique guid provider. This id is used to identify anonymous user.
-public protocol GuidProviderAPI {
+public protocol GuidRepositoryAPI {
     var guid: String? { get }
 }

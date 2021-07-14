@@ -6,9 +6,9 @@ The analytics module is responsible for sending user analytics events to Firebas
 
 When adding a new event it's highly recommended to wrap it in the AnalyticsKit's extension of  `AnalyticsEvents.New` .
 It's an empty class that acts as the namespace. It eases the process of finding events in the project.
-The newly created event enum must conform to `AnalyticsEvent`. It will by default output the name and parameters using reflection.
+The newly created event `enum` must conform to `AnalyticsEvent`. It will by default output the name and parameters using reflection.
 
-Nabu's scheme for automatic generation:
+Nabu's default scheme for automatic generation:
 Name uses space case: `amazingEvent` -> `"Amazing Event"`
 Params use snake case: `awesomeParameter` -> `"awesome_parameter"`
 
@@ -87,7 +87,8 @@ let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(platform: .wallet,
                                                          userAgent: userAgent,
                                                          tokenRepository: TokenRepository(),
                                                          guidProvider: GuidProvider())
-return AnalyticsEventRecorder(analyticsServiceProviders: [
+                                                         
+let analyticsRecorder = AnalyticsEventRecorder(analyticsServiceProviders: [
     nabuAnalyticsServiceProvider
 ])
 ```
@@ -107,7 +108,7 @@ class ClassToBeAnalyzed {
     }
     
     func functionToBeTracked() {
-        recorder.record(event: AnalyticsEvents.YourAnalyticsEvent.amazingEvent("paramName"))
+        recorder.record(event: AnalyticsEvents.New.Event.firstEvent(param: "paramValue"))
     }
 }
 ```

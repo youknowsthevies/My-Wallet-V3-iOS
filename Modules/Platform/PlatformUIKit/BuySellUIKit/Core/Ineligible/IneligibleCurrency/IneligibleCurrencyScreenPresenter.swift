@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
+import RxAnalyticsKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -60,9 +61,7 @@ final class IneligibleCurrencyScreenPresenter {
         )
 
         viewHomeButtonViewModel.tapRelay
-            .do(onNext: { _ in
-                analyticsRecording.record(event: AnalyticsEvent.sbUnsupportedViewHome)
-            })
+            .record(analyticsEvent: AnalyticsEvent.sbUnsupportedViewHome, using: analyticsRecording)
             .bindAndCatch(to: dismissalRelay)
             .disposed(by: disposeBag)
 
@@ -72,9 +71,7 @@ final class IneligibleCurrencyScreenPresenter {
         )
 
         changeCurrencyButtonViewModel.tapRelay
-            .do(onNext: { _ in
-                analyticsRecording.record(event: AnalyticsEvent.sbUnsupportedChangeCurrency)
-            })
+            .record(analyticsEvent: AnalyticsEvent.sbUnsupportedChangeCurrency, using: analyticsRecording)
             .bindAndCatch(to: restartRelay)
             .disposed(by: disposeBag)
     }

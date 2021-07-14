@@ -50,7 +50,7 @@ final class SettingsRouter: SettingsRouterAPI {
 
     // MARK: - Private
 
-    private let guidRepositoryAPI: GuidRepositoryAPI
+    private let guidRepositoryAPI: PlatformKit.GuidRepositoryAPI
     private let analyticsRecording: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private var cardRouter: CardRouter!
@@ -80,7 +80,7 @@ final class SettingsRouter: SettingsRouterAPI {
         appCoordinator: AppCoordinating = resolve(),
         builder: SettingsBuilding = SettingsBuilder(),
         wallet: WalletRecoveryVerifing = resolve(),
-        guidRepositoryAPI: GuidRepositoryAPI = resolve(),
+        guidRepositoryAPI: PlatformKit.GuidRepositoryAPI = resolve(),
         authenticationCoordinator: AuthenticationCoordinating = resolve(),
         exchangeCoordinator: ExchangeCoordinating = resolve(),
         appStoreOpener: AppStoreOpening = resolve(),

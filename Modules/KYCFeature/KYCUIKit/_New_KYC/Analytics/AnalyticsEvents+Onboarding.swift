@@ -7,7 +7,7 @@ extension AnalyticsEvents.New {
     public enum Onboarding: AnalyticsEvent {
 
         public var type: AnalyticsEventType {
-            .new
+            .nabu
         }
 
         case emailVerificationSkipped(origin: EmailVerificationOrigin)

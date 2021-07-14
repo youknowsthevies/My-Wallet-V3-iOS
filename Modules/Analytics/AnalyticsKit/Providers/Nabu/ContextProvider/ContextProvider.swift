@@ -4,11 +4,11 @@ import Foundation
 
 final class ContextProvider: ContextProviderAPI {
 
-    private let guidProvider: GuidProviderAPI
+    private let guidProvider: GuidRepositoryAPI
     private let timeZone: TimeZone
     private let locale: Locale
 
-    init(guidProvider: GuidProviderAPI,
+    init(guidProvider: GuidRepositoryAPI,
          timeZone: TimeZone = .current,
          locale: Locale = .current) {
         self.guidProvider = guidProvider

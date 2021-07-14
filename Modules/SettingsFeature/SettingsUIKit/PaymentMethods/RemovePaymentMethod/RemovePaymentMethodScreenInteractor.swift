@@ -29,9 +29,7 @@ final class RemovePaymentMethodScreenInteractor {
             .filter { $0.isValue }
             .take(1)
             .mapToVoid()
-            .do(onNext: { [eventRecorder, data] _ in
-                eventRecorder.record(event: data.event)
-            })
+            .record(analyticsEvent: data.event, using: eventRecorder)
             .subscribe()
             .disposed(by: disposeBag)
 

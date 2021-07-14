@@ -9,8 +9,6 @@ public protocol AnalyticsEventRecorderAPI: AnyObject {
 
 public extension AnalyticsEventRecorderAPI {
     func record(events: [AnalyticsEvent]) {
-        events.forEach {
-            record(event: $0)
-        }
+        events.forEach(record(event:))
     }
 }

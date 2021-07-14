@@ -47,10 +47,15 @@ extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
 extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
 
+extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
+
+extension NabuTokenStore: AnalyticsKit.TokenRepositoryAPI {}
+
 // MARK: - Blockchain Module
 
 extension DependencyContainer {
 
+    // swiftlint:disable closure_body_length
     static var blockchain = module {
 
         factory { NavigationRouter() as NavigationRouterAPI }
@@ -321,9 +326,9 @@ extension DependencyContainer {
             return walletManager.repository as SharedKeyRepositoryAPI
         }
 
-        factory { () -> GuidRepositoryAPI in
+        factory { () -> PlatformKit.GuidRepositoryAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as GuidRepositoryAPI
+            return walletManager.repository as PlatformKit.GuidRepositoryAPI
         }
 
         factory { () -> PasswordRepositoryAPI in
@@ -548,14 +553,24 @@ extension DependencyContainer {
 
         // MARK: Analytics
 
+        single { () -> AnalyticsKit.TokenRepositoryAPI in
+            let tokenRepository: NabuTokenStore = DIKit.resolve()
+            return tokenRepository as AnalyticsKit.TokenRepositoryAPI
+        }
+
+        single { () -> AnalyticsKit.GuidRepositoryAPI in
+            let guidRepository: BlockchainSettings.App = DIKit.resolve()
+            return guidRepository as AnalyticsKit.GuidRepositoryAPI
+        }
+
         single { () -> AnalyticsEventRecorderAPI in
             let firebaseAnalyticsServiceProvider = FirebaseAnalyticsServiceProvider()
             let userAgent = UserAgentProvider().userAgent ?? ""
             let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(platform: .wallet,
                                                                      basePath: BlockchainAPI.shared.apiUrl,
                                                                      userAgent: userAgent,
-                                                                     tokenRepository: TokenRepository(),
-                                                                     guidProvider: GuidProvider())
+                                                                     tokenRepository: DIKit.resolve(),
+                                                                     guidProvider: DIKit.resolve())
             return AnalyticsEventRecorder(analyticsServiceProviders: [
                 firebaseAnalyticsServiceProvider,
                 nabuAnalyticsServiceProvider

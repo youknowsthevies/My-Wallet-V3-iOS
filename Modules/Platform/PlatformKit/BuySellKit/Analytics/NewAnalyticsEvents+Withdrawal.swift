@@ -24,7 +24,7 @@ extension AnalyticsEvents.New {
         case withdrawalAmountMinClicked(amountCurrency: String?,
                                         currency: String,
                                         withdrawalMethod: Withdrawal.Method)
-        case withdrawalClicked(orign: Withdrawal.Origin)
+        case withdrawalClicked(origin: Withdrawal.Origin)
         case withdrawalMethodSelected(currency: String,
                                       withdrawalMethod: Withdrawal.Method)
         case withdrawalViewed
