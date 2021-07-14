@@ -8,9 +8,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable secure channel
     case secureChannel
 
-    /// Enables deposit and withdraw for US users
-    case withdrawAndDepositACH
-
     /// Enable the new Pin/OnBoarding which uses ComposableArchitecture
     case newOnboarding
 

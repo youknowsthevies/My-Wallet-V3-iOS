@@ -5,10 +5,10 @@ import DIKit
 import RxSwift
 
 public protocol WithdrawalServiceAPI {
-    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit>
+    func withdrawFeeAndLimit(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<WithdrawalFeeAndLimit>
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>>
-    func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue>
-    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue>
+    func withdrawalFee(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<FiatValue>
+    func withdrawalMinAmount(for currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<FiatValue>
 }
 
 final class WithdrawalService: WithdrawalServiceAPI {
@@ -19,8 +19,11 @@ final class WithdrawalService: WithdrawalServiceAPI {
         self.client = client
     }
 
-    func withdrawFeeAndLimit(for currency: FiatCurrency) -> Single<WithdrawalFeeAndLimit> {
-        client.withdrawFee(currency: currency)
+    func withdrawFeeAndLimit(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<WithdrawalFeeAndLimit> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> (CurrencyFeeResponse, CurrencyFeeResponse) in
                 guard let fees = response.fees.first(where: { $0.symbol == currency.code }) else {
                     fatalError("Expected fees for currency: \(currency)")
@@ -39,8 +42,11 @@ final class WithdrawalService: WithdrawalServiceAPI {
             }
     }
 
-    func withdrawalFee(for currency: FiatCurrency) -> Single<FiatValue> {
-        client.withdrawFee(currency: currency)
+    func withdrawalFee(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<FiatValue> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> CurrencyFeeResponse? in
                 response.fees.first(where: { $0.symbol == currency.code })
             }
@@ -53,8 +59,11 @@ final class WithdrawalService: WithdrawalServiceAPI {
             }
     }
 
-    func withdrawalMinAmount(for currency: FiatCurrency) -> Single<FiatValue> {
-        client.withdrawFee(currency: currency)
+    func withdrawalMinAmount(
+        for currency: FiatCurrency,
+        paymentMethodType: PaymentMethodPayloadType
+    ) -> Single<FiatValue> {
+        client.withdrawFee(currency: currency, paymentMethodType: paymentMethodType)
             .map { response -> CurrencyFeeResponse? in
                 response.minAmounts.first(where: { $0.symbol == currency.code })
             }

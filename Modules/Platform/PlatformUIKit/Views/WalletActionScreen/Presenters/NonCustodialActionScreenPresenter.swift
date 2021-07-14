@@ -33,6 +33,23 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Private Properties
 
+    private var actionCellPresenters: Single<[DefaultWalletActionCellPresenter]> {
+        interactor
+            .availableActions
+            .map { actions in
+                actions.map(\.walletAction)
+            }
+            .map { $0.sorted() }
+            .map { [currency] actions in
+                actions.map {
+                    DefaultWalletActionCellPresenter(
+                        currencyType: currency,
+                        action: $0
+                    )
+                }
+            }
+    }
+
     private let sectionsRelay = BehaviorRelay<[WalletActionItemsSectionViewModel]>(value: [])
     private let interactor: WalletActionScreenInteracting
     private let analyticsRecorder: AnalyticsEventRecorderAPI
@@ -64,19 +81,20 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             )
         )
 
-        var actionCells: [WalletActionCellType] = [.balance(assetBalanceViewPresenter)]
-
-        guard currency.isCryptoCurrency else { return }
-
-        let actionPresenters: [DefaultWalletActionCellPresenter] = [
-            .init(currencyType: currency, action: .send),
-            .init(currencyType: currency, action: .receive),
-            .init(currencyType: currency, action: .swap),
-            .init(currencyType: currency, action: .activity)
-        ]
-
-        actionCells.append(contentsOf: actionPresenters.map { .default($0) })
-        sectionsRelay.accept([.init(items: actionCells)])
+        actionCellPresenters
+            .catchError { _ in
+                .just([])
+            }
+            .map { [assetBalanceViewPresenter] presenters -> [WalletActionCellType] in
+                 [.balance(assetBalanceViewPresenter)] +
+                    presenters.map { WalletActionCellType.default($0) }
+            }
+            .map { cellTypes in
+                [WalletActionItemsSectionViewModel(items: cellTypes)]
+            }
+            .asObservable()
+            .bindAndCatch(to: sectionsRelay)
+            .disposed(by: disposeBag)
 
         selectionRelay
             .bind { model in
@@ -96,5 +114,28 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                 }
             }
             .disposed(by: disposeBag)
+    }
+}
+
+fileprivate extension AssetAction {
+    var walletAction: WalletAction {
+        switch self {
+        case .viewActivity:
+            return .activity
+        case .buy:
+            return .buy
+        case .deposit:
+            return .deposit
+        case .receive:
+            return .receive
+        case .sell:
+            return .sell
+        case .send:
+            return .send
+        case .swap:
+            return .swap
+        case .withdraw:
+            return .withdraw
+        }
     }
 }

@@ -37,7 +37,6 @@ final class AccountAuxiliaryViewPresenter {
                     accessibilityIdSuffix: "AccountAuxiliaryViewBadge"
                 )
             }
-            .asDriverCatchError()
 
         titleLabel = interactor
             .state
@@ -51,7 +50,6 @@ final class AccountAuxiliaryViewPresenter {
                     accessibility: .id("AccountAuxiliaryViewTitle")
                 )
             }
-            .asDriverCatchError()
 
         subtitleLabel = interactor
             .state
@@ -65,6 +63,5 @@ final class AccountAuxiliaryViewPresenter {
                     accessibility: .id("AccountAuxiliaryViewSubtitle")
                 )
             }
-            .asDriverCatchError()
     }
 }

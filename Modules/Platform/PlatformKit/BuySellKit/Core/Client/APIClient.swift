@@ -409,7 +409,7 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - WithdrawalClientAPI
 
-    func withdrawFee(currency: FiatCurrency) -> Single<WithdrawFeesResponse> {
+    func withdrawFee(currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<WithdrawFeesResponse> {
         let queryParameters = [
             URLQueryItem(
                 name: Parameter.currency,
@@ -421,7 +421,7 @@ final class APIClient: SimpleBuyClientAPI {
             ),
             URLQueryItem(
                 name: Parameter.paymentMethod,
-                value: Constants.bankTransfer
+                value: paymentMethodType.rawValue
             )
         ]
         let request = requestBuilder.get(

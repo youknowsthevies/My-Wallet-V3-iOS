@@ -1010,6 +1010,19 @@ extension FiatCurrency {
 }
 
 extension FiatCurrency {
+
+    static let achCurrencies: [FiatCurrency] = [.USD]
+
+    static let bankWireSupported: [FiatCurrency] = [.GBP, .EUR, .USD]
+
+    public var isACHSupportedCurrency: Bool {
+        FiatCurrency.achCurrencies.contains(self)
+    }
+
+    public var isBankWireSupportedCurrency: Bool {
+        FiatCurrency.bankWireSupported.contains(self)
+    }
+
     public static let supported: [FiatCurrency] = [
         .AUD,
         .BRL,

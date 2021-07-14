@@ -8,13 +8,32 @@ import ToolKit
 final class FiatCustodialAccount: FiatAccount {
 
     private(set) lazy var identifier: AnyHashable = "FiatCustodialAccount.\(fiatCurrency.code)"
-    let actions: Single<AvailableActions> = .just([.deposit, .viewActivity])
     let isDefault: Bool = true
     let label: String
     let fiatCurrency: FiatCurrency
 
     var receiveAddress: Single<ReceiveAddress> {
         .error(ReceiveAddressError.notSupported)
+    }
+
+    var actions: Single<AvailableActions> {
+        let hasActionableBalance = actionableBalance
+            .map(\.isPositive)
+        let canTransactWithBanks = paymentMethodService
+            .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
+
+        return Single.zip(canTransactWithBanks, hasActionableBalance)
+            .map { (fiatSupported, hasPositiveBalance) in
+                var availableActions: AvailableActions = [.viewActivity]
+                if fiatSupported {
+                    availableActions.insert(.deposit)
+                    if hasPositiveBalance {
+                        // TICKET: IOS-4988 - Implement canWithdrawFunds in FiatCustodialAccount
+                        availableActions.insert(.withdraw)
+                    }
+                }
+                return availableActions
+            }
     }
 
     var canWithdrawFunds: Single<Bool> {
@@ -47,6 +66,7 @@ final class FiatCustodialAccount: FiatAccount {
 
     private let balanceService: TradingBalanceServiceAPI
     private let exchange: PairExchangeServiceAPI
+    private let paymentMethodService: PaymentMethodTypesServiceAPI
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: currencyType)
     }
@@ -54,16 +74,45 @@ final class FiatCustodialAccount: FiatAccount {
     init(
         fiatCurrency: FiatCurrency,
         balanceService: TradingBalanceServiceAPI = resolve(),
-        exchangeProviding: ExchangeProviding = resolve()
+        exchangeProviding: ExchangeProviding = resolve(),
+        paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
         label = fiatCurrency.defaultWalletName
         self.fiatCurrency = fiatCurrency
+        self.paymentMethodService = paymentMethodService
         self.balanceService = balanceService
         self.exchange = exchangeProviding[fiatCurrency]
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
-        actions.map { $0.contains(action) }
+        switch action {
+        case .viewActivity:
+            return .just(true)
+        case .buy,
+             .send,
+             .sell,
+             .swap,
+             .receive:
+            return Single.just(false)
+        case .deposit,
+             .withdraw:
+            // TODO: Account for OB
+            let hasActionableBalance = actionableBalance
+                .map(\.isPositive)
+            let canTransactWithBanks = paymentMethodService
+                .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
+            return Single.zip(canTransactWithBanks, hasActionableBalance)
+                .map { canTransact, hasBalance in
+                    if canTransact {
+                        if action == .deposit {
+                            return true
+                        } else {
+                            return hasBalance ? true : false
+                        }
+                    }
+                    return false
+                }
+        }
     }
 
     func balancePair(fiatCurrency: FiatCurrency) -> Single<MoneyValuePair> {

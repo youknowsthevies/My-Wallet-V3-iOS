@@ -68,6 +68,8 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         super.init(presenter: presenter)
     }
 
+    // TODO: Clean up this function
+    // swiftlint:disable function_body_length
     override func didBecomeActive() {
         super.didBecomeActive()
 
@@ -168,7 +170,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
-            .subscribe(onNext: { [weak self] _ in
+            .withLatestFrom(transactionState)
+            .subscribe(onNext: { [weak self] state in
+                guard state.availableTargets.count > 1 else { return }
                 self?.transactionModel.process(action: .showTargetSelection)
             })
             .disposeOnDeactivate(interactor: self)
@@ -447,7 +451,11 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
         case (.send, .send):
             return true
         case (.account, .account):
-            return true
+            /// The account selection could have changed so,
+            /// always update the bottom auxiliary view. Alternatively
+            /// we can have an identifier property on the interactor but
+            /// would rather not expose this.
+            return false
         default:
             return false
         }

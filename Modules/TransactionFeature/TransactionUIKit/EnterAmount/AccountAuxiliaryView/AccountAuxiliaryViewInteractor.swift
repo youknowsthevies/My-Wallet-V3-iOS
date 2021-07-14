@@ -35,6 +35,15 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let title: String
         let subtitle: String
         let imageResource: ImageResource
+
+        static let empty: State = .init(
+            title: "",
+            subtitle: "",
+            imageResource: .local(
+                name: "icon-bank",
+                bundle: .platformUIKit
+            )
+        )
     }
 
     // MARK: - AccountAuxiliaryViewInteractorAPI
@@ -43,13 +52,12 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: Public Properties
 
-    var state: Observable<State> {
+    var state: Driver<State> {
         stateRelay
-            .asObservable()
-            .share(replay: 1, scope: .whileConnected)
+            .asDriver()
     }
 
-    let stateRelay = PublishRelay<State>()
+    let stateRelay = BehaviorRelay<State>(value: .empty)
 
     // MARK: - Connect API
 

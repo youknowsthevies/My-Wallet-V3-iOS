@@ -5,7 +5,7 @@ import RxDataSources
 
 /// Actions that are associated with a `default`
 /// `WalletActionCellType`
-public enum WalletAction: IdentifiableType {
+public enum WalletAction: Comparable, IdentifiableType {
 
     typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet.Action
     typealias LocalizationId = LocalizationConstants.WalletAction.Default
@@ -15,16 +15,15 @@ public enum WalletAction: IdentifiableType {
         name
     }
 
-    case deposit
-    case withdraw
-    case transfer
-    case interest
-    case activity
-    case send
-    case receive
-    case swap
     case buy
     case sell
+    case receive
+    case send
+    case swap
+    case deposit
+    case withdraw
+    case interest
+    case activity
 
     var imageName: String {
         switch self {
@@ -32,8 +31,6 @@ public enum WalletAction: IdentifiableType {
             return "deposit-icon"
         case .withdraw:
             return "withdraw-icon"
-        case .transfer:
-            return "send-icon"
         case .interest:
             // TODO: Add interest image
             return ""
@@ -58,8 +55,6 @@ public enum WalletAction: IdentifiableType {
             return LocalizationId.Deposit.title
         case .withdraw:
             return LocalizationId.Withdraw.title
-        case .transfer:
-            return LocalizationId.Transfer.title
         case .interest:
             return LocalizationId.Interest.title
         case .activity:
@@ -83,8 +78,6 @@ public enum WalletAction: IdentifiableType {
             return .id(AccessibilityId.deposit)
         case .withdraw:
             return .id(AccessibilityId.withdraw)
-        case .transfer:
-            return .id(AccessibilityId.transfer)
         case .interest:
             return .id(AccessibilityId.interest)
         case .activity:

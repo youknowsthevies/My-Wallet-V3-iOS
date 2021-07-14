@@ -52,8 +52,6 @@ public final class DefaultWalletActionCellPresenter {
             case .fiat:
                 description = LocalizationId.Deposit.Fiat.description
             }
-        case .transfer:
-            description = .init(format: LocalizationId.Transfer.description, currencyType.displayCode)
         case .withdraw:
             description = LocalizationId.Withdraw.description
         case .interest:

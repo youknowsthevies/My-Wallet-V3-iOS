@@ -4,12 +4,13 @@ public struct LinkedBankResponse: Decodable {
     enum AccountType: String, Decodable {
         case savings = "SAVINGS"
         case checking = "CHECKING"
+        case none = "UNKNOWN"
     }
 
     let id: String
     let currency: String
     let partner: String
-    let bankAccountType: AccountType?
+    let bankAccountType: AccountType
     let name: String
     let accountName: String?
     let accountNumber: String?
@@ -52,7 +53,8 @@ public struct LinkedBankResponse: Decodable {
         name = try (container.decodeIfPresent(String.self, forKey: .name) ?? "")
         attributes = try? container.decodeIfPresent(Attributes.self, forKey: .attributes)
         error = try container.decodeIfPresent(Error.self, forKey: .error)
-        bankAccountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
+        let accountType = try container.decodeIfPresent(AccountType.self, forKey: .bankAccountType)
+        bankAccountType = accountType ?? .none
         accountName = try container.decodeIfPresent(String.self, forKey: .accountName)
         accountNumber = try container.decodeIfPresent(String.self, forKey: .accountNumber)
         routingNumber = try container.decodeIfPresent(String.self, forKey: .routingNumber)

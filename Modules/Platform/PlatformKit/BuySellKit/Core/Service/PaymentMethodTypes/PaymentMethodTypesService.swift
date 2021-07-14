@@ -33,6 +33,19 @@ public enum PaymentMethodType: Equatable {
         }
     }
 
+    public var currency: CurrencyType {
+        switch self {
+        case .card(let data):
+            return .fiat(data.currency)
+        case .account(let data):
+            return data.topLimit.currency
+        case .suggested(let method):
+            return method.max.currency
+        case .linkedBank(let bank):
+            return bank.currency.currency
+        }
+    }
+
     public var isSuggested: Bool {
         switch self {
         case .card,
@@ -88,6 +101,17 @@ public protocol PaymentMethodTypesServiceAPI {
     /// - Parameter bankId: A `String` for the bank account to be preferred
     /// - Returns: A `Completable` trait indicating the action is completed
     func fetchLinkBanks(andPrefer bankId: String) -> Completable
+
+    /// Returns a `Bool` indicating if the given FiatCurrency can be used
+    /// as a bank payment method.
+    /// - Parameter fiatCurrency: The fiat currency
+    func canTransactWithBankPaymentMethods(fiatCurrency: FiatCurrency) -> Single<Bool>
+
+    /// Fetches an array of supported fiat currencies for bank transactions.
+    ///
+    /// - Parameter fiatCurrency: The fiat currency
+    /// - Returns: A `Single` of `[FiatCurrency]` that are supported.
+    func fetchSupportedCurrenciesForBankTransactions(fiatCurrency: FiatCurrency) -> Single<[FiatCurrency]>
 
     /// Clears a previously preferred payment, if needed, useful when deleting a card or linked bank.
     /// If the given id doesn't match the current payment method, this will do nothing
@@ -164,6 +188,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private let linkedBankService: LinkedBanksServiceAPI
     private let beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI
     private let kycTiersService: KYCTiersServiceAPI
+    private let featureFetching: FeatureFetching
 
     // MARK: - Setup
 
@@ -175,8 +200,10 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         tradingBalanceService: TradingBalanceServiceAPI = resolve(),
         linkedBankService: LinkedBanksServiceAPI = resolve(),
         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve(),
-        kycTiersService: KYCTiersServiceAPI = resolve()
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        featureFetching: FeatureFetching = resolve()
     ) {
+        self.featureFetching = featureFetching
         self.enabledCurrenciesService = enabledCurrenciesService
         self.paymentMethodsService = paymentMethodsService
         self.fiatCurrencyService = fiatCurrencyService
@@ -187,15 +214,70 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         self.kycTiersService = kycTiersService
     }
 
+    func canTransactWithBankPaymentMethods(
+        fiatCurrency: FiatCurrency
+    ) -> Single<Bool> {
+        guard fiatCurrency.isBankWireSupportedCurrency else {
+            return .just(false)
+        }
+        let supportedCurrencies = fetchSupportedCurrenciesForBankTransactions(
+            fiatCurrency: fiatCurrency
+        )
+        let achEnabled = featureFetching
+            .fetchBool(for: .withdrawAndDepositACH)
+        return Single.zip(
+            supportedCurrencies,
+            achEnabled
+        )
+        .map { (currencies, isACHEnabled) in
+            if isACHEnabled && fiatCurrency.isACHSupportedCurrency {
+                return currencies.contains(fiatCurrency)
+            }
+            // Filter out all currencies that are supported for ACH.
+            // If ACH is disabled, the user should not be able to transact.
+            // If ACH is enabled but the currency is not an ACH supported currency
+            // the currency will be available.
+            let available = currencies.filter { !$0.isACHSupportedCurrency }
+            return available.contains(fiatCurrency)
+        }
+    }
+
+    func fetchSupportedCurrenciesForBankTransactions(
+        fiatCurrency: FiatCurrency
+    ) -> Single<[FiatCurrency]> {
+        suggestedPaymentMethodTypes
+            .map { paymentMethods -> [PaymentMethodType] in
+                paymentMethods.filter {
+                    guard case let .fiat(currency) = $0.currency else { return false }
+                    guard fiatCurrency == currency else { return false }
+                    return ($0.method.isBankAccount || $0.method.isBankTransfer)
+                }
+            }
+            .map { $0.map(\.currency.fiatCurrency!) }
+    }
+
     func fetchCards(andPrefer cardId: String) -> Completable {
         Single
             .zip(
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.fetchCards(),
-                tradingBalanceService.balances
+                tradingBalanceService.balances,
+                featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
+            .map {
+                (paymentMethods: $0.0,
+                 cards: $0.1,
+                 balances: $0.2,
+                 withdrawAndDepositACHEnabled: $0.3)
+            }
             .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: [])
+                self.merge(
+                    paymentMethods: payload.paymentMethods,
+                    cards: payload.cards,
+                    balances: payload.balances,
+                    linkedBanks: [],
+                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                )
             }
             .do(onSuccess: { [weak preferredPaymentMethodTypeRelay] types in
                 let card = types
@@ -220,10 +302,24 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethodsSingle,
                 cardListService.cardsSingle,
                 tradingBalanceService.balances,
-                linkedBankService.fetchLinkedBanks()
+                linkedBankService.fetchLinkedBanks(),
+                featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
+            .map {
+                (paymentMethods: $0.0,
+                 cards: $0.1,
+                 balances: $0.2,
+                 linkedBanks: $0.3,
+                 withdrawAndDepositACHEnabled: $0.4)
+            }
             .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
+                self.merge(
+                    paymentMethods: payload.paymentMethods,
+                    cards: payload.cards,
+                    balances: payload.balances,
+                    linkedBanks: payload.linkedBanks,
+                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                )
             }
             .map { types in
                 types
@@ -270,7 +366,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     private func merge(paymentMethods: [PaymentMethod],
                        cards: [CardData],
                        balances: CustodialAccountBalanceStates,
-                       linkedBanks: [LinkedBankData]) -> [PaymentMethodType] {
+                       linkedBanks: [LinkedBankData],
+                       withdrawAndDepositACHEnabled: Bool) -> [PaymentMethodType] {
         let topCardLimit = (paymentMethods.first { $0.type.isCard })?.max
 
         let cardTypes = cards
@@ -297,7 +394,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                     case .crypto:
                         return true
                     case .fiat(let fiatCurrency):
-                        return enabledCurrenciesService.depositEnabledFiatCurrencies.contains(fiatCurrency)
+                        let enabledCurrencies: [FiatCurrency] = withdrawAndDepositACHEnabled ? [.USD, .GBP, .EUR] : [.GBP, .EUR]
+                        return enabledCurrencies.contains(fiatCurrency)
                     }
                 }
             }
@@ -339,10 +437,24 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 paymentMethodsService.paymentMethods,
                 cardListService.cards,
                 tradingBalanceService.balances.asObservable(),
-                linkedBankService.linkedBanks.asObservable()
+                linkedBankService.linkedBanks.asObservable(),
+                featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()
             )
+            .map {
+                (paymentMethods: $0.0,
+                 cards: $0.1,
+                 balances: $0.2,
+                 linkedBanks: $0.3,
+                 withdrawAndDepositACHEnabled: $0.4)
+            }
             .map(weak: self) { (self, payload) in
-                self.merge(paymentMethods: payload.0, cards: payload.1, balances: payload.2, linkedBanks: payload.3)
+                self.merge(
+                    paymentMethods: payload.paymentMethods,
+                    cards: payload.cards,
+                    balances: payload.balances,
+                    linkedBanks: payload.linkedBanks,
+                    withdrawAndDepositACHEnabled: payload.withdrawAndDepositACHEnabled
+                )
             }
     }
 }

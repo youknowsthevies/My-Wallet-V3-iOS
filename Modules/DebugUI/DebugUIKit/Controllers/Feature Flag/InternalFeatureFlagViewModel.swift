@@ -14,8 +14,6 @@ struct InternalFeatureItem: Equatable {
         switch type {
         case .secureChannel:
             return "Secure Channel"
-        case .withdrawAndDepositACH:
-            return "Withdraw and Deposit - US ACH"
         case .newOnboarding:
             return "New Pin/Onboarding (experimental)"
         case .requestConsoleLogging:

@@ -44,14 +44,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private let tabSwapping: TabSwapping
     private let accountProviding: BlockchainAccountProviding
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
     private let analyticsRecoder: AnalyticsEventRecorderAPI
+    private let featureFetching: FeatureFetching
     private var disposeBag = DisposeBag()
 
     /// Represents a reference of the `WithdrawFlowRouter` object
     /// - note: This is needed in order for the reference to be kept in memory,
     ///         will be release on the dismissal of the flow.
     private var withdrawFiatRouter: WithdrawFlowStarter?
+    private var withdrawRouter: WithdrawalRouting
 
     public convenience init(backupRouterAPI: BackupRouterAPI, tabSwapping: TabSwapping) {
         self.init(
@@ -69,9 +70,12 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         accountProviding: BlockchainAccountProviding = resolve(),
         analyticsService: SimpleBuyAnalayticsServicing = resolve(),
         walletOperationsRouter: WalletOperationsRouting = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
-        analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
+        featureFetching: FeatureFetching = resolve(),
+        analyticsRecoder: AnalyticsEventRecorderAPI = resolve(),
+        withdrawRouter: WithdrawalRouting = resolve()
     ) {
+        self.withdrawRouter = withdrawRouter
+        self.featureFetching = featureFetching
         self.accountProviding = accountProviding
         self.navigationRouter = navigationRouter
 
@@ -82,7 +86,6 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         self.analyticsService = analyticsService
 
         self.tabSwapping = tabSwapping
-        self.internalFeatureFlagService = internalFeatureFlagService
         self.analyticsRecoder = analyticsRecoder
 
         backupRouterAPI
@@ -229,27 +232,45 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showPaymentMethods() {
         guard case let .fiat(fiatCurrency) = currency else { return }
-        switch internalFeatureFlagService.isEnabled(.withdrawAndDepositACH) {
-        case true:
-            dismissTopMost { [weak self] in
+        featureFetching
+            .fetchBool(for: .withdrawAndDepositACH)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
                 guard let self = self else { return }
-                self.navigationRouter
-                    .topMostViewControllerProvider
-                    .topMostViewController?
-                    .dismiss(animated: true, completion: nil)
-                self.accountProviding
-                    .accounts(for: self.currency)
-                    .compactMap(\.first)
-                    .observeOn(MainScheduler.instance)
-                    .subscribe(onSuccess: { [weak self] account in
-                        self?.tabSwapping.deposit(into: account)
-                    })
-                    .disposed(by: self.disposeBag)
-            }
-        case false:
-            dismissTopMost { [weak self] in
-                self?.walletOperationsRouter.showFundTrasferDetails(fiatCurrency: fiatCurrency, isOriginDeposit: true)
-            }
+                switch withdrawAndDepositACHEnabled {
+                case true:
+                    self.showDepositFlow()
+                case false:
+                    self.showFundTransferDetails(fiatCurrency)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func showDepositFlow() {
+        self.dismissTopMost { [weak self] in
+            guard let self = self else { return }
+            self.navigationRouter
+                .topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
+            self.accountProviding
+                .accounts(for: self.currency)
+                .compactMap(\.first)
+                .observeOn(MainScheduler.instance)
+                .subscribe(onSuccess: { [weak self] account in
+                    self?.tabSwapping.deposit(into: account)
+                })
+                .disposed(by: self.disposeBag)
+        }
+    }
+
+    private func showFundTransferDetails(_ currency: FiatCurrency) {
+        self.dismissTopMost { [weak self] in
+            self?.walletOperationsRouter.showFundTrasferDetails(
+                fiatCurrency: currency,
+                isOriginDeposit: true
+            )
         }
     }
 
@@ -289,33 +310,48 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showWithdrawFiatScreen(currency: FiatCurrency) {
-        if internalFeatureFlagService.isEnabled(.withdrawAndDepositACH) {
-            dismissTopMost { [unowned self] in
-                self.navigationRouter
-                    .topMostViewControllerProvider
-                    .topMostViewController?
-                    .dismiss(animated: true, completion: nil)
-                self.accountProviding
-                    .accounts(for: .fiat(currency))
-                    .compactMap(\.first)
-                    .observeOn(MainScheduler.instance)
-                    .subscribe(onSuccess: { [unowned self] account in
-                        self.tabSwapping.withdraw(from: account)
-                    })
-                    .disposed(by: disposeBag)
-            }
-        } else {
-            let withdrawRouter: WithdrawalRouting = resolve()
-            let withdrawBuilder = withdrawRouter.withdrawalBuilder(for: currency)
-            let (router, controller) = withdrawBuilder.build()
-            withdrawFiatRouter = router
-            withdrawFiatRouter?.startFlow { [weak self] in
+        featureFetching
+            .fetchBool(for: .withdrawAndDepositACH)
+            .observeOn(MainScheduler.instance)
+            .subscribe(onSuccess: { [weak self] withdrawAndDepositACHEnabled in
                 guard let self = self else { return }
-                self.withdrawFiatRouter = nil
-            }
-            dismissTopMost { [weak navigationRouter] in
-                navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
-            }
+                switch withdrawAndDepositACHEnabled {
+                case true:
+                    self.showWithdrawTransactionFlow(currency)
+                case false:
+                    self.showLegacyWithdrawFlow(currency)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func showWithdrawTransactionFlow(_ currency: FiatCurrency) {
+        dismissTopMost { [unowned self] in
+            self.navigationRouter
+                .topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
+            self.accountProviding
+                .accounts(for: .fiat(currency))
+                .compactMap(\.first)
+                .observeOn(MainScheduler.instance)
+                .subscribe(onSuccess: { [unowned self] account in
+                    self.tabSwapping.withdraw(from: account)
+                })
+                .disposed(by: disposeBag)
+        }
+    }
+
+    private func showLegacyWithdrawFlow(_ currency: FiatCurrency) {
+        let withdrawBuilder = withdrawRouter.withdrawalBuilder(for: currency)
+        let (router, controller) = withdrawBuilder.build()
+        withdrawFiatRouter = router
+        withdrawFiatRouter?.startFlow { [weak self] in
+            guard let self = self else { return }
+            self.withdrawFiatRouter = nil
+        }
+        dismissTopMost { [weak navigationRouter] in
+            navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
         }
     }
 

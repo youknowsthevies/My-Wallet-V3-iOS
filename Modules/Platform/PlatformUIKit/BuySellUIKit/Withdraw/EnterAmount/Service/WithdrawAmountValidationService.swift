@@ -78,7 +78,7 @@ final class WithdrawAmountValidationService {
             }
             .asSingle()
 
-        self.minValue = withdrawFeeService.withdrawalMinAmount(for: fiatCurrency)
+        self.minValue = withdrawFeeService.withdrawalMinAmount(for: fiatCurrency, paymentMethodType: .bankTransfer)
             .asObservable()
             .map(\.moneyValue)
             .startWith(.zero(currency: fiatCurrency))

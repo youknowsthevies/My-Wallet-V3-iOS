@@ -6,8 +6,6 @@ import ToolKit
 public protocol EnabledCurrenciesServiceAPI {
     var allEnabledCryptoCurrencies: [CryptoCurrency] { get }
     var allEnabledFiatCurrencies: [FiatCurrency] { get }
-    var depositEnabledFiatCurrencies: [FiatCurrency] { get }
-    var withdrawEnabledFiatCurrencies: [FiatCurrency] { get }
     /// This returns the supported currencies that a user can link a bank through a partner, eg Yodlee
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] { get }
 }
@@ -35,14 +33,6 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     }()
 
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
-
-    var depositEnabledFiatCurrencies: [FiatCurrency] {
-        featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
-    }
-
-    var withdrawEnabledFiatCurrencies: [FiatCurrency] {
-        featureFlagService.isEnabled(.withdrawAndDepositACH) ? [.USD, .EUR, .GBP] : [.EUR, .GBP]
-    }
 
     var bankTransferEligibleFiatCurrencies: [FiatCurrency] {
         [.USD]

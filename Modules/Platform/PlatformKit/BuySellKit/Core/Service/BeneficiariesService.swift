@@ -158,5 +158,7 @@ private func concat(beneficiaries: [BeneficiaryResponse],
         guard let currency = FiatCurrency(code: $0.currency) else { return nil }
         return Beneficiary(response: $0, limit: limitsByBaseFiat[currency])
     }
-    return result + linkedBanksResult
+    let identifiers = result.map(\.identifier)
+    let linkedBanks = linkedBanksResult.filter { !identifiers.contains($0.identifier) }
+    return result + linkedBanks
 }

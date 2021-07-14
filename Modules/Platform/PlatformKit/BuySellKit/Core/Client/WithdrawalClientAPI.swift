@@ -7,7 +7,7 @@ protocol WithdrawalClientAPI: AnyObject {
     ///
     /// - parameter currency: A `FiatCurrency` value, for the request
     /// - Returns: A `Single<MoneyValue>` object with the fetched fee value
-    func withdrawFee(currency: FiatCurrency) -> Single<WithdrawFeesResponse>
+    func withdrawFee(currency: FiatCurrency, paymentMethodType: PaymentMethodPayloadType) -> Single<WithdrawFeesResponse>
 
     /// Requests the withdrawal for the requested checkout data
     ///
