@@ -116,6 +116,8 @@ struct EmailVerificationHelpRoutingView: View {
 }
 
 #if DEBUG
+import AnalyticsKit
+
 struct EmailVerificationView_Previews: PreviewProvider {
     static var previews: some View {
         EmailVerificationView(
@@ -123,6 +125,7 @@ struct EmailVerificationView_Previews: PreviewProvider {
                 initialState: .init(emailAddress: "test@example.com"),
                 reducer: emailVerificationReducer,
                 environment: EmailVerificationEnvironment(
+                    analyticsRecorder: NoOpAnalyticsRecorder(),
                     emailVerificationService: NoOpEmailVerificationService(),
                     flowCompletionCallback: nil,
                     openMailApp: { Effect(value: true) }

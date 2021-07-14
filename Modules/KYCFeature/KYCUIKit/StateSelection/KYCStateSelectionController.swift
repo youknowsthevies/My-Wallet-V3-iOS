@@ -32,9 +32,9 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
     // MARK: - Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCStateSelectionController {
+    override class func make(with coordinator: KYCRouter) -> KYCStateSelectionController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .states
         return controller
     }
@@ -61,11 +61,11 @@ class KYCStateSelectionController: KYCBaseViewController, ProgressableView {
 
 extension KYCStateSelectionController: KYCStateSelectionView {
     func continueKycFlow(state: KYCState) {
-        coordinator.handle(event: .nextPageFromPageType(pageType, .stateSelected(state, statesMap.allItems ?? [])))
+        router.handle(event: .nextPageFromPageType(pageType, .stateSelected(state, statesMap.allItems ?? [])))
     }
 
     func showExchangeNotAvailable(state: KYCState) {
-        coordinator.handle(event: .failurePageForPageType(pageType, .stateNotSupported(state)))
+        router.handle(event: .failurePageForPageType(pageType, .stateNotSupported(state)))
     }
 
     func display(states: [KYCState]) {

@@ -64,14 +64,14 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCVerifyIdentityController {
+    override class func make(with coordinator: KYCRouter) -> KYCVerifyIdentityController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .verifyIdentity
         return controller
     }
 
-    // MARK: - KYCCoordinatorDelegate
+    // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
         guard case let .verifyIdentity(countryCode) = model else { return }
@@ -247,7 +247,7 @@ extension KYCVerifyIdentityController: VeriffController {
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)
         delegate?.submitVerification(onCompleted: { [unowned self] in
             self.dismiss(animated: true, completion: {
-                self.coordinator.handle(event: .nextPageFromPageType(self.pageType, nil))
+                self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
             })},
         onError: { error in
             self.dismiss(animated: true, completion: {
@@ -265,7 +265,7 @@ extension KYCVerifyIdentityController: VeriffController {
         loadingViewPresenter.hide()
         dismiss(animated: true, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 

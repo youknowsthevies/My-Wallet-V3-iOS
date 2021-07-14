@@ -75,7 +75,7 @@ final class SwapKYCPresenter: DetailsScreenPresenterAPI {
             .tap
             .emit { (_) in
                 let kycRouter: KYCRouterAPI = resolve()
-                kycRouter.start()
+                kycRouter.start(parentFlow: .swap)
             }
             .disposed(by: disposeBag)
     }

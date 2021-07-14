@@ -35,9 +35,9 @@ final class KYCInformationController: KYCBaseViewController {
 
     // MARK: Factory
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCInformationController {
+    override class func make(with coordinator: KYCRouter) -> KYCInformationController {
         let controller: KYCInformationController = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .accountStatus
         return controller
     }
@@ -46,7 +46,7 @@ final class KYCInformationController: KYCBaseViewController {
 
     @IBAction func dismiss(_ sender: Any) {
         dismiss(animated: true, completion: {
-            self.coordinator.finish()
+            self.router.finish()
         })
     }
 
@@ -108,6 +108,6 @@ final class KYCInformationController: KYCBaseViewController {
     }
 
     override func navControllerRightBarButtonTapped(_ navController: KYCOnboardingNavigationController) {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 }

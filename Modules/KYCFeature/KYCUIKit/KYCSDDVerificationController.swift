@@ -17,9 +17,9 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     private var viewLoadingObject = KYCSDDVerificationLoadingView.LoadingObservable()
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCSDDVerificationController {
+    override class func make(with coordinator: KYCRouter) -> KYCSDDVerificationController {
         let controller = KYCSDDVerificationController()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .sddVerificationCheck
         return controller
     }
@@ -57,8 +57,8 @@ final class KYCSDDVerificationController: KYCBaseViewController {
 
     private func performVerificationCheck() {
         viewLoadingObject.loading = true
-        checkForSDDVerification { [coordinator, pageType, viewLoadingObject] isVerified in
-            coordinator?.handle(event: .nextPageFromPageType(pageType, .sddVerification(isVerified: isVerified)))
+        checkForSDDVerification { [router, pageType, viewLoadingObject] isVerified in
+            router?.handle(event: .nextPageFromPageType(pageType, .sddVerification(isVerified: isVerified)))
             viewLoadingObject.loading = false
         }
     }

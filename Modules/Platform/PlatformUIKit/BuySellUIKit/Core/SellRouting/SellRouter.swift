@@ -158,7 +158,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             .bindAndCatch(to: interactor.previousRelay)
             .disposed(by: kycDisposeBag)
 
-        kycRouter.start(tier: .tier2)
+        kycRouter.start(tier: .tier2, parentFlow: .simpleBuy)
     }
 
     private func navigateToVerificationFailedScreen() {

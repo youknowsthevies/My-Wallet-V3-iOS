@@ -17,7 +17,11 @@ final class RouterTests: XCTestCase {
         try super.setUpWithError()
         mockExternalAppOpener = MockExternalAppOpener()
         mockEmailVerificationService = MockEmailVerificationService()
-        router = .init(emailVerificationService: mockEmailVerificationService, openMailApp: mockExternalAppOpener.openMailApp)
+        router = .init(
+            analyticsRecorder: MockAnalyticsRecorder(),
+            emailVerificationService: mockEmailVerificationService,
+            openMailApp: mockExternalAppOpener.openMailApp
+        )
     }
 
     override func tearDownWithError() throws {

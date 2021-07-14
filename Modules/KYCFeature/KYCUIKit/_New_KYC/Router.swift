@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import Combine
 import ComposableArchitecture
 import KYCKit
@@ -47,13 +48,16 @@ public protocol Routing {
 /// A class that encapsulates routing logic for the KYC flow. Use this to present the app user with any part of the KYC flow.
 public class Router: Routing {
 
+    public let analyticsRecorder: AnalyticsEventRecorderAPI
     public let emailVerificationService: EmailVerificationServiceAPI
     public let openMailApp: (@escaping (Bool) -> Void) -> Void
 
     public init(
+        analyticsRecorder: AnalyticsEventRecorderAPI,
         emailVerificationService: EmailVerificationServiceAPI,
         openMailApp: @escaping (@escaping (Bool) -> Void) -> Void
     ) {
+        self.analyticsRecorder = analyticsRecorder
         self.emailVerificationService = emailVerificationService
         self.openMailApp = openMailApp
     }
@@ -157,6 +161,7 @@ public class Router: Routing {
 
     func buildEmailVerificationEnvironment(emailAddress: String, flowCompletion: @escaping (FlowResult) -> Void) -> EmailVerificationEnvironment {
         EmailVerificationEnvironment(
+            analyticsRecorder: analyticsRecorder,
             emailVerificationService: emailVerificationService,
             flowCompletionCallback: flowCompletion,
             openMailApp: { [openMailApp] in

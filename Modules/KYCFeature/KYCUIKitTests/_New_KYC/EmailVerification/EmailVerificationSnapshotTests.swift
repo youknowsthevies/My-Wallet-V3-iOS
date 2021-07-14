@@ -24,6 +24,7 @@ final class EmailVerificationSnapshotTests: XCTestCase {
 
         mockEmailVerificationService = MockEmailVerificationService()
         environment = EmailVerificationEnvironment(
+            analyticsRecorder: MockAnalyticsRecorder(),
             emailVerificationService: mockEmailVerificationService,
             flowCompletionCallback: { _ in },
             openMailApp: { .none },

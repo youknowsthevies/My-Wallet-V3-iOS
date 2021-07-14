@@ -46,9 +46,9 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
     // MARK: Overrides
 
-    override class func make(with coordinator: KYCCoordinator) -> KYCPersonalDetailsController {
+    override class func make(with coordinator: KYCRouter) -> KYCPersonalDetailsController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.user = coordinator.user
         controller.pageType = .profile
         return controller
@@ -176,7 +176,7 @@ final class KYCPersonalDetailsController: KYCBaseViewController, ValidationFormV
 
         delegate?.onSubmission(details, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 }

@@ -7,18 +7,27 @@ import RxSwift
 // TICKET: OS-4734 (remove this code)
 public enum KYCParentFlow {
     case simpleBuy
-    case none
+    case swap
+    case settings
+    case announcement
+    case resubmission
+    case onboarding
+    case receive
+    case airdrop
+    case cash
 }
 
 // TICKET: IOS-4734 (remove this code)
 public protocol KYCRouterAPI: AnyObject {
     var tier1Finished: Observable<Void> { get }
     var tier2Finished: Observable<Void> { get }
+    
     var kycStopped: Observable<Void> { get }
     var kycFinished: Observable<KYC.Tier> { get }
-    func start()
-    func start(tier: KYC.Tier)
-    func start(from viewController: UIViewController, tier: KYC.Tier, parentFlow: KYCParentFlow)
+
+    func start(parentFlow: KYCParentFlow)
+    func start(tier: KYC.Tier, parentFlow: KYCParentFlow)
+    func start(tier: KYC.Tier, parentFlow: KYCParentFlow, from viewController: UIViewController?)
 }
 
 public enum KYCRouterError: Error {

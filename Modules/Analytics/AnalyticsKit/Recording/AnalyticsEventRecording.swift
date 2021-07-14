@@ -12,7 +12,7 @@ public protocol AnalyticsEventRecording: AnyObject {
 }
 
 extension AnalyticsEventRecording {
-    func record(events: [AnalyticsEvent]) {
+    public func record(events: [AnalyticsEvent]) {
         events.forEach {
             record(event: $0)
         }

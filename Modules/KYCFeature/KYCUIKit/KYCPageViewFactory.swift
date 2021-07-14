@@ -17,7 +17,7 @@ class KYCPageViewFactory {
     // swiftlint:disable:next cyclomatic_complexity
     func createFrom(
         pageType: KYCPageType,
-        in coordinator: KYCCoordinator,
+        in coordinator: KYCRouter,
         payload: KYCPagePayload? = nil
     ) -> KYCBaseViewController {
         switch pageType {

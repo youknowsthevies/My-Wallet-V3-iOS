@@ -281,9 +281,9 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(tier: tier,
+                                     parentFlow: .airdrop,
+                                     from: tabControllerManager.tabViewController)
             }
         )
     }
@@ -316,9 +316,9 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(tier: tier,
+                                     parentFlow: .announcement,
+                                     from: tabControllerManager.tabViewController)
             }
         )
     }
@@ -508,9 +508,9 @@ extension AnnouncementPresenter {
                 guard let self = self else { return }
                 guard let tabControllerManager = self.tapControllerManagerProvider.tabControllerManager else { return }
                 let tier = user.tiers?.selected ?? .tier1
-                self.kycRouter.start(from: tabControllerManager.tabViewController,
-                                     tier: tier,
-                                     parentFlow: .none)
+                self.kycRouter.start(tier: tier,
+                                     parentFlow: .announcement,
+                                     from: tabControllerManager.tabViewController)
             }
         )
     }
