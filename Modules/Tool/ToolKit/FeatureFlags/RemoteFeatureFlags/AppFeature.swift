@@ -3,7 +3,6 @@
 import Foundation
 
 /// Enumerates app features that can be dynamically configured (e.g. enabled/disabled)
-@objc
 public enum AppFeature: Int, CaseIterable {
 
     // MARK: - Local features
@@ -21,14 +20,8 @@ public enum AppFeature: Int, CaseIterable {
     /// Enable Secure Channel
     case secureChannel
 
-    /// Enable receiving to trading account
-    case tradingAccountReceive
-
-    /// Enable sending from a trading account to any crypto address.
-    case tradingAccountExternalSend
-
-    /// Enable resolving a domain name when sending crypto.
-    case sendToDomainName
+    /// Custodial only tokens.
+    case custodialOnlyTokens
 
     // MARK: Onboarding (After Login)
 
@@ -57,12 +50,8 @@ extension AppFeature {
             return "sift_science_enabled"
         case .secureChannel:
             return "secure_channel_ios"
-        case .tradingAccountReceive:
-            return "trading_account_receive_ios"
-        case .tradingAccountExternalSend:
-            return "trading_account_external_send_ios"
-        case .sendToDomainName:
-            return "send_to_domain_name_ios"
+        case .custodialOnlyTokens:
+            return "custodial_only_tokens"
         case .biometry:
             return nil
         case .showOnboardingAfterSignUp:

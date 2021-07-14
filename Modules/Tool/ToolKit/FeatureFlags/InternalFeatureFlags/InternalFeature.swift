@@ -8,9 +8,6 @@ public enum InternalFeature: String, CaseIterable {
     /// Enable secure channel
     case secureChannel
 
-    /// Enable receiving to trading account
-    case tradingAccountReceive
-
     /// Enables deposit and withdraw for US users
     case withdrawAndDepositACH
 

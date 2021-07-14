@@ -70,21 +70,6 @@ extension CryptoCurrency {
         }
     }
 
-    /// CryptoCurrency is supported in Receive.
-    /// Used whenever we don't have access to the new Account architecture.
-    public var hasNonCustodialReceiveSupport: Bool {
-        switch self {
-        case .other:
-            return false
-        case.bitcoin,
-            .bitcoinCash,
-            .ethereum,
-            .stellar,
-            .erc20:
-            return true
-        }
-    }
-
     /// CryptoCurrency is supported in Withdrawal (send crypto from custodial to non custodial account).
     /// Used whenever we don't have access to the new Account architecture.
     public var hasNonCustodialWithdrawalSupport: Bool {
@@ -98,27 +83,6 @@ extension CryptoCurrency {
             .erc20:
             return true
         }
-    }
-
-    /// CryptoCurrency has non custodial support in the App.
-    /// Used whenever we don't have access to the new Account architecture.
-    public var hasNonCustodialSupport: Bool {
-        switch self {
-        case .other:
-            return false
-        case.bitcoin,
-            .bitcoinCash,
-            .ethereum,
-            .stellar,
-            .erc20:
-            return true
-        }
-    }
-
-    /// CryptoCurrency has Non Custodial support in Swap.
-    /// Used only if we don't have access to the new Account architecture.
-    public var hasSwapSupport: Bool {
-        hasNonCustodialSupport
     }
 
     public var name: String {
@@ -240,26 +204,32 @@ extension CryptoCurrency {
             return 1438992000
         case .stellar:
             return 1525716000
-        case let .erc20(model) where model.code == LegacyERC20Code.aave.rawValue:
-            return 1615831200
-        case let .erc20(model) where model.code == LegacyERC20Code.pax.rawValue:
-            return 1555060318
-        case let .erc20(model) where model.code == LegacyERC20Code.tether.rawValue:
-            return 1511829681
-        case let .erc20(model) where model.code == LegacyERC20Code.wdgld.rawValue:
-            return 1605636000
-        case let .erc20(model) where model.code == LegacyERC20Code.yearnFinance.rawValue:
-            return 1615831200
-        case .erc20:
-            // TODO: IOS-4958: Use correct date from model.
-            return CryptoCurrency.ethereum.maxStartDate
-        case let .other(model) where model.code == "DOT":
-            return 1615831200
-        case let .other(model) where model.code == "ALGO":
-            return 1560211225
-        case .other:
-            // TODO: IOS-4958: Use correct date from model.
-            return 1625097600
+        case let .erc20(model):
+            switch model.code {
+            case LegacyERC20Code.aave.rawValue:
+                return 1615831200
+            case LegacyERC20Code.pax.rawValue:
+                return 1555060318
+            case LegacyERC20Code.tether.rawValue:
+                return 1511829681
+            case LegacyERC20Code.wdgld.rawValue:
+                return 1605636000
+            case LegacyERC20Code.yearnFinance.rawValue:
+                return 1615831200
+            default:
+                // TODO: IOS-4958: Use correct date from model.
+                return CryptoCurrency.ethereum.maxStartDate
+            }
+        case let .other(model):
+            switch model.code {
+            case LegacyCustodialCode.polkadot.rawValue:
+                return 1615831200
+            case LegacyCustodialCode.algorand.rawValue:
+                return 1560211225
+            default:
+                // TODO: IOS-4958: Use correct date from model.
+                return 1625097600
+            }
         }
     }
 }

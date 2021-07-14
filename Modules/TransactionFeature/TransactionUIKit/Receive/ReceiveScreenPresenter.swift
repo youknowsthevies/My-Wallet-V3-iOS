@@ -28,8 +28,8 @@ final class ReceiveScreenPresenter {
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
     private (set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
-    var assetImage: Driver<ImageResource> {
-        .just(interactor.account.currencyType.logoResource)
+    var assetImage: Driver<ImageViewContent> {
+        .just(ImageViewContent(imageResource: interactor.account.currencyType.logoResource))
     }
     var qrCode: Driver<UIImage?> {
         qrCodeRelay.asDriver()

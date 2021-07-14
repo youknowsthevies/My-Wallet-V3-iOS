@@ -6,17 +6,10 @@ import UIKit
 extension UIColor {
 
     // MARK: Crypto
-    static let _aave = UIColor(paletteColor: .aave)
-    static let _algo = UIColor(paletteColor: .algo)
     static let _bch = UIColor(paletteColor: .bch)
     static let _btc = UIColor(paletteColor: .btc)
-    static let _dot = UIColor(paletteColor: .dot)
     static let _eth = UIColor(paletteColor: .eth)
-    static let _pax = UIColor(paletteColor: .pax)
-    static let _usdt = UIColor(paletteColor: .usdt)
-    static let _wDGLD = UIColor(paletteColor: .wDGLD)
     static let _xlm = UIColor(paletteColor: .xlm)
-    static let _yfi = UIColor(paletteColor: .yfi)
 
     // MARK: Tiers
     static let tiersSilver = UIColor(paletteColor: .tierSilver)
@@ -130,6 +123,23 @@ extension UIColor {
     public static let secondary = blue600
     public static let tertiary = blue400
 
+    public convenience init?(hex: String) {
+        let clean = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        guard clean.count == 6 else {
+            return nil
+        }
+        var rgbValue: UInt64 = 0
+        guard Scanner(string: clean).scanHexInt64(&rgbValue) else {
+            return nil
+        }
+        self.init(
+            red: CGFloat(rgbValue >> 16) / 255,
+            green: CGFloat(rgbValue >> 8 & 0xFF) / 255,
+            blue: CGFloat(rgbValue & 0xFF) / 255,
+            alpha: 1
+        )
+    }
+
     // MARK: Navigation
     public enum NavigationBar {
 
@@ -219,17 +229,10 @@ extension UIColor {
     public static let iconWarning = orange600
 
     // MARK: Currency
-    public static let aave = _aave
-    public static let algorand = _algo
     public static let bitcoin = _btc
     public static let bitcoinCash = _bch
     public static let ethereum = _eth
-    public static let polkadot = _dot
     public static let stellar = _xlm
-    public static let tether = _usdt
-    public static let usdd = _pax
-    public static let wdgld = _wDGLD
-    public static let yearnFinance = _yfi
     public static let fiat = green500
 
     // MARK: Tiers

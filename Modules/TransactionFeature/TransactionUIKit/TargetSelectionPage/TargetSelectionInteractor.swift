@@ -64,24 +64,18 @@ final class TargetSelectionInteractor {
     }
 
     private func validate(domainName: String, currency: CryptoCurrency) -> Single<Result<ReceiveAddress, Error>> {
-        featureFetcher.fetchBool(for: .sendToDomainName)
-            .flatMap(weak: self) { (self, isEnabled) -> Single<Result<ReceiveAddress, Error>> in
-                guard isEnabled else {
-                    return .just(.failure(CryptoAssetError.addressParseFailure))
+        nameResolutionService
+            .validate(domainName: domainName, currency: currency)
+            .asObservable()
+            .take(1)
+            .asSingle()
+            .map { receiveAddress -> Result<ReceiveAddress, Error> in
+                switch receiveAddress {
+                case .some(let receiveAddress):
+                    return .success(receiveAddress)
+                case .none:
+                    return .failure(CryptoAssetError.addressParseFailure)
                 }
-                return self.nameResolutionService
-                    .validate(domainName: domainName, currency: currency)
-                    .asObservable()
-                    .take(1)
-                    .asSingle()
-                    .map { receiveAddress -> Result<ReceiveAddress, Error> in
-                        switch receiveAddress {
-                        case .some(let receiveAddress):
-                            return .success(receiveAddress)
-                        case .none:
-                            return .failure(CryptoAssetError.addressParseFailure)
-                        }
-                    }
             }
     }
 }

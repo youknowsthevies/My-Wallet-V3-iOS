@@ -3,8 +3,7 @@
 import Foundation
 
 /// Defines a configuration for a given `AppFeature`
-@objc
-public class AppFeatureConfiguration: NSObject {
+public struct AppFeatureConfiguration {
 
     /// To be thrown if necessary when the feature is not remotely disabled
     public enum ConfigError: Error {
@@ -13,7 +12,6 @@ public class AppFeatureConfiguration: NSObject {
         case disabled
     }
 
-    @objc
     public let isEnabled: Bool
 
     public init(isEnabled: Bool) {

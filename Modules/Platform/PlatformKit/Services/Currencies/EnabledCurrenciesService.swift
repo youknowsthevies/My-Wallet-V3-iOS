@@ -31,7 +31,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     }
 
     lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {
-        nonErc20Currencies + erc20Currencies
+        (nonErc20Currencies + erc20Currencies).sorted()
     }()
 
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
@@ -49,13 +49,16 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
     }
 
     private let featureFlagService: InternalFeatureFlagServiceAPI
+    private let featureConfigurator: FeatureConfiguring
     private let repository: SupportedAssetsRepositoryAPI
 
     init(
         featureFlagService: InternalFeatureFlagServiceAPI = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve(),
         repository: SupportedAssetsRepositoryAPI = resolve()
     ) {
         self.featureFlagService = featureFlagService
+        self.featureConfigurator = featureConfigurator
         self.repository = repository
     }
 }

@@ -7,7 +7,7 @@ extension TriageCryptoCurrency {
     public var logoResource: ImageResource {
         switch self {
         case .blockstack:
-            return .local(name: "filled_stx_large", bundle: .platformUIKit)
+            return .local(name: "crypto-stx", bundle: .platformUIKit)
         case .supported(let currency):
             return currency.logoResource
         }

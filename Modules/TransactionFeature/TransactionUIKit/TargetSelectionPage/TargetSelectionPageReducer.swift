@@ -45,20 +45,11 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
                 return .just(.source(header: self.provideSourceSectionHeader(for: action), items: items))
             }
 
-        let tradingAccountExternalSend = featureFetcher
-            .fetchBool(for: .tradingAccountExternalSend)
-            .asDriver(onErrorJustReturn: false)
-
         let sourceAccountStrategy = interactorState
             .compactMap(\.sourceInteractor)
             .map(\.account)
-            .withLatestFrom(tradingAccountExternalSend) { (account: $0, isEnabled: $1) }
-            .map { (account, isEnabled) -> TargetDestinationsStrategyAPI in
-                if account is TradingAccount, !isEnabled {
-                    return TradingSourceDestinationStrategy(sourceAccount: account)
-                } else {
-                    return NonTradingSourceDestinationStrategy(sourceAccount: account)
-                }
+            .map { account -> TargetDestinationsStrategyAPI in
+                AnySourceDestinationStrategy(sourceAccount: account)
             }
             .map(TargetDestinationSections.init(strategy:))
 

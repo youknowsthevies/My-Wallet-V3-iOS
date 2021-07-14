@@ -22,7 +22,7 @@ struct CryptoCurrencyQuoteCell: View {
                     .contentShape(Rectangle())
                 VStack {
                     HStack(spacing: 16) {
-                        if let image = viewStore.cryptoCurrency.logoResource.localImage {
+                        if case let .image(image) = viewStore.cryptoCurrency.logoResource.resource {
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFit()

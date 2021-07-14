@@ -9,4 +9,6 @@ public protocol AssetModel {
     var name: String { get }
     var precision: Int { get }
     var products: [AssetModelProduct] { get }
+    var logoPngUrl: String? { get }
+    var spotColor: String? { get }
 }

@@ -105,19 +105,17 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     }
 
     public var actions: Single<AvailableActions> {
-        Single.zip(balance, eligibilityService.isEligible, can(perform: .receive))
-            .map { [asset] (balance, isEligible, canReceive) -> AvailableActions in
+        Single.zip(balance, eligibilityService.isEligible)
+            .map { (balance, isEligible) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity]
-                if balance.isPositive, asset.hasNonCustodialWithdrawalSupport {
+                if balance.isPositive {
                     base.insert(.send)
                 }
-                if balance.isPositive && isEligible {
+                if balance.isPositive, isEligible {
                     base.insert(.sell)
                     base.insert(.swap)
                 }
-                if canReceive {
-                    base.insert(.receive)
-                }
+                base.insert(.receive)
                 return base
             }
     }
@@ -127,11 +125,10 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let custodialAddressService: CustodialAddressServiceAPI
     private let custodialPendingDepositService: CustodialPendingDepositServiceAPI
     private let eligibilityService: EligibilityServiceAPI
-    private let featureFetcher: FeatureFetching
-    private let internalFeatureFlagService: InternalFeatureFlagServiceAPI
-    private let kycTiersService: KYCTiersServiceAPI
     private let errorRecorder: ErrorRecording
     private let fiatPriceService: FiatPriceServiceAPI
+    private let featureFetcher: FeatureFetching
+    private let kycTiersService: KYCTiersServiceAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currency)
@@ -140,14 +137,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     public init(
         asset: CryptoCurrency,
         errorRecorder: ErrorRecording = resolve(),
+        featureFetcher: FeatureFetching = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         cryptoReceiveAddressFactory: CryptoReceiveAddressFactoryService = resolve(),
         custodialAddressService: CustodialAddressServiceAPI = resolve(),
         custodialPendingDepositService: CustodialPendingDepositServiceAPI = resolve(),
         eligibilityService: EligibilityServiceAPI = resolve(),
-        featureFetcher: FeatureFetching = resolve(),
-        internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
         self.asset = asset
@@ -159,7 +155,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         self.custodialPendingDepositService = custodialPendingDepositService
         self.eligibilityService = eligibilityService
         self.featureFetcher = featureFetcher
-        self.internalFeatureFlagService = internalFeatureFlagService
         self.kycTiersService = kycTiersService
         self.errorRecorder = errorRecorder
     }
@@ -169,9 +164,6 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         case .viewActivity:
             return .just(true)
         case .send:
-            guard asset.hasNonCustodialReceiveSupport else {
-                return .just(false)
-            }
             return balance
                 .map(\.isPositive)
                 .catchError { [label, asset] error in
@@ -185,7 +177,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .recordErrors(on: errorRecorder)
                 .catchErrorJustReturn(false)
         case .buy:
-            unimplemented("WIP")
+            return .just(false)
         case .sell,
              .swap:
             return balance
@@ -207,23 +199,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 .recordErrors(on: errorRecorder)
                 .catchErrorJustReturn(false)
         case .receive:
-            return Single.just(internalFeatureFlagService.isEnabled(.tradingAccountReceive))
-                .flatMap(weak: self) { (self, isEnabled) -> Single<Bool> in
-                    guard isEnabled else {
-                        return self.featureFetcher.fetchBool(for: .tradingAccountReceive)
-                    }
-                    return .just(true)
-                }
-                .catchError { [label, asset] error in
-                    throw Error.loadingFailed(
-                        asset: asset.code,
-                        label: label,
-                        action: action,
-                        error: String(describing: error)
-                    )
-                }
-                .recordErrors(on: errorRecorder)
-                .catchErrorJustReturn(false)
+            return .just(true)
         case .deposit,
              .withdraw:
             return .just(false)

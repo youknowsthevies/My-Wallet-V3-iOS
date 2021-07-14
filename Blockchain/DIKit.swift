@@ -387,11 +387,6 @@ extension DependencyContainer {
             return featureFetching
         }
 
-        factory { () -> FeatureFetchingConfiguring in
-            let featureFetching: AppFeatureConfigurator = DIKit.resolve()
-            return featureFetching
-        }
-
         factory { () -> FeatureVariantFetching in
             let featureFetching: AppFeatureConfigurator = DIKit.resolve()
             return featureFetching

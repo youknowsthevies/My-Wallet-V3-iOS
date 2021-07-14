@@ -281,15 +281,9 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
                 .update(keyPath: \.destinationInteractors, value: destinations)
         }
 
-        let tradingAccountExternalSend = featureConfigurator.configuration(for: .tradingAccountExternalSend).isEnabled
-        if sourceAccount is NonCustodialAccount || tradingAccountExternalSend {
-            if state.inputFieldInteractor == nil {
-                state = state
-                    .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
-            }
-        } else {
+        if state.inputFieldInteractor == nil {
             state = state
-                .update(keyPath: \.inputFieldInteractor, value: nil)
+                .update(keyPath: \.inputFieldInteractor, value: .walletInputField(sourceAccount, cryptoAddressViewModel))
         }
 
         return state

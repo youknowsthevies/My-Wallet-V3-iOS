@@ -9,6 +9,8 @@ public struct CoinAssetModel: AssetModel, Hashable {
     public let name: String
     public let precision: Int
     public let products: [AssetModelProduct]
+    public let logoPngUrl: String?
+    public let spotColor: String?
     public let minimumOnChainConfirmations: Int
     let sortIndex: Int
 
@@ -18,17 +20,28 @@ public struct CoinAssetModel: AssetModel, Hashable {
         precondition(assetResponse.type.name == SupportedAssetsResponse.Asset.AssetType.Name.coin.rawValue)
         code = assetResponse.symbol
         name = assetResponse.name
+        logoPngUrl = assetResponse.type.logoPngUrl
+        spotColor = assetResponse.type.spotColor
         precision = assetResponse.precision
         products = assetResponse.products.compactMap(AssetModelProduct.init)
         minimumOnChainConfirmations = assetResponse.type.minimumOnChainConfirmations!
         self.sortIndex = sortIndex
     }
 
-    init(code: String, name: String, precision: Int, products: [AssetModelProduct], minimumOnChainConfirmations: Int, sortIndex: Int) {
+    init(code: String,
+         name: String,
+         precision: Int,
+         products: [AssetModelProduct],
+         logoPngUrl: String?,
+         spotColor: String?,
+         minimumOnChainConfirmations: Int,
+         sortIndex: Int) {
         self.code = code
         self.name = name
         self.precision = precision
         self.products = products
+        self.logoPngUrl = logoPngUrl
+        self.spotColor = spotColor
         self.minimumOnChainConfirmations = minimumOnChainConfirmations
         self.sortIndex = sortIndex
     }
@@ -41,9 +54,27 @@ public struct CoinAssetModel: AssetModel, Hashable {
 
 extension CoinAssetModel {
     static var algorand: CoinAssetModel {
-        CoinAssetModel(code: "ALGO", name: "Algorand", precision: 6, products: [], minimumOnChainConfirmations: 3, sortIndex: 1)
+        CoinAssetModel(
+            code: "ALGO",
+            name: "Algorand",
+            precision: 6,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "000000",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 1
+        )
     }
     static var polkadot: CoinAssetModel {
-        CoinAssetModel(code: "DOT", name: "Polkadot", precision: 10, products: [], minimumOnChainConfirmations: 3, sortIndex: 2)
+        CoinAssetModel(
+            code: "DOT",
+            name: "Polkadot",
+            precision: 10,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "E6007A",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 2
+        )
     }
 }

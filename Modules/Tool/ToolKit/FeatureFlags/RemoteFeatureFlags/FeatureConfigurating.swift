@@ -7,14 +7,20 @@ import RxSwift
 /// remote based feature flag system
 public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring { }
 
+public enum FeatureConfigurationError: Error {
+    case missingKeyRawValue
+    case missingValue
+    case decodingError
+}
+
 public protocol FeatureInitializer: AnyObject {
     func initialize()
 }
 
 /// Any feature remote configuration protocol
-@objc
 public protocol FeatureConfiguring: AnyObject {
-    @objc func configuration(for feature: AppFeature) -> AppFeatureConfiguration
+    func configuration(for feature: AppFeature) -> AppFeatureConfiguration
+    func configuration<Feature: Decodable>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError>
 }
 
 /// - Tag: FeatureFetching
@@ -24,8 +30,6 @@ public protocol FeatureFetching: AnyObject {
     func fetchString(for key: AppFeature) -> Single<String>
     func fetchBool(for key: AppFeature) -> Single<Bool>
 }
-
-public typealias FeatureFetchingConfiguring = FeatureFetching & FeatureConfiguring
 
 /// This protocol is responsible for variant fetching
 public protocol FeatureVariantFetching: AnyObject {

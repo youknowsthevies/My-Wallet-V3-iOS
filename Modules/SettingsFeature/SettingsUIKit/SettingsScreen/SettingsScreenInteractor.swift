@@ -35,7 +35,6 @@ final class SettingsScreenInteractor {
     let biometryProviding: BiometryProviding
     let credentialsStore: CredentialsStoreAPI
     let appSettings: BlockchainSettings.App
-    let featureConfigurator: FeatureFetchingConfiguring
     let recoveryPhraseStatusProviding: RecoveryPhraseStatusProviding
     let authenticationCoordinator: AuthenticationCoordinating
 
@@ -46,7 +45,7 @@ final class SettingsScreenInteractor {
     init(
         balanceSharingService: BalanceSharingSettingsServiceAPI = resolve(),
         credentialsStore: CredentialsStoreAPI = resolve(),
-        featureConfigurator: FeatureFetchingConfiguring = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve(),
         settingsService: SettingsServiceAPI = resolve(),
         smsTwoFactorService: SMSTwoFactorSettingsServiceAPI = resolve(),
         emailNotificationService: EmailNotificationSettingsServiceAPI = resolve(),
@@ -62,7 +61,6 @@ final class SettingsScreenInteractor {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
-        self.featureConfigurator = featureConfigurator
         self.emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.balanceSharingService = balanceSharingService

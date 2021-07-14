@@ -24,6 +24,7 @@ struct SupportedAssetsResponse: Decodable {
             let erc20Address: String?
 
             let logoPngUrl: String?
+            let spotColor: String?
             let websiteUrl: String?
         }
     }

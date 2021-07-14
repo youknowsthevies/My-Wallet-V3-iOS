@@ -3,16 +3,26 @@
 import UIKit
 
 public enum ImageResource: Hashable {
+    public enum Resource {
+        case image(UIImage)
+        case url(URL)
+    }
+
     case local(name: String, bundle: Bundle)
     case remote(url: String)
 
-    // TODO: IOS-4958: Remove this property.
-    public var localImage: UIImage? {
+    public var resource: Resource? {
         switch self {
         case let .local(name, bundle):
-            return UIImage(named: name, in: bundle, with: nil)
-        case .remote:
-            return nil
+            guard let image = UIImage(named: name, in: bundle, compatibleWith: nil) else {
+                return nil
+            }
+            return .image(image)
+        case let .remote(urlString):
+            guard let url = URL(string: urlString) else {
+                return nil
+            }
+            return .url(url)
         }
     }
 }

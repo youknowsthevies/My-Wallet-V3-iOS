@@ -64,9 +64,10 @@ public final class CompositeStatusView: UIView {
         }
 
         private func setupImageView(with imageResource: ImageResource) {
-            let image = imageResource.localImage
-            let imageView = UIImageView(image: image)
+            let content = ImageViewContent(imageResource: imageResource)
+            let imageView = UIImageView(image: nil)
             add(view: imageView)
+            imageView.set(content)
         }
 
         private func setupLoadingView() {
@@ -235,9 +236,10 @@ public final class CompositeStatusView: UIView {
     }
 
     private func setupImageView(with imageResource: ImageResource) {
-        let image = imageResource.localImage
-        let imageView = UIImageView(image: image)
+        let content = ImageViewContent(imageResource: imageResource)
+        let imageView = UIImageView(image: nil)
         add(view: imageView)
+        imageView.set(content)
     }
 
     private func setupTemplateImageView(with name: String, bundle: Bundle, templateColor: UIColor) {

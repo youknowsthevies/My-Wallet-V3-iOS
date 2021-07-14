@@ -16,4 +16,8 @@ class MockFeatureConfigurator: FeatureConfiguratorAPI {
     func configuration(for feature: AppFeature) -> AppFeatureConfiguration {
         AppFeatureConfiguration(isEnabled: featureIsEnabled)
     }
+
+    func configuration<Feature>(for feature: AppFeature) -> Result<Feature, FeatureConfigurationError> where Feature : Decodable {
+        .failure(.decodingError)
+    }
 }
