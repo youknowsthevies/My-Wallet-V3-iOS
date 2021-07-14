@@ -46,7 +46,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
 
     override class func make(with coordinator: KYCRouter) -> KYCConfirmPhoneNumberController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .confirmPhone
         return controller
     }
@@ -103,7 +103,7 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
 
 extension KYCConfirmPhoneNumberController: KYCConfirmPhoneNumberView {
     func confirmCodeSuccess() {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 
     func startVerificationSuccess() {

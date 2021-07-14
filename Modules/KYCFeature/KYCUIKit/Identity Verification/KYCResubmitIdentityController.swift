@@ -26,7 +26,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
 
     override class func make(with coordinator: KYCRouter) -> KYCResubmitIdentityController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .verifyIdentity
         return controller
     }
@@ -127,7 +127,7 @@ extension KYCResubmitIdentityController: VeriffController {
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)
         delegate?.submitVerification(onCompleted: { [unowned self] in
             self.dismiss(animated: true, completion: {
-                self.coordinator.handle(event: .nextPageFromPageType(self.pageType, nil))
+                self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
             })},
         onError: { error in
             self.dismiss(animated: true, completion: {
@@ -145,7 +145,7 @@ extension KYCResubmitIdentityController: VeriffController {
         loadingViewPresenter.hide()
         dismiss(animated: true, completion: { [weak self] in
             guard let this = self else { return }
-            this.coordinator.handle(event: .nextPageFromPageType(this.pageType, nil))
+            this.router.handle(event: .nextPageFromPageType(this.pageType, nil))
         })
     }
 

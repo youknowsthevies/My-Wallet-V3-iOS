@@ -162,29 +162,7 @@ final class KYCRouter: KYCRouterAPI {
         case .tier2:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Start)
         }
-
-        let origin: AnalyticsEvents.New.Onboarding.UpgradeVerificationOrigin
-        switch parentFlow {
-        case .simpleBuy:
-            origin = .simplebuy
-        case .swap:
-            origin = .swap
-        case .settings:
-            origin = .settings
-        case .announcement:
-            origin = .dashboardPromo
-        case .resubmission:
-            origin = .resubmission
-        case .onboarding:
-            origin = .onboarding
-        case .receive:
-            origin = .unknown
-        case .airdrop:
-            origin = .airdrop
-        case .cash:
-            origin = .fiatFunds
-        }
-        analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.upgradeVerificationClicked(origin: origin, tier: tier.rawValue))
+        analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.upgradeVerificationClicked(origin: .init(parentFlow), tier: tier.rawValue))
 
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let userObservable = dataRepository.fetchNabuUser().asObservable()

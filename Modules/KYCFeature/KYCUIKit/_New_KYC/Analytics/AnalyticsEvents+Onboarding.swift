@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import PlatformUIKit
 
 extension AnalyticsEvents.New {
     public enum Onboarding: AnalyticsEvent {
@@ -30,6 +31,29 @@ extension AnalyticsEvents.New {
             case simpletrade = "SIMPLETRADE"
             case swap = "SWAP"
             case unknown = "UNKNOWN"
+
+            init(_ parentFlow: KYCParentFlow) {
+                switch parentFlow {
+                case .simpleBuy:
+                    self = .simplebuy
+                case .swap:
+                    self = .swap
+                case .settings:
+                    self = .settings
+                case .announcement:
+                    self = .dashboardPromo
+                case .resubmission:
+                    self = .resubmission
+                case .onboarding:
+                    self = .onboarding
+                case .receive:
+                    self = .unknown
+                case .airdrop:
+                    self = .airdrop
+                case .cash:
+                    self = .fiatFunds
+                }
+            }
         }
     }
 }

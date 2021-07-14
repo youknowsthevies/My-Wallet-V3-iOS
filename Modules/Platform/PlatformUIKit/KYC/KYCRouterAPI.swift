@@ -21,8 +21,10 @@ public enum KYCParentFlow {
 public protocol KYCRouterAPI: AnyObject {
     var tier1Finished: Observable<Void> { get }
     var tier2Finished: Observable<Void> { get }
+    
     var kycStopped: Observable<Void> { get }
     var kycFinished: Observable<KYC.Tier> { get }
+
     func start(parentFlow: KYCParentFlow)
     func start(tier: KYC.Tier, parentFlow: KYCParentFlow)
     func start(tier: KYC.Tier, parentFlow: KYCParentFlow, from viewController: UIViewController?)

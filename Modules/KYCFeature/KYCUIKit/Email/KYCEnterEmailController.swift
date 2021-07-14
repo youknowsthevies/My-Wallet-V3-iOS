@@ -42,7 +42,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
 
     override class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .enterEmail
         return controller
     }
@@ -120,7 +120,7 @@ extension KYCEnterEmailController: EmailVerificationInterface {
         }
         Logger.shared.info("Show verification view!")
         let payload = KYCPagePayload.emailPendingVerification(email: email)
-        coordinator.handle(event: .nextPageFromPageType(pageType, payload))
+        router.handle(event: .nextPageFromPageType(pageType, payload))
     }
 
     func showError(message: String) {

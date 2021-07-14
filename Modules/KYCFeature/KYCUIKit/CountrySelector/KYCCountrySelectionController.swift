@@ -39,7 +39,7 @@ final class KYCCountrySelectionController: KYCBaseViewController, ProgressableVi
 
     override class func make(with coordinator: KYCRouter) -> KYCCountrySelectionController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .country
         return controller
     }
@@ -138,9 +138,9 @@ extension KYCCountrySelectionController: UITableViewDataSource, UITableViewDeleg
 extension KYCCountrySelectionController: KYCCountrySelectionView {
     func continueKycFlow(country: CountryData) {
         let payload = KYCPagePayload.countrySelected(country: country)
-        coordinator.handle(event: .nextPageFromPageType(pageType, payload))
+        router.handle(event: .nextPageFromPageType(pageType, payload))
     }
     func showExchangeNotAvailable(country: CountryData) {
-        coordinator.handle(event: .failurePageForPageType(pageType, .countryNotSupported(country)))
+        router.handle(event: .failurePageForPageType(pageType, .countryNotSupported(country)))
     }
 }

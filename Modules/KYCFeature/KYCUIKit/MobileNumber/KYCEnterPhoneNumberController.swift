@@ -43,7 +43,7 @@ final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonCo
 
     override class func make(with coordinator: KYCRouter) -> KYCEnterPhoneNumberController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .enterPhone
         return controller
     }
@@ -119,7 +119,7 @@ extension KYCEnterPhoneNumberController: KYCVerifyPhoneNumberView {
         }
         Logger.shared.info("Show verification view!")
         let payload = KYCPagePayload.phoneNumberUpdated(phoneNumber: number)
-        coordinator.handle(event: .nextPageFromPageType(pageType, payload))
+        router.handle(event: .nextPageFromPageType(pageType, payload))
     }
 
     func hideLoadingView() {

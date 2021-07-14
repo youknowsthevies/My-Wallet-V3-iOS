@@ -24,7 +24,7 @@ final class KYCWelcomeController: KYCBaseViewController {
 
     override class func make(with coordinator: KYCRouter) -> KYCWelcomeController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .welcome
         return controller
     }
@@ -58,13 +58,13 @@ final class KYCWelcomeController: KYCBaseViewController {
     }
 
     @IBAction private func primaryButtonTapped(_ sender: Any) {
-        coordinator.handle(event: .nextPageFromPageType(pageType, nil))
+        router.handle(event: .nextPageFromPageType(pageType, nil))
     }
 
     // MARK: - Private Methods
 
     private func initMainView() {
-        if coordinator.user?.isSunriverAirdropRegistered == true {
+        if router.user?.isSunriverAirdropRegistered == true {
             labelMain.text = LocalizationConstants.KYC.welcomeMainTextSunRiverCampaign
             imageViewMain.image = UIImage(named: "Icon-Verified-Large", in: .kycUIKit, compatibleWith: nil)
         } else {

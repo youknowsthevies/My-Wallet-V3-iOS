@@ -11,7 +11,7 @@ import ToolKit
 class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingNavigationControllerDelegate {
 
     private let webViewService: WebViewServiceAPI = resolve()
-    var coordinator: KYCRouter!
+    var router: KYCRouter!
     var pageType: KYCPageType = .welcome
 
     class func make(with coordinator: KYCRouter) -> KYCBaseViewController {
@@ -37,12 +37,12 @@ class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingN
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        coordinator.delegate = self
-        coordinator.handle(event: .pageWillAppear(pageType))
+        router.delegate = self
+        router.handle(event: .pageWillAppear(pageType))
     }
 
     override func viewWillDisappear(_ animated: Bool) {
-        coordinator.delegate = nil
+        router.delegate = nil
         super.viewWillDisappear(animated)
     }
 
@@ -89,7 +89,7 @@ class KYCBaseViewController: UIViewController, KYCRouterDelegate, KYCOnboardingN
         case .none:
             break
         case .dismiss:
-            coordinator.stop()
+            router.stop()
         case .help:
             presentNeedSomeHelpAlert()
         }

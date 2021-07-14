@@ -12,7 +12,7 @@ final class KYCApplicationCompleteController: KYCBaseViewController, Progressabl
 
     override class func make(with coordinator: KYCRouter) -> KYCApplicationCompleteController {
         let controller = makeFromStoryboard()
-        controller.coordinator = coordinator
+        controller.router = coordinator
         controller.pageType = .applicationComplete
         return controller
     }
