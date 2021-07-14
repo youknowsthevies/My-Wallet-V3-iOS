@@ -69,7 +69,7 @@ final class KYCRouter: KYCRouterAPI {
 
     private let tiersService: KYCTiersServiceAPI
     private let networkAdapter: NetworkAdapterAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let dataRepository: DataRepositoryAPI
     private let requestBuilder: RequestBuilder
 
@@ -110,7 +110,7 @@ final class KYCRouter: KYCRouterAPI {
         webViewServiceAPI: WebViewServiceAPI = resolve(),
         tiersService: KYCTiersServiceAPI = resolve(),
         appSettings: AppSettingsAPI = resolve(),
-        analyticsRecorder: AnalyticsEventRecording = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         alertPresenter: AlertViewPresenterAPI = resolve(),
         dataRepository: DataRepositoryAPI = resolve(),

@@ -31,7 +31,7 @@ final class KYCInformationController: KYCBaseViewController {
     var viewConfig: KYCInformationViewConfig = KYCInformationViewConfig.defaultConfig
 
     @Inject
-    private var analyticsRecorder: AnalyticsEventRecording
+    private var analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: Factory
 

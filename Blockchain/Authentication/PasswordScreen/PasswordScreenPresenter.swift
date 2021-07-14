@@ -39,7 +39,7 @@ final class PasswordScreenPresenter {
     // TODO: Remove dependency
     private let authenticationCoordinator: AuthenticationCoordinator
     private let interactor: PasswordScreenInteracting
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let alertPresenter: AlertViewPresenter
     private let confirmHandler: ConfirmHandler
     private let dismissHandler: DismissHandler
@@ -54,7 +54,7 @@ final class PasswordScreenPresenter {
 
     init(authenticationCoordinator: AuthenticationCoordinator = .shared,
          alertPresenter: AlertViewPresenter = .shared,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          interactor: PasswordScreenInteracting,
          confirmHandler: @escaping ConfirmHandler,
          dismissHandler: @escaping DismissHandler) {

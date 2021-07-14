@@ -63,7 +63,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
     }
 
     let type = AnnouncementType.interestFunds
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -78,7 +78,7 @@ final class InterestIdentityVerificationAnnouncement: OneTimeAnnouncement & Acti
 
     init(isKYCVerified: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

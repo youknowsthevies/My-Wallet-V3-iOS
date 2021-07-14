@@ -175,7 +175,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 self.custodyWithdrawalRouter.start(with: currency)
             }
         case .withdrawalFiat(let isKYCApproved):
-            analyticsRecoder.record(event: AnalyticsEvents.New.Withdrawal.withdrawalClicked(orign: .currencyPage))
+            analyticsRecoder.record(event: AnalyticsEvents.New.Withdrawal.withdrawalClicked(origin: .currencyPage))
             if isKYCApproved {
                 guard case let .fiat(currency) = currency else { return }
                 showWithdrawFiatScreen(currency: currency)

@@ -30,13 +30,13 @@ final class CreateWalletInteractor: RegisterWalletScreenInteracting {
     // MARK: - Injected
 
     private let reachability: InternetReachabilityAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let walletManager: WalletManager
 
     // MARK: - Setup
 
     init(reachability: InternetReachabilityAPI = InternetReachability(),
-         analyticsRecorder: AnalyticsEventRecording =  resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI =  resolve(),
          walletManager: WalletManager = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability

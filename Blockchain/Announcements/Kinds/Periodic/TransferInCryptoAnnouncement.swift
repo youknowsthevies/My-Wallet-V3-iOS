@@ -54,7 +54,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
     }
 
     let type = AnnouncementType.transferBitcoin
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -71,7 +71,7 @@ final class TransferInCryptoAnnouncement: PeriodicAnnouncement & ActionableAnnou
     init(isKycSupported: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

@@ -47,7 +47,7 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
     }
 
     let type = AnnouncementType.simpleBuyPendingTransaction
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let action: CardAnnouncementAction
 
@@ -59,7 +59,7 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
 
     init(canCompleteTier2: Bool,
          hasIncompleteBuyFlow: Bool,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          action: @escaping CardAnnouncementAction) {
         self.canCompleteTier2 = canCompleteTier2

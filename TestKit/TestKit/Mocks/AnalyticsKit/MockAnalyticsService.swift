@@ -3,7 +3,9 @@
 import AnalyticsKit
 import RxCocoa
 
-class MockAnalyticsService: AnalyticsServiceProviding {
+class MockAnalyticsService: AnalyticsServiceProviderAPI {
+    var supportedEventTypes = [AnalyticsEventType.firebase]
+
     func trackEvent(title: String, parameters: [String: Any]?) { }
 }
 

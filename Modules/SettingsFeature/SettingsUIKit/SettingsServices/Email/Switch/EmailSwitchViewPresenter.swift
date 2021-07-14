@@ -26,7 +26,7 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
     private let disposeBag = DisposeBag()
 
     init(service: EmailNotificationSettingsServiceAPI,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
+         analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
         interactor = EmailSwitchViewInteractor(service: service)
 
         viewModel.isSwitchedOnRelay

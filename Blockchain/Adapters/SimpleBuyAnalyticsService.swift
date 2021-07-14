@@ -19,7 +19,7 @@ class SimpleBuyAnalyticsService: SimpleBuyAnalayticsServicing {
         let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
         relay
             .map { _ in AnalyticsEvents.SimpleBuy.sbCustodyWalletCardClicked }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
     }
 

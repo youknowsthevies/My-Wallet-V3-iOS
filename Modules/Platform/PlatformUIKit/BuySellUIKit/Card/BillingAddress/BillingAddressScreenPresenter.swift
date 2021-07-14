@@ -96,13 +96,13 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
     private let interactor: BillingAddressScreenInteractor
     private let countrySelectionRouter: SelectionRouterAPI
     private let loadingViewPresenter: LoadingViewPresenting
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
     private let messageRecorder: MessageRecording
 
     init(interactor: BillingAddressScreenInteractor,
          countrySelectionRouter: SelectionRouterAPI,
          loadingViewPresenter: LoadingViewPresenting = resolve(),
-         eventRecorder: AnalyticsEventRecording,
+         eventRecorder: AnalyticsEventRecorderAPI,
          messageRecorder: MessageRecording) {
         self.interactor = interactor
         self.countrySelectionRouter = countrySelectionRouter

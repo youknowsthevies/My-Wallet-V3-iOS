@@ -6,9 +6,7 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Sell: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case sellAmountEntered(fromAccountType: FromAccountType?,
                                inputAmount: Double,

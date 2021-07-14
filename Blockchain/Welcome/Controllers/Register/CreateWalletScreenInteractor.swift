@@ -30,7 +30,7 @@ final class CreateWalletScreenInteractor: NSObject {
     // MARK: - Injected
 
     private let reachability: InternetReachabilityAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let wallet: Wallet
     private let walletManager: WalletManager
     private let authenticationCoordinator: AuthenticationCoordinator
@@ -39,7 +39,7 @@ final class CreateWalletScreenInteractor: NSObject {
     // MARK: - Setup
 
     init(reachability: InternetReachabilityAPI = InternetReachability(),
-         analyticsRecorder: AnalyticsEventRecording =  resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI =  resolve(),
          authenticationCoordinator: AuthenticationCoordinator = .shared,
          walletManager: WalletManager = .shared,
          wallet: Wallet = WalletManager.shared.wallet) {

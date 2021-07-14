@@ -69,7 +69,7 @@ final class BuyIntroScreenPresenter {
 
         continueButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonClicked }
-            .bindAndCatch(to: analytics.recordRelay)
+            .subscribe(onNext: analytics.record(event:))
             .disposed(by: disposeBag)
 
         skipButtonViewModel.tapRelay
@@ -78,7 +78,7 @@ final class BuyIntroScreenPresenter {
 
         skipButtonViewModel.tapRelay
             .map { AnalyticsEvent.sbWantToBuyButtonSkip }
-            .bindAndCatch(to: analytics.recordRelay)
+            .subscribe(onNext: analytics.record(event:))
             .disposed(by: disposeBag)
 
         analytics.record(event: AnalyticsEvent.sbWantToBuyScreenShown)

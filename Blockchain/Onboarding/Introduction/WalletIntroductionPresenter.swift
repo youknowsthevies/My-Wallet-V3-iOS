@@ -43,7 +43,7 @@ final class WalletIntroductionPresenter: NSObject {
     private var introductionSequence = WalletIntroductionSequence()
 
     private let interactor: WalletIntroductionInteractor
-    private let recorder: AnalyticsEventRecording
+    private let recorder: AnalyticsEventRecorderAPI
     private let screen: WalletIntroductionLocation.Screen
     private let onboardingSettings: OnboardingSettings
     private let tabControllerProvider: TabControllerManagerProvider
@@ -53,7 +53,7 @@ final class WalletIntroductionPresenter: NSObject {
 
     init(onboardingSettings: OnboardingSettings = resolve(),
          screen: WalletIntroductionLocation.Screen,
-         recorder: AnalyticsEventRecording = resolve(),
+         recorder: AnalyticsEventRecorderAPI = resolve(),
          tabControllerProvider: TabControllerManagerProvider = resolve(),
          drawerRouter: DrawerRouting = resolve()) {
         self.onboardingSettings = onboardingSettings

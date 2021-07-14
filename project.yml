@@ -88,10 +88,6 @@ schemeTemplates:
         randomExecutionOrder: true
       - name: AnalyticsKitTests
         randomExecutionOrder: true
-      - name: NabuAnalyticsDataKitTests
-        randomExecutionOrder: true
-      - name: NabuAnalyticsKitTests
-        randomExecutionOrder: true
       - name: RemoteNotificationsKitTests
         randomExecutionOrder: true
       - name: AuthenticationKitTests
@@ -392,6 +388,8 @@ targets:
     templates:
     - ModuleTests
   AnalyticsKit:
+    dependencies:
+    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -403,39 +401,16 @@ targets:
       featureName: Analytics
     templates:
     - ModuleTests
-  NabuAnalyticsKit:
+  RxAnalyticsKit:
     dependencies:
-    - target: PlatformKit
-    - target: NetworkKit
     - target: AnalyticsKit
-    - target: SettingsKit
-    - target: SharedPackagesKit
     templateAttributes:
       featureName: Analytics
     templates:
     - Module
-  NabuAnalyticsKitTests:
+  AnalyticsKitTests:
     dependencies:
-    - target: NabuAnalyticsKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
-  NabuAnalyticsDataKit:
-    dependencies:
-    - target: NabuAnalyticsKit
-    - target: NetworkKit
-    - target: ToolKit
-    scheme:
-      testTargets:
-      - NabuAnalyticsDataKitTests
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - Module
-  NabuAnalyticsDataKitTests:
-    dependencies:
-    - target: NabuAnalyticsDataKit
+    - target: AnalyticsKit
     templateAttributes:
       featureName: Analytics
     templates:
@@ -612,8 +587,6 @@ targets:
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
     - target: AnalyticsKit
-    - target: NabuAnalyticsKit
-    - target: NabuAnalyticsDataKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
@@ -1207,6 +1180,7 @@ targets:
     - target: ToolKit
     - target: WalletPayloadKit
     - target: SharedPackagesKit
+    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformKitTests

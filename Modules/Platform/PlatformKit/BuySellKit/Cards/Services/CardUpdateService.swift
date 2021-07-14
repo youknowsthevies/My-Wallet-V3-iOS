@@ -49,7 +49,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
     private let everyPayClient: EveryPayClientAPI
     private let dataRepository: DataRepositoryAPI
     private let fiatCurrencyService: FiatCurrencySettingsServiceAPI
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Setup
 
@@ -57,7 +57,7 @@ public final class CardUpdateService: CardUpdateServiceAPI {
          cardClient: CardClientAPI = resolve(),
          everyPayClient: EveryPayClientAPI = resolve(),
          fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve()) {
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.dataRepository = dataRepository
         self.cardClient = cardClient
         self.everyPayClient = everyPayClient

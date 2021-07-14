@@ -146,7 +146,7 @@ public final class PasteboardingLineItemCellPresenter: LineItemCellPresenting, P
 
         tapRelay
             .compactMap { input.analyticsEvent }
-            .bindAndCatch(to: analyticsRecorder.recordRelay)
+            .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)
 
         let delay = tapRelay

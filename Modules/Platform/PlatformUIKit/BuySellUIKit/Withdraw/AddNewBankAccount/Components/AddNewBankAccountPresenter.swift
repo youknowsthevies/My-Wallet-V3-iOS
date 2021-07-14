@@ -241,7 +241,7 @@ extension AddNewBankAccountPagePresenter {
 private extension Array where Element == PaymentAccountProperty.Field {
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
-    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecording & AnalyticsEventRelayRecording) -> [LineItemCellPresenting] {
+    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {
             switch field {

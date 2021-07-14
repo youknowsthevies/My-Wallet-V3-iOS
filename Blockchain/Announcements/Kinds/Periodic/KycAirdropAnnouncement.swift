@@ -57,7 +57,7 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
     }
 
     let type = AnnouncementType.kycAirdrop
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -76,7 +76,7 @@ final class KycAirdropAnnouncement: PeriodicAnnouncement & ActionableAnnouncemen
          isKycSupported: Bool,
          cacheSuite: CacheSuite = resolve(),
          reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

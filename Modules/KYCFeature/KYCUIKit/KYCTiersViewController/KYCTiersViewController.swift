@@ -31,7 +31,7 @@ public final class KYCTiersViewController: UIViewController {
     fileprivate var layoutAttributes: LayoutAttributes = .tiersOverview
     fileprivate var coordinator: KYCTiersCoordinator!
     private let loadingViewPresenter: LoadingViewPresenting = resolve()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     fileprivate var disposable: Disposable?
 
     // MARK: Public Properties

@@ -51,7 +51,7 @@ final class SendToDomainsAnnouncement: OneTimeAnnouncement & ActionableAnnouncem
     }
 
     let type = AnnouncementType.sendToDomains
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -64,7 +64,7 @@ final class SendToDomainsAnnouncement: OneTimeAnnouncement & ActionableAnnouncem
 
     init (shouldShowSendToDomainsAnnouncement: Bool,
           cacheSuite: CacheSuite = resolve(),
-          analyticsRecorder: AnalyticsEventRecording = resolve(),
+          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
           errorRecorder: ErrorRecording = resolve(),
           dismiss: @escaping CardAnnouncementAction,
           action: @escaping CardAnnouncementAction) {

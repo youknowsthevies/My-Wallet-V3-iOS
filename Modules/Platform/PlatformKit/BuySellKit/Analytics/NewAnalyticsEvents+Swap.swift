@@ -6,9 +6,7 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum Swap: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case swapClicked(origin: Origin)
         case swapViewed

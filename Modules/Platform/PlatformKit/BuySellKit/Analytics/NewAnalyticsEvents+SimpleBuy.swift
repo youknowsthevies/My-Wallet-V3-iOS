@@ -6,9 +6,7 @@ import Foundation
 extension AnalyticsEvents.New {
     public enum SimpleBuy: AnalyticsEvent {
 
-        public var type: AnalyticsEventType {
-            .new
-        }
+        public var type: AnalyticsEventType { .nabu }
 
         case buySellClicked(type: Type,
                             origin: Origin)

@@ -20,12 +20,12 @@ final class AnalyticsUserPropertyRecorder: UserPropertyRecording {
 
     private let logger: Logger
     private let validator: AnalyticsUserPropertyValidator
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - Setup
 
     init(validator: AnalyticsUserPropertyValidator = AnalyticsUserPropertyValidator(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          logger: Logger = .shared) {
         self.validator = validator
         self.analyticsRecorder = analyticsRecorder

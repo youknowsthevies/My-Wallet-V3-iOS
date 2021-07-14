@@ -6,7 +6,7 @@ import XCTest
 
 class AnalyticsEventTests: XCTestCase {
     enum NewAnalyticsEvent: AnalyticsEvent {
-        var type: AnalyticsEventType { .new }
+        var type: AnalyticsEventType { .nabu }
 
         case simpleEventWithoutParams
         case eventWithParams(nameOfTheParam: String, valueOfTheParam: Double)

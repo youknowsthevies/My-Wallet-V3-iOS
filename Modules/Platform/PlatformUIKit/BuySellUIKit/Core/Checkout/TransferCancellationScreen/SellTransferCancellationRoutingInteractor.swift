@@ -29,13 +29,13 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
 
     public let nextRelay = PublishRelay<Void>()
     public let previousRelay = PublishRelay<Void>()
-    public let analyticsRecorder: AnalyticsEventRecording
+    public let analyticsRecorder: AnalyticsEventRecorderAPI
 
     private let disposeBag = DisposeBag()
     private unowned let routingInteractor: SellRouterInteractor
 
     public init(routingInteractor: SellRouterInteractor,
-                analyticsRecording: AnalyticsEventRecording = resolve()) {
+                analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
         self.analyticsRecorder = analyticsRecording
         self.routingInteractor = routingInteractor
         _ = setup

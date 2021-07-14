@@ -29,7 +29,7 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
     init(provider: BiometryProviding,
          settingsAuthenticating: AppSettingsAuthenticating,
          authenticationCoordinator: AuthenticationCoordinating,
-         analyticsRecording: AnalyticsEventRecording = resolve()) {
+         analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
         interactor = BiometrySwitchViewInteractor(provider: provider,
                                                   authenticationCoordinator: authenticationCoordinator,
                                                   settingsAuthenticating: settingsAuthenticating)

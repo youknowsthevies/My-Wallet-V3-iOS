@@ -18,12 +18,12 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
 
     // MARK: - Properties
 
-    private let analyticsRecorder: AnalyticsEventRecording
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: CardOrderConfirmationClientAPI
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecording = resolve(),
+    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          client: CardOrderConfirmationClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client

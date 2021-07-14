@@ -45,7 +45,7 @@ import WalletPayloadKit
     @LazyInject private var walletUpgradeService: WalletUpgradeServicing
     @LazyInject private var reactiveWallet: ReactiveWalletAPI
     @LazyInject private var secondPasswordPrompter: SecondPasswordPromptable
-    @LazyInject private var recorder: AnalyticsEventRecording
+    @LazyInject private var recorder: AnalyticsEventRecorderAPI
     @LazyInject private var secureChannelRouter: SecureChannelRouting
     @LazyInject private var transactionsAdapter: TransactionsAdapterAPI
 

@@ -19,7 +19,7 @@ class ExchangeConnectViewController: UIViewController, NavigatableView {
     // MARK: Private Properties
 
     private let bag: DisposeBag = DisposeBag()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: Private IBOutlets
 

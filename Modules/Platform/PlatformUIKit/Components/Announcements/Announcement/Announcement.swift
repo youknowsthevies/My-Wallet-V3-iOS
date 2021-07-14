@@ -17,7 +17,7 @@ public protocol Announcement {
     var type: AnnouncementType { get }
 
     /// The analytics recorder
-    var analyticsRecorder: AnalyticsEventRecording { get }
+    var analyticsRecorder: AnalyticsEventRecorderAPI { get }
 
     /// An analytics event for appearance
     var didAppearAnalyticsEvent: AnalyticsEvents.Announcement { get }

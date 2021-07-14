@@ -14,7 +14,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
         data.state
     }
 
-    private let eventRecorder: AnalyticsEventRecording
+    private let eventRecorder: AnalyticsEventRecorderAPI
 
     private let data: PartnerAuthorizationData
     private var hasRedirected = false
@@ -25,7 +25,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
 
     init(interactor: CardAuthorizationScreenInteractor,
          data: PartnerAuthorizationData,
-         eventRecorder: AnalyticsEventRecording = resolve()) {
+         eventRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.eventRecorder = eventRecorder
         self.interactor = interactor
         self.data = data

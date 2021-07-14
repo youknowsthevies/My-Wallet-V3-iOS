@@ -21,11 +21,11 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let type: AnnouncementType
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     init(type: AnnouncementType,
          cacheSuite: CacheSuite,
-         analyticsRecorder: AnalyticsEventRecording = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()]),
+         analyticsRecorder: AnalyticsEventRecorderAPI = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()]),
          dismiss: @escaping CardAnnouncementAction) {
         self.type = type
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: MockErrorRecorder())

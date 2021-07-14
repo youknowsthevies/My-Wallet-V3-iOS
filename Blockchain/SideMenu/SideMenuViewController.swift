@@ -56,7 +56,7 @@ class SideMenuViewController: UIViewController {
     }
 
     private let recorder: ErrorRecording = CrashlyticsRecorder()
-    private let analyticsRecorder: AnalyticsEventRecording = resolve()
+    private let analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
 
     // MARK: - View Controller Lifecycle
 

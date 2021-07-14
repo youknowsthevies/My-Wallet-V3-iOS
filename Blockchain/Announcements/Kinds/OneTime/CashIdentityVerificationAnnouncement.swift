@@ -66,7 +66,7 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
     }
 
     let type = AnnouncementType.fiatFundsNoKYC
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
 
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
@@ -81,7 +81,7 @@ final class CashIdentityVerificationAnnouncement: OneTimeAnnouncement & Actionab
 
     init(shouldShowCashIdentityAnnouncement: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {

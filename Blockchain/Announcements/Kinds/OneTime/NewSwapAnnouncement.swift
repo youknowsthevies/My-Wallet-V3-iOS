@@ -92,7 +92,7 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         !isDismissed
     }
     let type: AnnouncementType = .newSwap
-    let analyticsRecorder: AnalyticsEventRecording
+    let analyticsRecorder: AnalyticsEventRecorderAPI
     let dismiss: CardAnnouncementAction
     let recorder: AnnouncementRecorder
     let action: CardAnnouncementAction
@@ -112,7 +112,7 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     init(isEligibleForSimpleBuy: Bool,
          isTier1Or2Verified: Bool,
          cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecording = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording = CrashlyticsRecorder(),
          dismiss: @escaping CardAnnouncementAction,
          action: @escaping CardAnnouncementAction) {
