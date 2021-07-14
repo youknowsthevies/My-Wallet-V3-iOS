@@ -587,6 +587,16 @@ targets:
     - framework: Carthage/Build/PhoneNumberKit.xcframework
     - framework: Carthage/Build/PromisesObjC.xcframework
       embed: false
+    - framework: Carthage/Build/recaptcha.framework
+      embed: false
+    - framework: Carthage/Build/GoogleToolboxForMac.xcframework
+      embed: false
+    - framework: Carthage/Build/GTMSessionFetcher.xcframework
+      embed: false
+    - framework: Carthage/Build/Protobuf.xcframework
+      embed: false
+    - framework: Carthage/Build/Promises.xcframework
+      embed: false
     - framework: Carthage/Build/RIBs.xcframework
     - framework: Carthage/Build/RxCocoa.xcframework
     - framework: Carthage/Build/RxCombine.xcframework

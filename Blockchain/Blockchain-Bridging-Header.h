@@ -14,3 +14,4 @@
 #import "UIDevice+Hardware.h"
 #import "Wallet.h"
 #import "Sift/Sift.h"
+#import <recaptcha/recaptcha.h>

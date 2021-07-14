@@ -81,18 +81,6 @@ Install the correct node version:
     $ cd ./Submodules/OpenSSL-for-iPhone
     $ ./build-libssl.sh --cleanup --archs="x86_64 arm64"
 
-## Bootstrap Carthage Dependencies
-
-To workaround a error when bootstraping Firebase dependencies, use this custom script:
-
-    $ sh scripts/carthage-bootstrap.sh
-    
-👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
-
-⚠️ You may need to run the following command if you encounter an `xcode-select` error:
-
-    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-
 ## Add production Config file
 
 Clone the [wallet-ios-credentials](https://github.com/blockchain/wallet-ios-credentials) repository and copy it's `Config` directory to this project root directory, it contains a `.xcconfig` for each environment:
@@ -136,21 +124,27 @@ Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
 ```
 
+## Add environment variables for scripts
+
+Clone `wallet-ios-credentials` repository and copy the `env` to the root folder of the project, hide the file by using `mv env .env`
+
 ## XcodeGen
+
+We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
 
 ### Installing:
 
     $ brew install xcodegen
 
-### Generate projects:
+## Generate projects & dependencies: 
 
-We are integrating XcodeGen and, despite still committing project files in git, we should generate project files using the following script:
+    $ sh scripts/bootstrap.sh
 
-    $ sh scripts/generate_projects.sh
+👉 Beware that this will take a while. Feel free to read some docs, a 📖, get a ☕, or go for a 🚶 while it runs…
 
-## Open the project in Xcode
+⚠️ You may need to run the following command if you encounter an `xcode-select` error:
 
-    $ open Blockchain.xcworkspace
+    $ sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
 ## Build the project
 

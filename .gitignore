@@ -42,7 +42,6 @@
 .DS_Store
 .dynamodb/
 .env
-.env.*
 .env.test
 .eslintcache
 .fseventsd
