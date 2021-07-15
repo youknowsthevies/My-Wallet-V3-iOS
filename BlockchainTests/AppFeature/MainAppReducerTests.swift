@@ -276,7 +276,7 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
-        testStore.send(.onboarding(.welcomeScreen(.createAccount))) { state in
+        testStore.send(.onboarding(.welcomeScreen(.createWallet))) { state in
             state.onboarding?.walletCreationContext = .new
             state.onboarding?.showLegacyCreateWalletScreen = true
         }

@@ -120,7 +120,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.showLegacyRecoverWalletScreen = false
             state.walletCreationContext = nil
             return .none
-        case .welcomeScreen(.createAccount):
+        case .welcomeScreen(.createWallet):
             state.showLegacyCreateWalletScreen = true
             state.walletCreationContext = .new
             return .none

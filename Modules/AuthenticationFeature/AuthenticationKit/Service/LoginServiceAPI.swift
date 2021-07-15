@@ -38,4 +38,3 @@ public protocol LoginServiceAPI: LoginServiceCombineAPI {
     /// and an OTP (from an authenticator app)
     func login(walletIdentifier: String, code: String) -> Completable
 }
-

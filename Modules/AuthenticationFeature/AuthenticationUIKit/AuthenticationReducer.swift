@@ -30,7 +30,7 @@ public let authenticationReducer = Reducer<
     // MARK: - Welcome Screen
 
     // TODO: Rename to create wallet in next PR
-    case .createAccount:
+    case .createWallet:
         state.isLoginVisible = false
         return .none
 

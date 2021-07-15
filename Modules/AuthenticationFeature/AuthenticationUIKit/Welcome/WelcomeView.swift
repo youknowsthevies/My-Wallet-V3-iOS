@@ -90,8 +90,8 @@ struct WelcomeActionSection: View {
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createAccount) {
-                viewStore.send(.createAccount)
+            PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+                viewStore.send(.createWallet)
             }
             .padding(.bottom, 10)
 

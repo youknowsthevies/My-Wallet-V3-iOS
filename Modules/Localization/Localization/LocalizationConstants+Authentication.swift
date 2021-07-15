@@ -45,9 +45,9 @@ extension LocalizationConstants.AuthenticationKit {
             )
         }
         public enum Button {
-            public static let createAccount = NSLocalizedString(
-                "Create an Account",
-                comment: "Welcome screen: create account CTA button"
+            public static let createWallet = NSLocalizedString(
+                "Create a Wallet",
+                comment: "Welcome screen: create wallet CTA button"
             )
             public static let login = NSLocalizedString(
                 "Log In",

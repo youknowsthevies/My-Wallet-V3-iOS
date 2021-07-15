@@ -22,7 +22,7 @@ public enum EmailAuthorizationServiceError: Error {
 
 public protocol EmailAuthorizationServiceAPI {
     var authorize: Completable { get }
-    func cancel()
 
+    func cancel()
     func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError>
 }

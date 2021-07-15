@@ -16,7 +16,10 @@ public protocol AuthenticationServiceAPI {
     /// - Parameters: emailAddress: The email address of the user
     /// - Parameters: captcha: The captcha token returned from reCaptcha Service
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
-    func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError>
+    func sendDeviceVerificationEmail(
+        to emailAddress: String,
+        captcha: String)
+    -> AnyPublisher<Void, AuthenticationServiceError>
 
     /// Authorize the login to the associated email identified by the email code. The email code is received by decrypting the base64 information encrypted in the magic link from the device verification email
     /// - Parameters: emailCode: The email code for the authorization
@@ -46,7 +49,10 @@ public final class AuthenticationService: AuthenticationServiceAPI {
 
     // MARK: - AuthenticationServiceAPI
 
-    public func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    public func sendDeviceVerificationEmail(
+        to emailAddress: String,
+        captcha: String
+    ) -> AnyPublisher<Void, AuthenticationServiceError> {
         authenticationRepository
             .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
             .eraseToAnyPublisher()

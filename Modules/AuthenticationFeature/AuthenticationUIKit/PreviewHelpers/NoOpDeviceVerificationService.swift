@@ -15,7 +15,10 @@ final class NoOpAuthenticationService: AuthenticationServiceAPI {
         .eraseToAnyPublisher()
     }
 
-    func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    func sendDeviceVerificationEmail(
+        to emailAddress: String,
+        captcha: String
+    ) -> AnyPublisher<Void, AuthenticationServiceError> {
         Deferred {
             Future { (_) in
                 // no-op

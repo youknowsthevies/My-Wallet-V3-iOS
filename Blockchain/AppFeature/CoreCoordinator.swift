@@ -337,7 +337,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 value: CoreAppAction.loggedIn(.start(context))
             )
         )
-    case .onboarding(.welcomeScreen(.createAccount)):
+    case .onboarding(.welcomeScreen(.createWallet)):
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
     case .onboarding(.welcomeScreen(.recoverFunds)):
