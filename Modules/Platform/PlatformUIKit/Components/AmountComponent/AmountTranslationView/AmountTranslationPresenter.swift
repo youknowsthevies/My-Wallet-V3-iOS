@@ -109,7 +109,7 @@ public final class AmountTranslationPresenter: AmountViewPresenting {
     public init(interactor: AmountTranslationInteractor,
                 analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
                 displayBundle: DisplayBundle,
-                inputTypeToggleVisiblity: Visibility = .hidden) {
+                inputTypeToggleVisiblity: Visibility) {
         self.displayBundle = displayBundle
         self.swapButtonVisibilityRelay.accept(inputTypeToggleVisiblity)
         self.interactor = interactor

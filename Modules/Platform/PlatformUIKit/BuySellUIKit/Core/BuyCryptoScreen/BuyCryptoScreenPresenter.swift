@@ -41,7 +41,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         self.featureFlagsService = featureFlagsService
         super.init(
             analyticsRecorder: analyticsRecorder,
-            inputTypeToggleVisibility: .hidden,
+            inputTypeToggleVisibility: .visible,
             backwardsNavigation: {
                 stateService.previousRelay.accept(())
             },
