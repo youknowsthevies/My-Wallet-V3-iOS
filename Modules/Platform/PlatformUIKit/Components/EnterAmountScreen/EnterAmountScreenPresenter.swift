@@ -112,9 +112,6 @@ open class EnterAmountScreenPresenter: RibBridgePresenter {
     open override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Hide swap button
-        amountTranslationPresenter.swapButtonVisibilityRelay.accept(.hidden)
-
         interactor.hasValidState
             .bindAndCatch(to: continueButtonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)

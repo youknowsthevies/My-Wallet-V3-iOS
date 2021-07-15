@@ -162,10 +162,10 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
         auxiliaryButton.layoutToSuperview(.centerX)
         auxiliaryButton.layout(edge: .trailing,
-                                 to: .leading,
-                                 of: swapButton,
-                                 relation: .lessThanOrEqual,
-                                 offset: 0)
+                               to: .leading,
+                               of: swapButton,
+                               relation: .lessThanOrEqual,
+                               offset: 0)
 
         let swapImage = UIImage(named: "vertical-swap-icon", in: bundle, compatibleWith: nil)
         swapButton.setImage(swapImage, for: .normal)
