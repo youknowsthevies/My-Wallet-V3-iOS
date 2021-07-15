@@ -624,6 +624,7 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
+    - target: RxAnalyticsKit
     platform: iOS
     postBuildScripts:
     - inputFiles:
@@ -1221,6 +1222,7 @@ targets:
     - target: PlatformKit
     - target: ToolKit
     - target: UIComponentsKit
+    - target: RxAnalyticsKit
     scheme:
       testTargets:
       - PlatformUIKitTests
