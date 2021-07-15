@@ -10,10 +10,10 @@ import UIComponentsKit
 typealias VerifyDeviceViewString = LocalizationConstants.AuthenticationKit.VerifyDevice
 
 public struct VerifyDeviceView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<VerifyDeviceViewState, AuthenticationAction>
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<VerifyDeviceViewState, WelcomeAction>
 
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
+    public init(store: Store<WelcomeState, WelcomeAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store.scope(state: VerifyDeviceViewState.init))
     }
@@ -47,7 +47,7 @@ public struct VerifyDeviceView: View {
                 destination: CredentialsView(store: store),
                 isActive: viewStore.binding(
                     get: \.isPasswordLoginVisible,
-                    send:  AuthenticationAction.setPasswordLoginVisible(_:)
+                    send:  WelcomeAction.setPasswordLoginVisible(_:)
                 ),
                 label: EmptyView.init
             )
@@ -61,7 +61,7 @@ public struct VerifyDeviceView: View {
 struct VerifyDeviceViewState: Equatable {
     var isPasswordLoginVisible: Bool
 
-    init(state: AuthenticationState) {
+    init(state: WelcomeState) {
         isPasswordLoginVisible = state.isPasswordLoginVisible
     }
 }
@@ -71,8 +71,8 @@ struct VerifyDeviceView_Previews: PreviewProvider {
     static var previews: some View {
         VerifyDeviceView(
             store:
-                Store(initialState: AuthenticationState(),
-                      reducer: authenticationReducer,
+                Store(initialState: WelcomeState(),
+                      reducer: welcomeReducer,
                       environment: .init(
                         mainQueue: .main,
                         buildVersionProvider: { "test version" },

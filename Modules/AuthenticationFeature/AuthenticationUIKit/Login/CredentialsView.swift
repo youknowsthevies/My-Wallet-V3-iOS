@@ -7,8 +7,8 @@ import SwiftUI
 import UIComponentsKit
 
 public struct CredentialsView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<CredentialsViewState, AuthenticationAction>
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<CredentialsViewState, WelcomeAction>
     @Binding var isTwoFACodeFieldVisible: Bool
     @Binding var isResendSMSButtonVisible: Bool
     @Binding var isHardwareKeyCodeFieldVisible: Bool
@@ -17,7 +17,7 @@ public struct CredentialsView: View {
     @Binding var isHardwareKeyCodeIncorrect: Bool
     @Binding var isAccountLocked: Bool
 
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
+    public init(store: Store<WelcomeState, WelcomeAction>) {
         self.store = store
         let newViewStore = ViewStore(self.store.scope(state: CredentialsViewState.init))
         self.viewStore = newViewStore
@@ -187,7 +187,7 @@ struct CredentialsViewState: Equatable {
     var isAccountLocked: Bool
     var isTwoFACodeVerified: Bool
 
-    init(state: AuthenticationState) {
+    init(state: WelcomeState) {
         emailAddress = state.emailAddress
         walletAddress = state.walletInfo?.guid ?? ""
         password = state.password
@@ -210,8 +210,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
     static var previews: some View {
         CredentialsView(
             store: Store(
-                initialState: AuthenticationState(),
-                reducer: authenticationReducer,
+                initialState: WelcomeState(),
+                reducer: welcomeReducer,
                 environment: .init(
                     mainQueue: .main,
                     buildVersionProvider: { "test version" },

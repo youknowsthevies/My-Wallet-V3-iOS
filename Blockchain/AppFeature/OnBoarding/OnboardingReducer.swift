@@ -19,7 +19,7 @@ public enum Onboarding {
         case pin(PinCore.Action)
         case walletUpgrade(WalletUpgrade.Action)
         case passwordScreen(PasswordRequired.Action)
-        case welcomeScreen(AuthenticationAction)
+        case welcomeScreen(WelcomeAction)
         case forgetWallet
         case createAccountScreenClosed
         case recoverWalletScreenClosed
@@ -29,7 +29,7 @@ public enum Onboarding {
         var pinState: PinCore.State? = .init()
         var walletUpgradeState: WalletUpgrade.State?
         var passwordScreen: PasswordRequired.State?
-        var authenticationState: AuthenticationState?
+        var authenticationState: WelcomeState?
         var displayAlert: Alert?
         var showLegacyCreateWalletScreen: Bool = false
         var showLegacyRecoverWalletScreen: Bool = false
@@ -60,13 +60,13 @@ public enum Onboarding {
 
 /// The reducer responsible for handing Pin screen and Login/Onboarding screen related action and state.
 let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment>.combine(
-    authenticationReducer
+    welcomeReducer
         .optional()
         .pullback(
             state: \.authenticationState,
             action: /Onboarding.Action.welcomeScreen,
             environment: {
-                AuthenticationEnvironment(
+                WelcomeEnvironment(
                     mainQueue: $0.mainQueue,
                     buildVersionProvider: $0.buildVersionProvider
                 )

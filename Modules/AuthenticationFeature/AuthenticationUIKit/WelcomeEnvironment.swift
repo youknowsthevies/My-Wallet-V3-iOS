@@ -6,7 +6,7 @@ import ComposableArchitecture
 import DIKit
 import ToolKit
 
-public struct AuthenticationEnvironment {
+public struct WelcomeEnvironment {
 
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
@@ -40,7 +40,7 @@ public struct AuthenticationEnvironment {
     }
 }
 
-extension AuthenticationEnvironment {
+extension WelcomeEnvironment {
 
     public struct WalletPairingDependencies {
 

@@ -3,7 +3,7 @@
 import AuthenticationKit
 import ComposableArchitecture
 
-public struct AuthenticationState: Equatable {
+public struct WelcomeState: Equatable {
 
     // MARK: - Welcome Screen
     public var buildVersion: String = ""
@@ -36,7 +36,7 @@ public struct AuthenticationState: Equatable {
     public var isAccountLocked: Bool = false
 
     // MARK: Alerts
-    public var alert: AlertState<AuthenticationAction>?
+    public var alert: AlertState<WelcomeAction>?
 
     public init() {}
 }

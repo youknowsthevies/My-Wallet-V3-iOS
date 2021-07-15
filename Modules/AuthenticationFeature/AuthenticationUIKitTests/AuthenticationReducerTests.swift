@@ -8,11 +8,11 @@ import XCTest
 class AuthenticationReducerTests: XCTestCase {
 
     private var testStore: TestStore<
-        AuthenticationState,
-        AuthenticationState,
-        AuthenticationAction,
-        AuthenticationAction,
-        AuthenticationEnvironment
+        WelcomeState,
+        WelcomeState,
+        WelcomeAction,
+        WelcomeAction,
+        WelcomeEnvironment
     >!
 
     override func setUpWithError() throws {

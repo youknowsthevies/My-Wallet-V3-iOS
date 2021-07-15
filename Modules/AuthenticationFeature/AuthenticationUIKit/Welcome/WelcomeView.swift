@@ -9,8 +9,8 @@ import UIComponentsKit
 typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
 public struct WelcomeView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, WelcomeAction>
 
     public var body: some View {
         VStack {
@@ -22,13 +22,13 @@ public struct WelcomeView: View {
         }
         .sheet(isPresented: viewStore.binding(
             get: \.isLoginVisible,
-            send: AuthenticationAction.setLoginVisible(_:))
+            send: WelcomeAction.setLoginVisible(_:))
         ) {
             LoginView(store: store)
         }
     }
 
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
+    public init(store: Store<WelcomeState, WelcomeAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store.scope(state: WelcomeViewState.init))
     }
@@ -37,7 +37,7 @@ public struct WelcomeView: View {
 struct WelcomeViewState: Equatable {
     var isLoginVisible: Bool
     var buildNumber: String
-    init(state: AuthenticationState) {
+    init(state: WelcomeState) {
         isLoginVisible = state.isLoginVisible
         buildNumber = state.buildVersion
     }
@@ -85,8 +85,8 @@ struct WelcomeMessageDescription: View {
 }
 
 struct WelcomeActionSection: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeViewState, WelcomeAction>
 
     var body: some View {
         VStack {
@@ -121,8 +121,8 @@ struct WelcomeActionSection: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         WelcomeView(
-            store:Store(initialState: AuthenticationState(),
-                        reducer: authenticationReducer,
+            store:Store(initialState: WelcomeState(),
+                        reducer: welcomeReducer,
                         environment: .init(
                             mainQueue: .main,
                             buildVersionProvider: { "test version" },

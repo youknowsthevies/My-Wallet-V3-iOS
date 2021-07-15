@@ -10,10 +10,10 @@ import UIComponentsKit
 typealias LoginViewString = LocalizationConstants.AuthenticationKit.Login
 
 public struct LoginView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<LoginViewState, AuthenticationAction>
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<LoginViewState, WelcomeAction>
 
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
+    public init(store: Store<WelcomeState, WelcomeAction>) {
         self.store = store
         self.viewStore = ViewStore(self.store.scope(state: LoginViewState.init))
     }
@@ -58,7 +58,7 @@ public struct LoginView: View {
                     destination: VerifyDeviceView(store: store),
                     isActive: viewStore.binding(
                         get: \.isVerifyDeviceVisible,
-                        send:  AuthenticationAction.setVerifyDeviceVisible(_:)
+                        send:  WelcomeAction.setVerifyDeviceVisible(_:)
                     ),
                     label: EmptyView.init
                 )
@@ -79,7 +79,7 @@ struct LoginViewState: Equatable {
     var emailAddress: String
     var isVerifyDeviceVisible: Bool
 
-    init(state: AuthenticationState) {
+    init(state: WelcomeState) {
         self.emailAddress = state.emailAddress
         self.isVerifyDeviceVisible = state.isVerifyDeviceVisible
     }
@@ -90,8 +90,8 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(
             store:
-                Store(initialState: AuthenticationState(),
-                      reducer: authenticationReducer,
+                Store(initialState: WelcomeState(),
+                      reducer: welcomeReducer,
                       environment: .init(
                         mainQueue: .main,
                         buildVersionProvider: { "test version" },

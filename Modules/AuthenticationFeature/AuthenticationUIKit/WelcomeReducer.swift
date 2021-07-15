@@ -6,15 +6,15 @@ import Combine
 import ComposableArchitecture
 import ToolKit
 
-private struct AuthenticationCancelations {
+private struct WelcomeCancelations {
     struct WalletIdentifierPollingTimerId: Hashable {}
     struct WalletIdentifierPollingId: Hashable {}
 }
 
-public let authenticationReducer = Reducer<
-    AuthenticationState,
-    AuthenticationAction,
-    AuthenticationEnvironment
+public let welcomeReducer = Reducer<
+    WelcomeState,
+    WelcomeAction,
+    WelcomeEnvironment
 
     // swiftlint:disable closure_body_length
 > { state, action, environment in
@@ -78,7 +78,7 @@ public let authenticationReducer = Reducer<
             .verifyForLogin()
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map { result -> AuthenticationAction in
+            .map { result -> WelcomeAction in
                 switch result {
                 case .success(let captcha):
                     return .verifyDevice(captcha)
@@ -104,7 +104,7 @@ public let authenticationReducer = Reducer<
             .sendDeviceVerificationEmail(to: state.emailAddress, captcha: captcha)
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map { result -> AuthenticationAction in
+            .map { result -> WelcomeAction in
                 if case .failure(let error) = result {
                     // For security purpose, users will not know if the email is successfully sent or not, just log the error
                     environment.errorRecorder.error(error)
@@ -118,7 +118,7 @@ public let authenticationReducer = Reducer<
             .extractWalletInfoFromDeeplink(url: url)
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map { result -> AuthenticationAction in
+            .map { result -> WelcomeAction in
                 switch result {
                 case .success(let walletInfo):
                     return .didExtractWalletInfo(walletInfo)
@@ -205,7 +205,7 @@ public let authenticationReducer = Reducer<
         return .none
 
     case .cancelPollingTimer:
-        return .cancel(id: AuthenticationCancelations.WalletIdentifierPollingTimerId())
+        return .cancel(id: WelcomeCancelations.WalletIdentifierPollingTimerId())
 
     // MARK: - Wallet Decryption
 
@@ -217,7 +217,7 @@ public let authenticationReducer = Reducer<
             .setupSessionTokenPublisher()
             .receive(on: environment.mainQueue)
             .catchToEffect()
-            .map { result -> AuthenticationAction in
+            .map { result -> WelcomeAction in
                 if case let .failure(error) = result {
                     // TODO: Await design for error state
                     environment.errorRecorder.error(error)
@@ -237,14 +237,14 @@ public let authenticationReducer = Reducer<
             // Clear error states
             Effect(value: .showAccountLockedError(false)),
             Effect(value: .showIncorrectPasswordError(false)),
-            .cancel(id: AuthenticationCancelations.WalletIdentifierPollingTimerId()),
+            .cancel(id: WelcomeCancelations.WalletIdentifierPollingTimerId()),
             environment
                 .walletPairingDependencies
                 .loginService
                 .loginPublisher(walletIdentifier: guid)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { [state] result -> AuthenticationAction in
+                .map { [state] result -> WelcomeAction in
                     switch result {
                     case .success:
                         return .authenticateWithPassword(state.password)
@@ -287,7 +287,7 @@ public let authenticationReducer = Reducer<
             // Poll the Guid every 2 seconds
             Effect
                 .timer(id: TimerIdentifier(), every: 2, on: environment.pollingQueue)
-                .cancellable(id: AuthenticationCancelations.WalletIdentifierPollingTimerId(), cancelInFlight: true)
+                .cancellable(id: WelcomeCancelations.WalletIdentifierPollingTimerId(), cancelInFlight: true)
                 .map { _ in .pollWalletIdentifier },
             // Immediately authorize the email
             environment
@@ -295,7 +295,7 @@ public let authenticationReducer = Reducer<
                 .authorizeLogin(emailCode: emailCode)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { result -> AuthenticationAction in
+                .map { result -> WelcomeAction in
                     if case let .failure(error) = result {
                         // If failed, an `Authorize Log In` will be sent to user for manual authorization
                         environment.errorRecorder.error(error)
@@ -306,15 +306,15 @@ public let authenticationReducer = Reducer<
 
     case .pollWalletIdentifier:
         return .concatenate(
-            .cancel(id: AuthenticationCancelations.WalletIdentifierPollingId()),
+            .cancel(id: WelcomeCancelations.WalletIdentifierPollingId()),
             environment
                 .walletPairingDependencies
                 .emailAuthorizationService
                 .authorizeEmailPublisher()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .cancellable(id: AuthenticationCancelations.WalletIdentifierPollingId(), cancelInFlight: true)
-                .map { result -> AuthenticationAction in
+                .cancellable(id: WelcomeCancelations.WalletIdentifierPollingId(), cancelInFlight: true)
+                .map { result -> WelcomeAction in
                     // Authenticate if the wallet identifier exists in repo
                     if case .success = result {
                         return .authenticate
@@ -333,7 +333,7 @@ public let authenticationReducer = Reducer<
                 .requestPublisher()
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { result -> AuthenticationAction in
+                .map { result -> WelcomeAction in
                     switch result {
                     case .success:
                         // TODO: Await design for success state
@@ -369,7 +369,7 @@ public let authenticationReducer = Reducer<
                                 code: state.twoFACode)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
-                .map { result -> AuthenticationAction in
+                .map { result -> WelcomeAction in
                     switch result {
                     case .success:
                         return .setTwoFACodeVerified(true)

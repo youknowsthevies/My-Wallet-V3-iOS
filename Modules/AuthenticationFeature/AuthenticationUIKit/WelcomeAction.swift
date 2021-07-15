@@ -64,7 +64,7 @@ LoginReducer
 
  */
 
-public enum AuthenticationAction: Equatable {
+public enum WelcomeAction: Equatable {
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
         case dismiss
