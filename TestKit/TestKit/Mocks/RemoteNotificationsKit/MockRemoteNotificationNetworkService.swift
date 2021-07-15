@@ -1,6 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import PlatformKit
+import AuthenticationKit
 import RxSwift
 
 @testable import RemoteNotificationsKit

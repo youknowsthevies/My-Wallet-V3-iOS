@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 
@@ -20,7 +21,7 @@ struct AnnouncementPreliminaryData {
     let country: CountryData?
 
     /// The authentication type (2FA / standard)
-    let authenticatorType: AuthenticatorType
+    let authenticatorType: WalletAuthenticatorType
 
     var hasLinkedExchangeAccount: Bool {
         user.hasLinkedExchangeAccount
@@ -54,7 +55,7 @@ struct AnnouncementPreliminaryData {
          hasLinkedBanks: Bool,
          countries: [CountryData],
          simpleBuyEventCache: EventCache = resolve(),
-         authenticatorType: AuthenticatorType,
+         authenticatorType: WalletAuthenticatorType,
          pendingOrderDetails: OrderDetails?,
          isSimpleBuyAvailable: Bool,
          isSimpleBuyEligible: Bool,

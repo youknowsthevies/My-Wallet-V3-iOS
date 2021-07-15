@@ -7,6 +7,7 @@ import ComposableArchitecture
 import PlatformKit
 import PlatformUIKit
 import SettingsKit
+import ToolKit
 
 public enum Onboarding {
     public enum Alert: Equatable {
@@ -53,6 +54,7 @@ public enum Onboarding {
         var walletManager: WalletManager
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
+        var buildVersionProvider: () -> String
     }
 }
 
@@ -65,7 +67,8 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             action: /Onboarding.Action.welcomeScreen,
             environment: {
                 AuthenticationEnvironment(
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    buildVersionProvider: $0.buildVersionProvider
                 )
             }
         ),
@@ -126,7 +129,11 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.walletCreationContext = .recovery
             return .none
         case .welcomeScreen(.setLoginVisible(let isVisible)):
-            state.walletCreationContext = isVisible ? .existing : nil
+            // don't clear the state if the state is not .existing when setting
+            // the isVisible to false
+            if state.walletCreationContext == .existing {
+                state.walletCreationContext = isVisible ? .existing : nil
+            }
             return .none
         case .welcomeScreen:
             return .none

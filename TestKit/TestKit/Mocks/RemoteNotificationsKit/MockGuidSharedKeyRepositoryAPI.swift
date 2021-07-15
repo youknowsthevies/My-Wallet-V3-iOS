@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
-import PlatformKit
 import RxSwift
 
 class MockGuidSharedKeyRepositoryAPI: GuidRepositoryAPI, SharedKeyRepositoryAPI {
@@ -16,7 +16,7 @@ class MockGuidSharedKeyRepositoryAPI: GuidRepositoryAPI, SharedKeyRepositoryAPI 
 
     func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
         expectedGuid = guid
-        return .empty()
+        return .just(())
     }
 
     var expectedGuid: String? = "123-abc-456-def-789-ghi"
@@ -35,8 +35,17 @@ class MockGuidSharedKeyRepositoryAPI: GuidRepositoryAPI, SharedKeyRepositoryAPI 
         .just(expectedSharedKey)
     }
 
+    var sharedKeyPublisher: AnyPublisher<String?, Never> {
+        .just(expectedSharedKey)
+    }
+
     func set(sharedKey: String) -> Completable {
         expectedSharedKey = sharedKey
         return .empty()
+    }
+
+    func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
+        expectedSharedKey = sharedKey
+        return .just(())
     }
 }

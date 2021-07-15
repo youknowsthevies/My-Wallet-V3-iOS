@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -54,7 +55,7 @@ extension AlertViewPresenter {
     // MARK: - 2FA alert
 
     /// Displays 2FA alert according to type
-    func notify2FA(type: AuthenticatorType,
+    func notify2FA(type: WalletAuthenticatorType,
                    title: String,
                    message: String,
                    in viewController: UIViewController? = nil,

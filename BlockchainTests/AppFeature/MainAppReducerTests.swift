@@ -104,7 +104,8 @@ final class MainAppReducerTests: XCTestCase {
                 analyticsRecorder: mockAnalyticsRecorder,
                 siftService: mockSiftService,
                 onboardingSettings: onboardingSettings,
-                mainQueue: mockMainQueue.eraseToAnyScheduler()
+                mainQueue: mockMainQueue.eraseToAnyScheduler(),
+                buildVersionProvider: { "" }
             )
         )
     }
@@ -190,8 +191,6 @@ final class MainAppReducerTests: XCTestCase {
     }
 
     func test_sending_start_should_correct_outputs() {
-        let window = UIWindow()
-
         testStore.send(.start) { state in
             state.onboarding = Onboarding.State()
             state.loggedIn = nil
@@ -298,7 +297,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyCreateWalletScreen = false
+            state.onboarding?.authenticationState?.isLoginVisible = false
         }
+        testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordScreen = nil
@@ -339,7 +340,9 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyRecoverWalletScreen = false
+            state.onboarding?.authenticationState?.isLoginVisible = false
         }
+        testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordScreen = nil

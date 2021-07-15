@@ -35,20 +35,21 @@ public struct LoginView: View {
                 .autocapitalization(.none)
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
 
-                LabelledDivider(label: LoginViewString.Divider.or)
+                // TODO: Enable scan pairing code when we implement
+//                LabelledDivider(label: LoginViewString.Divider.or)
 
-                IconButton(
-                    title: LoginViewString.Button.scanPairingCode,
-                    icon: Image.ButtonIcon.qrCode) {
-                    // Add scan pairing code action here
-                }
-                .foregroundColor(.buttonPrimaryBackground)
-                .padding(EdgeInsets(top: 22, leading: 24, bottom: 34, trailing: 24))
+//                IconButton(
+//                    title: LoginViewString.Button.scanPairingCode,
+//                    icon: Image.ButtonIcon.qrCode) {
+//                    // TODO: Add scan pairing code action here
+//                }
+//                .foregroundColor(.buttonPrimaryBackground)
+//                .padding(EdgeInsets(top: 22, leading: 24, bottom: 34, trailing: 24))
 
                 Spacer()
 
                 PrimaryButton(title: LoginViewString.Button._continue) {
-                    viewStore.send(.setVerifyDeviceVisible(true))
+                    viewStore.send(.verifyRecaptcha)
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.state.emailAddress.isEmail)
@@ -68,6 +69,9 @@ public struct LoginView: View {
             }
             .updateNavigationBarStyle()
         }
+        .onDisappear {
+            self.viewStore.send(.onLoginDisappear)
+        }
     }
 }
 
@@ -81,6 +85,7 @@ struct LoginViewState: Equatable {
     }
 }
 
+#if DEBUG
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(
@@ -88,9 +93,12 @@ struct LoginView_Previews: PreviewProvider {
                 Store(initialState: AuthenticationState(),
                       reducer: authenticationReducer,
                       environment: .init(
-                        mainQueue: .main
+                        mainQueue: .main,
+                        buildVersionProvider: { "test version" },
+                        authenticationService: NoOpAuthenticationService()
                       )
                 )
         )
     }
 }
+#endif

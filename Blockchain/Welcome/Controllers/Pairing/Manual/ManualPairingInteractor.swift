@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import RxCocoa
@@ -27,10 +28,10 @@ final class ManualPairingInteractor {
         case authorizeLoginWithEmail
 
         /// Authorize login by inserting an OTP code
-        case authorizeLoginWith2FA(AuthenticatorType)
+        case authorizeLoginWith2FA(WalletAuthenticatorType)
 
         /// Wrong OTP code
-        case wrongOtpCode(type: AuthenticatorType, attemptsLeft: Int)
+        case wrongOtpCode(type: WalletAuthenticatorType, attemptsLeft: Int)
 
         /// Account is locked
         case lockedAccount
@@ -58,10 +59,9 @@ final class ManualPairingInteractor {
         authenticationActionRelay.asObservable()
     }
 
-    // MARK: - Properties
-
     let dependencies: Dependencies
 
+    private var authenticator = Atomic<WalletAuthenticatorType>(.standard)
     private let authenticationActionRelay = PublishRelay<AuthenticationAction>()
     private let disposeBag = DisposeBag()
 
@@ -69,6 +69,18 @@ final class ManualPairingInteractor {
 
     init(dependencies: Dependencies = Dependencies()) {
         self.dependencies = dependencies
+
+        dependencies
+            .loginService
+            .authenticator
+            .distinctUntilChanged()
+            .observeOn(MainScheduler.instance)
+            .subscribe { [authenticator] authenticatorType in
+                authenticator.mutate { authenticator in
+                    authenticator = authenticatorType
+                }
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - API
@@ -140,18 +152,19 @@ final class ManualPairingInteractor {
     /// Handles any authentication error by streaming it to the relay
     private func handleAuthentication(error: Error) {
         switch error {
-        case LoginService.ServiceError.twoFactorOTPRequired(let type):
+        case LoginServiceError.twoFactorOTPRequired(let type):
             switch type {
             case .email:
                 authenticationActionRelay.accept(.authorizeLoginWithEmail)
             default:
                 authenticationActionRelay.accept(.authorizeLoginWith2FA(type))
             }
-        case LoginService.ServiceError.wrongCode(type: let type, attemptsLeft: let attempts):
-            authenticationActionRelay.accept(.wrongOtpCode(type: type, attemptsLeft: attempts))
-        case LoginService.ServiceError.accountLocked:
+        case let LoginServiceError.twoFAWalletServiceError(.wrongCode(attemptsLeft: attempts)):
+            authenticationActionRelay.accept(.wrongOtpCode(type: authenticator.value, attemptsLeft: attempts))
+        case LoginServiceError.twoFAWalletServiceError(.accountLocked),
+             LoginServiceError.walletPayloadServiceError(.accountLocked):
             authenticationActionRelay.accept(.lockedAccount)
-        case LoginService.ServiceError.message(let message):
+        case let LoginServiceError.walletPayloadServiceError(.message(message)):
             authenticationActionRelay.accept(.message(message))
         default:
             authenticationActionRelay.accept(.error(error))
@@ -167,7 +180,7 @@ extension ManualPairingInteractor {
 
         // MARK: - Pairing dependencies
 
-        let emailAuthorizationService: EmailAuthorizationService
+        let emailAuthorizationService: EmailAuthorizationServiceAPI
         fileprivate let sessionTokenService: SessionTokenServiceAPI
         fileprivate let smsService: SMSServiceAPI
         fileprivate let loginService: LoginServiceAPI
@@ -183,46 +196,21 @@ extension ManualPairingInteractor {
 
         init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
              errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-             walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
-             twoFAWalletClient: TwoFAWalletClientAPI = TwoFAWalletClient(),
-             guidClient: GuidClientAPI = GuidClient(),
-             smsClient: SMSClientAPI = SMSClient(),
-             sessionTokenClient: SessionTokenClientAPI = SessionTokenClient(),
+             sessionTokenService: SessionTokenServiceAPI = resolve(),
+             smsService: SMSServiceAPI = resolve(),
+             emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
+             loginService: LoginServiceAPI = resolve(),
              walletRepository: WalletRepositoryAPI = resolve(),
              wallet: Wallet = WalletManager.shared.wallet,
-             walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared) {
+             walletFetcher: PairingWalletFetching = resolve()) {
             self.wallet = wallet
             self.walletFetcher = walletFetcher
             self.analyticsRecorder = analyticsRecorder
             self.errorRecorder = errorRecorder
-            sessionTokenService = SessionTokenService(
-                client: sessionTokenClient,
-                repository: walletRepository
-            )
-            smsService = SMSService(
-                client: smsClient,
-                repository: walletRepository
-            )
-            let guidService = GuidService(
-                sessionTokenRepository: walletRepository,
-                client: guidClient
-            )
-            emailAuthorizationService = EmailAuthorizationService(guidService: guidService)
-
-            let payloadService = WalletPayloadService(
-                client: walletPayloadClient,
-                repository: walletRepository
-            )
-
-            let twoFAPayloadService = TwoFAWalletService(
-                client: twoFAWalletClient,
-                repository: walletRepository
-            )
-            loginService = LoginService(
-                payloadService: payloadService,
-                twoFAPayloadService: twoFAPayloadService,
-                walletRepository: walletRepository
-            )
+            self.sessionTokenService = sessionTokenService
+            self.smsService = smsService
+            self.emailAuthorizationService = emailAuthorizationService
+            self.loginService = loginService
         }
     }
 }

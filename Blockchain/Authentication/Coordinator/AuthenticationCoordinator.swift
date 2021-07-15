@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import BitcoinKit
 import Combine
 import DIKit
@@ -13,10 +14,6 @@ import RxRelay
 import RxSwift
 import SettingsKit
 import ToolKit
-
-protocol PairingWalletFetching: AnyObject {
-    func authenticate(using password: String)
-}
 
 extension AuthenticationCoordinator: PairingWalletFetching {
     /// A new method for fetching wallet - is being used after manual pairing
@@ -35,7 +32,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     // MARK: - Types
 
     typealias WalletAuthHandler = (_ authenticated: Bool, _
-                                   twoFactorType: AuthenticatorType?, _
+                                   twoFactorType: WalletAuthenticatorType?, _
                                    error: AuthenticationError?) -> Void
 
     @Inject @objc static var shared: AuthenticationCoordinator
@@ -121,7 +118,7 @@ extension AuthenticationCoordinator: PairingWalletFetching {
     /// with that flow. Eventually, wallet creation should be moved with AuthenticationCoordinator
     @available(*, deprecated, message: "This method is deprected and its logic should be distributed to separate services")
     func authenticationHandler(_ isAuthenticated: Bool,
-                               _ twoFactorType: AuthenticatorType?,
+                               _ twoFactorType: WalletAuthenticatorType?,
                                _ error: AuthenticationError?) {
         defer {
             self.loadingViewPresenter.hide()

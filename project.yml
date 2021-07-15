@@ -110,28 +110,28 @@ schemes:
     templateAttributes:
       debugConfig: Debug Dev
       releaseConfig: Release
-      bootstrapWorkValue: "false"
+      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Internal Production):
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release Internal
-      bootstrapWorkValue: "false"
+      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Staging):
     templateAttributes:
       debugConfig: Debug Staging
       releaseConfig: Release Staging
-      bootstrapWorkValue: "false"
+      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Alpha):
     templateAttributes:
       debugConfig: Debug Alpha
       releaseConfig: Release Alpha
-      bootstrapWorkValue: "false"
+      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
 settingGroups:
@@ -1174,6 +1174,7 @@ targets:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
     - framework: Carthage/Build/CryptoSwift.xcframework
+    - target: AuthenticationKit
     - target: CommonCryptoKit
     - target: Localization
     - target: NetworkKit
@@ -1574,6 +1575,23 @@ targets:
     templates:
     - ModuleTests
   AuthenticationKit:
+    configFiles:
+      Debug Dev: Config/AuthenticationKitConfig/AuthenticationKit-Dev.xcconfig
+      Debug Production: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Debug Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
+      Release: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Release Internal: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
+    dependencies:
+    - framework: Carthage/Build/RxSwift.xcframework
+    - framework: Carthage/Build/RxRelay.xcframework
+    - target: NetworkKit
+    info:
+      path: Modules/AuthenticationFeature/AuthenticationKit/Info.plist
+      properties:
+        LOGIN_URL: $(LOGIN_URL)
+        GOOGLE_RECAPTCHA_SITE_KEY: $(GOOGLE_RECAPTCHA_SITE_KEY)
+    platform: iOS
     scheme:
       testTargets:
       - AuthenticationKitTests
@@ -1591,6 +1609,7 @@ targets:
   AuthenticationUIKit:
     dependencies:
     - target: AuthenticationKit
+    - target: PlatformUIKit
     - target: SharedPackagesKit
     - target: UIComponentsKit
     scheme:
@@ -1610,6 +1629,9 @@ targets:
   AuthenticationDataKit:
     dependencies:
     - target: AuthenticationKit
+    - target: NetworkKit
+    - target: WalletPayloadKit
+    - target: CommonCryptoKit
     scheme:
       testTargets:
       - AuthenticationDataKitTests
@@ -1620,6 +1642,10 @@ targets:
   AuthenticationDataKitTests:
     dependencies:
     - target: AuthenticationDataKit
+    - target: PlatformKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/PlatformKit
     templateAttributes:
       featureName: AuthenticationFeature
     templates:

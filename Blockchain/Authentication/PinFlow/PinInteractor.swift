@@ -63,15 +63,11 @@ final class PinInteractor: PinInteracting {
          appSettings: AppSettingsAuthenticating = resolve(),
          recorder: Recording = CrashlyticsRecorder(),
          cacheSuite: CacheSuite = resolve(),
-         walletPayloadClient: WalletPayloadClientAPI = WalletPayloadClient(),
          walletRepository: WalletRepositoryAPI = resolve(),
          walletCryptoService: WalletCryptoServiceAPI = resolve()) {
         loginService = PinLoginService(
             settings: appSettings,
-            service: WalletPayloadService(
-                client: walletPayloadClient,
-                repository: walletRepository
-            ),
+            service: DIKit.resolve(),
             walletRepository: walletRepository
         )
         self.credentialsProvider = credentialsProvider

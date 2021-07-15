@@ -21,13 +21,13 @@ final class DeepLinkHandler: DeepLinkHandling {
 
     func handle(deepLink: String,
                 supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) {
-        Logger.shared.debug("Attempting to handle deep link.")
+        Logger.shared.debug("[DeepLinkHandler] Attempting to handle deep link.")
         guard let route = DeepLinkRoute.route(from: deepLink, supportedRoutes: supportedRoutes),
             let payload = DeepLinkPayload.create(from: deepLink, supportedRoutes: supportedRoutes) else {
             Logger.shared.debug("Unhandled deep link \(deepLink)")
             return
         }
-        Logger.shared.debug("Handling deep link \(deepLink) on route \(route)")
+        Logger.shared.debug("[DeepLinkHandler] Handling deep link \(deepLink) on route \(route)")
         switch route {
         case .xlmAirdop:
             handleXlmAirdrop(payload.params)

@@ -124,7 +124,7 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.send(.start(.none))
 
         mockSettingsApp.symbolLocal = false
-        mockSettingsApp.symbolLocal = true // needs to change to trigger action
+        mockSettingsApp.symbolLocal = true
 
         testStore.receive(.symbolChanged) { state in
             state.reloadAfterSymbolChanged = true

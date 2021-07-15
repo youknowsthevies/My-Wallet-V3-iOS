@@ -48,4 +48,5 @@ public struct AppEnvironment {
 
     var urlSession: URLSession
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var buildVersionProvider: () -> String
 }

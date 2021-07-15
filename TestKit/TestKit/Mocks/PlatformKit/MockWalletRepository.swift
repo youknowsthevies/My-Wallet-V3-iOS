@@ -1,49 +1,16 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import CombineExt
 import RxSwift
 import ToolKit
-
 @testable import PlatformKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
 
-    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
-        expectedOfflineTokenResponse
-            .publisher
-    }
-
-    func setPublisher(
-        offlineTokenResponse: NabuOfflineTokenResponse
-    ) -> AnyPublisher<Void, CredentialWritingError> {
-        perform { [weak self] in
-            self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
-        }
-    }
-
-    var guidPublisher: AnyPublisher<String?, Never> {
-        .just(expectedGuid)
-    }
-
-    func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
-        perform { [weak self] in
-            self?.expectedGuid = guid
-        }
-    }
-
-    var sharedKeyPublisher: AnyPublisher<String?, Never> {
-        .just(expectedSharedKey)
-    }
-
-    func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
-        perform { [weak self] in
-            self?.expectedSharedKey = sharedKey
-        }
-    }
-
     var expectedSessionToken: String?
-    var expectedAuthenticatorType: AuthenticatorType = .standard
+    var expectedAuthenticatorType: WalletAuthenticatorType = .standard
     var expectedGuid: String?
     var expectedPayload: String?
     var expectedSharedKey: String?
@@ -58,7 +25,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var guid: Single<String?> {
         .just(expectedGuid)
     }
-    var authenticatorType: Single<AuthenticatorType> { .just(expectedAuthenticatorType) }
+    var authenticatorType: Single<WalletAuthenticatorType> { .just(expectedAuthenticatorType) }
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
         expectedOfflineTokenResponse.single
     }
@@ -103,7 +70,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
         .empty()
     }
 
-    func set(authenticatorType: AuthenticatorType) -> Completable {
+    func set(authenticatorType: WalletAuthenticatorType) -> Completable {
         perform { [weak self] in
             self?.expectedAuthenticatorType = authenticatorType
         }
@@ -143,5 +110,102 @@ final class MockWalletRepository: WalletRepositoryAPI {
                 return AnyCancellable {}
             }
             .eraseToAnyPublisher()
+    }
+}
+
+// MARK: - MockWalletRepositoryCombineAPI
+
+extension MockWalletRepository {
+
+    var authenticatorTypePublisher: AnyPublisher<WalletAuthenticatorType, Never> {
+        .just(expectedAuthenticatorType)
+    }
+
+    func setPublisher(authenticatorType: WalletAuthenticatorType) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedAuthenticatorType = authenticatorType
+        }
+    }
+
+    func setPublisher(language: String) -> AnyPublisher<Void, Never> {
+        .just(())
+    }
+
+    var hasPasswordPublisher: AnyPublisher<Bool, Never> {
+        hasPassword.asPublisher().ignoreFailure()
+    }
+
+    var passwordPublisher: AnyPublisher<String?, Never> {
+        .just(expectedPassword)
+    }
+
+    func setPublisher(password: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedPassword = password
+        }
+    }
+
+    func syncPublisher() -> AnyPublisher<Void, PasswordRepositoryError> {
+        perform { }
+    }
+
+    func setPublisher(payload: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedPayload = payload
+        }
+    }
+
+    var sessionTokenPublisher: AnyPublisher<String?, Never> {
+        .just(expectedSessionToken)
+    }
+
+    func setPublisher(sessionToken: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedSessionToken = sessionToken
+        }
+    }
+
+    func cleanSessionTokenPublisher() -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedSessionToken = nil
+        }
+    }
+
+    func setPublisher(syncPubKeys: Bool) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedSyncPubKeys = syncPubKeys
+        }
+    }
+
+    var sharedKeyPublisher: AnyPublisher<String?, Never> {
+        .just(expectedSharedKey)
+    }
+
+    func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedSharedKey = sharedKey
+        }
+    }
+
+    var guidPublisher: AnyPublisher<String?, Never> {
+        .just(expectedGuid)
+    }
+
+    func setPublisher(guid: String) -> AnyPublisher<Void, Never> {
+        perform { [weak self] in
+            self?.expectedGuid = guid
+        }
+    }
+
+    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
+        expectedOfflineTokenResponse.publisher
+    }
+
+    func setPublisher(
+        offlineTokenResponse: NabuOfflineTokenResponse
+    ) -> AnyPublisher<Void, CredentialWritingError> {
+        perform { [weak self] in
+            self?.expectedOfflineTokenResponse = .success(offlineTokenResponse)
+        }
     }
 }

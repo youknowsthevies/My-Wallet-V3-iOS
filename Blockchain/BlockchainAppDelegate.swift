@@ -2,6 +2,8 @@
 
 import ActivityKit
 import ActivityUIKit
+import AuthenticationKit
+import AuthenticationDataKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -66,7 +68,6 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         super.init()
 
         FirebaseApp.configure()
-
         defineDependencies()
     }
 

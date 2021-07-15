@@ -87,11 +87,11 @@ func defineDependencies() {
         DependencyContainer.settingsKit;
         DependencyContainer.settingsUIKit;
         DependencyContainer.remoteNotificationsKit;
+        DependencyContainer.authenticationDataKit;
         #if INTERNAL_BUILD
         DependencyContainer.debugUIKit;
         #endif
     })
-    // swiftlint:enable trailing_semicolon
 }
 
 // MARK: - Private functions

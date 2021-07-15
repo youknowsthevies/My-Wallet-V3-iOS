@@ -45,7 +45,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -71,7 +72,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -99,7 +101,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -125,7 +128,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -153,7 +157,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -169,7 +174,9 @@ class OnboardingReducerTests: XCTestCase {
                 state.pinState = nil
                 state.authenticationState = .init()
             },
-            .receive(.welcomeScreen(.start))
+            .receive(.welcomeScreen(.start)) { state in
+                state.authenticationState?.buildVersion = "v1.0.0"
+            }
         )
     }
 
@@ -181,7 +188,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -205,7 +213,9 @@ class OnboardingReducerTests: XCTestCase {
         }
 
         // then
-        testStore.receive(.welcomeScreen(.start))
+        testStore.receive(.welcomeScreen(.start)) { state in
+            state.authenticationState?.buildVersion = "v1.0.0"
+        }
     }
 
     func test_forget_wallet_from_password_screen() {
@@ -216,7 +226,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main
+                mainQueue: .main,
+                buildVersionProvider: { "v1.0.0" }
             )
         )
 
@@ -240,6 +251,8 @@ class OnboardingReducerTests: XCTestCase {
             state.authenticationState = .init()
         }
 
-        testStore.receive(.welcomeScreen(.start))
+        testStore.receive(.welcomeScreen(.start)) { state in
+            state.authenticationState?.buildVersion = "v1.0.0"
+        }
     }
 }

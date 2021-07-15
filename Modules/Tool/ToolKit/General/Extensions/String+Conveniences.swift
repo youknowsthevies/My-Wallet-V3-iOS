@@ -93,6 +93,20 @@ public extension String {
         trimmingCharacters(in: .whitespaces)
     }
 
+    /// Returns the base64 string with proper paddings
+    var paddedBase64: String {
+        if count % 4 == 0 {
+            return self
+        } else if (count + 1) % 4 == 0 {
+            return self + "="
+        } else if (count + 2) % 4 == 0{
+            return self + "=="
+        } else {
+            // valid base64 (without padding) should require 0-2 paddings only
+            return self
+        }
+    }
+
     // MARK: - JS
 
     func escapedForJS(wrapInQuotes: Bool = false) -> String {

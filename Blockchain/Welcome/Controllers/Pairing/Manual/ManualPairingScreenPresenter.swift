@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -57,9 +58,7 @@ final class ManualPairingScreenPresenter {
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.interactor = interactor
-        emailAuthorizationPresenter = EmailAuthorizationPresenter(
-            emailAuthorizationService: interactor.dependencies.emailAuthorizationService
-        )
+        emailAuthorizationPresenter = EmailAuthorizationPresenter()
         walletIdTextFieldViewModel = TextFieldViewModel(
             with: .walletIdentifier,
             validator: TextValidationFactory.Info.walletIdentifier,
@@ -118,7 +117,7 @@ final class ManualPairingScreenPresenter {
             .bind { [weak self] action in
                 guard let self = self else { return }
                 switch action {
-                case.authorizeLoginWithEmail:
+                case .authorizeLoginWithEmail:
                     self.displayEmailAuthorizationAlert()
                 case .authorizeLoginWith2FA(let type):
                     self.display2FAAlert(
@@ -177,7 +176,7 @@ final class ManualPairingScreenPresenter {
     }
 
     /// Requests an OTP by SMS
-    private func requestOTPMessage(title: String, message: String, type: AuthenticatorType) {
+    private func requestOTPMessage(title: String, message: String, type: WalletAuthenticatorType) {
         display2FAAlert(title: title, message: message, type: type)
         interactor.requestOTPMessage()
             .subscribe(
@@ -194,7 +193,7 @@ final class ManualPairingScreenPresenter {
 
     /// Displays an alert asking the user for second OTP using one
     /// of the supported `AuthenticatorType` values
-    private func display2FAAlert(title: String, message: String, type: AuthenticatorType) {
+    private func display2FAAlert(title: String, message: String, type: WalletAuthenticatorType) {
         routerStateProvider.state = .pending2FA
 
         let cancel = { [weak self] () -> Void in
@@ -258,7 +257,7 @@ final class ManualPairingScreenPresenter {
 
 /// NOTE: This is here rather than in `PlatformKit` to prevent having to add
 /// `Localization.framework` as a dependency for `PlatformKit`
-fileprivate extension AuthenticatorType {
+fileprivate extension WalletAuthenticatorType {
     var name: String {
         switch self {
         case .google:

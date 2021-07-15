@@ -3,6 +3,7 @@
 import AuthenticationKit
 import ComposableArchitecture
 import Localization
+import PlatformUIKit
 import SwiftUI
 import UIComponentsKit
 
@@ -33,13 +34,13 @@ public struct VerifyDeviceView: View {
 
             Spacer()
 
-            PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
-                viewStore.send(.setPasswordLoginVisible(true))
+            SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
+                viewStore.send(.verifyRecaptcha)
             }
             .padding(.bottom, 10)
 
-            SecondaryButton(title: VerifyDeviceViewString.Button.sendAgain) {
-                // Add send again action here
+            PrimaryButton(title: VerifyDeviceViewString.Button.openEmail) {
+                UIApplication.shared.openMailApplication()
             }
 
             NavigationLink(
@@ -53,6 +54,7 @@ public struct VerifyDeviceView: View {
         }
         .multilineTextAlignment(.center)
         .padding(EdgeInsets(top: 247, leading: 24, bottom: 58, trailing: 24))
+        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
     }
 }
 
@@ -64,6 +66,7 @@ struct VerifyDeviceViewState: Equatable {
     }
 }
 
+#if DEBUG
 struct VerifyDeviceView_Previews: PreviewProvider {
     static var previews: some View {
         VerifyDeviceView(
@@ -71,9 +74,12 @@ struct VerifyDeviceView_Previews: PreviewProvider {
                 Store(initialState: AuthenticationState(),
                       reducer: authenticationReducer,
                       environment: .init(
-                        mainQueue: DispatchQueue.main.eraseToAnyScheduler()
+                        mainQueue: .main,
+                        buildVersionProvider: { "test version" },
+                        authenticationService: NoOpAuthenticationService()
                       )
                 )
         )
     }
 }
+#endif

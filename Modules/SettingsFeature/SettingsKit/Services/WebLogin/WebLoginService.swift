@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import CommonCryptoKit
 import DIKit
 import NetworkKit
@@ -32,18 +33,18 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
 
     // MARK: - Private Properties
 
-    private let autoPairing: AutoWalletPairingClientAPI
+    private let autoPairingService: AutoWalletPairingServiceAPI
     private let walletCryptoService: WalletCryptoServiceAPI
     private let walletRepository: WalletRepositoryAPI
 
     // MARK: - Setup
 
     public init(
-        autoPairing: AutoWalletPairingClientAPI = AutoWalletPairingClient(),
+        autoPairingService: AutoWalletPairingServiceAPI = resolve(),
         walletCryptoService: WalletCryptoServiceAPI = resolve(),
         walletRepository: WalletRepositoryAPI = resolve()
     ) {
-        self.autoPairing = autoPairing
+        self.autoPairingService = autoPairingService
         self.walletCryptoService = walletCryptoService
         self.walletRepository = walletRepository
     }
@@ -60,8 +61,8 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
     }
 
     private func qrCode(guid: String) -> Single<String> {
-        autoPairing
-            .request(guid: guid)
+        autoPairingService
+            .encryptionPhrase(using: guid)
             .flatMap(weak: self) { (self, encryptionPhrase) -> Single<String> in
                 self.encrypteWalletData(with: encryptionPhrase)
             }

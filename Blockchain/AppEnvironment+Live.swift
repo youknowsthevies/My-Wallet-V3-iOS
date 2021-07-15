@@ -38,7 +38,8 @@ extension AppEnvironment {
             blockchainSettings: .shared,
             credentialsStore: resolve(),
             urlSession: resolve(),
-            mainQueue: .main
+            mainQueue: .main,
+            buildVersionProvider: Bundle.versionAndBuildNumber
         )
     }
 }

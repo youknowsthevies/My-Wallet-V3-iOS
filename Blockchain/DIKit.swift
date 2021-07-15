@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationDataKit
+import AuthenticationKit
 import BitcoinCashKit
 import BitcoinChainKit
 import BitcoinKit
@@ -14,6 +16,7 @@ import KYCUIKit
 import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
+import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -46,6 +49,12 @@ extension AnalyticsUserPropertyInteractor: DashboardUIKit.AnalyticsUserPropertyI
 extension AnnouncementPresenter: DashboardUIKit.AnnouncementPresenting {}
 
 extension SettingsUIKit.BackupFundsRouter: DashboardUIKit.BackupRouterAPI {}
+
+// MARK: - AuthenticationFeature Dependencies
+
+extension Wallet: WalletAuthenticationKitWrapper {}
+
+// MARK: - AnalyticsKit Dependencies
 
 extension BlockchainSettings.App: AnalyticsKit.GuidRepositoryAPI {}
 
@@ -141,6 +150,8 @@ extension DependencyContainer {
 
         single { AuthenticationCoordinator() }
 
+        factory { AuthenticationCoordinator.shared as PairingWalletFetching }
+
         factory { () -> AuthenticationCoordinating in
             guard useNewOnboarding() else {
                 let coordinator: AuthenticationCoordinator = DIKit.resolve()
@@ -173,7 +184,8 @@ extension DependencyContainer {
 
         factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
 
-        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor()) as FiatBalanceCollectionViewPresenting }
+        factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor())
+            as FiatBalanceCollectionViewPresenting }
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
@@ -238,7 +250,8 @@ extension DependencyContainer {
                 return AppCoordinator.shared as CashIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveCashIdentityVerificationAnnouncementRouting() as CashIdentityVerificationAnnouncementRouting
+            return bridge.resolveCashIdentityVerificationAnnouncementRouting()
+                as CashIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> InterestIdentityVerificationAnnouncementRouting in
@@ -246,7 +259,8 @@ extension DependencyContainer {
                 return AppCoordinator.shared as InterestIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
-            return bridge.resolveInterestIdentityVerificationAnnouncementRouting() as InterestIdentityVerificationAnnouncementRouting
+            return bridge.resolveInterestIdentityVerificationAnnouncementRouting()
+                as InterestIdentityVerificationAnnouncementRouting
         }
 
         factory { () -> SettingsStarterAPI in
@@ -326,9 +340,9 @@ extension DependencyContainer {
             return walletManager.repository as SharedKeyRepositoryAPI
         }
 
-        factory { () -> PlatformKit.GuidRepositoryAPI in
+        factory { () -> AuthenticationKit.GuidRepositoryAPI in
             let walletManager: WalletManager = DIKit.resolve()
-            return walletManager.repository as PlatformKit.GuidRepositoryAPI
+            return walletManager.repository as AuthenticationKit.GuidRepositoryAPI
         }
 
         factory { () -> PasswordRepositoryAPI in
@@ -549,6 +563,67 @@ extension DependencyContainer {
 
         factory { () -> TransactionUIKit.KYCSDDServiceAPI in
             TransactionsKYCAdapter()
+        }
+
+        // MARK: AuthenticationFeature Module
+
+        factory { () -> AutoWalletPairingServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return AutoWalletPairingService(repository: manager.repository) as AutoWalletPairingServiceAPI
+        }
+
+        factory { () -> GuidServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return GuidService(sessionTokenRepository: manager.repository, client: DIKit.resolve())
+        }
+
+        factory { () -> SessionTokenServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return SessionTokenService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> SMSServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return SMSService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> TwoFAWalletServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return TwoFAWalletService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> WalletPayloadServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return WalletPayloadService(client: DIKit.resolve(), repository: manager.repository)
+        }
+
+        factory { () -> LoginServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return LoginService(
+                payloadService: DIKit.resolve(),
+                twoFAPayloadService: DIKit.resolve(),
+                repository: manager.repository
+            )
+        }
+
+        factory { () -> EmailAuthorizationServiceAPI in
+            return EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
+        }
+
+        factory { () -> AuthenticationServiceAPI in
+            let manager: WalletManager = DIKit.resolve()
+            return AuthenticationService(
+                sessionTokenRepository: manager.repository
+            ) as AuthenticationServiceAPI
+        }
+
+        factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }
+
+        factory { GoogleRecaptchaService() as GoogleRecaptchaServiceAPI }
+
+        factory { () -> WalletAuthenticationKitWrapper in
+            let manager: WalletManager = DIKit.resolve()
+            return manager.wallet as WalletAuthenticationKitWrapper
         }
 
         // MARK: Analytics

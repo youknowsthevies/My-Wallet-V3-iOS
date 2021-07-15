@@ -63,7 +63,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     analyticsRecorder: $0.analyticsRecorder,
                     siftService: resolve(),
                     onboardingSettings: $0.onboardingSettings,
-                    mainQueue: $0.mainQueue
+                    mainQueue: $0.mainQueue,
+                    buildVersionProvider: $0.buildVersionProvider
                 )
             }),
     appReducerCore

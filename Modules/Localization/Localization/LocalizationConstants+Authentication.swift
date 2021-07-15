@@ -78,11 +78,11 @@ extension LocalizationConstants.AuthenticationKit {
                 "Password",
                 comment: "Login screen: password field title"
             )
-            public static let twoFactorAuthCode = NSLocalizedString(
+            public static let twoFACode = NSLocalizedString(
                 "2FA Code",
                 comment: "Login screen: two factor authentication text field title"
             )
-            public static let hardwareKeyVerify = NSLocalizedString(
+            public static let hardwareKeyCode = NSLocalizedString(
                 "Verify with your |HARDWARE KEY|",
                 comment: "Login screen: verify with hardware key title prefix"
             )
@@ -106,21 +106,25 @@ extension LocalizationConstants.AuthenticationKit {
                 "Incorrect Password",
                 comment: "Login screen: wrong password footnote"
             )
-            public static let incorrectTwoFactorAuthCode = NSLocalizedString(
-                "Incorrect 2FA Code",
+            public static let incorrectTwoFACode = NSLocalizedString(
+                "Incorrect 2FA code. %d attempts left.",
                 comment: "Login screen: wrong 2FA code footnote"
             )
             public static let hardwareKeyInstruction = NSLocalizedString(
                 "Tap |HARDWARE KEY| to verify",
                 comment: "Login screen: hardware key usage instruction"
             )
-            public static let incorrectHardwareKey = NSLocalizedString(
+            public static let incorrectHardwareKeyCode = NSLocalizedString(
                 "Incorrect |HARDWARE KEY| code",
                 comment: "Login screen: wrong hardware key"
             )
-            public static let lostTwoFactorAuthCodePrompt = NSLocalizedString(
+            public static let lostTwoFACodePrompt = NSLocalizedString(
                 "Lost access to your 2FA device?",
                 comment: "Login screen: a prompt for user to reset their 2FA if they lost their 2FA device"
+            )
+            public static let accountLocked = NSLocalizedString(
+                "This account has been locked due to too many failed authentications.",
+                comment: "Login screen: a message saying that the account is locked"
             )
         }
         public enum Link {
@@ -128,7 +132,7 @@ extension LocalizationConstants.AuthenticationKit {
                 "Trouble logging in?",
                 comment: "Login screen: link for forgot password"
             )
-            public static let resetTwoFactorAuthLink = NSLocalizedString(
+            public static let resetTwoFALink = NSLocalizedString(
                 "Reset your 2FA",
                 comment: "Login screen: link for resetting 2FA"
             )
@@ -154,6 +158,10 @@ extension LocalizationConstants.AuthenticationKit {
             public static let _continue = NSLocalizedString(
                 "Continue",
                 comment: "Login screen: continue CTA button")
+            public static let resendSMS = NSLocalizedString(
+                "Resend SMS",
+                comment: "Login screen: resend SMS for 2FA CTA button"
+            )
         }
     }
 

@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import RxRelay
@@ -30,9 +31,7 @@ final class AutoPairingScreenInteractor {
 
     // MARK: - Setup
 
-    init(service: AutoWalletPairingServiceAPI = AutoWalletPairingService(
-            repository: WalletManager.shared.repository
-         ),
+    init(service: AutoWalletPairingServiceAPI = resolve(),
          walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.service = service

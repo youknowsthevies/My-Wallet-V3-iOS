@@ -72,6 +72,7 @@ struct CoreAppEnvironment {
     var siftService: SiftServiceAPI
     var onboardingSettings: OnboardingSettingsAPI
     var mainQueue: AnySchedulerOf<DispatchQueue>
+    var buildVersionProvider: () -> String
 }
 
 let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.combine(
@@ -85,7 +86,8 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     blockchainSettings: environment.blockchainSettings,
                     walletManager: environment.walletManager,
                     alertPresenter: environment.alertPresenter,
-                    mainQueue: .main
+                    mainQueue: .main,
+                    buildVersionProvider: environment.buildVersionProvider
                 )
             }),
     loggedInReducer
@@ -157,7 +159,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             return .none
         }
         // Pass content to welcomeScreen to be handled
-        return Effect(value: .onboarding(.welcomeScreen(.verifyDevice(content.url))))
+        return Effect(value: .onboarding(.welcomeScreen(.didReceiveWalletInfoDeeplink(content.url))))
     case .deeplink(.handleLink(let content)):
         // we first check if we're logged in, if not we need to defer the deeplink routing
         guard state.isLoggedIn else {
@@ -167,8 +169,8 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             }
             // check if we're on the pinState and we need the user to enter their pin
             if let pinState = onboarding.pinState,
-                  pinState.requiresPinAuthentication,
-                  !content.context.usableOnlyDuringAuthentication {
+               pinState.requiresPinAuthentication,
+               !content.context.usableOnlyDuringAuthentication {
                 // defer the deeplink until we handle the `.proceedToLoggedIn` action
                 state.onboarding?.deeplinkContent = content
             }
@@ -245,6 +247,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .decryptionFailure(let error):
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.DecryptId())
+    case .authenticated(.failure(let error)) where error.code == .failedToLoadWallet:
+        guard state.onboarding?.authenticationState != nil else {
+            state.onboarding?.displayAlert = .walletAuthentication(error)
+            return .cancel(id: WalletCancelations.AuthenticationId())
+        }
+        return .merge(
+            .cancel(id: WalletCancelations.AuthenticationId()),
+            Effect(value: CoreAppAction.onboarding(.welcomeScreen(.showIncorrectPasswordError(true))))
+        )
     case .authenticated(.failure(let error)):
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.AuthenticationId())
@@ -252,8 +263,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
+            guard state.onboarding?.authenticationState != nil else {
+                return .merge(
+                    .cancel(id: WalletCancelations.AuthenticationId()),
+                    Effect(value: .setupPin)
+                )
+            }
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
+                Effect(value: .onboarding(.welcomeScreen(.setLoginVisible(false)))),
                 Effect(value: .setupPin)
             )
         }
@@ -348,6 +366,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
     case .onboarding(.pin(.pinCreated)):
         return Effect(
             value: .initializeWallet
+        )
+    case .onboarding(.welcomeScreen(.authenticateWithPassword(let password))):
+        return Effect(
+            value: .fetchWallet(password)
         )
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import BigInt
 import DIKit
 import PlatformKit
@@ -88,7 +89,7 @@ final class AnalyticsUserPropertyInteractor {
 
     private func record(user: NabuUser?,
                         tiers: KYC.UserTiers?,
-                        authenticatorType: AuthenticatorType,
+                        authenticatorType: WalletAuthenticatorType,
                         guid: String?,
                         balances: [CryptoCurrency: MoneyValue]) {
         if let identifier = user?.personalDetails.identifier {

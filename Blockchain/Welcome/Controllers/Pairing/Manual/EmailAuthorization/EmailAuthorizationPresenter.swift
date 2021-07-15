@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -13,14 +14,14 @@ final class EmailAuthorizationPresenter {
 
     // MARK: - Services
 
-    private let emailAuthorizationService: EmailAuthorizationService
+    private let emailAuthorizationService: EmailAuthorizationServiceAPI
     private let alertPresenter: AlertViewPresenter
     private unowned let routerStateProvider: OnboardingRouterStateProviding
 
     // MARK: - Setup
 
     init(routerStateProvider: OnboardingRouterStateProviding = resolve(),
-         emailAuthorizationService: EmailAuthorizationService,
+         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
          alertPresenter: AlertViewPresenter = .shared) {
         self.emailAuthorizationService = emailAuthorizationService
         self.alertPresenter = alertPresenter

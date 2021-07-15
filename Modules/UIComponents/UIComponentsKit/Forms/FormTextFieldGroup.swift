@@ -6,7 +6,7 @@ public struct FormTextFieldGroup: View {
     public var title: String
     public let text: Binding<String>
     public let textPlaceholder: String
-    public let footnote: Binding<String>?
+    public let footnote: String?
     public let isDisabled: Bool
     public let isSecure: Bool
     public let error: ((_ text: String) -> Bool)?
@@ -18,7 +18,7 @@ public struct FormTextFieldGroup: View {
     public init(title: String,
                 text: Binding<String>,
                 textPlaceholder: String = "",
-                footnote: Binding<String>? = nil,
+                footnote: String? = nil,
                 isDisabled: Bool = false,
                 isSecure: Bool = false,
                 error: ((_ text: String) -> Bool)? = nil,
@@ -60,19 +60,19 @@ public struct FormTextFieldGroup: View {
                     TextField(textPlaceholder, text: text) { isEditing in
                         self.isEditing = isEditing
                     }
-                    .onReceive(Just(text), perform: { text in
-                        if let error = self.error {
-                            isError = error(text.wrappedValue)
-                        }
-                    })
                 }
             }
+            .onReceive(Just(text), perform: { text in
+                if let error = self.error {
+                    isError = error(text.wrappedValue)
+                }
+            })
             .textFieldStyle(FormTextFieldStyle(isEditing: isEditing,
                                                isActive: !isDisabled,
                                                isError: isError))
             .disabled(isDisabled)
             if let footnote = self.footnote {
-                Text(footnote.wrappedValue)
+                Text(footnote)
                     .textStyle(.subheading)
             }
             if isError, let error = errorMessage {
@@ -97,12 +97,12 @@ struct FormTextFieldGroupDemoView: View {
                 title: "My Text Field",
                 text: .constant(""),
                 textPlaceholder: "Some Placeholder",
-                footnote: .constant("Some Footnote")
+                footnote: "Some Footnote"
             )
             FormTextFieldGroup(
                 title: "My Text Field",
                 text: .constant("Lorem Ipsum"),
-                footnote: .constant("Lorem Ipsum")
+                footnote: "Lorem Ipsum"
             )
             FormTextFieldGroup(
                 title: "My Secure Text Field",

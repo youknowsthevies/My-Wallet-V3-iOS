@@ -9,128 +9,216 @@ import UIComponentsKit
 public struct CredentialsView: View {
     let store: Store<AuthenticationState, AuthenticationAction>
     @ObservedObject var viewStore: ViewStore<CredentialsViewState, AuthenticationAction>
+    @Binding var isTwoFACodeFieldVisible: Bool
+    @Binding var isResendSMSButtonVisible: Bool
+    @Binding var isHardwareKeyCodeFieldVisible: Bool
+    @Binding var isPasswordIncorrect: Bool
+    @Binding var isTwoFACodeIncorrect: Bool
+    @Binding var isHardwareKeyCodeIncorrect: Bool
+    @Binding var isAccountLocked: Bool
 
     public init(store: Store<AuthenticationState, AuthenticationAction>) {
         self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: CredentialsViewState.init))
+        let newViewStore = ViewStore(self.store.scope(state: CredentialsViewState.init))
+        self.viewStore = newViewStore
+        self._isTwoFACodeFieldVisible = newViewStore.binding(
+            get: { $0.isTwoFACodeVisible },
+            send: { _ in .none }
+        )
+        self._isHardwareKeyCodeFieldVisible = newViewStore.binding(
+            get: { $0.isHardwareKeyCodeFieldVisible },
+            send: { _ in .none }
+        )
+        self._isPasswordIncorrect = newViewStore.binding(
+            get: { $0.isPasswordIncorrect },
+            send: { _ in .none }
+        )
+        self._isTwoFACodeIncorrect = newViewStore.binding(
+            get: { $0.isTwoFACodeIncorrect },
+            send: { _ in .none }
+        )
+        self._isHardwareKeyCodeIncorrect = newViewStore.binding(
+            get: { $0.isHardwareKeyCodeIncorrect },
+            send: { _ in .none }
+        )
+        self._isAccountLocked = newViewStore.binding(
+            get: { $0.isAccountLocked },
+            send: { _ in .none }
+        )
+        self._isResendSMSButtonVisible = newViewStore.binding(
+            get: { $0.isResendSMSButtonVisible },
+            send: { _ in .none }
+        )
     }
 
     public var body: some View {
-        VStack {
-            ScrollView(.vertical) {
-                VStack(alignment: .leading) {
+        VStack(alignment: .leading) {
+            FormTextFieldGroup(
+                title: LoginViewString.TextFieldTitle.email,
+                text: viewStore.binding(
+                    get: { $0.emailAddress },
+                    send: { .didChangeEmailAddress($0) }
+                ),
+                footnote: LoginViewString.TextFieldFootnote.wallet + viewStore.walletAddress,
+                isDisabled: true
+            )
+            .padding(.top, 20)
+            .padding(.bottom, 20)
 
-                    FormTextFieldGroup(
-                        title: LoginViewString.TextFieldTitle.email,
-                        text: viewStore.binding(
-                            get: { $0.emailAddress },
-                            send: { .didChangeEmailAddress($0) }
-                        ),
-                        footnote: viewStore.binding(
-                            get: {
-                                LoginViewString.TextFieldFootnote.wallet + $0.walletAddress
-                            },
-                            send: { .didRetrievedWalletAddress($0) }
-                        ),
-                        isDisabled: true
-                    )
-                    .padding(.bottom, 20)
+            FormTextFieldGroup(
+                title: LoginViewString.TextFieldTitle.password,
+                text: viewStore.binding(
+                    get: { $0.password },
+                    send: { .didChangePassword($0) }
+                ),
+                isSecure: true,
+                error: { _ in isPasswordIncorrect || isAccountLocked },
+                errorMessage: isAccountLocked ? LoginViewString.TextFieldFootnote.accountLocked : LoginViewString.TextFieldFootnote.incorrectPassword
+            )
+            .padding(.bottom, 1)
 
-                    FormTextFieldGroup(
-                        title: LoginViewString.TextFieldTitle.password,
-                        text: viewStore.binding(
-                            get: { $0.password },
-                            send: { .didChangePassword($0) }
-                        ),
-                        isSecure: true
-                    )
-                    .padding(.bottom, 1)
+            Button(
+                action: {
+                    // TODO: Link to Account recovery
+                },
+                label: {
+                    Text(LoginViewString.Link.troubleLogInLink)
+                        .font(Font(weight: .medium, size: 14))
+                        .foregroundColor(.buttonLinkText)
+                }
+            )
+            .padding(.bottom, 16)
 
+            if isTwoFACodeFieldVisible {
+                FormTextFieldGroup(
+                    title: LoginViewString.TextFieldTitle.twoFACode,
+                    text: viewStore.binding(
+                        get: { $0.twoFACode },
+                        send: { .didChangeTwoFACode($0) }
+                    ),
+                    error: { _ in isTwoFACodeIncorrect || isAccountLocked },
+                    errorMessage:
+                        isAccountLocked ?
+                        LoginViewString.TextFieldFootnote.accountLocked :
+                        String(format: LoginViewString.TextFieldFootnote.incorrectTwoFACode, viewStore.twoFACodeAttemptsLeft)
+                )
+
+                if isResendSMSButtonVisible {
                     Button(
                         action: {
-                            // Add link action here
+                            viewStore.send(.requestOTPMessage)
                         },
                         label: {
-                            Text(LoginViewString.Link.troubleLogInLink)
+                            Text(LoginViewString.Button.resendSMS)
                                 .font(Font(weight: .medium, size: 14))
                                 .foregroundColor(.buttonLinkText)
                         }
                     )
-                    .padding(.bottom, 16)
-
-                    FormTextFieldGroup(
-                        title: LoginViewString.TextFieldTitle.twoFactorAuthCode,
-                        text: viewStore.binding(
-                            get: { $0.twoFactorAuthCode },
-                            send: { .didChangeTwoFactorAuthCode($0) }
-                        ),
-                        textPlaceholder: "-----"
-                    )
-
-                    HStack {
-                        Text(LoginViewString.TextFieldFootnote.lostTwoFactorAuthCodePrompt)
-                            .textStyle(.subheading)
-                        Button(
-                            action: {
-                                // Add reset 2FA action here
-                            },
-                            label: {
-                                Text(LoginViewString.Link.resetTwoFactorAuthLink)
-                                    .font(Font(weight: .medium, size: 14))
-                                    .foregroundColor(.buttonLinkText)
-                            }
-                        )
-                    }
-                    .padding(.bottom, 16)
-
-                    FormTextFieldGroup(
-                        title: LoginViewString.TextFieldTitle.hardwareKeyVerify,
-                        text: viewStore.binding(
-                            get: { $0.hardwareKeyCode },
-                            send: { .didChangeHardwareKeyCode($0) }
-                        ),
-                        isSecure: true
-                    )
-                    Text(LoginViewString.TextFieldFootnote.hardwareKeyInstruction)
-                        .textStyle(.subheading)
                 }
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-                .padding(EdgeInsets(top: 80, leading: 24, bottom: 0, trailing: 24))
+
+                HStack {
+                    Text(LoginViewString.TextFieldFootnote.lostTwoFACodePrompt)
+                        .textStyle(.subheading)
+                    Button(
+                        action: {
+                            guard let url = URL(string: Constants.Url.resetTwoFA) else { return }
+                            UIApplication.shared.open(url)
+                        },
+                        label: {
+                            Text(LoginViewString.Link.resetTwoFALink)
+                                .font(Font(weight: .medium, size: 14))
+                                .foregroundColor(.buttonLinkText)
+                        }
+                    )
+                }
+                .padding(.bottom, 16)
             }
+
+            if isHardwareKeyCodeFieldVisible {
+                FormTextFieldGroup(
+                    title: LoginViewString.TextFieldTitle.hardwareKeyCode,
+                    text: viewStore.binding(
+                        get: { $0.hardwareKeyCode },
+                        send: { .didChangeHardwareKeyCode($0) }
+                    ),
+                    isSecure: true,
+                    error: { _ in isHardwareKeyCodeIncorrect },
+                    errorMessage: LoginViewString.TextFieldFootnote.incorrectHardwareKeyCode
+                )
+                Text(LoginViewString.TextFieldFootnote.hardwareKeyInstruction)
+                    .textStyle(.subheading)
+            }
+
+            Spacer()
 
             PrimaryButton(title: LoginViewString.Button._continue) {
-                // Add Authentication actoin here
+                if viewStore.isTwoFACodeVerified {
+                    viewStore.send(.authenticateWithPassword(viewStore.password))
+                } else {
+                    viewStore.send(.authenticate)
+                }
             }
-            .padding(EdgeInsets(top: 0, leading: 24, bottom: 58, trailing: 24))
+            .padding(.bottom, 58)
         }
+        .disableAutocorrection(true)
+        .autocapitalization(.none)
+        .padding(.leading, 24)
+        .padding(.trailing, 24)
+        .onDisappear {
+            viewStore.send(.cancelPollingTimer)
+        }
+        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
     }
-
 }
 
 struct CredentialsViewState: Equatable {
     var emailAddress: String
     var walletAddress: String
     var password: String
-    var twoFactorAuthCode: String
+    var twoFACode: String
     var hardwareKeyCode: String
+    var isTwoFACodeVisible: Bool
+    var isResendSMSButtonVisible: Bool
+    var isHardwareKeyCodeFieldVisible: Bool
+    var isPasswordIncorrect: Bool
+    var isTwoFACodeIncorrect: Bool
+    var twoFACodeAttemptsLeft: Int
+    var isHardwareKeyCodeIncorrect: Bool
+    var isAccountLocked: Bool
+    var isTwoFACodeVerified: Bool
 
     init(state: AuthenticationState) {
         emailAddress = state.emailAddress
-        walletAddress = state.walletAddress
+        walletAddress = state.walletInfo?.guid ?? ""
         password = state.password
-        twoFactorAuthCode = state.twoFactorAuthCode
+        twoFACode = state.twoFACode
         hardwareKeyCode = state.hardwareKeyCode
+        isTwoFACodeVisible = state.isTwoFACodeFieldVisible
+        isResendSMSButtonVisible = state.isResendSMSButtonVisible
+        isHardwareKeyCodeFieldVisible = state.isHardwareKeyCodeFieldVisible
+        isPasswordIncorrect = state.isPasswordIncorrect
+        isTwoFACodeIncorrect = state.isTwoFACodeIncorrect
+        twoFACodeAttemptsLeft = state.twoFACodeAttemptsLeft
+        isHardwareKeyCodeIncorrect = state.isHardwareKeyCodeIncorrect
+        isAccountLocked = state.isAccountLocked
+        isTwoFACodeVerified = state.isTwoFACodeVerified
     }
 }
 
+#if DEBUG
 struct PasswordLoginView_Previews: PreviewProvider {
     static var previews: some View {
         CredentialsView(
-            store: Store(initialState: AuthenticationState(),
-                         reducer: authenticationReducer,
-                         environment: .init(mainQueue: .main)
+            store: Store(
+                initialState: AuthenticationState(),
+                reducer: authenticationReducer,
+                environment: .init(
+                    mainQueue: .main,
+                    buildVersionProvider: { "test version" },
+                    authenticationService: NoOpAuthenticationService()
+                )
             )
         )
     }
 }
+#endif

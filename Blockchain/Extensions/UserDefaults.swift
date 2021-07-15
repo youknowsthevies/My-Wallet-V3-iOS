@@ -7,7 +7,7 @@ extension UserDefaults {
         case walletIntroLatestLocation
         case firstRun
 
-        // MAKR: - PIN Login Flow
+        // MARK: - PIN Login Flow
         case walletWrongPinAttempts
         case walletLastWrongPinTimestamp
     }

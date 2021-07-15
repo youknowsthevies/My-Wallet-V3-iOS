@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import PlatformKit
 import RxRelay
@@ -45,7 +46,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         static let updateUserCredentialsFailure = "objc_updateUserCredentials_error"
     }
 
-    private let authenticatorTypeRelay = BehaviorRelay<AuthenticatorType>(value: .standard)
+    private let authenticatorTypeRelay = BehaviorRelay<WalletAuthenticatorType>(value: .standard)
     private let sessionTokenRelay = BehaviorRelay<String?>(value: nil)
     private let passwordRelay = BehaviorRelay<String?>(value: nil)
     private let reactiveWallet: ReactiveWalletAPI
@@ -76,7 +77,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .asSingle()
     }
 
-    var authenticatorType: Single<AuthenticatorType> {
+    var authenticatorType: Single<WalletAuthenticatorType> {
         authenticatorTypeRelay
             .take(1)
             .asSingle()
@@ -100,29 +101,6 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .map { NabuOfflineTokenResponse(userId: $0.userId, token: $0.offlineToken) }
     }
 
-    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
-        let userIdPublisher = self.userIdPublisher
-        let offlineTokenPublisher = self.offlineTokenPublisher
-        return reactiveWallet.waitUntilInitializedSinglePublisher
-            .mapError()
-            .flatMap { [userIdPublisher, offlineTokenPublisher] _ -> AnyPublisher<(String?, String?), WalletError> in
-                Publishers.Zip(userIdPublisher, offlineTokenPublisher)
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
-            .replaceError(with: MissingCredentialsError.offlineToken)
-            .flatMap { userId, offlineToken -> AnyPublisher<(userId: String, offlineToken: String), MissingCredentialsError> in
-                guard let userId = userId else {
-                    return .failure(.userId)
-                }
-                guard let offlineToken = offlineToken else {
-                    return .failure(.offlineToken)
-                }
-                return .just((userId: userId, offlineToken: offlineToken))
-            }
-            .map(NabuOfflineTokenResponse.init)
-            .eraseToAnyPublisher()
-    }
 
     private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
         let jsContextProvider = self.jsContextProvider
@@ -263,32 +241,6 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     // MARK: - Wallet Setters
 
-    func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError> {
-        let jsContextProvider = self.jsContextProvider
-        return Deferred {
-            Future { [jsContextProvider] promise in
-                jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        promise(.failure(.offlineToken))
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
-                )
-                jsContextProvider.jsContext.invokeOnce(
-                    functionBlock: {
-                        promise(.success(()))
-                    },
-                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
-                )
-                let userId = offlineTokenResponse.userId.escapedForJS()
-                let offlineToken = offlineTokenResponse.token.escapedForJS()
-                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
-                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
-            }
-        }
-        .subscribe(on: combineJSScheduler)
-        .eraseToAnyPublisher()
-    }
-
     func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable {
         Completable
             .create { [weak self] observer -> Disposable in
@@ -379,12 +331,12 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
                 }, forJsFunctionName: JSSetter.Password.error as NSString)
 
                 self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
-            return Disposables.create()
-        }
+                return Disposables.create()
+            }
     }
 
     /// Sets Authenticator Type
-    func set(authenticatorType: AuthenticatorType) -> Completable {
+    func set(authenticatorType: WalletAuthenticatorType) -> Completable {
         perform { [weak authenticatorTypeRelay] in
             authenticatorTypeRelay?.accept(authenticatorType)
         }
@@ -431,8 +383,8 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             .subscribeOn(jsScheduler)
     }
 
-    fileprivate func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
-        AnyPublisher<Void, E>
+    fileprivate func perform(_ operation: @escaping () -> Void) -> AnyPublisher<Void, Never> {
+        AnyPublisher<Void, Never>
             .create { observer -> AnyCancellable in
                 operation()
                 observer.send(())
@@ -441,6 +393,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             }
             .subscribe(on: combineJSScheduler)
             .eraseToAnyPublisher()
+    }
+
+    fileprivate func perform<E: Error>(_ operation: @escaping () -> Void) -> AnyPublisher<Void, E> {
+        let perform: AnyPublisher<Void, Never> = perform {
+            operation()
+        }
+        return perform.mapError()
     }
 
     // MARK: - Legacy: PLEASE DONT USE THESE UNLESS YOU MUST HOOK LEGACY OBJ-C CODE
@@ -468,26 +427,88 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
     }
 }
 
+// MARK: - SessionTokenRepositoryCombineAPI
+
+extension WalletRepository {
+
+    var sessionTokenPublisher: AnyPublisher<String?, Never> {
+        sessionToken.asPublisher().ignoreFailure()
+    }
+
+    func setPublisher(sessionToken: String) -> AnyPublisher<Void, Never> {
+        perform { [weak sessionTokenRelay] in
+            sessionTokenRelay?.accept(sessionToken)
+        }
+    }
+
+    func cleanSessionTokenPublisher() -> AnyPublisher<Void, Never> {
+        perform { [weak sessionTokenRelay] in
+            sessionTokenRelay?.accept(nil)
+        }
+    }
+}
+
 // MARK: - SharedKeyRepositoryCombineAPI
 
 extension WalletRepository {
 
     /// Streams the cached shared key or `nil` if it is not cached
     var sharedKeyPublisher: AnyPublisher<String?, Never> {
-        let settings = self.settings
-        return Deferred {
-            Future { [settings] promise in
-                promise(.success(settings.sharedKey))
-            }
-        }
-        .subscribe(on: combineJSScheduler)
-        .eraseToAnyPublisher()
+        sharedKey.asPublisher().ignoreFailure()
     }
 
     /// Sets the shared key
     func setPublisher(sharedKey: String) -> AnyPublisher<Void, Never> {
         perform { [weak self] in
             self?.settings.sharedKey = sharedKey
+        }
+    }
+}
+
+// MARK: - PasswordRepositoryCombineAPI
+
+extension WalletRepository {
+
+    var hasPasswordPublisher: AnyPublisher<Bool, Never> {
+        hasPassword.asPublisher().ignoreFailure()
+    }
+
+    var passwordPublisher: AnyPublisher<String?, Never> {
+        password.asPublisher().ignoreFailure()
+    }
+
+    func syncPublisher() -> AnyPublisher<Void, PasswordRepositoryError> {
+        Deferred {
+            Future { [weak self] promise in
+                guard let self = self else {
+                    promise(.failure(.syncFailed))
+                    return
+                }
+                guard let password = self.passwordRelay.value else {
+                    promise(.failure(.unavailable))
+                    return
+                }
+
+                let script = String(format: JSSetter.Password.change, password)
+
+                self.jsContextProvider.jsContext.invokeOnce(functionBlock: {
+                    promise(.success(()))
+                }, forJsFunctionName: JSSetter.Password.success as NSString)
+
+                self.jsContextProvider.jsContext.invokeOnce(functionBlock: {
+                    promise(.failure(.syncFailed))
+                }, forJsFunctionName: JSSetter.Password.error as NSString)
+
+                self.jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
+    }
+
+    func setPublisher(password: String) -> AnyPublisher<Void, Never> {
+        perform { [weak passwordRelay] in
+            passwordRelay?.accept(password)
         }
     }
 }
@@ -511,5 +532,114 @@ extension WalletRepository {
         perform { [weak self] in
             self?.settings.guid = guid
         }
+    }
+}
+
+// MARK: - SyncPubKeysRepositoryCombineAPI
+
+extension WalletRepository {
+
+    func setPublisher(syncPubKeys: Bool) -> AnyPublisher<Void, Never> {
+        perform { [weak jsContextProvider] in
+            let value = syncPubKeys ? "true" : "false"
+            let script = String(format: JSSetter.syncPubKeys, value)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+        }
+    }
+}
+
+// MARK: - LanguageRepositoryCombineAPI
+
+extension WalletRepository {
+
+    func setPublisher(language: String) -> AnyPublisher<Void, Never> {
+        perform { [weak jsContextProvider] in
+            let escaped = language.escapedForJS()
+            let script = String(format: JSSetter.language, escaped)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+        }
+    }
+}
+
+// MARK: - AuthenticatorRepositoryCombineAPI
+
+extension WalletRepository {
+
+    var authenticatorTypePublisher: AnyPublisher<WalletAuthenticatorType, Never> {
+        authenticatorType.asPublisher().ignoreFailure()
+    }
+
+    func setPublisher(authenticatorType: WalletAuthenticatorType) -> AnyPublisher<Void, Never> {
+        perform { [weak authenticatorTypeRelay] in
+            authenticatorTypeRelay?.accept(authenticatorType)
+        }
+    }
+}
+
+// MARK: - PayloadRepositoryCombineAPI
+
+extension WalletRepository {
+
+    func setPublisher(payload: String) -> AnyPublisher<Void, Never> {
+        perform { [weak jsContextProvider] in
+            let escaped = payload.escapedForJS()
+            let script = String(format: JSSetter.payload, escaped)
+            jsContextProvider?.jsContext.evaluateScriptCheckIsOnMainQueue(script)
+        }
+    }
+}
+
+// MARK: - NabuOfflineTokenRepositoryCombineAPI
+
+extension WalletRepository {
+
+    var offlineTokenResponsePublisher: AnyPublisher<NabuOfflineTokenResponse, MissingCredentialsError> {
+        let userIdPublisher = self.userIdPublisher
+        let offlineTokenPublisher = self.offlineTokenPublisher
+        return reactiveWallet.waitUntilInitializedSinglePublisher
+            .mapError()
+            .flatMap { [userIdPublisher, offlineTokenPublisher] _ -> AnyPublisher<(String?, String?), WalletError> in
+                Publishers.Zip(userIdPublisher, offlineTokenPublisher)
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
+            .replaceError(with: MissingCredentialsError.offlineToken)
+            .flatMap { userId, offlineToken -> AnyPublisher<(userId: String, offlineToken: String), MissingCredentialsError> in
+                guard let userId = userId else {
+                    return .failure(.userId)
+                }
+                guard let offlineToken = offlineToken else {
+                    return .failure(.offlineToken)
+                }
+                return .just((userId: userId, offlineToken: offlineToken))
+            }
+            .map(NabuOfflineTokenResponse.init)
+            .eraseToAnyPublisher()
+    }
+
+    func setPublisher(offlineTokenResponse: NabuOfflineTokenResponse) -> AnyPublisher<Void, CredentialWritingError> {
+        let jsContextProvider = self.jsContextProvider
+        return Deferred {
+            Future { [jsContextProvider] promise in
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.failure(.offlineToken))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsFailure as NSString
+                )
+                jsContextProvider.jsContext.invokeOnce(
+                    functionBlock: {
+                        promise(.success(()))
+                    },
+                    forJsFunctionName: JSCallback.updateUserCredentialsSuccess as NSString
+                )
+                let userId = offlineTokenResponse.userId.escapedForJS()
+                let offlineToken = offlineTokenResponse.token.escapedForJS()
+                let script = String(format: JSSetter.updateUserCredentials, userId, offlineToken)
+                jsContextProvider.jsContext.evaluateScriptCheckIsOnMainQueue(script)?.toString()
+            }
+        }
+        .subscribe(on: combineJSScheduler)
+        .eraseToAnyPublisher()
     }
 }

@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import CombineExt
 import DIKit
@@ -239,7 +240,7 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
             .eraseToAnyPublisher()
 
         let guid = credentialsRepository.guidPublisher
-            .mapError()
+            .setFailureType(to: NabuAuthenticationExecutorError.self)
             .flatMap { guid -> AnyPublisher<String, NabuAuthenticationExecutorError> in
                 guard let guid = guid else {
                     return .failure(.missingCredentials(MissingCredentialsError.guid))

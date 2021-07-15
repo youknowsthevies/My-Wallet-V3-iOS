@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Foundation
 
 public struct WalletSettings: Equatable {
@@ -16,7 +17,7 @@ public struct WalletSettings: Equatable {
     public let isSMSVerified: Bool
     public let isEmailNotificationsEnabled: Bool
     public let isEmailVerified: Bool
-    public let authenticator: AuthenticatorType
+    public let authenticator: WalletAuthenticatorType
     public let features: [Feature: Bool]
 
     public var currency: FiatCurrency? {
@@ -32,7 +33,7 @@ public struct WalletSettings: Equatable {
         isSMSVerified = response.smsVerified
         isEmailVerified = response.emailVerified
         isEmailNotificationsEnabled = response.emailNotificationsEnabled
-        authenticator = AuthenticatorType(rawValue: response.authenticator) ?? .standard
+        authenticator = WalletAuthenticatorType(rawValue: response.authenticator) ?? .standard
         features = response.invited.reduce(into: [Feature: Bool]()) { (result, data) in
             guard let key = Feature(rawValue: data.key.rawValue) else {
                 return

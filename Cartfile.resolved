@@ -1,3 +1,4 @@
+binary "RecaptchaSDK.json" "1.0.0"
 binary "VeriffSDK.json" "4.3.1"
 binary "RecaptchaSDK.json" "1.0.0"
 binary "https://dl.google.com/dl/firebase/ios/carthage/FirebaseAnalyticsBinary.json" "8.1.1"

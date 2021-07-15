@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import Combine
 import DIKit
 import RxRelay
@@ -193,7 +194,7 @@ extension SettingsService: FiatCurrencySettingsServiceAPI {
 
     func update(currency: FiatCurrency, context: FlowContext) -> AnyPublisher<Void, CurrencyUpdateError> {
         let fetch = fetchPublisher(force: true)
-        return credentialsRepository.fetchCredentials()
+        return credentialsRepository.credentialsPublisher
             .mapError(CurrencyUpdateError.credentialsError)
             .flatMap { [client] (guid: String, sharedKey: String) in
                 client.updatePublisher(
@@ -238,7 +239,7 @@ extension SettingsService: EmailSettingsServiceAPI {
     }
 
     func update(email: String) -> AnyPublisher<String, EmailSettingsServiceError> {
-        credentialsRepository.fetchCredentials()
+        credentialsRepository.credentialsPublisher
             .mapError(EmailSettingsServiceError.credentialsError)
             .flatMap { [client] (guid, sharedKey) in
                 client.update(

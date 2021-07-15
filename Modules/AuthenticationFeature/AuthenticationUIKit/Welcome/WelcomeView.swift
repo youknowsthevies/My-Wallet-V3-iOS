@@ -36,8 +36,10 @@ public struct WelcomeView: View {
 
 struct WelcomeViewState: Equatable {
     var isLoginVisible: Bool
+    var buildNumber: String
     init(state: AuthenticationState) {
         isLoginVisible = state.isLoginVisible
+        buildNumber = state.buildVersion
     }
 }
 
@@ -105,8 +107,7 @@ struct WelcomeActionSection: View {
                 .font(Font(weight: .semibold, size: 12))
                 .foregroundColor(.buttonLinkText)
                 Spacer()
-                // Replace test version with actual number later
-                Text("Test Version")
+                Text(viewStore.buildNumber)
                     .font(Font(weight: .medium, size: 12))
                     .foregroundColor(.textMuted)
             }
@@ -123,7 +124,9 @@ struct WelcomeView_Previews: PreviewProvider {
             store:Store(initialState: AuthenticationState(),
                         reducer: authenticationReducer,
                         environment: .init(
-                            mainQueue: .main
+                            mainQueue: .main,
+                            buildVersionProvider: { "test version" },
+                            authenticationService: NoOpAuthenticationService()
                         )
             )
         )
