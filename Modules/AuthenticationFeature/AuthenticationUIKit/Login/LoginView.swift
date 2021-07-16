@@ -69,6 +69,7 @@ public struct LoginView: View {
             }
             .updateNavigationBarStyle()
         }
+        .alert(self.store.scope(state: \.alert), dismiss: .alert(.dismiss))
         .onDisappear {
             self.viewStore.send(.onLoginDisappear)
         }
