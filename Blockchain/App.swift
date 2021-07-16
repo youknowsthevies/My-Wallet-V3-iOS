@@ -43,15 +43,17 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             window.setRootViewController(UIViewController())
             return true
         }
-        if useNewOnboarding() {
-            let hostingController = AppHostingController(
-                store: store.scope(
-                    state: \.coreState,
-                    action: AppAction.core
-                )
-            )
-            window.setRootViewController(hostingController)
+        guard !newOnboardingDisabled() else {
+            viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
+            return true
         }
+        let hostingController = AppHostingController(
+            store: store.scope(
+                state: \.coreState,
+                action: AppAction.core
+            )
+        )
+        window.setRootViewController(hostingController)
         viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
         return true
     }
@@ -104,7 +106,7 @@ private func bootstrap() {
     defineDependencies()
 }
 
-func useNewOnboarding() -> Bool {
+func newOnboardingDisabled() -> Bool {
     let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
     return featureFlagService.isEnabled(.newOnboarding)
 }

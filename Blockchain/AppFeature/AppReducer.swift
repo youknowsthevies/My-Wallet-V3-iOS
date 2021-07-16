@@ -52,7 +52,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     appFeatureConfigurator: $0.appFeatureConfigurator,
                     internalFeatureService: $0.internalFeatureService,
                     fiatCurrencySettingsService: $0.fiatCurrencySettingsService,
-                    blockchainSettings:  $0.blockchainSettings,
+                    blockchainSettings: $0.blockchainSettings,
                     credentialsStore: $0.credentialsStore,
                     alertPresenter: resolve(),
                     walletUpgradeService: $0.walletUpgradeService,
@@ -73,24 +73,24 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
-        guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
-            return .init(value: .core(.start))
+        guard !newOnboardingDisabled() else {
+            return .fireAndForget {
+                environment.appCoordinator.window = window
+                environment.appCoordinator.start()
+            }
         }
-        return .fireAndForget {
-            environment.appCoordinator.window = window
-            environment.appCoordinator.start()
-        }
+        return .init(value: .core(.start))
     case .appDelegate(.didEnterBackground):
         return .fireAndForget {
             environment.portfolioSyncingService.sync()
         }
     case .appDelegate(.willEnterForeground):
-        guard !environment.internalFeatureService.isEnabled(.newOnboarding) else {
-            return Effect(value: .core(.appForegrounded))
+        guard !newOnboardingDisabled() else {
+            return .fireAndForget {
+                handleWillEnterForeground(coordinator: environment.appCoordinator)
+            }
         }
-        return .fireAndForget {
-            handleWillEnterForeground(coordinator: environment.appCoordinator)
-        }
+        return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):
         return .merge(
             .fireAndForget {

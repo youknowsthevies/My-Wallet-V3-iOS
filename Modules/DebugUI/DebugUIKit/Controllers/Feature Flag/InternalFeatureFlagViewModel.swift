@@ -15,7 +15,7 @@ struct InternalFeatureItem: Equatable {
         case .secureChannel:
             return "Secure Channel"
         case .newOnboarding:
-            return "New Pin/Onboarding (experimental)"
+            return "Disable New Pin/Onboarding"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:
