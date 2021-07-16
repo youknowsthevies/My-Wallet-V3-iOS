@@ -16,6 +16,7 @@ public enum RouterError: Error {
 public protocol RouterAPI: AnyObject {
     func setup(startImmediately: Bool)
     func start()
+    func start(skipIntro: Bool)
     func next(to state: StateService.State)
     func previous(from state: StateService.State)
     func showCryptoSelectionScreen()
@@ -140,6 +141,13 @@ public final class Router: RouterAPI {
 
     /// Should be called once
     public func start() {
+        start(skipIntro: false)
+    }
+
+    public func start(skipIntro: Bool) {
+        if skipIntro {
+            stateService.cache.mutate { $0[.hasShownIntroScreen] = true }
+        }
         setup(startImmediately: true)
     }
 
@@ -369,6 +377,13 @@ public final class Router: RouterAPI {
         return newKYCRouter
             .presentEmailVerificationIfNeeded(from: viewController)
             .mapError(RouterError.kyc)
+            .flatMap { value in
+                return Future { completion in
+                    viewController.dismiss(animated: true) {
+                        completion(.success(value))
+                    }
+                }
+            }
             .eraseToAnyPublisher()
     }
 
