@@ -15,7 +15,7 @@ public enum EmailLoginAction: Equatable {
     case closeButtonTapped
     case didDisappear
     case didChangeEmailAddress(String)
-    case didSendVerifyDeviceEmail(Result<Int, AuthenticationServiceError>)
+    case didSendVerifyDeviceEmail(Result<Int, DeviceVerificationServiceError>)
     case emailLoginFailureAlert(AlertAction)
     case sendVerifyDeviceEmail
     case setVerifyDeviceScreenVisible(Bool)
@@ -40,16 +40,13 @@ struct EmailLoginState: Equatable {
 }
 
 struct EmailLoginEnvironment {
-    let authenticationService: AuthenticationServiceAPI
-    let recaptchaService: GoogleRecaptchaServiceAPI
+    let authenticationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validateEmail: (String) -> Bool = { $0.isEmail }
 
-    init(authenticationService: AuthenticationServiceAPI = resolve(),
-         recaptchaService: GoogleRecaptchaServiceAPI = resolve(),
+    init(authenticationService: DeviceVerificationServiceAPI = resolve(),
          mainQueue: AnySchedulerOf<DispatchQueue> = .main) {
         self.authenticationService = authenticationService
-        self.recaptchaService = recaptchaService
         self.mainQueue = mainQueue
     }
 }

@@ -81,7 +81,6 @@ struct LoginView_Previews: PreviewProvider {
                       reducer: emailLoginReducer,
                       environment: .init(
                         authenticationService: NoOpAuthenticationService(),
-                        recaptchaService: NoOpRecaptchaService(),
                         mainQueue: .main
                       )
                 )

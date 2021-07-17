@@ -70,7 +70,7 @@ struct CredentialsState: Equatable {
 struct CredentialsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
-    let authenticationService: AuthenticationServiceAPI
+    let authenticationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
     let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
@@ -85,7 +85,7 @@ struct CredentialsEnvironment {
             label: "com.blockchain.AuthenticationEnvironmentPollingQueue",
             qos: .utility
          ).eraseToAnyScheduler(),
-         authenticationService: AuthenticationServiceAPI = resolve(),
+         authenticationService: DeviceVerificationServiceAPI = resolve(),
          emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
          sessionTokenService: SessionTokenServiceAPI = resolve(),
          smsService: SMSServiceAPI = resolve(),

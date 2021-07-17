@@ -38,11 +38,11 @@ struct VerifyDeviceState: Equatable {
 }
 
 struct VerifyDeviceEnvironment {
-    let authenticationService: AuthenticationServiceAPI
+    let authenticationService: DeviceVerificationServiceAPI
     let errorRecorder: ErrorRecording
     let mainQueue: AnySchedulerOf<DispatchQueue>
 
-    init(authenticationService: AuthenticationServiceAPI = resolve(),
+    init(authenticationService: DeviceVerificationServiceAPI = resolve(),
          errorRecorder: ErrorRecording = resolve(),
          mainQueue: AnySchedulerOf<DispatchQueue> = .main) {
         self.authenticationService = authenticationService
