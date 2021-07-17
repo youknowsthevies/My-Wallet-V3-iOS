@@ -271,7 +271,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.authenticationState = .init()
+            state.onboarding?.welcomeState = .init()
         }
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
@@ -297,7 +297,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyCreateWalletScreen = false
-            state.onboarding?.authenticationState?.isLoginVisible = false
+            state.onboarding?.welcomeState?.isLoginVisible = false
         }
         testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
         testStore.receive(.setupPin) { state in
@@ -314,7 +314,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.send(.onboarding(.start)) { state in
             state.onboarding = .init()
             state.onboarding?.pinState = nil
-            state.onboarding?.authenticationState = .init()
+            state.onboarding?.welcomeState = .init()
         }
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
@@ -340,7 +340,7 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyRecoverWalletScreen = false
-            state.onboarding?.authenticationState?.isLoginVisible = false
+            state.onboarding?.welcomeState?.isLoginVisible = false
         }
         testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
         testStore.receive(.setupPin) { state in

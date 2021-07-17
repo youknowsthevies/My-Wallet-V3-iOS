@@ -29,7 +29,7 @@ public enum Onboarding {
         var pinState: PinCore.State? = .init()
         var walletUpgradeState: WalletUpgrade.State?
         var passwordScreen: PasswordRequired.State?
-        var authenticationState: WelcomeState?
+        var welcomeState: WelcomeState?
         var displayAlert: Alert?
         var showLegacyCreateWalletScreen: Bool = false
         var showLegacyRecoverWalletScreen: Bool = false
@@ -63,7 +63,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
     welcomeReducer
         .optional()
         .pullback(
-            state: \.authenticationState,
+            state: \.welcomeState,
             action: /Onboarding.Action.welcomeScreen,
             environment: {
                 WelcomeEnvironment(
@@ -120,20 +120,22 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             state.showLegacyRecoverWalletScreen = false
             state.walletCreationContext = nil
             return .none
-        case .welcomeScreen(.createWallet):
+        case .welcomeScreen(.presentScreenFlow(.welcomeScreen)):
+            // don't clear the state if the state is not .existing when dismissing the modal by setting the screen flow back to welcome screen
+            if state.walletCreationContext == .existing {
+                state.walletCreationContext = nil
+            }
+            return .none
+        case .welcomeScreen(.presentScreenFlow(.createWalletScreen)):
             state.showLegacyCreateWalletScreen = true
             state.walletCreationContext = .new
             return .none
-        case .welcomeScreen(.recoverFunds):
+        case .welcomeScreen(.presentScreenFlow(.recoverWalletScreen)):
             state.showLegacyRecoverWalletScreen = true
             state.walletCreationContext = .recovery
             return .none
-        case .welcomeScreen(.setLoginVisible(let isVisible)):
-            // don't clear the state if the state is not .existing when setting
-            // the isVisible to false
-            if state.walletCreationContext == .existing {
-                state.walletCreationContext = isVisible ? .existing : nil
-            }
+        case .welcomeScreen(.presentScreenFlow(.emailLoginScreen)):
+            state.walletCreationContext = .existing
             return .none
         case .welcomeScreen:
             return .none
@@ -145,7 +147,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
              .forgetWallet:
             state.passwordScreen = nil
             state.pinState = nil
-            state.authenticationState = .init()
+            state.welcomeState = .init()
             return Effect(value: .welcomeScreen(.start))
         case .passwordScreen:
             return .none
@@ -181,7 +183,7 @@ func decideFlow(state: inout Onboarding.State, blockchainSettings: BlockchainSet
     } else {
         state.pinState = nil
         state.passwordScreen = nil
-        state.authenticationState = .init()
+        state.welcomeState = .init()
         return Effect(value: .welcomeScreen(.start))
     }
 }

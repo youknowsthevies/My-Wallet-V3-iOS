@@ -4,9 +4,14 @@ import Combine
 import DIKit
 import NetworkKit
 
-public enum AuthenticationServiceError: Error {
+public enum AuthenticationServiceError: Error, Equatable {
     case missingSessionToken
+    case recaptchaError(GoogleRecaptchaError)
     case networkError(NetworkError)
+
+    public static func == (lhs: AuthenticationServiceError, rhs: AuthenticationServiceError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
 }
 
 /// `AuthenticationServiceAPI` is the interface the UI should use the authentication service APIs.
@@ -14,11 +19,8 @@ public protocol AuthenticationServiceAPI {
 
     /// Sends a verification email to the user's email address. Thie will trigger the send GUID reminder endpoint and user will receive a link to verify their device in their inbox if they have an account registered with the email
     /// - Parameters: emailAddress: The email address of the user
-    /// - Parameters: captcha: The captcha token returned from reCaptcha Service
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
-    func sendDeviceVerificationEmail(
-        to emailAddress: String,
-        captcha: String)
+    func sendDeviceVerificationEmail(to emailAddress: String)
     -> AnyPublisher<Void, AuthenticationServiceError>
 
     /// Authorize the login to the associated email identified by the email code. The email code is received by decrypting the base64 information encrypted in the magic link from the device verification email
@@ -38,23 +40,30 @@ public final class AuthenticationService: AuthenticationServiceAPI {
 
     private let authenticationRepository: AuthenticationRepositoryAPI
     private let sessionTokenRepository: SessionTokenRepositoryAPI
+    private let recaptchaService: GoogleRecaptchaServiceAPI
 
     // MARK: - Setup
 
     public init(authenticationRepository: AuthenticationRepositoryAPI = resolve(),
-                sessionTokenRepository: SessionTokenRepositoryAPI) {
+                sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
+                recaptchaService: GoogleRecaptchaServiceAPI = resolve()) {
         self.authenticationRepository = authenticationRepository
         self.sessionTokenRepository = sessionTokenRepository
+        self.recaptchaService = recaptchaService
     }
 
     // MARK: - AuthenticationServiceAPI
 
     public func sendDeviceVerificationEmail(
-        to emailAddress: String,
-        captcha: String
+        to emailAddress: String
     ) -> AnyPublisher<Void, AuthenticationServiceError> {
-        authenticationRepository
-            .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
+        recaptchaService
+            .verifyForLogin()
+            .mapError(AuthenticationServiceError.recaptchaError)
+            .flatMap { [authenticationRepository] captcha -> AnyPublisher<Void, AuthenticationServiceError> in
+                authenticationRepository
+                    .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
+            }
             .eraseToAnyPublisher()
     }
 

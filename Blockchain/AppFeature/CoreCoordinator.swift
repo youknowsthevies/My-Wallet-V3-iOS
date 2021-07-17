@@ -134,7 +134,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             // do nothing if we're on the authentication state,
             // meaning we either need to register, login or recover
             guard let onboarding = state.onboarding,
-                  onboarding.authenticationState == nil else {
+                  onboarding.welcomeState == nil else {
                 return .none
             }
             state.loggedIn = nil
@@ -154,12 +154,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         }
         // check if we're on the authentication state and the deeplink
         // currently we only support only one deeplink for login, so being naive here
-        guard let authState = onboarding.authenticationState,
+        guard let authState = onboarding.welcomeState,
               content.context == .blockchainLinks(.login) else {
             return .none
         }
         // Pass content to welcomeScreen to be handled
-        return Effect(value: .onboarding(.welcomeScreen(.didReceiveWalletInfoDeeplink(content.url))))
+        return Effect(value: .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.didReceiveWalletInfoDeeplink(content.url))))))
     case .deeplink(.handleLink(let content)):
         // we first check if we're logged in, if not we need to defer the deeplink routing
         guard state.isLoggedIn else {
@@ -248,13 +248,24 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         state.onboarding?.displayAlert = .walletAuthentication(error)
         return .cancel(id: WalletCancelations.DecryptId())
     case .authenticated(.failure(let error)) where error.code == .failedToLoadWallet:
-        guard state.onboarding?.authenticationState != nil else {
+        guard state.onboarding?.welcomeState != nil else {
             state.onboarding?.displayAlert = .walletAuthentication(error)
             return .cancel(id: WalletCancelations.AuthenticationId())
         }
         return .merge(
             .cancel(id: WalletCancelations.AuthenticationId()),
-            Effect(value: CoreAppAction.onboarding(.welcomeScreen(.showIncorrectPasswordError(true))))
+            Effect(value: CoreAppAction.onboarding(
+                    .welcomeScreen(
+                        .emailLogin(
+                            .verifyDevice(
+                                .credentials(
+                                    .password(.incorrectPasswordErrorVisibility(true))
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
     case .authenticated(.failure(let error)):
         state.onboarding?.displayAlert = .walletAuthentication(error)
@@ -263,7 +274,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // decide if we need to set a pin or not
         guard environment.blockchainSettings.isPinSet else {
             state.onboarding?.hideLegacyScreenIfNeeded()
-            guard state.onboarding?.authenticationState != nil else {
+            guard state.onboarding?.welcomeState != nil else {
                 return .merge(
                     .cancel(id: WalletCancelations.AuthenticationId()),
                     Effect(value: .setupPin)
@@ -271,7 +282,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             }
             return .merge(
                 .cancel(id: WalletCancelations.AuthenticationId()),
-                Effect(value: .onboarding(.welcomeScreen(.setLoginVisible(false)))),
+                Effect(value: .onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))),
                 Effect(value: .setupPin)
             )
         }
@@ -337,10 +348,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
                 value: CoreAppAction.loggedIn(.start(context))
             )
         )
-    case .onboarding(.welcomeScreen(.createWallet)):
+    case .onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation
         return Effect(value: .authenticate)
-    case .onboarding(.welcomeScreen(.recoverFunds)):
+    case .onboarding(.welcomeScreen(.presentScreenFlow(.recoverWalletScreen))):
         // send `authenticate` action so that we can listen for wallet creation or recovery
         return Effect(value: .authenticate)
     case .onboarding(.createAccountScreenClosed),
@@ -367,7 +378,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(
             value: .initializeWallet
         )
-    case .onboarding(.welcomeScreen(.authenticateWithPassword(let password))):
+    case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
         return Effect(
             value: .fetchWallet(password)
         )

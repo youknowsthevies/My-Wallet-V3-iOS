@@ -137,7 +137,7 @@ struct UnlockTradingView_Previews: PreviewProvider {
                 initialState: UnlockTradingState(
                     viewModel: .unlockGoldTier
                 ),
-                reducer: unloackTradingReducer,
+                reducer: unlockTradingReducer,
                 environment: UnlockTradingEnvironment(
                     dismiss: {},
                     unlock: {}
