@@ -21,8 +21,8 @@ public struct WelcomeState: Equatable {
         case recoverWalletScreen
     }
 
-    var buildVersion: String
-    var screenFlow: ScreenFlow
+    public var screenFlow: ScreenFlow
+    public var buildVersion: String
     var emailLoginState: EmailLoginState?
 
     public init() {

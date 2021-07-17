@@ -23,7 +23,7 @@ final class MainAppReducerTests: XCTestCase {
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockWalletUpgradeService: MockWalletUpgradeService!
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
-    var mockRemoteNotificationAuthorizer:MockRemoteNotificationAuthorizer!
+    var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockCoincore: MockCoincore!
     var mockFeatureConfigurator: MockFeatureConfigurator!
@@ -276,7 +276,8 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
-        testStore.send(.onboarding(.welcomeScreen(.createWallet))) { state in
+        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.createWalletScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .createWalletScreen
             state.onboarding?.walletCreationContext = .new
             state.onboarding?.showLegacyCreateWalletScreen = true
         }
@@ -297,9 +298,11 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyCreateWalletScreen = false
-            state.onboarding?.welcomeState?.isLoginVisible = false
+            state.onboarding?.welcomeState?.screenFlow = .createWalletScreen
         }
-        testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
+        testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .welcomeScreen
+        }
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordScreen = nil
@@ -319,7 +322,8 @@ final class MainAppReducerTests: XCTestCase {
 
         testStore.receive(.onboarding(.welcomeScreen(.start)))
 
-        testStore.send(.onboarding(.welcomeScreen(.recoverFunds))) { state in
+        testStore.send(.onboarding(.welcomeScreen(.presentScreenFlow(.recoverWalletScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .recoverWalletScreen
             state.onboarding?.walletCreationContext = .recovery
             state.onboarding?.showLegacyRecoverWalletScreen = true
         }
@@ -340,9 +344,11 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyRecoverWalletScreen = false
-            state.onboarding?.welcomeState?.isLoginVisible = false
+            state.onboarding?.welcomeState?.screenFlow = .recoverWalletScreen
         }
-        testStore.receive(.onboarding(.welcomeScreen(.setLoginVisible(false))))
+        testStore.receive(.onboarding(.welcomeScreen(.presentScreenFlow(.welcomeScreen)))) { state in
+            state.onboarding?.welcomeState?.screenFlow = .welcomeScreen
+        }
         testStore.receive(.setupPin) { state in
             state.onboarding?.pinState = .init()
             state.onboarding?.passwordScreen = nil
