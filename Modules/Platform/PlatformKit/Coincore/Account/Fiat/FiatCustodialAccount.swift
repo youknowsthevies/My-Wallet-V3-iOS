@@ -93,9 +93,11 @@ final class FiatCustodialAccount: FiatAccount {
              .sell,
              .swap,
              .receive:
-            return Single.just(false)
-        case .deposit,
-             .withdraw:
+            return .just(false)
+        case .deposit:
+            return paymentMethodService
+                .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
+        case .withdraw:
             // TODO: Account for OB
             let hasActionableBalance = actionableBalance
                 .map(\.isPositive)
@@ -103,14 +105,7 @@ final class FiatCustodialAccount: FiatAccount {
                 .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
             return Single.zip(canTransactWithBanks, hasActionableBalance)
                 .map { canTransact, hasBalance in
-                    if canTransact {
-                        if action == .deposit {
-                            return true
-                        } else {
-                            return hasBalance ? true : false
-                        }
-                    }
-                    return false
+                    canTransact && hasBalance
                 }
         }
     }

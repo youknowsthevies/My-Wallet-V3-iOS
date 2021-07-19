@@ -77,4 +77,124 @@ extension CoinAssetModel {
             sortIndex: 2
         )
     }
+    static var dogecoin: CoinAssetModel {
+        CoinAssetModel(
+            code: "DOGE",
+            name: "Dogecoin",
+            precision: 8,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "C2A633",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 3
+        )
+    }
+    static var bitClout: CoinAssetModel {
+        CoinAssetModel(
+            code: "CLOUT",
+            name: "BitClout",
+            precision: 9,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 4
+        )
+    }
+    static var ethereumClassic: CoinAssetModel {
+        CoinAssetModel(
+            code: "ETC",
+            name: "Ethereum Classic",
+            precision: 18,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 5
+        )
+    }
+    static var litecoin: CoinAssetModel {
+        CoinAssetModel(
+            code: "LTC",
+            name: "Litecoin",
+            precision: 18,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "BFBBBB",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 6
+        )
+    }
+    static var blockstack: CoinAssetModel {
+        CoinAssetModel(
+            code: "STX",
+            name: "Stacks",
+            precision: 6,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "211F6D",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 7
+        )
+    }
+    static var tezos: CoinAssetModel {
+        CoinAssetModel(
+            code: "XTZ",
+            name: "Tezos",
+            precision: 6,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "2C7DF7",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 8
+        )
+    }
+    static var mobileCoin: CoinAssetModel {
+        CoinAssetModel(
+            code: "MOB",
+            name: "Mobile Coin",
+            precision: 12,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "243855",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 9
+        )
+    }
+    static var theta: CoinAssetModel {
+        CoinAssetModel(
+            code: "THETA",
+            name: "Theta Network",
+            precision: 18,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "2AB8E6",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 10
+        )
+    }
+    static var near: CoinAssetModel {
+        CoinAssetModel(
+            code: "NEAR",
+            name: "NEAR Protocol",
+            precision: 24,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "000000",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 11
+        )
+    }
+    static var eos: CoinAssetModel {
+        CoinAssetModel(
+            code: "EOS",
+            name: "EOS",
+            precision: 4,
+            products: [],
+            logoPngUrl: nil,
+            spotColor: "000000",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 12
+        )
+    }
 }

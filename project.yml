@@ -16,7 +16,7 @@ options:
   bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
-    iOS: '13.0'
+    iOS: '14.0'
   groupSortPosition: bottom
   platform: iOS
 schemeTemplates:
@@ -33,9 +33,6 @@ schemeTemplates:
       config: ${releaseConfig}
     run:
       config: ${debugConfig}
-      environmentVariables:
-      - variable: bootstrap_work
-        value: ${bootstrapWorkValue}
     test:
       config: ${debugConfig}
       gatherCoverageData: true
@@ -103,35 +100,30 @@ schemes:
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release
-      bootstrapWorkValue: "false"
     templates:
     - BlockchainScheme
   Blockchain (Dev):
     templateAttributes:
       debugConfig: Debug Dev
       releaseConfig: Release
-      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Internal Production):
     templateAttributes:
       debugConfig: Debug Production
       releaseConfig: Release Internal
-      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Staging):
     templateAttributes:
       debugConfig: Debug Staging
       releaseConfig: Release Staging
-      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
   Blockchain (Alpha):
     templateAttributes:
       debugConfig: Debug Alpha
       releaseConfig: Release Alpha
-      bootstrapWorkValue: "true"
     templates:
     - BlockchainScheme
 settingGroups:
@@ -790,7 +782,7 @@ targets:
     - package: CombineExt
     platform: iOS
     deploymentTarget:
-        iOS: '13.0'
+        iOS: '14.0'
     scheme: {}
     sources:
     - createIntermediateGroups: true

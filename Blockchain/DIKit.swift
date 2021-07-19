@@ -153,7 +153,7 @@ extension DependencyContainer {
         factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
 
         factory { () -> AuthenticationCoordinating in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 let coordinator: AuthenticationCoordinator = DIKit.resolve()
                 return coordinator as AuthenticationCoordinating
             }
@@ -198,7 +198,7 @@ extension DependencyContainer {
         single { LoggedInDependencyBridge() as LoggedInDependencyBridgeAPI }
 
         factory { () -> CurrencyRouting & TabSwapping in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as CurrencyRouting & TabSwapping
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -206,7 +206,7 @@ extension DependencyContainer {
         }
 
         factory { () -> CurrencyRouting in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as CurrencyRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -214,7 +214,7 @@ extension DependencyContainer {
         }
 
         factory { () -> TabSwapping in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as TabSwapping
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -222,7 +222,7 @@ extension DependencyContainer {
         }
 
         factory { () -> AppCoordinating in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as AppCoordinating
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -230,7 +230,7 @@ extension DependencyContainer {
         }
 
         factory { () -> DashboardUIKit.WalletOperationsRouting in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as DashboardUIKit.WalletOperationsRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -238,7 +238,7 @@ extension DependencyContainer {
         }
 
         factory { () -> BackupFlowStarterAPI in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as BackupFlowStarterAPI
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -246,7 +246,7 @@ extension DependencyContainer {
         }
 
         factory { () -> CashIdentityVerificationAnnouncementRouting in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as CashIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -255,7 +255,7 @@ extension DependencyContainer {
         }
 
         factory { () -> InterestIdentityVerificationAnnouncementRouting in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as InterestIdentityVerificationAnnouncementRouting
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -264,7 +264,7 @@ extension DependencyContainer {
         }
 
         factory { () -> SettingsStarterAPI in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 return AppCoordinator.shared as SettingsStarterAPI
             }
             let bridge: LoggedInDependencyBridgeAPI = DIKit.resolve()
@@ -272,7 +272,7 @@ extension DependencyContainer {
         }
 
         factory { () -> TabControllerManagerProvider in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as TabControllerManagerProvider
             }
@@ -281,7 +281,7 @@ extension DependencyContainer {
         }
 
         factory { () -> DrawerRouting in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as DrawerRouting
             }
@@ -290,7 +290,7 @@ extension DependencyContainer {
         }
 
         factory { () -> LoggedInReloadAPI in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as LoggedInReloadAPI
             }
@@ -299,7 +299,7 @@ extension DependencyContainer {
         }
 
         factory { () -> ClearOnLogoutAPI in
-            guard useNewOnboarding() else {
+            guard !newOnboardingDisabled() else {
                 let app: AppCoordinator = DIKit.resolve()
                 return app as ClearOnLogoutAPI
             }

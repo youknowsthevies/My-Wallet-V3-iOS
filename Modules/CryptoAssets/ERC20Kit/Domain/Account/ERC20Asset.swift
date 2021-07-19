@@ -67,7 +67,7 @@ final class ERC20Asset: CryptoAsset {
                 asset: asset,
                 address: address,
                 label: address,
-                onTxCompleted: { _ in .empty() }
+                onTxCompleted: { _ in Completable.empty() }
             )
             .get()
         return .just(receiveAddress)
@@ -87,10 +87,7 @@ final class ERC20Asset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-        guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
-        return .just(
+        .just(
             CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)])
         )
     }
