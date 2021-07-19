@@ -22,7 +22,10 @@ public enum EmailAuthorizationServiceError: Error {
 
 public protocol EmailAuthorizationServiceAPI {
     var authorize: Completable { get }
-
     func cancel()
+
+    /// Checks whether the email authorization has been approved by checking the existence of GUID set at the backend
+    /// - Returns: A Combine `Publisher`that returns Void on success (GUID exist) or
+    ///  EmailAuthorizationServiceError on failure (including GUID not exist case)
     func authorizeEmailPublisher() -> AnyPublisher<Void, EmailAuthorizationServiceError>
 }

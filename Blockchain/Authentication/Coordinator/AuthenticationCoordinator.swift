@@ -15,7 +15,7 @@ import RxSwift
 import SettingsKit
 import ToolKit
 
-extension AuthenticationCoordinator: PairingWalletFetching {
+extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     /// A new method for fetching wallet - is being used after manual pairing
     /// TODO: Remove once done migrating JS to native
     func authenticate(using password: String) {

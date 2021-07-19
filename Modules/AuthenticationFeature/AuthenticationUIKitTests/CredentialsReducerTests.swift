@@ -30,8 +30,13 @@ final class CredentialsReducerTests: XCTestCase {
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 pollingQueue: mockPollingQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
+                emailAuthorizationService: MockEmailAuthorizationService(),
+                sessionTokenService: MockSessionTokenService(),
+                smsService: MockSMSService(),
+                loginService: MockLoginService(),
+                wallet: MockWalletAuthenticationKitWrapper(),
+                analyticsRecorder: MockAnalyticsRecorder(),
                 errorRecorder: NoOpErrorRecorder()
-                // TODO: create mocks for the other services and use them here to prevent DIKit errors
             )
         )
     }
@@ -57,11 +62,19 @@ final class CredentialsReducerTests: XCTestCase {
 
     func test_did_appear_should_set_wallet_info() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
-        testStore.send(.didAppear(walletInfo: mockWalletInfo)) { state in
-            state.emailAddress = mockWalletInfo.email
-            state.walletGuid = mockWalletInfo.guid
-            state.emailCode = mockWalletInfo.emailCode
-        }
+        testStore.assert(
+            .send(.didAppear(walletInfo: mockWalletInfo)) { state in
+                state.emailAddress = mockWalletInfo.email
+                state.walletGuid = mockWalletInfo.guid
+                state.emailCode = mockWalletInfo.emailCode
+            },
+            .receive(.walletPairing(.setupSessionToken)),
+            .do {
+                // advance 0.5 second for setup session token to take effect
+                self.mockMainQueue.advance(by: 0.5)
+            },
+            .receive(.none)
+        )
     }
 
     func test_set_twoFA_verified_should_update_view_state() {

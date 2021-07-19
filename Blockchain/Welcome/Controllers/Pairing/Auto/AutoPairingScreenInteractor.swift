@@ -22,7 +22,7 @@ final class AutoPairingScreenInteractor {
     /// The service responsible for taking the parser code and the login using it
     private let service: AutoWalletPairingServiceAPI
 
-    private let walletFetcher: PairingWalletFetching
+    private let walletFetcher: WalletPairingFetcherAPI
 
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let errorRelay = PublishRelay<Error>()
@@ -32,7 +32,7 @@ final class AutoPairingScreenInteractor {
     // MARK: - Setup
 
     init(service: AutoWalletPairingServiceAPI = resolve(),
-         walletFetcher: PairingWalletFetching = AuthenticationCoordinator.shared,
+         walletFetcher: WalletPairingFetcherAPI = AuthenticationCoordinator.shared,
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder

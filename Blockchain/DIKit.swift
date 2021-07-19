@@ -150,7 +150,7 @@ extension DependencyContainer {
 
         single { AuthenticationCoordinator() }
 
-        factory { AuthenticationCoordinator.shared as PairingWalletFetching }
+        factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
 
         factory { () -> AuthenticationCoordinating in
             guard useNewOnboarding() else {

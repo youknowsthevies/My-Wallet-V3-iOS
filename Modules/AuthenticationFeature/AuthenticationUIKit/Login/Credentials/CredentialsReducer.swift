@@ -75,7 +75,6 @@ struct CredentialsEnvironment {
     let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
     let loginService: LoginServiceAPI
-    let walletFetcher: PairingWalletFetching
     let wallet: WalletAuthenticationKitWrapper
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let errorRecorder: ErrorRecording
@@ -90,7 +89,6 @@ struct CredentialsEnvironment {
          sessionTokenService: SessionTokenServiceAPI = resolve(),
          smsService: SMSServiceAPI = resolve(),
          loginService: LoginServiceAPI = resolve(),
-         walletFetcher: PairingWalletFetching = resolve(),
          wallet: WalletAuthenticationKitWrapper = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          errorRecorder: ErrorRecording) {
@@ -102,7 +100,6 @@ struct CredentialsEnvironment {
         self.sessionTokenService = sessionTokenService
         self.smsService = smsService
         self.loginService = loginService
-        self.walletFetcher = walletFetcher
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
         self.errorRecorder = errorRecorder
@@ -135,8 +132,7 @@ let credentialsReducer = Reducer.combine(
         CredentialsState,
         CredentialsAction,
         CredentialsEnvironment
-    > {
-        state, action, environment in
+    > { state, action, environment in
         switch action {
         case let .didAppear(walletInfo):
             state.emailAddress = walletInfo.email
