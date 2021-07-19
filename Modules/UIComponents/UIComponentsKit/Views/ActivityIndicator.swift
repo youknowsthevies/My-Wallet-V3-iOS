@@ -29,11 +29,7 @@ public struct ActivityIndicatorView: View {
     }
 
     public var body: some View {
-        if #available(iOS 14.0, *) {
-            ProgressView()
-        } else {
-            ActivityIndicator(isAnimating: .constant(true))
-        }
+        ProgressView()
     }
 }
 

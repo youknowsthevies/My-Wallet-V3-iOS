@@ -27,6 +27,7 @@ public protocol RouterAPI: AnyObject {
 }
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 /// This object is used as a router for Simple-Buy flow
 public final class Router: RouterAPI {
@@ -79,7 +80,6 @@ public final class Router: RouterAPI {
         kycRouter: KYCRouterAPI = resolve(), // TODO: merge with the following or remove (IOS-4471)
         newKYCRouter: KYCRouting = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
-
     ) {
         self.navigationRouter = navigationRouter
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -114,9 +114,10 @@ public final class Router: RouterAPI {
     }
 
     public func showFailureAlert() {
-        alertViewPresenter.error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
-            self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
-        }
+        alertViewPresenter
+            .error(in: navigationRouter.topMostViewControllerProvider.topMostViewController) { [weak self] in
+                self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+            }
     }
 
     /// Should be called once
@@ -187,9 +188,17 @@ public final class Router: RouterAPI {
             showPaymentMethodsScreen()
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
-        case .fundsTransferDetails(let currency, isOriginPaymentMethods: let isOriginPaymentMethods, let isOriginDeposit):
+        case .fundsTransferDetails(
+                let currency,
+                isOriginPaymentMethods: let isOriginPaymentMethods,
+                let isOriginDeposit
+            ):
             guard let fiatCurrency = currency.fiatCurrency else { return }
-            showFundsTransferDetailsScreen(with: fiatCurrency, shouldDismissModal: isOriginPaymentMethods, isOriginDeposit: isOriginDeposit)
+            showFundsTransferDetailsScreen(
+                with: fiatCurrency,
+                shouldDismissModal: isOriginPaymentMethods,
+                isOriginDeposit: isOriginDeposit
+            )
         case .transferCancellation(let data):
             showTransferCancellation(with: data)
         case .kyc:
@@ -218,7 +227,9 @@ public final class Router: RouterAPI {
         case .kyc, .selectFiat, .changeFiat, .unsupportedFiat, .addCard, .linkBank:
             break
         case .paymentMethods, .bankTransferDetails, .fundsTransferDetails:
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true, completion: nil)
         default:
             navigationRouter.dismiss()
         }
@@ -377,12 +388,15 @@ public final class Router: RouterAPI {
         return newKYCRouter
             .presentEmailVerificationIfNeeded(from: viewController)
             .mapError(RouterError.kyc)
-            .flatMap { value in
-                return Future { completion in
-                    viewController.dismiss(animated: true) {
-                        completion(.success(value))
+            .flatMap { value -> AnyPublisher<Void, RouterError> in
+                Deferred {
+                    Future { completion in
+                        viewController.dismiss(animated: true) {
+                            completion(.success(value))
+                        }
                     }
                 }
+                .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }
@@ -444,7 +458,9 @@ public final class Router: RouterAPI {
         controller.transitioningDelegate = sheetPresenter
         controller.modalPresentationStyle = .custom
         analyticsRecorder.record(event: AnalyticsEvent.sbCurrencyUnsupported)
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(controller, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider
+            .topMostViewController?
+            .present(controller, animated: true, completion: nil)
     }
 
     /// Shows the checkout details screen
@@ -466,12 +482,23 @@ public final class Router: RouterAPI {
         navigationRouter.present(viewController: viewController)
     }
 
-    private func showFundsTransferDetailsScreen(with fiatCurrency: FiatCurrency, shouldDismissModal: Bool, isOriginDeposit: Bool) {
-        let viewController = builder.fundsTransferDetailsViewController(for: fiatCurrency, isOriginDeposit: isOriginDeposit)
+    private func showFundsTransferDetailsScreen(
+        with fiatCurrency: FiatCurrency,
+        shouldDismissModal: Bool,
+        isOriginDeposit: Bool
+    ) {
+        let viewController = builder.fundsTransferDetailsViewController(
+            for: fiatCurrency,
+            isOriginDeposit: isOriginDeposit
+        )
         if shouldDismissModal {
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.navigationRouter.navigationControllerAPI?.present(viewController, animated: true, completion: nil)
-            }
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true) { [weak self] in
+                    self?.navigationRouter
+                        .navigationControllerAPI?
+                        .present(viewController, animated: true, completion: nil)
+                }
         } else {
             navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
         }
@@ -493,7 +520,9 @@ public final class Router: RouterAPI {
         let viewController = TransferCancellationViewController(presenter: presenter)
         viewController.transitioningDelegate = sheetPresenter
         viewController.modalPresentationStyle = .custom
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.present(viewController, animated: true, completion: nil)
+        navigationRouter.topMostViewControllerProvider
+            .topMostViewController?
+            .present(viewController, animated: true, completion: nil)
     }
 
     /// Shows the checkout screen
@@ -624,9 +653,15 @@ public final class Router: RouterAPI {
             .disposed(by: kycDisposeBag)
 
         if afterDismissal {
-            navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true) { [weak self] in
-                self?.kycRouter.start(tier: .tier2, parentFlow: .simpleBuy, from: kycRootViewController)
-            }
+            navigationRouter.topMostViewControllerProvider
+                .topMostViewController?
+                .dismiss(animated: true) { [weak self] in
+                    self?.kycRouter.start(
+                        tier: .tier2,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                }
         } else {
             kycRouter.start(tier: .tier2, parentFlow: .simpleBuy, from: kycRootViewController)
         }

@@ -67,7 +67,7 @@ final class ERC20Asset: CryptoAsset {
                 asset: asset,
                 address: address,
                 label: address,
-                onTxCompleted: { _ in .empty() }
+                onTxCompleted: { _ in Completable.empty() }
             )
             .get()
         return .just(receiveAddress)

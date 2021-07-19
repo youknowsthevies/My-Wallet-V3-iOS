@@ -151,7 +151,6 @@ struct EditEmailView: View {
 }
 
 #if DEBUG
-@available(iOS 14.0, *)
 struct EditEmailView_Previews: PreviewProvider {
     static var previews: some View {
         // Invalid state: empty email

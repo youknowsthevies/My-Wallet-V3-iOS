@@ -16,7 +16,7 @@ options:
   bundleIdPrefix: com.rainydayapps
   defaultConfig: Release
   deploymentTarget:
-    iOS: '13.0'
+    iOS: '14.0'
   groupSortPosition: bottom
   platform: iOS
 schemeTemplates:
@@ -782,7 +782,7 @@ targets:
     - package: CombineExt
     platform: iOS
     deploymentTarget:
-        iOS: '13.0'
+        iOS: '14.0'
     scheme: {}
     sources:
     - createIntermediateGroups: true
