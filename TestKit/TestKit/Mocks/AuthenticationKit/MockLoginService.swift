@@ -6,8 +6,9 @@ import RxSwift
 
 final class MockLoginService: LoginServiceAPI {
 
-    /// Change this to adjust the mock service behaviour
+    /// Change these to adjust the mock service behaviour
     public var twoFAType: WalletAuthenticatorType = .standard
+    public var twoFAServiceError: LoginServiceError?
 
     func login(walletIdentifier: String) -> Completable {
         .empty()
@@ -37,6 +38,9 @@ final class MockLoginService: LoginServiceAPI {
     }
 
     func loginPublisher(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
-        .just(())
+        if let error = twoFAServiceError {
+            return .failure(error)
+        }
+        return .just(())
     }
 }

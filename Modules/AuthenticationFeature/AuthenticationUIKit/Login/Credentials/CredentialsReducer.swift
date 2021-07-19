@@ -249,10 +249,8 @@ let credentialsReducer = Reducer.combine(
             }
             return .merge(
                 // clear error states
-                Effect(value: .accountLockedErrorVisibility(false)),
                 Effect(value: .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))),
                 Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(false))),
-                Effect(value: .password(.incorrectPasswordErrorVisibility(false))),
                 environment
                     .loginService
                     .loginPublisher(walletIdentifier: state.walletGuid,
