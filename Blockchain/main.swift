@@ -5,7 +5,15 @@ import UIKit
 /// temporary top-level decision based on environment variable `bootstrap_work`
 /// to either use the new `AppDelegate` which uses `ComposableArchitecture` or the older `BlockchainAppDelegate`
 var appDelegateClass: String {
-    NSStringFromClass(AppDelegate.self)
+    guard let bootstrapWork = Bundle.main.infoDictionary?["useNewAppDelegate"] as? String else {
+        return NSStringFromClass(BlockchainAppDelegate.self)
+    }
+    guard let shouldUseNewBootstrap = Bool(bootstrapWork) else {
+        return NSStringFromClass(BlockchainAppDelegate.self)
+    }
+    return shouldUseNewBootstrap
+        ? NSStringFromClass(AppDelegate.self)
+        : NSStringFromClass(BlockchainAppDelegate.self)
 }
 
 UIApplicationMain(
