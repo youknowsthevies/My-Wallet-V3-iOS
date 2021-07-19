@@ -171,13 +171,7 @@ struct CredentialsView: View {
         .padding(.leading, 24)
         .padding(.trailing, 24)
         .onAppear {
-            viewStore.send(
-                .didAppear(
-                    emailAddress: walletInfo.email,
-                    walletGuid: walletInfo.guid,
-                    emailCode: walletInfo.emailCode
-                )
-            )
+            viewStore.send(.didAppear(walletInfo: walletInfo))
         }
         .onDisappear {
             viewStore.send(.didDisappear)
@@ -194,7 +188,9 @@ struct PasswordLoginView_Previews: PreviewProvider {
             store: Store(
                 initialState: .init(),
                 reducer: credentialsReducer,
-                environment: .init()
+                environment: .init(
+                    deviceVerificationService: NoOpDeviceVerificationService()
+                )
             )
         )
     }

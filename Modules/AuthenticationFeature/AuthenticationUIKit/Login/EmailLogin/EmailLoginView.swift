@@ -39,7 +39,7 @@ struct EmailLoginView: View {
                 Spacer()
 
                 PrimaryButton(title: EmailLoginString.Button._continue) {
-                    viewStore.send(.sendVerifyDeviceEmail)
+                    viewStore.send(.sendDeviceVerificationEmail)
                 }
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.isEmailValid)
@@ -80,7 +80,7 @@ struct LoginView_Previews: PreviewProvider {
                 Store(initialState: .init(),
                       reducer: emailLoginReducer,
                       environment: .init(
-                        authenticationService: NoOpAuthenticationService(),
+                        deviceVerificationService: NoOpDeviceVerificationService(),
                         mainQueue: .main
                       )
                 )

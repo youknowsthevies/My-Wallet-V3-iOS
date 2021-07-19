@@ -4,7 +4,7 @@ import AuthenticationKit
 import Combine
 
 /// Intend for SwiftUI Previews and only available in DEBUG
-final class NoOpAuthenticationService: DeviceVerificationServiceAPI {
+final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
 
     func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         Deferred {

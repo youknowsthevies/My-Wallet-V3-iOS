@@ -15,9 +15,9 @@ public enum EmailLoginAction: Equatable {
     case closeButtonTapped
     case didDisappear
     case didChangeEmailAddress(String)
-    case didSendVerifyDeviceEmail(Result<Int, DeviceVerificationServiceError>)
+    case didSendDeviceVerificationEmail(Result<Int, DeviceVerificationServiceError>)
     case emailLoginFailureAlert(AlertAction)
-    case sendVerifyDeviceEmail
+    case sendDeviceVerificationEmail
     case setVerifyDeviceScreenVisible(Bool)
     case verifyDevice(VerifyDeviceAction)
 }
@@ -40,13 +40,13 @@ struct EmailLoginState: Equatable {
 }
 
 struct EmailLoginEnvironment {
-    let authenticationService: DeviceVerificationServiceAPI
+    let deviceVerificationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validateEmail: (String) -> Bool = { $0.isEmail }
 
-    init(authenticationService: DeviceVerificationServiceAPI = resolve(),
+    init(deviceVerificationService: DeviceVerificationServiceAPI,
          mainQueue: AnySchedulerOf<DispatchQueue> = .main) {
-        self.authenticationService = authenticationService
+        self.deviceVerificationService = deviceVerificationService
         self.mainQueue = mainQueue
     }
 }
@@ -57,7 +57,12 @@ let emailLoginReducer = Reducer.combine(
         .pullback(
         state: \.verifyDeviceState,
         action: /EmailLoginAction.verifyDevice,
-        environment: { _ in VerifyDeviceEnvironment() }
+        environment: {
+            VerifyDeviceEnvironment(
+                mainQueue: $0.mainQueue,
+                deviceVerificationService: $0.deviceVerificationService
+            )
+        }
     ),
     Reducer<EmailLoginState, EmailLoginAction, EmailLoginEnvironment> { state, action, environment in
         switch action {
@@ -76,7 +81,7 @@ let emailLoginReducer = Reducer.combine(
             state.isEmailValid = environment.validateEmail(emailAddress)
             return .none
 
-        case let .didSendVerifyDeviceEmail(response):
+        case let .didSendDeviceVerificationEmail(response):
             if case let .failure(error) = response {
                 switch error {
                 case .recaptchaError, .missingSessionToken:
@@ -102,22 +107,22 @@ let emailLoginReducer = Reducer.combine(
             state.emailLoginFailureAlert = nil
             return .none
 
-        case .sendVerifyDeviceEmail,
+        case .sendDeviceVerificationEmail,
              .verifyDevice(.sendDeviceVerificationEmail):
             guard state.isEmailValid else {
                 return .none
             }
             return environment
-                .authenticationService
+                .deviceVerificationService
                 .sendDeviceVerificationEmail(to: state.emailAddress)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> EmailLoginAction in
                     switch result {
                     case .success:
-                        return .didSendVerifyDeviceEmail(.success((0)))
+                        return .didSendDeviceVerificationEmail(.success((0)))
                     case let .failure(error):
-                        return .didSendVerifyDeviceEmail(.failure(error))
+                        return .didSendDeviceVerificationEmail(.failure(error))
                     }
                 }
 

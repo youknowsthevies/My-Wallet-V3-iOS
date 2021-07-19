@@ -1,6 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AuthenticationKit
 import ComposableArchitecture
+import DIKit
 
 // MARK: - Type
 
@@ -34,11 +36,14 @@ public struct WelcomeState: Equatable {
 
 public struct WelcomeEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
 
     public init(mainQueue: AnySchedulerOf<DispatchQueue>,
+                deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
                 buildVersionProvider: @escaping () -> String) {
         self.mainQueue = mainQueue
+        self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
     }
 }
@@ -49,7 +54,12 @@ public let welcomeReducer = Reducer.combine(
         .pullback(
             state: \.emailLoginState,
             action: /WelcomeAction.emailLogin,
-            environment: { _ in EmailLoginEnvironment() }
+            environment: {
+                EmailLoginEnvironment(
+                    deviceVerificationService: $0.deviceVerificationService,
+                    mainQueue: $0.mainQueue
+                )
+            }
         ),
     Reducer<
         WelcomeState,

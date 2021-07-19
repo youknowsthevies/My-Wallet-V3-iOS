@@ -25,7 +25,7 @@ public enum CredentialsAction: Equatable {
         case requestSMSCode
         case setupSessionToken
     }
-    case didAppear(emailAddress: String, walletGuid: String, emailCode: String)
+    case didAppear(walletInfo: WalletInfo)
     case didDisappear
     case password(PasswordAction)
     case twoFA(TwoFAAction)
@@ -39,7 +39,7 @@ public enum CredentialsAction: Equatable {
 
 // MARK: - Properties
 
-struct WalletPairingCancelations {
+enum WalletPairingCancelations {
     struct WalletIdentifierPollingTimerId: Hashable {}
     struct WalletIdentifierPollingId: Hashable {}
 }
@@ -70,7 +70,7 @@ struct CredentialsState: Equatable {
 struct CredentialsEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
-    let authenticationService: DeviceVerificationServiceAPI
+    let deviceVerificationService: DeviceVerificationServiceAPI
     let emailAuthorizationService: EmailAuthorizationServiceAPI
     let sessionTokenService: SessionTokenServiceAPI
     let smsService: SMSServiceAPI
@@ -85,7 +85,7 @@ struct CredentialsEnvironment {
             label: "com.blockchain.AuthenticationEnvironmentPollingQueue",
             qos: .utility
          ).eraseToAnyScheduler(),
-         authenticationService: DeviceVerificationServiceAPI = resolve(),
+         deviceVerificationService: DeviceVerificationServiceAPI,
          emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
          sessionTokenService: SessionTokenServiceAPI = resolve(),
          smsService: SMSServiceAPI = resolve(),
@@ -93,11 +93,11 @@ struct CredentialsEnvironment {
          walletFetcher: PairingWalletFetching = resolve(),
          wallet: WalletAuthenticationKitWrapper = resolve(),
          analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = resolve()) {
+         errorRecorder: ErrorRecording) {
 
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
-        self.authenticationService = authenticationService
+        self.deviceVerificationService = deviceVerificationService
         self.emailAuthorizationService = emailAuthorizationService
         self.sessionTokenService = sessionTokenService
         self.smsService = smsService
@@ -131,14 +131,17 @@ let credentialsReducer = Reducer.combine(
         action: /CredentialsAction.hardwareKey,
         environment: { $0 }
     ),
-    Reducer<CredentialsState, CredentialsAction, CredentialsEnvironment> {
+    Reducer<
+        CredentialsState,
+        CredentialsAction,
+        CredentialsEnvironment
+    > {
         state, action, environment in
         switch action {
-
-        case let .didAppear(emailAddress, walletGuid, emailCode):
-            state.emailAddress = emailAddress
-            state.walletGuid = walletGuid
-            state.emailCode = emailCode
+        case let .didAppear(walletInfo):
+            state.emailAddress = walletInfo.email
+            state.walletGuid = walletInfo.guid
+            state.emailCode = walletInfo.emailCode
             return Effect(value: .walletPairing(.setupSessionToken))
 
         case .didDisappear:
@@ -153,7 +156,7 @@ let credentialsReducer = Reducer.combine(
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
 
         case .password, .twoFA, .hardwareKey:
-            // handled in reducers
+            // handled in respective reducers
             return .none
 
         case let .walletPairing(action):
@@ -173,7 +176,7 @@ let credentialsReducer = Reducer.combine(
                         .map { _ in .walletPairing(.pollWalletIdentifier) },
                     // Immediately authorize the email
                     environment
-                        .authenticationService
+                        .deviceVerificationService
                         .authorizeLogin(emailCode: state.emailCode)
                         .receive(on: environment.mainQueue)
                         .catchToEffect()

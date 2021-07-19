@@ -38,16 +38,16 @@ struct VerifyDeviceState: Equatable {
 }
 
 struct VerifyDeviceEnvironment {
-    let authenticationService: DeviceVerificationServiceAPI
-    let errorRecorder: ErrorRecording
     let mainQueue: AnySchedulerOf<DispatchQueue>
+    let deviceVerificationService: DeviceVerificationServiceAPI
+    let errorRecorder: ErrorRecording
 
-    init(authenticationService: DeviceVerificationServiceAPI = resolve(),
-         errorRecorder: ErrorRecording = resolve(),
-         mainQueue: AnySchedulerOf<DispatchQueue> = .main) {
-        self.authenticationService = authenticationService
-        self.errorRecorder = errorRecorder
+    init(mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+         deviceVerificationService: DeviceVerificationServiceAPI,
+         errorRecorder: ErrorRecording = resolve()) {
         self.mainQueue = mainQueue
+        self.deviceVerificationService = deviceVerificationService
+        self.errorRecorder = errorRecorder
     }
 }
 
@@ -55,10 +55,16 @@ let verifyDeviceReducer = Reducer.combine(
     credentialsReducer
         .optional()
         .pullback(
-        state: \.credentialsState,
-        action: /VerifyDeviceAction.credentials,
-        environment: { _ in CredentialsEnvironment() }
-    ),
+            state: \.credentialsState,
+            action: /VerifyDeviceAction.credentials,
+            environment: {
+                CredentialsEnvironment(
+                    mainQueue: $0.mainQueue,
+                    deviceVerificationService: $0.deviceVerificationService,
+                    errorRecorder: $0.errorRecorder
+                )
+            }
+        ),
     Reducer<
         VerifyDeviceState,
         VerifyDeviceAction,
@@ -79,7 +85,7 @@ let verifyDeviceReducer = Reducer.combine(
 
         case let .didReceiveWalletInfoDeeplink(url):
             return environment
-                .authenticationService
+                .deviceVerificationService
                 .extractWalletInfoFromDeeplink(url: url)
                 .receive(on: environment.mainQueue)
                 .catchToEffect()

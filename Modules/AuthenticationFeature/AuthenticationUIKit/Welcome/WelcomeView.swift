@@ -122,6 +122,7 @@ struct WelcomeView_Previews: PreviewProvider {
                 reducer: welcomeReducer,
                 environment: .init(
                     mainQueue: .main,
+                    deviceVerificationService: NoOpDeviceVerificationService(),
                     buildVersionProvider: { "Test version" }
                 )
             )
