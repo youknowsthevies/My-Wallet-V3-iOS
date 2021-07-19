@@ -100,7 +100,8 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             headers: headers,
             contentType: .json
         )!
-        return networkAdapter.perform(request: request)            .mapError(DeviceVerificationServiceError.networkError)
+        return networkAdapter.perform(request: request)
+            .mapError(DeviceVerificationServiceError.networkError)
             .eraseToAnyPublisher()
     }
 }

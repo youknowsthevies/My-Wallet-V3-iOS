@@ -42,12 +42,14 @@ struct EmailLoginState: Equatable {
 struct EmailLoginEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
-    let validateEmail: (String) -> Bool = { $0.isEmail }
+    let validateEmail: (String) -> Bool
 
     init(deviceVerificationService: DeviceVerificationServiceAPI,
-         mainQueue: AnySchedulerOf<DispatchQueue> = .main) {
+         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+         validateEmail: @escaping (String) -> Bool = { $0.isEmail }) {
         self.deviceVerificationService = deviceVerificationService
         self.mainQueue = mainQueue
+        self.validateEmail = validateEmail
     }
 }
 
