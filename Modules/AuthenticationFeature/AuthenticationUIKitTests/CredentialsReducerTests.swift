@@ -29,7 +29,8 @@ final class CredentialsReducerTests: XCTestCase {
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 pollingQueue: mockPollingQueue.eraseToAnyScheduler(),
-                deviceVerificationService: MockDeviceVerificationService()
+                deviceVerificationService: MockDeviceVerificationService(),
+                errorRecorder: NoOpErrorRecorder()
                 // TODO: create mocks for the other services and use them here to prevent DIKit errors
             )
         )
