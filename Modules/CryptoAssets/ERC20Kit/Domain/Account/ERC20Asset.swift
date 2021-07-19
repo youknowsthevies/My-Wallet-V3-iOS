@@ -87,10 +87,7 @@ final class ERC20Asset: CryptoAsset {
     }
 
     private var custodialGroup: Single<AccountGroup> {
-        guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
-        }
-        return .just(
+        .just(
             CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)])
         )
     }

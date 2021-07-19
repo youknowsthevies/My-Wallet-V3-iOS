@@ -31,14 +31,25 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     }
 
     // TODO: Use ERC20AssetModel.products field to dictate if swap is enabled for this currency.
-    private let legacySwapEnabledCurrencies: [String] = LegacyERC20Code.allCases.map(\.rawValue)
+    private lazy var isLegacyAsset: Bool = LegacyERC20Code.allCases.map(\.rawValue).contains(erc20Token.code)
 
     var actions: Single<AvailableActions> {
-        isFunded
-            .map { [erc20Token, legacySwapEnabledCurrencies] isFunded -> AvailableActions in
+        Single
+            .zip(isFunded, custodialSupport)
+            .map { [erc20Token, isLegacyAsset] (isFunded, custodialSupport) -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
-                if legacySwapEnabledCurrencies.contains(erc20Token.code), isFunded {
-                    base.insert(.swap)
+                if isLegacyAsset {
+                    base.insert(.buy)
+                    if isFunded {
+                        base.insert(.swap)
+                    }
+                } else if let support = custodialSupport.data[erc20Token.code] {
+                    if support.canBuy {
+                        base.insert(.buy)
+                    }
+                    if support.canSwap, isFunded {
+                        base.insert(.swap)
+                    }
                 }
                 return base
             }
@@ -57,8 +68,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     init(
         publicKey: String,
         erc20Token: ERC20AssetModel,
-        balanceService: ERC20BalanceServiceAPI = resolve(),
         featureFetcher: FeatureFetching = resolve(),
+        balanceService: ERC20BalanceServiceAPI = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
         self.publicKey = publicKey
@@ -66,24 +77,39 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         self.asset = erc20Token.cryptoCurrency
         self.label = erc20Token.cryptoCurrency.defaultWalletName
         self.balanceService = balanceService
-        self.featureFetcher = featureFetcher
         self.fiatPriceService = fiatPriceService
+        self.featureFetcher = featureFetcher
+    }
+
+    private var custodialSupport: Single<CryptoCustodialSupport> {
+        featureFetcher
+            .fetch(for: .custodialOnlyTokens)
+            .map { (data: [String: [String]]) in
+                CryptoCustodialSupport(data: data)
+            }
+            .catchErrorJustReturn(.empty)
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {
         switch action {
         case .receive,
-             .viewActivity:
-            return .just(true)
-        case .send:
+             .viewActivity,
+             .send:
             return .just(true)
         case .deposit,
-             .buy,
              .sell,
              .withdraw:
             return .just(false)
+        case .buy:
+            guard isLegacyAsset else {
+                return custodialSupport
+                    .map { [asset] support in
+                        support.data[asset.code]?.canBuy ?? false
+                    }
+            }
+            return .just(true)
         case .swap:
-            guard legacySwapEnabledCurrencies.contains(erc20Token.code) else {
+            guard isLegacyAsset else {
                 return .just(false)
             }
             return isFunded
