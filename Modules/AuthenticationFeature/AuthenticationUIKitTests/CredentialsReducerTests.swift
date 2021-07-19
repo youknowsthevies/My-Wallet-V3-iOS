@@ -3,7 +3,6 @@
 @testable import AuthenticationKit
 @testable import AuthenticationUIKit
 import ComposableArchitecture
-import Localization
 import ToolKit
 import XCTest
 
