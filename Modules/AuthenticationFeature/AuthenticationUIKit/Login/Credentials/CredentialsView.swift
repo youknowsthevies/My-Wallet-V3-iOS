@@ -4,6 +4,7 @@ import AuthenticationKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 struct CredentialsView: View {
@@ -189,7 +190,8 @@ struct PasswordLoginView_Previews: PreviewProvider {
                 initialState: .init(),
                 reducer: credentialsReducer,
                 environment: .init(
-                    deviceVerificationService: NoOpDeviceVerificationService()
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    errorRecorder: NoOpErrorRecorder()
                 )
             )
         )
