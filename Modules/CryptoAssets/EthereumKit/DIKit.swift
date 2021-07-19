@@ -21,7 +21,7 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.ethereum) { EthereumOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
 
-        factory { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
+        single { EthereumAccountDetailsService() as EthereumAccountDetailsServiceAPI }
 
         factory { EthereumWalletAccountRepository() }
 

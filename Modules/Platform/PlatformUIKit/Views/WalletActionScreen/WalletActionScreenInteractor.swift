@@ -13,8 +13,7 @@ public protocol WalletActionScreenInteracting: AnyObject {
 public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
 
     public var availableActions: Single<AvailableActions> {
-        account
-            .actions
+        account.actions
     }
 
     public var accountType: SingleAccountType {

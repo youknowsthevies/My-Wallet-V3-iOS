@@ -300,28 +300,4 @@ extension SegmentedViewModel {
         )
         return viewModel
     }
-
-    /// This provides a `SegmentedView` that is styled
-    /// with a `UISegmentedControl` pre-iOS 13.
-    public static func legacy(
-        items: [Item],
-        isMomentary: Bool,
-        defaultSelectedSegmentIndex: Int = 1,
-        cornerRadius: CGFloat = 8,
-        accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
-        ) -> SegmentedViewModel {
-        var viewModel = SegmentedViewModel(
-            isMomentary: isMomentary,
-            cornerRadius: cornerRadius,
-            defaultSelectedSegmentIndex: defaultSelectedSegmentIndex,
-            accessibility: .id(accessibilityId),
-            items: items
-        )
-        viewModel.theme = Theme(
-            font: .main(.medium, 14),
-            selectedFont: .main(.medium, 14),
-            backgroundColor: nil
-        )
-        return viewModel
-    }
 }

@@ -33,7 +33,7 @@ final class CertificatePinner: CertificatePinnerAPI {
 
     /// Path to the local certificate file
     private lazy var localCertificateURL: URL? = {
-        Bundle(for: CertificatePinner.self).url(forResource:"blockchain", withExtension: "der")
+        Bundle(for: CertificatePinner.self).url(forResource: "blockchain", withExtension: "der")
     }()
 
     private let session: URLSession
@@ -77,8 +77,8 @@ final class CertificatePinner: CertificatePinnerAPI {
             return
         }
 
-        let localPublicKey = SecTrustCopyPublicKey(localTrust!)
-        let serverPublicKey = SecTrustCopyPublicKey(serverTrust)
+        let localPublicKey = SecTrustCopyKey(localTrust!)
+        let serverPublicKey = SecTrustCopyKey(serverTrust)
         if (localPublicKey as AnyObject).isEqual(serverPublicKey as AnyObject) {
             let credential = URLCredential(trust: serverTrust)
             completion(.useCredential, credential)

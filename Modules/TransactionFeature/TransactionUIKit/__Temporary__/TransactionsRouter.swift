@@ -226,13 +226,7 @@ class LegacyBuyFlowPresenter {
                 stateService: PlatformUIKit.StateService()
             )
             self.buyRouter = PlatformUIKit.Router(builder: builder, currency: targetCurrency)
-            if isSDDEligible {
-                // setup and manually start otherwise the StateService gets in an odd state and the navigation gets messed-up
-                self.buyRouter.setup(startImmediately: false)
-                self.buyRouter.next(to: .buy)
-            } else {
-                self.buyRouter.start()
-            }
+            self.buyRouter.start(skipIntro: isSDDEligible)
         }
 
         // The current buy flow implementation is too complex to modify to get a callback

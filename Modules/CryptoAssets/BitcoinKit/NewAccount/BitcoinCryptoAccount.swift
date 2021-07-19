@@ -35,7 +35,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         isFunded
             .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
+                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
                 if isFunded {
                     base.insert(.swap)
                 }
@@ -84,10 +84,10 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive,
              .send,
+             .buy,
              .viewActivity:
             return .just(true)
         case .deposit,
-             .buy,
              .sell,
              .withdraw:
             return .just(false)

@@ -35,7 +35,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         isFunded
             .map { isFunded -> AvailableActions in
-                var base: AvailableActions = [.viewActivity, .receive, .send]
+                var base: AvailableActions = [.viewActivity, .receive, .send, .buy]
                 if isFunded {
                     base.insert(.swap)
                 }
@@ -80,10 +80,10 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         switch action {
         case .receive,
              .send,
-             .viewActivity:
+             .viewActivity,
+             .buy:
             return .just(true)
         case .deposit,
-             .buy,
              .sell,
              .withdraw:
             return .just(false)

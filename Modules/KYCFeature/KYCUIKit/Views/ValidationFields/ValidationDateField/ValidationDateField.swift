@@ -12,10 +12,8 @@ class ValidationDateField: ValidationTextField {
     lazy var pickerView: UIDatePicker = {
         var picker = UIDatePicker()
         picker.datePickerMode = .date
-        if #available(iOS 14.0, *) {
-            picker.preferredDatePickerStyle = .wheels
-            picker.sizeToFit()
-        }
+        picker.preferredDatePickerStyle = .wheels
+        picker.sizeToFit()
         return picker
     }()
 
@@ -58,7 +56,11 @@ class ValidationDateField: ValidationTextField {
         pickerView.isHidden = false
     }
 
-    override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         false
     }
 }
