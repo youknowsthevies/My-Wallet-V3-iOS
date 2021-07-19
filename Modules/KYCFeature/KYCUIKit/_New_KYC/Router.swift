@@ -138,7 +138,7 @@ public class Router: Routing {
                 initialState: UnlockTradingState(
                     viewModel: .unlockGoldTier
                 ),
-                reducer: unloackTradingReducer,
+                reducer: unlockTradingReducer,
                 environment: UnlockTradingEnvironment(
                     dismiss: {
                         presenter.dismiss(animated: true, completion: {

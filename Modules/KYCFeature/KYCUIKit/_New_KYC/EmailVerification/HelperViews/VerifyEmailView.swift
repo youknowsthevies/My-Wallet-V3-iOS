@@ -25,7 +25,11 @@ struct VerifyEmailEnvironment {
     var openMailApp: () -> Effect<Bool, Never>
 }
 
-let verifyEmailReducer = Reducer<VerifyEmailState, VerifyEmailAction, VerifyEmailEnvironment> { state, action, environment in
+let verifyEmailReducer = Reducer<
+    VerifyEmailState,
+    VerifyEmailAction,
+    VerifyEmailEnvironment
+> { state, action, environment in
     switch action {
     case .tapCheckInbox:
         return environment.openMailApp()

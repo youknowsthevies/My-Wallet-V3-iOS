@@ -9,8 +9,14 @@ import UIComponentsKit
 typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
 public struct WelcomeView: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+
+    private let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject private var viewStore: ViewStore<WelcomeState, WelcomeAction>
+
+    public init(store: Store<WelcomeState, WelcomeAction>) {
+        self.store = store
+        self.viewStore = ViewStore(store)
+    }
 
     public var body: some View {
         VStack {
@@ -20,30 +26,19 @@ public struct WelcomeView: View {
             WelcomeActionSection(store: store, viewStore: viewStore)
                 .padding(.bottom, 58)
         }
-        .sheet(isPresented: viewStore.binding(
-            get: \.isLoginVisible,
-            send: AuthenticationAction.setLoginVisible(_:))
-        ) {
-            LoginView(store: store)
+        .sheet(isPresented: .constant(viewStore.screenFlow == .emailLoginScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.emailLoginState,
+                    action: WelcomeAction.emailLogin
+                ),
+                then: EmailLoginView.init(store:)
+            )
         }
     }
-
-    public init(store: Store<AuthenticationState, AuthenticationAction>) {
-        self.store = store
-        self.viewStore = ViewStore(self.store.scope(state: WelcomeViewState.init))
-    }
 }
 
-struct WelcomeViewState: Equatable {
-    var isLoginVisible: Bool
-    var buildNumber: String
-    init(state: AuthenticationState) {
-        isLoginVisible = state.isLoginVisible
-        buildNumber = state.buildVersion
-    }
-}
-
-struct WelcomeMessageSection: View {
+private struct WelcomeMessageSection: View {
     var body: some View {
         VStack {
             Image.Logo.blockchain
@@ -61,7 +56,7 @@ struct WelcomeMessageSection: View {
     }
 }
 
-struct WelcomeMessageDescription: View {
+private struct WelcomeMessageDescription: View {
     let prefix = Text(WelcomeViewString.Description.prefix)
         .foregroundColor(.textMuted)
     let comma = Text(WelcomeViewString.Description.comma)
@@ -84,30 +79,31 @@ struct WelcomeMessageDescription: View {
     }
 }
 
-struct WelcomeActionSection: View {
-    let store: Store<AuthenticationState, AuthenticationAction>
-    @ObservedObject var viewStore: ViewStore<WelcomeViewState, AuthenticationAction>
+private struct WelcomeActionSection: View {
+
+    let store: Store<WelcomeState, WelcomeAction>
+    @ObservedObject var viewStore: ViewStore<WelcomeState, WelcomeAction>
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createAccount) {
-                viewStore.send(.createAccount)
+            PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+                viewStore.send(.presentScreenFlow(.createWalletScreen))
             }
             .padding(.bottom, 10)
 
             SecondaryButton(title: WelcomeViewString.Button.login) {
-                viewStore.send(.setLoginVisible(true))
+                viewStore.send(.presentScreenFlow(.emailLoginScreen))
             }
             .padding(.bottom, 20)
 
             HStack {
                 Button(WelcomeViewString.Button.restoreWallet) {
-                    viewStore.send(.recoverFunds)
+                    viewStore.send(.presentScreenFlow(.recoverWalletScreen))
                 }
                 .font(Font(weight: .semibold, size: 12))
                 .foregroundColor(.buttonLinkText)
                 Spacer()
-                Text(viewStore.buildNumber)
+                Text(viewStore.buildVersion)
                     .font(Font(weight: .medium, size: 12))
                     .foregroundColor(.textMuted)
             }
@@ -121,13 +117,14 @@ struct WelcomeActionSection: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         WelcomeView(
-            store:Store(initialState: AuthenticationState(),
-                        reducer: authenticationReducer,
-                        environment: .init(
-                            mainQueue: .main,
-                            buildVersionProvider: { "test version" },
-                            authenticationService: NoOpAuthenticationService()
-                        )
+            store: Store(
+                initialState: .init(),
+                reducer: welcomeReducer,
+                environment: .init(
+                    mainQueue: .main,
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    buildVersionProvider: { "Test version" }
+                )
             )
         )
     }

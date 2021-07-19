@@ -4,24 +4,29 @@ import Combine
 import DIKit
 import NetworkKit
 
-public enum AuthenticationServiceError: Error {
+public enum DeviceVerificationServiceError: Error, Equatable {
     case missingSessionToken
+    case recaptchaError(GoogleRecaptchaError)
     case networkError(NetworkError)
+
+    public static func == (lhs: DeviceVerificationServiceError, rhs: DeviceVerificationServiceError) -> Bool {
+        String(describing: lhs) == String(describing: rhs)
+    }
 }
 
-/// `AuthenticationServiceAPI` is the interface the UI should use the authentication service APIs.
-public protocol AuthenticationServiceAPI {
+/// `DeviceVerificationServiceAPI` is the interface the UI should use the authentication service APIs.
+public protocol DeviceVerificationServiceAPI {
 
     /// Sends a verification email to the user's email address. Thie will trigger the send GUID reminder endpoint and user will receive a link to verify their device in their inbox if they have an account registered with the email
     /// - Parameters: emailAddress: The email address of the user
-    /// - Parameters: captcha: The captcha token returned from reCaptcha Service
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
-    func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError>
+    func sendDeviceVerificationEmail(to emailAddress: String)
+    -> AnyPublisher<Void, DeviceVerificationServiceError>
 
     /// Authorize the login to the associated email identified by the email code. The email code is received by decrypting the base64 information encrypted in the magic link from the device verification email
     /// - Parameters: emailCode: The email code for the authorization
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
-    func authorizeLogin(emailCode: String) -> AnyPublisher<Void, AuthenticationServiceError>
+    func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError>
 
     /// Decodes the base64 string component from the deeplink
     /// - Parameters: deeplink: The url link received
@@ -29,41 +34,51 @@ public protocol AuthenticationServiceAPI {
     func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError>
 }
 
-public final class AuthenticationService: AuthenticationServiceAPI {
+public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - Properties
 
-    private let authenticationRepository: AuthenticationRepositoryAPI
+    private let deviceVerificationRepository: DeviceVerificationRepositoryAPI
     private let sessionTokenRepository: SessionTokenRepositoryAPI
+    private let recaptchaService: GoogleRecaptchaServiceAPI
 
     // MARK: - Setup
 
-    public init(authenticationRepository: AuthenticationRepositoryAPI = resolve(),
-                sessionTokenRepository: SessionTokenRepositoryAPI) {
-        self.authenticationRepository = authenticationRepository
+    public init(deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
+                sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
+                recaptchaService: GoogleRecaptchaServiceAPI = resolve()) {
+        self.deviceVerificationRepository = deviceVerificationRepository
         self.sessionTokenRepository = sessionTokenRepository
+        self.recaptchaService = recaptchaService
     }
 
     // MARK: - AuthenticationServiceAPI
 
-    public func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError> {
-        authenticationRepository
-            .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
+    public func sendDeviceVerificationEmail(
+        to emailAddress: String
+    ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+        recaptchaService
+            .verifyForLogin()
+            .mapError(DeviceVerificationServiceError.recaptchaError)
+            .flatMap { [deviceVerificationRepository] captcha -> AnyPublisher<Void, DeviceVerificationServiceError> in
+                deviceVerificationRepository
+                    .sendDeviceVerificationEmail(to: emailAddress, captcha: captcha)
+            }
             .eraseToAnyPublisher()
     }
 
-    public func authorizeLogin(emailCode: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    public func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         sessionTokenRepository
             .sessionTokenPublisher
-            .setFailureType(to: AuthenticationServiceError.self)
-            .flatMap { token -> AnyPublisher<String, AuthenticationServiceError> in
+            .setFailureType(to: DeviceVerificationServiceError.self)
+            .flatMap { token -> AnyPublisher<String, DeviceVerificationServiceError> in
                 guard let sessionToken = token else {
                     return .failure(.missingSessionToken)
                 }
                 return .just(sessionToken)
             }
-            .flatMap { [authenticationRepository] sessionToken -> AnyPublisher<Void, AuthenticationServiceError> in
-                authenticationRepository
+            .flatMap { [deviceVerificationRepository] sessionToken -> AnyPublisher<Void, DeviceVerificationServiceError> in
+                deviceVerificationRepository
                     .authorizeLogin(sessionToken: sessionToken, emailCode: emailCode)
                     .eraseToAnyPublisher()
             }

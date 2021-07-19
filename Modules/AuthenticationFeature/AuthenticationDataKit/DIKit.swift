@@ -21,13 +21,13 @@ extension DependencyContainer {
 
         factory { TwoFAWalletClient() as TwoFAWalletClientAPI }
 
-        factory { VerifyDeviceClient() as VerifyDeviceClientAPI }
+        factory { DeviceVerificationClient() as DeviceVerificationClientAPI }
 
         factory { WalletPayloadClient() as WalletPayloadClientAPI }
 
         // MARK: - Repositories
 
-        factory { AuthenticationRepository() as AuthenticationRepositoryAPI }
+        factory { DeviceVerificationRepository() as DeviceVerificationRepositoryAPI }
 
     }
 }

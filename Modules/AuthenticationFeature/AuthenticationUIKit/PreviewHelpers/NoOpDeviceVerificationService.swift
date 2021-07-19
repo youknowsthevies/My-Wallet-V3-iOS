@@ -4,9 +4,9 @@ import AuthenticationKit
 import Combine
 
 /// Intend for SwiftUI Previews and only available in DEBUG
-final class NoOpAuthenticationService: AuthenticationServiceAPI {
+final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
 
-    func authorizeLogin(emailCode: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         Deferred {
             Future { (_) in
                 // no-op
@@ -15,7 +15,9 @@ final class NoOpAuthenticationService: AuthenticationServiceAPI {
         .eraseToAnyPublisher()
     }
 
-    func sendDeviceVerificationEmail(to emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    func sendDeviceVerificationEmail(
+        to emailAddress: String
+    ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         Deferred {
             Future { (_) in
                 // no-op

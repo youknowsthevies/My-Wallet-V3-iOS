@@ -2,7 +2,7 @@
 
 import Combine
 
-public enum GoogleRecaptchaError: Error {
+public enum GoogleRecaptchaError: Error, Equatable {
     case missingRecaptchaTokenError
     case rcaRecaptchaError(String)
     case unknownError

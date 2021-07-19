@@ -6,7 +6,7 @@ import DIKit
 import NetworkKit
 import ToolKit
 
-final class VerifyDeviceClient: VerifyDeviceClientAPI {
+final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     // MARK: - Types
 
@@ -49,7 +49,7 @@ final class VerifyDeviceClient: VerifyDeviceClientAPI {
 
     // MARK: - Methods
 
-    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         let parameters = [
             URLQueryItem(
                 name: Parameters.SendGuidReminder.method,
@@ -74,11 +74,11 @@ final class VerifyDeviceClient: VerifyDeviceClientAPI {
             contentType: .json
         )!
         return networkAdapter.perform(request: request)
-            .mapError(AuthenticationServiceError.networkError)
+            .mapError(DeviceVerificationServiceError.networkError)
             .eraseToAnyPublisher()
     }
 
-    func authorizeApprove(sessionToken: String, emailCode: String) -> AnyPublisher<Void, AuthenticationServiceError> {
+    func authorizeApprove(sessionToken: String, emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
@@ -100,7 +100,7 @@ final class VerifyDeviceClient: VerifyDeviceClientAPI {
             headers: headers,
             contentType: .json
         )!
-        return networkAdapter.perform(request: request)            .mapError(AuthenticationServiceError.networkError)
+        return networkAdapter.perform(request: request)            .mapError(DeviceVerificationServiceError.networkError)
             .eraseToAnyPublisher()
     }
 }

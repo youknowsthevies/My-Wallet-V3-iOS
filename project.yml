@@ -1606,6 +1606,11 @@ targets:
     - target: PlatformUIKit
     - target: SharedPackagesKit
     - target: UIComponentsKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AuthenticationKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     scheme:
       testTargets:
       - AuthenticationUIKitTests
