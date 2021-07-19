@@ -14,4 +14,3 @@ final class MockEmailAuthorizationService: EmailAuthorizationServiceAPI {
         .just(())
     }
 }
-

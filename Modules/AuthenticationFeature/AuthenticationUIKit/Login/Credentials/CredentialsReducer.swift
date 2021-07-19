@@ -318,15 +318,12 @@ let credentialsReducer = Reducer.combine(
                         .receive(on: environment.mainQueue)
                         .catchToEffect()
                         .map { result -> CredentialsAction in
-                            switch result {
-                            case .success:
-                                // TODO: Await design for success state
-                                return .credentialsFailureAlert(.show(title: "", message: ""))
-                            case let .failure(error):
+                            if case let .failure(error) = result {
                                 // TODO: Await design for error state
                                 environment.errorRecorder.error(error)
                                 return .credentialsFailureAlert(.show(title: "", message: ""))
                             }
+                            return .none
                         }
                 )
             case .setupSessionToken:

@@ -19,10 +19,12 @@ final class MockDeviceVerificationService: DeviceVerificationServiceAPI {
     func sendDeviceVerificationEmail(
         to emailAddress: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+        // always succeed
         .just(())
     }
 
     func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+        // always succeed
         .just(())
     }
 

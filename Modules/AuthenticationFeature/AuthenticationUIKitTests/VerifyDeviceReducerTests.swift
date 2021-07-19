@@ -48,10 +48,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
     func test_receive_valid_wallet_deeplink_should_update_wallet_info() {
         testStore.assert(
             .send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.validDeeplink)),
-            .do {
-                // advance by 0.5 second for deeplink decoding effect to take place
-                self.mockMainQueue.advance(by: 0.5)
-            },
+            .do { self.mockMainQueue.advance() },
             .receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
                 state.walletInfo = MockDeviceVerificationService.mockWalletInfo
             },
@@ -65,10 +62,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
         let invalidDeeplink = URL(string: "https://login.blockchain.com")!
         testStore.assert(
             .send(.didReceiveWalletInfoDeeplink(invalidDeeplink)),
-            .do {
-                // advance by 0.5 second for deeplink decoding effect to take place
-                self.mockMainQueue.advance(by: 0.5)
-            },
+            .do { self.mockMainQueue.advance() },
             .receive(.verifyDeviceFailureAlert(.show(title: "", message: ""))) { state in
                 state.verifyDeviceFailureAlert = AlertState(
                     title: TextState(""),
