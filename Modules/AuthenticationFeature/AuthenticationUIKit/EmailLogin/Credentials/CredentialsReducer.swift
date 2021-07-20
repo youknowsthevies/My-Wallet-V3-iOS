@@ -230,7 +230,7 @@ let credentialsReducer = Reducer.combine(
                             case .walletPayloadServiceError(let error):
                                 // TODO: Await design for error state
                                 environment.errorRecorder.error(error)
-                                return .credentialsFailureAlert(.show(title: "", message: ""))
+                                return .credentialsFailureAlert(.show(title: "Wallet Payload Error", message: error.localizedDescription))
                             case .twoFAWalletServiceError:
                                 fatalError("Shouldn't receive TwoFAService errors here")
                             }
@@ -270,10 +270,9 @@ let credentialsReducer = Reducer.combine(
                                 case .accountLocked:
                                     return .accountLockedErrorVisibility(true)
                                 case .missingCode:
-                                    // TODO: Await design for error state
-                                    return .credentialsFailureAlert(.show(title: "", message: ""))
+                                    return .credentialsFailureAlert(.show(title: "Missing 2FA Code", message: error.localizedDescription))
                                 default:
-                                    return .credentialsFailureAlert(.show(title: "", message: ""))
+                                    return .credentialsFailureAlert(.show(title: "Two FA Error", message: error.localizedDescription))
                                 }
                             case .walletPayloadServiceError:
                                 fatalError("Shouldn't receive WalletPayloadService errors here")
@@ -319,7 +318,7 @@ let credentialsReducer = Reducer.combine(
                         if case let .failure(error) = result {
                             // TODO: Await design for error state
                             environment.errorRecorder.error(error)
-                            return .credentialsFailureAlert(.show(title: "", message: ""))
+                            return .credentialsFailureAlert(.show(title: "Send SMS Failed", message: error.localizedDescription))
                         }
                         return .none
                     }
@@ -335,7 +334,7 @@ let credentialsReducer = Reducer.combine(
                     if case let .failure(error) = result {
                         // TODO: Await design for error state
                         environment.errorRecorder.error(error)
-                        return .credentialsFailureAlert(.show(title: "", message: ""))
+                        return .credentialsFailureAlert(.show(title: "Session Token Error", message: error.localizedDescription))
                     }
                     return .none
                 }

@@ -122,22 +122,26 @@ extension LocalizationConstants.AuthenticationKit {
         public enum TextFieldError {
             public static let invalidEmail = NSLocalizedString(
                 "Invalid Email",
-                comment: "Login screen: invalid email error message"
+                comment: "Login screen: invalid email error"
             )
             public static let incorrectPassword = NSLocalizedString(
                 "Incorrect Password",
-                comment: "Login screen: wrong password footnote"
+                comment: "Login screen: wrong password error"
+            )
+            public static let missingTwoFACode = NSLocalizedString(
+                "Missing 2FA code",
+                comment: "Login screen: missing 2FA code error"
             )
             public static let incorrectTwoFACode = NSLocalizedString(
-                "Incorrect 2FA code. %d attempts left.",
-                comment: "Login screen: wrong 2FA code footnote"
+                "Incorrect 2FA code. %d attempts left",
+                comment: "Login screen: wrong 2FA code error"
             )
             public static let incorrectHardwareKeyCode = NSLocalizedString(
                 "Incorrect |HARDWARE KEY| code",
-                comment: "Login screen: wrong hardware key"
+                comment: "Login screen: wrong hardware key error"
             )
             public static let accountLocked = NSLocalizedString(
-                "This account has been locked due to too many failed authentications.",
+                "This account has been locked due to too many failed authentications",
                 comment: "Login screen: a message saying that the account is locked"
             )
         }

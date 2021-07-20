@@ -95,7 +95,7 @@ let verifyDeviceReducer = Reducer.combine(
                         return .didExtractWalletInfo(walletInfo)
                     case .failure(let error):
                         environment.errorRecorder.error(error)
-                        return .verifyDeviceFailureAlert(.show(title: "", message: ""))
+                        return .verifyDeviceFailureAlert(.show(title: "Deeplink Error", message: error.localizedDescription))
                     }
                 }
 

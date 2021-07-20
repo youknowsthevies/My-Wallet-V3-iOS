@@ -30,7 +30,7 @@ struct EmailLoginState: Equatable {
     var isVerifyDeviceScreenVisible: Bool
     var verifyDeviceState: VerifyDeviceState?
     var emailLoginFailureAlert: AlertState<EmailLoginAction>?
-
+    
     init() {
         verifyDeviceState = .init()
         emailAddress = ""
@@ -43,7 +43,7 @@ struct EmailLoginEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validateEmail: (String) -> Bool
-
+    
     init(deviceVerificationService: DeviceVerificationServiceAPI,
          mainQueue: AnySchedulerOf<DispatchQueue> = .main,
          validateEmail: @escaping (String) -> Bool = { $0.isEmail }) {
@@ -57,43 +57,46 @@ let emailLoginReducer = Reducer.combine(
     verifyDeviceReducer
         .optional()
         .pullback(
-        state: \.verifyDeviceState,
-        action: /EmailLoginAction.verifyDevice,
-        environment: {
-            VerifyDeviceEnvironment(
-                mainQueue: $0.mainQueue,
-                deviceVerificationService: $0.deviceVerificationService
-            )
-        }
-    ),
+            state: \.verifyDeviceState,
+            action: /EmailLoginAction.verifyDevice,
+            environment: {
+                VerifyDeviceEnvironment(
+                    mainQueue: $0.mainQueue,
+                    deviceVerificationService: $0.deviceVerificationService
+                )
+            }
+        ),
     Reducer<EmailLoginState, EmailLoginAction, EmailLoginEnvironment> { state, action, environment in
         switch action {
         case .closeButtonTapped:
             // handled in welcome reducer
             return .none
-
+            
         case .didDisappear:
             state.emailAddress = ""
             state.isEmailValid = false
             state.emailLoginFailureAlert = nil
             return .none
-
+            
         case let .didChangeEmailAddress(emailAddress):
             state.emailAddress = emailAddress
             state.isEmailValid = environment.validateEmail(emailAddress)
             return .none
-
+            
         case let .didSendDeviceVerificationEmail(response):
             if case let .failure(error) = response {
                 switch error {
-                case .recaptchaError, .missingSessionToken:
-                    return Effect(value: .emailLoginFailureAlert(.show(title: "", message: "")))
+                case .recaptchaError:
+                    return Effect(value: .emailLoginFailureAlert(.show(title: "Recaptcha Error", message: error.localizedDescription)))
+                case .missingSessionToken:
+                    return Effect(value: .emailLoginFailureAlert(.show(title: "Missing Session Token", message: error.localizedDescription)))
                 case .networkError:
+                    // still go to verify device screen if there is network error
                     break
                 }
             }
             return Effect(value: .setVerifyDeviceScreenVisible(true))
-
+            
         case let .emailLoginFailureAlert(.show(title, message)):
             state.emailLoginFailureAlert = AlertState(
                 title: TextState(verbatim: title),
@@ -104,11 +107,11 @@ let emailLoginReducer = Reducer.combine(
                 )
             )
             return .none
-
+            
         case .emailLoginFailureAlert(.dismiss):
             state.emailLoginFailureAlert = nil
             return .none
-
+            
         case .sendDeviceVerificationEmail,
              .verifyDevice(.sendDeviceVerificationEmail):
             guard state.isEmailValid else {
@@ -127,11 +130,11 @@ let emailLoginReducer = Reducer.combine(
                         return .didSendDeviceVerificationEmail(.failure(error))
                     }
                 }
-
+            
         case let .setVerifyDeviceScreenVisible(isVisible):
             state.isVerifyDeviceScreenVisible = isVisible
             return .none
-
+            
         case .verifyDevice(.didExtractWalletInfo),
              .verifyDevice(.didReceiveWalletInfoDeeplink),
              .verifyDevice(.verifyDeviceFailureAlert),
