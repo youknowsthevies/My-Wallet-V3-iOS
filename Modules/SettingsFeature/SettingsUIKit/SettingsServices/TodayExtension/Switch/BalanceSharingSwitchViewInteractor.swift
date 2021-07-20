@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import PlatformKit
 import PlatformUIKit
 import RxCocoa
@@ -21,6 +23,11 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
             .disposed(by: disposeBag)
 
         switchTriggerRelay
+            .do(onNext: { [analyticsRecorder] in
+                analyticsRecorder.record(
+                    event: AnalyticsEvents.New.Security.syncMyWidgetPortfolioUpdated(isEnabled: $0)
+                )
+            })
             .flatMap(weak: self) { (self, value) -> Observable<Void> in
                 self.service
                     .balanceSharing(enabled: value)
@@ -47,8 +54,11 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
     private let disposeBag = DisposeBag()
     private let service: BalanceSharingSettingsServiceAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(service: BalanceSharingSettingsServiceAPI) {
+    init(service: BalanceSharingSettingsServiceAPI,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.service = service
+        self.analyticsRecorder = analyticsRecorder
     }
 }

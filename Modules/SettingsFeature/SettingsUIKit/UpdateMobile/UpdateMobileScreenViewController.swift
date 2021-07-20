@@ -1,5 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
+import DIKit
 import PlatformUIKit
 import RxCocoa
 import RxSwift
@@ -20,12 +22,15 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     fileprivate var badgeShimmeringView: ShimmeringView!
     private var keyboardInteractionController: KeyboardInteractionController!
     private let presenter: UpdateMobileScreenPresenter
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let disposeBag = DisposeBag()
 
     // MARK: - Init
 
-    init(presenter: UpdateMobileScreenPresenter) {
+    init(presenter: UpdateMobileScreenPresenter,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.presenter = presenter
+        self.analyticsRecorder = analyticsRecorder
         super.init(nibName: UpdateMobileScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
@@ -43,12 +48,16 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionLabel
         mobileNumberTextFieldView.setup(
-            viewModel: presenter.textField,
+            viewModel: presenter.textFieldViewModel,
             keyboardInteractionController: keyboardInteractionController
         )
         continueButtonView.viewModel = presenter.continueButtonViewModel
         updateButtonView.viewModel = presenter.updateButtonViewModel
         disable2FALabel.content = presenter.disable2FALabel
+
+        mobileNumberTextFieldView.isEmpty
+            ? analyticsRecorder.record(event: AnalyticsEvents.New.Settings.addMobileNumberClicked)
+            : analyticsRecorder.record(event: AnalyticsEvents.New.Settings.changeMobileNumberClicked)
 
         presenter.disable2FASMSVisibility
             .map { $0.isHidden }

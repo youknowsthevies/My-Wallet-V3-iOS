@@ -44,6 +44,9 @@ final class BiometrySwitchViewPresenter: SwitchViewPresenting {
             .flatMap(weak: self) { (self, values) -> Observable<Bool> in
                 self.toggleBiometry(values.2, biometryStatus: values.1, isOn: values.0)
             }
+            .do(onNext: { [analyticsRecording] isEnabled in
+                analyticsRecording.record(event: AnalyticsEvents.New.Security.biometricsUpdated(isEnabled: isEnabled))
+            })
             .bindAndCatch(to: interactor.switchTriggerRelay)
             .disposed(by: disposeBag)
 

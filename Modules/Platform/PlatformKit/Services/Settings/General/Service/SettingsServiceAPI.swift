@@ -31,6 +31,7 @@ public protocol SettingsServiceCombineAPI: AnyObject {
 public protocol SettingsServiceAPI: SettingsServiceCombineAPI {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }
+    
     func fetch(force: Bool) -> Single<WalletSettings>
 }
 
@@ -52,8 +53,9 @@ public protocol VerifyMobileSettingsServiceAPI {
 
 public protocol BalanceSharingSettingsServiceAPI {
     var isEnabled: Observable<Bool> { get }
-    func sync()
+
     func balanceSharing(enabled: Bool) -> Completable
+    func sync()
 }
 
 public protocol SMSTwoFactorSettingsServiceAPI: SettingsServiceAPI {

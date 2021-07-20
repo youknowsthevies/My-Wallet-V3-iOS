@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import LocalAuthentication
 import Localization
@@ -159,6 +160,7 @@ final class PinScreenPresenter {
     private let appSettings: Settings
     private let biometryProvider: BiometryProviding
     private let credentialsStore: CredentialsStoreAPI
+    private let analyticsRecorder: AnalyticsEventRecorderAPI
 
     // MARK: - View Models
 
@@ -184,7 +186,8 @@ final class PinScreenPresenter {
          credentialsStore: CredentialsStoreAPI = resolve(),
          backwardRouting: PinRouting.RoutingType.Backward? = nil,
          forwardRouting: @escaping PinRouting.RoutingType.Forward,
-         performEffect: @escaping PinRouting.RoutingType.Effect) {
+         performEffect: @escaping PinRouting.RoutingType.Effect,
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.useCase = useCase
         self.flow = flow
         self.interactor = interactor
@@ -195,6 +198,7 @@ final class PinScreenPresenter {
         self.forwardRouting = forwardRouting
         self.credentialsStore = credentialsStore
         self.performEffect = performEffect
+        self.analyticsRecorder = analyticsRecorder
 
         let emptyPinColor: UIColor
         let buttonHighlightColor: UIColor
@@ -706,7 +710,7 @@ extension PinScreenPresenter {
         guard flow.isChange else {
             return nil
         }
-
+        analyticsRecorder.record(event: AnalyticsEvents.New.Security.mobilePinCodeChanged)
         let okButton = AlertAction(style: .confirm(LocalizationConstants.continueString))
         let image = UIImage(named: "success_icon")!
         let alert = AlertModel(headline: LocalizationConstants.Pin.pinSuccessfullySet,

@@ -44,7 +44,7 @@ final class UpdateMobileScreenPresenter {
         updateVisibilityRelay.asDriver()
     }
 
-    let textField: TextFieldViewModel
+    let textFieldViewModel: TextFieldViewModel
     let descriptionLabel: LabelContent
     let disable2FALabel: LabelContent
     let continueButtonViewModel: ButtonViewModel
@@ -63,7 +63,7 @@ final class UpdateMobileScreenPresenter {
          settingsAPI: MobileSettingsServiceAPI = resolve(),
          loadingViewPresenting: LoadingViewPresenting = resolve()) {
         self.stateService = stateService
-        textField = .init(
+        textFieldViewModel = .init(
             with: .mobile,
             validator: TextValidationFactory.Info.mobile,
             formatter: TextFormatterFactory.mobile,
@@ -90,7 +90,7 @@ final class UpdateMobileScreenPresenter {
         submissionInteractor = UpdateMobileScreenInteractor(service: settingsAPI)
         setupInteractor = UpdateMobileScreenSetupInteractor(service: settingsAPI)
 
-        textField.state
+        textFieldViewModel.state
             .compactMap { $0.value }
             .bindAndCatch(to: submissionInteractor.contentRelay)
             .disposed(by: disposeBag)
@@ -110,7 +110,7 @@ final class UpdateMobileScreenPresenter {
         setupInteractor.state
             .compactMap { $0.value }
             .map { !$0.is2FAEnabled }
-            .bindAndCatch(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textFieldViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
@@ -121,7 +121,7 @@ final class UpdateMobileScreenPresenter {
 
         setupInteractor.state
             .map { !$0.isLoading }
-            .bindAndCatch(to: textField.isEnabledRelay)
+            .bindAndCatch(to: textFieldViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
@@ -134,7 +134,7 @@ final class UpdateMobileScreenPresenter {
 
         setupInteractor.state
             .compactMap { $0.value?.mobileNumber }
-            .bindAndCatch(to: textField.textRelay)
+            .bindAndCatch(to: textFieldViewModel.textRelay)
             .disposed(by: disposeBag)
 
         setupInteractor.state
@@ -142,7 +142,7 @@ final class UpdateMobileScreenPresenter {
             .bindAndCatch(to: badgeRelay)
             .disposed(by: disposeBag)
 
-    Observable.combineLatest(textField.state, setupInteractor.state)
+    Observable.combineLatest(textFieldViewModel.state, setupInteractor.state)
             .compactMap { ($0.0, $0.1.value) }
             .map { $0.0.isValid && $0.1?.is2FAEnabled == false }
             .bindAndCatch(to:

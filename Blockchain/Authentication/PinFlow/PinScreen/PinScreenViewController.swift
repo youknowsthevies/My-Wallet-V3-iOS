@@ -332,7 +332,6 @@ extension PinScreenViewController {
             UINotificationFeedbackGenerator().notificationOccurred(.success)
             presenter?.didSetPinSuccessfully()
         }
-
         guard let model = presenter.setPinSuccessAlertModel else {
             success()
             return

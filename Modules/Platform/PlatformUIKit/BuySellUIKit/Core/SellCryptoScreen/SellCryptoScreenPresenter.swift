@@ -52,9 +52,11 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
         super.viewDidLoad()
         interactor.amountTranslationInteractor.minAmountSelectedRelay
             .map { [interactor] _ in
-                AnalyticsEvents.New.Sell.sellAmountMinClicked(fromAccountType: .init(interactor.data.source),
-                                                              inputCurrency: interactor.data.source.currencyType.code,
-                                                              outputCurrency: interactor.data.destination.currencyType.code)
+                AnalyticsEvents.New.Sell.sellAmountMinClicked(
+                    fromAccountType: .init(interactor.data.source),
+                    inputCurrency: interactor.data.source.currencyType.code,
+                    outputCurrency: interactor.data.destination.currencyType.code
+                )
             }
             .subscribe(onNext: analyticsRecorder.record(event:))
             .disposed(by: disposeBag)

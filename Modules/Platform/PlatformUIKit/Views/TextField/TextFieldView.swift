@@ -23,6 +23,10 @@ public class TextFieldView: UIView {
         }
     }
 
+    public var isEmpty: Bool {
+        textField.text?.isEmpty ?? true
+    }
+
     /// Equals to the expression: `textField.text ?? ""`
     var text: String {
         textField.text ?? ""

@@ -34,7 +34,12 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
             .disposed(by: disposeBag)
 
         viewModel.isSwitchedOnRelay
-            .bind { analyticsRecording.record(event: AnalyticsEvent.settingsEmailNotifSwitch(value: $0)) }
+            .bind {
+                analyticsRecording.record(events: [
+                    AnalyticsEvent.settingsEmailNotifSwitch(value: $0),
+                    AnalyticsEvents.New.Settings.notificationPreferencesUpdated(emailEnabled: $0, smsEnabled: nil)
+                ])
+            }
             .disposed(by: disposeBag)
 
         interactor.state

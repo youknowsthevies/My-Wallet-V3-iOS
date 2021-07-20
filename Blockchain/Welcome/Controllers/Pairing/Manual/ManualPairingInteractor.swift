@@ -85,8 +85,15 @@ final class ManualPairingInteractor {
 
     // MARK: - API
 
+    typealias Event = AnalyticsEvents.New.Security
+
     func pair(using action: AuthenticationType = .standard) throws {
         dependencies.analyticsRecorder.record(event: AnalyticsEvents.Onboarding.walletManualLogin)
+        if case .twoFA = action {
+            dependencies.analyticsRecorder.record(
+                event: Event.verificationCodeSubmitted(twoStepOption: .mobileNumber)
+            )
+        }
 
         /// We have to call `loadJS` before starting the pairing process
         /// `true` is being sent because we only need to load the JS.
@@ -200,7 +207,6 @@ extension ManualPairingInteractor {
              smsService: SMSServiceAPI = resolve(),
              emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
              loginService: LoginServiceAPI = resolve(),
-             walletRepository: WalletRepositoryAPI = resolve(),
              wallet: Wallet = WalletManager.shared.wallet,
              walletFetcher: PairingWalletFetching = resolve()) {
             self.wallet = wallet

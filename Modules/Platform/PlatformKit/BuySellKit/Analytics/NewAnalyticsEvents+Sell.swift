@@ -8,17 +8,17 @@ extension AnalyticsEvents.New {
 
         public var type: AnalyticsEventType { .nabu }
 
-        case sellAmountEntered(fromAccountType: FromAccountType?,
+        case sellAmountEntered(fromAccountType: FromAccountType,
                                inputAmount: Double,
                                inputCurrency: String,
                                outputCurrency: String)
-        case sellAmountMaxClicked(fromAccountType: FromAccountType?,
+        case sellAmountMaxClicked(fromAccountType: FromAccountType,
                                   inputCurrency: String,
                                   outputCurrency: String)
-        case sellAmountMinClicked(fromAccountType: FromAccountType?,
+        case sellAmountMinClicked(fromAccountType: FromAccountType,
                                   inputCurrency: String,
                                   outputCurrency: String)
-        case sellFromSelected(fromAccountType: FromAccountType?,
+        case sellFromSelected(fromAccountType: FromAccountType,
                               inputCurrency: String)
 
         public enum FromAccountType: String, StringRawRepresentable {
@@ -26,16 +26,14 @@ extension AnalyticsEvents.New {
             case trading = "TRADING"
             case userKey = "USERKEY"
 
-            public init?(_ account: CryptoAccount) {
+            public init(_ account: CryptoAccount) {
                 switch account {
-                case is CryptoNonCustodialAccount:
-                    self = .userKey
                 case is CryptoInterestAccount:
                     self = .savings
                 case is CryptoTradingAccount:
                     self = .trading
                 default:
-                    return nil
+                    self = .userKey
                 }
             }
         }

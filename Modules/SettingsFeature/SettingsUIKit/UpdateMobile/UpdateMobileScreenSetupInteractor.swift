@@ -51,7 +51,7 @@ final class UpdateMobileScreenSetupInteractor {
         serviceAPI
             .valueObservable
             .map {
-                .init(
+                InteractionModel(
                     badgeItem: $0.isSMSVerified ? .verified : .unverified,
                     is2FAEnabled: $0.authenticator == .sms,
                     isSMSVerified: $0.isSMSVerified,

@@ -361,9 +361,10 @@ final class SettingsRouter: SettingsRouterAPI {
                     /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
-                    self.analyticsRecording.record(
-                        event: AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code)
-                    )
+                    self.analyticsRecording.record(events: [
+                        AnalyticsEvents.Settings.settingsCurrencySelected(currency: currency.code),
+                        AnalyticsEvents.New.Settings.settingsCurrencyClicked(currency: currency.code)
+                    ])
                 },
                 onError: { [weak self] _ in
                     guard let self = self else { return }

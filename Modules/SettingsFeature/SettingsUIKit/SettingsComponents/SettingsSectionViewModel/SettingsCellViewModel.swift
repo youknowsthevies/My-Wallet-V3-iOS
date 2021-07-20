@@ -26,8 +26,7 @@ struct SettingsCellViewModel {
     }
 
     func recordSelection() {
-        guard let event = cellType.analyticsEvent else { return }
-        analyticsRecorder.record(event: event)
+        analyticsRecorder.record(events: cellType.analyticsEvent)
     }
 }
 
