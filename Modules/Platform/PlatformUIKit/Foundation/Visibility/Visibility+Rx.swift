@@ -8,6 +8,7 @@ extension Reactive where Base: UIView {
     public var visibility: Binder<Visibility> {
         Binder(base) { view, visibility in
             view.alpha = visibility.defaultAlpha
+            view.isUserInteractionEnabled = visibility == .visible
         }
     }
 }

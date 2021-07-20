@@ -39,7 +39,14 @@ public final class AmountTranslationView: UIView, AmountViewable {
     private let fiatAmountLabelView = AmountLabelView()
     private let cryptoAmountLabelView = AmountLabelView()
     private let auxiliaryButton = ButtonView()
-    private let swapButton = UIButton()
+    private let swapButton: UIButton = {
+        var swapButton = UIButton()
+        swapButton.layer.borderWidth = 1
+        swapButton.layer.cornerRadius = 8
+        swapButton.layer.borderColor = UIColor.mediumBorder.cgColor
+        swapButton.setImage(UIImage(named: "vertical-swap-icon", in: bundle, with: nil), for: .normal)
+        return swapButton
+    }()
 
     private let presenter: AmountTranslationPresenter
 
@@ -162,13 +169,11 @@ public final class AmountTranslationView: UIView, AmountViewable {
 
         auxiliaryButton.layoutToSuperview(.centerX)
         auxiliaryButton.layout(edge: .trailing,
-                                 to: .leading,
-                                 of: swapButton,
-                                 relation: .lessThanOrEqual,
-                                 offset: 0)
+                               to: .leading,
+                               of: swapButton,
+                               relation: .lessThanOrEqual,
+                               offset: 0)
 
-        let swapImage = UIImage(named: "vertical-swap-icon", in: bundle, compatibleWith: nil)
-        swapButton.setImage(swapImage, for: .normal)
         swapButton.layout(size: .init(edge: 40))
         swapButton.layout(to: .trailing, of: self, offset: -16)
 

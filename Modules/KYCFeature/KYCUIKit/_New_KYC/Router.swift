@@ -111,13 +111,16 @@ public class Router: Routing {
                     // The user's email address in NOT verified; present email verification flow.
                     let publisher = PassthroughSubject<FlowResult, RouterError>()
                     self.routeToEmailVerification(from: presenter, emailAddress: response.emailAddress) { result in
-                        switch result {
-                        case .abandoned:
-                            publisher.send(.abandoned)
-                        case .completed:
-                            publisher.send(.completed)
+                        // Because the caller of the API doesn't know if the flow got presented, we should dismiss it here
+                        presenter.dismiss(animated: true) {
+                            switch result {
+                            case .abandoned:
+                                publisher.send(.abandoned)
+                            case .completed:
+                                publisher.send(.completed)
+                            }
+                            publisher.send(completion: .finished)
                         }
-                        publisher.send(completion: .finished)
                     }
                     return publisher.eraseToAnyPublisher()
                 }

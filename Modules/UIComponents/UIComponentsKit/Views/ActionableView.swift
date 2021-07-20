@@ -91,7 +91,7 @@ extension ActionableView where Content == AnyView {
         self.init(
             content: {
                 AnyView(
-                    VStack(spacing: imageSpacing) {
+                    VStack(alignment: .center, spacing: imageSpacing) {
                         Spacer()
                         image()
                         VStack {
@@ -102,6 +102,7 @@ extension ActionableView where Content == AnyView {
                         }
                         Spacer()
                     }
+                    .frame(maxWidth: .infinity)
                     .multilineTextAlignment(.center)
                     .background(Color.viewPrimaryBackground)
                 )

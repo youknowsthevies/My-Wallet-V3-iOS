@@ -22,8 +22,8 @@ public protocol RouterAPI: AnyObject {
     func showCryptoSelectionScreen()
     func showFailureAlert()
 
-    func presentEmailVerificationIfNeeded() -> AnyPublisher<Void, RouterError>
-    func presentKYCIfNeeded() -> AnyPublisher<Void, RouterError>
+    func presentEmailVerificationIfNeeded() -> AnyPublisher<KYCRoutingResult, RouterError>
+    func presentKYCIfNeeded() -> AnyPublisher<KYCRoutingResult, RouterError>
 }
 
 // swiftlint:disable type_body_length
@@ -381,7 +381,7 @@ public final class Router: RouterAPI {
             .disposed(by: disposeBag)
     }
 
-    public func presentEmailVerificationIfNeeded() -> AnyPublisher<Void, RouterError> {
+    public func presentEmailVerificationIfNeeded() -> AnyPublisher<KYCRoutingResult, RouterError> {
         guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
             fatalError("This is not supposed to be nil. It shouldn't even be optional, probably...")
         }
@@ -401,7 +401,7 @@ public final class Router: RouterAPI {
             .eraseToAnyPublisher()
     }
 
-    public func presentKYCIfNeeded() -> AnyPublisher<Void, RouterError> {
+    public func presentKYCIfNeeded() -> AnyPublisher<KYCRoutingResult, RouterError> {
         guard let viewController = navigationRouter.topMostViewControllerProvider.topMostViewController else {
             fatalError("This is not supposed to be nil. It shouldn't even be optional, probably...")
         }
