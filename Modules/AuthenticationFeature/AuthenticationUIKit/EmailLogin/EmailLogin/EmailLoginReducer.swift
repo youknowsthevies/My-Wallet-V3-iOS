@@ -4,6 +4,7 @@ import AuthenticationKit
 import ComposableArchitecture
 import DIKit
 import Localization
+import ToolKit
 
 // MARK: - Type
 
@@ -15,7 +16,7 @@ public enum EmailLoginAction: Equatable {
     case closeButtonTapped
     case didDisappear
     case didChangeEmailAddress(String)
-    case didSendDeviceVerificationEmail(Result<Int, DeviceVerificationServiceError>)
+    case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
     case emailLoginFailureAlert(AlertAction)
     case sendDeviceVerificationEmail
     case setVerifyDeviceScreenVisible(Bool)
@@ -125,7 +126,7 @@ let emailLoginReducer = Reducer.combine(
                 .map { result -> EmailLoginAction in
                     switch result {
                     case .success:
-                        return .didSendDeviceVerificationEmail(.success((0)))
+                        return .didSendDeviceVerificationEmail(.success(.noValue))
                     case let .failure(error):
                         return .didSendDeviceVerificationEmail(.failure(error))
                     }
