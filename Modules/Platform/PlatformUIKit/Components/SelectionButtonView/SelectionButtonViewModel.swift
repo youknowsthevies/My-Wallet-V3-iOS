@@ -206,13 +206,11 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 titleFontRelay.asObservable(),
                 titleFontColor.asObservable()
             )
-            .map {
-                let title = $0.0
-                let accessibility = $0.1
-                return LabelContent(
+            .map { (title, accessibility, font, color) in
+                LabelContent(
                     text: title,
-                    font: $0.2,
-                    color: $0.3,
+                    font: font,
+                    color: color,
                     accessibility: accessibility
                 )
             }
@@ -228,18 +226,18 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 subtitleFontRelay.asObservable(),
                 subtitleFontColor.asObservable()
             )
-            .map {
-                guard let subtitle = $0.0
-                    else { return nil }
-                let accessibility = $0.1
+            .map { (subtitle, accessibility, font, color) in
+                guard let subtitle = subtitle else {
+                    return nil
+                }
                 return LabelContent(
                     text: subtitle,
-                    font: $0.2,
-                    color: $0.3,
+                    font: font,
+                    color: color,
                     accessibility: accessibility
                 )
             }
-            .asDriver(onErrorJustReturn: LabelContent.empty)
+            .asDriver(onErrorJustReturn: .empty)
     }
 
     /// Streams the trailing content

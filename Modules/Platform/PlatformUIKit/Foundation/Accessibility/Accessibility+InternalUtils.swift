@@ -10,9 +10,9 @@ extension Accessibility {
 
 public extension Accessibility.Identifier {
 
-    enum ContentLabelView {
-        static let title = "ContentLabelView.title"
-        static let description = "ContentLabelView.description"
+    public enum ContentLabelView {
+        public static let title = "ContentLabelView.title"
+        public static let description = "ContentLabelView.description"
     }
 
     /// General accessibility
