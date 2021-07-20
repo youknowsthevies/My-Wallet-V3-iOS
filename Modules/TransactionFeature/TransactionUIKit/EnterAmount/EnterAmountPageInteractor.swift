@@ -292,12 +292,13 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     ) -> State {
         let topSelectionTitle = TransactionFlowDescriptor.EnterAmountScreen.headerTitle(state: updater)
         let topSelectionSubtitle = TransactionFlowDescriptor.EnterAmountScreen.headerSubtitle(state: updater)
+
         let topSelection = TopSelectionState(
             sourceAccount: updater.source,
             destinationAccount: updater.destination as? BlockchainAccount,
             action: updater.action,
-            titleAccessibility: .label(topSelectionTitle),
-            subtitleAccessibility: .label(topSelectionSubtitle)
+            titleAccessibility: state.topSelection.titleAccessibility.copy(label: topSelectionTitle),
+            subtitleAccessibility: state.topSelection.subtitleAccessibility.copy(label: topSelectionSubtitle)
         )
 
         return state
@@ -331,7 +332,9 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         let topSelectionState = TopSelectionState(
             sourceAccount: nil,
             destinationAccount: nil,
-            action: action
+            action: action,
+            titleAccessibility: .id(Accessibility.Identifier.ContentLabelView.title),
+            subtitleAccessibility: .id(Accessibility.Identifier.ContentLabelView.description)
         )
         let send = BottomAuxiliaryViewModelState.send(
             sendAuxiliaryViewPresenter
@@ -368,8 +371,8 @@ extension EnterAmountPageInteractor {
         let isEnabled: Bool = false
         var trailingContent: SelectionButtonViewModel.TrailingContent
         var leadingContent: SelectionButtonViewModel.LeadingContentType?
-        var titleAccessibility: Accessibility = .none
-        var subtitleAccessibility: Accessibility = .none
+        var titleAccessibility: Accessibility
+        var subtitleAccessibility: Accessibility
         var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
 
         private init(titleDescriptor: (font: UIFont, textColor: UIColor),
@@ -391,8 +394,8 @@ extension EnterAmountPageInteractor {
         init(sourceAccount: BlockchainAccount?,
              destinationAccount: BlockchainAccount?,
              action: AssetAction,
-             titleAccessibility: Accessibility = .none,
-             subtitleAccessibility: Accessibility = .none) {
+             titleAccessibility: Accessibility,
+             subtitleAccessibility: Accessibility) {
             let transactionImageViewModel = TransactionDescriptorViewModel(
                 sourceAccount: sourceAccount as? SingleAccount,
                 destinationAccount: action == .swap ? destinationAccount as? SingleAccount : nil,

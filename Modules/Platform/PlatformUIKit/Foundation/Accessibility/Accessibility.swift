@@ -43,10 +43,10 @@ public struct Accessibility {
         )
     }
 
-    func copy(id: String? = nil,
-              label: String? = nil,
-              hint: String? = nil,
-              traits: UIAccessibilityTraits? = nil) -> Accessibility {
+    public func copy(id: String? = nil,
+                     label: String? = nil,
+                     hint: String? = nil,
+                     traits: UIAccessibilityTraits? = nil) -> Accessibility {
         Accessibility(
             id: id != nil ? id : self.id,
             label: label != nil ? label : self.label,
