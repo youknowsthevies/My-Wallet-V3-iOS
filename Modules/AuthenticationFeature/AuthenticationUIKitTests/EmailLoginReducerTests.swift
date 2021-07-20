@@ -3,6 +3,7 @@
 @testable import AuthenticationUIKit
 import ComposableArchitecture
 import Localization
+import ToolKit
 import XCTest
 
 final class EmailLoginReducerTests: XCTestCase {
@@ -60,7 +61,7 @@ final class EmailLoginReducerTests: XCTestCase {
             },
             .send(.sendDeviceVerificationEmail),
             .do { self.mockMainQueue.advance() },
-            .receive(.didSendDeviceVerificationEmail(.success(0))),
+            .receive(.didSendDeviceVerificationEmail(.success(.noValue))),
             .receive(.setVerifyDeviceScreenVisible(true)) { state in
                 state.isVerifyDeviceScreenVisible = true
             }
