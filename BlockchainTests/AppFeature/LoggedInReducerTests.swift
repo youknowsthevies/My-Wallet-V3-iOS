@@ -120,6 +120,88 @@ final class LoggedInReducerTests: XCTestCase {
         XCTAssertFalse(state.reloadAfterSymbolChanged)
     }
 
+    func test_calling_start_on_reducer_should_post_login_notification() {
+        let expectation = self.expectation(forNotification: .login, object: nil)
+
+        testStore.send(.start(.none))
+
+        wait(for: [expectation], timeout: 2)
+    }
+
+    func test_calling_start_calls_required_services() {
+        testStore.send(.start(.none))
+
+        XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedPublisherCalled)
+
+        XCTAssertTrue(mockRemoteNotificationServiceContainer.sendTokenIfNeededPublisherCalled)
+
+        XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededPublisherCalled)
+
+        XCTAssertTrue(mockCoincore.initializePublisherCalled)
+    }
+
+    func test_reducer_handles_new_wallet_correctly_should_show_new_onboarding() {
+        // when
+        _ = mockFeatureFlagsService.enable(.remote(.showOnboardingAfterSignUp))
+
+        // given
+        let context = LoggedIn.Context.wallet(.new)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.handleNewWalletCreation)
+
+        testStore.receive(.showOnboarding) { state in
+            state.displayOnboardingFlow = true
+        }
+    }
+
+    func test_reducer_handles_new_wallet_correctly_should_show_legacy_flow() {
+        // when
+        _ = mockFeatureFlagsService.disable(.remote(.showOnboardingAfterSignUp))
+
+        // given
+        let context = LoggedIn.Context.wallet(.new)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.handleNewWalletCreation)
+
+        testStore.receive(.showLegacyBuyFlow) { state in
+            state.displayLegacyBuyFlow = true
+        }
+    }
+
+    func test_reducer_handles_deeplink_sendCrypto_correctly() {
+        let uriContent = URIContent(url: URL(string: "https://")!, context: .sendCrypto)
+        let context = LoggedIn.Context.deeplink(uriContent)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.deeplink(uriContent)) { state in
+            state.displaySendCryptoScreen = true
+        }
+
+        testStore.receive(.deeplinkHandled) { state in
+            state.displaySendCryptoScreen = false
+        }
+    }
+
+    func test_reducer_handles_deeplink_executeDeeplinkRouting_correctly() {
+        let uriContent = URIContent(url: URL(string: "https://")!, context: .executeDeeplinkRouting)
+        let context = LoggedIn.Context.deeplink(uriContent)
+        testStore.send(.start(context))
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.deeplink(uriContent))
+
+        XCTAssertTrue(mockDeepLinkRouter.routeIfNeededCalled)
+    }
+
     func test_verify_start_action_observers_symbol_changes() {
         testStore.send(.start(.none))
 
@@ -145,6 +227,7 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
             state.reloadAfterMultiAddressResponse = false
         }
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_handleWalletBackup() {
@@ -172,6 +255,84 @@ final class LoggedInReducerTests: XCTestCase {
             state.displayWalletAlertContent = AlertViewContent(
                 title: LocalizationConstants.Errors.error,
                 message: LocalizationConstants.Errors.balancesGeneric
+            )
+        }
+    }
+
+    func test_reducer_handles_walletDidGetAccountInfoAndExchangeRates() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate.walletDidGetAccountInfoAndExchangeRates?(mockWallet)
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.wallet(.accountInfoAndExchangeRates)) { state in
+            state.reloadAfterMultiAddressResponse = true
+        }
+        testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
+            state.reloadAfterMultiAddressResponse = false
+        }
+    }
+
+    func test_reducer_handles_walletBackupFailed() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate?.didBackupWallet?()
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+    }
+
+    func test_reducer_handles_walletBackupSuccess() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        mockWallet.delegate?.didFailBackupWallet?()
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+    }
+
+    func test_reducer_handles_walletFailedToGetHistory_with_an_error_message() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        let errorMessage = "an error message"
+        mockWallet.delegate?.didFailGetHistory?(errorMessage)
+        mockMainQueue.advance()
+
+        // then
+        XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
+        testStore.receive(.wallet(.handleFailToLoadHistory(errorMessage))) { state in
+            state.displayWalletAlertContent = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.balancesGeneric
+            )
+        }
+    }
+
+    func test_reducer_handles_walletFailedToGetHistory_with_an_empty_error_message() {
+        // given
+        testStore.send(.start(.none))
+
+        // when
+        let emptyErrorMessage = ""
+        mockWallet.delegate?.didFailGetHistory?(emptyErrorMessage)
+        mockMainQueue.advance()
+
+        // then
+        testStore.receive(.wallet(.handleFailToLoadHistory(emptyErrorMessage))) { state in
+            state.displayWalletAlertContent = AlertViewContent(
+                title: LocalizationConstants.Errors.error,
+                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
             )
         }
     }

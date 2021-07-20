@@ -6,17 +6,20 @@ import RxSwift
 @testable import Blockchain
 
 class MockExchangeAccountRepository: ExchangeAccountRepositoryAPI {
-   var hasLinkedExchangeAccount: Single<Bool> = .just(false)
+    var hasLinkedExchangeAccount: Single<Bool> = .just(false)
 
-   func syncDepositAddresses() -> Completable {
-       .just(event: .completed)
-   }
+    func syncDepositAddresses() -> Completable {
+        .just(event: .completed)
+    }
 
-   func syncDepositAddressesIfLinked() -> Completable {
-       .just(event: .completed)
-   }
+    func syncDepositAddressesIfLinked() -> Completable {
+        .just(event: .completed)
+    }
 
-   func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error> {
-       .just(())
-   }
+    var syncDepositAddressesIfLinkedPublisherCalled: Bool = false
+
+    func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error> {
+        syncDepositAddressesIfLinkedPublisherCalled = true
+        return .just(())
+    }
 }

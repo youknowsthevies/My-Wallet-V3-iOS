@@ -34,8 +34,11 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
     }
 
     var sendTokenIfNeededSubject = PassthroughSubject<Never, Error>()
+    var sendTokenIfNeededPublisherCalled = false
+
     func sendTokenIfNeededPublisher() -> AnyPublisher<Never, Error> {
-        sendTokenIfNeededSubject
+        sendTokenIfNeededPublisherCalled = true
+        return sendTokenIfNeededSubject
             .eraseToAnyPublisher()
     }
 
