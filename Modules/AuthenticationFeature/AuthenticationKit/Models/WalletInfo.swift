@@ -8,6 +8,7 @@ public enum WalletInfoError: Error {
 public struct WalletInfo: Codable, Equatable {
 
     // MARK: - Type
+
     private enum CodingKeys: String, CodingKey {
         case guid
         case email
@@ -17,6 +18,14 @@ public struct WalletInfo: Codable, Equatable {
     }
 
     // MARK: - Properties
+
+    public static let empty = WalletInfo(
+        guid: "",
+        email: "",
+        emailCode: "",
+        isMobileSetup: false,
+        hasCloudBackup: false
+    )
 
     public let guid: String
     public let email: String

@@ -1616,6 +1616,11 @@ targets:
   AuthenticationUIKitTests:
     dependencies:
     - target: AuthenticationUIKit
+    sources:
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AuthenticationKit
+    - createIntermediateGroups: true
+      path: TestKit/TestKit/Mocks/AnalyticsKit
     templateAttributes:
       featureName: AuthenticationFeature
     templates:

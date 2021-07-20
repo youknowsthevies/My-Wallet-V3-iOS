@@ -150,7 +150,7 @@ extension DependencyContainer {
 
         single { AuthenticationCoordinator() }
 
-        factory { AuthenticationCoordinator.shared as PairingWalletFetching }
+        factory { AuthenticationCoordinator.shared as WalletPairingFetcherAPI }
 
         factory { () -> AuthenticationCoordinating in
             guard !newOnboardingDisabled() else {
@@ -610,11 +610,11 @@ extension DependencyContainer {
             return EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
         }
 
-        factory { () -> AuthenticationServiceAPI in
+        factory { () -> DeviceVerificationServiceAPI in
             let manager: WalletManager = DIKit.resolve()
-            return AuthenticationService(
+            return DeviceVerificationService(
                 sessionTokenRepository: manager.repository
-            ) as AuthenticationServiceAPI
+            ) as DeviceVerificationServiceAPI
         }
 
         factory { RecaptchaClient(siteKey: AuthenticationKeys.googleRecaptchaSiteKey) }

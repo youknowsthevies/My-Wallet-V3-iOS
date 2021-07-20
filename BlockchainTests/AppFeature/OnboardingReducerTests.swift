@@ -172,10 +172,10 @@ class OnboardingReducerTests: XCTestCase {
         testStore.assert(
             .send(.start) { state in
                 state.pinState = nil
-                state.authenticationState = .init()
+                state.welcomeState = .init()
             },
             .receive(.welcomeScreen(.start)) { state in
-                state.authenticationState?.buildVersion = "v1.0.0"
+                state.welcomeState?.buildVersion = "v1.0.0"
             }
         )
     }
@@ -209,12 +209,12 @@ class OnboardingReducerTests: XCTestCase {
         // when sending forgetWallet as a direct action
         testStore.send(.forgetWallet) { state in
             state.pinState = nil
-            state.authenticationState = .init()
+            state.welcomeState = .init()
         }
 
         // then
         testStore.receive(.welcomeScreen(.start)) { state in
-            state.authenticationState?.buildVersion = "v1.0.0"
+            state.welcomeState?.buildVersion = "v1.0.0"
         }
     }
 
@@ -248,11 +248,11 @@ class OnboardingReducerTests: XCTestCase {
         // when sending forgetWallet from password screen
         testStore.send(.passwordScreen(.forgetWallet)) { state in
             state.passwordScreen = nil
-            state.authenticationState = .init()
+            state.welcomeState = .init()
         }
 
         testStore.receive(.welcomeScreen(.start)) { state in
-            state.authenticationState?.buildVersion = "v1.0.0"
+            state.welcomeState?.buildVersion = "v1.0.0"
         }
     }
 }

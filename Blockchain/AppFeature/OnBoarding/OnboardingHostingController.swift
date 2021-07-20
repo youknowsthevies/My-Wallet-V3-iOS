@@ -78,7 +78,7 @@ final class OnboardingHostingController: UIViewController {
             .store(in: &cancellables)
 
         store
-            .scope(state: \.authenticationState, action: Onboarding.Action.welcomeScreen)
+            .scope(state: \.welcomeState, action: Onboarding.Action.welcomeScreen)
             .ifLet(then: { [weak self] authStore in
                 guard let self = self else { return }
                 let welcomeView = WelcomeView(store: authStore)

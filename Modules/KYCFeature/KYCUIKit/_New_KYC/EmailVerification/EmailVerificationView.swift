@@ -25,7 +25,10 @@ struct EmailVerificationView: View {
                         canShowEditAddressView: viewStore.flowStep == .editEmailAddress,
                         store: store
                     ),
-                    isActive: .constant(viewStore.flowStep == .emailVerificationHelp || viewStore.flowStep == .editEmailAddress),
+                    isActive: .constant(
+                        viewStore.flowStep == .emailVerificationHelp ||
+                            viewStore.flowStep == .editEmailAddress
+                    ),
                     label: EmptyView.init
                 )
 

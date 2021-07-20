@@ -16,7 +16,7 @@ struct UnlockTradingEnvironment {
     let unlock: () -> Void
 }
 
-let unloackTradingReducer = Reducer<
+let unlockTradingReducer = Reducer<
     UnlockTradingState,
     UnlockTradingAction,
     UnlockTradingEnvironment
