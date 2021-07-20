@@ -9,6 +9,8 @@ final class MockRemoteNotificationAuthorizer {
     private let expectedAuthorizationStatus: UNAuthorizationStatus
     private let authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>
 
+    var requestAuthorizationIfNeededPublisherCalled = false
+
     init(expectedAuthorizationStatus: UNAuthorizationStatus,
          authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>) {
         self.expectedAuthorizationStatus = expectedAuthorizationStatus
@@ -44,7 +46,8 @@ extension MockRemoteNotificationAuthorizer: RemoteNotificationAuthorizationReque
     }
 
     func requestAuthorizationIfNeededPublisher() -> AnyPublisher<Never, Error> {
-        authorizationRequestExpectedStatus.single
+        requestAuthorizationIfNeededPublisherCalled = true
+        return authorizationRequestExpectedStatus.single
             .asCompletable()
             .asPublisher()
     }

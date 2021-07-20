@@ -23,12 +23,14 @@ class MockWallet: Wallet {
     }
 
     var fetchCalled = false
+    
     override func fetch(with password: String) {
         fetchCalled = true
         self.password = password
     }
 
     var getHistoryForAllAssetsCalled = false
+
     override func getHistoryForAllAssets() {
         getHistoryForAllAssetsCalled = true
     }
