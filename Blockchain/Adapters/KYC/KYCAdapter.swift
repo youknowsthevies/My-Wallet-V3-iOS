@@ -63,29 +63,39 @@ extension KYCRouterError {
     }
 }
 
-// MARK: - PlatformUIKit.KYCRouting
+extension KYCRoutingResult {
+
+    init(_ result: KYCUIKit.FlowResult) {
+        switch result {
+        case .abandoned:
+            self = .abandoned
+        case .completed:
+            self = .completed
+        }
+    }
+}
 
 extension KYCAdapter: PlatformUIKit.KYCRouting {
 
-    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError> {
+    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentEmailVerificationAndKYCIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
+            .map(KYCRoutingResult.init)
             .eraseToAnyPublisher()
-            .mapToVoid()
     }
 
-    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError> {
+    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentEmailVerificationIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
+            .map(KYCRoutingResult.init)
             .eraseToAnyPublisher()
-            .mapToVoid()
     }
 
-    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError> {
+    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError> {
         presentKYCIfNeeded(from: presenter)
             .mapError(KYCRouterError.init)
+            .map(KYCRoutingResult.init)
             .eraseToAnyPublisher()
-            .mapToVoid()
     }
 }
 

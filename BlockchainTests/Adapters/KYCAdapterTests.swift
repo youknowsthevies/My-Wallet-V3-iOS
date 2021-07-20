@@ -53,7 +53,7 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification fails
         mockRouter.stubbedResults.presentEmailVerificationIfNeeded = .failure(.emailVerificationFailed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
+        let publisher: AnyPublisher<KYCRoutingResult, KYCRouterError> = adapter.presentEmailVerificationIfNeeded(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
@@ -75,7 +75,7 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: Email Verification or KYC fails
         mockRouter.stubbedResults.presentEmailVerificationAndKYCIfNeeded = .failure(.kycVerificationFailed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentEmailVerificationAndKYCIfNeeded(from: UIViewController())
+        let publisher: AnyPublisher<KYCRoutingResult, KYCRouterError> = adapter.presentEmailVerificationAndKYCIfNeeded(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
@@ -97,7 +97,7 @@ final class KYCAdapterTests: XCTestCase {
         // GIVEN: KYC fails
         mockRouter.stubbedResults.presentKYCIfNeeded = .failure(.kycStepFailed)
         // WHEN: the adapter is asked to present the email verification flow for Onboarding
-        let publisher: AnyPublisher<Void, KYCRouterError> = adapter.presentKYCIfNeeded(from: UIViewController())
+        let publisher: AnyPublisher<KYCRoutingResult, KYCRouterError> = adapter.presentKYCIfNeeded(from: UIViewController())
         // THEN: The error is ignored and the onboarding flow is assumed to continue smoothly
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")

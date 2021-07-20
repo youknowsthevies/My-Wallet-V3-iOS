@@ -29,8 +29,13 @@ public enum KYCRouterError: Error {
     case kycStepFailed
 }
 
+public enum KYCRoutingResult: Equatable {
+    case abandoned
+    case completed
+}
+
 public protocol KYCRouting {
-    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError>
-    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError>
-    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<Void, KYCRouterError>
+    func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+    func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
+    func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<KYCRoutingResult, KYCRouterError>
 }

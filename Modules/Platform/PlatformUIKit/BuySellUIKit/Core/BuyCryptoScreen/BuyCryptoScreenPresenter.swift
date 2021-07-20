@@ -97,7 +97,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: loader, style: .circle)
-            .flatMap(weak: self) { [router, featureFlagsService] (self, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
+            .flatMap(weak: self) { [loader, router, featureFlagsService] (self, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
                 // Perform email verification and KYC checks to obtain a CTAData value used by
                 let performKYCChecks: () -> Observable<Result<CTAData, Error>> = { [weak self] in
                     guard let self = self else {
@@ -114,8 +114,20 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                         }
                         return router.presentEmailVerificationIfNeeded()
                             .asObservable()
-                            .flatMap { _ in
-                                performKYCChecks()
+                            .flatMap { result -> Observable<Result<CTAData, Error>> in
+                                switch result {
+                                case .abandoned:
+                                    // user abandoned EV, so don't show an error but hide the loader to let the user continue
+                                    loader.hide()
+                                    return Empty(
+                                        completeImmediately: true,
+                                        outputType: Result<CTAData, Error>.self,
+                                        failureType: Error.self
+                                    )
+                                    .asObservable()
+                                case .completed:
+                                    return performKYCChecks()
+                                }
                             }
                             .catchError { error in
                                 .just(.failure(error))
