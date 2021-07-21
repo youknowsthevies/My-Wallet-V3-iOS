@@ -18,21 +18,23 @@ public struct LoadingButton: View {
     }
 
     public var body: some View {
-        if loading {
-            ActivityIndicatorView()
-                .frame(minHeight: LayoutConstants.buttonMinHeight)
-        } else {
-            if icon != nil {
-                Button(action: action, label: {
-                    HStack(spacing: 12) {
-                        icon?
-                            .renderingMode(.template)
-                            .frame(width: 15, height: 15)
-                        Text(title)
-                    }
-                })
+        ZStack(alignment: .center) {
+            if loading {
+                ActivityIndicatorView()
+                    .frame(minHeight: LayoutConstants.buttonMinHeight)
             } else {
-                Button(title, action: action)
+                if icon != nil {
+                    Button(action: action, label: {
+                        HStack(spacing: 12) {
+                            icon?
+                                .renderingMode(.template)
+                                .frame(width: 15, height: 15)
+                            Text(title)
+                        }
+                    })
+                } else {
+                    Button(title, action: action)
+                }
             }
         }
     }

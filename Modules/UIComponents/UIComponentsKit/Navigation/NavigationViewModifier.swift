@@ -21,6 +21,7 @@ extension NavigationButton {
     public func button(action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(iconName, bundle: .current)
+                .renderingMode(.original)
         }
     }
 }
@@ -57,6 +58,10 @@ extension View {
                 navigationButton.button(action: action)
             }
         )
+    }
+
+    public func removeNavigationBarItems() -> some View {
+        navigationBarItems(leading: EmptyView(), trailing: EmptyView())
     }
 }
 

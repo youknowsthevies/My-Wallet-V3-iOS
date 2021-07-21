@@ -45,7 +45,7 @@ struct EmailVerificationView: View {
                             action: EmailVerificationAction.emailVerified
                         )
                     )
-                    .navigationBarHidden(true)
+                    .removeNavigationBarItems()
                 } else {
                     // Default Root View
                     VerifyEmailView(
@@ -54,7 +54,6 @@ struct EmailVerificationView: View {
                             action: EmailVerificationAction.verifyEmail
                         )
                     )
-                    .navigationBarTitle("", displayMode: .inline)
                     .updateNavigationBarStyle()
                     .trailingNavigationButton(.close) {
                         viewStore.send(.closeButtonTapped)

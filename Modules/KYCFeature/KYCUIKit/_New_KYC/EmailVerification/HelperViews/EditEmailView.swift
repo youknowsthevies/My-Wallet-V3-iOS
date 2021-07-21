@@ -189,6 +189,22 @@ struct EditEmailView_Previews: PreviewProvider {
                 )
             )
         )
+
+        // Loading state
+        EditEmailView(
+            store: .init(
+                initialState: {
+                    var state = EditEmailState(emailAddress: "test@example.com")
+                    state.savingEmailAddress = true
+                    return state
+                }(),
+                reducer: editEmailReducer,
+                environment: EditEmailEnvironment(
+                    emailVerificationService: NoOpEmailVerificationService(),
+                    mainQueue: .main
+                )
+            )
+        )
     }
 }
 #endif
