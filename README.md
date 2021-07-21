@@ -8,8 +8,6 @@
 
 ## Install Xcode
 
-⚠️ **We're currently using Xcode 12.2!** The app won't compile on newer versions of the IDE! You can download it [here](https://developer.apple.com/download/more/). ⚠️
-
 After installing Xcode, open it to begin the Command Line Tools installation. After finished, make sure that a valid CL Tool version is selected in `Xcode > Preferences > Locations > Command Line Tools`.
 
 ## Install Git submodules
@@ -89,19 +87,21 @@ Clone the [wallet-ios-credentials](https://github.com/blockchain/wallet-ios-cred
 Config/BlockchainConfig/Dev.xcconfig
 Config/BlockchainConfig/Production.xcconfig
 Config/BlockchainConfig/Staging.xcconfig
+Config/BlockchainConfig/Alpha.xcconfig
 Config/NetworkKitConfig/Dev.xcconfig
 Config/NetworkKitConfig/Production.xcconfig
 Config/NetworkKitConfig/Staging.xcconfig
+Config/NetworkKitConfig/Alpha.xcconfig
 ```
 
-This is how `BlockchainConfig/Production.xcconfig` looks like:
+For example, This is how `BlockchainConfig/Production.xcconfig` looks like:
 
 ```
 ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon
 OPENSSL_CERT_URL = blockchain.info
 ```
 
-This is how `NetworkKitConfig/Production.xcconfig` looks like:
+For example, This is how `NetworkKitConfig/Production.xcconfig` looks like:
 
 ```
 API_URL = api.blockchain.info
@@ -122,6 +122,7 @@ Clone `wallet-ios-credentials` repository and copy it's `Firebase` directory int
 Firease/Dev/GoogleService-Info.plist
 Firease/Prod/GoogleService-Info.plist
 Firease/Staging/GoogleService-Info.plist
+Firease/Alpha/GoogleService-Info.plist
 ```
 
 ## Add environment variables for scripts
