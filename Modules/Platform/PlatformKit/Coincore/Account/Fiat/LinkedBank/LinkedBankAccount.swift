@@ -10,7 +10,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
 
     public var withdrawFeeAndMinLimit: Single<WithdrawalFeeAndLimit> {
         withdrawService
-            .withdrawFeeAndLimit(for: fiatCurrency, paymentMethodType: paymentType)
+            .withdrawFeeAndLimit(
+                for: fiatCurrency,
+                paymentMethodType: paymentType
+            )
     }
 
     // MARK: - BlockchainAccount

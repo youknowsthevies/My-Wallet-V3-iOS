@@ -22,8 +22,12 @@ protocol EnterAmountPageListener: AnyObject {
 }
 
 protocol EnterAmountPagePresentable: Presentable {
+
     var continueButtonTapped: Signal<Void> { get }
-    func connect(state: Driver<EnterAmountPageInteractor.State>) -> Driver<EnterAmountPageInteractor.NavigationEffects>
+
+    func connect(
+        state: Driver<EnterAmountPageInteractor.State>
+    ) -> Driver<EnterAmountPageInteractor.NavigationEffects>
 }
 
 final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>,
@@ -138,6 +142,10 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             })
             .disposeOnDeactivate(interactor: self)
 
+        let availableTargets = transactionState
+            .map(\.availableTargets)
+            .share(scope: .whileConnected)
+
         let fee = transactionState
             .takeWhile { $0.action == .send }
             .compactMap(\.pendingTransaction)
@@ -165,7 +173,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .share(scope: .whileConnected)
 
         accountAuxiliaryViewInteractor
-            .connect(stream: bank)
+            .connect(stream: bank, targets: availableTargets)
             .disposeOnDeactivate(interactor: self)
 
         accountAuxiliaryViewInteractor
@@ -427,7 +435,6 @@ extension EnterAmountPageInteractor {
         /// Hidden - nothing to present
         case hidden
     }
-
 }
 
 extension EnterAmountPageInteractor {
@@ -513,7 +520,11 @@ extension TransactionErrorState {
         }
     }
 
-    private func convertToInputCurrency(_ source: MoneyValue, exchangeRate: MoneyValuePair?, input: ActiveAmountInput) -> MoneyValue {
+    private func convertToInputCurrency(
+        _ source: MoneyValue,
+        exchangeRate: MoneyValuePair?,
+        input: ActiveAmountInput
+    ) -> MoneyValue {
         switch (source.currencyType, input) {
         case (.crypto, .crypto),
              (.fiat, .fiat):

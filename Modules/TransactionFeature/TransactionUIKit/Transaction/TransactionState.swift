@@ -310,6 +310,7 @@ enum TransactionStep: Equatable {
     case initial
     case enterPassword
     case selectSource
+    case linkABank
     case enterAddress
     case selectTarget
     case enterAmount
@@ -328,7 +329,8 @@ enum TransactionStep: Equatable {
              .confirmDetail,
              .enterPassword,
              .inProgress,
-             .initial:
+             .initial,
+             .linkABank:
             return false
         }
     }

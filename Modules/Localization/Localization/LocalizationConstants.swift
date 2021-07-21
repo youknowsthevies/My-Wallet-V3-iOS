@@ -26,6 +26,7 @@ public enum LocalizationConstants {
     public static let addEmail = NSLocalizedString ("Add Email", comment: "")
     public static let newEmail = NSLocalizedString ("New Email Address", comment: "")
     public static let settings = NSLocalizedString ("Settings", comment: "")
+    public static let addNew = NSLocalizedString("+Add New", comment: "+Add New")
     public static let balances = NSLocalizedString(
         "Balances",
         comment: "Generic translation, may be used in multiple places."

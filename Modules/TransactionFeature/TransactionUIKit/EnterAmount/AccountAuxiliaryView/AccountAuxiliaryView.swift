@@ -29,6 +29,11 @@ final class AccountAuxiliaryView: UIView {
                 .drive(badgeImageView.rx.viewModel)
                 .disposed(by: disposeBag)
 
+            presenter
+                .buttonEnabled
+                .drive(button.rx.isEnabled)
+                .disposed(by: disposeBag)
+
             button.rx
                 .controlEvent(.touchUpInside)
                 .bindAndCatch(to: presenter.tapRelay)

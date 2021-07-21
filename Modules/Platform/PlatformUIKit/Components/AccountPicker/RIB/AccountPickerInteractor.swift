@@ -47,9 +47,26 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
     override func didBecomeActive() {
         super.didBecomeActive()
 
+        let button = presenter.button
+        if let button = button {
+            button.tapRelay
+                .bind { [weak self] in
+                    guard let self = self else { return }
+                    self.listener?.didSelectActionButton()
+                }
+                .disposeOnDeactivate(interactor: self)
+        }
+
         let interactorState: Driver<State> = accountProvider.accounts
             .map { accounts -> [AccountPickerCellItem.Interactor] in
                 accounts.map(\.accountPickerCellItemInteractor)
+            }
+            .map { accounts in
+                if let button = button {
+                    return accounts + [.button(button)]
+                } else {
+                    return accounts
+                }
             }
             .map { (interactors) -> State in
                 State(interactors: interactors)

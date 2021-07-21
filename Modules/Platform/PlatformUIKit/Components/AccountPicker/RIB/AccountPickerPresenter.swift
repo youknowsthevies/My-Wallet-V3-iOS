@@ -1,15 +1,42 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Localization
 import PlatformKit
 import RIBs
 import RxCocoa
 import RxSwift
 
 protocol AccountPickerPresentable: Presentable {
+
+    /// An optional button that is displayed at the bottom of the
+    /// account picker screen.
+    var button: ButtonViewModel? { get }
+
+    /// Connect the interactor to the presenter. Returns effects from the presentation layer.
+    /// - Parameter state: The state of the interactor
     func connect(state: Driver<AccountPickerInteractor.State>) -> Driver<AccountPickerInteractor.Effects>
 }
 
 final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, AccountPickerPresentable {
+
+    // MARK: - Public Properties
+
+    var button: ButtonViewModel? {
+        switch action {
+        case .withdraw,
+             .deposit:
+            return .secondary(with: LocalizationConstants.addNew)
+        case .buy,
+             .sell:
+            // TICKET: IOS-5041 - Support linking a bank or card in Buy and Sell
+            return nil
+        case .send,
+             .receive,
+             .viewActivity,
+             .swap:
+            return nil
+        }
+    }
 
     // MARK: - Private Properties
 

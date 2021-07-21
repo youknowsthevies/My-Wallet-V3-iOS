@@ -12,6 +12,7 @@ final class AccountAuxiliaryViewPresenter {
     let badgeImageViewModel: Driver<BadgeImageViewModel>
     let titleLabel: Driver<LabelContent>
     let subtitleLabel: Driver<LabelContent>
+    let buttonEnabled: Driver<Bool>
     let tapRelay = PublishRelay<Void>()
 
     // MARK: - Private Properties
@@ -26,6 +27,10 @@ final class AccountAuxiliaryViewPresenter {
             .asSignal()
             .emit(to: interactor.auxiliaryViewTappedRelay)
             .disposed(by: disposeBag)
+
+        buttonEnabled = interactor
+            .state
+            .map(\.isEnabled)
 
         badgeImageViewModel = interactor
             .state

@@ -32,6 +32,8 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             guard let self = self else { return UITableViewCell() }
             let cell: UITableViewCell
             switch item.presenter {
+            case .button(let viewModel):
+                cell = self.buttonTableViewCell(for: indexPath, viewModel: viewModel)
             case .linkedBankAccount(let presenter):
                 cell = self.linkedBankCell(for: indexPath, presenter: presenter)
             case .accountGroup(let presenter):
@@ -53,6 +55,7 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
         tableView.register(LinkedBankAccountTableViewCell.self)
         tableView.register(CurrentBalanceTableViewCell.self)
         tableView.registerNibCell(AccountGroupBalanceTableViewCell.self)
+        tableView.registerNibCell(ButtonsTableViewCell.self)
     }()
 
     init(shouldOverrideNavigationEffects: Bool) {
@@ -104,7 +107,8 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
             .disposed(by: disposeBag)
 
         let modelSelected = tableView.rx.modelSelected(AccountPickerCellItem.self)
-            .map { AccountPickerInteractor.Effects.select($0.account) }
+            .compactMap(\.account)
+            .map { AccountPickerInteractor.Effects.select($0) }
             .asDriver(onErrorJustReturn: .none)
 
         let backButtonEffect = backButtonRelay
@@ -148,21 +152,42 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
 
     // MARK: - Private Methods
 
-    private func linkedBankCell(for indexPath: IndexPath, presenter: LinkedBankAccountCellPresenter) -> UITableViewCell {
+    private func linkedBankCell(
+        for indexPath: IndexPath,
+        presenter: LinkedBankAccountCellPresenter
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(LinkedBankAccountTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func balanceCell(for indexPath: IndexPath, presenter: CurrentBalanceCellPresenting) -> UITableViewCell {
+    private func balanceCell(
+        for indexPath: IndexPath,
+        presenter: CurrentBalanceCellPresenting
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func totalBalanceCell(for indexPath: IndexPath, presenter: AccountGroupBalanceCellPresenter) -> AccountGroupBalanceTableViewCell {
+    private func totalBalanceCell(
+        for indexPath: IndexPath,
+        presenter: AccountGroupBalanceCellPresenter
+    ) -> AccountGroupBalanceTableViewCell {
         let cell = tableView.dequeue(AccountGroupBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
+        return cell
+    }
+
+    private func buttonTableViewCell(
+        for indexPath: IndexPath,
+        viewModel: ButtonViewModel
+    ) -> UITableViewCell {
+        let cell = tableView.dequeue(
+            ButtonsTableViewCell.self,
+            for: indexPath
+        )
+        cell.models = [viewModel]
         return cell
     }
 }

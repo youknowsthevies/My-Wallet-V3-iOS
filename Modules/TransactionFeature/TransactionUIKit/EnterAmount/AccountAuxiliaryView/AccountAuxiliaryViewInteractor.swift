@@ -35,6 +35,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
         let title: String
         let subtitle: String
         let imageResource: ImageResource
+        let isEnabled: Bool
 
         static let empty: State = .init(
             title: "",
@@ -42,7 +43,8 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
             imageResource: .local(
                 name: "icon-bank",
                 bundle: .platformUIKit
-            )
+            ),
+            isEnabled: false
         )
     }
 
@@ -61,23 +63,29 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: - Connect API
 
-    func connect(stream: Observable<BlockchainAccount>) -> Disposable {
-        stream
-            .map { account -> State in
-                switch account {
-                case let bank as LinkedBankAccount:
-                    let type = bank.accountType.title
-                    let description = type + " \(LocalizationIds.account)"
-                    let subtitle = description + " \(bank.accountNumber)"
-                    return .init(
-                        title: bank.label,
-                        subtitle: subtitle,
-                        imageResource: bank.logoResource
-                    )
-                default:
-                    unimplemented()
-                }
+    func connect(stream: Observable<BlockchainAccount>, targets: Observable<[TransactionTarget]>) -> Disposable {
+        Observable.zip(
+            stream,
+            targets
+                .map(\.count)
+                .map { $0 > 1 }
+        )
+        .map { (account, tapEnabled) -> State in
+            switch account {
+            case let bank as LinkedBankAccount:
+                let type = bank.accountType.title
+                let description = type + " \(LocalizationIds.account)"
+                let subtitle = description + " \(bank.accountNumber)"
+                return .init(
+                    title: bank.label,
+                    subtitle: subtitle,
+                    imageResource: bank.logoResource,
+                    isEnabled: tapEnabled
+                )
+            default:
+                unimplemented()
             }
-            .bindAndCatch(to: stateRelay)
+        }
+        .bindAndCatch(to: stateRelay)
     }
 }

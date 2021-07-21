@@ -64,6 +64,13 @@ final class TransactionModel {
             return nil
         case .availableDestinationAccountsListUpdated:
             return nil
+        case .bankAccountLinked(let action):
+            return processSourceAccountsListUpdate(action: action)
+        case .bankAccountLinkedFromSource(let source, let action):
+            return processAccountsListUpdate(fromAccount: source, action: action)
+        case .showBankLinkingFlow,
+             .bankLinkingFlowDismissed:
+            return nil
         case let .initialiseWithSourceAccount(action, sourceAccount, _):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
@@ -73,10 +80,10 @@ final class TransactionModel {
             let sourceCurrency = source.currencyType
             let isAmountValid = previousState.amount.currencyType == sourceCurrency
             let amount = isAmountValid ? previousState.amount : .zero(currency: sourceCurrency)
-            /// If the `amount` `currencyType` differs from the source, we should
-            /// use `zero` as the amount. If not, it is safe to use the
-            /// `previousState.amount`.
-            /// The `amount` should always be the same `currencyType` as the `source`.
+            // If the `amount` `currencyType` differs from the source, we should
+            // use `zero` as the amount. If not, it is safe to use the
+            // `previousState.amount`.
+            // The `amount` should always be the same `currencyType` as the `source`.
             return processTargetSelectionConfirmed(
                 sourceAccount: source,
                 transactionTarget: destinationAccount,

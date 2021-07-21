@@ -17,6 +17,7 @@ public protocol AccountPickerBuildable: RIBs.Buildable {
 }
 
 public protocol AccountPickerListener: AnyObject {
+    func didSelectActionButton()
     func didSelect(blockchainAccount: BlockchainAccount)
     func didTapBack()
     func didTapClose()

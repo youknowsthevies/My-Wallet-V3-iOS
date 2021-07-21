@@ -500,7 +500,10 @@ public final class Router: RouterAPI {
                         .present(viewController, animated: true, completion: nil)
                 }
         } else {
-            navigationRouter.present(viewController: viewController, using: .modalOverTopMost)
+            navigationRouter.present(
+                viewController: viewController,
+                using: .modalOverTopMost
+            )
         }
     }
 

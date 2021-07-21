@@ -19,6 +19,10 @@ enum TransactionAction: MviAction {
                                               target: TransactionTarget,
                                               passwordRequired: Bool)
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
+    case bankLinkingFlowDismissed(AssetAction)
+    case showBankLinkingFlow
+    case bankAccountLinkedFromSource(BlockchainAccount, AssetAction)
+    case bankAccountLinked(AssetAction)
     case sourceAccountSelected(BlockchainAccount)
     case targetAccountSelected(TransactionTarget)
     case availableSourceAccountsListUpdated([BlockchainAccount])
@@ -42,6 +46,8 @@ enum TransactionAction: MviAction {
     case modifyTransactionConfirmation(TransactionConfirmation)
     case invalidateTransaction
 
+    // TODO: Clean up this function
+    // swiftlint:disable function_body_length
     func reduce(oldState: TransactionState) -> TransactionState {
         switch self {
         case .pendingTransactionStarted(let allowFiatInput):
@@ -52,6 +58,29 @@ enum TransactionAction: MviAction {
             return newState.withUpdatedBackstack(oldState: oldState)
         case .updateFeeLevelAndAmount:
             return oldState
+        case .showBankLinkingFlow:
+            var newState = oldState
+            newState.step = .linkABank
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankAccountLinkedFromSource:
+            var newState = oldState
+            newState.step = .selectTarget
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankAccountLinked:
+            var newState = oldState
+            newState.step = .selectTarget
+            return newState.withUpdatedBackstack(oldState: oldState)
+        case .bankLinkingFlowDismissed(let action):
+            var newState = oldState
+            switch action {
+            case .withdraw:
+                newState.step = .selectTarget
+            case .deposit:
+                newState.step = .selectSource
+            default:
+                unimplemented()
+            }
+            return newState
         case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
             /// If the user scans a BitPay QR code, the account will be a
             /// BitPayInvoiceTarget. This means we do not proceed to the enter amount

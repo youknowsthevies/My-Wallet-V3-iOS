@@ -33,6 +33,8 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
 
     private let alertViewPresenter: AlertViewPresenterAPI
     private let topMostViewControllerProvider: TopMostViewControllerProviding
+    private let disposeBag = DisposeBag()
+    private var linkBankFlowRouter: LinkBankFlowStarter?
 
     init(interactor: TransactionFlowInteractable,
          viewController: TransactionFlowViewControllable,
@@ -112,6 +114,30 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         let viewControllable = router.viewControllable
         attachChild(router)
         viewController.replaceRoot(viewController: viewControllable, animated: false)
+    }
+
+    func presentLinkABank(transactionModel: TransactionModel) {
+        let builder = LinkBankFlowRootBuilder()
+        let router = builder.build()
+        linkBankFlowRouter = router
+        router.startFlow()
+            .withLatestFrom(transactionModel.state) { ($0, $1) }
+            .subscribe(onNext: { [topMostViewControllerProvider] (effect, state) in
+                switch effect {
+                case .closeFlow:
+                    topMostViewControllerProvider
+                        .topMostViewController?
+                        .dismiss(animated: true, completion: nil)
+                    transactionModel.process(action: .bankLinkingFlowDismissed(state.action))
+                case .bankLinked:
+                    if let source = state.source {
+                        transactionModel.process(action: .bankAccountLinkedFromSource(source, state.action))
+                    } else {
+                        transactionModel.process(action: .bankAccountLinked(state.action))
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
     }
 
     func presentDestinationAccountPicker(transactionModel: TransactionModel, action: AssetAction) {
