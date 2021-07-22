@@ -30,12 +30,11 @@ final class OrdersService: OrdersServiceAPI {
     // MARK: - Exposed
 
     var orders: Single<[OrderDetails]> {
-        _ = setup
-        return ordersCachedValue.valueSingle
+        ordersCachedValue.valueSingle
     }
 
     private let ordersCachedValue = CachedValue<[OrderDetails]>(
-        configuration: .onSubscription()
+        configuration: .periodic(60)
     )
 
     // MARK: - Injected
@@ -43,41 +42,31 @@ final class OrdersService: OrdersServiceAPI {
     private let analyticsRecorder: AnalyticsEventRecorderAPI
     private let client: OrderDetailsClientAPI
 
-    private lazy var setup: Void = {
-        ordersCachedValue.setFetch(weak: self) { (self) in
-            self.client.orderDetails(pendingOnly: false)
-                .map(weak: self) { (self, rawOrders) in
-                    rawOrders.compactMap {
-                        OrderDetails(recorder: self.analyticsRecorder, response: $0)
-                    }
-                }
-        }
-    }()
-
     // MARK: - Setup
 
     init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
          client: OrderDetailsClientAPI = resolve()) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
+        ordersCachedValue.setFetch { [client, analyticsRecorder] in
+            client.orderDetails(pendingOnly: false)
+                .map { orders in
+                    orders.compactMap {
+                        OrderDetails(recorder: analyticsRecorder, response: $0)
+                    }
+                }
+        }
     }
 
     func fetchOrders() -> Single<[OrderDetails]> {
-        _ = setup
-        return ordersCachedValue.fetchValue
+        ordersCachedValue.fetchValue
     }
 
     func fetchOrder(with identifier: String) -> Single<OrderDetails> {
-        _ = setup
-        return client.orderDetails(with: identifier)
-            .map(weak: self) { (self, response) in
-                OrderDetails(recorder: self.analyticsRecorder, response: response)
+        client.orderDetails(with: identifier)
+            .map { [analyticsRecorder] response in
+                OrderDetails(recorder: analyticsRecorder, response: response)
             }
-            .map { details -> OrderDetails in
-                guard let details = details else {
-                    throw ServiceError.mappingError
-                }
-                return details
-            }
+            .onNil(error: ServiceError.mappingError)
     }
 }

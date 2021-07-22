@@ -47,18 +47,45 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        Single.zip(nonCustodialActivity, swapActivity)
+            .map { nonCustodialActivity, swapActivity in
+                Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
+            }
+    }
+
+    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+        operationsService
+            .transactions(accountID: publicKey, size: 50)
+            .map { response in
+                response
+                    .map(\.activityItemEvent)
+            }
+            .catchErrorJustReturn([])
+    }
+
+    private var swapActivity: Single<[SwapActivityItemEvent]> {
+        swapTransactionsService
+            .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
+            .catchErrorJustReturn([])
+    }
+
     private let publicKey: String
     private let hdAccountIndex: Int
     private let bridge: StellarWalletBridgeAPI
     private let accountDetailsService: StellarAccountDetailsServiceAPI
     private let fiatPriceService: FiatPriceServiceAPI
     private let accountCache: CachedValue<StellarAccountDetails>
+    private let operationsService: StellarHistoricalTransactionServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
 
     init(
         publicKey: String,
         label: String? = nil,
         hdAccountIndex: Int,
         bridge: StellarWalletBridgeAPI = resolve(),
+        operationsService: StellarHistoricalTransactionServiceAPI = resolve(),
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
         accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
@@ -69,6 +96,8 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         self.hdAccountIndex = hdAccountIndex
         self.label = label ?? asset.defaultWalletName
         self.accountDetailsService = accountDetailsService
+        self.swapTransactionsService = swapTransactionsService
+        self.operationsService = operationsService
         self.fiatPriceService = fiatPriceService
         accountCache = .init(configuration: .init(refreshType: .periodic(seconds: 20)))
         accountCache.setFetch(weak: self) { (self) -> Single<StellarAccountDetails> in

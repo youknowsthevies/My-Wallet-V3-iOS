@@ -2,49 +2,45 @@
 
 import DIKit
 import RxSwift
+import ToolKit
 
 public protocol SwapActivityServiceAPI: AnyObject {
-    var pageSize: Int { get }
-    func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]>
-    func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]>
-}
-
-extension SwapActivityServiceAPI {
-    public var pageSize: Int {
-        50
-    }
+    func fetchActivity(cryptoCurrency: CryptoCurrency, directions: Set<OrderDirection>) -> Single<[SwapActivityItemEvent]>
 }
 
 final class SwapActivityService: SwapActivityServiceAPI {
 
     private let client: SwapClientAPI
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
+    private let cache: CachedValue<[SwapActivityItemEvent]>
 
     init(client: SwapClientAPI = resolve(),
          fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
+        self.cache = .init(configuration: .periodic(30))
+        cache.setFetch {
+            fiatCurrencyProvider.fiatCurrency
+                .flatMap { fiatCurrency -> Single<[SwapActivityItemEvent]> in
+                    client.fetchActivity(from: Date(),
+                                         fiatCurrency: fiatCurrency.code,
+                                         cryptoCurrency: nil,
+                                         limit: 50)
+                }
+        }
     }
 
-    func fetchActivity(from date: Date) -> Single<[SwapActivityItemEvent]> {
-        fiatCurrencyProvider.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
-                self.client.fetchActivity(
-                    from: date,
-                    fiatCurrency: fiatCurrency.code
-                )
-            }
-    }
-
-    func fetchActivity(from date: Date, cryptoCurrency: CryptoCurrency) -> Single<[SwapActivityItemEvent]> {
-        fiatCurrencyProvider.fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[SwapActivityItemEvent]> in
-                self.client.fetchActivity(
-                    from: date,
-                    fiatCurrency: fiatCurrency.code,
-                    cryptoCurrency: cryptoCurrency,
-                    limit: self.pageSize
-                )
+    func fetchActivity(
+        cryptoCurrency: CryptoCurrency,
+        directions: Set<OrderDirection>
+    ) -> Single<[SwapActivityItemEvent]> {
+        cache.valueSingle
+            .map { events in
+                events
+                    .filter { event in
+                        directions.contains(event.kind.direction)
+                            && event.pair.inputCurrencyType == cryptoCurrency
+                    }
             }
     }
 }

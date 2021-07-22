@@ -39,11 +39,11 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumKit.EthereumFeeServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
-    private let bridge: EthereumWalletBridgeAPI
     private let ethereumAccountDetails: EthereumAccountDetailsServiceAPI
     private let erc20AccountService: ERC20AccountServiceAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
+    private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private var target: ERC20ReceiveAddress {
         transactionTarget as! ERC20ReceiveAddress
     }
@@ -57,7 +57,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         feeService: EthereumKit.EthereumFeeServiceAPI = resolve(),
-        ethereumWalletBridgeAPI: EthereumWalletBridgeAPI = resolve(),
+        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         erc20AccountService: ERC20AccountServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
@@ -68,7 +68,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
         self.feeService = feeService
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
-        self.bridge = ethereumWalletBridgeAPI
+        self.transactionsService = transactionsService
         self.erc20AccountService = erc20AccountService
         self.transactionBuildingService = transactionBuildingService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
@@ -240,7 +240,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Private Functions
 
     private func validateNoPendingTransaction() -> Completable {
-        bridge
+        transactionsService
             .isWaitingOnTransaction
             .map { (isWaitingOnTransaction) -> Void in
                 guard isWaitingOnTransaction == false else {

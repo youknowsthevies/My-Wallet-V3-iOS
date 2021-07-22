@@ -5,14 +5,10 @@ import NetworkKit
 import RxSwift
 
 public protocol SwapActivityClientAPI {
-    // TODO: Fetch a single activity from an order ID
     func fetchActivity(from date: Date,
-                       fiatCurrency: String,
-                       cryptoCurrency: CryptoCurrency,
+                       fiatCurrency: String?,
+                       cryptoCurrency: String?,
                        limit: Int) -> Single<[SwapActivityItemEvent]>
-
-    func fetchActivity(from date: Date,
-                       fiatCurrency: String) -> Single<[SwapActivityItemEvent]>
 }
 
 public typealias SwapClientAPI = SwapActivityClientAPI
@@ -46,27 +42,36 @@ final class SwapClient: SwapClientAPI {
     // MARK: - SwapActivityClientAPI
 
     func fetchActivity(from date: Date,
-                       fiatCurrency: String,
-                       cryptoCurrency: CryptoCurrency,
+                       fiatCurrency: String?,
+                       cryptoCurrency: String?,
                        limit: Int) -> Single<[SwapActivityItemEvent]> {
-        let parameters = [
+        var parameters = [
             URLQueryItem(
                 name: Parameter.before,
                 value: DateFormatter.iso8601Format.string(from: date)
-            ),
-            URLQueryItem(
-                name: Parameter.cryptoCurrency,
-                value: cryptoCurrency.code
-            ),
-            URLQueryItem(
-                name: Parameter.fiatCurrency,
-                value: fiatCurrency
             ),
             URLQueryItem(
                 name: Parameter.limit,
                 value: "\(limit)"
             )
         ]
+        if let fiatCurrency = fiatCurrency {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameter.fiatCurrency,
+                    value: fiatCurrency
+                )
+            )
+        }
+        if let cryptoCurrency = cryptoCurrency {
+            parameters.append(
+                URLQueryItem(
+                    name: Parameter.cryptoCurrency,
+                    value: cryptoCurrency
+                )
+            )
+        }
+
         let path = Path.activity
         let request = requestBuilder.get(
             path: path,
@@ -80,30 +85,4 @@ final class SwapClient: SwapClientAPI {
             )
 
     }
-
-    func fetchActivity(from date: Date, fiatCurrency: String) -> Single<[SwapActivityItemEvent]> {
-        let parameters = [
-            URLQueryItem(
-                name: Parameter.before,
-                value: DateFormatter.iso8601Format.string(from: date)
-            ),
-            URLQueryItem(
-                name: Parameter.fiatCurrency,
-                value: fiatCurrency
-            )
-        ]
-        let path = Path.activity
-        let request = requestBuilder.get(
-            path: path,
-            parameters: parameters,
-            authenticated: true
-        )!
-        return networkAdapter
-            .perform(
-                request: request,
-                errorResponseType: NabuNetworkError.self
-            )
-
-    }
-
 }

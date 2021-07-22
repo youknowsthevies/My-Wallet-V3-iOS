@@ -24,10 +24,10 @@ final class CustodialCryptoAsset: CryptoAsset {
         case .all, .custodial:
             return .just(CryptoAccountCustodialGroup(
                 asset: asset,
-                accounts: [CryptoTradingAccount(asset: asset)]
+                account: CryptoTradingAccount(asset: asset)
             ))
         case .interest:
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+            return .just(CryptoAccountCustodialGroup(asset: asset))
         case .nonCustodial:
             return .just(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))
         }

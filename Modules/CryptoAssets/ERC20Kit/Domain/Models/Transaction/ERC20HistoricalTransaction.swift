@@ -6,14 +6,7 @@ import NetworkKit
 import PlatformKit
 import RxSwift
 
-public struct ERC20HistoricalTransaction: HistoricalTransaction, Tokenized, Hashable {
-
-    /// There's not much point to `token` in this case since
-    /// for ERC20 paging we use the `wallet.transactions.count` to determine
-    /// if we need to fetch additional transactions.
-    public var token: String {
-        transactionHash
-    }
+public struct ERC20HistoricalTransaction: Hashable {
 
     /**
      The transaction identifier, used for equality checking and backend calls.

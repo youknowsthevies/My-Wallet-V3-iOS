@@ -24,7 +24,7 @@ public struct XPubs {
 }
 
 /// A single XPub address.
-public struct XPub: Equatable {
+public struct XPub: Hashable {
     public let address: String
     public let derivationType: DerivationType
 

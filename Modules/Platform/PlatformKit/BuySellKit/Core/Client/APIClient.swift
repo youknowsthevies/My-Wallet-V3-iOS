@@ -198,16 +198,12 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - OrdersActivityClientAPI
 
-    func activityResponse(fiatCurrency: FiatCurrency, pendingOnly: Bool) -> Single<OrdersActivityResponse> {
+    func activityResponse(currency: Currency) -> Single<OrdersActivityResponse> {
         let path = Path.transactions
         let parameters = [
             URLQueryItem(
-                name: Parameter.pendingOnly,
-                value: pendingOnly ? "true" : "false"
-            ),
-            URLQueryItem(
                 name: Parameter.currency,
-                value: fiatCurrency.code
+                value: currency.code
             ),
             URLQueryItem(
                 name: Parameter.product,

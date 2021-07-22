@@ -27,11 +27,6 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         .just(nil)
     }
 
-    var isWaitingOnTransactionValue = Single.just(false)
-    var isWaitingOnTransaction: Single<Bool> {
-        isWaitingOnTransactionValue
-    }
-
     var historyValue = Single.just(())
     var history: Single<Void> {
         historyValue

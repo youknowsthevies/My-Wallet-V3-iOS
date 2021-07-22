@@ -39,8 +39,11 @@ final class ERC20AccountAPIClient: ERC20AccountAPIClientAPI {
         self.requestBuilder = requestBuilder
     }
 
-    func fetchTransactions(from address: String, page: String, contractAddress: String) -> Single<ERC20TransfersResponse> {
-        let parameters = [ URLQueryItem(name: "page", value: page) ]
+    func fetchTransactions(from address: String, page: String?, contractAddress: String) -> Single<ERC20TransfersResponse> {
+        var parameters: [URLQueryItem] = []
+        if let page = page, !page.isEmpty {
+            parameters.append(URLQueryItem(name: "page", value: page))
+        }
         let path = EndpointV2.transactions(for: address, contractAddress: contractAddress)
         let request = requestBuilder.get(path: path, parameters: parameters)!
         return networkAdapter.perform(request: request)

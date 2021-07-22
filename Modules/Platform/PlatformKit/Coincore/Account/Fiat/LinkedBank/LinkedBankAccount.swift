@@ -51,6 +51,10 @@ public class LinkedBankAccount: FiatAccount, BankAccount {
         .just(false)
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        .just([])
+    }
+
     public let fiatCurrency: FiatCurrency
     private(set) public lazy var identifier: AnyHashable = "LinkedBankAccount.\(accountId).\(accountNumber).\(paymentType)"
     public let label: String

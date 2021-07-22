@@ -1,52 +1,52 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
 import ToolKit
 
-public final class BitcoinCashHistoricalTransactionService: TokenizedHistoricalTransactionAPI {
-
-    public typealias Model = BitcoinCashHistoricalTransaction
-    public typealias PageModel = PageResult<Model>
-
-    private let client: APIClientAPI
-    private let bridge: BitcoinCashWalletBridgeAPI
-
-    convenience init(bridge: BitcoinCashWalletBridgeAPI = resolve()) {
-        self.init(with: resolve(), bridge: bridge)
-    }
-
-    init(with client: APIClientAPI, bridge: BitcoinCashWalletBridgeAPI) {
-        self.client = client
-        self.bridge = bridge
-    }
-
-    public func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
-        bridge.defaultWallet.flatMap(weak: self) { (self, walletAccount) -> Single<PageModel> in
-            self.client.multiAddress(for: [ walletAccount.publicKey ])
-                .map { $0.transactions }
-                .map { PageModel(hasNextPage: false, items: $0) }
-        }
-    }
+protocol BitcoinCashHistoricalTransactionServiceAPI: AnyObject {
+    func transactions(publicKeys: [XPub]) -> Single<[BitcoinCashHistoricalTransaction]>
+    func transaction(publicKeys: [XPub], identifier: String) -> Single<BitcoinCashHistoricalTransaction>
 }
 
-extension BitcoinCashHistoricalTransactionService: HistoricalTransactionDetailsAPI {
+final class BitcoinCashHistoricalTransactionService: BitcoinCashHistoricalTransactionServiceAPI {
 
     private enum ServiceError: Error {
         case errorFetchingDetails
     }
 
-    // It is not possible to fetch a specifig transaction detail from 'multiaddr' endpoints,
+    private let client: APIClientAPI
+    private let cache: Cache<[XPub], [BitcoinCashHistoricalTransaction]>
+
+    init(with client: APIClientAPI = resolve()) {
+        self.client = client
+        cache = .init(entryLifetime: 60)
+    }
+
+    func transactions(publicKeys: [XPub]) -> Single<[BitcoinCashHistoricalTransaction]> {
+        guard let response = cache.value(forKey: publicKeys) else {
+            return client
+                .multiAddress(for: publicKeys)
+                .map(\.transactions)
+                .do(onSuccess: { [cache] transactions in
+                    cache.set(transactions, forKey: publicKeys)
+                })
+        }
+        return .just(response)
+    }
+
+    // It is not possible to fetch a specific transaction detail from 'multiaddr' endpoints,
     //   so we fetch the first page and filter out the transaction from there.
     //   This may cause a edge case where a user opens the last transaction of the list, but
     //   in the mean time there was a new transaction added, making it 'drop' out of the first
     //   page. The fix for this is to have a properly paginated multiaddr/details endpoint.
-    public func transaction(identifier: String) -> Observable<BitcoinCashHistoricalTransaction> {
-        fetchTransactions(token: nil, size: 50)
-            .map { $0.items }
-            .map { $0.first(where: { $0.identifier == identifier }) }
+    func transaction(publicKeys: [XPub], identifier: String) -> Single<BitcoinCashHistoricalTransaction> {
+        transactions(publicKeys: publicKeys)
+            .map { items -> BitcoinCashHistoricalTransaction? in
+                items.first { $0.identifier == identifier }
+            }
             .onNil(error: ServiceError.errorFetchingDetails)
-            .asObservable()
     }
 }

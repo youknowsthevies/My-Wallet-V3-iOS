@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformKit
 import TransactionKit
 
 extension TransactionKit.Product: Codable {}
@@ -7,7 +8,7 @@ extension TransactionKit.Product: Codable {}
 struct OrderQuoteRequest: Encodable {
 
     let product: TransactionKit.Product
-    let direction: TransactionKit.OrderDirection
+    let direction: OrderDirection
     let pair: TransactionKit.OrderPair
 
     enum CodingKeys: CodingKey {

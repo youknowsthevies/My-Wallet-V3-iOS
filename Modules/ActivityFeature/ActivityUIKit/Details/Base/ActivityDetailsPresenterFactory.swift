@@ -15,6 +15,8 @@ final class ActivityDetailsPresenterFactory {
         switch event {
         case .fiat(let fiat):
             return FiatActivityDetailsPresenter(event: fiat)
+        case .crypto(let crypto):
+            return CryptoActivityDetailsPresenter(event: crypto)
         case .buySell(let buySell):
             return BuySellActivityDetailsPresenter(event: buySell)
         case .swap(let swap):

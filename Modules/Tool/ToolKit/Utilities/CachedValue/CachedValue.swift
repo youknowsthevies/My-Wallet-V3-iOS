@@ -15,11 +15,6 @@ public class CachedValue<Value> {
     /// Typealias for fetch method
     typealias FetchMethod = () -> Single<Value>
 
-    @available(*, deprecated, message: "Do not use this! It is meant to support legacy code")
-    public var legacyValue: Value? {
-        atomicValue.value
-    }
-
     /// Streams a single value and terminates
     public var valueSingle: Single<Value> {
         _ = setup

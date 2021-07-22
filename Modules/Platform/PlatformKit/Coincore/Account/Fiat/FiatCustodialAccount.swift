@@ -16,11 +16,21 @@ final class FiatCustodialAccount: FiatAccount {
         .error(ReceiveAddressError.notSupported)
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        activityFetcher
+            .activity(fiatCurrency: fiatCurrency)
+            .map { items in
+                items.map(ActivityItemEvent.fiat)
+            }
+    }
+
     var actions: Single<AvailableActions> {
         let hasActionableBalance = actionableBalance
             .map(\.isPositive)
+            .catchErrorJustReturn(false)
         let canTransactWithBanks = paymentMethodService
             .canTransactWithBankPaymentMethods(fiatCurrency: fiatCurrency)
+            .catchErrorJustReturn(false)
 
         return Single.zip(canTransactWithBanks, hasActionableBalance)
             .map { (fiatSupported, hasPositiveBalance) in
@@ -64,6 +74,7 @@ final class FiatCustodialAccount: FiatAccount {
         balance.map(\.isPositive)
     }
 
+    private let activityFetcher: OrdersActivityServiceAPI
     private let balanceService: TradingBalanceServiceAPI
     private let exchange: PairExchangeServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
@@ -73,12 +84,14 @@ final class FiatCustodialAccount: FiatAccount {
 
     init(
         fiatCurrency: FiatCurrency,
+        activityFetcher: OrdersActivityServiceAPI = resolve(),
         balanceService: TradingBalanceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve(),
         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
     ) {
         label = fiatCurrency.defaultWalletName
         self.fiatCurrency = fiatCurrency
+        self.activityFetcher = activityFetcher
         self.paymentMethodService = paymentMethodService
         self.balanceService = balanceService
         self.exchange = exchangeProviding[fiatCurrency]

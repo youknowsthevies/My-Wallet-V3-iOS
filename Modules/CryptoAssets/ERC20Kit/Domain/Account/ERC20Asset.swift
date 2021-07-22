@@ -88,16 +88,16 @@ final class ERC20Asset: CryptoAsset {
 
     private var custodialGroup: Single<AccountGroup> {
         .just(
-            CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoTradingAccount(asset: asset)])
+            CryptoAccountCustodialGroup(asset: asset, account: CryptoTradingAccount(asset: asset))
         )
     }
 
     private var interestGroup: Single<AccountGroup> {
         guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+            return .just(CryptoAccountCustodialGroup(asset: asset))
         }
         return .just(
-            CryptoAccountCustodialGroup(asset: asset, accounts: [CryptoInterestAccount(asset: asset)])
+            CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset))
         )
     }
 
@@ -109,7 +109,7 @@ final class ERC20Asset: CryptoAsset {
 
     private var exchangeGroup: Single<AccountGroup> {
         guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset, accounts: []))
+            return .just(CryptoAccountCustodialGroup(asset: asset))
         }
         return exchangeAccountProvider
             .account(for: asset)
@@ -132,9 +132,9 @@ final class ERC20Asset: CryptoAsset {
             }
             .map { [asset] account in
                 guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset, accounts: [])
+                    return CryptoAccountCustodialGroup(asset: asset)
                 }
-                return CryptoAccountCustodialGroup(asset: asset, accounts: [account])
+                return CryptoAccountCustodialGroup(asset: asset, account: account)
             }
     }
 

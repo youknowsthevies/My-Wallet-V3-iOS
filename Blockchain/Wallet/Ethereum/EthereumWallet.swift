@@ -10,7 +10,13 @@ import PlatformKit
 import RxRelay
 import RxSwift
 
-class EthereumWallet: NSObject {
+final class EthereumWallet: NSObject {
+
+    // MARK: Types
+
+    typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
+
+    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
 
     enum EthereumWalletError: Error {
         case noEthereumAccount
@@ -22,54 +28,36 @@ class EthereumWallet: NSObject {
         case ethereumAccountsFailed
     }
 
-    typealias Dispatcher = EthereumJSInteropDispatcherAPI & EthereumJSInteropDelegateAPI
+    // MARK: Properties
 
-    typealias WalletAPI = LegacyEthereumWalletAPI & LegacyWalletAPI & MnemonicAccessAPI
-
-    private let disposeBag = DisposeBag()
-
+    weak var reactiveWallet: ReactiveWalletAPI!
     var delegate: EthereumJSInteropDelegateAPI {
         dispatcher
     }
-
-    weak var reactiveWallet: ReactiveWalletAPI!
-
-    @available(*, deprecated, message: "making this  so tests will compile")
+    @available(*, deprecated, message: "making this so tests will compile")
     var interopDispatcher: EthereumJSInteropDispatcherAPI {
         dispatcher
     }
 
-    @available(*, deprecated, message: "Please don't use this. It's here only to support legacy code")
-    @objc var legacyEthBalance: NSDecimalNumber = 0
+    // MARK: Private Properties
 
     private lazy var credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository
     private weak var wallet: WalletAPI?
-    private let walletOptionsService: WalletOptionsAPI
     private let secondPasswordPrompter: SecondPasswordPromptable
-
-    /// These are lazy because we have a dependency cycle, and injecting using `EthereumWallet` initializer
-    /// overflows the function stack with initializers that call one another
-    @LazyInject private var historicalTransactionService: EthereumHistoricalTransactionService
-
-    /// NOTE: This is to fix flaky tests - interaction with `Wallet` should be performed on the main scheduler
     private let schedulerType: SchedulerType
     private let dispatcher: Dispatcher
+
+    // MARK: Initializer
 
     @objc convenience init(legacyWallet: Wallet) {
         self.init(schedulerType: MainScheduler.instance, wallet: legacyWallet)
     }
 
-    convenience init(schedulerType: SchedulerType, legacyWallet: Wallet) {
-        self.init(schedulerType: schedulerType, wallet: legacyWallet)
-    }
-
     init(schedulerType: SchedulerType = MainScheduler.instance,
-         walletOptionsService: WalletOptionsAPI = resolve(),
          secondPasswordPrompter: SecondPasswordPromptable = resolve(),
          wallet: WalletAPI,
          dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared) {
         self.schedulerType = schedulerType
-        self.walletOptionsService = walletOptionsService
         self.secondPasswordPrompter = secondPasswordPrompter
         self.wallet = wallet
         self.dispatcher = dispatcher
@@ -137,10 +125,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    var history: Single<Void> {
-        fetchHistory(fromCache: false)
-    }
-
     var name: Single<String> {
         secondPasswordPrompter.secondPasswordIfNeeded(type: .actionRequiresPassword)
             .flatMap(weak: self) { (self, secondPassword) -> Single<String> in
@@ -173,13 +157,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
             }
     }
 
-    /// Streams `true` if there is a prending transaction
-    var isWaitingOnTransaction: Single<Bool> {
-        historicalTransactionService
-            .fetchTransactions()
-            .map { $0.contains(where: { $0.state == .pending }) }
-    }
-
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
@@ -199,10 +176,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 return Disposables.create()
             }
             .subscribeOn(MainScheduler.instance)
-    }
-
-    func fetchHistory() -> Single<Void> {
-        fetchHistory(fromCache: false)
     }
 
     private func label(secondPassword: String? = nil) -> Single<String> {
@@ -245,14 +218,6 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
                 return Disposables.create()
             }
             .subscribeOn(schedulerType)
-    }
-
-    private func fetchHistory(fromCache: Bool) -> Single<Void> {
-        if fromCache {
-            return historicalTransactionService.transactions.mapToVoid()
-        } else {
-            return historicalTransactionService.fetchTransactions().mapToVoid()
-        }
     }
 }
 

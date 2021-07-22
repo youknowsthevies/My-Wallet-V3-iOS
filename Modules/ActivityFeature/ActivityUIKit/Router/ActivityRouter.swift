@@ -47,7 +47,7 @@ final class ActivityRouter: ActivityRouterAPI {
     }
 
     private func didSelect(account: BlockchainAccount) {
-        serviceContainer.accountSelectionService.record(selection: account)
+        serviceContainer.selectionService.record(selection: account)
         router.viewControllable.uiviewController.dismiss(animated: true, completion: nil)
         router = nil
     }

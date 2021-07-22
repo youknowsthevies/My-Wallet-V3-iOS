@@ -1,16 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public enum OrderDirection: String {
-    /// From non-custodial to non-custodial
-    case onChain = "ON_CHAIN"
-    /// From non-custodial to custodial
-    case fromUserKey = "FROM_USERKEY"
-    /// From custodial to non-custodial
-    case toUserKey = "TO_USERKEY"
-    /// From custodial to custodial
-    case `internal` = "INTERNAL"
+import PlatformKit
 
-    public var requiresDestinationAddress: Bool {
+extension OrderDirection {
+    var requiresDestinationAddress: Bool {
         switch self {
         case .onChain,
              .toUserKey:
@@ -21,7 +14,7 @@ public enum OrderDirection: String {
         }
     }
 
-    public var requiresRefundAddress: Bool {
+    var requiresRefundAddress: Bool {
         switch self {
         case .onChain,
              .fromUserKey:

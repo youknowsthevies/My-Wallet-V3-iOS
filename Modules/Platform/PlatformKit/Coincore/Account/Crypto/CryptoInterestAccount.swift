@@ -42,6 +42,10 @@ public final class CryptoInterestAccount: CryptoAccount {
         .just([])
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        .just([])
+    }
+
     private let fiatPriceService: FiatPriceServiceAPI
     private let balanceService: SavingsOverviewAPI
     private var balances: Single<CustodialAccountBalanceState> {

@@ -8,9 +8,34 @@ public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
 
     func includes(account: BlockchainAccount) -> Bool
+    var activityObservable: Observable<[ActivityItemEvent]> { get }
 }
 
 extension AccountGroup {
+    /// An Observable stream that emits this AccountGroups accounts activity events.
+    public var activityObservable: Observable<[ActivityItemEvent]> {
+        Observable
+            .combineLatest(
+                accounts
+                    .map(\.activity)
+                    .map { $0.asObservable()
+                        .startWith([])
+                        .catchErrorJustReturn([])
+                    }
+            )
+            .map { $0.flatMap { $0 } }
+            .map { $0.unique.sorted(by: >) }
+    }
+
+    public var activity: Single<[ActivityItemEvent]> {
+        Single
+            .zip(accounts
+                    .map(\.activity)
+                    .map { $0.catchErrorJustReturn([]) })
+            .map { $0.flatMap { $0 } }
+            .map { $0.unique.sorted(by: >) }
+    }
+
     public var currencyType: CurrencyType {
         guard let type = accounts.first?.currencyType else {
             fatalError("AccountGroup should have at least one account")

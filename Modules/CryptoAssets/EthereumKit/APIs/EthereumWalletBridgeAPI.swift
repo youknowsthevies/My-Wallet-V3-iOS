@@ -13,20 +13,10 @@ public protocol EthereumWalletAccountBridgeAPI: AnyObject {
     var wallets: Single<[EthereumWalletAccount]> { get }
 }
 
-public protocol EthereumWalletBridgeAPI {
+public protocol EthereumWalletBridgeAPI: AnyObject {
     var name: Single<String> { get }
     var address: Single<EthereumAddress> { get }
     var account: Single<EthereumAssetAccount> { get }
-
-    /// Streams a boolean value indicating whether if there is transaction that should complete
-    var isWaitingOnTransaction: Single<Bool> { get }
-
-    /// Fetches the previously cached history
-    var history: Single<Void> { get }
-
-    /// Fetches the history (expected to make a network call to do so).
-    /// Always returns the updated history
-    func fetchHistory() -> Single<Void>
 
     func memo(for transactionHash: String) -> Single<String?>
     func updateMemo(for transactionHash: String, memo: String?) -> Completable

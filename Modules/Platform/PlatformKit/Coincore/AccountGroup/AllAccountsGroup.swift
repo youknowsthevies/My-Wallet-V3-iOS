@@ -35,26 +35,19 @@ public final class AllAccountsGroup: AccountGroup {
     }
 
     public var pendingBalance: Single<MoneyValue> {
-        unimplemented()
+        .error(MoneyValueError.invalidInput)
     }
 
     public var balance: Single<MoneyValue> {
-        if accounts.isEmpty {
-            return .just(.zero(currency: currencyType))
-        }
-        let asset = self.currencyType
-        return Single.zip(accounts.map(\.balance))
-            .map { values -> MoneyValue in
-                try values.reduce(MoneyValue.zero(currency: asset), +)
-            }
+        .error(MoneyValueError.invalidInput)
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        unimplemented()
+        .error(MoneyValueError.invalidInput)
     }
 
     public var receiveAddress: Single<ReceiveAddress> {
-        unimplemented()
+        .error(ReceiveAddressError.notSupported)
     }
 
     public init(accounts: [SingleAccount]) {

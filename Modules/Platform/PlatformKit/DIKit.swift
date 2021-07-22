@@ -214,14 +214,6 @@ extension DependencyContainer {
             return completeSettings
         }
 
-        // MARK: - Activity Services
-
-        factory(tag: FiatCurrency.EUR) { FiatActivityItemEventService(fiatCurrency: .EUR) as FiatActivityItemEventServiceAPI }
-
-        factory(tag: FiatCurrency.GBP) { FiatActivityItemEventService(fiatCurrency: .GBP) as FiatActivityItemEventServiceAPI }
-
-        factory(tag: FiatCurrency.USD) { FiatActivityItemEventService(fiatCurrency: .USD) as FiatActivityItemEventServiceAPI }
-
         // MARK: - KYC
 
         factory { KYCTierUpdatePollingService() as KYCTierUpdatePollingServiceAPI }
@@ -300,6 +292,11 @@ extension DependencyContainer {
             return client as LinkedBanksClientAPI
         }
 
+        factory { () -> OrdersActivityClientAPI in
+            let client: SimpleBuyClientAPI = DIKit.resolve()
+            return client as OrdersActivityClientAPI
+        }
+
         factory { WithdrawalService() as WithdrawalServiceAPI }
 
         // MARK: - Clients - Cards
@@ -325,6 +322,8 @@ extension DependencyContainer {
 
         // MARK: - Services - General
 
+        factory { OrdersActivityService() as OrdersActivityServiceAPI }
+
         factory { OrderConfirmationService() as OrderConfirmationServiceAPI }
 
         factory { OrderQuoteService() as OrderQuoteServiceAPI }
@@ -332,10 +331,6 @@ extension DependencyContainer {
         factory { EventCache() }
 
         single { OrdersService() as OrdersServiceAPI }
-
-        factory { OrdersFiatActivityItemEventService() as FiatActivityItemEventFetcherAPI }
-
-        factory { OrdersActivityEventService() as OrdersActivityEventServiceAPI }
 
         factory { PendingOrderDetailsService() as PendingOrderDetailsServiceAPI }
 

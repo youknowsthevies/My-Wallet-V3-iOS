@@ -3,9 +3,7 @@
 import BigInt
 import PlatformKit
 
-enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
-
-    public typealias Address = StellarAssetAddress
+enum StellarHistoricalTransaction {
 
     public var fee: CryptoValue? {
         switch self {
@@ -43,16 +41,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var token: String {
-        switch self {
-        case .accountCreated(let value):
-            return value.identifier
-        case .payment(let value):
-            return value.identifier
-        }
-    }
-
-    public var fromAddress: Address {
+    public var fromAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.funder)
@@ -61,7 +50,7 @@ enum StellarHistoricalTransaction: HistoricalTransaction, Tokenized {
         }
     }
 
-    public var toAddress: Address {
+    public var toAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.account)

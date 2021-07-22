@@ -30,6 +30,8 @@ public protocol BlockchainAccount {
     /// Emits `Set` containing all actions this account can execute.
     var actions: Single<AvailableActions> { get }
 
+    var activity: Single<[ActivityItemEvent]> { get }
+
     /// Indicates if this account is funded.
     ///
     /// Depending of the account implementation, this may not strictly mean a positive balance.
@@ -66,7 +68,6 @@ public protocol BlockchainAccount {
 }
 
 extension BlockchainAccount {
-
     public func fiatBalance(fiatCurrency: FiatCurrency) -> Single<MoneyValue> {
         balancePair(fiatCurrency: fiatCurrency).map(\.quote)
     }

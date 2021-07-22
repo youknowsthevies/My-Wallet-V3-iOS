@@ -4,13 +4,9 @@ import BigInt
 import BitcoinChainKit
 import PlatformKit
 
-public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse, HistoricalTransaction, Tokenized {
+public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTransactionResponse {
 
     public static let requiredConfirmations: Int = 3
-
-    // MARK: - HistoricalTransaction
-
-    public typealias Address = BitcoinAssetAddress
 
     // MARK: - Output
 
@@ -72,13 +68,9 @@ public class BitcoinHistoricalTransaction: Decodable, BitcoinChainHistoricalTran
         transactionHash
     }
 
-    public var token: String {
-        transactionHash
-    }
-
-    public let fromAddress: Address
-    public let toAddress: Address
     public let direction: Direction
+    public let fromAddress: BitcoinAssetAddress
+    public let toAddress: BitcoinAssetAddress
     public let amount: CryptoValue
     public let transactionHash: String
     public let createdAt: Date

@@ -28,9 +28,9 @@ extension DependencyContainer {
 
         factory(tag: CryptoCurrency.stellar) { StellarOnChainTransactionEngineFactory() as OnChainTransactionEngineFactory }
 
-        factory { StellarTransactionalActivityItemEventsService() }
-
-        factory { StellarActivityItemEventDetailsFetcher() }
+        factory { () -> AnyActivityItemEventDetailsFetcher<StellarActivityItemEventDetails> in
+            AnyActivityItemEventDetailsFetcher(api: StellarActivityItemEventDetailsFetcher())
+        }
 
         single { AnyCryptoFeeService(service: CryptoFeeService<StellarTransactionFee>()) }
 
@@ -39,6 +39,8 @@ extension DependencyContainer {
         factory { LedgersServiceProvider() as LedgersServiceProviderAPI }
 
         factory(tag: CryptoCurrency.stellar) { StellarCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
+
+        factory { StellarHistoricalTransactionService() as StellarHistoricalTransactionServiceAPI }
 
     }
 }

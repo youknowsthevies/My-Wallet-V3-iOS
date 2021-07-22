@@ -37,10 +37,6 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
         .just(nil)
     }
 
-    var isWaitingOnTransaction: Single<Bool> {
-        isWaitingOnTransactionValue
-    }
-
     var history: Single<Void> {
         historyValue
     }

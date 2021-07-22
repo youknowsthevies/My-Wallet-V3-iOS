@@ -5,13 +5,16 @@ import PlatformKit
 import RxSwift
 import stellarsdk
 
-final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionAPI {
+protocol StellarHistoricalTransactionServiceAPI {
+    func transactions(accountID: String, size: Int) -> Single<[StellarHistoricalTransaction]>
+    func transaction(accountID: String, operationID: String) -> Single<StellarHistoricalTransaction>
+}
 
-    typealias PageModel = PageResult<StellarHistoricalTransaction>
+final class StellarHistoricalTransactionService: StellarHistoricalTransactionServiceAPI {
 
     // MARK: - Private Properties
 
-    private var operationService: Single<stellarsdk.OperationsService> {
+    private var operationsService: Single<stellarsdk.OperationsService> {
         sdk.map { $0.operations }
     }
 
@@ -24,67 +27,70 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
     // MARK: - Private Properties
 
     private let configurationService: StellarConfigurationAPI
-    private let repository: StellarWalletAccountRepositoryAPI
     private let disposeBag = DisposeBag()
 
-    init(configurationService: StellarConfigurationAPI = resolve(),
-         repository: StellarWalletAccountRepositoryAPI) {
+    init(configurationService: StellarConfigurationAPI = resolve()) {
         self.configurationService = configurationService
-        self.repository = repository
     }
 
-    func fetchTransactions(token: String?, size: Int) -> Single<PageModel> {
-        guard let accountID = repository.defaultAccount?.publicKey else {
-            return Single.error(StellarAccountError.noDefaultAccount)
-        }
-        return fetchTransactions(accountId: accountID, size: size, token: nil)
+    func transactions(accountID: String, size: Int) -> Single<[StellarHistoricalTransaction]> {
+        operationsService
+            .flatMap { operationsService -> Single<PageResponse<OperationResponse>> in
+                operationsService.transactions(accountID: accountID, size: size)
+            }
+            .map { response -> [StellarHistoricalTransaction] in
+                response
+                    .records
+                    .compactMap { $0.buildOperation(accountID: accountID) }
+            }
+            .catchError { error in
+                switch error {
+                case stellarsdk.HorizonRequestError.notFound:
+                    return .just([])
+                default:
+                    throw error
+                }
+            }
     }
 
-    private func fetch(operationID: String,
-                       accountId: String,
-                       operationService: stellarsdk.OperationsService) -> Single<StellarHistoricalTransaction> {
+    func transaction(accountID: String, operationID: String) -> Single<StellarHistoricalTransaction> {
+        operationsService
+            .flatMap { operationsService -> Single<OperationResponse> in
+                operationsService.transaction(operationID: operationID)
+            }
+            .map { response -> StellarHistoricalTransaction? in
+                response.buildOperation(accountID: accountID)
+            }
+            .onNil(error: StellarNetworkError.parsingError)
+    }
+}
+
+extension stellarsdk.OperationsService {
+
+    func transaction(operationID: String) -> Single<OperationResponse> {
         Single<OperationResponse>
-            .create { observer -> Disposable in
-                operationService
-                    .getOperationDetails(
-                        operationId: operationID,
-                        join: "transactions",
-                        response: { response in
-                            switch response {
-                            case .success(let details):
-                                observer(.success(details))
-                            case .failure(let error):
-                                observer(.error(error))
-                            }
+            .create(weak: self) { (self, observer) -> Disposable in
+                self.getOperationDetails(
+                    operationId: operationID,
+                    join: "transactions",
+                    response: { response in
+                        switch response {
+                        case .success(let details):
+                            observer(.success(details))
+                        case .failure(let error):
+                            observer(.error(error))
                         }
-                    )
+                    }
+                )
                 return Disposables.create()
             }
-            .map { $0.buildOperation(accountID: accountId) }
-            .onNil(error: stellarsdk.HorizonRequestError.parsingResponseFailed(message: ""))
     }
 
-    private func fetchTransactions(accountId: String, size: Int, token: String?) -> Single<PageModel> {
-        operationService
-            .flatMap(weak: self) { (self, operationsService) -> Single<PageModel> in
-                self.fetchTransactions(
-                    accountId: accountId,
-                    operationService: operationsService,
-                    size: size,
-                    token: token
-                )
-            }
-    }
-
-    private func fetchTransactions(accountId: String,
-                                   operationService: stellarsdk.OperationsService,
-                                   size: Int,
-                                   token: String?) -> Single<PageModel> {
+    func transactions(accountID: String, size: Int) -> Single<PageResponse<OperationResponse>> {
         Single<PageResponse<OperationResponse>>
-            .create { observer -> Disposable in
-                operationService.getOperations(
-                    forAccount: accountId,
-                    from: token,
+            .create(weak: self) { (self, observer) -> Disposable in
+                self.getOperations(
+                    forAccount: accountID,
                     order: .descending,
                     limit: size,
                     join: "transactions",
@@ -96,29 +102,9 @@ final class StellarHistoricalTransactionService: TokenizedHistoricalTransactionA
                             observer(.error(horizonError.toStellarServiceError()))
                         }
 
-                })
+                    })
                 return Disposables.create()
             }
-            .map { payload -> PageModel in
-                let hasNextPage = (payload.hasNextPage() && payload.records.count > 0)
-                let transactions = payload
-                    .records
-                    .compactMap { $0.buildOperation(accountID: accountId) }
-                return PageModel(hasNextPage: hasNextPage, items: transactions)
-            }
-    }
-}
-
-extension StellarHistoricalTransactionService: HistoricalTransactionDetailsAPI {
-    public func transaction(identifier: String) -> Observable<StellarHistoricalTransaction> {
-        guard let accountID = repository.defaultAccount?.publicKey else {
-            return .error(StellarAccountError.noDefaultAccount)
-        }
-        return operationService
-            .flatMap(weak: self) { (self, operationService) in
-                self.fetch(operationID: identifier, accountId: accountID, operationService: operationService)
-            }
-            .asObservable()
     }
 }
 

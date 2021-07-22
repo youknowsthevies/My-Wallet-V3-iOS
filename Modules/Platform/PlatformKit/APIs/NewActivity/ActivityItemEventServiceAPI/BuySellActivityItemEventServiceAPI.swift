@@ -3,12 +3,6 @@
 import RxRelay
 import RxSwift
 
-public protocol BuySellActivityItemEventServiceAPI {
-    var buySellActivityEvents: Single<[BuySellActivityItemEvent]> { get }
-    var buySellActivityObservable: Observable<[BuySellActivityItemEvent]> { get }
-    var state: Observable<ActivityItemEventsLoadingState> { get }
-
-    /// Forces the service to fetch events.
-    /// Note that this should ignore the cache.
-    var fetchTriggerRelay: PublishRelay<Void> { get }
+public protocol BuySellActivityItemEventServiceAPI: AnyObject {
+    func buySellActivityEvents(cryptoCurrency: CryptoCurrency) -> Single<[BuySellActivityItemEvent]>
 }

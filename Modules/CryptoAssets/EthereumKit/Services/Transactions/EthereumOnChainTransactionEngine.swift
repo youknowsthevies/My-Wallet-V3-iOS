@@ -35,8 +35,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private let feeService: EthereumFeeServiceAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let priceService: PriceServiceAPI
-    private let bridge: EthereumWalletBridgeAPI
     private let transactionBuildingService: EthereumTransactionBuildingServiceAPI
+    private let transactionsService: EthereumHistoricalTransactionServiceAPI
     private let ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI
 
     private var receiveAddress: Single<ReceiveAddress> {
@@ -57,7 +57,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
         feeService: EthereumFeeServiceAPI = resolve(),
-        ethereumWalletBridgeAPI: EthereumWalletBridgeAPI = resolve(),
+        transactionsService: EthereumHistoricalTransactionServiceAPI = resolve(),
         transactionBuildingService: EthereumTransactionBuildingServiceAPI = resolve(),
         ethereumTransactionDispatcher: EthereumTransactionDispatcherAPI = resolve()
     ) {
@@ -66,8 +66,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.requireSecondPassword = requireSecondPassword
         self.priceService = priceService
         self.transactionBuildingService = transactionBuildingService
+        self.transactionsService = transactionsService
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
-        self.bridge = ethereumWalletBridgeAPI
         feeCache = CachedValue(configuration: .periodic(90))
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
             self.feeService.fees(cryptoCurrency: .ethereum)
@@ -249,7 +249,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     // MARK: - Private Functions
 
     private func validateNoPendingTransaction() -> Completable {
-        bridge
+        transactionsService
             .isWaitingOnTransaction
             .map { (isWaitingOnTransaction) -> Void in
                 guard isWaitingOnTransaction == false else {

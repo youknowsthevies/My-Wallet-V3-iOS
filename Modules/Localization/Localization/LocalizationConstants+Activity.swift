@@ -86,6 +86,7 @@ extension LocalizationConstants.Activity.Details {
         public static let send = NSLocalizedString("Send", comment: "'Send' title")
         public static let swap = NSLocalizedString("Swap", comment: "'Swap' title")
         public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+        public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
     }
 
     public enum Button {

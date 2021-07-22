@@ -53,7 +53,6 @@ public final class ActivityScreenViewController: BaseScreenViewController {
         setupNavigationBar()
         setupTableView()
         setupEmptyState()
-        presenter.refresh()
 
         let longPress = UILongPressGestureRecognizer()
         longPress
@@ -71,14 +70,13 @@ public final class ActivityScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         tableView.addGestureRecognizer(longPress)
-    }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.refresh()
-        }
+        rx.viewDidAppear
+            .take(1)
+            .bind { [weak self] _ in
+                self?.presenter.refresh()
+            }
+            .disposed(by: disposeBag)
     }
 
     // MARK: - Setup

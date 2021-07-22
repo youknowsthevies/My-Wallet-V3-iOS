@@ -30,11 +30,11 @@ extension DependencyContainer {
             return repository as EthereumWalletAccountRepositoryAPI
         }
 
-        single { EthereumHistoricalTransactionService() }
+        single { EthereumHistoricalTransactionService() as EthereumHistoricalTransactionServiceAPI }
 
-        factory { EthereumTransactionalActivityItemEventsService() }
-
-        factory { EthereumActivityItemEventDetailsFetcher() }
+        factory { () -> AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> in
+            AnyActivityItemEventDetailsFetcher(api: EthereumActivityItemEventDetailsFetcher())
+        }
 
         factory { EthereumTransactionBuildingService() as EthereumTransactionBuildingServiceAPI }
 

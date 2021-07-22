@@ -28,7 +28,9 @@ extension ObservableType where Element: OptionalType {
 extension ObservableType {
     public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> Observable<R> {
         map { [weak object] element -> R in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, element)
         }
     }
@@ -38,7 +40,7 @@ extension ObservableType {
     public func flatMap<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
         flatMap { [weak object] (value) -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
@@ -47,7 +49,7 @@ extension ObservableType {
     public func flatMapLatest<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
         flatMapLatest { [weak object] (value) -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
@@ -56,7 +58,7 @@ extension ObservableType {
     public func flatMapFirst<A: AnyObject, R>(weak object: A, selector: @escaping (A, Self.Element) throws -> Observable<R>) -> Observable<R> {
         flatMapFirst { [weak object] (value) -> Observable<R> in
             guard let object = object else {
-                return Observable.error(ToolKitError.nullReference(A.self))
+                throw ToolKitError.nullReference(A.self)
             }
             return try selector(object, value)
         }
@@ -83,7 +85,9 @@ extension ObservableType {
     public func catchError<A: AnyObject>(weak object: A,
                                          _ selector: @escaping (A, Swift.Error) throws -> Observable<Element>) -> Observable<Element> {
         catchError { [weak object] error -> Observable<Element> in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, error)
         }
     }

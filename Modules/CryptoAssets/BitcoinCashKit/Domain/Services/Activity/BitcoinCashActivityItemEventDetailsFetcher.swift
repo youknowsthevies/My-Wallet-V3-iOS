@@ -1,21 +1,32 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import BitcoinChainKit
 import DIKit
 import PlatformKit
 import RxSwift
 
-public final class BitcoinCashActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
-    public typealias Model = BitcoinCashActivityItemEventDetails
+final class BitcoinCashActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
+    typealias Model = BitcoinCashActivityItemEventDetails
 
-    private let transactionService: BitcoinCashHistoricalTransactionService
+    private let bridge: BitcoinCashWalletBridgeAPI
+    private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
 
-    public init(transactionService: BitcoinCashHistoricalTransactionService = resolve()) {
-        self.transactionService = transactionService
+    init(transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
+         bridge: BitcoinCashWalletBridgeAPI = resolve()) {
+        self.transactionsService = transactionsService
+        self.bridge = bridge
     }
 
-    public func details(for identifier: String) -> Observable<BitcoinCashActivityItemEventDetails> {
-        transactionService
-            .transaction(identifier: identifier)
-            .map { BitcoinCashActivityItemEventDetails(transaction: $0) }
+    func details(for identifier: String) -> Observable<BitcoinCashActivityItemEventDetails> {
+        bridge.wallets
+            .map { wallet -> [XPub] in
+                wallet.map(\.publicKey)
+            }
+            .flatMap { [transactionsService] publicKeys -> Single<BitcoinCashActivityItemEventDetails> in
+                transactionsService
+                    .transaction(publicKeys: publicKeys, identifier: identifier)
+                    .map(BitcoinCashActivityItemEventDetails.init(transaction:))
+            }
+            .asObservable()
     }
 }

@@ -68,17 +68,44 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        Single.zip(nonCustodialActivity, swapActivity)
+            .map { nonCustodialActivity, swapActivity in
+                Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)
+            }
+    }
+
+    private var nonCustodialActivity: Single<[TransactionalActivityItemEvent]> {
+        transactionsService
+            .transactions(publicKeys: [xPub])
+            .map { response in
+                response
+                    .map(\.activityItemEvent)
+            }
+            .catchErrorJustReturn([])
+    }
+
+    private var swapActivity: Single<[SwapActivityItemEvent]> {
+        swapTransactionsService
+            .fetchActivity(cryptoCurrency: asset, directions: custodialDirections)
+            .catchErrorJustReturn([])
+    }
+
     private let xPub: XPub
     private let hdAccountIndex: Int
     private let balanceService: BalanceServiceAPI
     private let fiatPriceService: FiatPriceServiceAPI
     private let bridge: BitcoinCashWalletBridgeAPI
+    private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
+    private let swapTransactionsService: SwapActivityServiceAPI
 
     init(xPub: XPub,
          label: String?,
          isDefault: Bool,
          hdAccountIndex: Int,
          fiatPriceService: FiatPriceServiceAPI = resolve(),
+         transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
+         swapTransactionsService: SwapActivityServiceAPI = resolve(),
          balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
          bridge: BitcoinCashWalletBridgeAPI = resolve()) {
         self.xPub = xPub
@@ -87,6 +114,8 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         self.hdAccountIndex = hdAccountIndex
         self.fiatPriceService = fiatPriceService
         self.balanceService = balanceService
+        self.transactionsService = transactionsService
+        self.swapTransactionsService = swapTransactionsService
         self.bridge = bridge
     }
 

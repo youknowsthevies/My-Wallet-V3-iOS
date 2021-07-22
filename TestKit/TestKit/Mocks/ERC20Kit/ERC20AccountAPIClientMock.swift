@@ -16,7 +16,7 @@ class ERC20AccountAPIClientMock: ERC20AccountAPIClientAPI {
         fetchAccountSummaryResponse = .just(.accountResponseMock(cryptoCurrency: cryptoCurrency))
     }
 
-    func fetchTransactions(from address: String, page: String, contractAddress: String) -> Single<ERC20TransfersResponse> {
+    func fetchTransactions(from address: String, page: String?, contractAddress: String) -> Single<ERC20TransfersResponse> {
         fetchTransactionsResponse
     }
 

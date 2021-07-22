@@ -4,18 +4,19 @@ import DIKit
 import PlatformKit
 import RxSwift
 
-public final class EthereumActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
-    public typealias Model = EthereumActivityItemEventDetails
+final class EthereumActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
+    typealias Model = EthereumActivityItemEventDetails
 
-    private let transactionService: EthereumHistoricalTransactionService
+    private let transactionService: EthereumHistoricalTransactionServiceAPI
 
-    public init(transactionService: EthereumHistoricalTransactionService = resolve()) {
+    init(transactionService: EthereumHistoricalTransactionServiceAPI = resolve()) {
         self.transactionService = transactionService
     }
 
-    public func details(for identifier: String) -> Observable<EthereumActivityItemEventDetails> {
+    func details(for identifier: String) -> Observable<EthereumActivityItemEventDetails> {
         transactionService
             .transaction(identifier: identifier)
             .map { EthereumActivityItemEventDetails(transaction: $0) }
+            .asObservable()
     }
 }

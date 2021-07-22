@@ -5,5 +5,5 @@ import RxSwift
 protocol OrdersActivityClientAPI: AnyObject {
 
     /// Fetch order activity response
-    func activityResponse(fiatCurrency: FiatCurrency, pendingOnly: Bool) -> Single<OrdersActivityResponse>
+    func activityResponse(currency: Currency) -> Single<OrdersActivityResponse>
 }

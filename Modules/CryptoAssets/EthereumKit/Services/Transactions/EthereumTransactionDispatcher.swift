@@ -39,10 +39,5 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
 
     private func updateAfterSending(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         bridge.recordLast(transaction: transaction)
-            .flatMap(weak: self) { (self, transaction) -> Single<EthereumTransactionPublished> in
-                self.bridge.fetchHistory().map { _ -> EthereumTransactionPublished in
-                    transaction
-                }
-            }
     }
 }

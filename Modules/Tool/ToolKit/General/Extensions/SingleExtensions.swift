@@ -74,7 +74,9 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == Array<Single<
 extension PrimitiveSequence where Trait == SingleTrait {
     public func map<A: AnyObject, R>(weak object: A, _ selector: @escaping (A, Element) throws -> R) -> PrimitiveSequence<SingleTrait, R> {
         map { [weak object] element -> R in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, element)
         }
     }
@@ -145,7 +147,9 @@ extension PrimitiveSequence where Trait == SingleTrait {
 extension PrimitiveSequence where Trait == SingleTrait {
     public func catchError<A: AnyObject>(weak object: A, _ selector: @escaping (A, Swift.Error) throws -> Single<Element>) -> Single<Element> {
         catchError { [weak object] error -> Single<Element> in
-            guard let object = object else { throw ToolKitError.nullReference(A.self) }
+            guard let object = object else {
+                throw ToolKitError.nullReference(A.self)
+            }
             return try selector(object, error)
         }
     }

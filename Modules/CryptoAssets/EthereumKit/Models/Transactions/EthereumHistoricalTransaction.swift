@@ -9,10 +9,8 @@ public enum EthereumTransactionState: String, CaseIterable, Codable {
     case replaced = "REPLACED"
 }
 
-public struct EthereumHistoricalTransaction: HistoricalTransaction {
+public struct EthereumHistoricalTransaction {
     public static let requiredConfirmations: Int = 12
-
-    public typealias Address = EthereumAddress
 
     public var fromAddress: EthereumAddress
     public var toAddress: EthereumAddress

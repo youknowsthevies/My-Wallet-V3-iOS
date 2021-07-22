@@ -115,6 +115,21 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         }
     }
 
+    public var activity: Single<[ActivityItemEvent]> {
+        Single
+            .zip(
+                buySellActivity.buySellActivityEvents(cryptoCurrency: asset),
+                ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
+                swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
+            )
+            .map { (buySellActivity, ordersActivity, swapActivity) -> [ActivityItemEvent] in
+                buySellActivity.map(ActivityItemEvent.buySell)
+                    + ordersActivity.map(ActivityItemEvent.crypto)
+                    + swapActivity.map(ActivityItemEvent.swap)
+            }
+
+    }
+
     public var actionsLegacyAsset: Single<AvailableActions> {
         Single.zip(balance, eligibilityService.isEligible)
             .map { (balance, isEligible) -> AvailableActions in
@@ -168,6 +183,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     private let fiatPriceService: FiatPriceServiceAPI
     private let featureFetcher: FeatureFetching
     private let kycTiersService: KYCTiersServiceAPI
+    private let ordersActivity: OrdersActivityServiceAPI
+    private let swapActivity: SwapActivityServiceAPI
+    private let buySellActivity: BuySellActivityItemEventServiceAPI
 
     private var balances: Single<CustodialAccountBalanceState> {
         balanceService.balance(for: asset.currency)
@@ -175,6 +193,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     public init(
         asset: CryptoCurrency,
+        swapActivity: SwapActivityServiceAPI = resolve(),
+        ordersActivity: OrdersActivityServiceAPI = resolve(),
+        buySellActivity: BuySellActivityItemEventServiceAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),
         featureFetcher: FeatureFetching = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve(),
@@ -187,6 +208,9 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
     ) {
         self.asset = asset
         self.label = asset.defaultTradingWalletName
+        self.ordersActivity = ordersActivity
+        self.swapActivity = swapActivity
+        self.buySellActivity = buySellActivity
         self.fiatPriceService = fiatPriceService
         self.balanceService = balanceService
         self.cryptoReceiveAddressFactory = cryptoReceiveAddressFactory
