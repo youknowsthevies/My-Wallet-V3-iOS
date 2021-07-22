@@ -29,10 +29,12 @@ public class ReceiveCoordinator {
 
     // MARK: - Setup
 
-    init(receiveRouter: ReceiveRouterAPI = resolve(),
-         receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
-         kycStatusChecker: KYCStatusChecking = resolve(),
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        receiveRouter: ReceiveRouterAPI = resolve(),
+        receiveSelectionService: AccountSelectionServiceAPI = AccountSelectionService(),
+        kycStatusChecker: KYCStatusChecking = resolve(),
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.receiveRouter = receiveRouter
         self.kycStatusChecker = kycStatusChecker
         self.analyticsHook = analyticsHook
@@ -70,7 +72,7 @@ public class ReceiveCoordinator {
 
     private func didSelectTradingAccountForReceive(account: BlockchainAccount) -> Observable<ReceiveAction> {
         kycStatusChecker.checkStatus()
-            .map { (status) -> ReceiveAction in
+            .map { status -> ReceiveAction in
                 switch status {
                 case .unverified, .verifying:
                     return .presentKYCScreen

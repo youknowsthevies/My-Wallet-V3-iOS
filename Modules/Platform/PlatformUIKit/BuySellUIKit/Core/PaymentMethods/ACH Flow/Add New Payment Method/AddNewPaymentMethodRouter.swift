@@ -12,7 +12,8 @@ protocol AddNewPaymentMethodViewControllable: ViewControllable {
 }
 
 final class AddNewPaymentMethodRouter: ViewableRouter<AddNewPaymentMethodInteractable, AddNewPaymentMethodViewControllable>,
-                                       AddNewPaymentMethodRouting {
+    AddNewPaymentMethodRouting
+{
 
     override init(interactor: AddNewPaymentMethodInteractable, viewController: AddNewPaymentMethodViewControllable) {
         super.init(interactor: interactor, viewController: viewController)

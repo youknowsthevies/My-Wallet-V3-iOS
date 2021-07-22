@@ -38,10 +38,12 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
 
     // MARK: - Setup
 
-    init(contextProvider: JSContextProviderAPI = resolve(),
-         payloadCryptor: WalletPayloadCryptorAPI = resolve(),
-         recorder: Recording = resolve(tag: "CrashlyticsRecorder")) {
-        self.jsContextProvider = contextProvider
+    init(
+        contextProvider: JSContextProviderAPI = resolve(),
+        payloadCryptor: WalletPayloadCryptorAPI = resolve(),
+        recorder: Recording = resolve(tag: "CrashlyticsRecorder")
+    ) {
+        jsContextProvider = contextProvider
         self.payloadCryptor = payloadCryptor
         self.recorder = recorder
     }
@@ -122,10 +124,12 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
         .subscribeOn(MainScheduler.instance)
     }
 
-    private func jsCrypto(_ method: JSMethod,
-                          data: String,
-                          key: String,
-                          iterations: Int) throws -> String {
+    private func jsCrypto(
+        _ method: JSMethod,
+        data: String,
+        key: String,
+        iterations: Int
+    ) throws -> String {
         let data = data.escapedForJS()
         let key = key.escapedForJS()
         let script = String(format: method.rawValue, data, key, iterations)

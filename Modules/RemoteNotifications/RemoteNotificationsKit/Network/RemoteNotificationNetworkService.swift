@@ -49,7 +49,7 @@ extension RemoteNotificationNetworkService: RemoteNotificationNetworkServicing {
             }
             .map { response -> Void in
                 guard response.success
-                    else { throw PushNotificationError.registrationFailure }
+                else { throw PushNotificationError.registrationFailure }
                 return ()
             }
     }

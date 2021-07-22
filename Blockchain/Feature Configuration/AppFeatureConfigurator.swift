@@ -23,8 +23,8 @@ final class AppFeatureConfigurator {
         #if DEBUG
         expiration = TimeInterval(60) // 1 min
         #endif
-        remoteConfig.fetch(withExpirationDuration: expiration) { [weak self] (status, error) in
-            guard status == .success && error == nil else {
+        remoteConfig.fetch(withExpirationDuration: expiration) { [weak self] status, error in
+            guard status == .success, error == nil else {
                 print("config fetch error")
                 return
             }
@@ -61,7 +61,6 @@ extension AppFeatureConfigurator: FeatureConfiguratorAPI {
         let isEnabled = remoteConfig.configValue(forKey: remoteEnabledKey).boolValue
         return AppFeatureConfiguration(isEnabled: isEnabled)
     }
-
 }
 
 // MARK: - FeatureDecoding

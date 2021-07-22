@@ -36,13 +36,15 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
 
     // MARK: - Init
 
-    public init(cryptoCurrency: CryptoCurrency,
-                fiatCurrency: FiatCurrency,
-                historicalFiatPriceService: HistoricalFiatPriceServiceAPI) {
+    public init(
+        cryptoCurrency: CryptoCurrency,
+        fiatCurrency: FiatCurrency,
+        historicalFiatPriceService: HistoricalFiatPriceServiceAPI
+    ) {
         self.cryptoCurrency = cryptoCurrency
 
         /// Setup `lineChartView`
-        self.lineChartView = LineChartView()
+        lineChartView = LineChartView()
         lineChartView.chartDescription?.enabled = false
         lineChartView.drawGridBackgroundEnabled = false
         lineChartView.gridBackgroundColor = .clear
@@ -56,14 +58,14 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
         lineChartView.pinchZoomEnabled = false
         lineChartView.data = LineChartData.empty
 
-        self.interactor = AssetLineChartTableViewCellInteractor(
+        interactor = AssetLineChartTableViewCellInteractor(
             cryptoCurrency: cryptoCurrency,
             fiatCurrency: fiatCurrency,
             historicalFiatPriceService: historicalFiatPriceService,
             lineChartView: lineChartView
         )
 
-        self.presenterContainer = .init(
+        presenterContainer = .init(
             priceViewPresenter: AssetPriceViewPresenter(
                 interactor: interactor.assetPriceViewInteractor,
                 alignment: .center,
@@ -98,33 +100,41 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
 
     private lazy var priceWindowItems: [SegmentedViewModel.Item] = {
         [
-            .text(LocalizationConstants.DashboardDetails.day,
-                  action: { [weak self] in
+            .text(
+                LocalizationConstants.DashboardDetails.day,
+                action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.day(.fifteenMinutes))
                 }
             ),
-            .text(LocalizationConstants.DashboardDetails.week,
-                  action: { [weak self] in
+            .text(
+                LocalizationConstants.DashboardDetails.week,
+                action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.week(.oneHour))
-            }),
-            .text(LocalizationConstants.DashboardDetails.month,
-                  action: { [weak self] in
+                }
+            ),
+            .text(
+                LocalizationConstants.DashboardDetails.month,
+                action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.month(.twoHours))
                 }
             ),
-            .text(LocalizationConstants.DashboardDetails.year,
-                  action: { [weak self] in
+            .text(
+                LocalizationConstants.DashboardDetails.year,
+                action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.year(.oneDay))
-            }),
-            .text(LocalizationConstants.DashboardDetails.all,
-                  action: { [weak self] in
+                }
+            ),
+            .text(
+                LocalizationConstants.DashboardDetails.all,
+                action: { [weak self] in
                     guard let self = self else { return }
                     self.windowRelay.accept(.all(.fiveDays))
-            })
+                }
+            )
         ]
     }()
 }

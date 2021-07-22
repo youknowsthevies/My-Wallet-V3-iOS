@@ -127,7 +127,7 @@ extension ActivityItemEvent {
                 return .pending(confirmations: .init(
                     current: confirmations.current,
                     total: confirmations.total
-                    )
+                )
                 )
             }
         case .fiat(let event):

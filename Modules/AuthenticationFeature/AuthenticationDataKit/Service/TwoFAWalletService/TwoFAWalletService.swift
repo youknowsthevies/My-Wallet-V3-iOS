@@ -8,6 +8,7 @@ import WalletPayloadKit
 public final class TwoFAWalletService: TwoFAWalletServiceAPI {
 
     // MARK: - Type
+
     public typealias WalletRepositoryAPI = GuidRepositoryAPI & SessionTokenRepositoryAPI & PayloadRepositoryAPI
 
     // MARK: - Properties
@@ -41,7 +42,7 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
         /// *. Errors along the way should be caught and mapped
         return Single
             .zip(repository.guid, repository.sessionToken)
-            .map(weak: self) { (_, credentials) -> (guid: String, sessionToken: String) in
+            .map(weak: self) { _, credentials -> (guid: String, sessionToken: String) in
                 guard let guid = credentials.0 else {
                     throw MissingCredentialsError.guid
                 }
@@ -98,9 +99,11 @@ extension TwoFAWalletService {
                 return .just((guid, sessionToken))
             }
             .flatMap { [client] credentails -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletServiceError> in
-                client.payloadPublisher(guid: credentails.guid,
-                                        sessionToken: credentails.sessionToken,
-                                        code: code)
+                client.payloadPublisher(
+                    guid: credentails.guid,
+                    sessionToken: credentails.sessionToken,
+                    code: code
+                )
             }
             .flatMap { response -> AnyPublisher<String, TwoFAWalletServiceError> in
                 guard let rawPayload = response.stringRepresentation, !rawPayload.isEmpty else {

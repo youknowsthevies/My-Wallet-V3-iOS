@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import Combine
 @testable import Blockchain
+import Combine
 
 class MockURIHandler: URIHandlingAPI {
     var passthroughSubject = PassthroughSubject<DeeplinkOutcome, AppDeeplinkError>()

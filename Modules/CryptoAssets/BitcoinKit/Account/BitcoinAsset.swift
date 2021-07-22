@@ -112,7 +112,7 @@ final class BitcoinAsset: CryptoAsset {
                 self.repository.defaultAccount
                     .map { ($0, accounts) }
             }
-            .map { (defaultAccount, accounts) -> [SingleAccount] in
+            .map { defaultAccount, accounts -> [SingleAccount] in
                 accounts.map { account in
                     BitcoinCryptoAccount(
                         walletAccount: account,

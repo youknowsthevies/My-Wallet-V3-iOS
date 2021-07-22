@@ -18,8 +18,10 @@ final class OrderUpdateRepository: OrderUpdateRepositoryAPI {
 
     // MARK: - OrderCreationServiceAPI
 
-    func updateOrder(identifier: String,
-                     success: Bool) -> Completable {
+    func updateOrder(
+        identifier: String,
+        success: Bool
+    ) -> Completable {
         client
             .updateOrder(
                 with: identifier,

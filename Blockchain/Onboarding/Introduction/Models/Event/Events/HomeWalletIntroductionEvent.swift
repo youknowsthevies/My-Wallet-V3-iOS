@@ -19,7 +19,8 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
             action: {
                 self.introductionEntry.updateLatestLocation(location)
                 self.selection()
-        })
+            }
+        )
         return .pulse(viewModel)
     }
 
@@ -36,8 +37,10 @@ final class HomeWalletIntroductionEvent: CompletableWalletIntroductionEvent {
         return false
     }
 
-    init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
-         selection: @escaping WalletIntroductionAction) {
+    init(
+        introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
+        selection: @escaping WalletIntroductionAction
+    ) {
         self.introductionRecorder = introductionRecorder
         self.selection = selection
     }

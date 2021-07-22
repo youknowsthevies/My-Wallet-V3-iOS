@@ -9,9 +9,9 @@ struct Event: Codable, Equatable {
     let properties: [String: JSONValue]?
 
     init(title: String, properties: [String: Any?]?) {
-        self.originalTimestamp = Date()
-        self.name = title
-        self.type = .event
+        originalTimestamp = Date()
+        name = title
+        type = .event
         self.properties = properties?.compactMapValues { value -> JSONValue? in
             switch value {
             case let value as String:

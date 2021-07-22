@@ -9,7 +9,7 @@ public struct SavingsAccountLimitsResponse: Decodable {
 
     // MARK: - Properties
 
-   private let limits: [String: SavingsAccountLimits]
+    private let limits: [String: SavingsAccountLimits]
 
     // MARK: - Init
 
@@ -61,8 +61,8 @@ public struct SavingsAccountLimits: Decodable {
     }
 }
 
-public extension SavingsAccountLimits {
-    var lockupDescription: String {
+extension SavingsAccountLimits {
+    public var lockupDescription: String {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day]
         formatter.unitsStyle = .short

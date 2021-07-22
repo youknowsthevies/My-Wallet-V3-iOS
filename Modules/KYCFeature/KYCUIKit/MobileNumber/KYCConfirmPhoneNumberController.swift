@@ -76,13 +76,14 @@ final class KYCConfirmPhoneNumberController: KYCBaseViewController, BottomButton
     // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .phone(user) = model else { return }
+        guard case .phone(let user) = model else { return }
 
         guard let mobile = user.mobile, phoneNumber.count == 0 else { return }
         phoneNumber = mobile.phone
     }
 
     // MARK: Actions
+
     @IBAction func onResendCodeTapped(_ sender: Any) {
         presenter.startVerification(number: phoneNumber)
     }

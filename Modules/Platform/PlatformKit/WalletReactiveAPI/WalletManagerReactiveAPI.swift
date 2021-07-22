@@ -71,5 +71,4 @@ public protocol WalletManagerReactiveAPI {
     /// Reactive wrapper for delegate method `getPrivateKeyPassword`
     /// - Note: Method invoked when second password is required for JS function to complete.
     var getPrivateKeyPassword: AnyPublisher<WalletSuccessCallback, Error> { get }
-
 }

@@ -54,7 +54,7 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
             .other(.tezos),
             .other(.theta)
         ]
-        let enabledCustodial: Result<[String:[String]], FeatureConfigurationError> = featureConfigurator.configuration(for: .custodialOnlyTokens)
+        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator.configuration(for: .custodialOnlyTokens)
         switch enabledCustodial {
         case .failure:
             return []

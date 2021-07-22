@@ -37,15 +37,17 @@ final class RecoverWalletInteractor: RegisterWalletScreenInteracting {
 
     // MARK: - Setup
 
-    init(passphrase: String,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         reachability: InternetReachabilityAPI = InternetReachability(),
-         walletManager: WalletManager = resolve()) {
+    init(
+        passphrase: String,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        reachability: InternetReachabilityAPI = InternetReachability(),
+        walletManager: WalletManager = resolve()
+    ) {
         self.passphrase = passphrase
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability
         self.walletManager = walletManager
-        self.wallet = walletManager.wallet
+        wallet = walletManager.wallet
     }
 
     func prepare() -> Result<Void, Error> {

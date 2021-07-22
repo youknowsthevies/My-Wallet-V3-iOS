@@ -9,20 +9,20 @@ public protocol AnalyticsEvent {
     var type: AnalyticsEventType { get }
 }
 
-public extension AnalyticsEvent {
-    var type: AnalyticsEventType {
+extension AnalyticsEvent {
+    public var type: AnalyticsEventType {
         .firebase
     }
 
-    var timestamp: Date? {
+    public var timestamp: Date? {
         nil
     }
 
-    var name: String {
+    public var name: String {
         (Mirror(reflecting: self).children.first?.label ?? String(describing: self)).camelCaseToSpaceCase()
     }
 
-    var params: [String: Any]? {
+    public var params: [String: Any]? {
         guard type == .nabu else {
             return nil
         }
@@ -49,18 +49,20 @@ public protocol StringRawRepresentable {
     var rawValue: String { get }
 }
 
-fileprivate extension String {
-    var acronymPattern: String {
+extension String {
+    private var acronymPattern: String {
         "([A-Z]+)([A-Z][a-z]|[0-9])"
     }
-    var fullWordsPattern: String {
+
+    private var fullWordsPattern: String {
         "([a-z])([A-Z]|[0-9])"
     }
-    var digitsFirstPattern: String {
+
+    private var digitsFirstPattern: String {
         "([0-9])([A-Z])"
     }
 
-    func camelCaseToSnakeCase() -> String {
+    fileprivate func camelCaseToSnakeCase() -> String {
         let template = "$1_$2"
         return processCamelCaseRegex(pattern: acronymPattern, withTemplate: template)?
             .processCamelCaseRegex(pattern: fullWordsPattern, withTemplate: template)?
@@ -68,7 +70,7 @@ fileprivate extension String {
             .lowercased() ?? lowercased()
     }
 
-    func camelCaseToSpaceCase() -> String {
+    fileprivate func camelCaseToSpaceCase() -> String {
         let template = "$1 $2"
         return capitalizingFirstLetter()
             .processCamelCaseRegex(pattern: acronymPattern, withTemplate: template)?
@@ -76,7 +78,7 @@ fileprivate extension String {
             .processCamelCaseRegex(pattern: digitsFirstPattern, withTemplate: template) ?? self
     }
 
-    private func processCamelCaseRegex(pattern: String, withTemplate: String ) -> String? {
+    private func processCamelCaseRegex(pattern: String, withTemplate: String) -> String? {
         let regex = try? NSRegularExpression(pattern: pattern, options: [])
         let range = NSRange(location: 0, length: count)
         return regex?.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: withTemplate)

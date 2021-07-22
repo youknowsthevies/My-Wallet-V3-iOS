@@ -3,9 +3,9 @@
 import AuthenticationKit
 import Combine
 import CombineExt
+@testable import PlatformKit
 import RxSwift
 import ToolKit
-@testable import PlatformKit
 
 final class MockWalletRepository: WalletRepositoryAPI {
 
@@ -25,6 +25,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     var guid: Single<String?> {
         .just(expectedGuid)
     }
+
     var authenticatorType: Single<WalletAuthenticatorType> { .just(expectedAuthenticatorType) }
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> {
         expectedOfflineTokenResponse.single
@@ -89,7 +90,7 @@ final class MockWalletRepository: WalletRepositoryAPI {
     }
 
     func sync() -> Completable {
-        perform { }
+        perform {}
     }
 
     private func perform(_ operation: @escaping () -> Void) -> Completable {
@@ -146,7 +147,7 @@ extension MockWalletRepository {
     }
 
     func syncPublisher() -> AnyPublisher<Void, PasswordRepositoryError> {
-        perform { }
+        perform {}
     }
 
     func setPublisher(payload: String) -> AnyPublisher<Void, Never> {

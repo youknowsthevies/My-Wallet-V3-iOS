@@ -75,7 +75,7 @@ final class RouterTests: XCTestCase {
         let publisher: AnyPublisher<FlowResult, KYCUIKit.RouterError> = router.presentEmailVerificationIfNeeded(from: mockViewController)
         let cancellable = publisher.sink(
             receiveCompletion: { completion in
-                if case let .failure(theError) = completion {
+                if case .failure(let theError) = completion {
                     error = theError
                 }
                 e.fulfill()

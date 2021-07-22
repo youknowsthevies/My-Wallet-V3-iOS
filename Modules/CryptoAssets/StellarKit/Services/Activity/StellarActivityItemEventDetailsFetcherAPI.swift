@@ -10,8 +10,10 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
     private let repository: StellarWalletAccountRepositoryAPI
     private let operationsService: StellarHistoricalTransactionServiceAPI
 
-    init(repository: StellarWalletAccountRepositoryAPI = resolve(),
-         operationsService: StellarHistoricalTransactionServiceAPI = resolve()) {
+    init(
+        repository: StellarWalletAccountRepositoryAPI = resolve(),
+        operationsService: StellarHistoricalTransactionServiceAPI = resolve()
+    ) {
         self.repository = repository
         self.operationsService = operationsService
     }

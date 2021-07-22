@@ -31,20 +31,27 @@ public class PriceService: PriceServiceAPI {
         price(for: cryptoCurrency, in: fiatValue.currency)
             .map(\.moneyValue)
             .map { $0.fiatValue ?? .zero(currency: fiatValue.currencyType) }
-            .map { MoneyValuePair(fiat: fiatValue,
-                                  priceInFiat: $0,
-                                  cryptoCurrency: cryptoCurrency,
-                                  usesFiatAsBase: usesFiatAsBase) }
+            .map { MoneyValuePair(
+                fiat: fiatValue,
+                priceInFiat: $0,
+                cryptoCurrency: cryptoCurrency,
+                usesFiatAsBase: usesFiatAsBase
+            )
+            }
     }
 
-    public func price(for baseCurrency: Currency,
-                      in quoteCurrency: Currency) -> Single<PriceQuoteAtTime> {
-        self.price(for: baseCurrency, in: quoteCurrency, at: nil)
+    public func price(
+        for baseCurrency: Currency,
+        in quoteCurrency: Currency
+    ) -> Single<PriceQuoteAtTime> {
+        price(for: baseCurrency, in: quoteCurrency, at: nil)
     }
 
-    public func price(for baseCurrency: Currency,
-                      in quoteCurrency: Currency,
-                      at date: Date? = nil) -> Single<PriceQuoteAtTime> {
+    public func price(
+        for baseCurrency: Currency,
+        in quoteCurrency: Currency,
+        at date: Date? = nil
+    ) -> Single<PriceQuoteAtTime> {
         guard baseCurrency.code != quoteCurrency.code else {
             return .just(
                 PriceQuoteAtTime(
@@ -53,8 +60,8 @@ public class PriceService: PriceServiceAPI {
                 )
             )
         }
-        if baseCurrency.isFiatCurrency && quoteCurrency.isFiatCurrency {
-            return self.price(for: FiatCurrency(code: baseCurrency.code)!, in: FiatCurrency(code: quoteCurrency.code)!, at: date)
+        if baseCurrency.isFiatCurrency, quoteCurrency.isFiatCurrency {
+            return price(for: FiatCurrency(code: baseCurrency.code)!, in: FiatCurrency(code: quoteCurrency.code)!, at: date)
         }
 
         var timestamp: UInt64?
@@ -66,9 +73,11 @@ public class PriceService: PriceServiceAPI {
             .map { try PriceQuoteAtTime(response: $0, currency: quoteCurrency) }
     }
 
-    private func price(for baseCurrency: FiatCurrency,
-                       in quoteCurrency: FiatCurrency,
-                       at date: Date? = nil) -> Single<PriceQuoteAtTime> {
+    private func price(
+        for baseCurrency: FiatCurrency,
+        in quoteCurrency: FiatCurrency,
+        at date: Date? = nil
+    ) -> Single<PriceQuoteAtTime> {
         var timestamp: UInt64?
         if let date = date {
             timestamp = UInt64(date.timeIntervalSince1970)
@@ -81,7 +90,7 @@ public class PriceService: PriceServiceAPI {
 
         return Single
             .zip(basePrice, quotePrice)
-            .map { (basePrice, quotePrice) in
+            .map { basePrice, quotePrice in
                 let price = basePrice.price != 0 ? quotePrice.price / basePrice.price : 0
                 return PriceQuoteAtTime(
                     timestamp: basePrice.timestamp,
@@ -90,9 +99,11 @@ public class PriceService: PriceServiceAPI {
             }
     }
 
-    public func priceSeries(within window: PriceWindow,
-                            of baseCurrency: CryptoCurrency,
-                            in quoteCurrency: FiatCurrency) -> Single<HistoricalPriceSeries> {
+    public func priceSeries(
+        within window: PriceWindow,
+        of baseCurrency: CryptoCurrency,
+        in quoteCurrency: FiatCurrency
+    ) -> Single<HistoricalPriceSeries> {
         let start: TimeInterval = window.timeIntervalSince1970(
             cryptoCurrency: baseCurrency,
             calendar: .current,

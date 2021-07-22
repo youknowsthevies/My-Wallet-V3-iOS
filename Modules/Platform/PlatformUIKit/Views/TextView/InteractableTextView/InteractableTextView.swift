@@ -60,7 +60,7 @@ public final class InteractableTextView: UITextView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         setup()
     }
@@ -109,16 +109,16 @@ public final class InteractableTextView: UITextView {
         guard bounds.contains(point) else { return false }
         guard let position = closestPosition(to: point) else { return false }
         guard let range = tokenizer.rangeEnclosingPosition(
-                position,
-                with: .character,
-                inDirection: .layout(.left)
-            ) else { return false }
+            position,
+            with: .character,
+            inDirection: .layout(.left)
+        ) else { return false }
         let startIndex = offset(from: beginningOfDocument, to: range.start)
         return attributedText.attribute(.link, at: startIndex, effectiveRange: nil) != nil
     }
 
     /// Accepts only tap gestures
-    public override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    override public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         gestureRecognizer is UITapGestureRecognizer
     }
 }
@@ -128,10 +128,12 @@ public final class InteractableTextView: UITextView {
 extension InteractableTextView: UITextViewDelegate {
 
     // Makes sure only links are handled
-    public func textView(_ textView: UITextView,
-                         shouldInteractWith URL: URL,
-                         in characterRange: NSRange,
-                         interaction: UITextItemInteraction) -> Bool {
+    public func textView(
+        _ textView: UITextView,
+        shouldInteractWith URL: URL,
+        in characterRange: NSRange,
+        interaction: UITextItemInteraction
+    ) -> Bool {
         guard interaction == .invokeDefaultAction else { return false }
         let title = textView.attributedText.attributedSubstring(from: characterRange).string
         viewModel.tapRelay.accept(TitledLink(title: title, url: URL))

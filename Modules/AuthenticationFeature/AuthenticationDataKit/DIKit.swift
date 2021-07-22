@@ -28,6 +28,5 @@ extension DependencyContainer {
         // MARK: - Repositories
 
         factory { DeviceVerificationRepository() as DeviceVerificationRepositoryAPI }
-
     }
 }

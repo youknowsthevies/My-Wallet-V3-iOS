@@ -5,17 +5,17 @@ import Foundation
 
 /// To regenerate this file use:
 /** ```swift
-let locale = NSLocale(localeIdentifier: "en_US")
-var s = "public enum FiatCurrency: String, Currency, Codable, CaseIterable {"
-for currencyCode in NSLocale.isoCurrencyCodes {
-        if let description = locale.localizedString(forCurrencyCode: currencyCode) {
-            s.append("\n\n\t/// \(description)")
-        }
-    s.append("\n\tcase \(currencyCode)")
-}
-print(s + "\n}")
-```
-*/
+ let locale = NSLocale(localeIdentifier: "en_US")
+ var s = "public enum FiatCurrency: String, Currency, Codable, CaseIterable {"
+ for currencyCode in NSLocale.isoCurrencyCodes {
+         if let description = locale.localizedString(forCurrencyCode: currencyCode) {
+             s.append("\n\n\t/// \(description)")
+         }
+     s.append("\n\tcase \(currencyCode)")
+ }
+ print(s + "\n}")
+ ```
+ */
 
 // swiftlint:disable type_body_length
 
@@ -944,7 +944,7 @@ extension FiatCurrency {
 extension FiatCurrency {
 
     public static let maxDisplayableDecimalPlaces: Int = {
-        Self.allCases.map { $0.maxDisplayableDecimalPlaces }.max() ?? 0
+        Self.allCases.map(\.maxDisplayableDecimalPlaces).max() ?? 0
     }()
 
     /// The code of the currency. e.g `USD`, `GBP`, `EUR`

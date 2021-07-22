@@ -116,7 +116,6 @@ final class FiatCustodialBalanceViewPresenter: Equatable {
             }
             .bindAndCatch(to: currencyNameRelay)
             .disposed(by: disposeBag)
-
     }
 }
 
@@ -130,8 +129,10 @@ extension FiatCustodialBalanceViewPresenter.Descriptors {
     typealias Descriptors = FiatCustodialBalanceViewPresenter.Descriptors
     typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
 
-    static func dashboard(baseAccessibilitySuffix: String = "",
-                          quoteAccessibilitySuffix: String = "") -> Descriptors {
+    static func dashboard(
+        baseAccessibilitySuffix: String = "",
+        quoteAccessibilitySuffix: String = ""
+    ) -> Descriptors {
         Descriptors(
             currencyNameFont: .main(.semibold, 20.0),
             currencyNameFontColor: .textFieldText,
@@ -147,8 +148,10 @@ extension FiatCustodialBalanceViewPresenter.Descriptors {
         )
     }
 
-    static func paymentMethods(baseAccessibilitySuffix: String = "",
-                               quoteAccessibilitySuffix: String = "") -> Descriptors {
+    static func paymentMethods(
+        baseAccessibilitySuffix: String = "",
+        quoteAccessibilitySuffix: String = ""
+    ) -> Descriptors {
         Descriptors(
             currencyNameFont: .main(.semibold, 16),
             currencyNameFontColor: .textFieldText,

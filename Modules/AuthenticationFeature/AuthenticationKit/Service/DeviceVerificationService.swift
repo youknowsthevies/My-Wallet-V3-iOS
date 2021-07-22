@@ -21,7 +21,7 @@ public protocol DeviceVerificationServiceAPI {
     /// - Parameters: emailAddress: The email address of the user
     /// - Returns: A combine `Publisher` that emits an EmptyNetworkResponse on success or NetworkError on failure
     func sendDeviceVerificationEmail(to emailAddress: String)
-    -> AnyPublisher<Void, DeviceVerificationServiceError>
+        -> AnyPublisher<Void, DeviceVerificationServiceError>
 
     /// Authorize the login to the associated email identified by the email code. The email code is received by decrypting the base64 information encrypted in the magic link from the device verification email
     /// - Parameters: emailCode: The email code for the authorization
@@ -44,9 +44,11 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
 
     // MARK: - Setup
 
-    public init(deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
-                sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
-                recaptchaService: GoogleRecaptchaServiceAPI = resolve()) {
+    public init(
+        deviceVerificationRepository: DeviceVerificationRepositoryAPI = resolve(),
+        sessionTokenRepository: SessionTokenRepositoryAPI = resolve(),
+        recaptchaService: GoogleRecaptchaServiceAPI = resolve()
+    ) {
         self.deviceVerificationRepository = deviceVerificationRepository
         self.sessionTokenRepository = sessionTokenRepository
         self.recaptchaService = recaptchaService
@@ -89,14 +91,15 @@ public final class DeviceVerificationService: DeviceVerificationServiceAPI {
         Deferred {
             Future { promise in
                 guard let base64LastPath = deeplink.absoluteString.components(separatedBy: "/").last?.paddedBase64,
-                      let jsonData = Data(base64Encoded: base64LastPath, options: .ignoreUnknownCharacters) else {
+                      let jsonData = Data(base64Encoded: base64LastPath, options: .ignoreUnknownCharacters)
+                else {
                     promise(.failure(.failToDecodeBase64Component))
                     return
                 }
                 do {
                     let walletInfo = try JSONDecoder().decode(WalletInfo.self, from: jsonData)
                     promise(.success(walletInfo))
-                } catch let error {
+                } catch {
                     promise(.failure(.failToDecodeToWalletInfo(error)))
                 }
             }

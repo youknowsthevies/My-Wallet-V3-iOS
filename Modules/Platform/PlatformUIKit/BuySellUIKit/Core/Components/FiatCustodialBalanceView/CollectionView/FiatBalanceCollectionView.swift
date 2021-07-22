@@ -16,10 +16,12 @@ final class FiatBalanceCollectionView: UICollectionView {
         didSet {
             guard let presenter = presenter else { return }
             presenter.presenters
-                .drive(rx.items(
-                    cellIdentifier: FiatCustodialBalanceCollectionViewCell.objectName,
-                    cellType: FiatCustodialBalanceCollectionViewCell.self),
-                       curriedArgument: { _, presenter, cell in
+                .drive(
+                    rx.items(
+                        cellIdentifier: FiatCustodialBalanceCollectionViewCell.objectName,
+                        cellType: FiatCustodialBalanceCollectionViewCell.self
+                    ),
+                    curriedArgument: { _, presenter, cell in
                         cell.presenter = presenter
                     }
                 )

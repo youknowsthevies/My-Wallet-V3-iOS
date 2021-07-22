@@ -15,9 +15,9 @@ class FirebaseAnalyticsServiceProvider: AnalyticsServiceProviderAPI {
         case sunriver
     }
 
-    private struct FirebaseConstants {
+    private enum FirebaseConstants {
 
-        struct MaxLength {
+        enum MaxLength {
 
             static let key = 40
             static let value = 100

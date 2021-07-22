@@ -43,7 +43,7 @@ final class InternalFeatureFlagViewModel {
 
         items = action
             .startWith(.load(initialItems))
-            .scan(into: [InternalFeatureItem](), accumulator: { (current, action) in
+            .scan(into: [InternalFeatureItem](), accumulator: { current, action in
                 switch action {
                 case .load(let items):
                     current = items

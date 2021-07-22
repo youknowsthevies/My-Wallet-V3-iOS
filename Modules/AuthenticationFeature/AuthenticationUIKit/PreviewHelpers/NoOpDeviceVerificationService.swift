@@ -8,7 +8,7 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
 
     func authorizeLogin(emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         Deferred {
-            Future { (_) in
+            Future { _ in
                 // no-op
             }
         }
@@ -19,7 +19,7 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
         to emailAddress: String
     ) -> AnyPublisher<Void, DeviceVerificationServiceError> {
         Deferred {
-            Future { (_) in
+            Future { _ in
                 // no-op
             }
         }
@@ -28,7 +28,7 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
 
     func extractWalletInfoFromDeeplink(url deeplink: URL) -> AnyPublisher<WalletInfo, WalletInfoError> {
         Deferred {
-            Future { (_) in
+            Future { _ in
                 // no-op
             }
         }

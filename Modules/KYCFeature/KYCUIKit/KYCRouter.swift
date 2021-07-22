@@ -140,13 +140,16 @@ final class KYCRouter: KYCRouterAPI {
     func start(parentFlow: KYCParentFlow) {
         start(tier: .tier2, parentFlow: parentFlow, from: nil)
     }
+
     func start(tier: KYC.Tier, parentFlow: KYCParentFlow) {
         start(tier: tier, parentFlow: parentFlow, from: nil)
     }
 
-    func start(tier: KYC.Tier,
-               parentFlow: KYCParentFlow,
-               from viewController: UIViewController?) {
+    func start(
+        tier: KYC.Tier,
+        parentFlow: KYCParentFlow,
+        from viewController: UIViewController?
+    ) {
         self.parentFlow = parentFlow
         guard let viewController = viewController ?? UIApplication.shared.topMostViewController else {
             Logger.shared.warning("Cannot start KYC. rootViewController is nil.")
@@ -186,7 +189,7 @@ final class KYCRouter: KYCRouterAPI {
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)
             .hideLoaderOnDisposal(loader: loadingViewPresenter)
-            .subscribe(onNext: { [weak self] (user, tiersTuple) in
+            .subscribe(onNext: { [weak self] user, tiersTuple in
                 let (tiersResponse, isSDDEligible, isSDDVerified) = tiersTuple
                 self?.pager = KYCPager(tier: tier, tiersResponse: tiersResponse)
                 Logger.shared.debug("Got user with ID: \(user.personalDetails.identifier ?? "")")
@@ -247,7 +250,7 @@ final class KYCRouter: KYCRouterAPI {
         dismiss { [tiersService, kycFinishedRelay, disposeBag] in
             tiersService.fetchTiers()
                 .asObservable()
-                .map { $0.latestApprovedTier }
+                .map(\.latestApprovedTier)
                 .catchErrorJustReturn(.tier0)
                 .bindAndCatch(to: kycFinishedRelay)
                 .disposed(by: disposeBag)
@@ -617,10 +620,10 @@ final class KYCRouter: KYCRouterAPI {
     }
 }
 
-fileprivate extension KYCPageType {
+extension KYCPageType {
 
     /// The page type the user should be placed in given the information they have provided
-    static func pageType(for user: NabuUser, tiersResponse: KYC.UserTiers, latestPage: KYCPageType? = nil) -> KYCPageType? {
+    fileprivate static func pageType(for user: NabuUser, tiersResponse: KYC.UserTiers, latestPage: KYCPageType? = nil) -> KYCPageType? {
         // Note: latestPage is only used by tier 2 flow, for tier 1, we need to infer the page,
         // because the user may need to select the country again.
         let tier = user.tiers?.selected ?? .tier1

@@ -14,7 +14,7 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
     /// at the moment.
     public enum ClientError: Error {
 
-        private struct RawErrorSubstring {
+        private enum RawErrorSubstring {
             static let accountLocked = "locked"
             static let wrongCode = "attempts left"
         }
@@ -51,17 +51,21 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = TwoFARequestBuilder(requestBuilder: requestBuilder)
     }
 
     // MARK: - API
 
-    public func payload(guid: String,
-                        sessionToken: String,
-                        code: String) -> Single<WalletPayloadWrapper> {
+    public func payload(
+        guid: String,
+        sessionToken: String,
+        code: String
+    ) -> Single<WalletPayloadWrapper> {
         let request = requestBuilder.build(
             guid: guid,
             sessionToken: sessionToken,
@@ -115,7 +119,8 @@ extension TwoFAWalletClient {
                 case .rawServerError(let response):
                     guard let payloadData = response.payload,
                           let payload = String(data: payloadData, encoding: .utf8),
-                          let clientError = ClientError(plainServerError: payload) else {
+                          let clientError = ClientError(plainServerError: payload)
+                    else {
                         return .failure(.networkError(error))
                     }
                     switch clientError {
@@ -138,7 +143,7 @@ extension TwoFAWalletClient {
 
     private struct TwoFARequestBuilder {
 
-        private let pathComponents = [ "wallet" ]
+        private let pathComponents = ["wallet"]
 
         private enum HeaderKey: String {
             case authorization = "Authorization"
@@ -155,7 +160,7 @@ extension TwoFAWalletClient {
             init(guid: String, payload: String) {
                 self.guid = guid
                 self.payload = payload
-                self.length = payload.count
+                length = payload.count
             }
         }
 

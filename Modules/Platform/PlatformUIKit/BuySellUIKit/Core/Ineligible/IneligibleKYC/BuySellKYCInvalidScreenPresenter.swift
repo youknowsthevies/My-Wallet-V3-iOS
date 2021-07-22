@@ -90,7 +90,7 @@ final class BuySellKYCInvalidScreenPresenter {
 
         contactSupportButtonViewModel
             .tapRelay
-            .bindAndCatch(weak: self) { (_) in
+            .bindAndCatch(weak: self) { _ in
                 routerInteractor.nextFromVerificationFailed()
             }
             .disposed(by: disposeBag)

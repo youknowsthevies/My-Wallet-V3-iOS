@@ -13,13 +13,13 @@ protocol WalletSecondPasswordDelegate: AnyObject {
 
 extension JSValue: WalletSuccessCallback {
     public func success(string: String) {
-        self.call(withArguments: [string])
+        call(withArguments: [string])
     }
 }
 
 extension JSValue: WalletDismissCallback {
     public func dismiss() {
-        guard !self.isUndefined && !self.isNull else { return }
-        self.call(withArguments: nil)
+        guard !isUndefined, !isNull else { return }
+        call(withArguments: nil)
     }
 }

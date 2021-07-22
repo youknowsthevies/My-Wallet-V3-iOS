@@ -28,13 +28,16 @@ final class PinScreenViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    init(using presenter: PinScreenPresenter,
-         alertViewPresenter: AlertViewPresenter = .shared) {
+    init(
+        using presenter: PinScreenPresenter,
+        alertViewPresenter: AlertViewPresenter = .shared
+    ) {
         self.presenter = presenter
         self.alertViewPresenter = alertViewPresenter
         super.init(nibName: String(describing: PinScreenViewController.self), bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -133,10 +136,12 @@ final class PinScreenViewController: BaseScreenViewController {
         serverStatusContainerView.spacing = 8
         serverStatusContainerView.backgroundColor = UIColor.darkBlueBackground
         serverStatusContainerView.isLayoutMarginsRelativeArrangement = true
-        serverStatusContainerView.directionalLayoutMargins = .init(top: Spacing.inner,
-                                                                   leading: Spacing.inner,
-                                                                   bottom: Spacing.inner,
-                                                                   trailing: Spacing.inner)
+        serverStatusContainerView.directionalLayoutMargins = .init(
+            top: Spacing.inner,
+            leading: Spacing.inner,
+            bottom: Spacing.inner,
+            trailing: Spacing.inner
+        )
         view.addSubview(serverStatusContainerView)
 
         serverStatusTitleLabel.font = UIFont.main(.bold, 16)
@@ -153,7 +158,7 @@ final class PinScreenViewController: BaseScreenViewController {
         serverStatusContainerView.layoutToSuperview(.top, relation: .equal, usesSafeAreaLayoutGuide: true, offset: 10)
         serverStatusContainerView.layoutToSuperview(.leading, relation: .equal, usesSafeAreaLayoutGuide: true, offset: 10)
         serverStatusContainerView.layoutToSuperview(.trailing, relation: .equal, usesSafeAreaLayoutGuide: true, offset: -10)
-        securePinView.layout(edge: .top, to: .bottom, of: serverStatusContainerView, relation: .equal, offset:  18, priority: .required)
+        securePinView.layout(edge: .top, to: .bottom, of: serverStatusContainerView, relation: .equal, offset: 18, priority: .required)
     }
 
     private func prepareForAppearance() {
@@ -162,12 +167,14 @@ final class PinScreenViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         parent?.view.backgroundColor = presenter.backgroundColor
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleView
 
-        // Subscribe to `isProcessing` indicates whether something is processing in the background 
+        // Subscribe to `isProcessing` indicates whether something is processing in the background
         presenter.isProcessing
             .bind { [weak self] isProcessing in
                 guard let self = self else { return }
@@ -246,14 +253,14 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
         case .incorrectPin(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining-1))
+            showInlineError(with: message, for: TimeInterval(remaining - 1))
             // TODO: Replace this with a custom error type
             if remaining == 300 {
                 displayTooManyAttemptsAlert()
             }
         case .backoff(let message, let remaining):
             presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining-1))
+            showInlineError(with: message, for: TimeInterval(remaining - 1))
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):

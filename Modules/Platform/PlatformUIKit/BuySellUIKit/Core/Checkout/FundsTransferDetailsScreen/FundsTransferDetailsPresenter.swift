@@ -54,11 +54,13 @@ final class FundsTransferDetailScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Setup
 
-    init(webViewRouter: WebViewRouterAPI,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         interactor: FundsTransferDetailsInteractorAPI,
-         stateService: StateServiceAPI,
-         isOriginDeposit: Bool) {
+    init(
+        webViewRouter: WebViewRouterAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        interactor: FundsTransferDetailsInteractorAPI,
+        stateService: StateServiceAPI,
+        isOriginDeposit: Bool
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.webViewRouter = webViewRouter
         self.interactor = interactor
@@ -145,9 +147,11 @@ extension FundsTransferDetailScreenPresenter {
         let noticeViewModels: [NoticeViewModel]
         let termsTextViewModel: InteractableTextViewModel!
 
-        init(account: PaymentAccountDescribing,
-             isOriginDeposit: Bool,
-             analyticsRecorder: AnalyticsEventRecorderAPI) {
+        init(
+            account: PaymentAccountDescribing,
+            isOriginDeposit: Bool,
+            analyticsRecorder: AnalyticsEventRecorderAPI
+        ) {
 
             typealias FundsString = LocalizedString.Funds
 
@@ -188,46 +192,46 @@ extension FundsTransferDetailScreenPresenter {
             }
 
             noticeViewModels = [
-                    (
-                        title: FundsString.Notice.BankTransferOnly.title,
-                        description: FundsString.Notice.BankTransferOnly.description,
-                        image: ImageResource.local(name: "icon-bank", bundle: .platformUIKit)
+                (
+                    title: FundsString.Notice.BankTransferOnly.title,
+                    description: FundsString.Notice.BankTransferOnly.description,
+                    image: ImageResource.local(name: "icon-bank", bundle: .platformUIKit)
+                ),
+                (
+                    title: FundsString.Notice.ProcessingTime.title,
+                    description: processingTimeNoticeDescription,
+                    image: ImageResource.local(name: "clock-icon", bundle: .platformUIKit)
+                )
+            ]
+            .map {
+                NoticeViewModel(
+                    imageViewContent: ImageViewContent(
+                        imageResource: $0.image,
+                        renderingMode: .template(.titleText)
                     ),
-                    (
-                        title: FundsString.Notice.ProcessingTime.title,
-                        description: processingTimeNoticeDescription,
-                        image: ImageResource.local(name: "clock-icon", bundle: .platformUIKit)
-                    )
-                ]
-                .map {
-                    NoticeViewModel(
-                        imageViewContent: ImageViewContent(
-                            imageResource: $0.image,
-                            renderingMode: .template(.titleText)
+                    labelContents: [
+                        LabelContent(
+                            text: $0.title,
+                            font: .main(.semibold, 12),
+                            color: .titleText
                         ),
-                        labelContents: [
-                            LabelContent(
-                                text: $0.title,
-                                font: .main(.semibold, 12),
-                                color: .titleText
-                            ),
-                            LabelContent(
-                                text: $0.description,
-                                font: .main(.medium, 12),
-                                color: .descriptionText
-                            )
-                        ],
-                        verticalAlignment: .top
-                    )
-                }
+                        LabelContent(
+                            text: $0.description,
+                            font: .main(.medium, 12),
+                            color: .descriptionText
+                        )
+                    ],
+                    verticalAlignment: .top
+                )
+            }
         }
     }
 }
 
-private extension Array where Element == PaymentAccountProperty.Field {
+extension Array where Element == PaymentAccountProperty.Field {
     private typealias AccessibilityId = Accessibility.Identifier.SimpleBuy.TransferDetails
 
-    func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {
+    fileprivate func transferDetailsCellsPresenting(analyticsRecorder: AnalyticsEventRecorderAPI) -> [LineItemCellPresenting] {
 
         func isCopyable(field: TransactionalLineItem) -> Bool {
             switch field {

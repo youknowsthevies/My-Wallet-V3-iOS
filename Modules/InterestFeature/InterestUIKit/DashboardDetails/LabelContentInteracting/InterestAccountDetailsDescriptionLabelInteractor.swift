@@ -18,7 +18,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
             service
                 .details(for: cryptoCurrency)
                 .asObservable()
-                .map { $0.value }
+                .map(\.value)
                 .compactMap { $0?.totalInterest }
                 .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
@@ -41,8 +41,10 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(service: SavingAccountServiceAPI,
-             cryptoCurrency: CryptoCurrency) {
+        init(
+            service: SavingAccountServiceAPI,
+            cryptoCurrency: CryptoCurrency
+        ) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
@@ -54,7 +56,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
             service
                 .details(for: cryptoCurrency)
                 .asObservable()
-                .map { $0.value }
+                .map(\.value)
                 .compactMap { $0?.pendingInterest }
                 .compactMap { CryptoValue.create(minor: $0, currency: self.cryptoCurrency) }
                 .map { $0.toDisplayString(includeSymbol: true) }
@@ -77,8 +79,10 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(service: SavingAccountServiceAPI,
-             cryptoCurrency: CryptoCurrency) {
+        init(
+            service: SavingAccountServiceAPI,
+            cryptoCurrency: CryptoCurrency
+        ) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
@@ -90,7 +94,7 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
             service
                 .limits(for: cryptoCurrency)
                 .asObservable()
-                .map { $0.value }
+                .map(\.value)
                 .compactMap { $0?.lockupDescription }
                 .map { .loaded(next: .init(text: $0)) }
                 .bindAndCatch(to: stateRelay)
@@ -111,8 +115,10 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(service: SavingAccountServiceAPI,
-             cryptoCurrency: CryptoCurrency) {
+        init(
+            service: SavingAccountServiceAPI,
+            cryptoCurrency: CryptoCurrency
+        ) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
@@ -145,8 +151,10 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(service: SavingAccountServiceAPI,
-             cryptoCurrency: CryptoCurrency) {
+        init(
+            service: SavingAccountServiceAPI,
+            cryptoCurrency: CryptoCurrency
+        ) {
             self.service = service
             self.cryptoCurrency = cryptoCurrency
         }
@@ -181,8 +189,10 @@ final class InterestAccountDetailsDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(date: Date = Date(),
-             cryptoCurrency: CryptoCurrency) {
+        init(
+            date: Date = Date(),
+            cryptoCurrency: CryptoCurrency
+        ) {
             self.date = date
             self.cryptoCurrency = cryptoCurrency
         }

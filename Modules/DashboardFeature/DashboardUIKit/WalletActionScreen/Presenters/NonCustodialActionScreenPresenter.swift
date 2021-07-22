@@ -58,10 +58,12 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Setup
 
-    init(using interactor: WalletActionScreenInteracting,
-         stateService: NonCustodialActionStateServiceAPI,
-         featureConfigurator: FeatureConfiguring = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        using interactor: WalletActionScreenInteracting,
+        stateService: NonCustodialActionStateServiceAPI,
+        featureConfigurator: FeatureConfiguring = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.interactor = interactor
         self.analyticsRecorder = analyticsRecorder
         let currency = interactor.currency
@@ -72,7 +74,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
         assetBalanceViewPresenter = CurrentBalanceCellPresenter(
             interactor: interactor.balanceCellInteractor,
             descriptionValue: descriptionValue,
-            currency:  interactor.currency,
+            currency: interactor.currency,
             titleAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.titleValue)",
             descriptionAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.descriptionValue)",
             pendingAccessibilitySuffix: "\(Accessibility.Identifier.DashboardDetails.CurrentBalanceCell.pendingValue)",
@@ -87,7 +89,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                 .just([])
             }
             .map { [assetBalanceViewPresenter] presenters -> [WalletActionCellType] in
-                 [.balance(assetBalanceViewPresenter)] +
+                [.balance(assetBalanceViewPresenter)] +
                     presenters.map { WalletActionCellType.default($0) }
             }
             .map { cellTypes in
@@ -99,7 +101,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
         selectionRelay
             .bind { model in
-                guard case let .default(presenter) = model else { return }
+                guard case .default(let presenter) = model else { return }
                 switch presenter.action {
                 case .activity:
                     stateService.selectionRelay.accept(.next(.activity))
@@ -130,8 +132,8 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
     }
 }
 
-fileprivate extension AssetAction {
-    var walletAction: WalletAction {
+extension AssetAction {
+    fileprivate var walletAction: WalletAction {
         switch self {
         case .viewActivity:
             return .activity

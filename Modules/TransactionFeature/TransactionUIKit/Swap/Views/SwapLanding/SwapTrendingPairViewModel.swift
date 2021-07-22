@@ -19,7 +19,7 @@ struct SwapTrendingPairViewModel {
 
     init(trendingPair: SwapTrendingPair) {
         self.trendingPair = trendingPair
-        self.titleLabel = .init(
+        titleLabel = .init(
             text: "\(LocalizationConstants.Swap.swap) \(trendingPair.sourceAccount.currencyType.name)",
             font: .main(.semibold, 16.0),
             color: .textFieldText,
@@ -27,7 +27,7 @@ struct SwapTrendingPairViewModel {
             accessibility: .none
         )
 
-        self.subtitleLabel = .init(
+        subtitleLabel = .init(
             text: "\(LocalizationConstants.Swap.receive) \(trendingPair.destinationAccount.currencyType.name)",
             font: .main(.medium, 14.0),
             color: .descriptionText,

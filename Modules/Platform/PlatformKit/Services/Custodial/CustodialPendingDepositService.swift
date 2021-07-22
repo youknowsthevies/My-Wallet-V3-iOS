@@ -12,10 +12,12 @@ struct CreatePendingDepositRequestBody: Encodable {
     let txHash: String
     let product: String
 
-    init(value: MoneyValue,
-         destination: String,
-         transactionHash: String,
-         product: String) {
+    init(
+        value: MoneyValue,
+        destination: String,
+        transactionHash: String,
+        product: String
+    ) {
         currency = value.currencyCode
         amount = value.value.amount.description
         depositAddress = destination
@@ -30,10 +32,12 @@ protocol CustodialPendingDepositClientAPI: AnyObject {
 
 public protocol CustodialPendingDepositServiceAPI: AnyObject {
 
-    func createPendingDeposit(value: MoneyValue,
-                              destination: String,
-                              transactionHash: String,
-                              product: String) -> Completable
+    func createPendingDeposit(
+        value: MoneyValue,
+        destination: String,
+        transactionHash: String,
+        product: String
+    ) -> Completable
 }
 
 final class CustodialPendingDepositService: CustodialPendingDepositServiceAPI {
@@ -46,10 +50,12 @@ final class CustodialPendingDepositService: CustodialPendingDepositServiceAPI {
         self.client = client
     }
 
-    func createPendingDeposit(value: MoneyValue,
-                              destination: String,
-                              transactionHash: String,
-                              product: String) -> Completable {
+    func createPendingDeposit(
+        value: MoneyValue,
+        destination: String,
+        transactionHash: String,
+        product: String
+    ) -> Completable {
         let body = CreatePendingDepositRequestBody(
             value: value,
             destination: destination,

@@ -81,7 +81,7 @@ public class BottomAlertSheet: UIView {
         return view
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
     }
@@ -112,14 +112,14 @@ public class BottomAlertSheet: UIView {
             attributes: [
                 .font: titleFont()
             ]
-            ).heightForWidth(width: adjustedWidth)
+        ).heightForWidth(width: adjustedWidth)
 
         let subtitleHeight = NSAttributedString(
             string: model.subtitle,
             attributes: [
                 .font: subtitleFont()
             ]
-            ).heightForWidth(width: adjustedWidth)
+        ).heightForWidth(width: adjustedWidth)
 
         return topPadding +
             bottomPadding +
@@ -251,7 +251,7 @@ public class BottomAlertSheet: UIView {
         )
     }
 
-    public override func didMoveToWindow() {
+    override public func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil {
             observeCenter()
@@ -265,7 +265,7 @@ public class BottomAlertSheet: UIView {
             return
         }
         observer?.invalidate()
-        observer = observe(\.center, options: [.new]) { [weak self] (_, change) in
+        observer = observe(\.center, options: [.new]) { [weak self] _, change in
             guard let self = self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
@@ -338,5 +338,4 @@ public class BottomAlertSheet: UIView {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         return tap
     }()
-
 }

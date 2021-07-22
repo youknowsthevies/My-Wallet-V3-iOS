@@ -6,4 +6,4 @@ public protocol Pasteboarding: AnyObject {
     var string: String? { get set }
 }
 
-extension UIPasteboard: Pasteboarding { }
+extension UIPasteboard: Pasteboarding {}

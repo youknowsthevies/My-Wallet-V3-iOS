@@ -11,8 +11,8 @@ extension AnalyticsEvents {
             "btc_history_error"
         }
 
-        var params: [String : String]? {
-            if case let .btcHistoryError(errorMessage) = self {
+        var params: [String: String]? {
+            if case .btcHistoryError(let errorMessage) = self {
                 return ["error": errorMessage]
             }
             return nil

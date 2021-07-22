@@ -7,6 +7,6 @@ extension String {
     }
 
     mutating func capitalingFirstLetter() {
-        self = self.capitalizeFirstLetter
+        self = capitalizeFirstLetter
     }
 }

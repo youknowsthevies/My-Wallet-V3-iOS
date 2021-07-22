@@ -8,10 +8,10 @@ public protocol CryptoAccount: SingleAccount {
     var feeAsset: CryptoCurrency? { get }
 }
 
-public extension CryptoAccount {
-    var feeAsset: CryptoCurrency? { nil }
+extension CryptoAccount {
+    public var feeAsset: CryptoCurrency? { nil }
 
-    var currencyType: CurrencyType {
+    public var currencyType: CurrencyType {
         asset.currency
     }
 }

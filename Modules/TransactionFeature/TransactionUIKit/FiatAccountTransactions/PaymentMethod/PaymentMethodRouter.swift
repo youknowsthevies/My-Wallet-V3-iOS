@@ -9,7 +9,8 @@ protocol PaymentMethodInteractable: Interactable {
 }
 
 protocol PaymentMethodViewControllable: ViewControllable,
-                                        PaymentMethodPresentable {
+    PaymentMethodPresentable
+{
     // TODO: Declare methods the router invokes to manipulate the view hierarchy.
 }
 

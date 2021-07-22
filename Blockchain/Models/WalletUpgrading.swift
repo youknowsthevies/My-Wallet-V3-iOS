@@ -39,8 +39,10 @@ final class WalletUpgrading: WalletUpgradingAPI {
 
     // MARK: Init
 
-    init(walletManager: WalletManager = .shared,
-         settings: SettingsServiceAPI = resolve()) {
+    init(
+        walletManager: WalletManager = .shared,
+        settings: SettingsServiceAPI = resolve()
+    ) {
         self.settings = settings
         self.walletManager = walletManager
     }

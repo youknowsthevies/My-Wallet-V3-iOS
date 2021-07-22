@@ -16,9 +16,8 @@ struct Passphrase: LosslessStringConvertible, RawRepresentable {
     }
 
     init?(_ description: String) {
-        self.rawValue = description
+        rawValue = description
     }
-
 }
 
 struct Words {
@@ -36,7 +35,6 @@ struct Words {
     init(words: String) throws {
         try self.init(words: words.components(separatedBy: " "))
     }
-
 }
 
 struct Mnemonic {
@@ -87,5 +85,4 @@ struct Mnemonic {
         let entropy = Entropy.create(size: strength.rawValue)
         return try Mnemonic(entropy: entropy, passphrase: passphrase)
     }
-
 }

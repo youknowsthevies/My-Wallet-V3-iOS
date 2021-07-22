@@ -70,8 +70,9 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
             return nil
         }
         guard let data = result.data(using: .utf8),
-            let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-                return nil
+              let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
+            return nil
         }
         return dictionary
     }
@@ -97,8 +98,9 @@ extension Wallet: LegacyBitcoinCashWalletProtocol {
             return nil
         }
         guard let data = result.data(using: .utf8),
-            let dictionary = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
-                return nil
+              let dictionary = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
+        else {
+            return nil
         }
         return dictionary
     }

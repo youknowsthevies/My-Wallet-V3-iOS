@@ -29,9 +29,11 @@ class BiometrySwitchViewInteractor: SwitchViewInteracting {
     private let disposeBag = DisposeBag()
     private let provider: BiometryProviding
 
-    init(provider: BiometryProviding,
-         authenticationCoordinator: AuthenticationCoordinating,
-         settingsAuthenticating: AppSettingsAuthenticating) {
+    init(
+        provider: BiometryProviding,
+        authenticationCoordinator: AuthenticationCoordinating,
+        settingsAuthenticating: AppSettingsAuthenticating
+    ) {
         self.provider = provider
         self.settingsAuthenticating = settingsAuthenticating
 

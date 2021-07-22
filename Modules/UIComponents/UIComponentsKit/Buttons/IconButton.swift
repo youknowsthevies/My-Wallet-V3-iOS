@@ -39,7 +39,7 @@ public struct IconButton: View {
     public init(title: String, icon: Image, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
         self.icon = icon
-        self._loading = loading
+        _loading = loading
         self.action = action
     }
 

@@ -32,6 +32,7 @@ public final class AnnouncementMiniCardView: UIView, AnnouncementCardViewConform
         setup()
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is not implemented")
     }

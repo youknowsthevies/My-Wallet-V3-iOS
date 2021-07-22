@@ -15,9 +15,11 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     var mockEncryptedPinPassword: String?
     var mockPinKey: String?
 
-    override init(enabledCurrenciesService: EnabledCurrenciesServiceAPI,
-                  keychainItemWrapper: KeychainItemWrapping,
-                  legacyPasswordProvider: LegacyPasswordProviding) {
+    override init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI,
+        keychainItemWrapper: KeychainItemWrapping,
+        legacyPasswordProvider: LegacyPasswordProviding
+    ) {
         super.init()
     }
 

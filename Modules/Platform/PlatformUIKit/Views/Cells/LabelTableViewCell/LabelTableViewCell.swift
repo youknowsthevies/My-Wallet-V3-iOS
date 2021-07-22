@@ -39,12 +39,12 @@ public final class LabelTableViewCell: UITableViewCell {
     fileprivate let titleLabel: UILabel = .init()
     fileprivate var titleShimmeringView: ShimmeringView!
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         content = .empty
     }
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         build()
     }
@@ -72,9 +72,9 @@ public final class LabelTableViewCell: UITableViewCell {
     }
 }
 
-fileprivate extension Reactive where Base: LabelTableViewCell {
+extension Reactive where Base: LabelTableViewCell {
 
-    var titleContent: Binder<LabelContent.State.Presentation> {
+    fileprivate var titleContent: Binder<LabelContent.State.Presentation> {
         Binder(base) { view, state in
             switch state {
             case .loading:

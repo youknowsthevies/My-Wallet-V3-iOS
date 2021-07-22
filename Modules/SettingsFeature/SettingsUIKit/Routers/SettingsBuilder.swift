@@ -14,8 +14,10 @@ public final class SettingsBuilder: SettingsBuilding {
     private let cardDeletionService: PaymentMethodDeletionServiceAPI
     private let beneficiariesService: BeneficiariesServiceAPI
 
-    public init(cardDeletionService: PaymentMethodDeletionServiceAPI = resolve(),
-                beneficiariesService: BeneficiariesServiceAPI = resolve()) {
+    public init(
+        cardDeletionService: PaymentMethodDeletionServiceAPI = resolve(),
+        beneficiariesService: BeneficiariesServiceAPI = resolve()
+    ) {
         self.cardDeletionService = cardDeletionService
         self.beneficiariesService = beneficiariesService
     }
@@ -44,9 +46,11 @@ public final class SettingsBuilder: SettingsBuilding {
         )
     }
 
-    private func removePaymentMethodViewController(buttonLocalizedString: String,
-                                                   removalData: PaymentMethodRemovalData,
-                                                   deletionService: PaymentMethodDeletionServiceAPI) -> UIViewController {
+    private func removePaymentMethodViewController(
+        buttonLocalizedString: String,
+        removalData: PaymentMethodRemovalData,
+        deletionService: PaymentMethodDeletionServiceAPI
+    ) -> UIViewController {
         let interactor = RemovePaymentMethodScreenInteractor(
             data: removalData,
             deletionService: deletionService

@@ -8,18 +8,26 @@ extension AnalyticsEvents.New {
 
         public var type: AnalyticsEventType { .nabu }
 
-        case sellAmountEntered(fromAccountType: FromAccountType,
-                               inputAmount: Double,
-                               inputCurrency: String,
-                               outputCurrency: String)
-        case sellAmountMaxClicked(fromAccountType: FromAccountType,
-                                  inputCurrency: String,
-                                  outputCurrency: String)
-        case sellAmountMinClicked(fromAccountType: FromAccountType,
-                                  inputCurrency: String,
-                                  outputCurrency: String)
-        case sellFromSelected(fromAccountType: FromAccountType,
-                              inputCurrency: String)
+        case sellAmountEntered(
+            fromAccountType: FromAccountType,
+            inputAmount: Double,
+            inputCurrency: String,
+            outputCurrency: String
+        )
+        case sellAmountMaxClicked(
+            fromAccountType: FromAccountType,
+            inputCurrency: String,
+            outputCurrency: String
+        )
+        case sellAmountMinClicked(
+            fromAccountType: FromAccountType,
+            inputCurrency: String,
+            outputCurrency: String
+        )
+        case sellFromSelected(
+            fromAccountType: FromAccountType,
+            inputCurrency: String
+        )
 
         public enum FromAccountType: String, StringRawRepresentable {
             case savings = "SAVINGS"

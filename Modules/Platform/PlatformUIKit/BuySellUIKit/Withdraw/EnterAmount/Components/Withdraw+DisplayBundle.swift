@@ -11,8 +11,10 @@ struct DisplayBundle {
         public let digitPadTopSeparator: Color
         public let bottomAuxiliaryItemSeparator: Color
 
-        public init(digitPadTopSeparator: Color,
-                    bottomAuxiliaryItemSeparator: Color) {
+        public init(
+            digitPadTopSeparator: Color,
+            bottomAuxiliaryItemSeparator: Color
+        ) {
             self.digitPadTopSeparator = digitPadTopSeparator
             self.bottomAuxiliaryItemSeparator = bottomAuxiliaryItemSeparator
         }
@@ -27,13 +29,15 @@ struct DisplayBundle {
         public let confirmTapped: (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent
         public let sourceAccountChanged: (String) -> AnalyticsEvent
 
-        public init(didAppear: AnalyticsEvent,
-                    minTapped: AnalyticsEvent,
-                    maxTapped: AnalyticsEvent,
-                    confirmSuccess: AnalyticsEvent,
-                    confirmFailure: AnalyticsEvent,
-                    confirmTapped: @escaping (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent,
-                    sourceAccountChanged: @escaping (String) -> AnalyticsEvent) {
+        public init(
+            didAppear: AnalyticsEvent,
+            minTapped: AnalyticsEvent,
+            maxTapped: AnalyticsEvent,
+            confirmSuccess: AnalyticsEvent,
+            confirmFailure: AnalyticsEvent,
+            confirmTapped: @escaping (CurrencyType, MoneyValue, [String: String]) -> AnalyticsEvent,
+            sourceAccountChanged: @escaping (String) -> AnalyticsEvent
+        ) {
             self.didAppear = didAppear
             self.minTapped = minTapped
             self.maxTapped = maxTapped
@@ -51,11 +55,13 @@ struct DisplayBundle {
         public let useMin: String
         public let useMax: String
 
-        public init(title: String,
-                    ctaButton: String,
-                    bottomAuxiliaryItemSeparatorTitle: String,
-                    useMin: String,
-                    useMax: String) {
+        public init(
+            title: String,
+            ctaButton: String,
+            bottomAuxiliaryItemSeparatorTitle: String,
+            useMin: String,
+            useMax: String
+        ) {
             self.title = title
             self.ctaButton = ctaButton
             self.bottomAuxiliaryItemSeparatorTitle = bottomAuxiliaryItemSeparatorTitle
@@ -77,14 +83,16 @@ struct DisplayBundle {
     public let events: Events
     public let accessibilityIdentifiers: AccessibilityIdentifiers
 
-    public init(strings: Strings,
-                colors: Colors,
-                events: Events,
-                accessibilityIdentifiers: AccessibilityIdentifiers) {
+    public init(
+        strings: Strings,
+        colors: Colors,
+        events: Events,
+        accessibilityIdentifiers: AccessibilityIdentifiers
+    ) {
         self.strings = strings
         self.colors = colors
         self.events = events
-        self.accessibilityIdentifiers  = accessibilityIdentifiers
+        self.accessibilityIdentifiers = accessibilityIdentifiers
     }
 }
 
@@ -115,7 +123,7 @@ extension DisplayBundle {
             maxTapped: AnalyticsEvent.sbBuyFormMaxClicked,
             confirmSuccess: AnalyticsEvent.sbBuyFormConfirmSuccess,
             confirmFailure: AnalyticsEvent.sbBuyFormConfirmFailure,
-            confirmTapped: { (currencyType, amount, additionalParameters) in
+            confirmTapped: { currencyType, amount, additionalParameters in
                 AnalyticsEvent.sbBuyFormConfirmClick(
                     currencyCode: currencyType.code,
                     amount: amount.toDisplayString(includeSymbol: true),

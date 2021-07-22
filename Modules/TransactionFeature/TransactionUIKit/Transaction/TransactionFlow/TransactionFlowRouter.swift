@@ -8,11 +8,12 @@ import RxSwift
 import TransactionKit
 
 protocol TransactionFlowInteractable: Interactable,
-                                      EnterAmountPageListener,
-                                      ConfirmationPageListener,
-                                      AccountPickerListener,
-                                      PendingTransactionPageListener,
-                                      TargetSelectionPageListener {
+    EnterAmountPageListener,
+    ConfirmationPageListener,
+    AccountPickerListener,
+    PendingTransactionPageListener,
+    TargetSelectionPageListener
+{
 
     var router: TransactionFlowRouting? { get set }
     var listener: TransactionFlowListener? { get set }
@@ -36,10 +37,12 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
     private let disposeBag = DisposeBag()
     private var linkBankFlowRouter: LinkBankFlowStarter?
 
-    init(interactor: TransactionFlowInteractable,
-         viewController: TransactionFlowViewControllable,
-         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        interactor: TransactionFlowInteractable,
+        viewController: TransactionFlowViewControllable,
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
@@ -122,7 +125,7 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
         linkBankFlowRouter = router
         router.startFlow()
             .withLatestFrom(transactionModel.state) { ($0, $1) }
-            .subscribe(onNext: { [topMostViewControllerProvider] (effect, state) in
+            .subscribe(onNext: { [topMostViewControllerProvider] effect, state in
                 switch effect {
                 case .closeFlow:
                     topMostViewControllerProvider

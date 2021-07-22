@@ -5,7 +5,7 @@ import XCTest
 
 class ConfigTests: XCTestCase {
 
-    private var configInfoDictionary: [String : Any]?
+    private var configInfoDictionary: [String: Any]?
 
     override func setUp() {
         super.setUp()

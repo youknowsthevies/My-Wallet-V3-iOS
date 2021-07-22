@@ -2,8 +2,8 @@
 
 import RxSwift
 
-public extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalType {
-    func onNil(error: Error) -> Single<Element.Wrapped> {
+extension PrimitiveSequenceType where Trait == SingleTrait, Element: OptionalType {
+    public func onNil(error: Error) -> Single<Element.Wrapped> {
         map { element -> Element.Wrapped in
             guard let value = element.value else {
                 throw error
@@ -12,7 +12,7 @@ public extension PrimitiveSequenceType where Trait == SingleTrait, Element: Opti
         }
     }
 
-    func onNilJustReturn(_ fallback: Element.Wrapped) -> Single<Element.Wrapped> {
+    public func onNilJustReturn(_ fallback: Element.Wrapped) -> Single<Element.Wrapped> {
         map { element -> Element.Wrapped in
             guard let value = element.value else {
                 return fallback
@@ -48,12 +48,12 @@ extension Single {
     }
 }
 
-extension PrimitiveSequence where Trait == SingleTrait, Element == Array<Single<Bool>> {
+extension PrimitiveSequence where Trait == SingleTrait, Element == [Single<Bool>] {
     /// Flat maps the array element of this stream, concatenating its elements into a `Single<Bool>` that returns `true` at first chance.
     public func flatMapConcatFirst() -> Single<Bool> {
         flatMap { array -> Single<Bool> in
             // Reduce the `Array<Single<Bool>>`
-            array.reduce(Single.just(false)) { (stream, thisSingle) -> Single<Bool> in
+            array.reduce(Single.just(false)) { stream, thisSingle -> Single<Bool> in
                 // Flat map the previously reduced value.
                 stream
                     .flatMap { streamResult -> Single<Bool> in
@@ -112,7 +112,8 @@ extension PrimitiveSequence where Trait == CompletableTrait {
 
 extension PrimitiveSequence where Trait == SingleTrait {
     public func flatMapCompletable<A: AnyObject>(weak object: A, _ selector: @escaping (A, Element) throws -> Completable)
-        -> Completable {
+        -> Completable
+    {
         asObservable()
             .flatMap(weak: object) { object, value in
                 try selector(object, value).asObservable()
@@ -161,7 +162,7 @@ extension PrimitiveSequence where Trait == SingleTrait {
 
     /// Directly maps to `Result<Element, Error>` type.
     public func mapToResult() -> PrimitiveSequence<SingleTrait, Result<Element, Error>> {
-        self.map { .success($0) }
+        map { .success($0) }
             .catchError { .just(.failure($0)) }
     }
 
@@ -169,15 +170,17 @@ extension PrimitiveSequence where Trait == SingleTrait {
     /// This is useful in case we would like to have a custom error type.
     public func mapToResult<ResultElement, OutputError: Error>(
         successMap: @escaping (Element) -> ResultElement,
-        errorMap: @escaping (Error) -> OutputError) -> PrimitiveSequence<SingleTrait, Result<ResultElement, OutputError>> {
-        self.map { .success(successMap($0)) }
+        errorMap: @escaping (Error) -> OutputError
+    ) -> PrimitiveSequence<SingleTrait, Result<ResultElement, OutputError>> {
+        map { .success(successMap($0)) }
             .catchError { .just(.failure(errorMap($0))) }
     }
 
     /// Map with success mapper only.
     public func mapToResult<ResultElement>(
-        successMap: @escaping (Element) -> ResultElement) -> PrimitiveSequence<SingleTrait, Result<ResultElement, Error>> {
-        self.map { .success(successMap($0)) }
+        successMap: @escaping (Element) -> ResultElement) -> PrimitiveSequence<SingleTrait, Result<ResultElement, Error>>
+    {
+        map { .success(successMap($0)) }
             .catchError { .just(.failure($0)) }
     }
 }

@@ -98,7 +98,7 @@ final class AddPaymentMethodLabelContentInteractor: LabelContentInteracting {
                 interactor.isAbleToAddNew,
                 interactor.isKYCVerified
             )
-            .map { (isAbleToAddNew, isKYCVerified) in
+            .map { isAbleToAddNew, isKYCVerified in
                 guard isKYCVerified else { return localizedStrings.kycDisabled }
                 guard isAbleToAddNew else { return localizedStrings.notAbleToAddNew }
                 return localizedStrings.cta

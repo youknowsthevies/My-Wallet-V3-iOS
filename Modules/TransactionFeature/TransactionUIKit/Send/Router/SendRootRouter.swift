@@ -24,9 +24,11 @@ final class SendRootRouter: ViewableRouter<SendRootInteractable, SendRootViewCon
 
     // MARK: - Init
 
-    init(interactor: SendRootInteractable,
-         viewController: SendRootViewControllable,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        interactor: SendRootInteractable,
+        viewController: SendRootViewControllable,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.analyticsHook = analyticsHook
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self

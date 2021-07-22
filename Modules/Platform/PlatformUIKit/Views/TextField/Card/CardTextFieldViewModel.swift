@@ -40,8 +40,10 @@ public final class CardTextFieldViewModel: TextFieldViewModel {
 
     // MARK: - Setup
 
-    public init(validator: CardNumberValidator,
-                messageRecorder: MessageRecording) {
+    public init(
+        validator: CardNumberValidator,
+        messageRecorder: MessageRecording
+    ) {
         cardNumberValidator = validator
         super.init(
             with: .cardNumber,

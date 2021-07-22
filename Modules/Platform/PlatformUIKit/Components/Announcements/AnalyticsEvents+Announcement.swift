@@ -24,7 +24,7 @@ extension AnalyticsEvents {
             }
         }
 
-        public var params: [String : String]? {
+        public var params: [String: String]? {
             ["card_title": type.rawValue]
         }
 

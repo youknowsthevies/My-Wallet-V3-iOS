@@ -9,10 +9,10 @@ public final class MockKYCRouter: KYCUIKit.Routing {
     public struct RecordedInvocations {
         public var routeToEmailVerification: [(emailAddress: String, flowCompletion: (FlowResult) -> Void)] = []
         public var routeToKYC: [(presenter: UIViewController, flowCompletion: (FlowResult) -> Void)] = []
-        public var presentEmailVerificationAndKYCIfNeeded: [(UIViewController)] = []
-        public var presentEmailVerificationIfNeeded: [(UIViewController)] = []
-        public var presentKYCIfNeeded: [(UIViewController)] = []
-        public var presentPromptToUnlockMoreTrading: [(UIViewController)] = []
+        public var presentEmailVerificationAndKYCIfNeeded: [UIViewController] = []
+        public var presentEmailVerificationIfNeeded: [UIViewController] = []
+        public var presentKYCIfNeeded: [UIViewController] = []
+        public var presentPromptToUnlockMoreTrading: [UIViewController] = []
     }
 
     public struct StubbedResults {
@@ -22,7 +22,7 @@ public final class MockKYCRouter: KYCUIKit.Routing {
         public var presentPromptToUnlockMoreTrading: AnyPublisher<FlowResult, Never> = .empty()
     }
 
-    private(set) public var recordedInvocations = RecordedInvocations()
+    public private(set) var recordedInvocations = RecordedInvocations()
     public var stubbedResults = StubbedResults()
 
     public func routeToEmailVerification(from origin: UIViewController, emailAddress: String, flowCompletion: @escaping (FlowResult) -> Void) {
@@ -34,17 +34,17 @@ public final class MockKYCRouter: KYCUIKit.Routing {
     }
 
     public func presentEmailVerificationAndKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<FlowResult, RouterError> {
-        recordedInvocations.presentEmailVerificationAndKYCIfNeeded.append((presenter))
+        recordedInvocations.presentEmailVerificationAndKYCIfNeeded.append(presenter)
         return stubbedResults.presentEmailVerificationAndKYCIfNeeded
     }
 
     public func presentEmailVerificationIfNeeded(from presenter: UIViewController) -> AnyPublisher<FlowResult, RouterError> {
-        recordedInvocations.presentEmailVerificationIfNeeded.append((presenter))
+        recordedInvocations.presentEmailVerificationIfNeeded.append(presenter)
         return stubbedResults.presentEmailVerificationIfNeeded
     }
 
     public func presentKYCIfNeeded(from presenter: UIViewController) -> AnyPublisher<FlowResult, RouterError> {
-        recordedInvocations.presentKYCIfNeeded.append((presenter))
+        recordedInvocations.presentKYCIfNeeded.append(presenter)
         return stubbedResults.presentKYCIfNeeded
     }
 

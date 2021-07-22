@@ -42,6 +42,7 @@ public final class LinkViewModel {
     var textDidChange: Observable<Void> {
         textDidChangeRelay.asObservable()
     }
+
     private let textDidChangeRelay = PublishRelay<Void>()
 
     let textViewModel: InteractableTextViewModel
@@ -52,9 +53,11 @@ public final class LinkViewModel {
 
     // MARK: - Setup
 
-    public init(font: UIFont = .main(.medium, 14),
-                textColor: Color = .mutedText,
-                linkColor: Color = .primaryButton) {
+    public init(
+        font: UIFont = .main(.medium, 14),
+        textColor: Color = .mutedText,
+        linkColor: Color = .primaryButton
+    ) {
         textViewModel = InteractableTextViewModel(
             inputs: [],
             textStyle: .init(color: textColor, font: font),

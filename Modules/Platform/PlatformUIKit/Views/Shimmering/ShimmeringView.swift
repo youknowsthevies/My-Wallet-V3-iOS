@@ -24,16 +24,18 @@ public final class ShimmeringView: UIView {
         animatingView.isShimmering
     }
 
-    public init(in superview: UIView,
-                anchorView: UIView,
-                size: CGSize,
-                cornerRadius: CGFloat = Constants.cornerRadius,
-                light: UIColor = .lightShimmering,
-                dark: UIColor = .darkShimmering) {
+    public init(
+        in superview: UIView,
+        anchorView: UIView,
+        size: CGSize,
+        cornerRadius: CGFloat = Constants.cornerRadius,
+        light: UIColor = .lightShimmering,
+        dark: UIColor = .darkShimmering
+    ) {
         self.anchorView = anchorView
         self.dark = dark
         super.init(frame: .init(origin: .zero, size: size))
-        self.backgroundColor = light
+        backgroundColor = light
         superview.addSubview(self)
 
         // Contain shimmer inside superview
@@ -56,16 +58,18 @@ public final class ShimmeringView: UIView {
         start()
     }
 
-    public init(in superview: UIView,
-                centeredIn anchorView: UIView,
-                size: CGSize,
-                cornerRadius: CGFloat = Constants.cornerRadius,
-                light: UIColor = .lightShimmering,
-                dark: UIColor = .darkShimmering) {
+    public init(
+        in superview: UIView,
+        centeredIn anchorView: UIView,
+        size: CGSize,
+        cornerRadius: CGFloat = Constants.cornerRadius,
+        light: UIColor = .lightShimmering,
+        dark: UIColor = .darkShimmering
+    ) {
         self.anchorView = anchorView
         self.dark = dark
         super.init(frame: CGRect(origin: .zero, size: size))
-        self.backgroundColor = light
+        backgroundColor = light
         superview.addSubview(self)
         translatesAutoresizingMaskIntoConstraints = false
 
@@ -98,7 +102,7 @@ public final class ShimmeringView: UIView {
         animatingView.stopShimmering()
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         animatingView.layoutShimmeringFrameIfNeeded()
     }

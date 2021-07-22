@@ -67,7 +67,7 @@ extension TextStyle {
 extension View {
 
     public func textStyle(_ style: TextStyle) -> some View {
-        self.modifier(style)
+        modifier(style)
     }
 }
 

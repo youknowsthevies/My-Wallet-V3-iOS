@@ -25,32 +25,32 @@ struct CredentialsView: View {
         self.walletInfo = walletInfo
         self.store = store
         let newViewStore = ViewStore(store)
-        self.viewStore = newViewStore
-        self._isTwoFACodeVisible = newViewStore.binding(
+        viewStore = newViewStore
+        _isTwoFACodeVisible = newViewStore.binding(
             get: { $0.twoFAState?.isTwoFACodeFieldVisible ?? false },
             send: { _ in .none }
         )
-        self._isHardwareKeyCodeFieldVisible = newViewStore.binding(
+        _isHardwareKeyCodeFieldVisible = newViewStore.binding(
             get: { $0.hardwareKeyState?.isHardwareKeyCodeFieldVisible ?? false },
             send: { _ in .none }
         )
-        self._isPasswordIncorrect = newViewStore.binding(
+        _isPasswordIncorrect = newViewStore.binding(
             get: { $0.passwordState?.isPasswordIncorrect ?? false },
             send: { _ in .none }
         )
-        self._isTwoFACodeIncorrect = newViewStore.binding(
+        _isTwoFACodeIncorrect = newViewStore.binding(
             get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false },
             send: { _ in .none }
         )
-        self._isHardwareKeyCodeVisible = newViewStore.binding(
+        _isHardwareKeyCodeVisible = newViewStore.binding(
             get: { $0.hardwareKeyState?.isHardwareKeyCodeIncorrect ?? false },
             send: { _ in .none }
         )
-        self._isAccountLocked = newViewStore.binding(
+        _isAccountLocked = newViewStore.binding(
             get: { $0.isAccountLocked },
             send: { _ in .none }
         )
-        self._isResendSMSButtonVisible = newViewStore.binding(
+        _isResendSMSButtonVisible = newViewStore.binding(
             get: { $0.twoFAState?.isResendSMSButtonVisible ?? false },
             send: { _ in .none }
         )
@@ -102,7 +102,7 @@ struct CredentialsView: View {
                     ),
                     error: { _ in isTwoFACodeIncorrect || isAccountLocked },
                     errorMessage:
-                        isAccountLocked ?
+                    isAccountLocked ?
                         EmailLoginString.TextFieldError.accountLocked :
                         String(
                             format: EmailLoginString.TextFieldError.incorrectTwoFACode,

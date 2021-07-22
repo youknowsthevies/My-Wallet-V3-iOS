@@ -20,7 +20,7 @@ public enum BitcoinChainCoin: String {
         switch self {
         case .bitcoin,
              .bitcoinCash:
-            return 2_100_000_000_000_000
+            return 2100000000000000
         }
     }
 

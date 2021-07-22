@@ -95,14 +95,16 @@ public final class PasswordTextFieldViewModel: TextFieldViewModel {
     }
 
     private let scoreRelay = BehaviorRelay<Score>(value: .hidden)
-    private let disposeBag =  DisposeBag()
+    private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    public init(with type: TextFieldType,
-                passwordValidator: NewPasswordValidating,
-                textMatchValidator: CollectionTextMatchValidator,
-                messageRecorder: MessageRecording) {
+    public init(
+        with type: TextFieldType,
+        passwordValidator: NewPasswordValidating,
+        textMatchValidator: CollectionTextMatchValidator,
+        messageRecorder: MessageRecording
+    ) {
         self.passwordValidator = passwordValidator
         super.init(with: type, validator: passwordValidator, textMatcher: textMatchValidator, messageRecorder: messageRecorder)
         passwordValidator.score

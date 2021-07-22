@@ -31,8 +31,10 @@ final class SecureChannelClient {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

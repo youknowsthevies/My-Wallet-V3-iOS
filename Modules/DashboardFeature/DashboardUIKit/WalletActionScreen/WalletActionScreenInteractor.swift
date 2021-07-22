@@ -20,6 +20,7 @@ public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     public var accountType: SingleAccountType {
         balanceCellInteractor.accountType
     }
+
     public let currency: CurrencyType
     public let balanceCellInteractor: CurrentBalanceCellInteracting
 
@@ -32,7 +33,7 @@ public final class WalletActionScreenInteractor: WalletActionScreenInteracting {
     public init(account: BlockchainAccount) {
         self.account = account
         currency = account.currencyType
-        self.balanceCellInteractor = CurrentBalanceCellInteractor(
+        balanceCellInteractor = CurrentBalanceCellInteractor(
             account: account
         )
     }

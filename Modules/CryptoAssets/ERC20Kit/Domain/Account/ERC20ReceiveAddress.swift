@@ -16,10 +16,12 @@ struct ERC20ReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding
         EthereumURLPayload(address: address)!
     }
 
-    init(asset: CryptoCurrency,
-         address: String,
-         label: String,
-         onTxCompleted: @escaping TxCompleted) {
+    init(
+        asset: CryptoCurrency,
+        address: String,
+        label: String,
+        onTxCompleted: @escaping TxCompleted
+    ) {
         guard asset.isERC20 else {
             fatalError("Not an ERC20 Token")
         }

@@ -7,20 +7,25 @@ import RIBs
 // MARK: - Builder
 
 protocol TransactionFlowBuildable: RIBs.Buildable {
-    func build(withListener listener: TransactionFlowListener,
-               action: AssetAction,
-               sourceAccount: BlockchainAccount?,
-               target: TransactionTarget?) -> ViewableRouting
+    func build(
+        withListener listener: TransactionFlowListener,
+        action: AssetAction,
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?
+    ) -> ViewableRouting
 }
 
 final class TransactionFlowBuilder: TransactionFlowBuildable {
 
-    func build(withListener listener: TransactionFlowListener,
-               action: AssetAction,
-               sourceAccount: BlockchainAccount?,
-               target: TransactionTarget?) -> ViewableRouting {
+    func build(
+        withListener listener: TransactionFlowListener,
+        action: AssetAction,
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?
+    ) -> ViewableRouting {
 
         // MARK: TransactionModel
+
         let transactionInteractor = TransactionInteractor()
         let transactionModel = TransactionModel(transactionInteractor: transactionInteractor)
 

@@ -14,8 +14,10 @@ final class MockUNUserNotificationCenter: UNUserNotificationCenterAPI {
     private let initialAuthorizationStatus: UNAuthorizationStatus
     private let expectedAuthorizationResult: Result<Bool, FakeError>
 
-    init(initialAuthorizationStatus: UNAuthorizationStatus,
-         expectedAuthorizationResult: Result<Bool, FakeError>) {
+    init(
+        initialAuthorizationStatus: UNAuthorizationStatus,
+        expectedAuthorizationResult: Result<Bool, FakeError>
+    ) {
         self.initialAuthorizationStatus = initialAuthorizationStatus
         self.expectedAuthorizationResult = expectedAuthorizationResult
     }

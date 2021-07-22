@@ -60,7 +60,7 @@ public final class KYCTiersViewController: UIViewController {
         disposable = nil
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         layout = UICollectionViewFlowLayout()
         collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
@@ -157,8 +157,9 @@ extension KYCTiersViewController: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = pageModel.cells[indexPath.row]
         guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: KYCTierCell.identifier,
-                for: indexPath) as? KYCTierCell else {
+            withReuseIdentifier: KYCTierCell.identifier,
+            for: indexPath
+        ) as? KYCTierCell else {
             return UICollectionViewCell()
         }
         cell.delegate = self
@@ -193,7 +194,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
     public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
         let model = pageModel.cells[indexPath.row]
         let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
         let height = KYCTierCell.heightForProposedWidth(width, model: model)
@@ -202,8 +204,8 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
 
     public func collectionView(
         _ collectionView: UICollectionView,
-        viewForSupplementaryElementOfKind
-            kind: String,
+        viewForSupplementaryElementOfKind kind: String,
+
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
         switch kind {
@@ -316,7 +318,7 @@ extension KYCTiersViewController {
 
                 return Single.zip(tradeLimits, tiersService.tiers, .just(fiatCurrency))
             }
-            .map { (tradeLimits, tiers, fiatCurrency) -> (FiatValue, KYC.UserTiers) in
+            .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
                     return (FiatValue.zero(currency: fiatCurrency), tiers)
                 }
@@ -326,7 +328,7 @@ extension KYCTiersViewController {
                 )
                 return (maxTradableToday, tiers)
             }
-            .map { (maxTradableToday, tiers) -> KYCTiersPageModel in
+            .map { maxTradableToday, tiers -> KYCTiersPageModel in
                 KYCTiersPageModel.make(tiers: tiers, maxTradableToday: maxTradableToday, suppressCTA: true)
             }
     }

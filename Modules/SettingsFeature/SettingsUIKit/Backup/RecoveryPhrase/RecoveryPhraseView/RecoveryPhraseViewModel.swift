@@ -39,9 +39,11 @@ class RecoveryPhraseViewModel {
 
     // MARK: - Init
 
-    init(mnemonicAPI: MnemonicAccessAPI,
-         mnemonicComponentsProviding: MnemonicComponentsProviding,
-         pasteboarding: Pasteboarding = resolve()) {
+    init(
+        mnemonicAPI: MnemonicAccessAPI,
+        mnemonicComponentsProviding: MnemonicComponentsProviding,
+        pasteboarding: Pasteboarding = resolve()
+    ) {
 
         mnemonicComponentsProviding
             .components
@@ -49,7 +51,7 @@ class RecoveryPhraseViewModel {
             .disposed(by: disposeBag)
 
         self.mnemonicAPI = mnemonicAPI
-        self.copyButtonViewModel = .secondary(with: LocalizationConstants.RecoveryPhraseScreen.copyToClipboard)
+        copyButtonViewModel = .secondary(with: LocalizationConstants.RecoveryPhraseScreen.copyToClipboard)
 
         copyButtonViewModel.tapRelay
             .withLatestFrom(mnemonicAPI.mnemonic.asObservable())

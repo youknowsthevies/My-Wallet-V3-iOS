@@ -4,9 +4,9 @@
 
 import Foundation
 
-public extension LocalizationConstants {
-    struct TextField {
-        public struct CardType {
+extension LocalizationConstants {
+    public enum TextField {
+        public enum CardType {
             public static let visa = NSLocalizedString(
                 "Visa",
                 comment: "Card type: VISA"
@@ -36,7 +36,8 @@ public extension LocalizationConstants {
                 comment: "Card type: Unknown"
             )
         }
-        public struct Placeholder {
+
+        public enum Placeholder {
             public static let noDescription = NSLocalizedString(
                 "No description",
                 comment: "Description placeholder"
@@ -58,8 +59,9 @@ public extension LocalizationConstants {
                 comment: "Placeholder for a one time code."
             )
         }
-        public struct Title {
-            public struct Card {
+
+        public enum Title {
+            public enum Card {
                 public static let name = NSLocalizedString(
                     "Name on Card",
                     comment: "Title for card owner name text field"
@@ -81,6 +83,7 @@ public extension LocalizationConstants {
                     comment: "Title for card cvc text field"
                 )
             }
+
             public static let description = NSLocalizedString(
                 "Description",
                 comment: "Title for Description text field"
@@ -162,8 +165,8 @@ public extension LocalizationConstants {
                 comment: "Title for crypto address"
             )
         }
-        
-        public struct PasswordScore {
+
+        public enum PasswordScore {
             public static let weak = NSLocalizedString(
                 "Weak",
                 comment: "Label for a Weak password score in password text field"
@@ -177,8 +180,8 @@ public extension LocalizationConstants {
                 comment: "Label for a Strong password score in password text field"
             )
         }
-        
-        public struct Gesture {
+
+        public enum Gesture {
             public static let passwordMismatch = NSLocalizedString(
                 "Passwords Do Not Match",
                 comment: "Error label when two passwords do not match"

@@ -13,7 +13,7 @@ class BitPayLinkRouter: DeepLinkRouting {
     // MARK: - Init
 
     init(bitpayService: BitpayServiceProtocol = BitpayService.shared) {
-        self.service = bitpayService
+        service = bitpayService
     }
 
     // MARK: - Static Functions

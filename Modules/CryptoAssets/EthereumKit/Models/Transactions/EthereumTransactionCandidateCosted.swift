@@ -17,15 +17,17 @@ public struct EthereumTransactionCandidateCosted {
         self.transaction = Self.signingInput(with: transaction, nonce: nonce)
     }
 
-    private static func signingInput(with candidate: EthereumTransactionCandidate,
-                                     nonce: BigUInt) -> EthereumSigningInput {
+    private static func signingInput(
+        with candidate: EthereumTransactionCandidate,
+        nonce: BigUInt
+    ) -> EthereumSigningInput {
         EthereumSigningInput.with {
             $0.chainID = Data(hexString: "01")!
             $0.nonce = Data(hexString: nonce.hexString)!
             $0.gasPrice = Data(hexString: candidate.gasPrice.hexString)!
             $0.gasLimit = Data(hexString: candidate.gasLimit.hexString)!
             switch candidate.transferType {
-            case let .erc20Transfer(contractAddress):
+            case .erc20Transfer(let contractAddress):
                 $0.toAddress = contractAddress.publicKey
                 $0.transaction.erc20Transfer.to = candidate.to.publicKey
                 $0.transaction.erc20Transfer.amount = Data(hexString: candidate.value.hexString)!

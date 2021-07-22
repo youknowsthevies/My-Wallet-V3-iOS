@@ -135,7 +135,7 @@ extension DependencyContainer {
                     return asset
                 }
             let other = allEnabledCryptoCurrencies
-                .filter { $0.isOther }
+                .filter(\.isOther)
                 .map { cryptoCurrency -> CryptoAsset in
                     CustodialCryptoAsset(asset: cryptoCurrency)
                 }
@@ -143,7 +143,7 @@ extension DependencyContainer {
             let erc20 = allEnabledCryptoCurrencies
                 .filter(\.isERC20)
                 .compactMap { cryptoCurrency -> ERC20AssetModel? in
-                    guard case let .erc20(model) = cryptoCurrency else {
+                    guard case .erc20(let model) = cryptoCurrency else {
                         return nil
                     }
                     return model

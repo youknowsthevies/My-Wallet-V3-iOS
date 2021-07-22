@@ -6,4 +6,3 @@ struct DomainResolutionRequest: Encodable {
     let currency: String
     let name: String
 }
-

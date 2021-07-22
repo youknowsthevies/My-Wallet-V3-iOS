@@ -17,8 +17,8 @@ protocol NonCustodialActionEmitterAPI: AnyObject {
 }
 
 typealias NonCustodialActionStateServiceAPI = NonCustodialActionStateReceiverServiceAPI &
-                                              RoutingNextStateEmitterAPI &
-                                              NonCustodialActionEmitterAPI
+    RoutingNextStateEmitterAPI &
+    NonCustodialActionEmitterAPI
 
 final class NonCustodialActionStateService: NonCustodialActionStateServiceAPI {
 

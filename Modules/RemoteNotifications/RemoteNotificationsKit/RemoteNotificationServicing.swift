@@ -27,7 +27,7 @@ public protocol RemoteNotificationBackgroundReceiving: AnyObject {
     ///   - applicationState: `UIApplication` state.
     ///   - completionHandler: `completionHandler` that will be called when any work is completed.
     func didReceiveRemoteNotification(
-        _  userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     )

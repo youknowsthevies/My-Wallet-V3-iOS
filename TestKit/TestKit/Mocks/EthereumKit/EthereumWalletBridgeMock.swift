@@ -75,7 +75,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
         accountValue
     }
 
-    var recordLastTransactionValue: Single<EthereumTransactionPublished> = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
+    var recordLastTransactionValue = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
     var lastRecordedTransaction: EthereumTransactionPublished?
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         lastRecordedTransaction = transaction

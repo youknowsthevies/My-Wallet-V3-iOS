@@ -18,7 +18,7 @@ public final class CryptoFormatterProvider {
     private var formatterMap = [String: CryptoFormatter]()
     private let queue = DispatchQueue(label: "CryptoFormatterProvider.queue.\(UUID().uuidString)")
 
-    public init() { }
+    public init() {}
 
     /// Returns `CryptoFormatter`. This method executes on a dedicated queue.
     public func formatter(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int = 1) -> CryptoFormatter {
@@ -54,12 +54,12 @@ public final class CryptoFormatter {
     private let cryptoCurrency: CryptoCurrency
 
     public init(locale: Locale, cryptoCurrency: CryptoCurrency, minFractionDigits: Int) {
-        self.shortFormatter = NumberFormatter.cryptoFormatter(
+        shortFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
             minFractionDigits: minFractionDigits,
             maxFractionDigits: cryptoCurrency.maxDisplayableDecimalPlaces
         )
-        self.longFormatter = NumberFormatter.cryptoFormatter(
+        longFormatter = NumberFormatter.cryptoFormatter(
             locale: locale,
             minFractionDigits: minFractionDigits,
             maxFractionDigits: cryptoCurrency.maxDecimalPlaces

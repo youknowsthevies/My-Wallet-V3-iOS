@@ -20,7 +20,7 @@ public final class TodayAssetPriceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
         }

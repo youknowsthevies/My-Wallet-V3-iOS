@@ -34,20 +34,20 @@ class EthereumTransactionEncoderTests: XCTestCase {
         let candidate = EthereumTransactionCandidate(
             to: EthereumAddress(address: "0x3535353535353535353535353535353535353535")!,
             gasPrice: 23,
-            gasLimit: 21_000,
+            gasLimit: 21000,
             value: BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!,
             data: nil,
             transferType: .transfer
         )
-        guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
+        guard case .success(let costed) = builder.build(transaction: candidate, nonce: 9) else {
             XCTFail("Transaction building failed")
             return
         }
-        guard case let .success(signed) = signer.sign(transaction: costed, keyPair: keyPair) else {
+        guard case .success(let signed) = signer.sign(transaction: costed, keyPair: keyPair) else {
             XCTFail("Transaction signing failed")
             return
         }
-        guard case let .success(finalised) = subject.encode(signed: signed) else {
+        guard case .success(let finalised) = subject.encode(signed: signed) else {
             XCTFail("Transaction encoding failed")
             return
         }

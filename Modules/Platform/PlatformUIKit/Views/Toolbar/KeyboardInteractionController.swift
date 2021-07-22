@@ -83,8 +83,8 @@ public final class KeyboardInteractionController {
 
 // MARK: - ObservableType
 
-public extension ObservableType {
-    func dismissKeyboard(using controller: KeyboardInteractionController) -> Observable<Element> {
+extension ObservableType {
+    public func dismissKeyboard(using controller: KeyboardInteractionController) -> Observable<Element> {
         self.do(onNext: { _ in
             controller.dismissKeyboard()
         })

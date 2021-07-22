@@ -11,8 +11,10 @@ final class MockRemoteNotificationAuthorizer {
 
     var requestAuthorizationIfNeededPublisherCalled = false
 
-    init(expectedAuthorizationStatus: UNAuthorizationStatus,
-         authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>) {
+    init(
+        expectedAuthorizationStatus: UNAuthorizationStatus,
+        authorizationRequestExpectedStatus: Result<Void, RemoteNotificationAuthorizer.ServiceError>
+    ) {
         self.expectedAuthorizationStatus = expectedAuthorizationStatus
         self.authorizationRequestExpectedStatus = authorizationRequestExpectedStatus
     }

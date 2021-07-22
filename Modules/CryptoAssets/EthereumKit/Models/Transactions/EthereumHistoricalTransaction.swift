@@ -53,32 +53,34 @@ public struct EthereumHistoricalTransaction {
         self.data = data
     }
 
-    public init(response: EthereumHistoricalTransactionResponse,
-                memo: String? = nil,
-                accountAddress: String,
-                latestBlock: Int) {
-        self.identifier = response.hash
-        self.fromAddress = EthereumAddress(address: response.from)!
-        self.toAddress = EthereumAddress(address: response.to)!
-        self.direction = EthereumHistoricalTransaction.direction(
+    public init(
+        response: EthereumHistoricalTransactionResponse,
+        memo: String? = nil,
+        accountAddress: String,
+        latestBlock: Int
+    ) {
+        identifier = response.hash
+        fromAddress = EthereumAddress(address: response.from)!
+        toAddress = EthereumAddress(address: response.to)!
+        direction = EthereumHistoricalTransaction.direction(
             to: response.to,
             from: response.from,
             accountAddress: accountAddress
         )
-        self.amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .ethereum)
-        self.transactionHash = response.hash
-        self.createdAt = response.createdAt
-        self.fee = EthereumHistoricalTransaction.fee(
+        amount = CryptoValue(amount: BigInt(response.value) ?? 0, currency: .ethereum)
+        transactionHash = response.hash
+        createdAt = response.createdAt
+        fee = EthereumHistoricalTransaction.fee(
             gasPrice: response.gasPrice,
             gasUsed: response.gasUsed
         )
         self.memo = memo
-        self.confirmations = EthereumHistoricalTransaction.confirmations(
+        confirmations = EthereumHistoricalTransaction.confirmations(
             latestBlock: latestBlock,
             blockNumber: response.blockNumber
         )
-        self.state = response.state
-        self.data = response.data
+        state = response.state
+        data = response.data
     }
 
     private static func created(timestamp: Int) -> Date {
@@ -88,7 +90,7 @@ public struct EthereumHistoricalTransaction {
     private static func direction(to: String, from: String, accountAddress: String) -> Direction {
         let incoming = to.lowercased() == accountAddress.lowercased()
         let outgoing = from.lowercased() == accountAddress.lowercased()
-        if incoming && outgoing {
+        if incoming, outgoing {
             return .transfer
         }
         if incoming {

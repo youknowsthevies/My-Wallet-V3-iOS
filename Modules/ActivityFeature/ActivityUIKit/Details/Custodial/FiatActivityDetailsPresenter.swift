@@ -52,8 +52,10 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(event: CustodialActivityEvent.Fiat,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        event: CustodialActivityEvent.Fiat,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         fiatAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: "")
@@ -98,7 +100,7 @@ final class FiatActivityDetailsPresenter: DetailsScreenPresenterAPI {
                 .loaded(
                     next: badgeItem
                 )
-        )
+            )
         badgesModel
             .badgesRelay
             .accept([statusBadge])

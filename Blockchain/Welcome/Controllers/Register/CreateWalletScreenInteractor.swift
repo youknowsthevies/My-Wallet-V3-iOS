@@ -38,11 +38,13 @@ final class CreateWalletScreenInteractor: NSObject {
 
     // MARK: - Setup
 
-    init(reachability: InternetReachabilityAPI = InternetReachability(),
-         analyticsRecorder: AnalyticsEventRecorderAPI =  resolve(),
-         authenticationCoordinator: AuthenticationCoordinator = .shared,
-         walletManager: WalletManager = .shared,
-         wallet: Wallet = WalletManager.shared.wallet) {
+    init(
+        reachability: InternetReachabilityAPI = InternetReachability(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        authenticationCoordinator: AuthenticationCoordinator = .shared,
+        walletManager: WalletManager = .shared,
+        wallet: Wallet = WalletManager.shared.wallet
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability
         self.walletManager = walletManager

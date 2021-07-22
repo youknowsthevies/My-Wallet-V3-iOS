@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
 import NetworkKit
+import RxSwift
 
 /// A potential login service error
 public enum LoginServiceError: LocalizedError {

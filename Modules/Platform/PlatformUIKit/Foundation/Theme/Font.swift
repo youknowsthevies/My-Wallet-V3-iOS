@@ -65,7 +65,6 @@ public struct Font {
             case h5
         }
     }
-
 }
 
 extension Font.StandardSize {
@@ -129,7 +128,7 @@ extension Font {
             }
             return font
         case .system:
-             return UIFont.systemFont(ofSize: CGFloat(size.value))
+            return UIFont.systemFont(ofSize: CGFloat(size.value))
         }
     }
 }

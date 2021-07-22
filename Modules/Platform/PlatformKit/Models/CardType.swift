@@ -47,7 +47,7 @@ public enum CardType: String {
         case .diners:
             return "^3(?:0[0-5]|[68][0-9])[0-9]{11}$"
         case .discover:
-            return  "^(?:6011\\d{12})|(?:65\\d{14})$"
+            return "^(?:6011\\d{12})|(?:65\\d{14})$"
         case .jcb:
             return "^(?:2131|1800|35[0-9]{3})[0-9]{11}$"
         case .unknown:

@@ -33,7 +33,7 @@ extension URL {
             }
         }
 
-        guard var components: URLComponents = URLComponents(url: mutableBaseURL as URL, resolvingAgainstBaseURL: false) else { return nil }
+        guard var components = URLComponents(url: mutableBaseURL as URL, resolvingAgainstBaseURL: false) else { return nil }
 
         components.queryItems = queryItems
 

@@ -8,7 +8,7 @@ final class SharedKeyParsingService {
 
     // MARK: - Types
 
-    private struct Constant {
+    private enum Constant {
         static let componentCount = 2
         static let sharedKeyLength = 36
         static let delimiter: Character = "|"

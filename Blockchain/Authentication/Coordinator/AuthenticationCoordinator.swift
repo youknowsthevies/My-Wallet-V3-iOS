@@ -31,9 +31,11 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
 
     // MARK: - Types
 
-    typealias WalletAuthHandler = (_ authenticated: Bool, _
-                                   twoFactorType: WalletAuthenticatorType?, _
-                                   error: AuthenticationError?) -> Void
+    typealias WalletAuthHandler = (
+        _ authenticated: Bool,
+        _ twoFactorType: WalletAuthenticatorType?,
+        _ error: AuthenticationError?
+    ) -> Void
 
     @Inject @objc static var shared: AuthenticationCoordinator
 
@@ -79,21 +81,23 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     private let bag = DisposeBag()
     private var cancellables = Set<AnyCancellable>()
 
-   // MARK: - Initializer
+    // MARK: - Initializer
 
-    init(fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
-         appSettings: BlockchainSettings.App = resolve(),
-         sharedContainter: SharedContainerUserDefaults = .default,
-         onboardingSettings: OnboardingSettings = resolve(),
-         wallet: Wallet = WalletManager.shared.wallet,
-         alertPresenter: AlertViewPresenter = resolve(),
-         walletManager: WalletManager = WalletManager.shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
-         deepLinkRouter: DeepLinkRouting = resolve(),
-         onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
-         featureFlagsService: FeatureFlagsServiceAPI = resolve(),
-         remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()) {
+    init(
+        fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve(),
+        appSettings: BlockchainSettings.App = resolve(),
+        sharedContainter: SharedContainerUserDefaults = .default,
+        onboardingSettings: OnboardingSettings = resolve(),
+        wallet: Wallet = WalletManager.shared.wallet,
+        alertPresenter: AlertViewPresenter = resolve(),
+        walletManager: WalletManager = WalletManager.shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        dataRepository: BlockchainDataRepository = BlockchainDataRepository.shared,
+        deepLinkRouter: DeepLinkRouting = resolve(),
+        onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
+        remoteNotificationServiceContainer: RemoteNotificationServiceContaining = resolve()
+    ) {
         self.sharedContainter = sharedContainter
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
         self.appSettings = appSettings
@@ -117,9 +121,11 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     /// but the current way wallet creation is designed, we need to share this handler
     /// with that flow. Eventually, wallet creation should be moved with AuthenticationCoordinator
     @available(*, deprecated, message: "This method is deprected and its logic should be distributed to separate services")
-    func authenticationHandler(_ isAuthenticated: Bool,
-                               _ twoFactorType: WalletAuthenticatorType?,
-                               _ error: AuthenticationError?) {
+    func authenticationHandler(
+        _ isAuthenticated: Bool,
+        _ twoFactorType: WalletAuthenticatorType?,
+        _ error: AuthenticationError?
+    ) {
         defer {
             self.loadingViewPresenter.hide()
         }
@@ -237,8 +243,9 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     /// Cleanup any running authentication flows when the app is backgrounded.
     func cleanupOnAppBackgrounded() {
         guard let pinRouter = pinRouter,
-            pinRouter.isBeingDisplayed,
-            !pinRouter.flow.isLoginAuthentication else {
+              pinRouter.isBeingDisplayed,
+              !pinRouter.flow.isLoginAuthentication
+        else {
             return
         }
         pinRouter.cleanup()
@@ -266,9 +273,11 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     ///   - type: The type of the screen
     ///   - confirmHandler: Confirmation handler, receives the password
     ///   - dismissHandler: Dismiss handler (optional - defaults to `nil`)
-    func showPasswordScreen(type: PasswordScreenType,
-                            confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
-                            dismissHandler: PasswordScreenPresenter.DismissHandler? = nil) {
+    func showPasswordScreen(
+        type: PasswordScreenType,
+        confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
+        dismissHandler: PasswordScreenPresenter.DismissHandler? = nil
+    ) {
         guard !isShowingSecondPasswordScreen else { return }
         guard let parent = UIApplication.shared.topMostViewController else {
             return
@@ -302,8 +311,10 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     }
 
     /// ObjC compatible version of `showPasswordScreen`
-    @objc func showPasswordScreen(confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
-                                  dismissHandler: PasswordScreenPresenter.DismissHandler? = nil) {
+    @objc func showPasswordScreen(
+        confirmHandler: @escaping PasswordScreenPresenter.ConfirmHandler,
+        dismissHandler: PasswordScreenPresenter.DismissHandler? = nil
+    ) {
         showPasswordScreen(
             type: .actionRequiresPassword,
             confirmHandler: confirmHandler,
@@ -399,9 +410,10 @@ extension AuthenticationCoordinator: WalletAuthDelegate {
         // With the hash prefix we can then figure out if the password changed. If so, clear the pin
         // so that the user can reset it
         guard let password = password,
-            let passwordPartHash = password.passwordPartHash,
-            let savedPasswordPartHash = appSettings.passwordPartHash else {
-                return
+              let passwordPartHash = password.passwordPartHash,
+              let savedPasswordPartHash = appSettings.passwordPartHash
+        else {
+            return
         }
 
         guard passwordPartHash != savedPasswordPartHash else {

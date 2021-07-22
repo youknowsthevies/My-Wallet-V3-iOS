@@ -11,17 +11,20 @@ protocol EnterAmountPageInteractable: Interactable {
     var listener: EnterAmountPageListener? { get set }
 }
 
-protocol EnterAmountViewControllable: ViewControllable { }
+protocol EnterAmountViewControllable: ViewControllable {}
 
 final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, EnterAmountViewControllable>,
-                                   EnterAmountPageRouting,
-                                   NetworkFeeSelectionListener {
+    EnterAmountPageRouting,
+    NetworkFeeSelectionListener
+{
 
     private let alertViewPresenter: AlertViewPresenterAPI
 
-    init(interactor: EnterAmountPageInteractable,
-         viewController: EnterAmountViewControllable,
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        interactor: EnterAmountPageInteractable,
+        viewController: EnterAmountViewControllable,
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
@@ -50,7 +53,7 @@ final class EnterAmountPageRouter: ViewableRouter<EnterAmountPageInteractable, E
             return
         }
         detachChild(currentRouter)
-        self.viewController.uiviewController.dismiss(animated: true, completion: nil)
+        viewController.uiviewController.dismiss(animated: true, completion: nil)
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {

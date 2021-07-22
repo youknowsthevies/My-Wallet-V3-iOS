@@ -67,7 +67,7 @@ public final class BadgeView: UIView {
                     strokeWidth: 6
                 )
                 backgroundCircle.translatesAutoresizingMaskIntoConstraints = false
-                self.accessoryContainer.addSubview(backgroundCircle)
+                accessoryContainer.addSubview(backgroundCircle)
                 accessoryContainer.layout(edges: .leading, .trailing, .top, .bottom, to: backgroundCircle)
                 backgroundCircle.model = model
             }
@@ -108,13 +108,13 @@ public final class BadgeView: UIView {
 extension Reactive where Base: BadgeView {
 
     public var badgeViewModel: Binder<BadgeViewModel> {
-        Binder(base) { (view, model) in
+        Binder(base) { view, model in
             view.viewModel = model
         }
     }
 
     public var viewModel: Binder<BadgeAsset.State.BadgeItem.Presentation> {
-        Binder(base) { (view, state) in
+        Binder(base) { view, state in
             switch state {
             case .loaded(let next):
                 view.viewModel = next.viewModel

@@ -21,11 +21,13 @@ public struct Accessibility {
     public let isAccessible: Bool
 
     /// Initializes inner properties by defaulting all parameters to `nil`.
-    public init(id: String? = .none,
-                label: String? = .none,
-                hint: String? = .none,
-                traits: UIAccessibilityTraits = .none,
-                isAccessible: Bool = true) {
+    public init(
+        id: String? = .none,
+        label: String? = .none,
+        hint: String? = .none,
+        traits: UIAccessibilityTraits = .none,
+        isAccessible: Bool = true
+    ) {
         self.id = id
         self.label = label
         self.hint = hint
@@ -43,10 +45,12 @@ public struct Accessibility {
         )
     }
 
-    public func copy(id: String? = nil,
-                     label: String? = nil,
-                     hint: String? = nil,
-                     traits: UIAccessibilityTraits? = nil) -> Accessibility {
+    public func copy(
+        id: String? = nil,
+        label: String? = nil,
+        hint: String? = nil,
+        traits: UIAccessibilityTraits? = nil
+    ) -> Accessibility {
         Accessibility(
             id: id != nil ? id : self.id,
             label: label != nil ? label : self.label,
@@ -84,7 +88,7 @@ extension Optional {
         switch self {
         case .none:
             return ""
-        case let .some(value):
+        case .some(let value):
             return value
         }
     }

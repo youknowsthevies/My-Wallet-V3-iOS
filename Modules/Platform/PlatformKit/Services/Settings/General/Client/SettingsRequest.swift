@@ -6,7 +6,7 @@ struct SettingsRequest: Codable {
 
     // MARK: - Types
 
-    struct Formats {
+    enum Formats {
         static let plain = "plain"
     }
 

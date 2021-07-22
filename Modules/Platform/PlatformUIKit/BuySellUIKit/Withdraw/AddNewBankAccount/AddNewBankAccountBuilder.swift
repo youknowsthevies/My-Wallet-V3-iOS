@@ -25,17 +25,23 @@ public final class AddNewBankAccountBuilder: AddNewBankAccountBuildable {
     }
 
     public func build(listener: AddNewBankAccountListener) -> AddNewBankAccountRouter {
-        let presenter = AddNewBankAccountPagePresenter(isOriginDeposit: isOriginDeposit,
-                                                       fiatCurrency: currency)
+        let presenter = AddNewBankAccountPagePresenter(
+            isOriginDeposit: isOriginDeposit,
+            fiatCurrency: currency
+        )
         let viewController = DetailsScreenViewController(presenter: presenter)
 
-        let interactor = AddNewBankAccountInteractor(presenter: presenter,
-                                                     fiatCurrency: currency)
+        let interactor = AddNewBankAccountInteractor(
+            presenter: presenter,
+            fiatCurrency: currency
+        )
         interactor.listener = listener
-        return AddNewBankAccountRouter(interactor: interactor,
-                                       viewController: viewController)
+        return AddNewBankAccountRouter(
+            interactor: interactor,
+            viewController: viewController
+        )
     }
 }
 
 /// Conforming to AddNewBankAccountViewControllable for RIB compatibility
-extension DetailsScreenViewController: AddNewBankAccountViewControllable { }
+extension DetailsScreenViewController: AddNewBankAccountViewControllable {}

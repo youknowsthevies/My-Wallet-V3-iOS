@@ -40,7 +40,6 @@ public final class AmountLabelViewPresenter {
                 string.append(NSAttributedString(amountLabelContent.currencyCode))
                 return string
             }
-
         }
 
         public var accessibility: Accessibility {
@@ -73,7 +72,7 @@ public final class AmountLabelViewPresenter {
     private let disposeBag = DisposeBag()
 
     public init(interactor: AmountLabelViewInteractor, currencyCodeSide: CurrencyCodeSide, isFocused: Bool = false) {
-        self.focusRelay.accept(isFocused)
+        focusRelay.accept(isFocused)
         self.interactor = interactor
         self.currencyCodeSide = currencyCodeSide
 

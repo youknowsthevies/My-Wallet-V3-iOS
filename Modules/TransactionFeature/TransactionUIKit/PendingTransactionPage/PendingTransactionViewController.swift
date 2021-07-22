@@ -63,9 +63,11 @@ final class PendingTransactionViewController: BaseScreenViewController, PendingT
 
     private func setupNavigationBar() {
         titleViewStyle = .none
-        set(barStyle: .darkContent(),
+        set(
+            barStyle: .darkContent(),
             leadingButtonStyle: .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
     }
 
     // MARK: - PendingTransactionPagePresentable

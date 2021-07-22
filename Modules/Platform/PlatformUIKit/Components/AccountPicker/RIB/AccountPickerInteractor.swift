@@ -27,16 +27,18 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
 
     // MARK: - Init
 
-    init(presenter: AccountPickerPresentable,
-         accountProvider: AccountPickerAccountProviding,
-         listener: AccountPickerListenerBridge) {
+    init(
+        presenter: AccountPickerPresentable,
+        accountProvider: AccountPickerAccountProviding,
+        listener: AccountPickerListenerBridge
+    ) {
         self.accountProvider = accountProvider
         switch listener {
         case .simple(let didSelect):
             self.didSelect = didSelect
             self.listener = nil
         case .listener(let listener):
-            self.didSelect = nil
+            didSelect = nil
             self.listener = listener
         }
         super.init(presenter: presenter)
@@ -68,7 +70,7 @@ final class AccountPickerInteractor: PresentableInteractor<AccountPickerPresenta
                     return accounts
                 }
             }
-            .map { (interactors) -> State in
+            .map { interactors -> State in
                 State(interactors: interactors)
             }
             .asDriver(onErrorJustReturn: .empty)
@@ -110,8 +112,8 @@ extension AccountPickerInteractor {
     }
 }
 
-fileprivate extension BlockchainAccount {
-    var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
+extension BlockchainAccount {
+    fileprivate var accountPickerCellItemInteractor: AccountPickerCellItem.Interactor {
         switch self {
         case is LinkedBankAccount:
             let account = self as! LinkedBankAccount

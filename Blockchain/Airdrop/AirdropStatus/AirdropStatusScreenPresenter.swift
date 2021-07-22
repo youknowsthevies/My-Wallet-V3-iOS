@@ -67,9 +67,11 @@ final class AirdropStatusScreenPresenter {
 
     // MARK: - Setup
 
-    init(presentationType: PresentationType,
-         alertPresenter: AlertViewPresenter = .shared,
-         interactor: AirdropStatusScreenInteractor) {
+    init(
+        presentationType: PresentationType,
+        alertPresenter: AlertViewPresenter = .shared,
+        interactor: AirdropStatusScreenInteractor
+    ) {
         self.alertPresenter = alertPresenter
         self.presentationType = presentationType
         self.interactor = interactor
@@ -227,7 +229,7 @@ final class AirdropStatusScreenPresenter {
         case .empty:
             break
         case .valueCouldNotBeCalculated:
-            self.alertPresenter.standardError(
+            alertPresenter.standardError(
                 message: LocalizationConstants.GeneralError.loadingData
             )
         }

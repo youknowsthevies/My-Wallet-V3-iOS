@@ -20,10 +20,12 @@ final class YodleeScreenRouter: ViewableRouter<YodleeScreenInteractable, YodleeS
 
     private let webViewService: WebViewServiceAPI
 
-    init(interactor: YodleeScreenInteractable,
-         viewController: YodleeScreenViewControllable,
-         webViewServiceAPI: WebViewServiceAPI = resolve()) {
-        self.webViewService = webViewServiceAPI
+    init(
+        interactor: YodleeScreenInteractable,
+        viewController: YodleeScreenViewControllable,
+        webViewServiceAPI: WebViewServiceAPI = resolve()
+    ) {
+        webViewService = webViewServiceAPI
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }

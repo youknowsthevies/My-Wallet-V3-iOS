@@ -7,13 +7,13 @@ public struct Gradient {
     let endColor: UIColor
 
     init(start: UIColor, end: UIColor) {
-        self.startColor = start
-        self.endColor = end
+        startColor = start
+        endColor = end
     }
 }
 
-public extension Gradient {
-    static let exchange: Gradient = .init(start: #colorLiteral(red: 0.3, green: 0.09, blue: 0.73, alpha: 1), end: #colorLiteral(red: 0.05, green: 0.09, blue: 0.09, alpha: 1))
+extension Gradient {
+    public static let exchange: Gradient = .init(start: #colorLiteral(red: 0.3, green: 0.09, blue: 0.73, alpha: 1), end: #colorLiteral(red: 0.05, green: 0.09, blue: 0.09, alpha: 1))
 }
 
 public enum Radius: Int {
@@ -25,7 +25,7 @@ public enum Radius: Int {
 }
 
 /// This is just a view that shows a gradient. Use this wherever you want to show a gradient
-/// and set its properties in Interface Builder. 
+/// and set its properties in Interface Builder.
 public class GradientView: UIView {
 
     enum Direction: Int {
@@ -37,7 +37,7 @@ public class GradientView: UIView {
         case bottomLeft
     }
 
-    @IBInspectable var startColor: UIColor = UIColor(white: 0.0, alpha: 0.9) {
+    @IBInspectable var startColor = UIColor(white: 0.0, alpha: 0.9) {
         didSet {
             updateGradientLayer()
         }

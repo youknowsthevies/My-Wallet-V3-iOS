@@ -20,14 +20,16 @@ final class FileCache: FileCacheAPI {
     private let jsonEncoder: JSONEncoder
     private let jsonDecoder: JSONDecoder
     private lazy var cacheDirectoryURLs: [URL] = { fileManager.urls(
-            for: .cachesDirectory,
-            in: .userDomainMask
-        )
+        for: .cachesDirectory,
+        in: .userDomainMask
+    )
     }()
 
-    init(fileManager: FileManager = .default,
-         jsonEncoder: JSONEncoder = JSONEncoder(),
-         jsonDecoder: JSONDecoder = JSONDecoder()) {
+    init(
+        fileManager: FileManager = .default,
+        jsonEncoder: JSONEncoder = JSONEncoder(),
+        jsonDecoder: JSONDecoder = JSONDecoder()
+    ) {
         self.fileManager = fileManager
         self.jsonEncoder = jsonEncoder
         self.jsonDecoder = jsonDecoder
@@ -63,8 +65,8 @@ final class FileCache: FileCacheAPI {
     }
 }
 
-private extension Date {
-    static var currentTimeStampString: String {
+extension Date {
+    fileprivate static var currentTimeStampString: String {
         "\(Int(Date().timeIntervalSince1970 * 1000))"
     }
 }

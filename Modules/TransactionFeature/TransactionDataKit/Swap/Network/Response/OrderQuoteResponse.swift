@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import TransactionKit
 import PlatformKit
+import TransactionKit
 
 struct OrderQuoteResponse: Decodable {
 
@@ -14,8 +14,10 @@ struct OrderQuoteResponse: Decodable {
             case priceTiers
         }
 
-        init(pair: OrderPairResponse,
-             priceTiers: [OrderPriceTierResponse]) {
+        init(
+            pair: OrderPairResponse,
+            priceTiers: [OrderPriceTierResponse]
+        ) {
             self.pair = pair
             self.priceTiers = priceTiers
         }
@@ -53,16 +55,18 @@ struct OrderQuoteResponse: Decodable {
     let createdAt: Date
     let updatedAt: Date
 
-    init(identifier: String,
-         product: ProductResponse = .brokerage,
-         pair: OrderPairResponse,
-         quote: Self.OrderQuote,
-         networkFee: MoneyValue,
-         staticFee: MoneyValue,
-         sampleDepositAddress: String,
-         expiresAt: Date,
-         createdAt: Date,
-         updatedAt: Date) {
+    init(
+        identifier: String,
+        product: ProductResponse = .brokerage,
+        pair: OrderPairResponse,
+        quote: Self.OrderQuote,
+        networkFee: MoneyValue,
+        staticFee: MoneyValue,
+        sampleDepositAddress: String,
+        expiresAt: Date,
+        createdAt: Date,
+        updatedAt: Date
+    ) {
         self.identifier = identifier
         self.product = product
         self.pair = pair
@@ -96,7 +100,7 @@ struct OrderQuoteResponse: Decodable {
             from: updatedAt,
             container: values
         )
-        self.sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
+        sampleDepositAddress = try values.decode(String.self, forKey: .sampleDepositAddress)
         let networkFeeValue = try values.decode(String.self, forKey: .networkFee)
         let staticFeeValue = try values.decode(String.self, forKey: .staticFee)
         let zeroDestination = MoneyValue.zero(currency: pair.destinationCurrencyType)
@@ -106,10 +110,12 @@ struct OrderQuoteResponse: Decodable {
     }
 }
 
-private extension OrderQuoteResponse {
+extension OrderQuoteResponse {
 
-    static func date(from stringValue: String,
-                     container: KeyedDecodingContainer<CodingKeys>) throws -> Date {
+    fileprivate static func date(
+        from stringValue: String,
+        container: KeyedDecodingContainer<CodingKeys>
+    ) throws -> Date {
         let formatter = DateFormatter.sessionDateFormat
         if let value = formatter.date(from: stringValue) {
             return value

@@ -32,6 +32,7 @@ extension Bundle {
         }
         return version
     }
+
     /// The build version of the application. Equivalent to CFBundleVersion.
     public static var applicationBuildVersion: String? {
         guard let infoDictionary = main.infoDictionary else {
@@ -42,6 +43,7 @@ extension Bundle {
         }
         return buildVersion
     }
+
     /// The name of the application. Equivalent to CFBundleDisplayName.
     public static var applicationName: String? {
         guard let infoDictionary = main.infoDictionary else {

@@ -25,7 +25,6 @@ final class FiatFormatterProvider {
                 )
                 self.formatterMap[mapKey] = formatter
             }
-
         }
         return formatter
     }

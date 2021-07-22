@@ -14,7 +14,7 @@ public final class AssetLineChartTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

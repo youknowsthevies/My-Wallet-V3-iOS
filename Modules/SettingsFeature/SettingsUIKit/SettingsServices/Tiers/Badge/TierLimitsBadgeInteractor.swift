@@ -14,16 +14,16 @@ final class TierLimitsBadgeInteractor: DefaultBadgeAssetInteractor {
     init(limitsProviding: TierLimitsProviding) {
         super.init()
         limitsProviding.tiers
-            .map { $0.interactionModel }
+            .map(\.interactionModel)
             .catchErrorJustReturn(.loading)
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
     }
 }
 
-fileprivate extension KYC.UserTiers {
+extension KYC.UserTiers {
 
-    var interactionModel: BadgeAsset.State.BadgeItem.Interaction {
+    fileprivate var interactionModel: BadgeAsset.State.BadgeItem.Interaction {
         // TODO: Update with correct copy + Localization
         let locked: BadgeAsset.State.BadgeItem.Interaction = .loaded(next: .locked)
 
@@ -56,7 +56,7 @@ fileprivate extension KYC.UserTiers {
     }
 }
 
-fileprivate extension BadgeAsset.Value.Interaction.BadgeItem {
-    typealias Model = BadgeAsset.Value.Interaction.BadgeItem
-    static let locked: Model = .init(type: .destructive, description: LocalizationConstants.Settings.Badge.Limits.failed)
+extension BadgeAsset.Value.Interaction.BadgeItem {
+    fileprivate typealias Model = BadgeAsset.Value.Interaction.BadgeItem
+    fileprivate static let locked: Model = .init(type: .destructive, description: LocalizationConstants.Settings.Badge.Limits.failed)
 }

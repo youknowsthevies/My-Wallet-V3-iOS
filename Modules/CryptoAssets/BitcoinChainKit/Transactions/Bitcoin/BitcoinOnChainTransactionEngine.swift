@@ -50,17 +50,19 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
 
     // MARK: - Init
 
-    init(requireSecondPassword: Bool,
-         priceService: PriceServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         bridge: BitcoinChainSendBridgeAPI = resolve(),
-         feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)) {
+    init(
+        requireSecondPassword: Bool,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        bridge: BitcoinChainSendBridgeAPI = resolve(),
+        feeService: AnyCryptoFeeService<BitcoinChainTransactionFee<Token>> = resolve(tag: Token.coin)
+    ) {
         self.requireSecondPassword = requireSecondPassword
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.bridge = bridge
         self.feeService = feeService
-        self.feeCache = CachedValue<BitcoinChainTransactionFee<Token>>(
+        feeCache = CachedValue<BitcoinChainTransactionFee<Token>>(
             configuration: .periodic(90)
         )
         feeCache.setFetch(weak: self) { (self) in
@@ -113,9 +115,11 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                 fiatAmountAndFees(from: pendingTransaction),
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
-            .map { (fiatAmountAndFees, feeSelectionOption) -> (amountInFiat: MoneyValue,
-                                                               feesInFiat: MoneyValue,
-                                                               feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
+            .map { fiatAmountAndFees, feeSelectionOption -> (
+                amountInFiat: MoneyValue,
+                feesInFiat: MoneyValue,
+                feeSelectionOption: TransactionConfirmation.Model.FeeSelection
+            ) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
             }
@@ -168,21 +172,23 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
                     .catchError { error -> Single<BitcoinChainTransactionCandidate<Token>> in
                         let candidate: BitcoinChainTransactionCandidate<Token>
                         switch error {
-                        case let BitcoinChainTransactionError.noUnspentOutputs(finalFee, sweepAmount, sweepFee),
-                             let BitcoinChainTransactionError.belowDustThreshold(finalFee, sweepAmount, sweepFee),
-                             let BitcoinChainTransactionError.feeTooLow(finalFee, sweepAmount, sweepFee),
-                             let BitcoinChainTransactionError.unknown(finalFee, sweepAmount, sweepFee):
+                        case BitcoinChainTransactionError.noUnspentOutputs(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.belowDustThreshold(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.feeTooLow(let finalFee, let sweepAmount, let sweepFee),
+                             BitcoinChainTransactionError.unknown(let finalFee, let sweepAmount, let sweepFee):
                             candidate = .init(proposal: proposal, fees: finalFee, sweepAmount: sweepAmount, sweepFee: sweepFee)
                         default:
-                            candidate = .init(proposal: proposal,
-                                              fees: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                                              sweepAmount: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
-                                              sweepFee: MoneyValue.zero(currency: Token.coin.cryptoCurrency))
+                            candidate = .init(
+                                proposal: proposal,
+                                fees: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
+                                sweepAmount: MoneyValue.zero(currency: Token.coin.cryptoCurrency),
+                                sweepFee: MoneyValue.zero(currency: Token.coin.cryptoCurrency)
+                            )
                         }
                         return .just(candidate)
                     }
             }
-            .map { (candidate) -> PendingTransaction in
+            .map { candidate -> PendingTransaction in
                 pendingTransaction.update(
                     amount: amount,
                     available: candidate.sweepAmount,
@@ -304,7 +310,7 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
                 try self.getFeeState(pendingTransaction: pendingTransaction)
             }
-            .map { (feeState) -> TransactionConfirmation.Model.FeeSelection in
+            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
                 TransactionConfirmation.Model.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,
@@ -319,8 +325,8 @@ final class BitcoinOnChainTransactionEngine<Token: BitcoinChainToken>: OnChainTr
             .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency)),
             .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: Token.coin.cryptoCurrency))
         )
-        .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
-        .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
+        .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
+        .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
             let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
             let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
             return (fiatAmount, fiatFees)

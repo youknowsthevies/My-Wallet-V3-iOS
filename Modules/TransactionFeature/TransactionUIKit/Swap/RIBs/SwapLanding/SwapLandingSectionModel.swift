@@ -22,7 +22,7 @@ enum SwapLandingSectionItem: Equatable {
 }
 
 extension SwapLandingSectionItem {
-    static func ==(lhs: SwapLandingSectionItem, rhs: SwapLandingSectionItem) -> Bool {
+    static func == (lhs: SwapLandingSectionItem, rhs: SwapLandingSectionItem) -> Bool {
         switch (lhs, rhs) {
         case (.pair(let left), .pair(let right)):
             return left.sourceAccount.currencyType == right.sourceAccount.currencyType &&

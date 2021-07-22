@@ -30,8 +30,8 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_ascent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100_000, currency: .bitcoin))
-        let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .bitcoin))
+        let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
             CoinSelectionInputs(
@@ -42,10 +42,10 @@ class CoinSelectionTests: XCTestCase {
             )
         )
 
-        let selected = unspents([ 20_000, 30_000, 50_000, 300_000 ])
+        let selected = unspents([20000, 30000, 50000, 300000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
-            absoluteFee: BigUInt(37_070),
+            absoluteFee: BigUInt(37070),
             consumedAmount: BigUInt.zero
         )
         let outputs = try result.get()
@@ -53,8 +53,8 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_ascent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 472_000, currency: .bitcoin))
-        let coins = unspents([ 200_000, 300_000, 500_000 ])
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 472000, currency: .bitcoin))
+        let coins = unspents([200000, 300000, 500000])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
             CoinSelectionInputs(
@@ -64,19 +64,19 @@ class CoinSelectionTests: XCTestCase {
                 sortingStrategy: strategy
             )
         )
-        let selected = unspents([ 200_000, 300_000 ])
+        let selected = unspents([200000, 300000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
             absoluteFee: selected.sum() - outputAmount.amount.magnitude,
-            consumedAmount: BigUInt(9_190)
+            consumedAmount: BigUInt(9190)
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
 
     func test_descent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100_000, currency: .bitcoin))
-        let coins = unspents([ 1, 20_000, 0, 0, 300_000, 50_000, 30_000 ])
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .bitcoin))
+        let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
             CoinSelectionInputs(
@@ -87,8 +87,8 @@ class CoinSelectionTests: XCTestCase {
             )
         )
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: unspents([ 300_000 ]),
-            absoluteFee: BigUInt(12_485),
+            spendableOutputs: unspents([300000]),
+            absoluteFee: BigUInt(12485),
             consumedAmount: BigUInt.zero
         )
         let outputs = try result.get()
@@ -96,8 +96,8 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_descent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 485_000, currency: .bitcoin))
-        let coins = unspents([ 200_000, 300_000, 500_000 ])
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 485000, currency: .bitcoin))
+        let coins = unspents([200000, 300000, 500000])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
             CoinSelectionInputs(
@@ -107,22 +107,22 @@ class CoinSelectionTests: XCTestCase {
                 sortingStrategy: strategy
             )
         )
-        let selected = unspents([ 500_000 ])
+        let selected = unspents([500000])
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: selected,
             absoluteFee: selected.sum() - outputAmount.amount.magnitude,
-            consumedAmount: BigUInt(4_385)
+            consumedAmount: BigUInt(4385)
         )
         let outputs = try result.get()
         XCTAssertEqual(outputs, expectedOutputs)
     }
 
     func test_select_all_selection_with_effective_inputs() throws {
-        let coins = unspents([ 1, 20_000, 0, 0, 300_000 ])
+        let coins = unspents([1, 20000, 0, 0, 300000])
         let result = subject.select(all: coins, fee: fee)
         let expectedOutputs = SpendableUnspentOutputs(
-            spendableOutputs: unspents([ 20_000, 300_000 ]),
-            absoluteFee: BigUInt(18_810),
+            spendableOutputs: unspents([20000, 300000]),
+            absoluteFee: BigUInt(18810),
             consumedAmount: BigUInt.zero
         )
         let outputs = try result.get()
@@ -142,7 +142,7 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_select_all_selection_with_no_effective_inputs() throws {
-        let coins = unspents([ 1, 10, 100 ])
+        let coins = unspents([1, 10, 100])
         let result = subject.select(all: coins, fee: fee)
         let expectedOutputs = SpendableUnspentOutputs(
             spendableOutputs: unspents([]),
@@ -166,14 +166,16 @@ private func unspents(_ values: [Int]) -> [UnspentOutput] {
 }
 
 extension UnspentOutput {
-    static func create(with value: BitcoinValue,
-                       hash: String = "hash",
-                       script: String = "script",
-                       confirmations: UInt = 0,
-                       transactionIndex: Int = 0,
-                       xpub: XPub = XPub(m: "m", path: "path"),
-                       isReplayable: Bool = true,
-                       isForceInclude: Bool = false) -> UnspentOutput {
+    static func create(
+        with value: BitcoinValue,
+        hash: String = "hash",
+        script: String = "script",
+        confirmations: UInt = 0,
+        transactionIndex: Int = 0,
+        xpub: XPub = XPub(m: "m", path: "path"),
+        isReplayable: Bool = true,
+        isForceInclude: Bool = false
+    ) -> UnspentOutput {
         UnspentOutput(
             hash: hash,
             script: script,

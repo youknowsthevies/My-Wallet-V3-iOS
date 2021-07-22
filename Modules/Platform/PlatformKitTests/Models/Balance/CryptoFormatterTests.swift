@@ -13,11 +13,11 @@ class CryptoFormatterTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        self.englishLocale = Locale(identifier: "en_US")
-        self.btcFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoin, minFractionDigits: 1)
-        self.ethFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .ethereum, minFractionDigits: 1)
-        self.bchFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoinCash, minFractionDigits: 1)
-        self.xlmFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .stellar, minFractionDigits: 1)
+        englishLocale = Locale(identifier: "en_US")
+        btcFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoin, minFractionDigits: 1)
+        ethFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .ethereum, minFractionDigits: 1)
+        bchFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .bitcoinCash, minFractionDigits: 1)
+        xlmFormatter = CryptoFormatter(locale: englishLocale, cryptoCurrency: .stellar, minFractionDigits: 1)
     }
 
     func testFormatWithoutSymbolBtc() {
@@ -255,7 +255,7 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "1,000,000.0",
-            xlmFormatter.format(value: CryptoValue.create(major: 1_000_000, currency: .stellar))
+            xlmFormatter.format(value: CryptoValue.create(major: 1000000, currency: .stellar))
         )
     }
 
@@ -266,33 +266,43 @@ class CryptoFormatterTests: XCTestCase {
         )
         XCTAssertEqual(
             "0.1 XLM",
-            xlmFormatter.format(value: CryptoValue.create(major: "0.1", currency: .stellar)!,
-                                withPrecision: .short,
-                                includeSymbol: true)
+            xlmFormatter.format(
+                value: CryptoValue.create(major: "0.1", currency: .stellar)!,
+                withPrecision: .short,
+                includeSymbol: true
+            )
         )
         XCTAssertEqual(
             "0.0 XLM",
-            xlmFormatter.format(value: CryptoValue.create(major: "0", currency: .stellar)!,
-                                withPrecision: .short,
-                                includeSymbol: true)
+            xlmFormatter.format(
+                value: CryptoValue.create(major: "0", currency: .stellar)!,
+                withPrecision: .short,
+                includeSymbol: true
+            )
         )
         XCTAssertEqual(
             "1.0 XLM",
-            xlmFormatter.format(value: CryptoValue.create(major: "1", currency: .stellar)!,
-                                withPrecision: .short,
-                                includeSymbol: true)
+            xlmFormatter.format(
+                value: CryptoValue.create(major: "1", currency: .stellar)!,
+                withPrecision: .short,
+                includeSymbol: true
+            )
         )
         XCTAssertEqual(
             "1,000.0 XLM",
-            xlmFormatter.format(value: CryptoValue.create(major: 1000, currency: .stellar),
-                                withPrecision: .short,
-                                includeSymbol: true)
+            xlmFormatter.format(
+                value: CryptoValue.create(major: 1000, currency: .stellar),
+                withPrecision: .short,
+                includeSymbol: true
+            )
         )
         XCTAssertEqual(
             "1,000,000.0 XLM",
-            xlmFormatter.format(value: CryptoValue.create(major: 1_000_000, currency: .stellar),
-                                withPrecision: .short,
-                                includeSymbol: true)
+            xlmFormatter.format(
+                value: CryptoValue.create(major: 1000000, currency: .stellar),
+                withPrecision: .short,
+                includeSymbol: true
+            )
         )
     }
 

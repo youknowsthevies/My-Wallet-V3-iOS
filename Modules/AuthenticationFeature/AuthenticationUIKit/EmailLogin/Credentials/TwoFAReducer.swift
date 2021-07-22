@@ -38,21 +38,21 @@ let twoFAReducer = Reducer<
     TwoFAState,
     TwoFAAction,
     CredentialsEnvironment
-> { state, action, environment in
+> { state, action, _ in
     switch action {
-    case let .didChangeTwoFACode(code):
+    case .didChangeTwoFACode(let code):
         state.twoFACode = code
         return .none
-    case let .didChangeTwoFACodeAttemptsLeft(attemptsLeft):
+    case .didChangeTwoFACodeAttemptsLeft(let attemptsLeft):
         state.twoFACodeAttemptsLeft = attemptsLeft
         return Effect(value: .incorrectTwoFACodeErrorVisibility(true))
-    case let .incorrectTwoFACodeErrorVisibility(isVisible):
+    case .incorrectTwoFACodeErrorVisibility(let isVisible):
         state.isTwoFACodeIncorrect = isVisible
         return .none
-    case let .resendSMSButtonVisibility(isVisible):
+    case .resendSMSButtonVisibility(let isVisible):
         state.isResendSMSButtonVisible = isVisible
         return .none
-    case let .twoFACodeFieldVisibility(isVisible):
+    case .twoFACodeFieldVisibility(let isVisible):
         state.twoFACode = ""
         state.isTwoFACodeFieldVisible = isVisible
         return .none

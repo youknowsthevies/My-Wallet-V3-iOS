@@ -19,6 +19,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
     private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - The controllers
+
     var sideMenuViewController: SideMenuViewController?
     var tabControllerManager: TabControllerManager?
     var slidingViewController: ECSlidingViewController?
@@ -39,14 +40,17 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
     @LazyInject var transactionsAdapter: TransactionsAdapterAPI
 
-    init(store: Store<LoggedIn.State, LoggedIn.Action>,
-         onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve()) {
+    init(
+        store: Store<LoggedIn.State, LoggedIn.Action>,
+        onboardingRouter: OnboardingUIKit.OnboardingRouterAPI = resolve()
+    ) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
         self.onboardingRouter = onboardingRouter
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -102,7 +106,7 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
             .displayWalletAlertContent
             .compactMap { $0 }
             .removeDuplicates()
-            .sink {[weak self] content in
+            .sink { [weak self] content in
                 self?.showAlert(with: content)
             }
             .store(in: &cancellables)
@@ -155,8 +159,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
         TabControllerManager()
     }
 
-    private func slidingControllerProvider(sideMenuController: SideMenuViewController?,
-                                           tabController: TabControllerManager?) -> ECSlidingViewController {
+    private func slidingControllerProvider(
+        sideMenuController: SideMenuViewController?,
+        tabController: TabControllerManager?
+    ) -> ECSlidingViewController {
         let viewController = ECSlidingViewController()
         // Assign the required controllers
         viewController.underLeftViewController = sideMenuController
@@ -255,6 +261,7 @@ extension LoggedInHostingController: SideMenuViewControllerDelegate {
     }
 
     // MARK: - LoggedInReloadAPI
+
     func reload() {
         accountsAndAddressesNavigationController?.reload()
         sideMenuViewController?.reload()

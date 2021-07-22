@@ -41,6 +41,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         setup()
     }
 
+    @available(*, unavailable)
     public required init?(coder aDecoder: NSCoder) {
         fatalError("\(#function) is not implemented")
     }
@@ -105,7 +106,7 @@ public final class AnnouncementCardView: UIView, AnnouncementCardViewConforming 
         button.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             button.heightAnchor.constraint(equalToConstant: 50)
-            ])
+        ])
         button.accessibility = .id(Accessibility.Identifier.Dashboard.Announcement.confirmButton)
         buttonsStackView.addArrangedSubview(button)
     }

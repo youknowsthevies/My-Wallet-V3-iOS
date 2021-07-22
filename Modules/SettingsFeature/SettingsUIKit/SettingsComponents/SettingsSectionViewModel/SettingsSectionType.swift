@@ -80,8 +80,10 @@ enum SettingsSectionType: Int, Equatable {
         }
 
         /// Any payment method can get under this category
-        enum LinkedPaymentMethodCellType<AddNewCellPresenter: IdentifiableType,
-                                         LinkedCellPresenter: Equatable & IdentifiableType>: Equatable, IdentifiableType {
+        enum LinkedPaymentMethodCellType<
+            AddNewCellPresenter: IdentifiableType,
+            LinkedCellPresenter: Equatable & IdentifiableType
+        >: Equatable, IdentifiableType {
             var identity: AnyHashable {
                 switch self {
                 case .skeleton(let index):
@@ -97,8 +99,10 @@ enum SettingsSectionType: Int, Equatable {
             case linked(LinkedCellPresenter)
             case add(AddNewCellPresenter)
 
-            static func == (lhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>,
-                            rhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>) -> Bool {
+            static func == (
+                lhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>,
+                rhs: SettingsSectionType.CellType.LinkedPaymentMethodCellType<AddNewCellPresenter, LinkedCellPresenter>
+            ) -> Bool {
                 switch (lhs, rhs) {
                 case (.skeleton(let left), .skeleton(let right)):
                     return left == right

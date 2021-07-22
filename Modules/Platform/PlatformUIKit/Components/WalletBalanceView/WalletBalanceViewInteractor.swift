@@ -38,13 +38,15 @@ public final class WalletBalanceViewInteractor {
     private lazy var setup: Void = {
         stateObservableProvider()
             .bindAndCatch(to: self.stateRelay)
-                .disposed(by: self.disposeBag)
+            .disposed(by: self.disposeBag)
     }()
 
     // MARK: - Setup
 
-    public init(account: BlockchainAccount,
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    public init(
+        account: BlockchainAccount,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         stateObservableProvider = {
             fiatCurrencyService.fiatCurrencyObservable
                 .flatMap { fiatCurrency in

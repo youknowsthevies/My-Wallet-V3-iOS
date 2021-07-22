@@ -47,15 +47,17 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
     private(set) var repository: WalletRepositoryAPI!
     private(set) var legacyRepository: WalletRepository!
 
-    init(wallet: Wallet = Wallet()!,
-         appSettings: BlockchainSettings.App = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve()) {
+    init(
+        wallet: Wallet = Wallet()!,
+        appSettings: BlockchainSettings.App = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve()
+    ) {
         self.appSettings = appSettings
         self.wallet = wallet
         self.reactiveWallet = reactiveWallet
         super.init()
         let repository = WalletRepository(jsContextProvider: self, settings: appSettings, reactiveWallet: reactiveWallet)
-        self.legacyRepository = repository
+        legacyRepository = repository
         self.repository = repository
         self.wallet.repository = repository
         self.wallet.delegate = self
@@ -140,7 +142,7 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
             return
         }
         currencySymbols["code"] = fiatCode
-        self.latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
+        latestMultiAddressResponse?.symbol_local = CurrencySymbol(dict: currencySymbols)
     }
 }
 
@@ -239,7 +241,7 @@ extension WalletManager: WalletDelegate {
     func didGet(_ response: MultiAddressResponse) {
         latestMultiAddressResponse = response
         wallet.getAccountInfoAndExchangeRates()
-        let newDefaultAccountLabeledAddressesCount = self.wallet.getDefaultAccountLabelledAddressesCount()
+        let newDefaultAccountLabeledAddressesCount = wallet.getDefaultAccountLabelledAddressesCount()
         let newCount = newDefaultAccountLabeledAddressesCount
         BlockchainSettings.App.shared.defaultAccountLabelledAddressesCount = Int(newCount)
         updateFiatSymbols()
@@ -282,6 +284,7 @@ extension WalletManager: WalletDelegate {
     }
 
     // MARK: - History
+
     func didFailGetHistory(_ error: String?) {
         DispatchQueue.main.async { [unowned self] in
             self.historyDelegate?.didFailGetHistory(error: error)
@@ -295,6 +298,7 @@ extension WalletManager: WalletDelegate {
     }
 
     // MARK: - Second Password
+
     @objc func getSecondPassword(withSuccess success: WalletSuccessCallback, dismiss: WalletDismissCallback) {
         secondPasswordDelegate?.getSecondPassword(success: success, dismiss: dismiss)
     }
@@ -304,6 +308,7 @@ extension WalletManager: WalletDelegate {
     }
 
     // MARK: - Key Importing
+
     func askUserToAddWatchOnlyAddress(_ address: AssetAddress, then: @escaping () -> Void) {
         DispatchQueue.main.async { [unowned self] in
             self.keyImportDelegate?.askUserToAddWatchOnlyAddress(address, then: then)

@@ -100,6 +100,7 @@ struct CreateBankLinkageResponse: Decodable {
         let fastlinkUrl: String?
         let fastlinkParams: FastlinkParameters?
     }
+
     let id: String
     let partner: BankLinkagePartner
     let attributes: LinkBankAttrsResponse?

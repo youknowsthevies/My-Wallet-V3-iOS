@@ -182,8 +182,8 @@ public final class ButtonView: UIView {
     }
 }
 
-public extension Reactive where Base: ButtonView {
-    var viewModel: Binder<ButtonViewModel> {
+extension Reactive where Base: ButtonView {
+    public var viewModel: Binder<ButtonViewModel> {
         Binder(base) { buttonView, viewModel in
             buttonView.viewModel = viewModel
         }

@@ -18,12 +18,13 @@ import WalletPayloadKit
 /// as late as possible and also would be deallocated when is no longer in use
 /// TICKET: IOS-2619
 @objc class AppCoordinator: NSObject,
-                            MainFlowProviding,
-                            BackupFlowStarterAPI,
-                            SettingsStarterAPI,
-                            TabControllerManagerProvider,
-                            LoggedInReloadAPI,
-                            ClearOnLogoutAPI {
+    MainFlowProviding,
+    BackupFlowStarterAPI,
+    SettingsStarterAPI,
+    TabControllerManagerProvider,
+    LoggedInReloadAPI,
+    ClearOnLogoutAPI
+{
 
     // MARK: - Properties
 
@@ -67,9 +68,9 @@ import WalletPayloadKit
 
     override init() {
         super.init()
-        self.walletManager.accountInfoAndExchangeRatesDelegate = self
-        self.walletManager.backupDelegate = self
-        self.walletManager.historyDelegate = self
+        walletManager.accountInfoAndExchangeRatesDelegate = self
+        walletManager.backupDelegate = self
+        walletManager.historyDelegate = self
         observeSymbolChanges()
     }
 
@@ -109,9 +110,10 @@ import WalletPayloadKit
         }
 
         if blockchainSettings.pinKey == nil,
-            blockchainSettings.encryptedPinPassword == nil,
-            blockchainSettings.guid == nil,
-            blockchainSettings.sharedKey == nil {
+           blockchainSettings.encryptedPinPassword == nil,
+           blockchainSettings.guid == nil,
+           blockchainSettings.sharedKey == nil
+        {
 
             credentialsStore.synchronize()
 
@@ -235,19 +237,19 @@ import WalletPayloadKit
     }
 
     private func setupLoggedInFlow() -> UIViewController {
-        self.setupTabControllerManager()
-        self.setupSideMenuViewController()
+        setupTabControllerManager()
+        setupSideMenuViewController()
         let viewController = ECSlidingViewController()
-        viewController.underLeftViewController = self.sideMenuViewController
-        viewController.topViewController = self.tabControllerManager?.tabViewController
-        self.slidingViewController = viewController
+        viewController.underLeftViewController = sideMenuViewController
+        viewController.topViewController = tabControllerManager?.tabViewController
+        slidingViewController = viewController
         sideMenuViewController.tabControllerManager = tabControllerManager
         sideMenuViewController.slidingViewController = slidingViewController
 
         sideMenuViewController?.peekPadding = viewController.anchorRightPeekAmount
-        self.tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
-        self.tabControllerManager?.tabViewController.loadViewIfNeeded()
-        self.tabControllerManager?.showDashboard()
+        tabControllerManager?.tabViewController.sideMenuGesture = viewController.panGesture
+        tabControllerManager?.tabViewController.loadViewIfNeeded()
+        tabControllerManager?.showDashboard()
         return viewController
     }
 
@@ -267,11 +269,11 @@ import WalletPayloadKit
                 )
             )
         }
-        self.sideMenuViewController = viewController
+        sideMenuViewController = viewController
     }
 
     private func setupTabControllerManager() {
-        self.tabControllerManager = TabControllerManager()
+        tabControllerManager = TabControllerManager()
     }
 
     /// Observes symbol changes so that view controllers can reflect the new symbol
@@ -367,7 +369,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         ) as! AccountsAndAddressesNavigationController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .coverVertical
-        self.accountsAndAddressesNavigationController = viewController
+        accountsAndAddressesNavigationController = viewController
         return viewController
     }
 

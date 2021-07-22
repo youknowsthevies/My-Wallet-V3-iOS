@@ -56,7 +56,7 @@ final class KYCResubmitIdentityController: KYCBaseViewController, ProgressableVi
     // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .verifyIdentity(countryCode) = model else { return }
+        guard case .verifyIdentity(let countryCode) = model else { return }
         self.countryCode = countryCode
     }
 
@@ -125,16 +125,19 @@ extension KYCResubmitIdentityController: LoadingView {
 extension KYCResubmitIdentityController: VeriffController {
     func onVeriffSubmissionCompleted() {
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)
-        delegate?.submitVerification(onCompleted: { [unowned self] in
-            self.dismiss(animated: true, completion: {
-                self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
-            })},
-        onError: { error in
-            self.dismiss(animated: true, completion: {
-                AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
-            })
-            Logger.shared.error("Failed to submit verification \(String(describing: error))")
-        })
+        delegate?.submitVerification(
+            onCompleted: { [unowned self] in
+                self.dismiss(animated: true, completion: {
+                    self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
+                })
+            },
+            onError: { error in
+                self.dismiss(animated: true, completion: {
+                    AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                })
+                Logger.shared.error("Failed to submit verification \(String(describing: error))")
+            }
+        )
     }
 
     func onVeriffError(message: String) {
@@ -159,7 +162,7 @@ extension KYCResubmitIdentityController: VeriffController {
     }
 }
 
-extension KYCResubmitIdentityController: CameraPromptingDelegate { }
+extension KYCResubmitIdentityController: CameraPromptingDelegate {}
 
 extension KYCResubmitIdentityController: MicrophonePromptingDelegate {
     func onMicrophonePromptingComplete() {

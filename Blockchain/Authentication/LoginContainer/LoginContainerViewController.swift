@@ -158,15 +158,21 @@ final class LoginContainerViewController: UIViewController {
 
 extension LoginContainerViewController: UICollectionViewDelegate, UICollectionViewDataSource {
 
-    func collectionView(_ collectionView: UICollectionView,
-                        numberOfItemsInSection section: Int) -> Int {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         inputs.count
     }
 
-    func collectionView(_ collectionView: UICollectionView,
-                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: LoginContainerCollectionViewCell.self),
-                                                      for: indexPath) as! LoginContainerCollectionViewCell
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: String(describing: LoginContainerCollectionViewCell.self),
+            for: indexPath
+        ) as! LoginContainerCollectionViewCell
 
         let input = inputs[indexPath.row]
         if let viewController = input.viewController {
@@ -209,10 +215,12 @@ extension LoginContainerViewController {
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         let visibleRect = scrollView.bounds
-        let expectedRect = CGRect(x: CGFloat(pageControl.currentPage + 1) * scrollView.contentOffset.x,
-                                  y: scrollView.bounds.minY,
-                                  width: scrollView.bounds.width,
-                                  height: scrollView.bounds.height)
+        let expectedRect = CGRect(
+            x: CGFloat(pageControl.currentPage + 1) * scrollView.contentOffset.x,
+            y: scrollView.bounds.minY,
+            width: scrollView.bounds.width,
+            height: scrollView.bounds.height
+        )
         guard visibleRect == expectedRect else { return }
         didFinishScrolling()
     }
@@ -223,7 +231,7 @@ extension LoginContainerViewController {
         let fraction = min(normalizedOffset / maxOffset, 0.99)
         translationAnimator.fractionComplete = fraction
 
-        if !isPageControlCurrentlyInteracted && scrollView.contentSize.width > 0 {
+        if !isPageControlCurrentlyInteracted, scrollView.contentSize.width > 0 {
             let offset = scrollView.contentOffset.x - scrollView.bounds.width * 0.5
             let page = Int(offset / scrollView.contentSize.width * CGFloat(inputs.count))
             pageControl.currentPage = max(page, 0)

@@ -29,8 +29,10 @@ final class KYCStatusChecker: KYCStatusChecking {
     private let kycSettings: KYCSettingsAPI
     private let kycTiersService: KYCTiersServiceAPI
 
-    init(kycSettings: KYCSettingsAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        kycSettings: KYCSettingsAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.kycSettings = kycSettings
         self.kycTiersService = kycTiersService
     }
@@ -48,7 +50,7 @@ final class KYCStatusChecker: KYCStatusChecking {
         return Single.zip(hasAnyApprovedKYCTier, isCompletingKyc)
             .observeOn(MainScheduler.asyncInstance)
             .do(onSubscribe: whileLoading)
-            .flatMap(weak: self) { (_, payload) -> Single<KYCStatus> in
+            .flatMap(weak: self) { _, payload -> Single<KYCStatus> in
                 let (hasAnyApprovedKYCTier, isCompletingKyc) = payload
                 switch (hasAnyApprovedKYCTier, isCompletingKyc) {
                 case (false, false):

@@ -13,7 +13,7 @@ import PlatformKit
 /// 5. Implement the event using `AnalyticsEventRecorderAPI`
 extension AnalyticsEvents {
 
-    private struct Parameter {
+    private enum Parameter {
         static let asset = "asset"
         static let currency = "currency"
     }
@@ -164,7 +164,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             nil
         }
     }
@@ -202,7 +202,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             case .bitpayUrlDeeplink(asset: let asset),
                  .bitpayUrlScanned(asset: let asset),
@@ -287,7 +287,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             let assetParamName = Parameter.asset
             switch self {
             case .sendTabItemClick:
@@ -337,7 +337,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             nil
         }
     }
@@ -367,7 +367,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             // Transactions - transaction item clicked
             case .transactionsListItemClick(asset: let asset):
@@ -433,7 +433,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             nil
         }
     }
@@ -455,7 +455,7 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             case .assetSelectorOpen(asset: let asset):
                 return [Parameter.asset: asset.code]

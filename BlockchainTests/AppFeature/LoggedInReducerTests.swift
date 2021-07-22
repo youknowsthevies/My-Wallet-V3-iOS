@@ -21,7 +21,7 @@ final class LoggedInReducerTests: XCTestCase {
     var mockSettingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
     var mockExchangeAccountRepository: MockExchangeAccountRepository!
-    var mockRemoteNotificationAuthorizer:MockRemoteNotificationAuthorizer!
+    var mockRemoteNotificationAuthorizer: MockRemoteNotificationAuthorizer!
     var mockRemoteNotificationServiceContainer: MockRemoteNotificationServiceContainer!
     var mockCoincore: MockCoincore!
     var mockAnalyticsRecorder: MockAnalyticsRecorder!

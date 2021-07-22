@@ -38,11 +38,12 @@ public final class InteractableTextTableViewCell: UITableViewCell {
         verticalConstraints = instructionTextView.layoutToSuperview(axis: .vertical)
     }
 
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         viewModel = nil
     }

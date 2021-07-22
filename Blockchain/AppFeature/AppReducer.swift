@@ -37,7 +37,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     blurEffectHandler: $0.blurEffectHandler,
                     backgroundAppHandler: $0.backgroundAppHandler
                 )
-            }),
+            }
+        ),
     mainAppReducer
         .pullback(
             state: \.coreState,
@@ -66,7 +67,8 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
                     mainQueue: $0.mainQueue,
                     buildVersionProvider: $0.buildVersionProvider
                 )
-            }),
+            }
+        ),
     appReducerCore
 )
 
@@ -95,7 +97,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
         return .merge(
             .fireAndForget {
                 if environment.walletManager.wallet.isInitialized() {
-                    if environment.blockchainSettings.guid != nil && environment.blockchainSettings.sharedKey != nil {
+                    if environment.blockchainSettings.guid != nil, environment.blockchainSettings.sharedKey != nil {
                         environment.blockchainSettings.hasEndedFirstSession = true
                     }
                     environment.walletManager.close()
@@ -141,7 +143,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
 @available(*, deprecated, message: "this is for compatibility, it should be removed when we add onBoardingReducer")
 private func handleWillEnterForeground(coordinator: AppCoordinator) {
     if !WalletManager.shared.wallet.isInitialized() {
-        if BlockchainSettings.App.shared.guid != nil && BlockchainSettings.App.shared.sharedKey != nil {
+        if BlockchainSettings.App.shared.guid != nil, BlockchainSettings.App.shared.sharedKey != nil {
             AuthenticationCoordinator.shared.start()
         } else {
             if coordinator.onboardingRouter.state == .standard {

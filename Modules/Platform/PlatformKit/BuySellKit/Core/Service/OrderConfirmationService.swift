@@ -23,8 +23,10 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         client: CardOrderConfirmationClientAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        client: CardOrderConfirmationClientAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
     }
@@ -44,20 +46,20 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
             partner = .funds
         }
 
-        return self.client.confirmOrder(
-                with: orderId,
-                partner: partner,
-                paymentMethodId: paymentMethodId
-            )
-            .map(weak: self) { (self, response) in
-                OrderDetails(recorder: self.analyticsRecorder, response: response)
+        return client.confirmOrder(
+            with: orderId,
+            partner: partner,
+            paymentMethodId: paymentMethodId
+        )
+        .map(weak: self) { (self, response) in
+            OrderDetails(recorder: self.analyticsRecorder, response: response)
+        }
+        .map { details -> OrderDetails in
+            guard let details = details else {
+                throw ServiceError.mappingError
             }
-            .map { details -> OrderDetails in
-                guard let details = details else {
-                    throw ServiceError.mappingError
-                }
-                return details
-            }
-            .map { checkoutData.checkoutData(byAppending: $0) }
+            return details
+        }
+        .map { checkoutData.checkoutData(byAppending: $0) }
     }
 }

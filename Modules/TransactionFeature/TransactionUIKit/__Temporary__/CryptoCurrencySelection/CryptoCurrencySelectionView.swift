@@ -98,7 +98,7 @@ struct CryptoCurrencySelectionView: View {
                 }
                 .padding()
 
-                if viewStore.cryptoCurrencies.isEmpty && viewStore.loadingCryptoCurrencies {
+                if viewStore.cryptoCurrencies.isEmpty, viewStore.loadingCryptoCurrencies {
                     Spacer()
                     ActivityIndicatorView()
                     Spacer()

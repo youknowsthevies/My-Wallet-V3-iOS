@@ -26,24 +26,29 @@ public final class SingleAmountInteractor: AmountViewInteracting {
     public let inputCurrency: Currency
 
     // MARK: - Private
+
     private let currencyService: CurrencyServiceAPI
 
     private let disposeBag = DisposeBag()
 
-    public init(currencyService: CurrencyServiceAPI,
-                inputCurrency: Currency) {
-        self.activeInput = .just(inputCurrency.isFiatCurrency ? .fiat : .crypto)
+    public init(
+        currencyService: CurrencyServiceAPI,
+        inputCurrency: Currency
+    ) {
+        activeInput = .just(inputCurrency.isFiatCurrency ? .fiat : .crypto)
         self.currencyService = currencyService
         self.inputCurrency = inputCurrency
-        self.currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
+        currencyInteractor = InputAmountLabelInteractor(currency: inputCurrency)
 
-        self.amount = currencyInteractor
+        amount = currencyInteractor
             .scanner
             .input
             .compactMap { [inputCurrency] input -> MoneyValue? in
                 let amount = input.isEmpty || input.isPlaceholderZero ? "0" : input.amount
-                return MoneyValue.create(major: amount,
-                                         currency: inputCurrency.currency)
+                return MoneyValue.create(
+                    major: amount,
+                    currency: inputCurrency.currency
+                )
             }
             .share(replay: 1, scope: .whileConnected)
     }

@@ -47,8 +47,8 @@ extension AddBankCellModel: Equatable {
     }
 }
 
-private extension Accessibility.Identifier {
-    enum AddBankView {
+extension Accessibility.Identifier {
+    fileprivate enum AddBankView {
         private static let prefix = "AddBankView."
         static let image = "\(prefix)image"
         static let name = "\(prefix)name."

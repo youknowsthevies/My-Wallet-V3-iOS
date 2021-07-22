@@ -27,7 +27,7 @@ final class WalletActionCellPresenter {
             templateColor = .fiat
             accentColor = UIColor.fiat.withAlphaComponent(0.15)
         }
-        self.badgeImageViewModel = .template(
+        badgeImageViewModel = .template(
             image: .local(name: action.imageName, bundle: .platformUIKit),
             templateColor: templateColor,
             backgroundColor: accentColor,

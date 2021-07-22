@@ -20,7 +20,7 @@ final class QRCodeScannerOverlayViewModel {
         qrCodeFlashService.isEnabled
     }
 
-    /// Streams events when a scan was successful 
+    /// Streams events when a scan was successful
     let scanSuccess = PublishRelay<Bool>()
 
     /// Streams events when the flash button is tapped

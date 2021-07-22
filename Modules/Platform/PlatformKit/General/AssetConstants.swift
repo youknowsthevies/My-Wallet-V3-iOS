@@ -2,8 +2,8 @@
 
 import Foundation
 
-public struct AssetConstants {
-    public struct URLSchemes {
+public enum AssetConstants {
+    public enum URLSchemes {
         public static let blockchain = "blockchain"
         public static let blockchainWallet = "blockchain-wallet"
         public static let mail = "message"

@@ -76,24 +76,27 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
     }
 
     // MARK: - Methods
+
     func connect(state: Driver<AccountPickerPresenter.State>) -> Driver<AccountPickerInteractor.Effects> {
         disposeBag = DisposeBag()
         tableView.delegate = self
 
         let stateWait: Driver<AccountPickerPresenter.State> =
-            self.rx.viewDidLoad
-            .asDriver()
-            .flatMap { _ in
-                state
-            }
+            rx.viewDidLoad
+                .asDriver()
+                .flatMap { _ in
+                    state
+                }
 
         stateWait
             .map(\.navigationModel)
             .drive(weak: self) { (self, model) in
                 self.titleViewStyle = model.titleViewStyle
-                self.set(barStyle: model.barStyle,
-                         leadingButtonStyle: model.leadingButton,
-                         trailingButtonStyle: model.trailingButton)
+                self.set(
+                    barStyle: model.barStyle,
+                    leadingButtonStyle: model.leadingButton,
+                    trailingButtonStyle: model.trailingButton
+                )
             }
             .disposed(by: disposeBag)
 

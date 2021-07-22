@@ -24,9 +24,11 @@ extension UIViewController {
     ///   - toChild: To `UIViewController` child to be added
     ///   - shouldAnimate: If `true` an animation would occur, otherwise the `toChild` will appear immediatally.
     ///                    Default value is `true`
-    public func transition(from fromChild: UIViewController,
-                           to toChild: UIViewController,
-                           animate shouldAnimate: Bool = true) {
+    public func transition(
+        from fromChild: UIViewController,
+        to toChild: UIViewController,
+        animate shouldAnimate: Bool = true
+    ) {
         guard shouldAnimate else {
             add(child: toChild)
             fromChild.remove()

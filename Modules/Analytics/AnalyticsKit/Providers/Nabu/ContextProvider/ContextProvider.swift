@@ -8,9 +8,11 @@ final class ContextProvider: ContextProviderAPI {
     private let timeZone: TimeZone
     private let locale: Locale
 
-    init(guidProvider: GuidRepositoryAPI,
-         timeZone: TimeZone = .current,
-         locale: Locale = .current) {
+    init(
+        guidProvider: GuidRepositoryAPI,
+        timeZone: TimeZone = .current,
+        locale: Locale = .current
+    ) {
         self.guidProvider = guidProvider
         self.timeZone = timeZone
         self.locale = locale

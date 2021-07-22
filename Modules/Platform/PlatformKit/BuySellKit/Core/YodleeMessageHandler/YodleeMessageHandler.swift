@@ -8,7 +8,7 @@ public final class YodleeMessageHandler: NSObject, WKScriptMessageHandler {
     static let yodleeHandlerName = "YWebViewHandler"
 
     public var receivedMessage: Observable<YodleeModel> {
-        self.rx
+        rx
             .methodInvoked(#selector(userContentController(_:didReceive:)))
             .compactMap { args -> WKScriptMessage? in
                 guard args.count == 2 else {
@@ -50,8 +50,10 @@ public final class YodleeMessageHandler: NSObject, WKScriptMessageHandler {
 
     // MARK: - WKScriptMessageHandler
 
-    public func userContentController(_ userContentController: WKUserContentController,
-                                      didReceive message: WKScriptMessage) {
+    public func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {
         // empty implementation on purpose as it will be handled by `receivedMessage` observable
     }
 }

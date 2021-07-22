@@ -24,13 +24,13 @@ struct MockEthereumWalletTestData {
         privateKey: MockEthereumWalletTestData.privateKey
     )
 
-    struct Transaction {
+    enum Transaction {
         static let to = "0x3535353535353535353535353535353535353535"
         static let value: BigUInt = 1
         static let nonce: BigUInt = 9
-        static let gasPrice: BigUInt = 11_000_000_000
-        static let gasLimit: BigUInt = 21_000
-        static let gasLimitContract: BigUInt = 65_000
+        static let gasPrice: BigUInt = 11000000000
+        static let gasLimit: BigUInt = 21000
+        static let gasLimitContract: BigUInt = 65000
         static let data: Data? = Data()
     }
 }

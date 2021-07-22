@@ -22,11 +22,11 @@ public protocol BottomButtonContainerView {
     var layoutConstraintBottomButton: NSLayoutConstraint! { get }
 }
 
-public extension BottomButtonContainerView where Self: UIViewController {
+extension BottomButtonContainerView where Self: UIViewController {
 
     /// Sets up this view so that it can respond to keyboard show/hide events.
     /// This should be called in viewDidAppear()
-    func setUpBottomButtonContainerView() {
+    public func setUpBottomButtonContainerView() {
         NotificationCenter.when(UIResponder.keyboardWillShowNotification) {
             self.keyboardWillShow(with: KeyboardObserver.Payload(with: $0.userInfo))
         }
@@ -36,11 +36,11 @@ public extension BottomButtonContainerView where Self: UIViewController {
     }
 
     /// Call this in deinit to remove the instance as an observer to the NotificationCenter
-    func cleanUp() {
+    public func cleanUp() {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func keyboardWillShow(with payload: KeyboardObserver.Payload?) {
+    public func keyboardWillShow(with payload: KeyboardObserver.Payload?) {
         guard let payload = payload else { return }
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(payload.duration)
@@ -50,7 +50,7 @@ public extension BottomButtonContainerView where Self: UIViewController {
         UIView.commitAnimations()
     }
 
-    func keyboardWillHide(with payload: KeyboardObserver.Payload?) {
+    public func keyboardWillHide(with payload: KeyboardObserver.Payload?) {
         guard let payload = payload else { return }
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(payload.duration)

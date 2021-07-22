@@ -87,17 +87,21 @@ final class ActivityScreenInteractor {
     }
 }
 
-fileprivate extension ActivityScreenInteractor.State {
+extension ActivityScreenInteractor.State {
 
     /// Initializer that receives the loading state and
     /// maps it to `self`
-    init(with items: [ActivityItemEvent],
-         exchangeProviding: ExchangeProviding) {
+    fileprivate init(
+        with items: [ActivityItemEvent],
+        exchangeProviding: ExchangeProviding
+    ) {
         let interactors: [ActivityItemInteractor] = items
             .sorted(by: >)
             .map { item in
-                ActivityItemInteractor(activityItemEvent: item,
-                                       exchangeAPI: exchangeProviding[item.amount.currencyType])
+                ActivityItemInteractor(
+                    activityItemEvent: item,
+                    exchangeAPI: exchangeProviding[item.amount.currencyType]
+                )
             }
         self = interactors.isEmpty ? .invalid(.empty) : .value(interactors)
     }

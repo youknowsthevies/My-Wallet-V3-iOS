@@ -11,7 +11,7 @@ enum ERC20Function: Equatable {
 
     init?(data: String?) {
         guard let tuple = ERC20Function.extractFunction(from: data)
-            else { return nil }
+        else { return nil }
         self.init(identifier: tuple.id, data: tuple.data)
     }
 
@@ -45,7 +45,6 @@ enum ERC20Function: Equatable {
                 to: String(data[addressStart..<addressEnd]),
                 amount: String(data[addressEnd..<data.endIndex])
             )
-
         }
         let result = extractData()
         return .transfer(to: result.to, amount: result.amount)

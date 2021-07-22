@@ -9,7 +9,7 @@ final class PairingDataQRCodeParser: QRCodeScannerParsing {
 
     // MARK: - Types
 
-    private struct Constant {
+    private enum Constant {
         static let guidLength = 36
         static let componentCount = 3
         static let requiredVersion = "1"
@@ -26,8 +26,10 @@ final class PairingDataQRCodeParser: QRCodeScannerParsing {
 
     // MARK: - Setup
 
-    func parse(scanResult: Result<String, QRScannerError>,
-               completion: ((Result<PairingData, PairingCodeParsingError>) -> Void)?) {
+    func parse(
+        scanResult: Result<String, QRScannerError>,
+        completion: ((Result<PairingData, PairingCodeParsingError>) -> Void)?
+    ) {
         guard let completion = completion else {
             fatalError("completion handler must be sent to complete QR parsing")
         }

@@ -41,28 +41,34 @@ public final class CurrencyLabeledButtonViewModel: LabeledButtonViewModelAPI {
 
     // MARK: - Setup
 
-    convenience init(amount: MoneyValue,
-                     format: String = "%@",
-                     style: LabeledButtonViewStyle = .currency,
-                     accessibilityId: String) {
+    convenience init(
+        amount: MoneyValue,
+        format: String = "%@",
+        style: LabeledButtonViewStyle = .currency,
+        accessibilityId: String
+    ) {
         let amountString = amount.toDisplayString(includeSymbol: true)
         let text = String(format: format, amountString)
         let buttonContent = Self.buttonContent(from: style, text: text, amountString: amountString, accessibilityId: accessibilityId)
         self.init(amount: amount, style: style, buttonContent: buttonContent)
     }
 
-    init(amount: MoneyValue,
-         style: LabeledButtonViewStyle,
-         buttonContent: ButtonContent) {
+    init(
+        amount: MoneyValue,
+        style: LabeledButtonViewStyle,
+        buttonContent: ButtonContent
+    ) {
         self.amount = amount
         backgroundColor = style.backgroundColor
         contentRelay.accept(buttonContent)
     }
 
-    private static func buttonContent(from style: LabeledButtonViewStyle,
-                                      text: String,
-                                      amountString: String,
-                                      accessibilityId: String) -> ButtonContent {
+    private static func buttonContent(
+        from style: LabeledButtonViewStyle,
+        text: String,
+        amountString: String,
+        accessibilityId: String
+    ) -> ButtonContent {
         ButtonContent(
             text: text,
             font: style.font,

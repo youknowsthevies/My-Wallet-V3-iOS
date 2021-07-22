@@ -25,8 +25,10 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
     private let interactor: SwitchViewInteracting
     private let disposeBag = DisposeBag()
 
-    init(service: EmailNotificationSettingsServiceAPI,
-         analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        service: EmailNotificationSettingsServiceAPI,
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve()
+    ) {
         interactor = EmailSwitchViewInteractor(service: service)
 
         viewModel.isSwitchedOnRelay
@@ -43,14 +45,14 @@ final class EmailSwitchViewPresenter: SwitchViewPresenting {
             .disposed(by: disposeBag)
 
         interactor.state
-            .compactMap { $0.value }
-            .map { $0.isEnabled }
+            .compactMap(\.value)
+            .map(\.isEnabled)
             .bindAndCatch(to: viewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         interactor.state
-            .compactMap { $0.value }
-            .map { $0.isOn }
+            .compactMap(\.value)
+            .map(\.isOn)
             .bindAndCatch(to: viewModel.isOnRelay)
             .disposed(by: disposeBag)
     }

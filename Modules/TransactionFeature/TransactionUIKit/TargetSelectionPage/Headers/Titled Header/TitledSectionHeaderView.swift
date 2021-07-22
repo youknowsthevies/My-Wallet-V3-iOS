@@ -4,9 +4,9 @@ import PlatformUIKit
 import UIKit
 
 final class TitledSectionHeaderView: UIView {
-    private let titleLabel: UILabel = UILabel()
-    private let sectionTitleLabel: UILabel = UILabel()
-    private let separator: UIView = UIView()
+    private let titleLabel = UILabel()
+    private let sectionTitleLabel = UILabel()
+    private let separator = UIView()
 
     var model: TitledSectionHeaderModel! {
         didSet {

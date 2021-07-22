@@ -65,7 +65,7 @@ class SideMenuPresenter {
         self.wallet = wallet
         self.walletService = walletService
         self.reactiveWallet = reactiveWallet
-        self.introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
+        introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
         secureChannelConfiguration = appFeatureConfigurator.configuration(for: .secureChannel)
         secureChannelInternalEnabled = internalFeatureFlagService.isEnabled(.secureChannel)
@@ -87,9 +87,9 @@ class SideMenuPresenter {
             .subscribe(onSuccess: { [weak self] events in
                 guard let self = self else { return }
                 self.execute(events: events)
-                }, onError: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.introductionRelay.accept(.none)
+            }, onError: { [weak self] _ in
+                guard let self = self else { return }
+                self.introductionRelay.accept(.none)
             })
             .disposed(by: disposeBag)
     }

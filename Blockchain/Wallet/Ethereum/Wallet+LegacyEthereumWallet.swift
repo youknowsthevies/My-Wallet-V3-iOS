@@ -15,9 +15,9 @@ extension Wallet: LegacyEthereumWalletAPI {
             let result: String = context.evaluateScriptCheckIsOnMainQueue(function)?.toString(),
             !result.isEmpty,
             result != "null"
-            else {
-                success(nil)
-                return
+        else {
+            success(nil)
+            return
         }
         success(result)
     }
@@ -56,7 +56,7 @@ extension Wallet: LegacyEthereumWalletAPI {
     }
 
     public func getLabelForEthereumAccount(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        self.ethereumAccounts(
+        ethereumAccounts(
             with: secondPassword,
             success: { accounts in
                 guard
@@ -75,7 +75,7 @@ extension Wallet: LegacyEthereumWalletAPI {
     }
 
     public func getEthereumAddress(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
-        self.ethereumAccounts(
+        ethereumAccounts(
             with: secondPassword,
             success: { accounts in
                 guard

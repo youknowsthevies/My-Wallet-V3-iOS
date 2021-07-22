@@ -6,8 +6,8 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Send {
-        public enum Header { }
-        public enum Text { }
+        public enum Header {}
+        public enum Text {}
     }
 }
 
@@ -33,14 +33,14 @@ extension LocalizationConstants.Send.Text {
 }
 
 extension LocalizationConstants.Send {
-    public struct Source {
+    public enum Source {
         public static let subject = NSLocalizedString(
             "From",
             comment: "Transfer screen: source address / account subject"
         )
     }
 
-    public struct Destination {
+    public enum Destination {
         public static let subject = NSLocalizedString(
             "To",
             comment: "Transfer screen: destination address / account subject"
@@ -55,14 +55,14 @@ extension LocalizationConstants.Send {
         )
     }
 
-    public struct Fees {
+    public enum Fees {
         public static let subject = NSLocalizedString(
             "Fees",
             comment: "Transfer screen: fees subject"
         )
     }
 
-    public struct SpendableBalance {
+    public enum SpendableBalance {
         public static let prefix = NSLocalizedString(
             "Use total spendable balance: ",
             comment: "String displayed to the user when they want to send their full balance to an address."
@@ -74,8 +74,8 @@ extension LocalizationConstants.Send {
         comment: "Transfer screen: primary CTA button"
     )
 
-    public struct Error {
-        public struct Balance {
+    public enum Error {
+        public enum Balance {
             public static let title = NSLocalizedString(
                 "Not Enough %@",
                 comment: "Prefix for alert title when there is not enough balance"
@@ -89,7 +89,8 @@ extension LocalizationConstants.Send {
                 comment: "Prefix for alert description when there is not enough balance"
             )
         }
-        public struct DestinationAddress {
+
+        public enum DestinationAddress {
             public static let title = NSLocalizedString(
                 "Invalid %@ Address",
                 comment: "Prefix for alert title when the destination address is invalid"
@@ -103,7 +104,8 @@ extension LocalizationConstants.Send {
                 comment: "Prefix for alert description when the destination address is invalid"
             )
         }
-        public struct PendingTransaction {
+
+        public enum PendingTransaction {
             public static let title = NSLocalizedString(
                 "Waiting for Payment",
                 comment: "Alert title when transaction cannot be sent because there is another in progress"

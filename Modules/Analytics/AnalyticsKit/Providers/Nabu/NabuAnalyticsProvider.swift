@@ -18,28 +18,34 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
     private let platform: Platform
     private let eventsRepository: NabuAnalyticsEventsRepositoryAPI
     private let contextProvider: ContextProviderAPI
-    private let queue: DispatchQueue = DispatchQueue(label: "AnalyticsKit", qos: .background)
+    private let queue = DispatchQueue(label: "AnalyticsKit", qos: .background)
     private var cancellables = Set<AnyCancellable>()
 
     @Published private var events = [Event]()
 
-    public convenience init(platform: Platform,
-                            basePath: String,
-                            userAgent: String,
-                            tokenRepository: TokenRepositoryAPI,
-                            guidProvider: GuidRepositoryAPI) {
+    public convenience init(
+        platform: Platform,
+        basePath: String,
+        userAgent: String,
+        tokenRepository: TokenRepositoryAPI,
+        guidProvider: GuidRepositoryAPI
+    ) {
         let client = APIClient(basePath: basePath, userAgent: userAgent)
         let eventsRepository = NabuAnalyticsEventsRepository(client: client, tokenRepository: tokenRepository)
         let contextProvider = ContextProvider(guidProvider: guidProvider)
-        self.init(platform: platform,
-                  eventsRepository: eventsRepository,
-                  contextProvider: contextProvider)
+        self.init(
+            platform: platform,
+            eventsRepository: eventsRepository,
+            contextProvider: contextProvider
+        )
     }
 
-    init(fileCache: FileCacheAPI = FileCache(),
-         platform: Platform,
-         eventsRepository: NabuAnalyticsEventsRepositoryAPI,
-         contextProvider: ContextProviderAPI) {
+    init(
+        fileCache: FileCacheAPI = FileCache(),
+        platform: Platform,
+        eventsRepository: NabuAnalyticsEventsRepositoryAPI,
+        contextProvider: ContextProviderAPI
+    ) {
 
         self.fileCache = fileCache
         self.platform = platform
@@ -99,8 +105,8 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
         self.events = self.events.filter { !events.contains($0) }
         let eventsWrapper = EventsWrapper(contextProvider: contextProvider, events: events, platform: platform)
         eventsRepository.publish(events: eventsWrapper)
-            .sink() { [fileCache] completion in
-                if case let .failure(error) = completion {
+            .sink { [fileCache] completion in
+                if case .failure(let error) = completion {
                     if (500...599).contains(error.errorCode) || error.networkUnavailableReason != nil {
                         fileCache.save(events: events)
                     }

@@ -3,12 +3,12 @@
 extension Accessibility.Identifier {
     public enum Activity {
         static let prefix = "Activity."
-        public enum WalletPickerView { }
-        public enum WalletBalance { }
-        public enum ActivityCell { }
-        public enum WalletSelectorView { }
-        public enum EmptyState { }
-        public enum Details { }
+        public enum WalletPickerView {}
+        public enum WalletBalance {}
+        public enum ActivityCell {}
+        public enum WalletSelectorView {}
+        public enum EmptyState {}
+        public enum Details {}
     }
 }
 

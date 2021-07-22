@@ -31,12 +31,12 @@ extension BIP21URI {
         let bitpayPaymentLink = "https://bitpay.com/"
         let hasBitpayPaymentUrl = urlString.contains(bitpayPaymentLink)
 
-        if urlString.contains(doubleSlash) && !hasBitpayPaymentUrl {
+        if urlString.contains(doubleSlash), !hasBitpayPaymentUrl {
             let queryArgs = url.queryArgs
 
             address = url.host ?? queryArgs["address"]
             amount = queryArgs["amount"]
-        } else if urlString.contains(colon) && hasBitpayPaymentUrl {
+        } else if urlString.contains(colon), hasBitpayPaymentUrl {
             return nil
         } else if urlString.contains(colon) {
             // Handle web format (e.g. "scheme:1Amu4uPJnYbUXX2HhDFMNq7tSneDwWYDyv")

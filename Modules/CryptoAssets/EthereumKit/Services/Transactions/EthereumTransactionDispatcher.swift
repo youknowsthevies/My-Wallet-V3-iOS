@@ -16,9 +16,11 @@ final class EthereumTransactionDispatcher: EthereumTransactionDispatcherAPI {
     private let keyPairProvider: AnyKeyPairProvider<EthereumKeyPair>
     private let transactionSendingService: EthereumTransactionSendingServiceAPI
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
-         transactionSendingService: EthereumTransactionSendingServiceAPI = resolve()) {
+    init(
+        with bridge: EthereumWalletBridgeAPI = resolve(),
+        keyPairProvider: AnyKeyPairProvider<EthereumKeyPair> = resolve(),
+        transactionSendingService: EthereumTransactionSendingServiceAPI = resolve()
+    ) {
         self.bridge = bridge
         self.keyPairProvider = keyPairProvider
         self.transactionSendingService = transactionSendingService

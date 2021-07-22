@@ -6,7 +6,7 @@ import RxSwift
 
 final class MockEmailAuthorizationService: EmailAuthorizationServiceAPI {
 
-    var authorize: Completable = Completable.empty()
+    var authorize = Completable.empty()
 
     func cancel() {}
 

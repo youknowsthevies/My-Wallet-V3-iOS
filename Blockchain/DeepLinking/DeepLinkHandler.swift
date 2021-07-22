@@ -13,17 +13,22 @@ final class DeepLinkHandler: DeepLinkHandling {
     private let appSettings: BlockchainSettings.App
     private let kycSettings: KYCSettingsAPI
 
-    init(appSettings: BlockchainSettings.App = resolve(),
-         kycSettings: KYCSettingsAPI = resolve()) {
+    init(
+        appSettings: BlockchainSettings.App = resolve(),
+        kycSettings: KYCSettingsAPI = resolve()
+    ) {
         self.appSettings = appSettings
         self.kycSettings = kycSettings
     }
 
-    func handle(deepLink: String,
-                supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases) {
+    func handle(
+        deepLink: String,
+        supportedRoutes: [DeepLinkRoute] = DeepLinkRoute.allCases
+    ) {
         Logger.shared.debug("[DeepLinkHandler] Attempting to handle deep link.")
         guard let route = DeepLinkRoute.route(from: deepLink, supportedRoutes: supportedRoutes),
-            let payload = DeepLinkPayload.create(from: deepLink, supportedRoutes: supportedRoutes) else {
+              let payload = DeepLinkPayload.create(from: deepLink, supportedRoutes: supportedRoutes)
+        else {
             Logger.shared.debug("Unhandled deep link \(deepLink)")
             return
         }

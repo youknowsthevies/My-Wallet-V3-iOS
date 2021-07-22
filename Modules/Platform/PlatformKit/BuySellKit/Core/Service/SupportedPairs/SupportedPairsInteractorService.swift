@@ -38,8 +38,10 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
 
     // MARK: - Setup
 
-    init(pairsService: SupportedPairsServiceAPI = resolve(),
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        pairsService: SupportedPairsServiceAPI = resolve(),
+        fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.pairsService = pairsService
         self.fiatCurrencySettingsService = fiatCurrencySettingsService
 

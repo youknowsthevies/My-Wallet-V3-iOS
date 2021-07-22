@@ -28,7 +28,7 @@ public protocol EthereumWalletBridgeAPI: AnyObject {
 }
 
 public typealias CompleteEthereumWalletBridgeAPI =
-      EthereumWalletBridgeAPI
-    & EthereumWalletAccountBridgeAPI
-    & MnemonicAccessAPI
-    & PasswordAccessAPI
+    EthereumWalletBridgeAPI
+        & EthereumWalletAccountBridgeAPI
+        & MnemonicAccessAPI
+        & PasswordAccessAPI

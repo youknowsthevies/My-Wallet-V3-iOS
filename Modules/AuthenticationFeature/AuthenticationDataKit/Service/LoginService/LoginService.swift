@@ -21,20 +21,22 @@ public final class LoginService: LoginServiceAPI {
 
     // MARK: - Setup
 
-    public init(payloadService: WalletPayloadServiceAPI,
-                twoFAPayloadService: TwoFAWalletServiceAPI,
-                repository: GuidRepositoryAPI) {
+    public init(
+        payloadService: WalletPayloadServiceAPI,
+        twoFAPayloadService: TwoFAWalletServiceAPI,
+        repository: GuidRepositoryAPI
+    ) {
         self.payloadService = payloadService
         self.twoFAPayloadService = twoFAPayloadService
         self.repository = repository
-        self.authenticator = authenticatorRelay.asObservable()
+        authenticator = authenticatorRelay.asObservable()
     }
 
     // MARK: - API
 
     public func login(walletIdentifier: String) -> Completable {
         /// Set the wallet identifier as `GUID`
-        return repository
+        repository
             .set(guid: walletIdentifier)
             .andThen(payloadService.requestUsingSessionToken())
             .catchError { error -> Single<WalletAuthenticatorType> in
@@ -64,7 +66,7 @@ public final class LoginService: LoginServiceAPI {
     }
 
     public func login(walletIdentifier: String, code: String) -> Completable {
-        return twoFAPayloadService
+        twoFAPayloadService
             .send(code: code)
             .catchError { error -> Completable in
                 switch error {
@@ -106,7 +108,7 @@ extension LoginService {
     }
 
     public func loginPublisher(walletIdentifier: String, code: String) -> AnyPublisher<Void, LoginServiceError> {
-        return twoFAPayloadService
+        twoFAPayloadService
             .sendPublisher(code: code)
             .mapError(LoginServiceError.twoFAWalletServiceError)
             .eraseToAnyPublisher()

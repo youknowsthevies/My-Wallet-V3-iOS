@@ -28,6 +28,7 @@ extension LocalizationConstants {
                 comment: "Welcome announcement card skip button title"
             )
         }
+
         public enum VerifyEmail {
             public static let title = NSLocalizedString(
                 "Verify Your Email Address",
@@ -42,6 +43,7 @@ extension LocalizationConstants {
                 comment: "Verify email announcement card CTA button title"
             )
         }
+
         public enum BackupFunds {
             public static let title = NSLocalizedString(
                 "Wallet Recovery Phrase",
@@ -56,6 +58,7 @@ extension LocalizationConstants {
                 comment: "Backup funds announcement card CTA button title"
             )
         }
+
         public enum SimpleBuyPendingTransaction {
             public static let titlePrefix = NSLocalizedString(
                 "Pending",
@@ -77,6 +80,7 @@ extension LocalizationConstants {
                 SimpleBuy.Checkout.Button.transferDetails
             }
         }
+
         public enum SimpleBuyFinishSignup {
             public static let title = NSLocalizedString(
                 "Finish Signing Up. Buy Crypto.",
@@ -108,6 +112,7 @@ extension LocalizationConstants {
                 comment: "Send to Domains announcement card CTA button title"
             )
         }
+
         public enum BlockstackAirdropReceived {
             public static let title = NSLocalizedString(
                 "Your Airdrop has landed",
@@ -122,6 +127,7 @@ extension LocalizationConstants {
                 comment: "STX airdrop received announcement card CTA button title"
             )
         }
+
         public enum BlockstackAirdropRegisteredMini {
             public static let title = NSLocalizedString(
                 "A Reward for Being Gold Level",
@@ -132,6 +138,7 @@ extension LocalizationConstants {
                 comment: "STX airdrop registered announcement mini card description"
             )
         }
+
         public enum IdentityVerification {
             public static let title = NSLocalizedString(
                 "Finish Verifying Your Account",
@@ -146,6 +153,7 @@ extension LocalizationConstants {
                 comment: "Finish identity verification announcement card CTA button title"
             )
         }
+
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",
@@ -160,6 +168,7 @@ extension LocalizationConstants {
                 comment: "Cloud Backup announcement card CTA button title"
             )
         }
+
         public enum Exchange {
             public static let title = NSLocalizedString(
                 "Introducing the Exchange",
@@ -174,6 +183,7 @@ extension LocalizationConstants {
                 comment: "Exchange announcement card CTA button title"
             )
         }
+
         public enum CashIdentityVerification {
             public static let title = NSLocalizedString("Keep Cash in Your Wallet", comment: "Keep Cash in Your Wallet")
             public static let description = NSLocalizedString(
@@ -183,6 +193,7 @@ extension LocalizationConstants {
             public static let badgeName = NSLocalizedString("NEW", comment: "NEW")
             public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
+
         public enum InterestIdentityVerification {
             public static let title = NSLocalizedString("Earn 9.0% Interest", comment: "Earn 4.5% Interest")
             public enum Description {
@@ -195,8 +206,10 @@ extension LocalizationConstants {
                     comment: "Verify your identity and start earning up to 9.0% interest on your crypto."
                 )
             }
+
             public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
+
         public enum FiatFundsLinkBank {
             public static let title = NSLocalizedString("Link a Bank to Buy Crypto", comment: "Link a Bank to Buy Crypto")
             public static let description = NSLocalizedString(
@@ -205,6 +218,7 @@ extension LocalizationConstants {
             )
             public static let linkABank = NSLocalizedString("Link a Bank", comment: "Link a Bank")
         }
+
         public enum Bitpay {
             public static let description = NSLocalizedString(
                 "With BitPay, you can now use your Blockchain wallet for purchases with supporting retailers.",
@@ -228,6 +242,7 @@ extension LocalizationConstants {
                 comment: "Buy BTC announcement card CTA button title"
             )
         }
+
         public enum NewSwap {
             public enum Promo {
                 public static let title = NSLocalizedString(
@@ -243,6 +258,7 @@ extension LocalizationConstants {
                     comment: ""
                 )
             }
+
             public enum Eligible {
                 public static let title = NSLocalizedString(
                     "Swap it like it’s hot.",
@@ -257,6 +273,7 @@ extension LocalizationConstants {
                     comment: ""
                 )
             }
+
             public enum NotEligible {
                 public static let title = NSLocalizedString(
                     "Swap better.",
@@ -272,6 +289,7 @@ extension LocalizationConstants {
                 )
             }
         }
+
         public enum Swap {
             public static let title = NSLocalizedString(
                 "Trade Crypto",
@@ -286,6 +304,7 @@ extension LocalizationConstants {
                 comment: "Swap announcement card CTA button title"
             )
         }
+
         public enum TransferInCrypto {
             public static let title = NSLocalizedString(
                 "Transfer In Crypto",
@@ -300,6 +319,7 @@ extension LocalizationConstants {
                 comment: "Transfer crypto announcement card CTA button title"
             )
         }
+
         public enum ResubmitDocuments {
             public static let title = NSLocalizedString(
                 "Documents Needed",
@@ -314,6 +334,7 @@ extension LocalizationConstants {
                 comment: "The title of the action on the announcement card for when a user needs to submit documents to verify their identity."
             )
         }
+
         public enum KycAirdrop {
             public static let title = NSLocalizedString(
                 "Want Free Crypto?",
@@ -328,6 +349,7 @@ extension LocalizationConstants {
                 comment: "Kyc airdrop announcement card CTA button title"
             )
         }
+
         public enum TwoFA {
             public static let title = NSLocalizedString(
                 "Enable 2-Step Verification",

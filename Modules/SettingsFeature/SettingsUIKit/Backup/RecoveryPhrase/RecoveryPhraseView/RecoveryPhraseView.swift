@@ -83,8 +83,8 @@ final class RecoveryPhraseView: UIView {
     }
 }
 
-fileprivate extension Reactive where Base: RecoveryPhraseView {
-    var mnemonicContent: Binder<([LabelContent])> {
+extension Reactive where Base: RecoveryPhraseView {
+    fileprivate var mnemonicContent: Binder<[LabelContent]> {
         Binder(base) { view, payload in
             payload.enumerated().forEach { value in
                 view.labels[value.0].content = value.1

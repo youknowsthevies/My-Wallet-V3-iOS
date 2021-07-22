@@ -18,8 +18,10 @@ final class NabuAnalyticsEventsRepository: NabuAnalyticsEventsRepositoryAPI {
 
     // MARK: - Setup
 
-    init(client: EventSendingAPI,
-         tokenRepository: TokenRepositoryAPI) {
+    init(
+        client: EventSendingAPI,
+        tokenRepository: TokenRepositoryAPI
+    ) {
         self.client = client
         self.tokenRepository = tokenRepository
     }

@@ -31,10 +31,12 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
 
     // MARK: - Init
 
-    public init(title: String,
-                subtitle: String,
-                selected: Bool = false,
-                hideSeparator: Bool = true) {
+    public init(
+        title: String,
+        subtitle: String,
+        selected: Bool = false,
+        hideSeparator: Bool = true
+    ) {
         let model: LineItemViewViewModel = .init(
             title: title,
             subtitle: subtitle
@@ -58,6 +60,6 @@ public final class RadioLineItemCellPresenter: IdentifiableType {
 extension RadioLineItemCellPresenter: Equatable {
     public static func == (lhs: RadioLineItemCellPresenter, rhs: RadioLineItemCellPresenter) -> Bool {
         lhs.identity == rhs.identity &&
-        lhs.selectedRelay.value == rhs.selectedRelay.value
+            lhs.selectedRelay.value == rhs.selectedRelay.value
     }
 }

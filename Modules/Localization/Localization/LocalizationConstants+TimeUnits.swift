@@ -4,9 +4,9 @@
 
 import Foundation
 
-public extension LocalizationConstants {
-    struct TimeUnit {
-        public struct Singular {
+extension LocalizationConstants {
+    public enum TimeUnit {
+        public enum Singular {
             public static let hour = NSLocalizedString(
                 "hr",
                 comment: "Dashboard: balance component - hourly price movement"
@@ -28,8 +28,8 @@ public extension LocalizationConstants {
                 comment: "Dashboard: balance component - years price movement"
             )
         }
-        
-        public struct Plural {
+
+        public enum Plural {
             public static let hours = NSLocalizedString(
                 "hrs",
                 comment: "Dashboard: balance component - hourly price movement"

@@ -13,7 +13,7 @@ public struct BottomSheet {
         dismissalTitle: String,
         actions: [BottomSheetAction],
         dismissable: Bool = true
-        ) {
+    ) {
         self.title = title
         self.dismissalTitle = dismissalTitle
         self.actions = actions
@@ -22,7 +22,7 @@ public struct BottomSheet {
 }
 
 // TODO: Combine `AlertAction` with `BottomSheetAction`. They should be shared between
-// `AlertView` and `BottomSheetView`. 
+// `AlertView` and `BottomSheetView`.
 public struct BottomSheetAction {
     public typealias Action = () -> Void
 

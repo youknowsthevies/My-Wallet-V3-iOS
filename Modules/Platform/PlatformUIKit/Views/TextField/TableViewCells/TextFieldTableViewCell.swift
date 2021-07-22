@@ -17,7 +17,7 @@ public final class TextFieldTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setup()
     }
@@ -35,9 +35,11 @@ public final class TextFieldTableViewCell: UITableViewCell {
         textFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
 
-    public func setup(viewModel: TextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController,
-                      scrollView: UIScrollView) {
+    public func setup(
+        viewModel: TextFieldViewModel,
+        keyboardInteractionController: KeyboardInteractionController,
+        scrollView: UIScrollView
+    ) {
         textFieldView.setup(
             viewModel: viewModel,
             keyboardInteractionController: keyboardInteractionController,

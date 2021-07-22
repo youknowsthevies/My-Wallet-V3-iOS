@@ -30,7 +30,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
     ) {
         self.routerInteractor = routerInteractor
         self.interactor = interactor
-        self.auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
+        auxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: interactor.auxiliaryViewInteractor,
             initialState: SendAuxiliaryViewPresenter.State(
                 maxButtonVisibility: .visible,
@@ -82,12 +82,12 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: loader, style: .circle)
-            .flatMap(weak: interactor) { (interactor, candidateOrderDetails) -> Observable<Result<CTAData, Error>> in
+            .flatMap(weak: interactor) { interactor, candidateOrderDetails -> Observable<Result<CTAData, Error>> in
                 Observable.zip(
                     interactor.currentKycState.asObservable(),
                     interactor.currentEligibilityState
                 )
-                .map { [weak self] (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+                .map { [weak self] currentKycState, currentEligibilityState -> Result<CTAData, Error> in
                     switch (currentKycState, currentEligibilityState) {
                     case (.success(let kycState), .success(let isSimpleBuyEligible)):
                         let ctaData = CTAData(
@@ -96,10 +96,12 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                             candidateOrderDetails: candidateOrderDetails
                         )
                         self?.analyticsRecorder.record(event:
-                            AnalyticsEvents.New.Sell.sellAmountEntered(fromAccountType: .init(interactor.data.source),
-                                                                       inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
-                                                                       inputCurrency: candidateOrderDetails.cryptoCurrency.code,
-                                                                       outputCurrency: candidateOrderDetails.fiatCurrency.code)
+                            AnalyticsEvents.New.Sell.sellAmountEntered(
+                                fromAccountType: .init(interactor.data.source),
+                                inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
+                                inputCurrency: candidateOrderDetails.cryptoCurrency.code,
+                                outputCurrency: candidateOrderDetails.fiatCurrency.code
+                            )
                         )
                         return .success(ctaData)
                     case (.failure(let error), .success):
@@ -121,7 +123,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, false):
                         self.loader.hide()
-                        // TODO: inelligible
+                    // TODO: inelligible
                     case (.completed, true):
                         self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
                             self?.loader.hide()
@@ -142,8 +144,10 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     // MARK: - Private methods
 
-    private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
-                             with completion: @escaping (CheckoutData) -> Void) {
+    private func createOrder(
+        from candidateOrderDetails: CandidateOrderDetails,
+        with completion: @escaping (CheckoutData) -> Void
+    ) {
 
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)

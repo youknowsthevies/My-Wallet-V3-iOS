@@ -68,14 +68,14 @@ public final class InterestAccountDetailsScreenInteractor {
         )
 
         let interactors: [DetailCellInteractor] = [
-                total,
-                nextPayment,
-                pending,
-                limits,
-                rates
-            ]
-            .map { .default($0) }
-            .map { .item($0) }
+            total,
+            nextPayment,
+            pending,
+            limits,
+            rates
+        ]
+        .map { .default($0) }
+        .map { .item($0) }
         interactorsRelay.accept(interactors)
     }()
 
@@ -91,8 +91,8 @@ public final class InterestAccountDetailsScreenInteractor {
         account: BlockchainAccount
     ) {
         self.service = service
-        self.cryptoCurrency = account.currencyType.cryptoCurrency!
-        self.currentBalanceCellInteractor = CurrentBalanceCellInteractor(
+        cryptoCurrency = account.currencyType.cryptoCurrency!
+        currentBalanceCellInteractor = CurrentBalanceCellInteractor(
             account: account
         )
     }

@@ -19,7 +19,7 @@ public final class PortfolioProvider: PortfolioProviding {
     ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.coincore = coincore
-        self.portfolioBalanceChangeProviding = PortfolioBalanceChangeProvider(
+        portfolioBalanceChangeProviding = PortfolioBalanceChangeProvider(
             coincore: coincore,
             fiatCurrencyService: fiatCurrencyService
         )
@@ -40,7 +40,7 @@ public final class PortfolioProvider: PortfolioProviding {
                 change,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (accounts, change, fiatCurrency) -> Portfolio in
+            .map { accounts, change, fiatCurrency -> Portfolio in
                 let (ethereum, stellar, bitcoin, bitcoinCash) = accounts
                 return .init(
                     accounts: [

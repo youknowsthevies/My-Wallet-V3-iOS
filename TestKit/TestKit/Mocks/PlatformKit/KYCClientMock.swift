@@ -12,9 +12,11 @@ final class KYCClientMock: KYCClientAPI {
         var fetchUser: AnyPublisher<NabuUser, NabuNetworkError> = {
             .failure(NabuNetworkError.mockError)
         }()
+
         var checkSimplifiedDueDiligenceEligibility: AnyPublisher<SimplifiedDueDiligenceResponse, NabuNetworkError> = {
             .failure(NabuNetworkError.mockError)
         }()
+
         var checkSimplifiedDueDiligenceVerification: AnyPublisher<SimplifiedDueDiligenceVerificationResponse, NabuNetworkError> = {
             .failure(NabuNetworkError.mockError)
         }()

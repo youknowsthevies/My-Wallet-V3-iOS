@@ -9,22 +9,32 @@ extension AnalyticsEvents.New {
     public enum Send: AnalyticsEvent {
         public var type: AnalyticsEventType { .nabu }
 
-        case sendReceiveClicked(origin: Origin = .navigation,
-                                type: Type)
+        case sendReceiveClicked(
+            origin: Origin = .navigation,
+            type: Type
+        )
         case sendReceiveViewed(type: Type)
-        case sendAmountMaxClicked(currency: String,
-                                  fromAccountType: FromAccountType?,
-                                  toAccountType: ToAccountType)
-        case sendFeeRateSelected(currency: String,
-                                 feeRate: FeeRate,
-                                 fromAccountType: FromAccountType?,
-                                 toAccountType: ToAccountType)
-        case sendFromSelected(currency: String,
-                              fromAccountType: FromAccountType?)
-        case sendSubmitted(currency: String,
-                           feeRate: FeeRate,
-                           fromAccountType: FromAccountType?,
-                           toAccountType: ToAccountType)
+        case sendAmountMaxClicked(
+            currency: String,
+            fromAccountType: FromAccountType?,
+            toAccountType: ToAccountType
+        )
+        case sendFeeRateSelected(
+            currency: String,
+            feeRate: FeeRate,
+            fromAccountType: FromAccountType?,
+            toAccountType: ToAccountType
+        )
+        case sendFromSelected(
+            currency: String,
+            fromAccountType: FromAccountType?
+        )
+        case sendSubmitted(
+            currency: String,
+            feeRate: FeeRate,
+            fromAccountType: FromAccountType?,
+            toAccountType: ToAccountType
+        )
 
         public enum Origin: String, StringRawRepresentable {
             case navigation = "NAVIGATION"

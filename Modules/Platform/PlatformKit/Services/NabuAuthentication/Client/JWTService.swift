@@ -34,8 +34,10 @@ final class JWTService: JWTServiceAPI {
     private let client: JWTClientAPI
     private let credentialsRepository: CredentialsRepositoryAPI
 
-    init(client: JWTClientAPI = resolve(),
-         credentialsRepository: CredentialsRepositoryAPI = resolve()) {
+    init(
+        client: JWTClientAPI = resolve(),
+        credentialsRepository: CredentialsRepositoryAPI = resolve()
+    ) {
         self.client = client
         self.credentialsRepository = credentialsRepository
     }

@@ -40,33 +40,37 @@ extension CoincoreAPI {
         }
     }
 
-    private func createOnChainProcessor(with account: CryptoNonCustodialAccount,
-                                        target: TransactionTarget,
-                                        action: AssetAction) -> Single<TransactionProcessor> {
+    private func createOnChainProcessor(
+        with account: CryptoNonCustodialAccount,
+        target: TransactionTarget,
+        action: AssetAction
+    ) -> Single<TransactionProcessor> {
         let factory = account.createTransactionEngine() as! OnChainTransactionEngineFactory
         switch (target, action) {
         case (is BitPayInvoiceTarget, .send):
             return account
                 .requireSecondPassword
-                .map { (requiresSecondPassword) -> TransactionProcessor in
-                    .init(sourceAccount: account,
-                          transactionTarget: target,
-                          engine: BitPayTransactionEngine(
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: BitPayTransactionEngine(
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
-                          )
+                        )
                     )
                 }
         case (is CryptoAccount, .swap):
             return account
                 .requireSecondPassword
-                .map { (requiresSecondPassword) -> TransactionProcessor in
-                    .init(sourceAccount: account,
-                          transactionTarget: target,
-                          engine: OnChainSwapTransactionEngine(
+                .map { requiresSecondPassword -> TransactionProcessor in
+                    .init(
+                        sourceAccount: account,
+                        transactionTarget: target,
+                        engine: OnChainSwapTransactionEngine(
                             quotesEngine: SwapQuotesEngine(),
                             requireSecondPassword: requiresSecondPassword,
                             onChainEngine: factory.build(requiresSecondPassword: requiresSecondPassword)
-                          )
+                        )
                     )
                 }
         case (is CryptoReceiveAddress, .send):
@@ -91,8 +95,10 @@ extension CoincoreAPI {
             guard let destination = target as? SingleAccount else {
                 fatalError("Expected a SingleAccount: \(target)")
             }
-            let data = Single.zip(destination.receiveAddress,
-                                  account.requireSecondPassword)
+            let data = Single.zip(
+                destination.receiveAddress,
+                account.requireSecondPassword
+            )
             return data
                 .map { values -> TransactionProcessor in
                     let (receiveAddress, requiresSecondPassword) = values
@@ -107,9 +113,11 @@ extension CoincoreAPI {
         }
     }
 
-    private func createTradingProcessor(with account: CryptoTradingAccount,
-                                        target: TransactionTarget,
-                                        action: AssetAction) -> Single<TransactionProcessor> {
+    private func createTradingProcessor(
+        with account: CryptoTradingAccount,
+        target: TransactionTarget,
+        action: AssetAction
+    ) -> Single<TransactionProcessor> {
         switch action {
         case .swap:
             return createTradingProcessorSwap(with: account, target: target)
@@ -124,8 +132,10 @@ extension CoincoreAPI {
         }
     }
 
-    private func createFiatWithdrawalProcessor(with account: FiatAccount,
-                                               target: TransactionTarget) -> Single<TransactionProcessor> {
+    private func createFiatWithdrawalProcessor(
+        with account: FiatAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
         Single.just(
             TransactionProcessor(
                 sourceAccount: account,
@@ -133,11 +143,12 @@ extension CoincoreAPI {
                 engine: FiatWithdrawalTransactionEngine()
             )
         )
-
     }
 
-    private func createFiatDepositProcessor(with account: LinkedBankAccount,
-                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+    private func createFiatDepositProcessor(
+        with account: LinkedBankAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
         Single.just(
             TransactionProcessor(
                 sourceAccount: account,
@@ -147,8 +158,10 @@ extension CoincoreAPI {
         )
     }
 
-    private func createTradingProcessorSwap(with account: CryptoTradingAccount,
-                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+    private func createTradingProcessorSwap(
+        with account: CryptoTradingAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
         Single.just(
             TransactionProcessor(
                 sourceAccount: account,
@@ -160,8 +173,10 @@ extension CoincoreAPI {
         )
     }
 
-    private func createTradingProcessorSend(with account: CryptoTradingAccount,
-                                            target: TransactionTarget) -> Single<TransactionProcessor> {
+    private func createTradingProcessorSend(
+        with account: CryptoTradingAccount,
+        target: TransactionTarget
+    ) -> Single<TransactionProcessor> {
         let receiveAddressTarget: Single<ReceiveAddress>
         switch target {
         case is ReceiveAddress:

@@ -12,7 +12,7 @@ final class ERC20Asset: CryptoAsset {
 
     var defaultAccount: Single<SingleAccount> {
         walletAccountBridge.wallets
-            .map { $0.first }
+            .map(\.first)
             .map { wallet -> EthereumWalletAccount in
                 guard let wallet = wallet else {
                     throw CryptoAssetError.noDefaultAccount
@@ -39,7 +39,7 @@ final class ERC20Asset: CryptoAsset {
         kycTiersService: KYCTiersServiceAPI = resolve(),
         addressFactory: ERC20ExternalAssetAddressFactory = .init()
     ) {
-        self.asset = erc20Token.cryptoCurrency
+        asset = erc20Token.cryptoCurrency
         self.addressFactory = addressFactory
         self.erc20Token = erc20Token
         self.walletAccountBridge = walletAccountBridge

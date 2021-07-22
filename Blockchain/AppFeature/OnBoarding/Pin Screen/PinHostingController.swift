@@ -16,10 +16,11 @@ final class PinHostingController: UIViewController {
 
     init(store: Store<PinCore.State, PinCore.Action>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

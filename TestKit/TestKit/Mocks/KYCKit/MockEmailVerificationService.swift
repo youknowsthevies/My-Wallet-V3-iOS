@@ -20,7 +20,7 @@ public final class MockEmailVerificationService: EmailVerificationServiceAPI {
         public var updateEmailAddress: AnyPublisher<Void, UpdateEmailAddressError> = .just(())
     }
 
-    private(set) public var recordedInvocations = RecordedInvocations()
+    public private(set) var recordedInvocations = RecordedInvocations()
     public var stubbedResults = StubbedResults()
 
     public func checkEmailVerificationStatus() -> AnyPublisher<EmailVerificationResponse, EmailVerificationCheckError> {

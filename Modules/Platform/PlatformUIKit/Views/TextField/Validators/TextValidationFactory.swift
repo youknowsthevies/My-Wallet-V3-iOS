@@ -4,11 +4,11 @@ import Localization
 import PlatformKit
 
 /// A factory for text validators
-public final class TextValidationFactory {
+public enum TextValidationFactory {
 
     private typealias LocalizedString = LocalizationConstants.TextField.Gesture
 
-    public final class Password {
+    public enum Password {
         public static var login: TextValidating {
             General.notEmpty
         }
@@ -18,7 +18,7 @@ public final class TextValidationFactory {
         }
     }
 
-    public final class Card {
+    public enum Card {
         public static var number: CardNumberValidator {
             CardNumberValidator()
         }
@@ -42,7 +42,7 @@ public final class TextValidationFactory {
         }
     }
 
-    public final class Info {
+    public enum Info {
         public static var email: TextValidating {
             RegexTextValidator(
                 regex: .email,
@@ -62,7 +62,7 @@ public final class TextValidationFactory {
         }
     }
 
-    public final class General {
+    public enum General {
         public static var alwaysValid: TextValidating {
             AlwaysValidValidator()
         }
@@ -75,7 +75,7 @@ public final class TextValidationFactory {
         }
     }
 
-    public final class Backup {
+    public enum Backup {
         public static func mnemonic(words: Set<String>, mnemonicLength: Int = 12) -> MnemonicValidating {
             MnemonicValidator(words: words, mnemonicLength: mnemonicLength)
         }

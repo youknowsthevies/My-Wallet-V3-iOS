@@ -28,12 +28,12 @@ final class ExchangeClient: ExchangeClientAPI {
     ) {
         self.requestBuilder = requestBuilder
         self.networkAdapter = networkAdapter
-        self.appSettings = settings
+        appSettings = settings
     }
 
     var linkID: Single<LinkID> {
         let fallback = fetchLinkIDPayload()
-            .flatMap(weak: self) { (_, payload) -> Single<LinkID> in
+            .flatMap(weak: self) { _, payload -> Single<LinkID> in
                 guard let linkID = payload["linkId"] else {
                     return Single.error(ExchangeLinkingAPIError.noLinkID)
                 }
@@ -47,7 +47,7 @@ final class ExchangeClient: ExchangeClientAPI {
         let depositAddresses = accounts.reduce(into: [String: String]()) { result, receiveAddress in
             result[receiveAddress.asset.code] = receiveAddress.address
         }
-        let payload = ["addresses" : depositAddresses ]
+        let payload = ["addresses": depositAddresses]
         let request = requestBuilder.post(
             path: ["users", "deposit", "addresses"],
             body: try? JSONEncoder().encode(payload),
@@ -79,7 +79,7 @@ final class ExchangeClient: ExchangeClientAPI {
             )
     }
 
-    func fetchLinkIDPayload() -> Single<Dictionary<String, String>> {
+    func fetchLinkIDPayload() -> Single<[String: String]> {
         let apiURL = URL(string: BlockchainAPI.shared.retailCoreUrl)!
         let components = ["users", "link-account", "create", "start"]
         let endpoint = URL.endpoint(apiURL, pathComponents: components)!

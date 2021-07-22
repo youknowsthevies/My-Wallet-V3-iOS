@@ -20,12 +20,14 @@ final class YodleeScreenBuilder: YodleeScreenBuildable {
         let contentReducer = YodleeScreenContentReducer()
         let yodleeRequestProvider = YodleeRequestProvider()
         let viewController = YodleeScreenViewController(webConfiguration: webConfiguration)
-        let interactor = YodleeScreenInteractor(presenter: viewController,
-                                                bankLinkageData: data,
-                                                yodleeRequestProvider: yodleeRequestProvider,
-                                                yodleeMessageService: messageService,
-                                                yodleeActivationService: activationService,
-                                                contentReducer: contentReducer)
+        let interactor = YodleeScreenInteractor(
+            presenter: viewController,
+            bankLinkageData: data,
+            yodleeRequestProvider: yodleeRequestProvider,
+            yodleeMessageService: messageService,
+            yodleeActivationService: activationService,
+            contentReducer: contentReducer
+        )
         interactor.listener = listener
         return YodleeScreenRouter(interactor: interactor, viewController: viewController)
     }

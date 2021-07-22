@@ -19,15 +19,17 @@ public class LoadingCircleView: UIView {
 
     // MARK: - Setup
 
-    init(diameter: CGFloat,
-         strokeColor: UIColor,
-         strokeBackgroundColor: UIColor,
-         fillColor: UIColor,
-         strokeWidth: CGFloat = 8) {
+    init(
+        diameter: CGFloat,
+        strokeColor: UIColor,
+        strokeBackgroundColor: UIColor,
+        fillColor: UIColor,
+        strokeWidth: CGFloat = 8
+    ) {
         self.strokeWidth = strokeWidth
         super.init(frame: CGRect(origin: .zero, size: CGSize(edge: diameter)))
         configure(layer, strokeColor: strokeColor, fillColor: fillColor)
-        let strokeBackgroundLayer: CAShapeLayer = CAShapeLayer()
+        let strokeBackgroundLayer = CAShapeLayer()
         configure(strokeBackgroundLayer, strokeColor: strokeBackgroundColor, fillColor: fillColor)
         layer.addSublayer(strokeBackgroundLayer)
         isAccessibilityElement = false
@@ -41,6 +43,7 @@ public class LoadingCircleView: UIView {
         layer.path = UIBezierPath(ovalIn: bounds.insetBy(dx: strokeWidth / 2, dy: strokeWidth / 2)).cgPath
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

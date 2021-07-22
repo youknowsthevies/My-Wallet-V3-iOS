@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import RxSwift
 import PlatformKit
+import RxSwift
 import TransactionKit
 
 final class OrderCreationRepository: OrderCreationRepositoryAPI {
@@ -19,11 +19,13 @@ final class OrderCreationRepository: OrderCreationRepositoryAPI {
 
     // MARK: - OrderCreationServiceAPI
 
-    func createOrder(direction: OrderDirection,
-                     quoteIdentifier: String,
-                     volume: MoneyValue,
-                     destinationAddress: String?,
-                     refundAddress: String?) -> Single<SwapOrder> {
+    func createOrder(
+        direction: OrderDirection,
+        quoteIdentifier: String,
+        volume: MoneyValue,
+        destinationAddress: String?,
+        refundAddress: String?
+    ) -> Single<SwapOrder> {
         client
             .create(
                 direction: direction,

@@ -7,14 +7,16 @@ protocol PendingTransactionPageInteractable: Interactable {
     var listener: PendingTransactionPageListener? { get set }
 }
 
-protocol PendingTransactionPageViewControllable: ViewControllable {
-}
+protocol PendingTransactionPageViewControllable: ViewControllable {}
 
 final class PendingTransactionPageRouter: ViewableRouter<PendingTransactionPageInteractable, PendingTransactionPageViewControllable>,
-                                          PendingTransactionPageRouting {
+    PendingTransactionPageRouting
+{
 
-    init(interactor: PendingTransactionPageInteractor,
-         viewController: PendingTransactionPageViewControllable) {
+    init(
+        interactor: PendingTransactionPageInteractor,
+        viewController: PendingTransactionPageViewControllable
+    ) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }

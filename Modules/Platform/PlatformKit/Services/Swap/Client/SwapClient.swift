@@ -5,10 +5,12 @@ import NetworkKit
 import RxSwift
 
 public protocol SwapActivityClientAPI {
-    func fetchActivity(from date: Date,
-                       fiatCurrency: String?,
-                       cryptoCurrency: String?,
-                       limit: Int) -> Single<[SwapActivityItemEvent]>
+    func fetchActivity(
+        from date: Date,
+        fiatCurrency: String?,
+        cryptoCurrency: String?,
+        limit: Int
+    ) -> Single<[SwapActivityItemEvent]>
 }
 
 public typealias SwapClientAPI = SwapActivityClientAPI
@@ -33,18 +35,22 @@ final class SwapClient: SwapClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
 
     // MARK: - SwapActivityClientAPI
 
-    func fetchActivity(from date: Date,
-                       fiatCurrency: String?,
-                       cryptoCurrency: String?,
-                       limit: Int) -> Single<[SwapActivityItemEvent]> {
+    func fetchActivity(
+        from date: Date,
+        fiatCurrency: String?,
+        cryptoCurrency: String?,
+        limit: Int
+    ) -> Single<[SwapActivityItemEvent]> {
         var parameters = [
             URLQueryItem(
                 name: Parameter.before,
@@ -83,6 +89,5 @@ final class SwapClient: SwapClientAPI {
                 request: request,
                 errorResponseType: NabuNetworkError.self
             )
-
     }
 }

@@ -13,7 +13,7 @@ public struct EthereumTransactionCandidateSigned {
     }
 
     init(encodedTransaction: Data) {
-        self.transactionHash = Hash.keccak256(data: encodedTransaction).hexString.withHex
+        transactionHash = Hash.keccak256(data: encodedTransaction).hexString.withHex
         self.encodedTransaction = encodedTransaction
     }
 }

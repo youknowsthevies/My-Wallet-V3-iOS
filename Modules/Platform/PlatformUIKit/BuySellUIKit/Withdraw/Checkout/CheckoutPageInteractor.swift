@@ -23,7 +23,8 @@ protocol CheckoutPagePresentable: Presentable {
 }
 
 final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentable>,
-                                    CheckoutPageInteractable {
+    CheckoutPageInteractable
+{
 
     private typealias AnalyticsEvent = AnalyticsEvents.FiatWithdrawal
 
@@ -34,10 +35,12 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
     private let withdrawalService: WithdrawalServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(presenter: CheckoutPagePresentable,
-         checkoutData: WithdrawalCheckoutData,
-         withdrawalService: WithdrawalServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        presenter: CheckoutPagePresentable,
+        checkoutData: WithdrawalCheckoutData,
+        withdrawalService: WithdrawalServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.checkoutData = checkoutData
         self.withdrawalService = withdrawalService
         self.analyticsRecorder = analyticsRecorder
@@ -58,11 +61,13 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
             .do(onNext: { [analyticsRecorder, checkoutData] _ in
                 analyticsRecorder.record(events: [
                     AnalyticsEvent.checkout(.confirm(currencyCode: checkoutData.currency.code)),
-                    AnalyticsEvents.New.Withdrawal.withdrawalAmountEntered(currency: checkoutData.currency.code,
-                                                                           inputAmount: checkoutData.amount.displayMajorValue.doubleValue,
-                                                                           outputAmount: checkoutData.amount.displayMajorValue.doubleValue -
-                                                                            checkoutData.fee.displayMajorValue.doubleValue,
-                                                                           withdrawalMethod: .bankAccount)
+                    AnalyticsEvents.New.Withdrawal.withdrawalAmountEntered(
+                        currency: checkoutData.currency.code,
+                        inputAmount: checkoutData.amount.displayMajorValue.doubleValue,
+                        outputAmount: checkoutData.amount.displayMajorValue.doubleValue -
+                            checkoutData.fee.displayMajorValue.doubleValue,
+                        withdrawalMethod: .bankAccount
+                    )
                 ])
             })
             .flatMapLatest(weak: self) { (self, _) -> Observable<Result<FiatValue, Error>> in
@@ -78,7 +83,7 @@ final class CheckoutPageInteractor: PresentableInteractor<CheckoutPagePresentabl
                 case .success(let amount):
                     analyticsRecorder.record(event: AnalyticsEvent.withdrawSuccess(currencyCode: self.checkoutData.currency.code))
                     router?.route(to: .confirmation(amount: amount))
-                case let .failure(error):
+                case .failure(let error):
                     analyticsRecorder.record(event: AnalyticsEvent.withdrawFailure(currencyCode: self.checkoutData.currency.code))
                     router?.route(to: .failure(self.checkoutData.currency.currency, error))
                 }

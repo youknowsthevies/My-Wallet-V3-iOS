@@ -14,7 +14,8 @@ public protocol CustodialTransferRepositoryAPI {
     func transfer(
         moneyValue: MoneyValue,
         destination: String,
-        memo: String?) -> Single<CustodialWithdrawalIdentifier>
+        memo: String?
+    ) -> Single<CustodialWithdrawalIdentifier>
 
     func fees() -> Single<CustodialTransferFee>
 }

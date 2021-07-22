@@ -10,7 +10,7 @@ public struct PriceQuoteAtTimeResponse: Decodable, Equatable {
     public let timestamp: Date
     public let price: Decimal
 
-    public static func ==(lhs: PriceQuoteAtTimeResponse, rhs: PriceQuoteAtTimeResponse) -> Bool {
+    public static func == (lhs: PriceQuoteAtTimeResponse, rhs: PriceQuoteAtTimeResponse) -> Bool {
         lhs.timestamp == rhs.timestamp
             && lhs.price == rhs.price
     }

@@ -11,7 +11,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
     // MARK: - Types
 
     private enum Path {
-        static let wallet = [ "wallet" ]
+        static let wallet = ["wallet"]
     }
 
     private enum Parameters {
@@ -40,8 +40,9 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
     ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder

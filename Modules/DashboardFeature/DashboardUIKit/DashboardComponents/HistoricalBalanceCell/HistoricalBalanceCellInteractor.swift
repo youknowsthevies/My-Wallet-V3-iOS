@@ -22,7 +22,7 @@ final class HistoricalBalanceCellInteractor {
         historicalFiatPriceService: HistoricalFiatPriceServiceAPI,
         fiatCurrencyService: FiatCurrencyServiceAPI
     ) {
-        self.cryptoCurrency = cryptoAsset.asset
+        cryptoCurrency = cryptoAsset.asset
         sparklineInteractor = SparklineInteractor(
             priceService: historicalFiatPriceService,
             cryptoCurrency: cryptoCurrency

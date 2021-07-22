@@ -32,13 +32,13 @@ public struct SecondaryButtonStyle: ButtonStyle {
 
 /**
  A simple wrapper to `LoadingButton` that applies`SecondaryButtonStyle` to it.
- 
+
  This is equivalent to writing:
  ```
  LoadingButton(...)
     .buttonStyle(SecondaryButtonStyle())
  ```
-*/
+ */
 public struct SecondaryButton: View {
 
     let title: String
@@ -48,7 +48,7 @@ public struct SecondaryButton: View {
 
     public init(title: String, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
-        self._loading = loading
+        _loading = loading
         self.action = action
     }
 

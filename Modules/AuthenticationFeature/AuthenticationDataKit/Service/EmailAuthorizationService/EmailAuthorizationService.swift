@@ -26,7 +26,7 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
         set {
             lock.lock()
             defer { lock.unlock() }
-            self._isActive = newValue
+            _isActive = newValue
         }
     }
 

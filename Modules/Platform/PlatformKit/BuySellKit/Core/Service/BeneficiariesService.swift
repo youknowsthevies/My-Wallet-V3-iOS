@@ -38,10 +38,12 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 
     // MARK: - Setup
 
-    init(client: BeneficiariesClientAPI = resolve(),
-         linkedBankService: LinkedBanksServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
-         beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()) {
+    init(
+        client: BeneficiariesClientAPI = resolve(),
+        linkedBankService: LinkedBanksServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
+        beneficiariesServiceUpdater: BeneficiariesServiceUpdaterAPI = resolve()
+    ) {
         self.client = client
         self.linkedBankService = linkedBankService
         self.paymentMethodTypesService = paymentMethodTypesService
@@ -61,17 +63,19 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
                 linkedBankService.fetchLinkedBanks().asObservable()
             )
             .map(concat(beneficiaries:methodTypes:linkedBanks:))
-            .do(onNext: { _ in
-                beneficiariesServiceUpdater.reset()
-            },
-            afterNext: { [weak beneficiariesRelay] beneficiaries in
-                beneficiariesRelay?.accept(beneficiaries)
-            })
+            .do(
+                onNext: { _ in
+                    beneficiariesServiceUpdater.reset()
+                },
+                afterNext: { [weak beneficiariesRelay] beneficiaries in
+                    beneficiariesRelay?.accept(beneficiaries)
+                }
+            )
             .catchErrorJustReturn([])
 
         beneficiaries = beneficiariesRelay
             .withLatestFrom(beneficiariesServiceUpdater.shouldRefresh) { ($0, $1) }
-            .flatMap { (beneficiaries, shouldUpdate) -> Observable<[Beneficiary]> in
+            .flatMap { beneficiaries, shouldUpdate -> Observable<[Beneficiary]> in
                 guard !shouldUpdate else {
                     return fetchBeneficiaries.asObservable()
                 }
@@ -84,7 +88,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             .share(replay: 1, scope: .whileConnected)
 
         availableCurrenciesForBankLinkage = paymentMethodsShared
-            .map { (methodTypes) in
+            .map { methodTypes in
                 Set(methodTypes.suggestedFunds)
             }
             .share(replay: 1, scope: .whileConnected)
@@ -105,7 +109,7 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
             return .just(event: .completed)
         }
         return deleteBank(by: data.id, for: accountType)
-            .andThen(self.fetch().take(1))
+            .andThen(fetch().take(1))
             .do(onNext: { [weak self] _ in
                 self?.paymentMethodTypesService.clearPreferredPaymentIfNeeded(by: data.id)
             })
@@ -140,11 +144,13 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 ///   - beneficiaries: An array containing beneficiaries responses
 ///   - methodTypes: An array containing payment method tyoes
 /// - Returns: An array of `Beneficiary` elements as a result of the contatenation
-private func concat(beneficiaries: [BeneficiaryResponse],
-                    methodTypes: [PaymentMethodType],
-                    linkedBanks: [LinkedBankData]) -> [Beneficiary] {
-    var limitsByBaseFiat: [FiatCurrency : FiatValue] = [:]
-    let topLimits = methodTypes.accounts.map { $0.topLimit }
+private func concat(
+    beneficiaries: [BeneficiaryResponse],
+    methodTypes: [PaymentMethodType],
+    linkedBanks: [LinkedBankData]
+) -> [Beneficiary] {
+    var limitsByBaseFiat: [FiatCurrency: FiatValue] = [:]
+    let topLimits = methodTypes.accounts.map(\.topLimit)
     for limit in topLimits {
         limitsByBaseFiat[limit.currencyType] = limit
     }

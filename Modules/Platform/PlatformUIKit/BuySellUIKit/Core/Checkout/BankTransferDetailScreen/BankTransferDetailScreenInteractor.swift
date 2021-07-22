@@ -20,8 +20,10 @@ final class BankTransferDetailScreenInteractor {
 
     // MARK: - Setup
 
-    init(checkoutData: CheckoutData,
-         cancellationService: OrderCancellationServiceAPI = resolve()) {
+    init(
+        checkoutData: CheckoutData,
+        cancellationService: OrderCancellationServiceAPI = resolve()
+    ) {
         self.checkoutData = checkoutData
         self.cancellationService = cancellationService
     }

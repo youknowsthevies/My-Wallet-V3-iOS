@@ -75,7 +75,7 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
                 walletRepository.password,
                 walletRepository.sharedKey
             )
-            .map { (password, sharedKey) -> (String, String) in
+            .map { password, sharedKey -> (String, String) in
                 guard let password = password else {
                     throw ServiceError.missingPassword
                 }
@@ -84,15 +84,17 @@ public final class WebLoginQRCodeService: WebLoginQRCodeServiceAPI {
                 }
                 return (password, sharedKey)
             }
-            .map { (password, sharedKey) -> String in
+            .map { password, sharedKey -> String in
                 guard let hexPassword = password.data(using: .utf8)?.hexValue else {
                     throw ServiceError.missingPassword
                 }
                 return "\(sharedKey)|\(hexPassword)"
             }
             .flatMap(weak: self) { (self, data) in
-                self.walletCryptoService.encrypt(pair: KeyDataPair(key: encryptionPhrase, data: data),
-                                                 pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair)
+                self.walletCryptoService.encrypt(
+                    pair: KeyDataPair(key: encryptionPhrase, data: data),
+                    pbkdf2Iterations: WalletCryptoPBKDF2Iterations.autoPair
+                )
             }
     }
 }

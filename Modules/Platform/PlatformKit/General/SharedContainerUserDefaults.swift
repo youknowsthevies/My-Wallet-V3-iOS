@@ -12,7 +12,7 @@ public final class SharedContainerUserDefaults: UserDefaults {
 
     // MARK: - Static
 
-    static let name: String = String(describing: "group.rainydayapps.blockchain")
+    static let name = String(describing: "group.rainydayapps.blockchain")
 
     // MARK: - Public Properties
 

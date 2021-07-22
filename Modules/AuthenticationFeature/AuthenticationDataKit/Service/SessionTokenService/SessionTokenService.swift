@@ -30,7 +30,7 @@ public final class SessionTokenService: SessionTokenServiceAPI {
                     .flatMapCompletable(weak: self) { (self, sessionToken) -> Completable in
                         self.repository.set(sessionToken: sessionToken)
                     }
-                }
+            }
     }
 }
 
@@ -43,7 +43,7 @@ extension SessionTokenService {
             .setFailureType(to: SessionTokenServiceError.self)
             .flatMap { [client] hasSessionToken -> AnyPublisher<String, SessionTokenServiceError> in
                 guard !hasSessionToken else {
-                    return .just((""))
+                    return .just("")
                 }
                 return client.tokenPublisher
             }

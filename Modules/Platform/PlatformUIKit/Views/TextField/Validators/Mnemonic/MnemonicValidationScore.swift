@@ -30,8 +30,8 @@ public enum MnemonicValidationScore: Equatable {
     }
 }
 
-public extension MnemonicValidationScore {
-    static func ==(lhs: MnemonicValidationScore, rhs: MnemonicValidationScore) -> Bool {
+extension MnemonicValidationScore {
+    public static func == (lhs: MnemonicValidationScore, rhs: MnemonicValidationScore) -> Bool {
         switch (lhs, rhs) {
         case (.none, .none),
              (.incomplete, .incomplete),

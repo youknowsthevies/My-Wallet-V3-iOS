@@ -23,9 +23,11 @@ final class RemoteNotificationRelay: NSObject {
 
     // MARK: - Setup
 
-    init(userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
-         messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
-         secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()) {
+    init(
+        userNotificationCenter: UNUserNotificationCenterAPI = UNUserNotificationCenter.current(),
+        messagingService: FirebaseCloudMessagingServiceAPI = Messaging.messaging(),
+        secureChannelNotificationRelay: SecureChannelNotificationRelaying = resolve()
+    ) {
         self.userNotificationCenter = userNotificationCenter
         self.messagingService = messagingService
         self.secureChannelNotificationRelay = secureChannelNotificationRelay
@@ -69,9 +71,11 @@ extension RemoteNotificationRelay: RemoteNotificationBackgroundReceiving {
 extension RemoteNotificationRelay: UNUserNotificationCenterDelegate {
 
     /// Use this method to process the user's response to a notification.
-    func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                didReceive response: UNNotificationResponse,
-                                withCompletionHandler completionHandler: @escaping () -> Void) {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         let userInfo = response.notification.request.content.userInfo
         Logger.shared.debug("Notification didReceive: \(userInfo)")
         if secureChannelNotificationRelay.isSecureChannelNotification(userInfo) {

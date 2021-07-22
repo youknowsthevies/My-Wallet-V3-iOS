@@ -17,13 +17,13 @@ class KYCTierCell: UICollectionViewCell {
 
     // MARK: Private Static Properties
 
-    static fileprivate let headlineContainerHeight: CGFloat = 50.0
-    static fileprivate let stackviewInteritemPadding: CGFloat = 4.0
-    static fileprivate let stackviewVerticalPadding: CGFloat = 40.0
-    static fileprivate let stackviewLeadingPadding: CGFloat = 24.0
-    static fileprivate let stackviewTrailingPadding: CGFloat = 8.0
-    static fileprivate let disclosureTrailingPadding: CGFloat = 24.0
-    static fileprivate let disclosureButtonWidth: CGFloat = 56.0
+    fileprivate static let headlineContainerHeight: CGFloat = 50.0
+    fileprivate static let stackviewInteritemPadding: CGFloat = 4.0
+    fileprivate static let stackviewVerticalPadding: CGFloat = 40.0
+    fileprivate static let stackviewLeadingPadding: CGFloat = 24.0
+    fileprivate static let stackviewTrailingPadding: CGFloat = 8.0
+    fileprivate static let disclosureTrailingPadding: CGFloat = 24.0
+    fileprivate static let disclosureButtonWidth: CGFloat = 56.0
 
     // MARK: Private IBOutlets
 
@@ -39,17 +39,18 @@ class KYCTierCell: UICollectionViewCell {
     @IBOutlet fileprivate var tierRequirements: UILabel!
     @IBOutlet fileprivate var shadowView: UIView!
 
-    fileprivate var allLabels: [UILabel] {[
-            headlineDescription,
-            tierDescription,
-            limitAmountDescription,
-            limitTimeframe,
-            limitDurationEstimate,
-            tierApprovalStatus
-        ]
+    fileprivate var allLabels: [UILabel] { [
+        headlineDescription,
+        tierDescription,
+        limitAmountDescription,
+        limitTimeframe,
+        limitDurationEstimate,
+        tierApprovalStatus
+    ]
     }
 
     // MARK: Private Properties
+
     fileprivate var model: KYCTierCellModel!
     fileprivate var tier: KYC.Tier {
         model.tier
@@ -125,20 +126,22 @@ class KYCTierCell: UICollectionViewCell {
             green: 0.87,
             blue: 0.87,
             alpha: 1
-            ).cgColor
+        ).cgColor
         shadowView.layer.shadowOffset = CGSize(width: 2.0, height: 4.0)
         shadowView.layer.shadowOpacity = 1.0
     }
 
     fileprivate func styleAsDisabled() {
-        allLabels.forEach({
+        allLabels.forEach {
             $0.textColor = .disabled
             $0.alpha = 1
-        })
+        }
         layer.borderColor = UIColor.disabled.cgColor
         layer.borderWidth = 1.0
-        disclosureButton.setImage(UIImage(named: "icon_lock", in: .kycUIKit, compatibleWith: nil),
-                                  for: .normal)
+        disclosureButton.setImage(
+            UIImage(named: "icon_lock", in: .kycUIKit, compatibleWith: nil),
+            for: .normal
+        )
         disclosureButton.isEnabled = false
         disclosureButton.layer.borderColor = UIColor.disabled.cgColor
     }
@@ -155,29 +158,35 @@ class KYCTierCell: UICollectionViewCell {
             attributes: [
                 .font: headlineFont(),
                 .kern: NSNumber(value: 4.0)
-            ]).heightForWidth(width: adjustedWidth)
+            ]
+        ).heightForWidth(width: adjustedWidth)
 
         let limitAmountHeight = NSAttributedString(
             string: model.limitDescription,
-            attributes: [.font: limitFont()]).heightForWidth(width: adjustedWidth)
+            attributes: [.font: limitFont()]
+        ).heightForWidth(width: adjustedWidth)
 
         let timeframeHeight = NSAttributedString(
             string: tier.limitTimeframe,
-            attributes: [.font: timeframeFont()]).heightForWidth(width: adjustedWidth)
+            attributes: [.font: timeframeFont()]
+        ).heightForWidth(width: adjustedWidth)
 
         let durationEstimateHeight = NSAttributedString(
             string: tier.duration,
-            attributes: [.font: timeframeFont()]).heightForWidth(width: adjustedWidth)
+            attributes: [.font: timeframeFont()]
+        ).heightForWidth(width: adjustedWidth)
 
         var tierRequirementsHeight = NSAttributedString(
             string: tier.requirementsDescription,
-            attributes: [.font: requirementsFont()]).heightForWidth(width: adjustedWidth)
+            attributes: [.font: requirementsFont()]
+        ).heightForWidth(width: adjustedWidth)
 
         var statusHeight: CGFloat = 0.0
         if let value = model.status.description {
             statusHeight = NSAttributedString(
                 string: value,
-                attributes: [.font: timeframeFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: timeframeFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         statusHeight = model.statusVisibility.isHidden ? 0.0 : statusHeight
@@ -190,9 +199,9 @@ class KYCTierCell: UICollectionViewCell {
             durationEstimateHeight,
             tierRequirementsHeight,
             statusHeight
-        ].filter({ $0 > 0.0 }).count
+        ].filter { $0 > 0.0 }.count
 
-        let stackviewPadding = CGFloat((numberVisible - 1)) * stackviewInteritemPadding
+        let stackviewPadding = CGFloat(numberVisible - 1) * stackviewInteritemPadding
 
         let labelHeights = headlineContainerHeight +
             tierDescriptionHeight +

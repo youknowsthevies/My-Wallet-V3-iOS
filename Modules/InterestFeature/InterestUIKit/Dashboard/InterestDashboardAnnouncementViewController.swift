@@ -12,18 +12,19 @@ public final class InterestDashboardAnnouncementViewController: UIViewController
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         tableView.reloadData()
@@ -50,13 +51,17 @@ public final class InterestDashboardAnnouncementViewController: UIViewController
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension InterestDashboardAnnouncementViewController: UITableViewDelegate, UITableViewDataSource {
-    public func tableView(_ tableView: UITableView,
-                          numberOfRowsInSection section: Int) -> Int {
+    public func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         presenter.cellCount
     }
 
-    public func tableView(_ tableView: UITableView,
-                          cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {

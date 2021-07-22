@@ -11,7 +11,9 @@ protocol RemoteNotificationNetworkServicing: AnyObject {
     ///   - deviceToken: A token string that identifies the device
     ///   - sharedKeyProvider: A data repository that provides shared key
     ///   - guidProvider: A data repository that provides guid
-    func register(with deviceToken: String,
-                  sharedKeyProvider: SharedKeyRepositoryAPI,
-                  guidProvider: GuidRepositoryAPI) -> Single<Void>
+    func register(
+        with deviceToken: String,
+        sharedKeyProvider: SharedKeyRepositoryAPI,
+        guidProvider: GuidRepositoryAPI
+    ) -> Single<Void>
 }

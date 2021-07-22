@@ -4,6 +4,4 @@ import DIKit
 import PlatformKit
 import ToolKit
 
-extension DependencyContainer {
-
-}
+extension DependencyContainer {}

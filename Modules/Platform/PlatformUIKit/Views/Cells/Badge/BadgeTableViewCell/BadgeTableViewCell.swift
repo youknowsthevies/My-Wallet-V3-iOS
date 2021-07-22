@@ -40,7 +40,7 @@ public final class BadgeTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
         shimmer()
         titleLabel.textColor = .titleText
@@ -48,7 +48,7 @@ public final class BadgeTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }
@@ -96,15 +96,17 @@ extension Reactive where Base: BadgeTableViewCell {
     }
 
     var content: Binder<LabelContent.State.Presentation> {
-         Binder(base) { view, state in
+        Binder(base) { view, state in
             let loading = {
                 view.titleShimmeringView.start()
             }
 
             switch state {
             case .loading:
-                UIView.animate(withDuration: 0.5,
-                               animations: loading)
+                UIView.animate(
+                    withDuration: 0.5,
+                    animations: loading
+                )
             case .loaded(next: let value):
                 UIView.animate(
                     withDuration: 0.2,

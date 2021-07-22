@@ -15,6 +15,5 @@ extension DependencyContainer {
         factory { RemoteNotificationService() as RemoteNotificationServicing }
 
         single { RemoteNotificationServiceContainer() as RemoteNotificationServiceContaining }
-
     }
 }

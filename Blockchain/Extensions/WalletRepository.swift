@@ -14,9 +14,9 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     // MARK: - Types
 
-    private struct JSSetter {
+    private enum JSSetter {
 
-        struct Password {
+        enum Password {
             static let change = "MyWalletPhone.changePassword(\"%@\")"
             static let success = "objc_on_change_password_success"
             static let error = "objc_on_change_password_error"
@@ -41,7 +41,7 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
         static let updateUserCredentials = "MyWalletPhone.KYC.updateUserCredentials(\"%@\", \"%@\")"
     }
 
-    private struct JSCallback {
+    private enum JSCallback {
         static let updateUserCredentialsSuccess = "objc_updateUserCredentials_success"
         static let updateUserCredentialsFailure = "objc_updateUserCredentials_error"
     }
@@ -100,7 +100,6 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
             }
             .map { NabuOfflineTokenResponse(userId: $0.userId, token: $0.offlineToken) }
     }
-
 
     private var offlineTokenPublisher: AnyPublisher<String?, WalletError> {
         let jsContextProvider = self.jsContextProvider
@@ -226,11 +225,13 @@ final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsPr
 
     // MARK: - Setup
 
-    init(jsContextProvider: JSContextProviderAPI,
-         settings: AppSettingsAPI,
-         reactiveWallet: ReactiveWalletAPI,
-         jsScheduler: SerialDispatchQueueScheduler = MainScheduler.instance,
-         combineJSScheduler: DispatchQueue = DispatchQueue.main) {
+    init(
+        jsContextProvider: JSContextProviderAPI,
+        settings: AppSettingsAPI,
+        reactiveWallet: ReactiveWalletAPI,
+        jsScheduler: SerialDispatchQueueScheduler = MainScheduler.instance,
+        combineJSScheduler: DispatchQueue = DispatchQueue.main
+    ) {
         self.jsContextProvider = jsContextProvider
         self.settings = settings
         self.reactiveWallet = reactiveWallet

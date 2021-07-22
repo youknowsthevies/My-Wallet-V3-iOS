@@ -4,7 +4,7 @@
 
 extension CustodialBalanceResponse {
 
-        static let mockJson = """
+    static let mockJson = """
     {
       "BTC": {
         "pendingDeposit": "0",

@@ -24,10 +24,10 @@ final class TransactionModel {
     // MARK: - Init
 
     init(initialState: TransactionState = TransactionState(), transactionInteractor: TransactionInteractor) {
-        self.interactor = transactionInteractor
+        interactor = transactionInteractor
         mviModel = MviModel(
             initialState: initialState,
-            performAction: { [unowned self] (state, action) -> Disposable? in
+            performAction: { [unowned self] state, action -> Disposable? in
                 self.perform(previousState: state, action: action)
             }
         )
@@ -43,22 +43,22 @@ final class TransactionModel {
         switch action {
         case .pendingTransactionStarted:
             return nil
-        case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, _):
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, _):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, _):
             return processTargetSelectionConfirmed(
                 sourceAccount: sourceAccount,
                 transactionTarget: target,
                 amount: .zero(currency: sourceAccount.currencyType),
                 action: action
             )
-        case let .initialiseWithTargetAndNoSource(action, _, _),
-             let .initialiseWithNoSourceOrTargetAccount(action, _):
+        case .initialiseWithTargetAndNoSource(let action, _, _),
+             .initialiseWithNoSourceOrTargetAccount(let action, _):
             return processSourceAccountsListUpdate(action: action)
         case .availableSourceAccountsListUpdated:
             return nil
@@ -71,7 +71,7 @@ final class TransactionModel {
         case .showBankLinkingFlow,
              .bankLinkingFlowDismissed:
             return nil
-        case let .initialiseWithSourceAccount(action, sourceAccount, _):
+        case .initialiseWithSourceAccount(let action, let sourceAccount, _):
             return processAccountsListUpdate(fromAccount: sourceAccount, action: action)
         case .targetAccountSelected(let destinationAccount):
             guard let source = previousState.source else {
@@ -99,7 +99,7 @@ final class TransactionModel {
         case .prepareTransaction:
             return nil
         case .executeTransaction:
-           return processExecuteTransaction(secondPassword: previousState.secondPassword)
+            return processExecuteTransaction(secondPassword: previousState.secondPassword)
         case .updateTransactionComplete:
             return nil
         case .fetchFiatRates:
@@ -178,7 +178,7 @@ final class TransactionModel {
         interactor.getAvailableSourceAccounts(action: action)
             .subscribe(
                 onSuccess: { [weak self] sourceAccounts in
-                     self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
+                    self?.process(action: .availableSourceAccountsListUpdated(sourceAccounts))
                 }
             )
     }
@@ -218,10 +218,12 @@ final class TransactionModel {
     // the state object a bit more; depending on whether it's an internal, external,
     // bitpay or BTC Url address we can set things like note, amount, fee schedule
     // and hook up the correct processor to execute the transaction.
-    private func processTargetSelectionConfirmed(sourceAccount: BlockchainAccount,
-                                                 transactionTarget: TransactionTarget,
-                                                 amount: MoneyValue,
-                                                 action: AssetAction) -> Disposable {
+    private func processTargetSelectionConfirmed(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        amount: MoneyValue,
+        action: AssetAction
+    ) -> Disposable {
         hasInitializedTransaction = false
         return interactor
             .initializeTransaction(sourceAccount: sourceAccount, transactionTarget: transactionTarget, action: action)
@@ -260,7 +262,7 @@ final class TransactionModel {
     private func processFiatRatePairs() -> Disposable {
         interactor
             .startFiatRatePairsFetch
-            .subscribe { [weak self] (transactionMoneyValuePairs) in
+            .subscribe { [weak self] transactionMoneyValuePairs in
                 self?.process(action: .transactionFiatRatePairs(transactionMoneyValuePairs))
             }
     }
@@ -268,7 +270,7 @@ final class TransactionModel {
     private func processTransactionRatePair() -> Disposable {
         interactor
             .startCryptoRatePairFetch
-            .subscribe { [weak self] (moneyValuePair) in
+            .subscribe { [weak self] moneyValuePair in
                 self?.process(action: .sourceDestinationPair(moneyValuePair))
             }
     }

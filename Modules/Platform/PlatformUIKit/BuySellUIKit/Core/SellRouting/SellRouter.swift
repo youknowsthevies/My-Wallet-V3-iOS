@@ -21,10 +21,12 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
     private var kycDisposeBag = DisposeBag()
     private let disposeBag = DisposeBag()
 
-    public init(routingType: RoutingType = .modal,
-                navigationRouter: NavigationRouterAPI = NavigationRouter(),
-                kycRouter: KYCRouterAPI = resolve(),
-                builder: SellBuilderAPI) {
+    public init(
+        routingType: RoutingType = .modal,
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        kycRouter: KYCRouterAPI = resolve(),
+        builder: SellBuilderAPI
+    ) {
         self.kycRouter = kycRouter
         self.navigationRouter = navigationRouter
         self.routingType = routingType
@@ -34,7 +36,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
 
     // MARK: - Lifecycle
 
-    public override func didLoad() {
+    override public func didLoad() {
         super.didLoad()
 
         // Embed the entire flow in another navigation controller
@@ -213,8 +215,10 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
     private func navigateToFiatAccountSelectorScreen() {
         let router = builder.fiatAccountSelectionRouter()
         attachChild(router)
-        navigationRouter.present(viewController: router.viewControllable.uiviewController,
-                                 using: .modalOverTopMost)
+        navigationRouter.present(
+            viewController: router.viewControllable.uiviewController,
+            using: .modalOverTopMost
+        )
     }
 
     private func navigateToAccountSelectorScreen() {

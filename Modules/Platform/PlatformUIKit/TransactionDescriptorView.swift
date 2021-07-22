@@ -48,7 +48,7 @@ public final class TransactionDescriptorView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -85,8 +85,8 @@ public final class TransactionDescriptorView: UIView {
 
 // MARK: - Rx
 
-public extension Reactive where Base: TransactionDescriptorView {
-    var viewModel: Binder<TransactionDescriptorViewModel> {
+extension Reactive where Base: TransactionDescriptorView {
+    public var viewModel: Binder<TransactionDescriptorViewModel> {
         Binder(base) { view, viewModel in
             view.viewModel = viewModel
         }

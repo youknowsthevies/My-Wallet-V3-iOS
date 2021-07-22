@@ -40,6 +40,7 @@ public protocol KYCTiersServiceAPI: AnyObject {
 final class KYCTiersService: KYCTiersServiceAPI {
 
     // MARK: - Exposed Properties
+
     var tiers: Single<KYC.UserTiers> {
         Single.create(weak: self) { (self, observer) -> Disposable in
             guard case .success = self.semaphore.wait(timeout: .now() + .seconds(30)) else {
@@ -65,6 +66,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     }
 
     // MARK: - Private Properties
+
     private let client: KYCClientAPI
     private let featureFlagsService: FeatureFlagsServiceAPI
     private let cachedTiers = CachedValue<KYC.UserTiers>(configuration: .onSubscription())
@@ -72,6 +74,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
     private let scheduler = SerialDispatchQueueScheduler(qos: .default)
 
     // MARK: - Setup
+
     init(
         client: KYCClientAPI = resolve(),
         featureFlagsService: FeatureFlagsServiceAPI = resolve()
@@ -124,7 +127,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
                 }
                 return fetchTiersPublisher()
                     .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
-                        return simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
+                        simplifiedDueDiligenceEligibility(userTiers.latestApprovedTier)
                             .map(\.eligible)
                             .setFailureType(to: KYCTierServiceError.self)
                             .eraseToAnyPublisher()
@@ -186,7 +189,7 @@ final class KYCTiersService: KYCTiersServiceAPI {
                 }
                 return fetchTiersPublisher()
                     .flatMap { userTiers -> AnyPublisher<Bool, KYCTierServiceError> in
-                        return sddVerificationCheck(userTiers.latestApprovedTier, pollUntilComplete)
+                        sddVerificationCheck(userTiers.latestApprovedTier, pollUntilComplete)
                             .setFailureType(to: KYCTierServiceError.self)
                             .eraseToAnyPublisher()
                     }

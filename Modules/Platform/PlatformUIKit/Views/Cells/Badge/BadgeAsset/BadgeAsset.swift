@@ -26,9 +26,10 @@ public enum BadgeAsset {
                     case destructive
                     case progress(BadgeCircleViewModel)
 
-                    public static func ==(
+                    public static func == (
                         lhs: BadgeAsset.Value.Interaction.BadgeItem.BadgeType,
-                        rhs: BadgeAsset.Value.Interaction.BadgeItem.BadgeType) -> Bool {
+                        rhs: BadgeAsset.Value.Interaction.BadgeItem.BadgeType
+                    ) -> Bool {
                         switch (lhs, rhs) {
                         case (.default, .default),
                              (.verified, .verified),

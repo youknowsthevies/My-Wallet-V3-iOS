@@ -32,7 +32,7 @@ public final class LineItemTableViewCell: UITableViewCell {
 
             presenter.imageWidth
                 .withLatestFrom(presenter.image) { ($0, $1) }
-                .map { (requestWidth, image) -> CGFloat in
+                .map { requestWidth, image -> CGFloat in
                     guard image != nil else {
                         return 0
                     }
@@ -59,12 +59,12 @@ public final class LineItemTableViewCell: UITableViewCell {
     @IBOutlet fileprivate var descriptionLabel: UILabel!
     fileprivate var descriptionShimmeringView: ShimmeringView!
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }
 
-    public override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
         descriptionShimmeringView = ShimmeringView(
             in: contentView,
@@ -76,9 +76,9 @@ public final class LineItemTableViewCell: UITableViewCell {
 
 // MARK: - Rx
 
-fileprivate extension Reactive where Base: LineItemTableViewCell {
+extension Reactive where Base: LineItemTableViewCell {
 
-    var titleContent: Binder<LabelContent.State.Presentation> {
+    fileprivate var titleContent: Binder<LabelContent.State.Presentation> {
         Binder(base) { view, state in
             switch state {
             case .loading:
@@ -89,7 +89,7 @@ fileprivate extension Reactive where Base: LineItemTableViewCell {
         }
     }
 
-    var descriptionContent: Binder<LabelContent.State.Presentation> {
+    fileprivate var descriptionContent: Binder<LabelContent.State.Presentation> {
         Binder(base) { view, state in
             switch state {
             case .loading:

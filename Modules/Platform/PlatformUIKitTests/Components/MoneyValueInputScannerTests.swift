@@ -14,7 +14,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
 
         // When
-        let inputs = [0, 100, 123_21, 1_123_01, 11_642_12, 11_642_07, 100_123_02, 10_000_000_23]
+        let inputs = [0, 100, 12321, 112301, 1164212, 1164207, 10012302, 1000000023]
         let ouputs = ["0", "1", "123.21", "1123.01", "11642.12", "11642.07", "100123.02", "10000000.23"]
         for (index, input) in inputs.enumerated() {
             let moneyValue = MoneyValue.create(minor: input, currency: currency.currency)
@@ -37,7 +37,7 @@ class MoneyValueInputScannerTests: XCTestCase {
         let scanner = MoneyValueInputScanner(maxDigits: .init(integral: decimalAccurancy, fractional: currency.maxDecimalPlaces))
 
         // When
-        let inputs = [0, 100, 123_21, 1_123_01, 11_642_12, 11_642_07, 100_123_02, 10_000_000_23, 100_000_000_231232]
+        let inputs = [0, 100, 12321, 112301, 1164212, 1164207, 10012302, 1000000023, 100000000231232]
         let ouputs = ["0", "0.000001", "0.00012321", "0.00112301", "0.01164212", "0.01164207", "0.10012302", "10.00000023", "1000000.00231232"]
         for (index, input) in inputs.enumerated() {
             let moneyValue = MoneyValue.create(minor: input, currency: currency.currency)

@@ -5,7 +5,7 @@
 extension NetworkRequest {
 
     final class MockBuilder {
-        private var endpoint: URL = URL(string: "https://blockchain.com")!
+        private var endpoint = URL(string: "https://blockchain.com")!
         private var method: NetworkMethod = .get
         private var body: Data?
         private var headers: HTTPHeaders = [:]

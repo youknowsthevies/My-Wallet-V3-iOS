@@ -21,5 +21,4 @@ class TransactionClientAPIMock: TransactionClientAPI {
         lastTransactionsForAccount = account
         return transactionsForAccountValue
     }
-
 }

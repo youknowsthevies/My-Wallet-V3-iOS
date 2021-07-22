@@ -8,7 +8,7 @@ import ToolKit
 /// Presenter in charge of displaying a `PulseAnimationView`.
 /// Note that though this API is very similar to that of the Loader, this
 /// `PulseAnimationView` isn't necessarily meant for loading, but rather an on-boarding
-/// tutorial. It servers as a CTA when the user creats a wallet for the first time. 
+/// tutorial. It servers as a CTA when the user creats a wallet for the first time.
 @objc public final class PulseViewPresenter: NSObject, PulseViewPresenting {
 
     // MARK: - Types
@@ -60,11 +60,11 @@ import ToolKit
         set {
             lock.lock()
             defer { lock.unlock() }
-            self._isEnabled = newValue
+            _isEnabled = newValue
         }
     }
 
-    private let bag: DisposeBag = DisposeBag()
+    private let bag = DisposeBag()
 
     // Privately used by exposed `isEnabled` only.
     private var _isEnabled = true
@@ -113,7 +113,7 @@ import ToolKit
                 // We should hide the pulse when the user taps it.
                 self.hide()
             })
-            .disposed(by: self.bag)
+                .disposed(by: self.bag)
             self.state = .animating
         }
     }

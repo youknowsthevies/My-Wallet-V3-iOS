@@ -76,7 +76,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
         Observable
             .combineLatest(
                 interactor.preferredPaymentMethodType,
-                interactor.paymentMethodTypes.map { $0.count }
+                interactor.paymentMethodTypes.map(\.count)
             )
             .observeOn(MainScheduler.asyncInstance)
             .do(onError: { [weak self] error in
@@ -145,7 +145,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         ctaObservable
             .compactMap { result -> CandidateOrderDetails? in
-                guard case let .success(data) = result else { return nil }
+                guard case .success(let data) = result else { return nil }
                 return data.candidateOrderDetails
             }
             .compactMap { [weak self] candidateOrderDetails in
@@ -154,7 +154,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                     candidateOrderDetails.fiatValue.currency,
                     candidateOrderDetails.fiatValue.moneyValue,
                     candidateOrderDetails.cryptoCurrency,
-                    [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod : (paymentMethod?.analyticsParameter.string) ?? ""]
+                    [AnalyticsEvents.SimpleBuy.ParameterName.paymentMethod: (paymentMethod?.analyticsParameter.string) ?? ""]
                 )
             }
             .subscribe(onNext: { [weak self] events in
@@ -224,7 +224,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
                 .just(.invalid(ValueCalculationState<SupportedPairs>.CalculationError.valueCouldNotBeCalculated))
             }
             .bindAndCatch(weak: self) { (self, state) in
-                guard case let .invalid(error) = state, error == .valueCouldNotBeCalculated else {
+                guard case .invalid(let error) = state, error == .valueCouldNotBeCalculated else {
                     return
                 }
                 self.handle(error)
@@ -234,8 +234,10 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
 
     // MARK: - Private methods
 
-    private func createOrder(from candidateOrderDetails: CandidateOrderDetails,
-                             with completion: @escaping (CheckoutData) -> Void) {
+    private func createOrder(
+        from candidateOrderDetails: CandidateOrderDetails,
+        with completion: @escaping (CheckoutData) -> Void
+    ) {
         interactor.createOrder(from: candidateOrderDetails)
             .observeOn(MainScheduler.instance)
             .subscribe(
@@ -310,7 +312,7 @@ final class BuyCryptoScreenPresenter: EnterAmountScreenPresenter {
             interactor.currentKycState.asObservable(),
             interactor.currentEligibilityState
         )
-        .map { (currentKycState, currentEligibilityState) -> Result<CTAData, Error> in
+        .map { currentKycState, currentEligibilityState -> Result<CTAData, Error> in
             switch (currentKycState, currentEligibilityState) {
             case (.success(let kycState), .success(let isSimpleBuyEligible)):
                 let ctaData = CTAData(

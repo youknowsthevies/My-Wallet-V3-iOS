@@ -8,14 +8,14 @@ import UIKit
 open class NibBasedView: UIView {
 
     // swiftlint:disable strong_iboutlet
-    @IBOutlet weak var view: UIView!
+    @IBOutlet var view: UIView!
 
-    open override func prepareForInterfaceBuilder() {
+    override open func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         nibSetup()
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         nibSetup()
     }

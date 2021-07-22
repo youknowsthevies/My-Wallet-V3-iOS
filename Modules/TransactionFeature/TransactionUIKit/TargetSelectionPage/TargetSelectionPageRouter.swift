@@ -11,16 +11,19 @@ protocol TargetSelectionPageInteractable: Interactable {
 }
 
 final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInteractable, TargetSelectionPageViewControllable>,
-                                       TargetSelectionPageRouting {
+    TargetSelectionPageRouting
+{
 
     override init(interactor: TargetSelectionPageInteractable, viewController: TargetSelectionPageViewControllable) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
 
-    func presentQRScanner(for currency: CryptoCurrency,
-                          sourceAccount: CryptoAccount,
-                          model: TargetSelectionPageModel) {
+    func presentQRScanner(
+        for currency: CryptoCurrency,
+        sourceAccount: CryptoAccount,
+        model: TargetSelectionPageModel
+    ) {
         let parser = CryptoTargetQRCodeParser(assetType: currency)
         let textViewModel = TargetSelectionQRScanningViewModel()
         let builder = QRCodeScannerViewControllerBuilder(

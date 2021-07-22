@@ -10,7 +10,7 @@ extension LocalizationConstants {
 
     public enum LineItem {
         public enum Transactional {
-            public enum Copyable { }
+            public enum Copyable {}
         }
     }
 }
@@ -134,7 +134,7 @@ extension LocalizationConstants.LineItem.Transactional {
         "%@ Price",
         comment: "Crypto Price"
     )
-    public struct Funds {
+    public enum Funds {
         public static let prefix = NSLocalizedString(
             "My",
             comment: "My"
@@ -144,6 +144,7 @@ extension LocalizationConstants.LineItem.Transactional {
             comment: "Wallet"
         )
     }
+
     public static let creditOrDebitCard = NSLocalizedString(
         "Credit or Debit Card",
         comment: "Simple Buy: Payment method"

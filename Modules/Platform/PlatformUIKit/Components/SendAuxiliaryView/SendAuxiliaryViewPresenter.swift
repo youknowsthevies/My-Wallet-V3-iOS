@@ -44,7 +44,7 @@ public final class SendAuxiliaryViewPresenter {
 
     // MARK: - Public Properties
 
-    private(set) public lazy var state = stateRelay.asDriver()
+    public private(set) lazy var state = stateRelay.asDriver()
 
     public let stateRelay: BehaviorRelay<State>
 
@@ -66,8 +66,10 @@ public final class SendAuxiliaryViewPresenter {
 
     // MARK: - Init
 
-    public init(interactor: SendAuxiliaryViewInteractorAPI,
-                initialState: State = .initial) {
+    public init(
+        interactor: SendAuxiliaryViewInteractorAPI,
+        initialState: State = .initial
+    ) {
 
         // MARK: Setting up
 

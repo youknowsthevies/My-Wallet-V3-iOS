@@ -32,8 +32,10 @@ public final class SellCheckoutRoutingInteractor: CheckoutRoutingInteracting {
     private unowned let interactor: SellRouterInteractor
     private let disposeBag = DisposeBag()
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         interactor: SellRouterInteractor) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        interactor: SellRouterInteractor
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         _ = setup

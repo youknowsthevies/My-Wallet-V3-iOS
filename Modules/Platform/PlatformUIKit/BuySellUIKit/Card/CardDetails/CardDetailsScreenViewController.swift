@@ -18,8 +18,10 @@ final class CardDetailsScreenViewController: BaseTableViewController {
 
     // MARK: - Setup
 
-    init(presenter: CardDetailsScreenPresenter,
-         alertPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        presenter: CardDetailsScreenPresenter,
+        alertPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.presenter = presenter
         self.alertPresenter = alertPresenter
         super.init()
@@ -137,9 +139,11 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         return cell
     }
 
-    private func doubleTextFieldCell(for row: Int,
-                                     leadingType: TextFieldType,
-                                     trailingType: TextFieldType) -> UITableViewCell {
+    private func doubleTextFieldCell(
+        for row: Int,
+        leadingType: TextFieldType,
+        trailingType: TextFieldType
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(
             DoubleTextFieldTableViewCell.self,
             for: IndexPath(row: row, section: 0)
@@ -155,8 +159,10 @@ extension CardDetailsScreenViewController: UITableViewDelegate, UITableViewDataS
         return cell
     }
 
-    private func buttonTableViewCell(for row: Int,
-                                     viewModel: ButtonViewModel) -> UITableViewCell {
+    private func buttonTableViewCell(
+        for row: Int,
+        viewModel: ButtonViewModel
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(
             ButtonsTableViewCell.self,
             for: IndexPath(row: row, section: 0)

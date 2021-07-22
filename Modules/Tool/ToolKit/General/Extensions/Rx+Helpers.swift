@@ -2,32 +2,32 @@
 
 import RxSwift
 
-public extension CompositeDisposable {
-    @discardableResult func insertWithDiscardableResult(_ disposable: Disposable) -> CompositeDisposable.DisposeKey? {
-        self.insert(disposable)
+extension CompositeDisposable {
+    @discardableResult public func insertWithDiscardableResult(_ disposable: Disposable) -> CompositeDisposable.DisposeKey? {
+        insert(disposable)
     }
 }
 
-public extension ObservableType {
-    func optional() -> Observable<Element?> {
+extension ObservableType {
+    public func optional() -> Observable<Element?> {
         map { element -> Element? in
             element
         }
     }
 
-    func mapToVoid() -> Observable<Void> {
+    public func mapToVoid() -> Observable<Void> {
         map { _ in () }
     }
 }
 
-public extension PrimitiveSequenceType where Trait == SingleTrait {
-    func optional() -> Single<Element?> {
+extension PrimitiveSequenceType where Trait == SingleTrait {
+    public func optional() -> Single<Element?> {
         map { element -> Element? in
             element
         }
     }
 
-    func mapToVoid() -> Single<Void> {
+    public func mapToVoid() -> Single<Void> {
         map { _ in () }
     }
 }

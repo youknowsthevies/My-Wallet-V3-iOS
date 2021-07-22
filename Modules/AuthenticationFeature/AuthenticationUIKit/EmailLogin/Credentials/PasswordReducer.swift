@@ -26,12 +26,12 @@ let passwordReducer = Reducer<
     PasswordAction,
     CredentialsEnvironment
 > {
-    state, action, environment in
+    state, action, _ in
     switch action {
-    case let .didChangePassword(password):
+    case .didChangePassword(let password):
         state.password = password
         return .none
-    case let .incorrectPasswordErrorVisibility(isVisible):
+    case .incorrectPasswordErrorVisibility(let isVisible):
         state.isPasswordIncorrect = isVisible
         return .none
     }

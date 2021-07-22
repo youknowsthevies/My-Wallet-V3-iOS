@@ -9,8 +9,7 @@ import RIBs
 import RxCocoa
 import RxSwift
 
-protocol SwapLandingRouting: ViewableRouting {
-}
+protocol SwapLandingRouting: ViewableRouting {}
 
 enum SwapLandingSelectionEffects {
     case swap(SwapTrendingPair)
@@ -164,11 +163,13 @@ final class SwapLandingInteractor: PresentableInteractor<SwapLandingPresentable>
         case .swap(let pair):
             analyticsRecorder.record(events: [
                 AnalyticsEvent.trendingPairClicked,
-                NewSwapAnalyticsEvent.swapAccountsSelected(inputCurrency: pair.sourceAccount.currencyType.code,
-                                                           inputType: .init(pair.sourceAccount),
-                                                           outputCurrency: pair.destinationAccount.currencyType.code,
-                                                           outputType: .init(pair.destinationAccount),
-                                                           wasSuggested: true)
+                NewSwapAnalyticsEvent.swapAccountsSelected(
+                    inputCurrency: pair.sourceAccount.currencyType.code,
+                    inputType: .init(pair.sourceAccount),
+                    outputCurrency: pair.destinationAccount.currencyType.code,
+                    outputType: .init(pair.destinationAccount),
+                    wasSuggested: true
+                )
             ])
             listener?.routeToSwap(with: pair)
         case .newSwap:
@@ -197,8 +198,10 @@ extension SwapLandingInteractor {
 }
 
 extension Array where Element == CryptoAccount {
-    func trendingPair(source sourceCurrency: CryptoCurrency,
-                      destination destinationCurrency: CryptoCurrency) -> SwapTrendingPair? {
+    func trendingPair(
+        source sourceCurrency: CryptoCurrency,
+        destination destinationCurrency: CryptoCurrency
+    ) -> SwapTrendingPair? {
         guard let source = first(where: { $0.currencyType == sourceCurrency }) else {
             return nil
         }

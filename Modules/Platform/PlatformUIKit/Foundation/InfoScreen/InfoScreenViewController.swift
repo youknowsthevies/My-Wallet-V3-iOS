@@ -21,14 +21,17 @@ public final class InfoScreenViewController: BaseScreenViewController {
         super.init(nibName: InfoScreenViewController.objectName, bundle: Self.bundle)
     }
 
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: .darkContent(background: .clear),
-            leadingButtonStyle: .close)
+        set(
+            barStyle: .darkContent(background: .clear),
+            leadingButtonStyle: .close
+        )
         thumbImageView.set(presenter.imageViewContent)
         titleLabel.content = presenter.titleLabelContent
         descriptionLabel.content = presenter.descriptionLabelContent

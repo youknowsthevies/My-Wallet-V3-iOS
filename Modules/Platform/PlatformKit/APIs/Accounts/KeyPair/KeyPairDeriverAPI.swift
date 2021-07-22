@@ -22,7 +22,7 @@ public struct AnyKeyPairDeriver<P: KeyPair, I: KeyDerivationInput>: KeyPairDeriv
     private let derivingClosure: Deriver
 
     public init<D: KeyPairDeriverAPI>(deriver: D) where D.Pair == P, D.Input == I {
-        self.derivingClosure = deriver.derive
+        derivingClosure = deriver.derive
     }
 
     public func derive(input: I) -> Result<P, Error> {

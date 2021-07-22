@@ -36,7 +36,6 @@ public final class AssetPriceViewPresenter {
             }
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
-
     }()
 
     private let descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors
@@ -47,11 +46,13 @@ public final class AssetPriceViewPresenter {
 
     // MARK: - Setup
 
-    public init(interactor: AssetPriceViewInteracting,
-                alignment: UIStackView.Alignment = .fill,
-                descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors) {
+    public init(
+        interactor: AssetPriceViewInteracting,
+        alignment: UIStackView.Alignment = .fill,
+        descriptors: DashboardAsset.Value.Presentation.AssetPrice.Descriptors
+    ) {
         self.interactor = interactor
         self.descriptors = descriptors
-        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }

@@ -39,8 +39,9 @@ final class KYCWelcomeController: KYCBaseViewController {
     }
 
     // MARK: - Actions
+
     @IBAction func onCloseTapped(_ sender: Any) {
-        self.presentingViewController?.dismiss(animated: true)
+        presentingViewController?.dismiss(animated: true)
     }
 
     @IBAction private func onLabelTapped(_ sender: UITapGestureRecognizer) {
@@ -48,11 +49,13 @@ final class KYCWelcomeController: KYCBaseViewController {
             return
         }
         if let tosRange = text.range(of: LocalizationConstants.tos),
-            sender.didTapAttributedText(in: labelTermsOfService, range: NSRange(tosRange, in: text)) {
+           sender.didTapAttributedText(in: labelTermsOfService, range: NSRange(tosRange, in: text))
+        {
             webViewService.openSafari(url: Constants.Url.termsOfService, from: self)
         }
         if let privacyPolicyRange = text.range(of: LocalizationConstants.privacyPolicy),
-            sender.didTapAttributedText(in: labelTermsOfService, range: NSRange(privacyPolicyRange, in: text)) {
+           sender.didTapAttributedText(in: labelTermsOfService, range: NSRange(privacyPolicyRange, in: text))
+        {
             webViewService.openSafari(url: Constants.Url.privacyPolicy, from: self)
         }
     }
@@ -77,7 +80,7 @@ final class KYCWelcomeController: KYCBaseViewController {
         let font = UIFont(
             name: Constants.FontNames.montserratRegular,
             size: Constants.FontSizes.ExtraExtraExtraSmall
-            ) ?? UIFont.systemFont(ofSize: Constants.FontSizes.ExtraExtraExtraSmall)
+        ) ?? UIFont.systemFont(ofSize: Constants.FontSizes.ExtraExtraExtraSmall)
         let labelAttributes = [
             NSAttributedString.Key.font: font,
             NSAttributedString.Key.foregroundColor: UIColor.gray5

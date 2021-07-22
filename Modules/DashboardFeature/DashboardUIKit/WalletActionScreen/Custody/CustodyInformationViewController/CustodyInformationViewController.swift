@@ -23,6 +23,7 @@ final class CustodyInformationViewController: BaseScreenViewController {
         super.init(nibName: CustodyInformationViewController.objectName, bundle: CustodyInformationViewController.bundle)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -34,24 +35,28 @@ final class CustodyInformationViewController: BaseScreenViewController {
         secondaryDescriptionLabel.content = presenter.subDescription
 
         titleViewStyle = presenter.titleView
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
 
         applyAnimation()
     }
 
     private func applyAnimation() {
-        UIView.animate(withDuration: 1.0,
-                       delay: 0,
-                       options: [.repeat, .autoreverse, .curveEaseInOut],
-                       animations: {
-            self.walletIllustrationImageView.transform = .init(translationX: 0.0, y: 7.0)
-        }, completion: nil)
+        UIView.animate(
+            withDuration: 1.0,
+            delay: 0,
+            options: [.repeat, .autoreverse, .curveEaseInOut],
+            animations: {
+                self.walletIllustrationImageView.transform = .init(translationX: 0.0, y: 7.0)
+            },
+            completion: nil
+        )
     }
 
     override func navigationBarTrailingButtonPressed() {
         presenter.navigationBarTrailingButtonTapped()
     }
-
 }

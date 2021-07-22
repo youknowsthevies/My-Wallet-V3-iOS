@@ -9,7 +9,7 @@ import TransactionKit
 
 final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
-    typealias AskForRefreshConfirmations =  (Bool) -> Completable
+    typealias AskForRefreshConfirmations = (Bool) -> Completable
 
     // MARK: - OnChainTransactionEngine
 
@@ -121,7 +121,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
                 fiatAmountAndFees(from: pendingTransaction),
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
-            .map { (fiatAmountAndFees, feeSelectionOption) ->
+            .map { fiatAmountAndFees, feeSelectionOption ->
                 (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
@@ -156,7 +156,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             sourceAccount.actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel)
         )
-        .map { (values) -> PendingTransaction in
+        .map { values -> PendingTransaction in
             let (actionableBalance, fee) = values
             let available = try actionableBalance - fee.moneyValue
             let zero: MoneyValue = .zero(currency: actionableBalance.currency)
@@ -251,7 +251,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
             .isWaitingOnTransaction
-            .map { (isWaitingOnTransaction) -> Void in
+            .map { isWaitingOnTransaction -> Void in
                 guard isWaitingOnTransaction == false else {
                     throw TransactionValidationFailure(state: .transactionInFlight)
                 }
@@ -283,7 +283,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
                 try self.getFeeState(pendingTransaction: pendingTransaction)
             }
-            .map { (feeState) -> TransactionConfirmation.Model.FeeSelection in
+            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
                 TransactionConfirmation.Model.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,
@@ -317,8 +317,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .just(pendingTransaction.amount.cryptoValue ?? .etherZero),
             .just(pendingTransaction.feeAmount.cryptoValue ?? .etherZero)
         )
-        .map({ (quote: ($0.0.quote.fiatValue ?? .zero(currency: .USD)), amount: $0.1, fees: $0.2) })
-        .map { (quote: (FiatValue), amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
+        .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
+        .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in
             let fiatAmount = amount.convertToFiatValue(exchangeRate: quote)
             let fiatFees = fees.convertToFiatValue(exchangeRate: quote)
             return (fiatAmount, fiatFees)

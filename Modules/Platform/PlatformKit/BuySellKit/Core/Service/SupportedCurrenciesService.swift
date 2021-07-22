@@ -22,8 +22,10 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
 
     // MARK: - Setup
 
-    init(pairsService: SupportedPairsServiceAPI = resolve(),
-         fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        pairsService: SupportedPairsServiceAPI = resolve(),
+        fiatCurrencySettingsService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
 
         cachedValue = .init(
             configuration: .onSubscription()
@@ -33,7 +35,7 @@ final class SupportedCurrenciesService: SupportedCurrenciesServiceAPI {
             .setFetch { () -> Single<Set<FiatCurrency>> in
                 pairsService
                     .fetchPairs(for: .all)
-                    .map { $0.fiatCurrencySet }
+                    .map(\.fiatCurrencySet)
             }
     }
 }

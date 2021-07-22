@@ -25,7 +25,7 @@ final class JWTClient: JWTClientAPI {
     }
 
     private enum Path {
-        static let token = [ "wallet", "signed-retail-token" ]
+        static let token = ["wallet", "signed-retail-token"]
     }
 
     private enum Parameter {
@@ -41,8 +41,10 @@ final class JWTClient: JWTClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

@@ -67,11 +67,13 @@ public final class SellBuilder: SellBuilderAPI {
 
     // MARK: - Setup
 
-    public init(accountSelectionService: AccountSelectionServiceAPI,
-                routerInteractor: SellRouterInteractor,
-                analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-                supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-                priceService: PriceServiceAPI = resolve()) {
+    public init(
+        accountSelectionService: AccountSelectionServiceAPI,
+        routerInteractor: SellRouterInteractor,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve()
+    ) {
         self.accountSelectionService = accountSelectionService
         self.analyticsRecorder = analyticsRecorder
         self.supportedPairsInteractor = supportedPairsInteractor
@@ -95,8 +97,10 @@ public final class SellBuilder: SellBuilderAPI {
             self?.accountSelectionService.record(selection: account)
             if let account = account as? CryptoAccount {
                 self?.analyticsRecorder.record(event:
-                    AnalyticsEvents.New.Sell.sellFromSelected(fromAccountType: .init(account),
-                                                              inputCurrency: account.currencyType.code)
+                    AnalyticsEvents.New.Sell.sellFromSelected(
+                        fromAccountType: .init(account),
+                        inputCurrency: account.currencyType.code
+                    )
                 )
             }
         }

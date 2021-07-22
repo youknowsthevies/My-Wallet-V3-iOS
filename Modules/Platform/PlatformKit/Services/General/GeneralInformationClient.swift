@@ -13,7 +13,7 @@ final class GeneralInformationClient: GeneralInformationClientAPI {
     // MARK: - Types
 
     private enum Path {
-        static let countries = [ "countries" ]
+        static let countries = ["countries"]
     }
 
     // MARK: - Properties
@@ -28,7 +28,6 @@ final class GeneralInformationClient: GeneralInformationClientAPI {
             responseType: [CountryData].self,
             errorResponseType: NabuNetworkError.self
         )
-
     }
 
     // MARK: - Properties
@@ -38,8 +37,10 @@ final class GeneralInformationClient: GeneralInformationClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

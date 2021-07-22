@@ -128,7 +128,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 fiatAmountAndFees(from: pendingTransaction),
                 makeFeeSelectionOption(pendingTransaction: pendingTransaction)
             )
-            .map { (fiatAmountAndFees, feeSelectionOption) ->
+            .map { fiatAmountAndFees, feeSelectionOption ->
                 (amountInFiat: MoneyValue, feesInFiat: MoneyValue, feeSelectionOption: TransactionConfirmation.Model.FeeSelection) in
                 let (amountInFiat, feesInFiat) = fiatAmountAndFees
                 return (amountInFiat.moneyValue, feesInFiat.moneyValue, feeSelectionOption)
@@ -166,7 +166,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             sourceAccount.actionableBalance,
             absoluteFee(with: pendingTransaction.feeLevel, fetch: true)
         )
-        .map { (values) -> PendingTransaction in
+        .map { values -> PendingTransaction in
             let (actionableBalance, fee) = values
             return pendingTransaction.update(
                 amount: amount,
@@ -242,7 +242,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private func validateNoPendingTransaction() -> Completable {
         transactionsService
             .isWaitingOnTransaction
-            .map { (isWaitingOnTransaction) -> Void in
+            .map { isWaitingOnTransaction -> Void in
                 guard isWaitingOnTransaction == false else {
                     throw TransactionValidationFailure(state: .transactionInFlight)
                 }
@@ -278,7 +278,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 ethereumAccountBalance,
                 absoluteFee(with: pendingTransaction.feeLevel)
             )
-            .map { (balance, absoluteFee) -> Void in
+            .map { balance, absoluteFee -> Void in
                 guard try absoluteFee <= balance else {
                     throw TransactionValidationFailure(state: .insufficientGas)
                 }
@@ -303,7 +303,7 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .map(weak: self) { (self, pendingTransaction) -> FeeState in
                 try self.getFeeState(pendingTransaction: pendingTransaction)
             }
-            .map { (feeState) -> TransactionConfirmation.Model.FeeSelection in
+            .map { feeState -> TransactionConfirmation.Model.FeeSelection in
                 TransactionConfirmation.Model.FeeSelection(
                     feeState: feeState,
                     selectedLevel: pendingTransaction.feeLevel,

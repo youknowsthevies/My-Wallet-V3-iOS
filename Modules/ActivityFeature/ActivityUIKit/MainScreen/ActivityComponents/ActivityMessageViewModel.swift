@@ -17,9 +17,11 @@ final class ActivityMessageViewModel {
     let logoImage: ImageViewContent
     let badgeImageViewModel: BadgeImageViewModel
 
-    init?(event: ActivityItemEvent,
-          transactionDetailService: TransactionDetailServiceAPI = resolve()) {
-        guard case let .transactional(transaction) = event else { return nil }
+    init?(
+        event: ActivityItemEvent,
+        transactionDetailService: TransactionDetailServiceAPI = resolve()
+    ) {
+        guard case .transactional(let transaction) = event else { return nil }
         var title = ""
         var imageName = ""
         let currency = transaction.currency

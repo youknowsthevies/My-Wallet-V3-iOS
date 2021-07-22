@@ -89,11 +89,10 @@ final class CustodyInformationScreenPresenter {
             .bindAndCatch(to: stateService.nextRelay)
             .disposed(by: disposeBag)
     }
-
 }
 
-fileprivate extension Accessibility.Identifier {
-    enum CustodyInfo {
+extension Accessibility.Identifier {
+    fileprivate enum CustodyInfo {
         private static let prefix = "CustodyInfoScreen."
         static let backButton = "\(prefix)backButton"
         static let descriptionLabel = "\(prefix)descriptionLabel"

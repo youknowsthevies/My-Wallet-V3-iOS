@@ -33,7 +33,7 @@ final class EthereumWalletAccountRepository: EthereumWalletAccountRepositoryAPI,
     }
 
     var accounts: Single<[Account]> {
-        defaultAccount.map { [ $0 ] }
+        defaultAccount.map { [$0] }
     }
 
     var activeAccounts: Single<[Account]> {

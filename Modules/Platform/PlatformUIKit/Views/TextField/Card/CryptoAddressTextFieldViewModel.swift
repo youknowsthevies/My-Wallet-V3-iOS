@@ -11,8 +11,10 @@ public final class CryptoAddressTextFieldViewModel: TextFieldViewModel {
 
     // MARK: - Setup
 
-    public init(validator: TextValidating,
-                messageRecorder: MessageRecording) {
+    public init(
+        validator: TextValidating,
+        messageRecorder: MessageRecording
+    ) {
         super.init(
             with: .cryptoAddress,
             validator: validator,

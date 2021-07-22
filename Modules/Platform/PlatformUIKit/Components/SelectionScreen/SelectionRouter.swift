@@ -1,9 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 public protocol SelectionRouterAPI: AnyObject {
-    func showSelectionScreen(screenTitle: String,
-                             searchBarPlaceholder: String,
-                             using service: SelectionServiceAPI)
+    func showSelectionScreen(
+        screenTitle: String,
+        searchBarPlaceholder: String,
+        using service: SelectionServiceAPI
+    )
 }
 
 public final class SelectionRouter: SelectionRouterAPI {
@@ -20,9 +22,11 @@ public final class SelectionRouter: SelectionRouterAPI {
 
     // MARK: - API
 
-    public func showSelectionScreen(screenTitle: String,
-                                    searchBarPlaceholder: String,
-                                    using service: SelectionServiceAPI) {
+    public func showSelectionScreen(
+        screenTitle: String,
+        searchBarPlaceholder: String,
+        using service: SelectionServiceAPI
+    ) {
         let interactor = SelectionScreenInteractor(service: service)
         let presenter = SelectionScreenPresenter(
             title: screenTitle,

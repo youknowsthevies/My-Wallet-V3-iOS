@@ -18,8 +18,8 @@ public protocol KYCSettingsAPI: AnyObject {
     func reset()
 }
 
-public extension KYCSettingsAPI {
-    var isCompletingKyc: Single<Bool> {
+extension KYCSettingsAPI {
+    public var isCompletingKyc: Single<Bool> {
         Single.deferred { [weak self] in
             guard let self = self else {
                 return .error(ToolKitError.nullReference(Self.self))

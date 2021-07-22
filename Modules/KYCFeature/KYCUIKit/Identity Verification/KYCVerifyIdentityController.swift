@@ -74,7 +74,7 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
     // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .verifyIdentity(countryCode) = model else { return }
+        guard case .verifyIdentity(let countryCode) = model else { return }
         self.countryCode = countryCode
     }
 
@@ -152,16 +152,16 @@ final class KYCVerifyIdentityController: KYCBaseViewController, ProgressableView
         countrySupportedDescription.accessibility = .id(Accessibility.Identifier.KYCVerifyIdentityScreen.countrySupportedSubheaderText)
     }
 
-    private func actionAttributes() -> [NSAttributedString.Key: Any] {[
-            .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-            .foregroundColor: UIColor.brandSecondary
-        ]
+    private func actionAttributes() -> [NSAttributedString.Key: Any] { [
+        .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+        .foregroundColor: UIColor.brandSecondary
+    ]
     }
 
-    private func defaultAttributes() -> [NSAttributedString.Key: Any] {[
-            .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
-            .foregroundColor: countrySupportedDescription.textColor
-        ]
+    private func defaultAttributes() -> [NSAttributedString.Key: Any] { [
+        .font: Font(.branded(.montserratRegular), size: .custom(18.0)).result,
+        .foregroundColor: countrySupportedDescription.textColor
+    ]
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -245,16 +245,19 @@ extension KYCVerifyIdentityController: VeriffController {
     func onVeriffSubmissionCompleted() {
         analyticsRecorder.record(event: AnalyticsEvents.KYC.kycVeriffInfoSubmitted)
         loadingViewPresenter.show(with: LocalizationConstants.KYC.submittingInformation)
-        delegate?.submitVerification(onCompleted: { [unowned self] in
-            self.dismiss(animated: true, completion: {
-                self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
-            })},
-        onError: { error in
-            self.dismiss(animated: true, completion: {
-                AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
-            })
-            Logger.shared.error("Failed to submit verification \(String(describing: error))")
-        })
+        delegate?.submitVerification(
+            onCompleted: { [unowned self] in
+                self.dismiss(animated: true, completion: {
+                    self.router.handle(event: .nextPageFromPageType(self.pageType, nil))
+                })
+            },
+            onError: { error in
+                self.dismiss(animated: true, completion: {
+                    AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.genericError)
+                })
+                Logger.shared.error("Failed to submit verification \(String(describing: error))")
+            }
+        )
     }
 
     func onVeriffError(message: String) {
@@ -279,7 +282,7 @@ extension KYCVerifyIdentityController: VeriffController {
     }
 }
 
-extension KYCVerifyIdentityController: CameraPromptingDelegate { }
+extension KYCVerifyIdentityController: CameraPromptingDelegate {}
 
 extension KYCVerifyIdentityController: MicrophonePromptingDelegate {
     func onMicrophonePromptingComplete() {

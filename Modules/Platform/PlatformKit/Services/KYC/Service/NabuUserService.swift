@@ -45,8 +45,10 @@ final class NabuUserService: NabuUserServiceAPI {
 
     // MARK: - Setup
 
-    init(client: KYCClientAPI = resolve(),
-         siftService: SiftServiceAPI = resolve()) {
+    init(
+        client: KYCClientAPI = resolve(),
+        siftService: SiftServiceAPI = resolve()
+    ) {
         self.client = client
         self.siftService = siftService
 

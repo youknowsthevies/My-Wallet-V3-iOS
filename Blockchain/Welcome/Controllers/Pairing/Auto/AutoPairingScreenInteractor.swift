@@ -31,9 +31,11 @@ final class AutoPairingScreenInteractor {
 
     // MARK: - Setup
 
-    init(service: AutoWalletPairingServiceAPI = resolve(),
-         walletFetcher: WalletPairingFetcherAPI = AuthenticationCoordinator.shared,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        service: AutoWalletPairingServiceAPI = resolve(),
+        walletFetcher: WalletPairingFetcherAPI = AuthenticationCoordinator.shared,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder
         self.walletFetcher = walletFetcher

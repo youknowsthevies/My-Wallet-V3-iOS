@@ -26,11 +26,11 @@ enum NetworkErrorEvent: AnalyticsEvent {
             guard
                 let url = request.urlRequest.url,
                 let host = url.host
-                else {
-                    return nil
+            else {
+                return nil
             }
             self.host = host
-            self.path = url.path
+            path = url.path
             self.message = message
         }
     }
@@ -43,7 +43,7 @@ enum NetworkErrorEvent: AnalyticsEvent {
         "network_error"
     }
 
-    var params: [String : String]? {
+    var params: [String: String]? {
         switch self {
         case .unknown:
             return [:]

@@ -16,7 +16,7 @@ struct EmailLoginView: View {
 
     init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
-        self.viewStore = ViewStore(self.store)
+        viewStore = ViewStore(self.store)
     }
 
     var body: some View {
@@ -77,13 +77,14 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         EmailLoginView(
             store:
-                Store(initialState: .init(),
-                      reducer: emailLoginReducer,
-                      environment: .init(
-                        deviceVerificationService: NoOpDeviceVerificationService(),
-                        mainQueue: .main
-                      )
+            Store(
+                initialState: .init(),
+                reducer: emailLoginReducer,
+                environment: .init(
+                    deviceVerificationService: NoOpDeviceVerificationService(),
+                    mainQueue: .main
                 )
+            )
         )
     }
 }

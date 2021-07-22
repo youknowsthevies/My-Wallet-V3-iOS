@@ -25,22 +25,22 @@ import UIKit
     }
 
     @objc func setupOnePixelLine() {
-        if self.superview == nil {
+        if superview == nil {
             return
         }
 
-        let onePixelHeight = 1.0/UIScreen.main.scale
+        let onePixelHeight = 1.0 / UIScreen.main.scale
         let onePixelLine = UIView(
             frame: CGRect(
                 x: 0,
-                y: self.frame.size.height - onePixelHeight,
-                width: self.frame.size.width + 15,
+                y: frame.size.height - onePixelHeight,
+                width: frame.size.width + 15,
                 height: onePixelHeight
             )
         )
-        onePixelLine.frame = self.superview!.convert(onePixelLine.frame, from: self)
+        onePixelLine.frame = superview!.convert(onePixelLine.frame, from: self)
         onePixelLine.isUserInteractionEnabled = false
         onePixelLine.backgroundColor = .gray2
-        self.superview!.addSubview(onePixelLine)
+        superview!.addSubview(onePixelLine)
     }
 }

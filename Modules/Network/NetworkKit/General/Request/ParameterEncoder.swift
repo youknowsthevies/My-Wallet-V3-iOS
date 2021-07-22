@@ -77,7 +77,7 @@ public class ParameterEncoder {
             }
         } else if let value = value as? NSNumber {
             if value.isBool {
-                components.append((escape(key), escape(value.boolValue.encoded) ))
+                components.append((escape(key), escape(value.boolValue.encoded)))
             } else {
                 components.append((escape(key), escape("\(value)")))
             }

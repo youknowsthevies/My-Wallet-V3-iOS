@@ -31,7 +31,8 @@ protocol EnterAmountPagePresentable: Presentable {
 }
 
 final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePresentable>,
-                                       EnterAmountPageInteractable {
+    EnterAmountPageInteractable
+{
 
     weak var router: EnterAmountPageRouting?
     weak var listener: EnterAmountPageListener?
@@ -50,23 +51,25 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
     private let action: AssetAction
     private let navigationModel: ScreenNavigationModel
 
-    init(transactionModel: TransactionModel,
-         presenter: EnterAmountPagePresentable,
-         amountInteractor: AmountViewInteracting,
-         action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        transactionModel: TransactionModel,
+        presenter: EnterAmountPagePresentable,
+        amountInteractor: AmountViewInteracting,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.action = action
         self.transactionModel = transactionModel
-        self.amountViewInteractor = amountInteractor
+        amountViewInteractor = amountInteractor
         self.navigationModel = navigationModel
         self.analyticsHook = analyticsHook
-        self.sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
+        sendAuxiliaryViewInteractor = SendAuxiliaryViewInteractor()
         sendAuxiliaryViewPresenter = SendAuxiliaryViewPresenter(
             interactor: sendAuxiliaryViewInteractor
         )
-        self.accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
-        self.accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
+        accountAuxiliaryViewInteractor = AccountAuxiliaryViewInteractor()
+        accountAuxiliaryViewPresenter = AccountAuxiliaryViewPresenter(
             interactor: accountAuxiliaryViewInteractor
         )
         super.init(presenter: presenter)
@@ -83,7 +86,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         amountViewInteractor
             .effect
-            .subscribe { [weak self] effect  in
+            .subscribe { [weak self] effect in
                 self?.handleAmountTranslation(effect: effect)
             }
             .disposeOnDeactivate(interactor: self)
@@ -91,7 +94,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         amountViewInteractor
             .amount
             .debounce(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-            .flatMap { (amount) -> Observable<MoneyValue> in
+            .flatMap { amount -> Observable<MoneyValue> in
                 transactionState
                     .take(1)
                     .asSingle()
@@ -122,7 +125,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
                 transactionState,
                 amountViewInteractor.activeInput
             )
-            .map { (state, input) in
+            .map { state, input in
                 (
                     min: state.minSpendable.displayableRounding(roundingMode: .up),
                     max: state.maxSpendable.displayableRounding(roundingMode: .down),
@@ -239,7 +242,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         let interactorState = transactionState
-            .scan(initialState()) { [weak self] (currentState, updater) -> State in
+            .scan(initialState()) { [weak self] currentState, updater -> State in
                 guard let self = self else {
                     return currentState
                 }
@@ -266,20 +269,24 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .disposeOnDeactivate(interactor: self)
 
         transactionState
-            .compactMap { state -> (action: AssetAction,
-                                    amountIsZero: Bool,
-                                    networkFeeAdjustmentSupported: Bool)? in
-                guard let pendingTransaction = state.pendingTransaction else {
-                    return nil
-                }
-                return (state.action,
-                        state.amount.isZero,
-                        pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported)
+            .compactMap { state -> (
+                action: AssetAction,
+                amountIsZero: Bool,
+                networkFeeAdjustmentSupported: Bool
+            )? in
+            guard let pendingTransaction = state.pendingTransaction else {
+                return nil
             }
-            .map { (action, amountIsZero, networkFeeAdjustmentSupported) in
+            return (
+                state.action,
+                state.amount.isZero,
+                pendingTransaction.availableFeeLevels.networkFeeAdjustmentSupported
+            )
+            }
+            .map { action, amountIsZero, networkFeeAdjustmentSupported in
                 (action, (networkFeeAdjustmentSupported && action == .send && !amountIsZero) ? .visible : .hidden)
             }
-            .map { (action, networkFeeVisibility) -> SendAuxiliaryViewPresenter.State in
+            .map { action, networkFeeVisibility -> SendAuxiliaryViewPresenter.State in
                 SendAuxiliaryViewPresenter.State(
                     maxButtonVisibility: networkFeeVisibility.inverted,
                     networkFeeVisibility: networkFeeVisibility,
@@ -383,13 +390,15 @@ extension EnterAmountPageInteractor {
         var subtitleAccessibility: Accessibility
         var accessibilityContent: SelectionButtonViewModel.AccessibilityContent?
 
-        private init(titleDescriptor: (font: UIFont, textColor: UIColor),
-                     subtitleDescriptor: (font: UIFont, textColor: UIColor),
-                     trailingContent: SelectionButtonViewModel.TrailingContent,
-                     leadingContent: SelectionButtonViewModel.LeadingContentType?,
-                     accessibilityContent: SelectionButtonViewModel.AccessibilityContent?,
-                     titleAccessibility: Accessibility,
-                     subtitleAccessibility: Accessibility) {
+        private init(
+            titleDescriptor: (font: UIFont, textColor: UIColor),
+            subtitleDescriptor: (font: UIFont, textColor: UIColor),
+            trailingContent: SelectionButtonViewModel.TrailingContent,
+            leadingContent: SelectionButtonViewModel.LeadingContentType?,
+            accessibilityContent: SelectionButtonViewModel.AccessibilityContent?,
+            titleAccessibility: Accessibility,
+            subtitleAccessibility: Accessibility
+        ) {
             self.titleDescriptor = titleDescriptor
             self.subtitleDescriptor = subtitleDescriptor
             self.trailingContent = trailingContent
@@ -399,11 +408,13 @@ extension EnterAmountPageInteractor {
             self.subtitleAccessibility = subtitleAccessibility
         }
 
-        init(sourceAccount: BlockchainAccount?,
-             destinationAccount: BlockchainAccount?,
-             action: AssetAction,
-             titleAccessibility: Accessibility,
-             subtitleAccessibility: Accessibility) {
+        init(
+            sourceAccount: BlockchainAccount?,
+            destinationAccount: BlockchainAccount?,
+            action: AssetAction,
+            titleAccessibility: Accessibility,
+            subtitleAccessibility: Accessibility
+        ) {
             let transactionImageViewModel = TransactionDescriptorViewModel(
                 sourceAccount: sourceAccount as? SingleAccount,
                 destinationAccount: action == .swap ? destinationAccount as? SingleAccount : nil,
@@ -474,12 +485,14 @@ extension EnterAmountPageInteractor.BottomAuxiliaryViewModelState: Equatable {
 
 extension TransactionErrorState {
     private typealias LocalizedString = LocalizationConstants.Transaction
-    func toAmountInteractorState(min: MoneyValue,
-                                 max: MoneyValue,
-                                 exchangeRate: MoneyValuePair?,
-                                 activeInput: ActiveAmountInput,
-                                 stateAmount:  MoneyValue,
-                                 listener: EnterAmountPageListener?) -> AmountInteractorState {
+    func toAmountInteractorState(
+        min: MoneyValue,
+        max: MoneyValue,
+        exchangeRate: MoneyValuePair?,
+        activeInput: ActiveAmountInput,
+        stateAmount: MoneyValue,
+        listener: EnterAmountPageListener?
+    ) -> AmountInteractorState {
         switch self {
         case .none:
             return .inBounds

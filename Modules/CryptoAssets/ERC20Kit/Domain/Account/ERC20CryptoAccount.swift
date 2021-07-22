@@ -36,7 +36,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     var actions: Single<AvailableActions> {
         Single
             .zip(isFunded, custodialSupport)
-            .map { [erc20Token, isLegacyAsset] (isFunded, custodialSupport) -> AvailableActions in
+            .map { [erc20Token, isLegacyAsset] isFunded, custodialSupport -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .receive, .send]
                 if isLegacyAsset {
                     base.insert(.buy)
@@ -101,8 +101,8 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
     ) {
         self.publicKey = publicKey
         self.erc20Token = erc20Token
-        self.asset = erc20Token.cryptoCurrency
-        self.label = erc20Token.cryptoCurrency.defaultWalletName
+        asset = erc20Token.cryptoCurrency
+        label = erc20Token.cryptoCurrency.defaultWalletName
         self.balanceService = balanceService
         self.featureFetcher = featureFetcher
         self.transactionsService = transactionsService
@@ -151,7 +151,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -162,7 +162,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

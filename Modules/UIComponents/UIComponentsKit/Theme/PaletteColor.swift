@@ -26,6 +26,7 @@ extension Color {
 enum PaletteColor: String, CaseIterable {
 
     // MARK: Blue
+
     case blue000
     case blue100
     case blue200
@@ -38,6 +39,7 @@ enum PaletteColor: String, CaseIterable {
     case blue900
 
     // MARK: Green
+
     case green000
     case green100
     case green200
@@ -50,6 +52,7 @@ enum PaletteColor: String, CaseIterable {
     case green900
 
     // MARK: Grey
+
     case grey000
     case grey050
     case grey100
@@ -63,12 +66,14 @@ enum PaletteColor: String, CaseIterable {
     case grey900
 
     // MARK: GreyFade
+
     case greyFade100
     case greyFade400
     case greyFade600
     case greyFade800
 
     // MARK: Orange
+
     case orange000
     case orange100
     case orange200
@@ -81,6 +86,7 @@ enum PaletteColor: String, CaseIterable {
     case orange900
 
     // MARK: Purple
+
     case purple000
     case purple100
     case purple200
@@ -93,6 +99,7 @@ enum PaletteColor: String, CaseIterable {
     case purple900
 
     // MARK: Red
+
     case red000
     case red100
     case red200
@@ -105,6 +112,7 @@ enum PaletteColor: String, CaseIterable {
     case red900
 
     // MARK: Teal
+
     case teal000
     case teal100
     case teal200
@@ -117,20 +125,24 @@ enum PaletteColor: String, CaseIterable {
     case teal900
 
     // MARK: White
+
     case white
 
     // MARK: WhiteFade
+
     case whiteFade100
     case whiteFade400
     case whiteFade600
     case whiteFade800
 
     // MARK: KYC Verification Tiers
+
     case tierSilver
     case tierGold
     case tierDiamond
 
     // MARK: Cryptocurrencies
+
     case aave = "Aave"
     case algo = "Algorand"
     case bch = "BitcoinCash"

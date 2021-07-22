@@ -27,7 +27,7 @@ public final class WalletUpgradeViewController: UIViewController {
 
     // MARK: Methods
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(loading)
         loading.layout(edge: .bottom, to: .centerY, of: view, offset: -8)
@@ -51,7 +51,7 @@ public final class WalletUpgradeViewController: UIViewController {
             .disposed(by: disposeBag)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         presenter.viewDidAppear()
     }

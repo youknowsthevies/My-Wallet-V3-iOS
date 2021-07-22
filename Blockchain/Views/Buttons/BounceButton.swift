@@ -42,8 +42,9 @@ class BounceButton: UIButton {
             options: [.curveEaseIn],
             animations: {
                 self.transform = self.selectedScale
-        },
-            completion: nil)
+            },
+            completion: nil
+        )
     }
 
     fileprivate func scaleDown() {
@@ -54,8 +55,7 @@ class BounceButton: UIButton {
             options: [],
             animations: {
                 self.transform = .identity
-        }, completion: nil
+            }, completion: nil
         )
     }
-
 }

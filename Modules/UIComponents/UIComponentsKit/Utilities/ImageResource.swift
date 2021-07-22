@@ -13,12 +13,12 @@ public enum ImageResource: Hashable {
 
     public var resource: Resource? {
         switch self {
-        case let .local(name, bundle):
+        case .local(let name, let bundle):
             guard let image = UIImage(named: name, in: bundle, compatibleWith: nil) else {
                 return nil
             }
             return .image(image)
-        case let .remote(urlString):
+        case .remote(let urlString):
             guard let url = URL(string: urlString) else {
                 return nil
             }

@@ -140,6 +140,7 @@ extension KYCCountrySelectionController: KYCCountrySelectionView {
         let payload = KYCPagePayload.countrySelected(country: country)
         router.handle(event: .nextPageFromPageType(pageType, payload))
     }
+
     func showExchangeNotAvailable(country: CountryData) {
         router.handle(event: .failurePageForPageType(pageType, .countryNotSupported(country)))
     }

@@ -9,7 +9,7 @@ import ToolKit
 
 /// NOTE: Currently this is only used in the `Withdraw` flow. If you
 /// are using this outside of `Withdraw` you must create a `DisplayBundle`
-/// type class that holds analytic events and localized strings. 
+/// type class that holds analytic events and localized strings.
 public final class SingleAmountPresenter: AmountViewPresenting {
 
     // MARK: - Types
@@ -25,9 +25,11 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     let amountPresenter: InputAmountLabelPresenter
 
     // MARK: - Injected
+
     private let interactor: SingleAmountInteractor
 
     // MARK: - Accessors
+
     private let stateRelay = BehaviorRelay<State>(value: .empty)
 
     private let disposeBag = DisposeBag()
@@ -35,12 +37,14 @@ public final class SingleAmountPresenter: AmountViewPresenting {
     public init(interactor: SingleAmountInteractor) {
         self.interactor = interactor
 
-        self.amountPresenter = InputAmountLabelPresenter(interactor: interactor.currencyInteractor,
-                                                         currencyCodeSide: .leading,
-                                                         /// There is only one amount,
-                                                         /// so the label should appear as
-                                                         /// focused (larger font).
-                                                         isFocused: true)
+        amountPresenter = InputAmountLabelPresenter(
+            interactor: interactor.currencyInteractor,
+            currencyCodeSide: .leading,
+            /// There is only one amount,
+            /// so the label should appear as
+            /// focused (larger font).
+            isFocused: true
+        )
     }
 
     public func connect(input: Driver<AmountPresenterInput>) -> Driver<AmountPresenterState> {

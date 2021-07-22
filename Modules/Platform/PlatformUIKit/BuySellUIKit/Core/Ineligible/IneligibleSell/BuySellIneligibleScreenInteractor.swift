@@ -10,7 +10,7 @@ public final class BuySellIneligibleScreenInteractor {
 
     var region: Single<String> {
         dataRepositoryAPI
-        .userSingle
+            .userSingle
             .map { $0.address?.state ?? (Country.current ?? .US).name }
     }
 
@@ -23,5 +23,4 @@ public final class BuySellIneligibleScreenInteractor {
     init(dataRepositoryAPI: DataRepositoryAPI = resolve()) {
         self.dataRepositoryAPI = dataRepositoryAPI
     }
-
 }

@@ -33,13 +33,13 @@ struct WalletIntroductionSequence: Sequence, IteratorProtocol {
 
     /// Resets the sequence to a given `WalletIntroductionEvent` array
     mutating func reset(to announcements: [WalletIntroductionEvent]) {
-        self.index = 0
+        index = 0
         self.announcements = announcements
     }
 }
 
 protocol WalletIntroductionLocationSequenceAPI {
-    /// Returns the next location given a location. 
+    /// Returns the next location given a location.
     func nextLocation(from location: WalletIntroductionLocation) -> Single<WalletIntroductionLocation>
 }
 

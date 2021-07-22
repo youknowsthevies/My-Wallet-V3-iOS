@@ -110,7 +110,7 @@ enum TargetSelectionInputValidation: Equatable {
     enum QRInput: Equatable {
         /// The user has not scanned anything
         case empty
-        /// TODO: Accommodate an amount, memo, and the address
+        // TODO: Accommodate an amount, memo, and the address
         case valid(CryptoReceiveAddress)
 
         var text: String {
@@ -152,7 +152,7 @@ extension TargetSelectionInputValidation.QRInput {
         switch (lhs, rhs) {
         case (.valid(let leftAddress), .valid(let rightAddress)):
             return leftAddress.address == rightAddress.address
-            && leftAddress.memo == rightAddress.memo
+                && leftAddress.memo == rightAddress.memo
         case (.empty, .empty):
             return true
         default:

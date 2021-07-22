@@ -12,10 +12,12 @@ import ToolKit
 import UIKit
 
 protocol EnterAmountPageBuildable {
-    func build(listener: EnterAmountPageListener,
-               sourceAccount: SingleAccount,
-               action: AssetAction,
-               navigationModel: ScreenNavigationModel) -> EnterAmountPageRouter
+    func build(
+        listener: EnterAmountPageListener,
+        sourceAccount: SingleAccount,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel
+    ) -> EnterAmountPageRouter
 }
 
 final class EnterAmountPageBuilder: EnterAmountPageBuildable {
@@ -25,21 +27,25 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
     private let priceService: PriceServiceAPI
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
 
-    public init(transactionModel: TransactionModel,
-                priceService: PriceServiceAPI = resolve(),
-                fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-                exchangeProvider: ExchangeProviding = resolve(),
-                analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    public init(
+        transactionModel: TransactionModel,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        exchangeProvider: ExchangeProviding = resolve(),
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.priceService = priceService
         self.analyticsEventRecorder = analyticsEventRecorder
         self.transactionModel = transactionModel
         self.fiatCurrencyService = fiatCurrencyService
     }
 
-    func build(listener: EnterAmountPageListener,
-               sourceAccount: SingleAccount,
-               action: AssetAction,
-               navigationModel: ScreenNavigationModel) -> EnterAmountPageRouter {
+    func build(
+        listener: EnterAmountPageListener,
+        sourceAccount: SingleAccount,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel
+    ) -> EnterAmountPageRouter {
         let displayBundle = DisplayBundle.bundle(for: action, sourceAccount: sourceAccount)
 
         let initialActiveInput: ActiveAmountInput
@@ -106,8 +112,10 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
             navigationModel: navigationModel
         )
         interactor.listener = listener
-        let router = EnterAmountPageRouter(interactor: interactor,
-                                           viewController: viewController)
+        let router = EnterAmountPageRouter(
+            interactor: interactor,
+            viewController: viewController
+        )
         return router
     }
 

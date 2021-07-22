@@ -4,16 +4,16 @@ import Charts
 import PlatformKit
 
 /// Any util / data related to the pie chart presentation / interaction layers
-public struct AssetPieChart {
+public enum AssetPieChart {
 
-    public struct State {
+    public enum State {
         public typealias Interaction = LoadingState<[AssetPieChart.Value.Interaction]>
         public typealias Presentation = LoadingState<PieChartData>
     }
 
     // MARK: - Value namespace
 
-    public struct Value {
+    public enum Value {
 
         /// Value for the interaction level
         public struct Interaction: Equatable {

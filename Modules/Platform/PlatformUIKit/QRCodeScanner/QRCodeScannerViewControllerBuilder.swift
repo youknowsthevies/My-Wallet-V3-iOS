@@ -20,19 +20,23 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
     private let completed: CompletionHandler
     private let closeHandler: (() -> Void)?
 
-    public init(parser: P,
-                textViewModel: QRCodeScannerTextViewModel,
-                completed: @escaping CompletionHandler,
-                closeHandler: (() -> Void)? = nil) {
+    public init(
+        parser: P,
+        textViewModel: QRCodeScannerTextViewModel,
+        completed: @escaping CompletionHandler,
+        closeHandler: (() -> Void)? = nil
+    ) {
         self.parser = parser
         self.textViewModel = textViewModel
         self.completed = completed
         self.closeHandler = closeHandler
     }
 
-    public func with(loadingViewPresenter: LoadingViewPresenting,
-                     style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator) -> QRCodeScannerViewControllerBuilder {
-        self.loadingViewStyle = style
+    public func with(
+        loadingViewPresenter: LoadingViewPresenting,
+        style: LoadingViewPresenter.LoadingViewStyle = .activityIndicator
+    ) -> QRCodeScannerViewControllerBuilder {
+        loadingViewStyle = style
         self.loadingViewPresenter = loadingViewPresenter
         return self
     }
@@ -48,7 +52,7 @@ public final class QRCodeScannerViewControllerBuilder<P: QRCodeScannerParsing> {
     }
 
     public func with(supportForCameraRoll: Bool) -> QRCodeScannerViewControllerBuilder {
-        self.supportsCameraRoll = supportForCameraRoll
+        supportsCameraRoll = supportForCameraRoll
         return self
     }
 

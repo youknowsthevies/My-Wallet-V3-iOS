@@ -112,7 +112,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
         self.account = account
-        self.stateService = CustodyActionStateService(recoveryStatusProviding: resolve())
+        stateService = CustodyActionStateService(recoveryStatusProviding: resolve())
 
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
@@ -168,11 +168,11 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             /// has ended. `CustodyActionScreen` has been dismissed
             /// prior to `Backup`. There is no `topMost` screen that
             /// needs to be dismissed.
-            guard case let .crypto(currency) = currency else { return }
+            guard case .crypto(let currency) = currency else { return }
             custodyWithdrawalRouter.start(with: currency)
         case .withdrawal:
             /// The `topMost` screen is the `CustodyActionScreen`
-            guard case let .crypto(currency) = currency else { return }
+            guard case .crypto(let currency) = currency else { return }
             dismiss { [weak self] in
                 guard let self = self else { return }
                 self.custodyWithdrawalRouter.start(with: currency)
@@ -180,7 +180,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         case .withdrawalFiat(let isKYCApproved):
             analyticsRecoder.record(event: AnalyticsEvents.New.Withdrawal.withdrawalClicked(origin: .currencyPage))
             if isKYCApproved {
-                guard case let .fiat(currency) = currency else { return }
+                guard case .fiat(let currency) = currency else { return }
                 showWithdrawFiatScreen(currency: currency)
             } else {
                 showCashIdentityViewController()
@@ -200,7 +200,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showSendCustody() {
-        if case let .crypto(cryptoCurrency) = account.currencyType {
+        if case .crypto(let cryptoCurrency) = account.currencyType {
             analyticsService.recordTradingWalletClicked(for: cryptoCurrency)
         }
         let interactor = WalletActionScreenInteractor(account: account)
@@ -228,7 +228,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showPaymentMethods() {
-        guard case let .fiat(fiatCurrency) = currency else { return }
+        guard case .fiat(let fiatCurrency) = currency else { return }
         featureFetching
             .fetchBool(for: .withdrawAndDepositACH)
             .observeOn(MainScheduler.instance)
@@ -275,7 +275,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
 
     private func showBuy() {
         dismiss { [weak self] in
-            guard case let .crypto(cryptoCurrency) = self?.currency else { return }
+            guard case .crypto(let cryptoCurrency) = self?.currency else { return }
             self?.walletOperationsRouter.handleBuyCrypto(currency: cryptoCurrency)
         }
     }

@@ -40,11 +40,13 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
 
     // MARK: - Setup
 
-    init(routingInteractor: PendingOrderRoutingInteracting,
-         interactor: PendingOrderStateScreenInteractor,
-         topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
-         tabSwapping: TabSwapping = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        routingInteractor: PendingOrderRoutingInteracting,
+        interactor: PendingOrderStateScreenInteractor,
+        topMostViewControllerProviding: TopMostViewControllerProviding = resolve(),
+        tabSwapping: TabSwapping = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.topMostViewControllerProviding = topMostViewControllerProviding
         self.tabSwapping = tabSwapping
         self.analyticsRecorder = analyticsRecorder
@@ -55,7 +57,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         let isBuy = interactor.isBuy
         let prefix = isBuy ? LocalizedString.Loading.Buy.titlePrefix : LocalizedString.Loading.Sell.titlePrefix
@@ -263,7 +265,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
             button: button,
             supplementaryButton: supplementaryButton
         )
-        self.viewModelRelay.accept(viewModel)
+        viewModelRelay.accept(viewModel)
     }
 
     private func handle(state: PolledOrder) {
@@ -312,14 +314,14 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
     }
 
     private func dismissTopMost(weak object: PendingOrderStateScreenPresenter, _ selector: @escaping (PendingOrderStateScreenPresenter) -> Void) {
-            guard let viewController = topMostViewControllerProviding.topMostViewController else {
-                selector(object)
-                return
-            }
-            viewController.dismiss(animated: true, completion: {
-                selector(object)
-            })
+        guard let viewController = topMostViewControllerProviding.topMostViewController else {
+            selector(object)
+            return
         }
+        viewController.dismiss(animated: true, completion: {
+            selector(object)
+        })
+    }
 
     private func getEstimateTransactionCompletionTime() -> String {
         guard let fiveDaysFromNow = Calendar.current.date(byAdding: .day, value: 5, to: Date()) else {

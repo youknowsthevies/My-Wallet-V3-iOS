@@ -47,14 +47,16 @@ public final class PasswordTextFieldView: TextFieldView {
         passwordStrengthIndicatorView.layout(dimension: .height, to: 1)
     }
 
-    public func setup(viewModel: PasswordTextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+    public func setup(
+        viewModel: PasswordTextFieldViewModel,
+        keyboardInteractionController: KeyboardInteractionController
+    ) {
         super.setup(viewModel: viewModel, keyboardInteractionController: keyboardInteractionController)
         self.viewModel = viewModel
 
         // Bind score color to score label
         self.viewModel.score
-            .map { $0.color }
+            .map(\.color)
             .bindAndCatch(to: passwordStrengthIndicatorView.rx.fillColor)
             .disposed(by: disposeBag)
 

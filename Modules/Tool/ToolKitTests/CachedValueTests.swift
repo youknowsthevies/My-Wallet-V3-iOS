@@ -45,7 +45,7 @@ final class CachedValueTests: XCTestCase {
             return Single.just(current)
         }
 
-        for index in (0...7) {
+        for index in 0...7 {
             XCTAssertEqual(
                 try? cachedValue.fetchValue.toBlocking().first(),
                 expectedResults[index % expectedResults.count]
@@ -65,7 +65,7 @@ final class CachedValueTests: XCTestCase {
             Single.just(expectedResult)
         }
 
-        for _ in (0...7) {
+        for _ in 0...7 {
             XCTAssertEqual(
                 try? cachedValue.valueSingle.toBlocking().first(),
                 expectedResult

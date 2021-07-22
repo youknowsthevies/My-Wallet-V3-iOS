@@ -14,7 +14,7 @@ import UIKit
 typealias AppDelegateEffect = Effect<AppDelegateAction, Never>
 
 /// Used to cancel the background task if needed
-struct BackgroundTaskId: Hashable { }
+struct BackgroundTaskId: Hashable {}
 
 /// The actions to be performed by the AppDelegate
 public enum AppDelegateAction: Equatable {

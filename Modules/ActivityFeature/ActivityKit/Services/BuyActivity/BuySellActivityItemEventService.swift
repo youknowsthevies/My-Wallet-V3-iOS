@@ -16,8 +16,10 @@ final class BuySellActivityItemEventService: BuySellActivityItemEventServiceAPI 
             .catchErrorJustReturn(false)
     }
 
-    init(ordersService: OrdersServiceAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        ordersService: OrdersServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.ordersService = ordersService
         self.kycTiersService = kycTiersService
     }

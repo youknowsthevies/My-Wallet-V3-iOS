@@ -21,6 +21,7 @@ final class SettingsSkeletonTableViewCell: UITableViewCell {
         setup()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -48,5 +49,4 @@ final class SettingsSkeletonTableViewCell: UITableViewCell {
             cornerRadius: 8.0
         )
     }
-
 }

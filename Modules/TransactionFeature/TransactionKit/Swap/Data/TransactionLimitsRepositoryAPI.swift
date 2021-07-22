@@ -7,8 +7,9 @@ import ToolKit
 
 public protocol TransactionLimitsRepositoryAPI {
 
-    func fetchTransactionLimits(currency: CurrencyType,
-                                networkFee: CurrencyType,
-                                product: TransactionLimitsProduct) -> Single<TransactionLimits>
+    func fetchTransactionLimits(
+        currency: CurrencyType,
+        networkFee: CurrencyType,
+        product: TransactionLimitsProduct
+    ) -> Single<TransactionLimits>
 }
-

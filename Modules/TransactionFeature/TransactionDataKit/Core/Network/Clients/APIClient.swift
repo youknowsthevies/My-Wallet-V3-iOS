@@ -8,15 +8,15 @@ import ToolKit
 import TransactionKit
 
 typealias TransactionKitClientAPI = CustodialQuoteAPI &
-                                    OrderCreationClientAPI &
-                                    AvailablePairsClientAPI &
-                                    OrderTransactionLimitsClientAPI &
-                                    OrderFetchingClientAPI &
-                                    OrderUpdateClientAPI &
-                                    CustodialTransferClientAPI &
-                                    BitPayClientAPI &
-                                    BlockchainNameResolutionClientAPI &
-                                    BankTransferClientAPI
+    OrderCreationClientAPI &
+    AvailablePairsClientAPI &
+    OrderTransactionLimitsClientAPI &
+    OrderFetchingClientAPI &
+    OrderUpdateClientAPI &
+    CustodialTransferClientAPI &
+    BitPayClientAPI &
+    BlockchainNameResolutionClientAPI &
+    BankTransferClientAPI
 
 /// TransactionKit network client
 final class APIClient: TransactionKitClientAPI {
@@ -68,10 +68,12 @@ final class APIClient: TransactionKitClientAPI {
 
     // MARK: - Setup
 
-    init(retailNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail),
-         retailRequestBuilder: RequestBuilder = DIKit.resolve(tag: DIKitContext.retail),
-         defaultNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(),
-         defaultRequestBuilder: RequestBuilder = DIKit.resolve()) {
+    init(
+        retailNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(tag: DIKitContext.retail),
+        retailRequestBuilder: RequestBuilder = DIKit.resolve(tag: DIKitContext.retail),
+        defaultNetworkAdapter: NetworkAdapterAPI = DIKit.resolve(),
+        defaultRequestBuilder: RequestBuilder = DIKit.resolve()
+    ) {
         self.retailNetworkAdapter = retailNetworkAdapter
         self.retailRequestBuilder = retailRequestBuilder
         self.defaultNetworkAdapter = defaultNetworkAdapter

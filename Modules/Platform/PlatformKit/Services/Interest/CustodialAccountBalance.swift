@@ -29,8 +29,8 @@ public struct CustodialAccountBalance: Equatable {
     }
 }
 
-public extension CustodialAccountBalance {
-    static func zero(currencyType: CurrencyType) -> CustodialAccountBalance {
+extension CustodialAccountBalance {
+    public static func zero(currencyType: CurrencyType) -> CustodialAccountBalance {
         .init(currency: currencyType, response: .zero)
     }
 }

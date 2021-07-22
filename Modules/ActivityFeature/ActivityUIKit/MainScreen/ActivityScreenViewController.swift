@@ -36,7 +36,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     public init(services: ActivityServiceContaining = resolve()) {
         let router = ActivityRouter(container: services)
         let interactor = ActivityScreenInteractor(serviceContainer: services)
-        self.presenter = ActivityScreenPresenter(router: router, interactor: interactor)
+        presenter = ActivityScreenPresenter(router: router, interactor: interactor)
         super.init(nibName: ActivityScreenViewController.objectName, bundle: Self.bundle)
     }
 
@@ -47,7 +47,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         selectionButtonView.viewModel = presenter.selectionButtonViewModel
         setupNavigationBar()
@@ -82,9 +82,11 @@ public final class ActivityScreenViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(),
+        set(
+            barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = .text(value: presenter.title)
     }
 
@@ -94,7 +96,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
         let alpha = presenter
             .emptySubviewsVisibility
-            .map { $0.defaultAlpha }
+            .map(\.defaultAlpha)
 
         alpha
             .drive(emptyActivitySubtitleLabel.rx.alpha)
@@ -112,7 +114,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
             .map { $0 == 0 }
             .drive(empyActivityStackView.rx.isHidden)
             .disposed(by: disposeBag)
-        }
+    }
 
     private func setupTableView() {
         tableView.backgroundColor = .clear
@@ -159,7 +161,7 @@ public final class ActivityScreenViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 

@@ -62,9 +62,9 @@ class KYCVerifyIdentityPresenter {
     }()
 }
 
-extension KYCVerifyIdentityPresenter: MicrophonePrompting { }
+extension KYCVerifyIdentityPresenter: MicrophonePrompting {}
 
-extension KYCVerifyIdentityPresenter: CameraPrompting { }
+extension KYCVerifyIdentityPresenter: CameraPrompting {}
 
 extension KYCVerifyIdentityPresenter: KYCVerifyIdentityDelegate {
     func submitVerification(onCompleted: @escaping (() -> Void), onError: @escaping ((Error) -> Void)) {

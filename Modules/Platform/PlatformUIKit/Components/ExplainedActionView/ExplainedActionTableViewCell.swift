@@ -16,14 +16,14 @@ public final class ExplainedActionTableViewCell: UITableViewCell {
 
     // MARK: - Setup
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         contentView.addSubview(explainedActionView)
         explainedActionView.fillSuperview()
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         viewModel = nil
     }

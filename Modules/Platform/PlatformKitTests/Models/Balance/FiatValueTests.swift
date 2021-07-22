@@ -41,7 +41,7 @@ class FiatValueTests: XCTestCase {
         let usdValue = FiatValue.zero(currencyCode: "USD")!
         XCTAssertEqual("$", usdValue.symbol)
 
-        let eurValue = FiatValue.zero(currencyCode:"EUR")!
+        let eurValue = FiatValue.zero(currencyCode: "EUR")!
         XCTAssertEqual("€", eurValue.symbol)
     }
 

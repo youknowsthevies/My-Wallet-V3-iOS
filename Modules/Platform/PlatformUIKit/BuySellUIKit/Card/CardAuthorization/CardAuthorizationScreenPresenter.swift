@@ -23,9 +23,11 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
 
     // MARK: - Setup
 
-    init(interactor: CardAuthorizationScreenInteractor,
-         data: PartnerAuthorizationData,
-         eventRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        interactor: CardAuthorizationScreenInteractor,
+        data: PartnerAuthorizationData,
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.eventRecorder = eventRecorder
         self.interactor = interactor
         self.data = data
@@ -36,7 +38,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
         /// Might get called multiple times from the `WKNavigationDelegate`
         guard !hasRedirected else { return }
         hasRedirected = true
-        self.eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)
+        eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)
         interactor.cardAuthorized(with: data.paymentMethodId)
     }
 }

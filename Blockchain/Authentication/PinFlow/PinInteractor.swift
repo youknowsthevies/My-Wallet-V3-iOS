@@ -32,11 +32,13 @@ final class PinInteractor: PinInteracting {
         get { cacheSuite.integer(forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue) }
         set { cacheSuite.set(newValue, forKey: UserDefaults.Keys.walletWrongPinAttempts.rawValue) }
     }
+
     /// A helper property to get the timestamp for the last wrong PIN attempt
     private var lastWrongPinAttemptTimestamp: TimeInterval {
         get { cacheSuite.object(forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue) as! TimeInterval }
         set { cacheSuite.set(newValue, forKey: UserDefaults.Keys.walletLastWrongPinTimestamp.rawValue) }
     }
+
     // TODO: Used hardcoded value for now, replace with the actual lock time returned from backend
     /// A helper property to determine lock time seconds based on wrong PIN attempts
     private var pinLockTime: Int {
@@ -56,15 +58,17 @@ final class PinInteractor: PinInteracting {
 
     // MARK: - Setup
 
-    init(credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository,
-         pinClient: PinClientAPI = PinClient(),
-         maintenanceService: MaintenanceServicing = resolve(),
-         wallet: WalletProtocol = WalletManager.shared.wallet,
-         appSettings: AppSettingsAuthenticating = resolve(),
-         recorder: Recording = CrashlyticsRecorder(),
-         cacheSuite: CacheSuite = resolve(),
-         walletRepository: WalletRepositoryAPI = resolve(),
-         walletCryptoService: WalletCryptoServiceAPI = resolve()) {
+    init(
+        credentialsProvider: WalletCredentialsProviding = WalletManager.shared.legacyRepository,
+        pinClient: PinClientAPI = PinClient(),
+        maintenanceService: MaintenanceServicing = resolve(),
+        wallet: WalletProtocol = WalletManager.shared.wallet,
+        appSettings: AppSettingsAuthenticating = resolve(),
+        recorder: Recording = CrashlyticsRecorder(),
+        cacheSuite: CacheSuite = resolve(),
+        walletRepository: WalletRepositoryAPI = resolve(),
+        walletCryptoService: WalletCryptoServiceAPI = resolve()
+    ) {
         loginService = PinLoginService(
             settings: appSettings,
             service: DIKit.resolve(),
@@ -102,9 +106,9 @@ final class PinInteractor: PinInteracting {
                 if let message = message { throw PinError.serverMaintenance(message: message) }
                 return self.pinClient.create(pinPayload: payload)
             }
-            .flatMapCompletable(weak: self, { (self, response) in
+            .flatMapCompletable(weak: self) { (self, response) in
                 self.handleCreatePinResponse(response: response, payload: payload)
-            })
+            }
             .catchError { error in
                 throw PinError.map(from: error)
             }
@@ -195,20 +199,23 @@ final class PinInteractor: PinInteracting {
                 }
 
                 guard let pinValue = payload.pinValue,
-                    !payload.pinKey.isEmpty,
-                    !pinValue.isEmpty else {
-                        let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
-                        self.recorder.error(error)
-                        observer(.error(error))
-                        return Disposables.create()
+                      !payload.pinKey.isEmpty,
+                      !pinValue.isEmpty
+                else {
+                    let error = PinError.serverError(LocalizationConstants.Pin.responseKeyOrValueLengthZero)
+                    self.recorder.error(error)
+                    observer(.error(error))
+                    return Disposables.create()
                 }
                 observer(.success((pin: pinValue, password: password)))
                 return Disposables.create()
             }
             .flatMap(weak: self) { (self, data) -> Single<(encryptedPinPassword: String, password: String)> in
                 self.walletCryptoService
-                    .encrypt(pair: KeyDataPair(key: data.pin, data: data.password),
-                             pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin)
+                    .encrypt(
+                        pair: KeyDataPair(key: data.pin, data: data.password),
+                        pbkdf2Iterations: WalletCryptoPBKDF2Iterations.pinLogin
+                    )
                     .map { (encryptedPinPassword: $0, password: data.password) }
             }
             .flatMapCompletable(weak: self) { (self, data) -> Completable in
@@ -226,8 +233,10 @@ final class PinInteractor: PinInteracting {
     }
 
     /// Persists the pin if needed or deletes it according to the response code received from the backend
-    private func updateCacheIfNeeded(response: PinStoreResponse,
-                                     pinPayload: PinPayload) throws {
+    private func updateCacheIfNeeded(
+        response: PinStoreResponse,
+        pinPayload: PinPayload
+    ) throws {
         // Make sure the user has not logout
         guard !hasLogoutAttempted else {
             throw PinError.receivedResponseWhileLoggedOut
@@ -287,7 +296,7 @@ final class PinInteractor: PinInteracting {
 
     private func getBackoffRemainingLockTime() -> Int {
         // Calculate elapsed time and remaining lock time
-        let elapsed = Int(NSDate().timeIntervalSince1970 - self.lastWrongPinAttemptTimestamp)
+        let elapsed = Int(NSDate().timeIntervalSince1970 - lastWrongPinAttemptTimestamp)
         // Ensure no negative number
         let remaining = max(pinLockTime - elapsed, 0)
         return remaining

@@ -22,12 +22,12 @@ public final class FiatBalanceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .drive(rx.values)
                 .disposed(by: disposeBag)
 
             presenter.state
-                .map { $0.isLoading }
+                .map(\.isLoading)
                 .drive(weak: self) { (self, _) in
                     self.startShimmering()
                 }
@@ -95,7 +95,7 @@ public final class FiatBalanceView: UIView {
     private func stopShimmering() {
         guard fiatLabelShimmeringView != nil else { return }
         guard baseFiatLabelShimmeringView != nil else { return }
-        guard fiatLabelShimmeringView.isShimmering && baseFiatLabelShimmeringView.isShimmering else { return }
+        guard fiatLabelShimmeringView.isShimmering, baseFiatLabelShimmeringView.isShimmering else { return }
 
         baseLabel.alpha = 0
         quoteLabel.alpha = 0

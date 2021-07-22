@@ -99,11 +99,13 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
     private let eventRecorder: AnalyticsEventRecorderAPI
     private let messageRecorder: MessageRecording
 
-    init(interactor: BillingAddressScreenInteractor,
-         countrySelectionRouter: SelectionRouterAPI,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         eventRecorder: AnalyticsEventRecorderAPI,
-         messageRecorder: MessageRecording) {
+    init(
+        interactor: BillingAddressScreenInteractor,
+        countrySelectionRouter: SelectionRouterAPI,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        eventRecorder: AnalyticsEventRecorderAPI,
+        messageRecorder: MessageRecording
+    ) {
         self.interactor = interactor
         self.countrySelectionRouter = countrySelectionRouter
         self.loadingViewPresenter = loadingViewPresenter
@@ -132,12 +134,12 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
             .disposed(by: disposeBag)
 
         interactor.selectedCountry
-            .map { $0.name }
+            .map(\.name)
             .bindAndCatch(to: selectionButtonViewModel.titleRelay)
             .disposed(by: disposeBag)
 
         interactor.selectedCountry
-            .map { $0.code }
+            .map(\.code)
             .bindAndCatch(to: selectionButtonViewModel.subtitleRelay)
             .disposed(by: disposeBag)
 
@@ -194,7 +196,7 @@ final class BillingAddressScreenPresenter: RibBridgePresenter {
 
         let stateArrayObservable = viewModelsObservable
             .map { viewModels in
-                viewModels.map { $0.state }
+                viewModels.map(\.state)
             }
             .flatMap { Observable.combineLatest($0) }
 

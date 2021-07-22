@@ -134,11 +134,11 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     }
 
     var cards: Observable<[CardData]> {
-        methodTypes.map { $0.cards }
+        methodTypes.map(\.cards)
     }
 
     var linkedBanks: Observable<[LinkedBankData]> {
-        methodTypes.map { $0.linkedBanks }
+        methodTypes.map(\.linkedBanks)
     }
 
     /// Preferred payment method
@@ -172,7 +172,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                             accountForEligibility: isTier2Approved
                         )
                     }
-                    .map { $0.first }
+                    .map(\.first)
                     .asObservable()
                     .catchErrorJustReturn(.none)
             }
@@ -229,8 +229,8 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
             supportedCurrencies,
             achEnabled
         )
-        .map { (currencies, isACHEnabled) in
-            if isACHEnabled && fiatCurrency.isACHSupportedCurrency {
+        .map { currencies, isACHEnabled in
+            if isACHEnabled, fiatCurrency.isACHSupportedCurrency {
                 return currencies.contains(fiatCurrency)
             }
             // Filter out all currencies that are supported for ACH.
@@ -248,7 +248,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         suggestedPaymentMethodTypes
             .map { paymentMethods -> [PaymentMethodType] in
                 paymentMethods.filter {
-                    guard case let .fiat(currency) = $0.currency else { return false }
+                    guard case .fiat(let currency) = $0.currency else { return false }
                     guard fiatCurrency == currency else { return false }
                     return ($0.method.isBankAccount || $0.method.isBankTransfer)
                 }
@@ -265,10 +265,12 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
             .map {
-                (paymentMethods: $0.0,
-                 cards: $0.1,
-                 balances: $0.2,
-                 withdrawAndDepositACHEnabled: $0.3)
+                (
+                    paymentMethods: $0.0,
+                    cards: $0.1,
+                    balances: $0.2,
+                    withdrawAndDepositACHEnabled: $0.3
+                )
             }
             .map(weak: self) { (self, payload) in
                 self.merge(
@@ -306,11 +308,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 featureFetching.fetchBool(for: .withdrawAndDepositACH)
             )
             .map {
-                (paymentMethods: $0.0,
-                 cards: $0.1,
-                 balances: $0.2,
-                 linkedBanks: $0.3,
-                 withdrawAndDepositACHEnabled: $0.4)
+                (
+                    paymentMethods: $0.0,
+                    cards: $0.1,
+                    balances: $0.2,
+                    linkedBanks: $0.3,
+                    withdrawAndDepositACHEnabled: $0.4
+                )
             }
             .map(weak: self) { (self, payload) in
                 self.merge(
@@ -363,15 +367,17 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     /// - Linked Banks
     /// - Suggested Methods
     /// ~~~
-    private func merge(paymentMethods: [PaymentMethod],
-                       cards: [CardData],
-                       balances: CustodialAccountBalanceStates,
-                       linkedBanks: [LinkedBankData],
-                       withdrawAndDepositACHEnabled: Bool) -> [PaymentMethodType] {
+    private func merge(
+        paymentMethods: [PaymentMethod],
+        cards: [CardData],
+        balances: CustodialAccountBalanceStates,
+        linkedBanks: [LinkedBankData],
+        withdrawAndDepositACHEnabled: Bool
+    ) -> [PaymentMethodType] {
         let topCardLimit = (paymentMethods.first { $0.type.isCard })?.max
 
         let cardTypes = cards
-            .filter { $0.state.isUsable }
+            .filter(\.state.isUsable)
             .map { card in
                 var card = card
                 if let limit = topCardLimit {
@@ -405,7 +411,7 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         let balancesResult = paymentMethods
             .filter(\.type.isFunds)
             .compactMap { paymentMethod -> FundData? in
-                guard case let .funds(currency) = paymentMethod.type else {
+                guard case .funds(let currency) = paymentMethod.type else {
                     return nil
                 }
                 guard let balance = balances[currency].balance else {
@@ -441,11 +447,13 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
                 featureFetching.fetchBool(for: .withdrawAndDepositACH).asObservable()
             )
             .map {
-                (paymentMethods: $0.0,
-                 cards: $0.1,
-                 balances: $0.2,
-                 linkedBanks: $0.3,
-                 withdrawAndDepositACHEnabled: $0.4)
+                (
+                    paymentMethods: $0.0,
+                    cards: $0.1,
+                    balances: $0.2,
+                    linkedBanks: $0.3,
+                    withdrawAndDepositACHEnabled: $0.4
+                )
             }
             .map(weak: self) { (self, payload) in
                 self.merge(

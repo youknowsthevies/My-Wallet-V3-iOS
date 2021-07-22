@@ -33,8 +33,8 @@ public enum DetailCellPresenter: IdentifiableType, Equatable {
     case lineItem(LineItemType)
 }
 
-public extension DetailCellPresenter {
-    static func ==(lhs: DetailCellPresenter, rhs: DetailCellPresenter) -> Bool {
+extension DetailCellPresenter {
+    public static func == (lhs: DetailCellPresenter, rhs: DetailCellPresenter) -> Bool {
         switch (lhs, rhs) {
         case (.currentBalance(let left), .currentBalance(let right)):
             return left.identifier == right.identifier

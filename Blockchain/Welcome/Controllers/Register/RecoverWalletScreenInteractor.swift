@@ -37,12 +37,14 @@ final class RecoverWalletScreenInteractor {
 
     // MARK: - Setup
 
-    init(authenticationCoordinator: AuthenticationCoordinator = .shared,
-         passphrase: String,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         reachability: InternetReachabilityAPI = InternetReachability(),
-         walletManager: WalletManager = .shared,
-         wallet: Wallet = WalletManager.shared.wallet) {
+    init(
+        authenticationCoordinator: AuthenticationCoordinator = .shared,
+        passphrase: String,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        reachability: InternetReachabilityAPI = InternetReachability(),
+        walletManager: WalletManager = .shared,
+        wallet: Wallet = WalletManager.shared.wallet
+    ) {
         self.passphrase = passphrase
         self.analyticsRecorder = analyticsRecorder
         self.reachability = reachability

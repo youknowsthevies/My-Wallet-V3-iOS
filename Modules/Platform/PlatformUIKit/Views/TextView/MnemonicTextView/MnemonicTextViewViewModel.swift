@@ -30,14 +30,14 @@ public struct MnemonicTextViewViewModel {
                     input.lowercased(),
                     font: validStyle.font,
                     color: validStyle.color
-                    )
+                )
                 )
             case .incomplete:
                 self = .valid(value: .init(
                     input.lowercased(),
                     font: validStyle.font,
                     color: validStyle.color
-                    )
+                )
                 )
             case .invalid(let ranges):
                 let attributed: NSMutableAttributedString = .init(
@@ -49,14 +49,13 @@ public struct MnemonicTextViewViewModel {
                     attributed.addAttributes([
                         .font: invalidStyle.font,
                         .foregroundColor: invalidStyle.color
-                        ], range: $0)
+                    ], range: $0)
                 }
                 self = .invalid(value: .init(attributedString: attributed))
             case .none:
                 self = .empty
             }
         }
-
     }
 
     /// A style for text
@@ -91,7 +90,7 @@ public struct MnemonicTextViewViewModel {
     let attributedTextRelay = BehaviorRelay<NSAttributedString>(value: .init(string: ""))
     var attributedText: Driver<NSAttributedString> {
         attributedTextRelay
-        .asDriver()
+            .asDriver()
     }
 
     /// The content of the text field
@@ -125,17 +124,15 @@ public struct MnemonicTextViewViewModel {
             .disposed(by: disposeBag)
 
         Observable.zip(validator.valueRelay, validator.score)
-            .map { (value, score) -> State in
+            .map { value, score -> State in
                 State(input: value, score: score)
-        }
-        .bindAndCatch(to: stateRelay)
-        .disposed(by: disposeBag)
+            }
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
 
-        validator.score.map {
-            $0.tintColor
-        }
-        .bindAndCatch(to: borderColorRelay)
-        .disposed(by: disposeBag)
+        validator.score.map(\.tintColor)
+            .bindAndCatch(to: borderColorRelay)
+            .disposed(by: disposeBag)
 
         stateRelay.map { state -> NSAttributedString in
             switch state {
@@ -172,7 +169,7 @@ extension MnemonicTextViewViewModel.Style {
 }
 
 extension MnemonicTextViewViewModel.State {
-    public static func ==(lhs: MnemonicTextViewViewModel.State, rhs: MnemonicTextViewViewModel.State) -> Bool {
+    public static func == (lhs: MnemonicTextViewViewModel.State, rhs: MnemonicTextViewViewModel.State) -> Bool {
         switch (lhs, rhs) {
         case (.complete(let left), .complete(value: let right)):
             return left == right

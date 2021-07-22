@@ -18,11 +18,13 @@ public struct LabelContent: Equatable {
     let alignment: NSTextAlignment
     let accessibility: Accessibility
 
-    public init(text: String = "",
-                font: UIFont = .main(.regular, 12),
-                color: UIColor = .clear,
-                alignment: NSTextAlignment = .natural,
-                accessibility: Accessibility = .none) {
+    public init(
+        text: String = "",
+        font: UIFont = .main(.regular, 12),
+        color: UIColor = .clear,
+        alignment: NSTextAlignment = .natural,
+        accessibility: Accessibility = .none
+    ) {
         self.text = text
         self.font = font
         self.color = color
@@ -30,7 +32,7 @@ public struct LabelContent: Equatable {
         self.accessibility = accessibility
     }
 
-    public static func ==(lhs: LabelContent, rhs: LabelContent) -> Bool {
+    public static func == (lhs: LabelContent, rhs: LabelContent) -> Bool {
         lhs.text == rhs.text
     }
 }

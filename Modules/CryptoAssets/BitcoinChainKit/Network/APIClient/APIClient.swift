@@ -12,8 +12,8 @@ public protocol APIClientAPI {
     func unspentOutputs(for wallets: [XPub]) -> Single<UnspentOutputsResponse>
 }
 
-fileprivate extension DerivationType {
-    var activeParameter: String {
+extension DerivationType {
+    fileprivate var activeParameter: String {
         switch self {
         case .legacy:
             return "active"
@@ -27,30 +27,33 @@ final class APIClient: APIClientAPI {
 
     private struct Endpoint {
         var multiaddress: [String] {
-            base + [ "multiaddr" ]
+            base + ["multiaddr"]
         }
+
         var balance: [String] {
-            base + [ "balance" ]
+            base + ["balance"]
         }
+
         var unspent: [String] {
-            base + [ "unspent" ]
+            base + ["unspent"]
         }
+
         let base: [String]
 
         init(coin: BitcoinChainCoin) {
-            self.base = [ coin.rawValue.lowercased() ]
+            base = [coin.rawValue.lowercased()]
         }
     }
 
-    private struct Parameter {
+    private enum Parameter {
         static func active(wallets: [XPub]) -> [URLQueryItem] {
             wallets
-                .reduce(into: [DerivationType: [String]]()) { (result, wallet) in
+                .reduce(into: [DerivationType: [String]]()) { result, wallet in
                     var list = result[wallet.derivationType] ?? []
                     list.append(wallet.address)
                     result[wallet.derivationType] = list
                 }
-                .map { (type, addresses) -> URLQueryItem in
+                .map { type, addresses -> URLQueryItem in
                     URLQueryItem(
                         name: type.activeParameter,
                         value: addresses.joined(separator: "|")
@@ -66,12 +69,14 @@ final class APIClient: APIClientAPI {
 
     // MARK: - Init
 
-    init(coin: BitcoinChainCoin,
-         requestBuilder: RequestBuilder = resolve(),
-         networkAdapter: NetworkAdapterAPI = resolve()) {
+    init(
+        coin: BitcoinChainCoin,
+        requestBuilder: RequestBuilder = resolve(),
+        networkAdapter: NetworkAdapterAPI = resolve()
+    ) {
         self.coin = coin
         self.requestBuilder = requestBuilder
-        self.endpoint = Endpoint(coin: coin)
+        endpoint = Endpoint(coin: coin)
         self.networkAdapter = networkAdapter
     }
 

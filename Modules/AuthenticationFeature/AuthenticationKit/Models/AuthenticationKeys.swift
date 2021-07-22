@@ -7,7 +7,7 @@ public final class AuthenticationKeys: NSObject {
     }
 }
 
-private struct InfoDictionaryHelper {
+private enum InfoDictionaryHelper {
     enum Key: String {
         case googleRecaptchaSiteKey = "GOOGLE_RECAPTCHA_SITE_KEY"
     }

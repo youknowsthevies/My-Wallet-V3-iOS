@@ -13,7 +13,7 @@ final class EmailVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
         super.init()
         service
             .valueObservable
-            .map { $0.isEmailVerified }
+            .map(\.isEmailVerified)
             .map { $0 ? .verified : .unverified }
             .map { .loaded(next: $0) }
             // TODO: Error handing

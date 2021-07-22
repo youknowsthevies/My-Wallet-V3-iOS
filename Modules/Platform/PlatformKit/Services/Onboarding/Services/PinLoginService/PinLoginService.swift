@@ -30,10 +30,12 @@ public final class PinLoginService: PinLoginServiceAPI {
 
     // MARK: - Setup
 
-    public init(settings: AppSettingsAuthenticating,
-                service: WalletPayloadServiceAPI,
-                walletRepository: PasscodeRepositoryAPI,
-                walletCryptoService: WalletCryptoServiceAPI = resolve()) {
+    public init(
+        settings: AppSettingsAuthenticating,
+        service: WalletPayloadServiceAPI,
+        walletRepository: PasscodeRepositoryAPI,
+        walletCryptoService: WalletCryptoServiceAPI = resolve()
+    ) {
         self.service = service
         self.settings = settings
         self.walletRepository = walletRepository
@@ -56,9 +58,9 @@ public final class PinLoginService: PinLoginServiceAPI {
     private func passcodePayload(from pinDecryptionKey: String) -> Single<PasscodePayload> {
         Single
             .zip(
-                self.walletRepository.guid,
-                self.walletRepository.sharedKey,
-                self.decrypt(pinDecryptionKey: pinDecryptionKey)
+                walletRepository.guid,
+                walletRepository.sharedKey,
+                decrypt(pinDecryptionKey: pinDecryptionKey)
             )
             .map { payload -> PasscodePayload in
                 guard let guid = payload.0, !guid.isEmpty else {

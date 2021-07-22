@@ -17,12 +17,14 @@ final class ActivityRouter: ActivityRouterAPI {
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private var router: AccountPickerRouting!
 
-    init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         container: ActivityServiceContaining = resolve(),
-         transactionDetailService: TransactionDetailServiceAPI = resolve()) {
+    init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        container: ActivityServiceContaining = resolve(),
+        transactionDetailService: TransactionDetailServiceAPI = resolve()
+    ) {
         self.navigationRouter = navigationRouter
-        self.serviceContainer = container
+        serviceContainer = container
         self.enabledCurrenciesService = enabledCurrenciesService
         self.transactionDetailService = transactionDetailService
     }
@@ -63,7 +65,7 @@ final class ActivityRouter: ActivityRouterAPI {
         guard
             let urlString = transactionDetailService.transactionDetailURL(for: event.transactionHash, cryptoCurrency: event.currency),
             let url = URL(string: urlString)
-            else { return }
+        else { return }
         let controller = SFSafariViewController(url: url)
         controller.modalPresentationStyle = .overFullScreen
         navigationRouter.topMostViewControllerProvider.topMostViewController?.present(

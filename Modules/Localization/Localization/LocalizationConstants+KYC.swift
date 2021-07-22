@@ -18,7 +18,8 @@ extension LocalizationConstants {
         )
         public static let invalidPhoneNumber = NSLocalizedString(
             "The mobile number you entered is invalid.",
-            comment: "Error message displayed to the user when the phone number they entered during KYC is invalid.")
+            comment: "Error message displayed to the user when the phone number they entered during KYC is invalid."
+        )
         public static let failedToConfirmNumber = NSLocalizedString(
             "Failed to confirm mobile number. Please try again.",
             comment: "Error message displayed to the user when the mobile confirmation steps fails."
@@ -392,8 +393,8 @@ extension LocalizationConstants {
         public static let state = NSLocalizedString("State", comment: "state")
         public static let stateRegionProvinceCountry = NSLocalizedString("State / Region / Province / Country", comment: "State / Region / Province / Country")
         public static let postalCode = NSLocalizedString("Postal Code", comment: "postal code")
-        
-        public struct Errors {
+
+        public enum Errors {
             public static let genericErrorMessage = NSLocalizedString("Please check the information you provided and try again.", comment: "A message shown when something goes wrong on the backend, normally address validation.")
             public static let cannotFetchUserAlertTitle = NSLocalizedString(
                 "Failed to get user",

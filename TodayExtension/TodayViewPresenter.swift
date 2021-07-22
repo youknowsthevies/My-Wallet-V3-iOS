@@ -16,7 +16,7 @@ final class TodayViewPresenter {
                 portfolioCellRelay,
                 assetCellsRelay
             )
-            .map { (values) -> [TodayExtensionSectionViewModel] in
+            .map { values -> [TodayExtensionSectionViewModel] in
                 var result: [TodayExtensionSectionViewModel] = []
                 if let portfolio = values.0 {
                     result.append(.init(sectionType: .balance, items: [portfolio]))
@@ -35,7 +35,7 @@ final class TodayViewPresenter {
     private lazy var setup: Void = {
         interactor
             .assetInteractors
-            .map { items in items.map { $0.cellType } }
+            .map { items in items.map(\.cellType) }
             .map { cellTypes in cellTypes.map { TodayExtensionCellViewModel(cellType: $0) } }
             .bindAndCatch(to: assetCellsRelay)
             .disposed(by: disposeBag)
@@ -43,7 +43,7 @@ final class TodayViewPresenter {
         interactor
             .portfolioInteractor
             .compactMap { $0 }
-            .map { $0.cellType }
+            .map(\.cellType)
             .map { TodayExtensionCellViewModel(cellType: $0) }
             .bindAndCatch(to: portfolioCellRelay)
             .disposed(by: disposeBag)
@@ -86,5 +86,4 @@ final class TodayViewPresenter {
             fatalError("Unexpected section")
         }
     }
-
 }

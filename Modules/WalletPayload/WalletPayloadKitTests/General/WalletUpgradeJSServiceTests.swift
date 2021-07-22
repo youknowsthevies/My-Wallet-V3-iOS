@@ -41,6 +41,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         };
         """
     }
+
     private var multipleSuccessScript: String {
         """
         var MyWalletPhone = {};
@@ -50,6 +51,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         };
         """
     }
+
     private var successErrorScript: String {
         """
         var MyWalletPhone = {};
@@ -59,6 +61,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         };
         """
     }
+
     private var failureScript: String {
         """
         var MyWalletPhone = {};
@@ -144,7 +147,7 @@ class WalletUpgradeJSServiceTests: XCTestCase {
         let expectedEvents: [Recorded<Event<String>>] = Recorded.events(
             .error(
                 200,
-                   WalletUpgradeJSError.failedV3Upgrade
+                WalletUpgradeJSError.failedV3Upgrade
             )
         )
         XCTAssertEqual(result.events, expectedEvents)

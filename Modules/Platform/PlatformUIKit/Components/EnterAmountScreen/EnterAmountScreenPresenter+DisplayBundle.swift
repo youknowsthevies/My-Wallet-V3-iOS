@@ -14,8 +14,10 @@ extension EnterAmountScreenPresenter {
             public let digitPadTopSeparator: Color
             public let bottomAuxiliaryItemSeparator: Color
 
-            public init(digitPadTopSeparator: Color,
-                        bottomAuxiliaryItemSeparator: Color) {
+            public init(
+                digitPadTopSeparator: Color,
+                bottomAuxiliaryItemSeparator: Color
+            ) {
                 self.digitPadTopSeparator = digitPadTopSeparator
                 self.bottomAuxiliaryItemSeparator = bottomAuxiliaryItemSeparator
             }
@@ -28,11 +30,13 @@ extension EnterAmountScreenPresenter {
             public let confirmTapped: (CurrencyType, MoneyValue, CryptoCurrency, [String: String]) -> [AnalyticsEvent]
             public let sourceAccountChanged: (String) -> AnalyticsEvent
 
-            public init(didAppear: [AnalyticsEvent],
-                        confirmSuccess: AnalyticsEvent,
-                        confirmFailure: AnalyticsEvent,
-                        confirmTapped: @escaping (CurrencyType, MoneyValue, CryptoCurrency, [String: String]) -> [AnalyticsEvent],
-                        sourceAccountChanged: @escaping (String) -> AnalyticsEvent) {
+            public init(
+                didAppear: [AnalyticsEvent],
+                confirmSuccess: AnalyticsEvent,
+                confirmFailure: AnalyticsEvent,
+                confirmTapped: @escaping (CurrencyType, MoneyValue, CryptoCurrency, [String: String]) -> [AnalyticsEvent],
+                sourceAccountChanged: @escaping (String) -> AnalyticsEvent
+            ) {
                 self.didAppear = didAppear
                 self.confirmSuccess = confirmSuccess
                 self.confirmFailure = confirmFailure
@@ -46,9 +50,11 @@ extension EnterAmountScreenPresenter {
             public let ctaButton: String
             public let bottomAuxiliaryItemSeparatorTitle: String
 
-            public init(title: String,
-                        ctaButton: String,
-                        bottomAuxiliaryItemSeparatorTitle: String) {
+            public init(
+                title: String,
+                ctaButton: String,
+                bottomAuxiliaryItemSeparatorTitle: String
+            ) {
                 self.title = title
                 self.ctaButton = ctaButton
                 self.bottomAuxiliaryItemSeparatorTitle = bottomAuxiliaryItemSeparatorTitle
@@ -69,15 +75,17 @@ extension EnterAmountScreenPresenter {
         public let events: Events
         public let accessibilityIdentifiers: AccessibilityIdentifiers
 
-        public init(strings: Strings,
-                    colors: Colors,
-                    events: Events,
-                    accessibilityIdentifiers: AccessibilityIdentifiers,
-                    amountDisplayBundle: AmountTranslationPresenter.DisplayBundle) {
+        public init(
+            strings: Strings,
+            colors: Colors,
+            events: Events,
+            accessibilityIdentifiers: AccessibilityIdentifiers,
+            amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
+        ) {
             self.strings = strings
             self.colors = colors
             self.events = events
-            self.accessibilityIdentifiers  = accessibilityIdentifiers
+            self.accessibilityIdentifiers = accessibilityIdentifiers
             self.amountDisplayBundle = amountDisplayBundle
         }
     }

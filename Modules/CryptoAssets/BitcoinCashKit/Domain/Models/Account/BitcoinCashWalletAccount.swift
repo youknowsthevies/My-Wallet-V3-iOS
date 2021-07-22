@@ -10,11 +10,13 @@ public struct BitcoinCashWalletAccount {
     public let label: String?
     public let publicKey: XPub
 
-    public init(index: Int,
-                publicKey: String,
-                label: String?,
-                derivationType: DerivationType,
-                archived: Bool) {
+    public init(
+        index: Int,
+        publicKey: String,
+        label: String?,
+        derivationType: DerivationType,
+        archived: Bool
+    ) {
         self.archived = archived
         self.index = index
         self.label = label

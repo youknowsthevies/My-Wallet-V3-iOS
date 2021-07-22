@@ -18,4 +18,4 @@ final class LinkBankFailureScreenBuilder: LinkBankFailureScreenBuildable {
     }
 }
 
-extension PendingStateViewController: LinkBankFailureScreenViewControllable { }
+extension PendingStateViewController: LinkBankFailureScreenViewControllable {}

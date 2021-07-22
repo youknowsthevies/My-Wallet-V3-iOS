@@ -27,13 +27,15 @@ final class ReceiveScreenPresenter {
     let memoNoteViewModel: InteractableTextViewModel
     let copyButton: ButtonViewModel
     let shareButton: ButtonViewModel
-    private (set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
+    private(set) lazy var title = "\(LocalizedString.Text.receive) \(interactor.account.currencyType.code)"
     var assetImage: Driver<ImageViewContent> {
         .just(ImageViewContent(imageResource: interactor.account.currencyType.logoResource))
     }
+
     var qrCode: Driver<UIImage?> {
         qrCodeRelay.asDriver()
     }
+
     let webViewLaunchRelay = PublishRelay<URL>()
 
     // MARK: Private Properties
@@ -45,9 +47,11 @@ final class ReceiveScreenPresenter {
 
     // MARK: Setup
 
-    init(pasteboard: Pasteboarding = resolve(),
-         eventsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         interactor: ReceiveScreenInteractor) {
+    init(
+        pasteboard: Pasteboarding = resolve(),
+        eventsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        interactor: ReceiveScreenInteractor
+    ) {
         self.interactor = interactor
         self.eventsRecorder = eventsRecorder
         walletAddressLabelContent = LabelContent(
@@ -79,7 +83,7 @@ final class ReceiveScreenPresenter {
         )
         balanceLabelContentPresenting = DefaultLabelContentPresenter(
             knownValue: "  ",
-            descriptors:  .init(
+            descriptors: .init(
                 fontWeight: .medium,
                 contentColor: .descriptionText,
                 fontSize: 14,
@@ -148,7 +152,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         memoNoteViewModel.tap
-            .map { $0.url }
+            .map(\.url)
             .bindAndCatch(to: webViewLaunchRelay)
             .disposed(by: disposeBag)
 
@@ -157,8 +161,10 @@ final class ReceiveScreenPresenter {
         copyButton.tapRelay
             .bind { [eventsRecorder] in
                 eventsRecorder.record(event:
-                    AnalyticsEvents.New.Receive.receiveDetailsCopied(accountType: .init(self.interactor.account as? CryptoAccount),
-                                                                     currency: self.interactor.account.currencyType.code)
+                    AnalyticsEvents.New.Receive.receiveDetailsCopied(
+                        accountType: .init(self.interactor.account as? CryptoAccount),
+                        currency: self.interactor.account.currencyType.code
+                    )
                 )
             }
             .disposed(by: disposeBag)
@@ -169,7 +175,7 @@ final class ReceiveScreenPresenter {
             .disposed(by: disposeBag)
 
         copyButton.tapRelay
-            .bindAndCatch(weak: self) { (_, _) in
+            .bindAndCatch(weak: self) { _, _ in
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                 feedbackGenerator.prepare()
                 feedbackGenerator.impactOccurred()

@@ -100,7 +100,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         }
 
         let confirmationLineItems: [DetailsScreen.CellType] = interactors
-            .reduce(into: [DetailsScreen.CellType]()) { (result, lineItem) in
+            .reduce(into: [DetailsScreen.CellType]()) { result, lineItem in
                 result.append(.lineItem(lineItem))
                 result.append(.separator)
             }
@@ -126,7 +126,7 @@ final class ConfirmationPageContentReducer: ConfirmationPageContentReducing {
         let memo: TransactionConfirmation.Model.Memo? = pendingTransaction.confirmations
             .filter(\.isMemo)
             .compactMap { confirmation -> TransactionConfirmation.Model.Memo? in
-                guard case let .memo(memo) = confirmation else {
+                guard case .memo(let memo) = confirmation else {
                     return nil
                 }
                 return memo

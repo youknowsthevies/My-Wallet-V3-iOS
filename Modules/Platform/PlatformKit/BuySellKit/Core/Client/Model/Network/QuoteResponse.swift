@@ -48,11 +48,11 @@ public struct Quote {
         let majorEstimatedAmount: Decimal = amount.amount.decimalDivision(divisor: rate)
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
         guard let estimatedAmount = CryptoValue.create(major: "\(majorEstimatedAmount)", currency: cryptoCurrency)
-            else { throw SetupError.createFromMajorValue }
+        else { throw SetupError.createFromMajorValue }
         self.estimatedAmount = estimatedAmount
         let feeAmountMinor = feeRateMinor * estimatedAmount.displayMajorValue
         /// Decimal string interpolation always uses '.' (full stop) as decimal separator, because of that we will use US locale.
-        self.fee = FiatValue.create(minor: "\(feeAmountMinor)", currency: amount.currencyType)!
+        fee = FiatValue.create(minor: "\(feeAmountMinor)", currency: amount.currencyType)!
         self.time = time
         self.rate = FiatValue.create(minor: response.rate, currency: amount.currencyType)!
     }

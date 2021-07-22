@@ -15,8 +15,8 @@ public protocol CameraPrompting: AnyObject {
     func requestCameraPermissions()
 }
 
-public extension CameraPrompting where Self: MicrophonePrompting {
-    func willUseCamera() {
+extension CameraPrompting where Self: MicrophonePrompting {
+    public func willUseCamera() {
         if PermissionsRequestor.shouldDisplayCameraPermissionsRequest() {
             cameraPromptingDelegate?.promptToAcceptCameraPermissions(confirmHandler: {
                 self.requestCameraPermissions()
@@ -30,7 +30,7 @@ public extension CameraPrompting where Self: MicrophonePrompting {
         }
     }
 
-    func requestCameraPermissions() {
+    public func requestCameraPermissions() {
         permissionsRequestor.requestPermissions([.camera]) { [weak self] in
             guard let this = self else { return }
             switch PermissionsRequestor.cameraEnabled() {
@@ -49,8 +49,8 @@ public protocol CameraPromptingDelegate: AnyObject {
     func promptToAcceptCameraPermissions(confirmHandler: @escaping (() -> Void))
 }
 
-public extension CameraPromptingDelegate {
-    func showCameraPermissionsDenied() {
+extension CameraPromptingDelegate {
+    public func showCameraPermissionsDenied() {
         let action = AlertAction(style: .confirm(LocalizationConstants.goToSettings))
         let model = AlertModel(
             headline: LocalizationConstants.Errors.cameraAccessDenied,
@@ -70,7 +70,7 @@ public extension CameraPromptingDelegate {
         alert.show()
     }
 
-    func promptToAcceptCameraPermissions(confirmHandler: @escaping (() -> Void)) {
+    public func promptToAcceptCameraPermissions(confirmHandler: @escaping (() -> Void)) {
         let okay = AlertAction(style: .confirm(LocalizationConstants.okString))
         let notNow = AlertAction(style: .default(LocalizationConstants.KYC.notNow))
 

@@ -7,7 +7,7 @@ import NetworkKit
 import RxSwift
 import WalletPayloadKit
 
-/// TODO: fetch using a `sharedKey`
+// TODO: fetch using a `sharedKey`
 public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     // MARK: - Types
@@ -32,19 +32,19 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             guard let guid = response.guid else {
                 throw ClientError.missingGuid
             }
-            self.payload = try? WalletPayloadWrapper(string: response.payload)
+            payload = try? WalletPayloadWrapper(string: response.payload)
             self.guid = guid
-            self.authType = response.authType
-            self.language = response.language
-            self.shouldSyncPubkeys = response.shouldSyncPubkeys
-            self.time = Date(timeIntervalSince1970: response.serverTime / 1000)
+            authType = response.authType
+            language = response.language
+            shouldSyncPubkeys = response.shouldSyncPubkeys
+            time = Date(timeIntervalSince1970: response.serverTime / 1000)
         }
     }
 
     /// Errors thrown from the client layer
     public enum ClientError: Error {
 
-        private struct RawErrorSubstring {
+        private enum RawErrorSubstring {
             static let accountLocked = "locked"
         }
 
@@ -96,6 +96,7 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             case isEmailAuthorizationRequired = "authorization_required"
             case errorMessage = "initial_error"
         }
+
         let isEmailAuthorizationRequired: Bool
         let errorMessage: String?
 
@@ -108,8 +109,10 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
             errorMessage = try container.decode(String.self, forKey: .errorMessage)
         }
 
-        private init(isEmailAuthorizationRequired: Bool,
-                     errorMessage: String?) {
+        private init(
+            isEmailAuthorizationRequired: Bool,
+            errorMessage: String?
+        ) {
             self.isEmailAuthorizationRequired = isEmailAuthorizationRequired
             self.errorMessage = errorMessage
         }
@@ -142,8 +145,10 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = WalletPayloadRequestBuilder(requestBuilder: requestBuilder)
     }
@@ -176,14 +181,13 @@ public final class WalletPayloadClient: WalletPayloadClientAPI {
         do {
             let clientResponse = try ClientResponse(response: response)
             return .success(clientResponse)
-        } catch(let error) {
+        } catch {
             guard let clientError = error as? ClientError else {
                 fatalError("Error must be of type ClientError")
             }
             return .failure(clientError)
         }
     }
-
 }
 
 // MARK: - WalletPayloadClientCombineAPI
@@ -215,7 +219,7 @@ extension WalletPayloadClient {
 
     private struct WalletPayloadRequestBuilder {
 
-        private let pathComponents = [ "wallet" ]
+        private let pathComponents = ["wallet"]
 
         private enum HeaderKey: String {
             case cookie

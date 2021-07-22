@@ -48,9 +48,9 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     init(with bridge: EthereumWalletBridgeAPI = resolve(), client: TransactionClientAPI = resolve()) {
         self.bridge = bridge
         self.client = client
-        self.cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
-        self.cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodic(60))
-        self.cachedLatestBlock = CachedValue<Int>(configuration: .periodic(5))
+        cachedAccount = CachedValue<EthereumAssetAccount>(configuration: .onSubscription())
+        cachedTransactions = CachedValue<[EthereumHistoricalTransaction]>(configuration: .periodic(60))
+        cachedLatestBlock = CachedValue<Int>(configuration: .periodic(5))
 
         cachedAccount.setFetch { [weak self] () -> Single<EthereumAssetAccount> in
             guard let self = self else {
@@ -118,12 +118,14 @@ final class EthereumHistoricalTransactionService: EthereumHistoricalTransactionS
     }
 
     private func fetchLatestBlock() -> Single<Int> {
-        client.latestBlock.map { $0.number }
+        client.latestBlock.map(\.number)
     }
 
-    private func transactions(from address: String,
-                              latestBlock: Int,
-                              response: [EthereumHistoricalTransactionResponse]) -> [EthereumHistoricalTransaction] {
+    private func transactions(
+        from address: String,
+        latestBlock: Int,
+        response: [EthereumHistoricalTransactionResponse]
+    ) -> [EthereumHistoricalTransaction] {
         response
             .map { transactionResponse -> EthereumHistoricalTransaction in
                 EthereumHistoricalTransaction(

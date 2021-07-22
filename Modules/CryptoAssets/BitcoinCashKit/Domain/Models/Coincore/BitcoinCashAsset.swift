@@ -114,7 +114,7 @@ class BitcoinCashAsset: CryptoAsset {
                 self.repository.defaultAccount
                     .map { ($0, accounts) }
             }
-            .map { (defaultAccount, accounts) -> [SingleAccount] in
+            .map { defaultAccount, accounts -> [SingleAccount] in
                 accounts.map { account in
                     BitcoinCashCryptoAccount(
                         xPub: account.publicKey,

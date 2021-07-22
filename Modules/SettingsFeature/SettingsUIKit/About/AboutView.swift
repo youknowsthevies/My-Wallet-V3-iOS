@@ -25,7 +25,7 @@ final class AboutView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -64,13 +64,17 @@ final class AboutView: UIView {
     }
 
     static func estimatedHeight(for width: CGFloat) -> CGFloat {
-        let version = NSAttributedString(string: LocalizationIDs.version,
-                                         attributes: [.font: UIFont.main(.medium, 12.0)])
-            .heightForWidth(width: width - horizontalPadding)
+        let version = NSAttributedString(
+            string: LocalizationIDs.version,
+            attributes: [.font: UIFont.main(.medium, 12.0)]
+        )
+        .heightForWidth(width: width - horizontalPadding)
 
-        let copyright = NSAttributedString(string: LocalizationIDs.copyright,
-                                           attributes: [.font: UIFont.main(.medium, 12.0)])
-            .heightForWidth(width: width - horizontalPadding)
+        let copyright = NSAttributedString(
+            string: LocalizationIDs.copyright,
+            attributes: [.font: UIFont.main(.medium, 12.0)]
+        )
+        .heightForWidth(width: width - horizontalPadding)
 
         return verticalPadding + version + copyright + logoHeight
     }

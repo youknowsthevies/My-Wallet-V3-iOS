@@ -13,10 +13,12 @@ final class TargetSelectionInteractor {
     private let featureFetcher: FeatureFetching
     private let nameResolutionService: BlockchainNameResolutionServiceAPI
 
-    init(coincore: CoincoreAPI = resolve(),
-         nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
-         featureFetcher: FeatureFetching = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve()) {
+    init(
+        coincore: CoincoreAPI = resolve(),
+        nameResolutionService: BlockchainNameResolutionServiceAPI = resolve(),
+        featureFetcher: FeatureFetching = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve()
+    ) {
         self.coincore = coincore
         self.linkedBanksFactory = linkedBanksFactory
         self.featureFetcher = featureFetcher
@@ -27,8 +29,10 @@ final class TargetSelectionInteractor {
         BitPayInvoiceTarget.make(from: data, asset: .bitcoin)
     }
 
-    func getAvailableTargetAccounts(sourceAccount: BlockchainAccount,
-                                    action: AssetAction) -> Single<[SingleAccount]> {
+    func getAvailableTargetAccounts(
+        sourceAccount: BlockchainAccount,
+        action: AssetAction
+    ) -> Single<[SingleAccount]> {
         switch action {
         case .swap,
              .send:

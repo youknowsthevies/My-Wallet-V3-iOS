@@ -19,12 +19,12 @@ protocol SwapTransactionEngine: TransactionEngine {
     var priceService: PriceServiceAPI { get }
 }
 
-fileprivate extension PendingTransaction {
-    var quoteSubscription: Disposable? {
+extension PendingTransaction {
+    fileprivate var quoteSubscription: Disposable? {
         engineState[.quoteSubscription] as? Disposable
     }
 
-    var userTiers: KYC.UserTiers? {
+    fileprivate var userTiers: KYC.UserTiers? {
         engineState[.userTiers] as? KYC.UserTiers
     }
 }
@@ -100,9 +100,11 @@ extension SwapTransactionEngine {
         disposeQuotesFetching(pendingTransaction: pendingTransaction)
     }
 
-    func updateLimits(pendingTransaction: PendingTransaction,
-                      pricedQuote: PricedQuote,
-                      fiatCurrency: FiatCurrency) -> Single<PendingTransaction> {
+    func updateLimits(
+        pendingTransaction: PendingTransaction,
+        pricedQuote: PricedQuote,
+        fiatCurrency: FiatCurrency
+    ) -> Single<PendingTransaction> {
         Single
             .zip(
                 kycTiersService.tiers,
@@ -112,10 +114,10 @@ extension SwapTransactionEngine {
                     product: .swap(orderDirection)
                 )
             )
-            .map { (tiers, limits) -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
+            .map { tiers, limits -> (tiers: KYC.UserTiers, min: FiatValue, max: FiatValue) in
                 // TODO: Convert to `MoneyValuePair` so that
                 // we can show crypto or fiat min/max values.
-                return (tiers, limits.minOrder, limits.maxOrder)
+                (tiers, limits.minOrder, limits.maxOrder)
             }
             .flatMap(weak: self) { (self, values) -> Single<(KYC.UserTiers, MoneyValue, MoneyValue)> in
                 let (tiers, min, max) = values
@@ -180,13 +182,15 @@ extension SwapTransactionEngine {
                     .source(.init(value: self.sourceAccount.label)),
                     .destination(.init(value: self.target.label)),
                     .networkFee(.init(
-                                    fee: pricedQuote.networkFee,
-                                    feeType: .withdrawalFee,
-                                    asset: targetAsset.currency)),
+                        fee: pricedQuote.networkFee,
+                        feeType: .withdrawalFee,
+                        asset: targetAsset.currency
+                    )),
                     .networkFee(.init(
-                                    fee: pendingTransaction.feeAmount,
-                                    feeType: .depositFee,
-                                    asset: sourceAsset.currency))
+                        fee: pendingTransaction.feeAmount,
+                        feeType: .depositFee,
+                        asset: sourceAsset.currency
+                    ))
                 ]
 
                 var pendingTransaction = pendingTransaction.update(confirmations: confirmations)
@@ -249,33 +253,35 @@ extension SwapTransactionEngine {
     // MARK: - SwapTransactionEngine
 
     func createOrder(pendingTransaction: PendingTransaction) -> Single<SwapOrder> {
-        Single.zip(target.receiveAddress,
-                   sourceAccount.receiveAddress)
-            .map { ($0.0.address, $0.1.address) }
-            .flatMap(weak: self) { (self, addresses) -> Single<SwapOrder> in
-                let (destinationAddress, refundAddress) = addresses
-                return self.orderQuoteRepository
-                    .fetchQuote(
-                        direction: self.orderDirection,
-                        sourceCurrencyType: self.sourceAsset,
-                        destinationCurrencyType: self.target.currencyType
-                    )
-                    .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
-                        let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress : nil
-                        let refund = self.orderDirection.requiresRefundAddress ? refundAddress : nil
-                        return self.orderCreationRepository
-                            .createOrder(
-                                direction: self.orderDirection,
-                                quoteIdentifier: quote.identifier,
-                                volume: pendingTransaction.amount,
-                                destinationAddress: destination,
-                                refundAddress: refund
-                            )
-                    }
-            }
-            .do(onDispose: { [weak self] in
-                self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
-            })
+        Single.zip(
+            target.receiveAddress,
+            sourceAccount.receiveAddress
+        )
+        .map { ($0.0.address, $0.1.address) }
+        .flatMap(weak: self) { (self, addresses) -> Single<SwapOrder> in
+            let (destinationAddress, refundAddress) = addresses
+            return self.orderQuoteRepository
+                .fetchQuote(
+                    direction: self.orderDirection,
+                    sourceCurrencyType: self.sourceAsset,
+                    destinationCurrencyType: self.target.currencyType
+                )
+                .flatMap(weak: self) { (self, quote) -> Single<SwapOrder> in
+                    let destination = self.orderDirection.requiresDestinationAddress ? destinationAddress : nil
+                    let refund = self.orderDirection.requiresRefundAddress ? refundAddress : nil
+                    return self.orderCreationRepository
+                        .createOrder(
+                            direction: self.orderDirection,
+                            quoteIdentifier: quote.identifier,
+                            volume: pendingTransaction.amount,
+                            destinationAddress: destination,
+                            refundAddress: refund
+                        )
+                }
+        }
+        .do(onDispose: { [weak self] in
+            self?.disposeQuotesFetching(pendingTransaction: pendingTransaction)
+        })
     }
 
     // MARK: - Private Functions
@@ -345,7 +351,7 @@ extension PendingTransaction {
             return MoneyValue.zero(currency: quote.networkFee.currencyType)
         }
         let destination = quote.networkFee.currencyType
-        let source = self.amount.currencyType
+        let source = amount.currencyType
         let price = MoneyValue(amount: quote.price, currency: destination)
         let totalFees = (try? quote.networkFee + quote.staticFee) ?? MoneyValue.zero(currency: destination)
         let convertedFees = try totalFees.convert(usingInverse: price, currencyType: source)

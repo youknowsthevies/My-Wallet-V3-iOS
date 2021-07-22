@@ -16,6 +16,7 @@ class ERC20BalanceServiceMock: ERC20BalanceServiceAPI {
     func accountBalance(cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
         balanceResponse
     }
+
     func balance(for address: EthereumAddress, cryptoCurrency: CryptoCurrency) -> Single<CryptoValue> {
         balanceResponse
     }

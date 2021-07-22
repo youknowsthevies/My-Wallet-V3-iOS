@@ -18,7 +18,7 @@ final class UserCreationClient: UserCreationClientAPI {
     }
 
     private enum Path {
-        static let users = [ "users" ]
+        static let users = ["users"]
     }
 
     // MARK: - Properties
@@ -28,8 +28,10 @@ final class UserCreationClient: UserCreationClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

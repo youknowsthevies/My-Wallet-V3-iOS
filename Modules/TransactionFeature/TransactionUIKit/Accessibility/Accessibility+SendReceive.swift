@@ -3,8 +3,8 @@
 import PlatformUIKit
 
 extension Accessibility.Identifier {
-    enum Send { }
-    enum Receive { }
+    enum Send {}
+    enum Receive {}
 }
 
 extension Accessibility.Identifier.Receive {

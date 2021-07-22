@@ -10,8 +10,8 @@ struct EventsWrapper: Encodable {
     let device = "APP-iOS"
 
     init(contextProvider: ContextProviderAPI, events: [Event], platform: Platform) {
-        self.id = contextProvider.anonymousId
-        self.context = contextProvider.context
+        id = contextProvider.anonymousId
+        context = contextProvider.context
         self.events = events
         self.platform = platform
     }

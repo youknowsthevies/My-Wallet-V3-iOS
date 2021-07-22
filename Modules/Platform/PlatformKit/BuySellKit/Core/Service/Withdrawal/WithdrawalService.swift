@@ -52,7 +52,8 @@ final class WithdrawalService: WithdrawalServiceAPI {
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
-                      let minorValue = BigInt(feeResponse.minorValue) else {
+                      let minorValue = BigInt(feeResponse.minorValue)
+                else {
                     return .zero(currency: currency)
                 }
                 return FiatValue(amount: minorValue, currency: currency)
@@ -69,7 +70,8 @@ final class WithdrawalService: WithdrawalServiceAPI {
             }
             .map { feeResponse -> FiatValue in
                 guard let feeResponse = feeResponse,
-                      let minorValue = BigInt(feeResponse.minorValue) else {
+                      let minorValue = BigInt(feeResponse.minorValue)
+                else {
                     return .zero(currency: currency)
                 }
                 return FiatValue(amount: minorValue, currency: currency)
@@ -78,7 +80,7 @@ final class WithdrawalService: WithdrawalServiceAPI {
 
     func withdrawal(for checkout: WithdrawalCheckoutData) -> Single<Result<FiatValue, Error>> {
         client.withdraw(data: checkout)
-            .mapToResult { (response) -> FiatValue in
+            .mapToResult { response -> FiatValue in
                 guard let amount = FiatValue.create(major: response.amount.value, currency: checkout.currency) else {
                     fatalError("Couldn't create FiatValue from withdrawal response: \(response)")
                 }

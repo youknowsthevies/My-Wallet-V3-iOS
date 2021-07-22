@@ -44,7 +44,7 @@ public struct PendingStateViewModel {
             .map(\.url)
     }
 
-    static private func title(_ string: String) -> NSAttributedString {
+    private static func title(_ string: String) -> NSAttributedString {
         NSAttributedString(
             string,
             font: .main(.regular, 20),
@@ -52,14 +52,16 @@ public struct PendingStateViewModel {
         )
     }
 
-    public init(compositeStatusViewType: CompositeStatusViewType,
-                title: String,
-                subtitle: String,
-                interactibleText: String? = nil,
-                url: String? = nil,
-                button: ButtonViewModel? = nil,
-                supplementaryButton: ButtonViewModel? = nil,
-                displayCloseButton: Bool = false) {
+    public init(
+        compositeStatusViewType: CompositeStatusViewType,
+        title: String,
+        subtitle: String,
+        interactibleText: String? = nil,
+        url: String? = nil,
+        button: ButtonViewModel? = nil,
+        supplementaryButton: ButtonViewModel? = nil,
+        displayCloseButton: Bool = false
+    ) {
         self.compositeStatusViewType = compositeStatusViewType
         self.title = Self.title(title)
         var inputs: [InteractableTextViewModel.Input] = [.text(string: subtitle)]
@@ -67,7 +69,7 @@ public struct PendingStateViewModel {
             inputs.append(.url(string: interactableText, url: url))
         }
 
-        self.subtitleTextViewModel = .init(
+        subtitleTextViewModel = .init(
             inputs: inputs,
             textStyle: .init(
                 color: .descriptionText,
@@ -75,7 +77,9 @@ public struct PendingStateViewModel {
             ),
             linkStyle: .init(
                 color: .primaryButton,
-                font: .main(.regular, 14.0
+                font: .main(
+                    .regular,
+                    14.0
                 )
             ),
             alignment: .center

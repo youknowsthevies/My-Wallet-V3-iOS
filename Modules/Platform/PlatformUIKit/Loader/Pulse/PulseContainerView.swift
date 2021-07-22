@@ -46,6 +46,7 @@ final class PulseContainerView: PassthroughView {
         pulseAnimationView.layout(size: CGSize(width: frame.min(max).width, height: frame.min(max).height))
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

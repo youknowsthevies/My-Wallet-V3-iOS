@@ -57,13 +57,15 @@ final class AnnouncementInteractor: AnnouncementInteracting {
             )
         )
         .map { payload -> AnnouncementPreliminaryData in
-            let (user,
-                 tiers,
-                 isSDDEligible,
-                 countries,
-                 authenticatorType,
-                 hasAnyWalletBalance,
-                 (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)) = payload
+            let (
+                user,
+                tiers,
+                isSDDEligible,
+                countries,
+                authenticatorType,
+                hasAnyWalletBalance,
+                (isSimpleBuyAvailable, pendingOrderDetails, hasLinkedBanks, isSimpleBuyEligible)
+            ) = payload
             return AnnouncementPreliminaryData(
                 user: user,
                 tiers: tiers,
@@ -95,16 +97,18 @@ final class AnnouncementInteractor: AnnouncementInteracting {
 
     // MARK: - Setup
 
-    init(repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
-         wallet: WalletProtocol = WalletManager.shared.wallet,
-         dataRepository: BlockchainDataRepository = .shared,
-         tiersService: KYCTiersServiceAPI = resolve(),
-         infoService: GeneralInformationServiceAPI = resolve(),
-         supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
-         beneficiariesService: BeneficiariesServiceAPI = resolve(),
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
-         simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
-         coincore: CoincoreAPI = resolve()) {
+    init(
+        repository: AuthenticatorRepositoryAPI = WalletManager.shared.repository,
+        wallet: WalletProtocol = WalletManager.shared.wallet,
+        dataRepository: BlockchainDataRepository = .shared,
+        tiersService: KYCTiersServiceAPI = resolve(),
+        infoService: GeneralInformationServiceAPI = resolve(),
+        supportedPairsInteractor: SupportedPairsInteractorServiceAPI = resolve(),
+        beneficiariesService: BeneficiariesServiceAPI = resolve(),
+        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve(),
+        simpleBuyEligibilityService: EligibilityServiceAPI = resolve(),
+        coincore: CoincoreAPI = resolve()
+    ) {
         self.repository = repository
         self.wallet = wallet
         self.dataRepository = dataRepository

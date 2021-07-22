@@ -10,7 +10,7 @@ public struct WalletOptions: Decodable {
     public enum UpdateType {
 
         /// Possible update value representation
-        public struct RawValue {
+        public enum RawValue {
             static let recommended = "recommended"
             static let forced = "forced"
             static let none = "none"
@@ -38,7 +38,7 @@ public struct WalletOptions: Decodable {
         }
     }
 
-    struct Keys {
+    enum Keys {
         static let domains = "domains"
 
         static let partners = "partners"
@@ -116,7 +116,7 @@ public struct WalletOptions: Decodable {
 
         public init?(value: String?) {
             guard let input = value else { return nil }
-            self.message = input
+            message = input
         }
     }
 
@@ -157,11 +157,11 @@ public struct WalletOptions: Decodable {
             let updateTypeRawValue = try updateMetaData.decodeIfPresent(String.self, forKey: .updateType)
             let version = try updateMetaData.decodeIfPresent(String.self, forKey: .latestStoreVersion)
             guard let type = updateTypeRawValue, let latest = version else {
-                self.updateType = .none
+                updateType = .none
                 return
             }
             guard let latestVersion = AppVersion(string: latest) else {
-                self.updateType = .none
+                updateType = .none
                 return
             }
             switch type {
@@ -201,58 +201,59 @@ extension WalletOptions.Domains {
             let stellarHorizonURLString = mobile[Keys.stellarHorizon.rawValue],
             !stellarHorizonURLString.isEmpty,
             let stellarHorizonURL = URL(string: stellarHorizonURLString)
-            else {
-                return nil
+        else {
+            return nil
         }
-        self.stellarHorizon = stellarHorizonURL.absoluteString
+        stellarHorizon = stellarHorizonURL.absoluteString
     }
 }
 
-public extension WalletOptions.XLMMetadata {
-    init?(json: JSON) {
+extension WalletOptions.XLMMetadata {
+    public init?(json: JSON) {
         if let xlmData = json[WalletOptions.Keys.xlm] as? [String: Int] {
             guard let fee = xlmData["operationFee"] else { return nil }
             guard let timeout = xlmData["sendTimeOutSeconds"] else { return nil }
-            self.operationFee = fee
-            self.sendTimeOutSeconds = timeout
+            operationFee = fee
+            sendTimeOutSeconds = timeout
         } else {
             return nil
         }
     }
 }
 
-public extension WalletOptions.Mobile {
-    init(json: JSON) {
+extension WalletOptions.Mobile {
+    public init(json: JSON) {
         if let mobile = json[WalletOptions.Keys.mobile] as? [String: String] {
-            self.walletRoot = mobile[WalletOptions.Keys.walletRoot]
+            walletRoot = mobile[WalletOptions.Keys.walletRoot]
         } else {
-            self.walletRoot = nil
+            walletRoot = nil
         }
     }
 }
 
-public extension WalletOptions.MobileInfo {
-    init(json: JSON) {
+extension WalletOptions.MobileInfo {
+    public init(json: JSON) {
         if let mobileInfo = json[WalletOptions.Keys.mobileInfo] as? [String: String] {
             if let code = Locale.current.languageCode {
-                self.message = mobileInfo[code] ?? mobileInfo["en"]
+                message = mobileInfo[code] ?? mobileInfo["en"]
             } else {
-                self.message = mobileInfo["en"]
+                message = mobileInfo["en"]
             }
         } else {
-            self.message = nil
+            message = nil
         }
     }
 }
 
-public extension WalletOptions.UpdateType {
-    init(json: JSON) {
+extension WalletOptions.UpdateType {
+    public init(json: JSON) {
 
         // Extract version update values
         guard let iosJson = json[WalletOptions.Keys.ios] as? JSON,
-            let updateJson = iosJson[WalletOptions.Keys.update] as? JSON else {
-                self = .none
-                return
+              let updateJson = iosJson[WalletOptions.Keys.update] as? JSON
+        else {
+            self = .none
+            return
         }
 
         // First, verify the update type can be extracted, and fallback to `.none` if not
@@ -263,9 +264,10 @@ public extension WalletOptions.UpdateType {
 
         // Verify the latest available version in sotre can be extracted, and fallback to `.none` if not
         guard let version = updateJson[WalletOptions.Keys.latestStoreVersion] as? String,
-            let latestVersion = AppVersion(string: version) else {
-                self = .none
-                return
+              let latestVersion = AppVersion(string: version)
+        else {
+            self = .none
+            return
         }
 
         switch updateTypeRawValue {
@@ -279,49 +281,49 @@ public extension WalletOptions.UpdateType {
     }
 }
 
-public extension WalletOptions.Ethereum {
-    init(json: JSON) {
+extension WalletOptions.Ethereum {
+    public init(json: JSON) {
         let ethereum = json[WalletOptions.Keys.ethereum] as? [String: Any]
         lastTxFuse = ethereum?[WalletOptions.Keys.lastTxFuse] as? Int64 ?? 0
     }
 }
 
-public extension WalletOptions {
-    init(json: JSON) {
-        self.domains = WalletOptions.Domains(json: json)
-        self.downForMaintenance = json[Keys.maintenance] as? Bool ?? false
-        self.mobile = WalletOptions.Mobile(json: json)
-        self.mobileInfo = WalletOptions.MobileInfo(json: json)
-        self.xlmMetadata = WalletOptions.XLMMetadata(json: json)
+extension WalletOptions {
+    public init(json: JSON) {
+        domains = WalletOptions.Domains(json: json)
+        downForMaintenance = json[Keys.maintenance] as? Bool ?? false
+        mobile = WalletOptions.Mobile(json: json)
+        mobileInfo = WalletOptions.MobileInfo(json: json)
+        xlmMetadata = WalletOptions.XLMMetadata(json: json)
         updateType = WalletOptions.UpdateType(json: json)
         let xlmExchangeContainer = json[CodingKeys.xlmExchange.rawValue] as? [String: [String]]
-        self.xlmExchangeAddresses = xlmExchangeContainer?[CodingKeys.exchangeAddresses.rawValue] ?? nil
-        self.ethereum = WalletOptions.Ethereum(json: json)
+        xlmExchangeAddresses = xlmExchangeContainer?[CodingKeys.exchangeAddresses.rawValue] ?? nil
+        ethereum = WalletOptions.Ethereum(json: json)
     }
 
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        self.domains = try values.decodeIfPresent(Domains.self, forKey: .domains)
-        self.downForMaintenance = try values.decodeIfPresent(Bool.self, forKey: .maintenance) ?? false
-        self.mobile = try values.decodeIfPresent(Mobile.self, forKey: .mobile)
-        self.xlmMetadata = try values.decodeIfPresent(XLMMetadata.self, forKey: .xlm)
+        domains = try values.decodeIfPresent(Domains.self, forKey: .domains)
+        downForMaintenance = try values.decodeIfPresent(Bool.self, forKey: .maintenance) ?? false
+        mobile = try values.decodeIfPresent(Mobile.self, forKey: .mobile)
+        xlmMetadata = try values.decodeIfPresent(XLMMetadata.self, forKey: .xlm)
         if let mobileInfoPayload = try values.decodeIfPresent([String: String].self, forKey: .mobileInfo) {
             if let code = Locale.current.languageCode {
-                self.mobileInfo = MobileInfo(value: mobileInfoPayload[code] ?? mobileInfoPayload["en"])
+                mobileInfo = MobileInfo(value: mobileInfoPayload[code] ?? mobileInfoPayload["en"])
             } else {
-                self.mobileInfo = MobileInfo(value: mobileInfoPayload["en"])
+                mobileInfo = MobileInfo(value: mobileInfoPayload["en"])
             }
         } else {
-            self.mobileInfo = nil
+            mobileInfo = nil
         }
         let xlmExchangeAddressContainer = try values.nestedContainer(keyedBy: CodingKeys.self, forKey: .xlmExchange)
-        self.xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
+        xlmExchangeAddresses = try xlmExchangeAddressContainer.decodeIfPresent([String].self, forKey: .exchangeAddresses)
         let appUpdateMetaData = try values.decodeIfPresent(AppUpdateMetadata.self, forKey: .ios)
         if let value = appUpdateMetaData {
             updateType = value.updateType
         } else {
             updateType = .none
         }
-        self.ethereum = try values.decode(Ethereum.self, forKey: .ethereum)
+        ethereum = try values.decode(Ethereum.self, forKey: .ethereum)
     }
 }

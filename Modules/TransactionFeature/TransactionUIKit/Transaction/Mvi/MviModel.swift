@@ -25,7 +25,7 @@ final class MviModel<State, Action: MviAction> where Action.State == State, Stat
         self.performAction = performAction
         actions // TODO: Inject // actions.distinctUntilChanged()
             .observeOn(ConcurrentDispatchQueueScheduler(qos: .userInitiated))
-            .scan(initialState) { [unowned self] (oldState, action) -> State in
+            .scan(initialState) { [unowned self] oldState, action -> State in
                 guard action.isValid(for: oldState) else {
                     return oldState
                 }

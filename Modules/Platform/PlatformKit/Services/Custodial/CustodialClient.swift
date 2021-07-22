@@ -11,15 +11,16 @@ public protocol TradingBalanceClientAPI: AnyObject {
 }
 
 final class CustodialClient: TradingBalanceClientAPI,
-                             CustodialPaymentAccountClientAPI,
-                             CustodialPendingDepositClientAPI {
+    CustodialPaymentAccountClientAPI,
+    CustodialPendingDepositClientAPI
+{
 
     // MARK: - Types
 
     private enum Path {
         static let withdrawal = ["payments", "withdrawals"]
-        static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
-        static let custodialBalance = [ "accounts", "simplebuy" ]
+        static let paymentAccount = ["payments", "accounts", "simplebuy"]
+        static let custodialBalance = ["accounts", "simplebuy"]
     }
 
     // MARK: - Properties
@@ -43,8 +44,10 @@ final class CustodialClient: TradingBalanceClientAPI,
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

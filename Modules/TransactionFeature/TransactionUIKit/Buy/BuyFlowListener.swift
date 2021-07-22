@@ -11,6 +11,7 @@ final class BuyFlowListener: BuyFlowListening {
     var publisher: AnyPublisher<TransactionFlowResult, Never> {
         subject.eraseToAnyPublisher()
     }
+
     private let subject = PassthroughSubject<TransactionFlowResult, Never>()
 
     deinit {

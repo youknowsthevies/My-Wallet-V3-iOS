@@ -36,14 +36,18 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
     let bankLinkageStartup: Single<Result<BankLinkageData?, BankLinkageError>>
 
     // MARK: - Private
+
     private let cachedValue: CachedValue<[LinkedBankData]>
 
     // MARK: - Injected
+
     private let client: LinkedBanksClientAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
 
-    init(client: LinkedBanksClientAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    init(
+        client: LinkedBanksClientAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.client = client
         self.fiatCurrencyService = fiatCurrencyService
 
@@ -63,8 +67,10 @@ final class LinkedBanksService: LinkedBanksServiceAPI {
             .flatMap { currency -> Single<CreateBankLinkageResponse> in
                 client.createBankLinkage(for: currency)
             }
-            .mapToResult(successMap: { BankLinkageData(from: $0) } ,
-                         errorMap: { BankLinkageError.server($0) })
+            .mapToResult(
+                successMap: { BankLinkageData(from: $0) },
+                errorMap: { BankLinkageError.server($0) }
+            )
     }
 
     // MARK: Methods

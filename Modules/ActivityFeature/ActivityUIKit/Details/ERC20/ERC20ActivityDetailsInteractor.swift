@@ -17,11 +17,13 @@ final class ERC20ActivityDetailsInteractor {
 
     // MARK: - Init
 
-    init(wallet: EthereumWalletBridgeAPI = resolve(),
-         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
-         cryptoCurrency: CryptoCurrency) {
+    init(
+        wallet: EthereumWalletBridgeAPI = resolve(),
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve(),
+        cryptoCurrency: CryptoCurrency
+    ) {
         self.cryptoCurrency = cryptoCurrency
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings

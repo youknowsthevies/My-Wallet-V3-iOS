@@ -44,5 +44,4 @@ final class AssetPriceTableViewCell: UITableViewCell {
         super.prepareForReuse()
         presenter = nil
     }
-
 }

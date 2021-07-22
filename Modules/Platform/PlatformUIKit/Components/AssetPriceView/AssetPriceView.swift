@@ -22,12 +22,12 @@ public final class AssetPriceView: UIView {
                 .disposed(by: disposeBag)
 
             presenter.state
-                .compactMap { $0.value }
+                .compactMap(\.value)
                 .bindAndCatch(to: rx.values)
                 .disposed(by: disposeBag)
 
             presenter.state
-                .map { $0.isLoading }
+                .map(\.isLoading)
                 .mapToVoid()
                 .bind { [weak self] in
                     self?.startShimmering()
@@ -55,7 +55,7 @@ public final class AssetPriceView: UIView {
 
     private var disposeBag = DisposeBag()
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -72,8 +72,10 @@ public final class AssetPriceView: UIView {
     }
 
     /// Should be called once when the parent view loads
-    public func shimmer(estimatedPriceLabelSize: CGSize,
-                        estimatedChangeLabelSize: CGSize) {
+    public func shimmer(
+        estimatedPriceLabelSize: CGSize,
+        estimatedChangeLabelSize: CGSize
+    ) {
         priceLabelShimmeringView = ShimmeringView(
             in: self,
             anchorView: priceLabel,
@@ -87,7 +89,7 @@ public final class AssetPriceView: UIView {
     }
 
     private func stopShimmering() {
-        guard priceLabelShimmeringView.isShimmering && changeLabelShimmeringView.isShimmering else { return }
+        guard priceLabelShimmeringView.isShimmering, changeLabelShimmeringView.isShimmering else { return }
 
         changeLabel.alpha = 0
         priceLabel.alpha = 0

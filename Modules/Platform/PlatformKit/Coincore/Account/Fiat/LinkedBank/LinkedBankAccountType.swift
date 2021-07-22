@@ -8,8 +8,8 @@ public enum LinkedBankAccountType {
     case unknown
 }
 
-public extension LinkedBankAccountType {
-    var title: String {
+extension LinkedBankAccountType {
+    public var title: String {
         switch self {
         case .checking:
             return LocalizationConstants.Transaction.checking

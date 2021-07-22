@@ -60,7 +60,6 @@ extension AlertAction {
             return nil
         }
     }
-
 }
 
 public enum AlertActionStyle: Equatable {
@@ -76,7 +75,7 @@ public enum AlertActionStyle: Equatable {
 }
 
 extension AlertActionStyle {
-    public static func ==(lhs: AlertActionStyle, rhs: AlertActionStyle) -> Bool {
+    public static func == (lhs: AlertActionStyle, rhs: AlertActionStyle) -> Bool {
         switch (lhs, rhs) {
         case (.confirm(let left), .confirm(let right)):
             return left == right

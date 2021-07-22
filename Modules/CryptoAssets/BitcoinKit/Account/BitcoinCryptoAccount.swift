@@ -48,7 +48,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
             .flatMap { [bridge] address -> Single<(Int32, String)> in
                 Single.zip(bridge.walletIndex(for: address), .just(address))
             }
-            .map { [label, onTxCompleted] (index, address) -> ReceiveAddress in
+            .map { [label, onTxCompleted] index, address -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinToken>(
                     address: address,
                     label: label,
@@ -90,16 +90,18 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
 
-    init(walletAccount: BitcoinWalletAccount,
-         isDefault: Bool,
-         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
-         transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
-         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-         fiatPriceService: FiatPriceServiceAPI = resolve(),
-         bridge: BitcoinWalletBridgeAPI = resolve()) {
-        self.xPub = walletAccount.publicKeys.default
-        self.hdAccountIndex = walletAccount.index
-        self.label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
+    init(
+        walletAccount: BitcoinWalletAccount,
+        isDefault: Bool,
+        balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainKit.BitcoinChainCoin.bitcoin),
+        transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        bridge: BitcoinWalletBridgeAPI = resolve()
+    ) {
+        xPub = walletAccount.publicKeys.default
+        hdAccountIndex = walletAccount.index
+        label = walletAccount.label ?? CryptoCurrency.bitcoin.defaultWalletName
         self.isDefault = isDefault
         self.balanceService = balanceService
         self.fiatPriceService = fiatPriceService
@@ -131,7 +133,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -142,7 +144,7 @@ class BitcoinCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

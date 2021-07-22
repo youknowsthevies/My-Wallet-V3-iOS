@@ -8,10 +8,10 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Activity {
-        public enum Message { }
-        public enum Details { }
-        public enum MainScreen { }
-        public enum Pax { }
+        public enum Message {}
+        public enum Details {}
+        public enum MainScreen {}
+        public enum Pax {}
     }
 }
 
@@ -22,14 +22,16 @@ extension LocalizationConstants.Activity.MainScreen {
         "Activity",
         comment: "Activity Screen: title"
     )
-    public struct MessageView {
+    public enum MessageView {
         public static let sharedWithBlockchain = NSLocalizedString("Shared With Blockchain", comment: "Shared With Blockchain")
     }
-    public struct Empty {
+
+    public enum Empty {
         public static let title = NSLocalizedString("You Have No Activity", comment: "You Have No Activity")
         public static let subtitle = NSLocalizedString("All your transactions will show up here.", comment: "All your transactions will show up here.")
     }
-    public struct Item {
+
+    public enum Item {
         public static let allWallets = NSLocalizedString("All Wallets", comment: "All Wallets")
         public static let wallet = NSLocalizedString("Wallet", comment: "Wallet")
         public static let trade = NSLocalizedString("Trade", comment: "Trade")
@@ -90,9 +92,13 @@ extension LocalizationConstants.Activity.Details {
     }
 
     public enum Button {
-        public static let viewOnExplorer = NSLocalizedString("View on Blockchain Explorer",
-                                                             comment: "Button title, button takes user to explorer webpage")
-        public static let viewOnStellarChainIO = NSLocalizedString("View on StellarChain.io",
-                                                                   comment: "Button title, button takes user to StellarChain webpage")
+        public static let viewOnExplorer = NSLocalizedString(
+            "View on Blockchain Explorer",
+            comment: "Button title, button takes user to explorer webpage"
+        )
+        public static let viewOnStellarChainIO = NSLocalizedString(
+            "View on StellarChain.io",
+            comment: "Button title, button takes user to StellarChain webpage"
+        )
     }
 }

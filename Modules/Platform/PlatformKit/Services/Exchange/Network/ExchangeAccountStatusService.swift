@@ -50,8 +50,10 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
 
     // MARK: - Init
 
-    init(nabuUserService: NabuUserServiceAPI = resolve(),
-         client: ExchangeAccountsClientAPI = resolve()) {
+    init(
+        nabuUserService: NabuUserServiceAPI = resolve(),
+        client: ExchangeAccountsClientAPI = resolve()
+    ) {
         self.nabuUserService = nabuUserService
         self.client = client
     }

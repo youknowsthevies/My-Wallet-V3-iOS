@@ -7,7 +7,7 @@ protocol SwapBootstrapInteractable: Interactable {
     var listener: SwapBootstrapListener? { get set }
 }
 
-protocol SwapBootstrapViewControllable: ViewControllable { }
+protocol SwapBootstrapViewControllable: ViewControllable {}
 
 final class SwapBootstrapRouter: ViewableRouter<SwapBootstrapInteractable, SwapBootstrapViewControllable>, SwapBootstrapRouting {
     override init(interactor: SwapBootstrapInteractable, viewController: SwapBootstrapViewControllable) {

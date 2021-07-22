@@ -66,7 +66,7 @@ public class TextFieldView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }
@@ -101,9 +101,11 @@ public class TextFieldView: UIView {
     // MARK: - API
 
     /// Must be called by specialized subclasses
-    public func setup(viewModel: TextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController,
-                      scrollView: UIScrollView? = nil) {
+    public func setup(
+        viewModel: TextFieldViewModel,
+        keyboardInteractionController: KeyboardInteractionController,
+        scrollView: UIScrollView? = nil
+    ) {
         disposeBag = DisposeBag()
         self.scrollView = scrollView
         self.keyboardInteractionController = keyboardInteractionController
@@ -196,7 +198,7 @@ public class TextFieldView: UIView {
         }
 
         viewModel.focus
-            .map { $0.isOn }
+            .map(\.isOn)
             .drive(onNext: { [weak self] shouldGainFocus in
                 guard let self = self else { return }
                 if shouldGainFocus {
@@ -227,7 +229,8 @@ public class TextFieldView: UIView {
                 self.textFieldBackgroundView.layer.borderColor = mode.borderColor.cgColor
                 self.textField.tintColor = mode.cursorColor
             },
-            completion: nil)
+            completion: nil
+        )
     }
 
     fileprivate func set(accessoryContentType: TextFieldViewModel.AccessoryContentType) {
@@ -256,7 +259,6 @@ public class TextFieldView: UIView {
                 badgeImageView.layoutToSuperview(.leading)
                 badgeImageView.layoutToSuperview(.trailing, offset: -16)
                 badgeImageView.layoutToSuperview(axis: .vertical)
-
             }
         case .badgeLabel(let viewModel):
             if let badgeView = accessoryView.subviews.first as? BadgeView {
@@ -282,9 +284,11 @@ extension TextFieldView: UITextFieldDelegate {
         viewModel.textFieldShouldBeginEditing()
     }
 
-    public func textField(_ textField: UITextField,
-                          shouldChangeCharactersIn range: NSRange,
-                          replacementString string: String) -> Bool {
+    public func textField(
+        _ textField: UITextField,
+        shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         let text = textField.text ?? ""
         let input = (text as NSString).replacingCharacters(in: range, with: string)
         let operation: TextInputOperation = string.isEmpty ? .deletion : .addition

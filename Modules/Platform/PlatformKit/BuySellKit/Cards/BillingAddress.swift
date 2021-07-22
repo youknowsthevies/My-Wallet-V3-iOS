@@ -9,17 +9,20 @@ public struct BillingAddress {
     public let state: String
     public let postCode: String
 
-    public init?(country: Country,
-                 fullName: String?,
-                 addressLine1: String?,
-                 addressLine2: String?,
-                 city: String?,
-                 state: String?,
-                 postCode: String?) {
+    public init?(
+        country: Country,
+        fullName: String?,
+        addressLine1: String?,
+        addressLine2: String?,
+        city: String?,
+        state: String?,
+        postCode: String?
+    ) {
         guard let fullName = fullName,
               let addressLine1 = addressLine1,
               let city = city,
-              let postCode = postCode else {
+              let postCode = postCode
+        else {
             return nil
         }
 
@@ -72,8 +75,8 @@ extension BillingAddress {
 
 // MARK: - Privately used extensions
 
-private extension Country {
-    var hasStatesSubdomain: Bool {
+extension Country {
+    fileprivate var hasStatesSubdomain: Bool {
         switch self {
         case .US:
             return true

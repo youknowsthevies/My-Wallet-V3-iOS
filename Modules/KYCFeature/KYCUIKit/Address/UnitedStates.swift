@@ -1,5 +1,5 @@
 // We shouldn't need this but we let the user search an address and don't reload states within that VC...
-struct UnitedStates {
+enum UnitedStates {
     struct State {
         let abbreviation: String
         let name: String

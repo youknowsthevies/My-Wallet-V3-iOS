@@ -17,7 +17,7 @@ final class GoogleRecaptchaService: GoogleRecaptchaServiceAPI {
             Future { promise in
                 recaptchaClient
                     .execute(RecaptchaAction(action: .login)) { token, error in
-                        if token == nil && error == nil {
+                        if token == nil, error == nil {
                             promise(.failure(GoogleRecaptchaError.unknownError))
                         }
                         if let recaptchaToken = token {

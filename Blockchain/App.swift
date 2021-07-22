@@ -32,8 +32,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
     // MARK: - App entry point
 
-    func application(_ application: UIApplication,
-                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         let window = windowProvider(screen: .main)
         self.window = window
         window.makeKeyAndVisible()
@@ -65,33 +67,33 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 func defineDependencies() {
     // swiftlint:disable trailing_semicolon
     DependencyContainer.defined(by: modules {
-        DependencyContainer.toolKit;
-        DependencyContainer.networkKit;
-        DependencyContainer.walletPayloadKit;
-        DependencyContainer.platformKit;
-        DependencyContainer.interestKit;
-        DependencyContainer.platformUIKit;
-        DependencyContainer.ethereumKit;
-        DependencyContainer.erc20Kit;
-        DependencyContainer.bitcoinChainKit;
-        DependencyContainer.bitcoinKit;
-        DependencyContainer.bitcoinCashKit;
-        DependencyContainer.stellarKit;
-        DependencyContainer.transactionKit;
-        DependencyContainer.transactionDataKit;
-        DependencyContainer.transactionUIKit;
-        DependencyContainer.buySellKit;
-        DependencyContainer.activityKit;
-        DependencyContainer.activityUIKit;
-        DependencyContainer.kycKit;
-        DependencyContainer.kycUIKit;
-        DependencyContainer.blockchain;
-        DependencyContainer.settingsKit;
-        DependencyContainer.settingsUIKit;
-        DependencyContainer.remoteNotificationsKit;
-        DependencyContainer.authenticationDataKit;
+        DependencyContainer.toolKit
+        DependencyContainer.networkKit
+        DependencyContainer.walletPayloadKit
+        DependencyContainer.platformKit
+        DependencyContainer.interestKit
+        DependencyContainer.platformUIKit
+        DependencyContainer.ethereumKit
+        DependencyContainer.erc20Kit
+        DependencyContainer.bitcoinChainKit
+        DependencyContainer.bitcoinKit
+        DependencyContainer.bitcoinCashKit
+        DependencyContainer.stellarKit
+        DependencyContainer.transactionKit
+        DependencyContainer.transactionDataKit
+        DependencyContainer.transactionUIKit
+        DependencyContainer.buySellKit
+        DependencyContainer.activityKit
+        DependencyContainer.activityUIKit
+        DependencyContainer.kycKit
+        DependencyContainer.kycUIKit
+        DependencyContainer.blockchain
+        DependencyContainer.settingsKit
+        DependencyContainer.settingsUIKit
+        DependencyContainer.remoteNotificationsKit
+        DependencyContainer.authenticationDataKit
         #if INTERNAL_BUILD
-        DependencyContainer.debugUIKit;
+        DependencyContainer.debugUIKit
         #endif
     })
 }
@@ -123,9 +125,9 @@ private func eraseWalletForUITestsIfNeeded() {
 
 private func shouldStopProcessOnDebugAndTestingMode() -> Bool {
     #if DEBUG
-        return ProcessInfo.processInfo.isUnitTesting
+    return ProcessInfo.processInfo.isUnitTesting
     #else
-        return false
+    return false
     #endif
 }
 
@@ -139,8 +141,8 @@ private func windowProvider(screen: UIScreen) -> UIWindow {
 /// Determines if the app has the `DEBUG` flag
 var isDebug: Bool {
     #if DEBUG
-        return true
+    return true
     #else
-        return false
+    return false
     #endif
 }

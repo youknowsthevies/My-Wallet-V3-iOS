@@ -26,20 +26,24 @@ final class ActivityScreenPresenter {
 
     /// The title of the empty state
     var emptyActivityTitle: LabelContent {
-        .init(text: LocalizedString.Empty.title,
-              font: .main(.semibold, 20.0),
-              color: .titleText,
-              alignment: .center,
-              accessibility: .none)
+        .init(
+            text: LocalizedString.Empty.title,
+            font: .main(.semibold, 20.0),
+            color: .titleText,
+            alignment: .center,
+            accessibility: .none
+        )
     }
 
     /// The subtitle of the empty state
     var emptyActivitySubtitle: LabelContent {
-        .init(text: LocalizedString.Empty.subtitle,
-              font: .main(.medium, 14.0),
-              color: .descriptionText,
-              alignment: .center,
-              accessibility: .none)
+        .init(
+            text: LocalizedString.Empty.subtitle,
+            font: .main(.medium, 14.0),
+            color: .descriptionText,
+            alignment: .center,
+            accessibility: .none
+        )
     }
 
     /// The visibility state of the subviews that should be
@@ -64,7 +68,7 @@ final class ActivityScreenPresenter {
     private var activityItemsObservable: Observable<[ActivityItemsSectionViewModel]> {
         interactor
             .state
-            .map { (state) -> [ActivityCellItem] in
+            .map { state -> [ActivityCellItem] in
                 switch state {
                 case .calculating:
                     let items = Array(1...20)
@@ -96,9 +100,11 @@ final class ActivityScreenPresenter {
 
     // MARK: - Setup
 
-    init(router: ActivityRouterAPI,
-         interactor: ActivityScreenInteractor,
-         drawerRouter: DrawerRouting = resolve()) {
+    init(
+        router: ActivityRouterAPI,
+        interactor: ActivityScreenInteractor,
+        drawerRouter: DrawerRouting = resolve()
+    ) {
         self.drawerRouter = drawerRouter
         self.router = router
         self.interactor = interactor
@@ -165,7 +171,7 @@ final class ActivityScreenPresenter {
 
         selectedModelRelay
             .bind { [weak self] model in
-                guard case let .activity(presenter) = model else { return }
+                guard case .activity(let presenter) = model else { return }
                 self?.router.showTransactionScreen(with: presenter.viewModel.event)
             }
             .disposed(by: disposeBag)
@@ -189,8 +195,8 @@ final class ActivityScreenPresenter {
     }
 }
 
-fileprivate extension SelectionButtonViewModel.LeadingContent {
-    static func content(from account: BlockchainAccount) -> SelectionButtonViewModel.LeadingContentType {
+extension SelectionButtonViewModel.LeadingContent {
+    fileprivate static func content(from account: BlockchainAccount) -> SelectionButtonViewModel.LeadingContentType {
         switch account {
         case is AccountGroup:
             return .image(

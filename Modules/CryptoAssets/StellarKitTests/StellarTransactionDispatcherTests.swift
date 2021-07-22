@@ -63,7 +63,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
-        let sendDetails = SendDetails.valid(value: .init(amount: 10_000_000, currency: .stellar))
+        let sendDetails = SendDetails.valid(value: .init(amount: 10000000, currency: .stellar))
         horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .stellar)
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
@@ -94,9 +94,11 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 }
 
-fileprivate extension SendDetails {
-    static func valid(toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",
-                      value: CryptoValue = .create(major: 50, currency: .stellar)) -> SendDetails {
+extension SendDetails {
+    fileprivate static func valid(
+        toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",
+        value: CryptoValue = .create(major: 50, currency: .stellar)
+    ) -> SendDetails {
         SendDetails(
             fromAddress: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
             fromLabel: "From Label",

@@ -55,8 +55,8 @@ extension UIFont {
 
     static func registerFont(fileName: String, bundle: Bundle = Bundle.current) {
         let pathForResourceString = bundle.path(forResource: fileName, ofType: nil)
-        if let fontData = NSData(contentsOfFile: pathForResourceString!), let dataProvider = CGDataProvider.init(data: fontData) {
-            let fontRef = CGFont.init(dataProvider)
+        if let fontData = NSData(contentsOfFile: pathForResourceString!), let dataProvider = CGDataProvider(data: fontData) {
+            let fontRef = CGFont(dataProvider)
             var errorRef: Unmanaged<CFError>?
             if CTFontManagerRegisterGraphicsFont(fontRef!, &errorRef) == false {
                 print("Failed to register font - register graphics font failed - this font may have already been registered in the main bundle.")

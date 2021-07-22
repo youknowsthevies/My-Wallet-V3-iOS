@@ -73,6 +73,7 @@ struct PlainCryptoReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataPro
     var metadata: CryptoAssetQRMetadata {
         PlainCryptoAssetQRMetadata(address: address, cryptoCurrency: asset)
     }
+
     init(address: String, asset: CryptoCurrency, label: String) {
         self.address = address
         self.asset = asset

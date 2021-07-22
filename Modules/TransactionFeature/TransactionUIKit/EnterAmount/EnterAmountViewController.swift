@@ -7,8 +7,9 @@ import RxSwift
 import UIKit
 
 final class EnterAmountViewController: BaseScreenViewController,
-                                       EnterAmountViewControllable,
-                                       EnterAmountPagePresentable {
+    EnterAmountViewControllable,
+    EnterAmountPagePresentable
+{
 
     // MARK: - Types
 
@@ -19,6 +20,7 @@ final class EnterAmountViewController: BaseScreenViewController,
             static let topSelectionViewHeight: CGFloat = 48
             static let bottomAuxiliaryViewOffset: CGFloat = 8
         }
+
         enum Standard {
             static let topSelectionViewHeight: CGFloat = 78
         }
@@ -52,16 +54,18 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Lifecycle
 
-    init(displayBundle: DisplayBundle,
-         devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
-         digitPadViewModel: DigitPadViewModel,
-         continueButtonViewModel: ButtonViewModel,
-         topSelectionButtonViewModel: SelectionButtonViewModel,
-         amountViewProvider: AmountViewable) {
+    init(
+        displayBundle: DisplayBundle,
+        devicePresenterType: DevicePresenter.DeviceType = DevicePresenter.type,
+        digitPadViewModel: DigitPadViewModel,
+        continueButtonViewModel: ButtonViewModel,
+        topSelectionButtonViewModel: SelectionButtonViewModel,
+        amountViewProvider: AmountViewable
+    ) {
         self.displayBundle = displayBundle
         self.devicePresenterType = devicePresenterType
-        self.amountViewable = amountViewProvider
-        self.continueButtonTapped = continueButtonViewModel.tap
+        amountViewable = amountViewProvider
+        continueButtonTapped = continueButtonViewModel.tap
         super.init(nibName: nil, bundle: nil)
 
         digitPadView.viewModel = digitPadViewModel
@@ -78,7 +82,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -138,11 +142,11 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadTopSeparatorView.backgroundColor = .lightBorder
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
 
-    public override func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         /// NOTE: This must be in `viewWillLayoutSubviews`
         /// This is a special treatment due to the manner view controllers
@@ -203,7 +207,7 @@ final class EnterAmountViewController: BaseScreenViewController,
             }
             .disposed(by: disposeBag)
 
-        ControlEvent.merge(self.rx.viewDidLoad.mapToVoid(), self.rx.viewWillAppear.mapToVoid())
+        ControlEvent.merge(rx.viewDidLoad.mapToVoid(), rx.viewWillAppear.mapToVoid())
             .asDriver(onErrorJustReturn: ())
             .flatMap { _ in
                 state
@@ -252,9 +256,11 @@ final class EnterAmountViewController: BaseScreenViewController,
     private func setupNavigationBar(model: ScreenNavigationModel) {
         titleViewStyle = .text(value: displayBundle.title)
         let mayGoBack = model.leadingButton != .none ? (navigationController?.children.count ?? 0) > 1 : false
-        set(barStyle: model.barStyle,
+        set(
+            barStyle: model.barStyle,
             leadingButtonStyle: mayGoBack ? .back : .none,
-            trailingButtonStyle: model.trailingButton)
+            trailingButtonStyle: model.trailingButton
+        )
     }
 
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountPageInteractor.BottomAuxiliaryViewModelState) {
@@ -312,12 +318,11 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         backTriggered.onNext(())
     }
 
-    public override func navigationBarTrailingButtonPressed() {
+    override public func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
     }
-
 }

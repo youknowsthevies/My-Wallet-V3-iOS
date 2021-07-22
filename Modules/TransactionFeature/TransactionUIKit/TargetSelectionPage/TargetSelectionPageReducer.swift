@@ -22,9 +22,11 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
     private let navigationModel: ScreenNavigationModel
     private let featureFetcher: FeatureFetching
 
-    init(action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         featureFetcher: FeatureFetching = resolve()) {
+    init(
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel,
+        featureFetcher: FeatureFetching = resolve()
+    ) {
         self.action = action
         self.navigationModel = navigationModel
         self.featureFetcher = featureFetcher
@@ -56,14 +58,14 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
         let destinationSections = interactorState
             .map(\.destinationInteractors)
             .withLatestFrom(sourceAccountStrategy) { ($0, $1) }
-            .map { (items, strategy) -> [TargetSelectionPageSectionModel] in
+            .map { items, strategy -> [TargetSelectionPageSectionModel] in
                 strategy.sections(interactors: items, action: action)
             }
 
         let inputFieldSection = interactorState
             .map(\.inputFieldInteractor)
             .distinctUntilChanged()
-            .map { (item) -> [TargetSelectionPageSectionModel] in
+            .map { item -> [TargetSelectionPageSectionModel] in
                 guard let item = item else {
                     return []
                 }
@@ -92,7 +94,7 @@ final class TargetSelectionPageReducer: TargetSelectionPageReducerAPI {
 
         let navigationModel = self.navigationModel
         return Driver.combineLatest(sections, button)
-            .map { (values) -> TargetSelectionPagePresenter.State in
+            .map { values -> TargetSelectionPagePresenter.State in
                 let (sections, button) = values
                 return .init(
                     actionButtonModel: button,

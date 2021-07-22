@@ -58,7 +58,7 @@ class WalletCryptoServiceTests: XCTestCase {
                 .toBlocking()
                 .first()
             XCTAssertEqual(data, decryptedData)
-        } catch let error {
+        } catch {
             XCTFail("Decryption failed with error: \(String(describing: error))")
         }
     }

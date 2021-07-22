@@ -61,7 +61,7 @@ final class SettingsScreenInteractor {
         self.smsTwoFactorService = smsTwoFactorService
         self.appSettings = appSettings
         self.settingsService = settingsService
-        self.emailNotificationsService = emailNotificationService
+        emailNotificationsService = emailNotificationService
         self.tiersProviding = tiersProviding
         self.balanceSharingService = balanceSharingService
 
@@ -89,10 +89,10 @@ final class SettingsScreenInteractor {
             fiatCurrencyService: fiatCurrencyService
         )
 
-        self.biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
+        biometryProviding = BiometryProvider(settings: settingsAuthenticating, featureConfigurator: featureConfigurator)
         self.settingsAuthenticating = settingsAuthenticating
-        self.pitConnnectionProviding = pitConnectionAPI
-        self.recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
+        pitConnnectionProviding = pitConnectionAPI
+        recoveryPhraseStatusProviding = RecoveryPhraseStatusProvider(walletRecoveryVerifier: wallet)
         self.credentialsStore = credentialsStore
         self.authenticationCoordinator = authenticationCoordinator
     }

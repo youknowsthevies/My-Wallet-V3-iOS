@@ -20,26 +20,30 @@ public struct BitcoinCashActivityItemEventDetails: Equatable {
     public let fee: CryptoValue
 
     init(transaction: BitcoinCashHistoricalTransaction) {
-        self.init(amount: transaction.amount,
-                  requiredConfirmations: BitcoinCashHistoricalTransaction.requiredConfirmations,
-                  transactionHash: transaction.transactionHash,
-                  createdAt: transaction.createdAt,
-                  isConfirmed: transaction.isConfirmed,
-                  confirmations: transaction.confirmations,
-                  from: transaction.fromAddress,
-                  to: transaction.toAddress,
-                  fee: transaction.fee)
+        self.init(
+            amount: transaction.amount,
+            requiredConfirmations: BitcoinCashHistoricalTransaction.requiredConfirmations,
+            transactionHash: transaction.transactionHash,
+            createdAt: transaction.createdAt,
+            isConfirmed: transaction.isConfirmed,
+            confirmations: transaction.confirmations,
+            from: transaction.fromAddress,
+            to: transaction.toAddress,
+            fee: transaction.fee
+        )
     }
 
-    init(amount: CryptoValue,
-         requiredConfirmations: Int,
-         transactionHash: String,
-         createdAt: Date,
-         isConfirmed: Bool,
-         confirmations: Int,
-         from: BitcoinCashAssetAddress,
-         to: BitcoinCashAssetAddress,
-         fee: CryptoValue?) {
+    init(
+        amount: CryptoValue,
+        requiredConfirmations: Int,
+        transactionHash: String,
+        createdAt: Date,
+        isConfirmed: Bool,
+        confirmations: Int,
+        from: BitcoinCashAssetAddress,
+        to: BitcoinCashAssetAddress,
+        fee: CryptoValue?
+    ) {
         identifier = transactionHash
         self.createdAt = createdAt
         confirmation = .init(

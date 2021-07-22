@@ -58,7 +58,7 @@ final class KYCAdapterTests: XCTestCase {
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
         let cancellable = publisher.sink { completion in
-            if case let .failure(theError) = completion {
+            if case .failure(let theError) = completion {
                 error = theError
             }
             e.fulfill()
@@ -80,7 +80,7 @@ final class KYCAdapterTests: XCTestCase {
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
         let cancellable = publisher.sink { completion in
-            if case let .failure(theError) = completion {
+            if case .failure(let theError) = completion {
                 error = theError
             }
             e.fulfill()
@@ -102,7 +102,7 @@ final class KYCAdapterTests: XCTestCase {
         var error: KYCRouterError?
         let e = expectation(description: "Wait for publisher to complete")
         let cancellable = publisher.sink { completion in
-            if case let .failure(theError) = completion {
+            if case .failure(let theError) = completion {
                 error = theError
             }
             e.fulfill()

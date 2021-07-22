@@ -22,7 +22,7 @@ enum WalletActionCellType: IdentifiableType, Equatable {
 }
 
 extension WalletActionCellType {
-    static func ==(lhs: WalletActionCellType, rhs: WalletActionCellType) -> Bool {
+    static func == (lhs: WalletActionCellType, rhs: WalletActionCellType) -> Bool {
         switch (lhs, rhs) {
         case (.balance(let left), .balance(let right)):
             return left.currency.code == right.currency.code

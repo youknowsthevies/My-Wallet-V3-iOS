@@ -40,12 +40,14 @@ final class TabControllerManager: NSObject {
     private let disposeBag = DisposeBag()
     @LazyInject private var walletManager: WalletManager
 
-    init(receiveCoordinator: ReceiveCoordinator = resolve(),
-         analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
-         featureConfigurator: FeatureConfiguring = resolve(),
-         internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
-         coincore: CoincoreAPI = resolve(),
-         drawerRouter: DrawerRouting = resolve()) {
+    init(
+        receiveCoordinator: ReceiveCoordinator = resolve(),
+        analyticsEventRecorder: AnalyticsEventRecorderAPI = resolve(),
+        featureConfigurator: FeatureConfiguring = resolve(),
+        internalFeatureFlag: InternalFeatureFlagServiceAPI = resolve(),
+        coincore: CoincoreAPI = resolve(),
+        drawerRouter: DrawerRouting = resolve()
+    ) {
         self.analyticsEventRecorder = analyticsEventRecorder
         self.featureConfigurator = featureConfigurator
         self.internalFeatureFlag = internalFeatureFlag
@@ -63,9 +65,11 @@ final class TabControllerManager: NSObject {
         if dashboardNavigationController == nil {
             dashboardNavigationController = UINavigationController(rootViewController: DashboardViewController())
         }
-        tabViewController.setActiveViewController(dashboardNavigationController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabDashboard)
+        tabViewController.setActiveViewController(
+            dashboardNavigationController,
+            animated: true,
+            index: Constants.Navigation.tabDashboard
+        )
     }
 
     @objc func showTransactions() {
@@ -73,9 +77,11 @@ final class TabControllerManager: NSObject {
         if activityNavigationController == nil {
             activityNavigationController = UINavigationController(rootViewController: ActivityScreenViewController())
         }
-        tabViewController.setActiveViewController(activityNavigationController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabTransactions)
+        tabViewController.setActiveViewController(
+            activityNavigationController,
+            animated: true,
+            index: Constants.Navigation.tabTransactions
+        )
     }
 
     private func loadSwap() {
@@ -156,9 +162,11 @@ final class TabControllerManager: NSObject {
             let receive = receiveCoordinator.builder.receive()
             receiveNavigationViewController = UINavigationController(rootViewController: receive)
         }
-        tabViewController.setActiveViewController(receiveNavigationViewController,
-                                                  animated: true,
-                                                  index: Constants.Navigation.tabReceive)
+        tabViewController.setActiveViewController(
+            receiveNavigationViewController,
+            animated: true,
+            index: Constants.Navigation.tabReceive
+        )
     }
 
     // MARK: BitPay
@@ -199,8 +207,7 @@ extension TabControllerManager: TabViewControllerDelegate {
 
     // MARK: - View Life Cycle
 
-    func tabViewControllerViewDidLoad(_ tabViewController: TabViewController) {
-    }
+    func tabViewControllerViewDidLoad(_ tabViewController: TabViewController) {}
 
     func sendClicked() {
         showSend()
@@ -218,8 +225,8 @@ extension TabControllerManager: TabViewControllerDelegate {
 
     func transactionsClicked() {
         analyticsEventRecorder.record(
-             event: AnalyticsEvents.Transactions.transactionsTabItemClick
-         )
+            event: AnalyticsEvents.Transactions.transactionsTabItemClick
+        )
         showTransactions()
     }
 

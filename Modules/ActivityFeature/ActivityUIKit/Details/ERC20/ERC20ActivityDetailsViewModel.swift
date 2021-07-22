@@ -32,6 +32,7 @@ struct ERC20ActivityDetailsViewModel: Equatable {
             let amount: String
             let value: String
         }
+
         let fee: Value
         let gasFor: Value?
     }

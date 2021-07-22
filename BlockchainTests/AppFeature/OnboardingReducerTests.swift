@@ -13,7 +13,7 @@ import XCTest
 class OnboardingReducerTests: XCTestCase {
 
     var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet = MockWallet()
+    var mockWallet = MockWallet()
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
 
@@ -58,9 +58,9 @@ class OnboardingReducerTests: XCTestCase {
         // then
         testStore.assert(
             .send(.start),
-            .receive(.pin(.authenticate), { state in
+            .receive(.pin(.authenticate)) { state in
                 state.pinState?.authenticate = true
-            })
+            }
         )
     }
 
@@ -84,11 +84,11 @@ class OnboardingReducerTests: XCTestCase {
 
         // then
         testStore.assert(
-            .send(.start, { state in
+            .send(.start) { state in
                 state.passwordScreen = .init()
                 state.pinState = nil
                 state.walletUpgradeState = nil
-            }),
+            },
             .receive(.passwordScreen(.start))
         )
     }
@@ -114,9 +114,9 @@ class OnboardingReducerTests: XCTestCase {
         // then
         testStore.assert(
             .send(.start),
-            .receive(.pin(.authenticate), { state in
+            .receive(.pin(.authenticate)) { state in
                 state.pinState?.authenticate = true
-            })
+            }
         )
     }
 
@@ -140,11 +140,11 @@ class OnboardingReducerTests: XCTestCase {
 
         // then
         testStore.assert(
-            .send(.start, { state in
+            .send(.start) { state in
                 state.passwordScreen = .init()
                 state.pinState = nil
                 state.walletUpgradeState = nil
-            }),
+            },
             .receive(.passwordScreen(.start))
         )
     }
@@ -201,9 +201,9 @@ class OnboardingReducerTests: XCTestCase {
         // then
         testStore.assert(
             .send(.start),
-            .receive(.pin(.authenticate), { state in
+            .receive(.pin(.authenticate)) { state in
                 state.pinState?.authenticate = true
-            })
+            }
         )
 
         // when sending forgetWallet as a direct action

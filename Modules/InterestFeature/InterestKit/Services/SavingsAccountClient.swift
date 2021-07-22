@@ -14,9 +14,9 @@ public protocol SavingsAccountClientAPI: AnyObject {
 final class SavingsAccountClient: SavingsAccountClientAPI {
 
     private enum Path {
-        static let balance = [ "accounts", "savings" ]
-        static let rate = [ "savings", "rates" ]
-        static let limits = [ "savings", "limits" ]
+        static let balance = ["accounts", "savings"]
+        static let rate = ["savings", "rates"]
+        static let limits = ["savings", "limits"]
     }
 
     private enum Parameter {
@@ -31,8 +31,10 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

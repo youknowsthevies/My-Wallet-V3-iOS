@@ -45,7 +45,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     }
 
     override var hasValidState: Observable<Bool> {
-        stateRelay.map { $0.isValid }
+        stateRelay.map(\.isValid)
     }
 
     var state: Observable<State> {
@@ -55,7 +55,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
-            .map { $0.isTier2Approved }
+            .map(\.isTier2Approved)
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
 
@@ -111,16 +111,18 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Setup
 
-    init(kycTiersService: KYCTiersServiceAPI = resolve(),
-         pairsService: SupportedPairsInteractorServiceAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve(),
-         data: SellCryptoInteractionData,
-         priceService: PriceServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
-         initialActiveInput: ActiveAmountInput,
-         orderCreationService: OrderCreationServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        pairsService: SupportedPairsInteractorServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        data: SellCryptoInteractionData,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        cryptoCurrencySelectionService: CryptoCurrencyServiceAPI & SelectionServiceAPI,
+        initialActiveInput: ActiveAmountInput,
+        orderCreationService: OrderCreationServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.eligibilityService = eligibilityService
         self.pairsService = pairsService
         self.kycTiersService = kycTiersService
@@ -157,20 +159,22 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
         auxiliaryViewInteractor.resetToMaxAmount
             .withLatestFrom(balance)
             .map { ($0.base, $0.quote) }
-            .do(onNext: { (_, quote) in
+            .do(onNext: { _, quote in
                 #warning("This will break once we enable input using either fiat or crypto")
                 amountTranslationInteractor.set(amount: quote)
             })
-            .map { [weak self] (base, quote) -> State in
+            .map { [weak self] base, quote -> State in
                 guard let self = self else { return .empty }
                 guard !quote.isZero else { return .empty }
                 guard let fiat = quote.fiatValue else { return .empty }
                 guard let crypto = base.cryptoValue else { return .empty }
 
                 self.analyticsRecorder.record(event:
-                    AnalyticsEvents.New.Sell.sellAmountMaxClicked(fromAccountType: .init(self.data.source),
-                                                                  inputCurrency: crypto.currencyCode,
-                                                                  outputCurrency: fiat.currencyCode)
+                    AnalyticsEvents.New.Sell.sellAmountMaxClicked(
+                        fromAccountType: .init(self.data.source),
+                        inputCurrency: crypto.currencyCode,
+                        outputCurrency: fiat.currencyCode
+                    )
                 )
                 let data = CandidateOrderDetails.sell(
                     fiatValue: fiat,
@@ -190,14 +194,14 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         let pairs = pairsCalculationState
-            .compactMap { $0.value }
+            .compactMap(\.value)
 
         let pairForCryptoCurrency = Observable
             .combineLatest(
                 pairs,
                 cryptoCurrencySelectionService.selectedData
             )
-            .map { (pairs, item) -> SupportedPairs.Pair? in
+            .map { pairs, item -> SupportedPairs.Pair? in
                 pairs.pairs(per: item.cryptoCurrency).first
             }
 
@@ -209,7 +213,7 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 fiatCurrencyService.fiatCurrencyObservable,
                 pairForCryptoCurrency
             )
-            .map { (fiatAmount, cryptoAmount, balance, fiatCurrency, pair) -> State in
+            .map { fiatAmount, cryptoAmount, balance, _, pair -> State in
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair else {
                     return .empty

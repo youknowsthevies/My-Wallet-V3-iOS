@@ -9,13 +9,13 @@ public final class MockViewController: UIViewController {
         public var presentViewController: [UIViewController] = []
     }
 
-    private(set) public var recordedInvocations = RecordedInvocations()
+    public private(set) var recordedInvocations = RecordedInvocations()
 
     override public func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
         recordedInvocations.presentViewController.append(viewControllerToPresent)
     }
 
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    override public func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         recordedInvocations.dismiss.append((flag, completion))
     }
 }

@@ -17,9 +17,11 @@ final class TransactionFlowDescriptor {
                     cryptoCurrency: cryptoValue.currencyType,
                     minFractionDigits: 2
                 )
-                return formatter.format(value: cryptoValue,
-                                        withPrecision: .short,
-                                        includeSymbol: true)
+                return formatter.format(
+                    value: cryptoValue,
+                    withPrecision: .short,
+                    includeSymbol: true
+                )
             }
             return moneyValue.displayString
         }

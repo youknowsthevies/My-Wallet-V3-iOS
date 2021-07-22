@@ -47,7 +47,7 @@ final class NewPasswordTextValidator: NewPasswordValidating {
             .disposed(by: disposeBag)
 
         scoreRelay
-            .map { $0.isValid }
+            .map(\.isValid)
             .map { $0 ? .valid : .invalid(reason: nil) }
             .bindAndCatch(to: validationStateRelay)
             .disposed(by: disposeBag)

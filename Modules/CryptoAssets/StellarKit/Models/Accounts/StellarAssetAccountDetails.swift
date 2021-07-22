@@ -11,8 +11,8 @@ public struct StellarAccountDetails {
 
 // MARK: Extension
 
-public extension StellarAccountDetails {
-    static func unfunded(accountID: String) -> StellarAccountDetails {
+extension StellarAccountDetails {
+    public static func unfunded(accountID: String) -> StellarAccountDetails {
         let account = StellarAssetAccount(
             accountAddress: accountID,
             name: CryptoCurrency.stellar.defaultWalletName,

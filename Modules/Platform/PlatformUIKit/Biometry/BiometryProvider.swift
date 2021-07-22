@@ -17,12 +17,12 @@ public final class BiometryProvider: BiometryProviding {
         switch canAuthenticate {
         case .success(let biometryType):
             // Verify configuration in remote
-            guard self.featureConfigurator.configuration(for: .biometry).isEnabled else {
+            guard featureConfigurator.configuration(for: .biometry).isEnabled else {
                 return .unconfigurable(Biometry.EvaluationError.notAllowed)
             }
 
             // Biometrics id is already configured - therefore, return it
-            if self.settings.biometryEnabled {
+            if settings.biometryEnabled {
                 return .configured(biometryType)
             } else { // Biometrics has not yet been configured within the app
                 return .configurable(biometryType)
@@ -44,7 +44,7 @@ public final class BiometryProvider: BiometryProviding {
     /// Returns the supported device biometrics, regardless if currently configured in app
     public var supportedBiometricsType: Biometry.BiometryType {
         let context = LAContext()
-        _ = context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
+        _ = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
         return .init(with: context.biometryType)
     }
 
@@ -73,8 +73,10 @@ public final class BiometryProvider: BiometryProviding {
 
     // MARK: - Setup
 
-    public init(settings: AppSettingsAuthenticating = resolve(),
-                featureConfigurator: FeatureConfiguring) {
+    public init(
+        settings: AppSettingsAuthenticating = resolve(),
+        featureConfigurator: FeatureConfiguring
+    ) {
         self.settings = settings
         self.featureConfigurator = featureConfigurator
     }

@@ -15,10 +15,12 @@ extension PaymentMethod {
             return nil
         }
 
-        guard let methodType = MethodType(type: rawType,
-                                          subTypes: method.subTypes,
-                                          currency: currency,
-                                          supportedFiatCurrencies: supportedFiatCurrencies) else {
+        guard let methodType = MethodType(
+            type: rawType,
+            subTypes: method.subTypes,
+            currency: currency,
+            supportedFiatCurrencies: supportedFiatCurrencies
+        ) else {
             return nil
         }
         let zero = FiatValue.zero(currency: currency)
@@ -83,7 +85,7 @@ extension Array where Element == PaymentMethod {
     }
 
     public var funds: [PaymentMethod] {
-        filter { $0.type.isFunds }
+        filter(\.type.isFunds)
     }
 
     public var fundsCurrencies: [CurrencyType] {

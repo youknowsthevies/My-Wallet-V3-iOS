@@ -23,7 +23,7 @@ protocol SettingsStarterAPI: AnyObject {
     func showSettingsView()
 }
 
-/// Provides a reload mechanism that `Wallet` triggers 
+/// Provides a reload mechanism that `Wallet` triggers
 protocol LoggedInReloadAPI: AnyObject {
     func reload()
 }
@@ -33,17 +33,17 @@ protocol LoggedInReloadAPI: AnyObject {
 /// This attempts to bridge the two worlds of the `LoggedInHostingController` and any
 /// class that uses the extended protocols.
 protocol LoggedInBridge: DrawerRouting,
-                         TabSwapping,
-                         CurrencyRouting,
-                         CashIdentityVerificationAnnouncementRouting,
-                         InterestIdentityVerificationAnnouncementRouting,
-                         AppCoordinating,
-                         WalletOperationsRouting,
-                         TabControllerManagerProvider,
-                         BackupFlowStarterAPI,
-                         SettingsStarterAPI,
-                         LoggedInReloadAPI,
-                         AuthenticationCoordinating { }
+    TabSwapping,
+    CurrencyRouting,
+    CashIdentityVerificationAnnouncementRouting,
+    InterestIdentityVerificationAnnouncementRouting,
+    AppCoordinating,
+    WalletOperationsRouting,
+    TabControllerManagerProvider,
+    BackupFlowStarterAPI,
+    SettingsStarterAPI,
+    LoggedInReloadAPI,
+    AuthenticationCoordinating {}
 
 protocol LoggedInDependencyBridgeAPI: AnyObject {
     /// Registers the bridge
@@ -87,7 +87,7 @@ final class LoggedInDependencyBridge: LoggedInDependencyBridgeAPI {
 
     private weak var hostingControllerBridge: LoggedInBridge?
 
-    init() { }
+    init() {}
 
     func register(bridge: LoggedInBridge) {
         hostingControllerBridge = bridge

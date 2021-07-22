@@ -89,7 +89,7 @@ public final class LinkedCardCellPresenter {
             )
         }
 
-        badgeVisibilityRelay.accept(cardData.state == .active ? .hidden: .visible)
+        badgeVisibilityRelay.accept(cardData.state == .active ? .hidden : .visible)
 
         digitsLabelContent = .init(
             text: cardData.displaySuffix,

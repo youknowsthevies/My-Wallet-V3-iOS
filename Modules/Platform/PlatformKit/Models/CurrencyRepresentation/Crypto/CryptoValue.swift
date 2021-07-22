@@ -18,7 +18,7 @@ public struct CryptoValue: CryptoMoney, Hashable {
 
     public init(amount: BigInt, currency: CryptoCurrency) {
         self.amount = amount
-        self.currencyType = currency
+        currencyType = currency
     }
 }
 

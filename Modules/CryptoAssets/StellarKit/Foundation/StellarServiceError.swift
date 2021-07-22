@@ -83,7 +83,7 @@ extension StellarNetworkError {
 }
 
 extension StellarNetworkError {
-    public static func ==(lhs: StellarNetworkError, rhs: StellarNetworkError) -> Bool {
+    public static func == (lhs: StellarNetworkError, rhs: StellarNetworkError) -> Bool {
         switch (lhs, rhs) {
         case (.rateLimitExceeded, .rateLimitExceeded),
              (.internalError, .internalError),
@@ -92,7 +92,7 @@ extension StellarNetworkError {
              (.forbidden, .forbidden),
              (.unknown, .unknown):
             return true
-        case let (.badRequest(lhs), .badRequest(rhs)):
+        case (.badRequest(let lhs), .badRequest(let rhs)):
             return lhs == rhs
         default:
             return false

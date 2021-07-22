@@ -75,7 +75,7 @@ public final class WalletPayloadService: WalletPayloadServiceAPI {
             .flatMap(weak: self) { (self, response) -> Single<WalletPayloadClient.ClientResponse> in
                 self.cacheWalletData(from: response)
             }
-            .map(weak: self) { (_, response) -> WalletAuthenticatorType in
+            .map(weak: self) { _, response -> WalletAuthenticatorType in
                 guard let type = WalletAuthenticatorType(rawValue: response.authType) else {
                     throw WalletPayloadServiceError.unsupported2FAType
                 }
@@ -202,7 +202,7 @@ extension WalletPayloadService {
 
     public func cacheWalletDataPublisher(
         from clientResponse: WalletPayloadClient.ClientResponse
-    ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadServiceError>  {
+    ) -> AnyPublisher<WalletPayloadClient.ClientResponse, WalletPayloadServiceError> {
         repository.setPublisher(guid: clientResponse.guid)
             .zip(repository.setPublisher(language: clientResponse.language))
             .zip(repository.setPublisher(syncPubKeys: clientResponse.shouldSyncPubkeys))
@@ -243,7 +243,7 @@ extension WalletPayloadServiceError {
             self = .emailAuthorizationRequired
         case .accountLocked:
             self = .accountLocked
-        case let .message(message):
+        case .message(let message):
             self = .message(message)
         case .unknown:
             self = .unknown

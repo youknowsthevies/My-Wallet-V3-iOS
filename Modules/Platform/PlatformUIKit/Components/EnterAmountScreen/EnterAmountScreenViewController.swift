@@ -18,6 +18,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             static let topSelectionViewHeight: CGFloat = 48
             static let bottomAuxiliaryViewOffset: CGFloat = 8
         }
+
         enum Standard {
             static let topSelectionViewHeight: CGFloat = 78
         }
@@ -53,7 +54,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -118,7 +119,7 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
         digitPadTopSeparatorView.backgroundColor = presenter.displayBundle.colors.digitPadTopSeparator
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         digitPadView.viewModel = presenter.digitPadViewModel
@@ -148,18 +149,18 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         presenter.viewWillAppear()
         setupNavigationBar()
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         presenter.viewDidDisappear()
     }
 
-    public override func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         /// NOTE: This must be in `viewWillLayoutSubviews`
         /// This is a special treatment due to the manner view controllers
@@ -188,8 +189,8 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
                 onNext: { [weak self] state in
                     self?.bottomAuxiliaryViewModelStateDidChange(to: state)
                 }
-           )
-           .disposed(by: disposeBag)
+            )
+            .disposed(by: disposeBag)
     }
 
     private func bottomAuxiliaryViewModelStateDidChange(to state: EnterAmountScreenPresenter.BottomAuxiliaryViewModelState) {
@@ -241,11 +242,11 @@ public final class EnterAmountScreenViewController: BaseScreenViewController {
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.previous()
     }
 
-    public override func navigationBarTrailingButtonPressed() {
+    override public func navigationBarTrailingButtonPressed() {
         presenter.previous()
     }
 }

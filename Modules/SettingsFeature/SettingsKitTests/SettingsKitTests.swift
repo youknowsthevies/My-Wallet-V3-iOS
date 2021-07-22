@@ -3,14 +3,12 @@
 import PlatformKit
 import XCTest
 
-class SettingsKitTests: XCTestCase {
-
-}
+class SettingsKitTests: XCTestCase {}
 
 class MockBlockchainSettingsApp: BlockchainSettings.App {
-    override init(enabledCurrenciesService: EnabledCurrenciesServiceAPI = MockEnabledCurrenciesService(),
-                  keychainItemWrapper: KeychainItemWrapping = MockKeychainItemWrapping(),
-                  legacyPasswordProvider: LegacyPasswordProviding = MockLegacyPasswordProvider()) {
-
-    }
+    override init(
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = MockEnabledCurrenciesService(),
+        keychainItemWrapper: KeychainItemWrapping = MockKeychainItemWrapping(),
+        legacyPasswordProvider: LegacyPasswordProviding = MockLegacyPasswordProvider()
+    ) {}
 }

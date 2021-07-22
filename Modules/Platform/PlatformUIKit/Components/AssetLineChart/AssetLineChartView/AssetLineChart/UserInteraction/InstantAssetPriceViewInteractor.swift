@@ -15,7 +15,7 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
     // MARK: - Exposed Properties
 
     public var state: Observable<InteractionState> {
-         _ = setup
+        _ = setup
         return stateRelay.asObservable()
             .observeOn(MainScheduler.instance)
     }
@@ -76,10 +76,10 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
                         )
                     )
                 }
-        }
-        .catchErrorJustReturn(.loading)
-        .bindAndCatch(to: stateRelay)
-        .disposed(by: disposeBag)
+            }
+            .catchErrorJustReturn(.loading)
+            .bindAndCatch(to: stateRelay)
+            .disposed(by: disposeBag)
     }()
 
     private let stateRelay = BehaviorRelay<InteractionState>(value: .loading)
@@ -90,8 +90,10 @@ public final class InstantAssetPriceViewInteractor: AssetPriceViewInteracting {
 
     // MARK: - Setup
 
-    public init(historicalPriceProvider: HistoricalFiatPriceServiceAPI,
-                chartUserInteracting: AssetLineChartUserInteracting) {
+    public init(
+        historicalPriceProvider: HistoricalFiatPriceServiceAPI,
+        chartUserInteracting: AssetLineChartUserInteracting
+    ) {
         self.historicalPriceProvider = historicalPriceProvider
         self.chartUserInteracting = chartUserInteracting
     }

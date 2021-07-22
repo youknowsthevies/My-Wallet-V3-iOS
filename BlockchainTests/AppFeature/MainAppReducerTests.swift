@@ -148,8 +148,10 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.mockIsPairedWithWallet = true
 
         // method is implementing fireAndForget
-        syncPinKeyWithICloud(blockchainSettings: mockSettingsApp,
-                             credentialsStore: mockCredentialsStore)
+        syncPinKeyWithICloud(
+            blockchainSettings: mockSettingsApp,
+            credentialsStore: mockCredentialsStore
+        )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
@@ -159,8 +161,10 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.sharedKey = "b"
 
         // method is implementing fireAndForget
-        syncPinKeyWithICloud(blockchainSettings: mockSettingsApp,
-                             credentialsStore: mockCredentialsStore)
+        syncPinKeyWithICloud(
+            blockchainSettings: mockSettingsApp,
+            credentialsStore: mockCredentialsStore
+        )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
@@ -170,8 +174,10 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.pinKey = "b"
 
         // method is implementing fireAndForget
-        syncPinKeyWithICloud(blockchainSettings: mockSettingsApp,
-                             credentialsStore: mockCredentialsStore)
+        syncPinKeyWithICloud(
+            blockchainSettings: mockSettingsApp,
+            credentialsStore: mockCredentialsStore
+        )
 
         XCTAssertFalse(mockCredentialsStore.synchronizeCalled)
 
@@ -183,8 +189,10 @@ final class MainAppReducerTests: XCTestCase {
         mockSettingsApp.sharedKey = nil
 
         // method is implementing fireAndForget
-        syncPinKeyWithICloud(blockchainSettings: mockSettingsApp,
-                             credentialsStore: mockCredentialsStore)
+        syncPinKeyWithICloud(
+            blockchainSettings: mockSettingsApp,
+            credentialsStore: mockCredentialsStore
+        )
 
         XCTAssertTrue(mockCredentialsStore.synchronizeCalled)
         XCTAssertTrue(mockCredentialsStore.expectedPinDataCalled)
@@ -223,14 +231,15 @@ final class MainAppReducerTests: XCTestCase {
         // password screen should start
         testStore.receive(.onboarding(.passwordScreen(.start)))
 
-        // when authenticating 
+        // when authenticating
         testStore.send(.onboarding(.passwordScreen(.authenticate("password"))))
 
         testStore.receive(.fetchWallet("password"))
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
-            password: "password".passwordPartHash)
+            password: "password".passwordPartHash
+        )
 
         XCTAssertTrue(mockWallet.fetchCalled)
     }
@@ -258,7 +267,8 @@ final class MainAppReducerTests: XCTestCase {
         mockWallet.load(
             withGuid: mockSettingsApp.guid!,
             sharedKey: mockSettingsApp.sharedKey!,
-            password: "password".passwordPartHash)
+            password: "password".passwordPartHash
+        )
 
         XCTAssertTrue(mockWallet.fetchCalled)
     }
@@ -292,9 +302,11 @@ final class MainAppReducerTests: XCTestCase {
 
         mockMainQueue.advance()
 
-        let walletDecryption = WalletDecryption(guid: guid,
-                                                sharedKey: sharedKey,
-                                                passwordPartHash: "a-password".passwordPartHash)
+        let walletDecryption = WalletDecryption(
+            guid: guid,
+            sharedKey: sharedKey,
+            passwordPartHash: "a-password".passwordPartHash
+        )
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyCreateWalletScreen = false
@@ -338,9 +350,11 @@ final class MainAppReducerTests: XCTestCase {
 
         mockMainQueue.advance()
 
-        let walletDecryption = WalletDecryption(guid: guid,
-                                                sharedKey: sharedKey,
-                                                passwordPartHash: "a-password".passwordPartHash)
+        let walletDecryption = WalletDecryption(
+            guid: guid,
+            sharedKey: sharedKey,
+            passwordPartHash: "a-password".passwordPartHash
+        )
         testStore.receive(.didDecryptWallet(walletDecryption))
         testStore.receive(.authenticated(.success(true))) { state in
             state.onboarding?.showLegacyRecoverWalletScreen = false
@@ -370,8 +384,10 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
         XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(mockAnalyticsRecorder.recordEventCalled.event!.name,
-                       AnalyticsEvents.New.Navigation.signedOut.name)
+        XCTAssertEqual(
+            mockAnalyticsRecorder.recordEventCalled.event!.name,
+            AnalyticsEvents.New.Navigation.signedOut.name
+        )
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)
@@ -402,8 +418,10 @@ final class MainAppReducerTests: XCTestCase {
 
         XCTAssertTrue(mockAnalyticsRecorder.recordEventCalled.called)
         XCTAssertNotNil(mockAnalyticsRecorder.recordEventCalled.event)
-        XCTAssertEqual(mockAnalyticsRecorder.recordEventCalled.event!.name,
-                       AnalyticsEvents.New.Navigation.signedOut.name)
+        XCTAssertEqual(
+            mockAnalyticsRecorder.recordEventCalled.event!.name,
+            AnalyticsEvents.New.Navigation.signedOut.name
+        )
 
         XCTAssertTrue(mockSiftService.removeUserIdCalled)
         XCTAssertTrue(mockSettingsApp.resetCalled)

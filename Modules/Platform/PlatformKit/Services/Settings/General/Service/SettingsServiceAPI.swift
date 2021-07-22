@@ -5,17 +5,17 @@ import RxRelay
 import RxSwift
 
 public typealias CompleteSettingsServiceAPI = SettingsServiceAPI &
-                                              EmailSettingsServiceAPI &
-                                              LastTransactionSettingsUpdateServiceAPI &
-                                              EmailNotificationSettingsServiceAPI &
-                                              FiatCurrencySettingsServiceAPI &
-                                              SMSTwoFactorSettingsServiceAPI &
-                                              UpdateMobileSettingsServiceAPI &
-                                              VerifyMobileSettingsServiceAPI
+    EmailSettingsServiceAPI &
+    LastTransactionSettingsUpdateServiceAPI &
+    EmailNotificationSettingsServiceAPI &
+    FiatCurrencySettingsServiceAPI &
+    SMSTwoFactorSettingsServiceAPI &
+    UpdateMobileSettingsServiceAPI &
+    VerifyMobileSettingsServiceAPI
 
 public typealias MobileSettingsServiceAPI = UpdateMobileSettingsServiceAPI &
-                                            VerifyMobileSettingsServiceAPI &
-                                            SettingsServiceAPI
+    VerifyMobileSettingsServiceAPI &
+    SettingsServiceAPI
 
 public enum SettingsServiceError: Error {
     case timedOut
@@ -31,7 +31,7 @@ public protocol SettingsServiceCombineAPI: AnyObject {
 public protocol SettingsServiceAPI: SettingsServiceCombineAPI {
     var valueSingle: Single<WalletSettings> { get }
     var valueObservable: Observable<WalletSettings> { get }
-    
+
     func fetch(force: Bool) -> Single<WalletSettings>
 }
 

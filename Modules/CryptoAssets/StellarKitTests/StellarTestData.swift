@@ -9,6 +9,7 @@ enum StellarTestData {
     static let address = "GBIRQUDJO7JT4FIG53BD22DJ4BYO7R5ERHWQMXRLDDF7UZUJQYWQPDOM"
     static let memo = "memo-memo"
     static let label = "account-label"
+
     // MARK: Address Memo
 
     static let addressColonMemo = "\(address):\(memo)"

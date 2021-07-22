@@ -15,7 +15,7 @@ extension CryptoNonCustodialAccount {
 
     public var isFunded: Single<Bool> {
         balance
-            .map { $0.isPositive }
+            .map(\.isPositive)
     }
 
     public func updateLabel(_ newLabel: String) -> Completable {
@@ -28,8 +28,10 @@ extension CryptoNonCustodialAccount {
     }
 
     /// Treats an `[TransactionalActivityItemEvent]`, replacing any event matching one of the `SwapActivityItemEvent` with the said match.
-    public static func reconcile(swapEvents: [SwapActivityItemEvent],
-                                 noncustodial: [TransactionalActivityItemEvent]) -> [ActivityItemEvent] {
+    public static func reconcile(
+        swapEvents: [SwapActivityItemEvent],
+        noncustodial: [TransactionalActivityItemEvent]
+    ) -> [ActivityItemEvent] {
         noncustodial.map { event -> ActivityItemEvent in
             guard event.type == .send else {
                 return .transactional(event)

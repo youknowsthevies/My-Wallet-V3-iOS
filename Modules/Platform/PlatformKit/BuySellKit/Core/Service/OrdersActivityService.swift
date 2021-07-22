@@ -10,8 +10,10 @@ final class OrdersActivityService: OrdersActivityServiceAPI {
     private let enabledCurrenciesService: EnabledCurrenciesServiceAPI
     private let cache: Cache<CurrencyType, OrdersActivityResponse>
 
-    init(client: OrdersActivityClientAPI = resolve(),
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
+    init(
+        client: OrdersActivityClientAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()
+    ) {
         self.client = client
         self.enabledCurrenciesService = enabledCurrenciesService
         cache = Cache(entryLifetime: 90)

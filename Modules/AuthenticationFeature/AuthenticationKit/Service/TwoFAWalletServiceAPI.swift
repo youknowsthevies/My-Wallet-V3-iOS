@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
 import NetworkKit
+import RxSwift
 
 /// Potential errors that may arise during 2FA initialization
 public enum TwoFAWalletServiceError: Error {

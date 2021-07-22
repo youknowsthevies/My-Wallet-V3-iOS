@@ -15,7 +15,7 @@ struct Blockstack: CoinType {
     static let coinType: UInt32 = 5757
 }
 
-// TODO
+// TODO:
 // * For now `CoinType` is not supported by LibWally-Swift,
 enum Network {
     case main(CoinType.Type)

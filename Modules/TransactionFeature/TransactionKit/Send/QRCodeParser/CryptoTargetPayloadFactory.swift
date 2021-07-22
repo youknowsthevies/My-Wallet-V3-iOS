@@ -53,7 +53,6 @@ final class CryptoTargetPayloadFactory: CryptoTargetPayloadFactoryAPI {
                 case .invalidBitPayURL:
                     return metadata
                 }
-
             }
     }
 

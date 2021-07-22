@@ -27,6 +27,7 @@ final class TransferCancellationViewController: UIViewController {
         super.init(nibName: TransferCancellationViewController.objectName, bundle: Self.bundle)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -44,7 +45,7 @@ final class TransferCancellationViewController: UIViewController {
             .bindAndCatch(weak: self) { (self) in
                 self.dismiss(animated: true, completion: nil)
             }
-        .disposed(by: disposeBag)
+            .disposed(by: disposeBag)
 
         presenter.viewDidLoad()
     }

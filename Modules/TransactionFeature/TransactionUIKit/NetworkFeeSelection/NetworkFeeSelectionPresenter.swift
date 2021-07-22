@@ -34,8 +34,10 @@ final class NetworkFeeSelectionPresenter: Presenter<NetworkFeeSelectionViewContr
 
     // MARK: - Init
 
-    init(viewController: NetworkFeeSelectionViewControllable,
-         feeSelectionPageReducer: NetworkFeeSelectionReducerAPI) {
+    init(
+        viewController: NetworkFeeSelectionViewControllable,
+        feeSelectionPageReducer: NetworkFeeSelectionReducerAPI
+    ) {
         self.feeSelectionPageReducer = feeSelectionPageReducer
         super.init(viewController: viewController)
     }
@@ -44,5 +46,4 @@ final class NetworkFeeSelectionPresenter: Presenter<NetworkFeeSelectionViewContr
         let presentableState = feeSelectionPageReducer.presentableState(for: state)
         return viewController.connect(state: presentableState)
     }
-
 }

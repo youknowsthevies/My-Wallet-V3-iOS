@@ -38,8 +38,10 @@ public final class AssetPieChartPresenter {
 
     // MARK: - Setup
 
-    public init(edge: CGFloat,
-                interactor: AssetPieChartInteracting) {
+    public init(
+        edge: CGFloat,
+        interactor: AssetPieChartInteracting
+    ) {
         self.edge = edge
         self.interactor = interactor
     }

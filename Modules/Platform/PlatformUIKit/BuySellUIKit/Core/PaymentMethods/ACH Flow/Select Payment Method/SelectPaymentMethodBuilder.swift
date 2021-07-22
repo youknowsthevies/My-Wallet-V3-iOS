@@ -19,8 +19,10 @@ final class SelectPaymentMethodBuilder: SelectPaymentMethodBuildable {
     func build(listener: SelectPaymentMethodListener) -> SelectPaymentMethodRouting {
         let viewController = SelectPaymentMethodViewController()
         viewController.isModalInPresentation = true
-        let interactor = SelectPaymentMethodInteractor(presenter: viewController,
-                                                       paymentMethodService: paymentMethodService)
+        let interactor = SelectPaymentMethodInteractor(
+            presenter: viewController,
+            paymentMethodService: paymentMethodService
+        )
         interactor.listener = listener
         return SelectPaymentMethodRouter(interactor: interactor, viewController: viewController)
     }

@@ -139,12 +139,14 @@ struct AirdropCampaigns {
                 withdrawalAt = try values.decode(String.self, forKey: .withdrawalAt)
             }
 
-            init(state: State,
-                 fiatValue: Decimal,
-                 fiatCurrency: String,
-                 withdrawalQuantity: Decimal,
-                 withdrawalCurrency: String,
-                 withdrawalAt: String) {
+            init(
+                state: State,
+                fiatValue: Decimal,
+                fiatCurrency: String,
+                withdrawalQuantity: Decimal,
+                withdrawalCurrency: String,
+                withdrawalAt: String
+            ) {
                 self.state = state
                 self.fiatValue = fiatValue
                 self.fiatCurrency = fiatCurrency
@@ -276,13 +278,15 @@ struct AirdropCampaigns {
         private let endDate: Date?
         private let updateDate: Date?
 
-        init(name: String,
-             state: GeneralState,
-             userState: UserState,
-             attributes: Attributes,
-             transactions: [Transaction],
-             updateDate: Date?,
-             endDate: Date?) {
+        init(
+            name: String,
+            state: GeneralState,
+            userState: UserState,
+            attributes: Attributes,
+            transactions: [Transaction],
+            updateDate: Date?,
+            endDate: Date?
+        ) {
             self.name = name
             self.state = state
             self.userState = userState
@@ -337,7 +341,7 @@ extension AirdropCampaigns: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let campaigns = try values.decode([Campaign].self, forKey: .campaigns)
-        self.campaigns = Set(campaigns.filter { $0.isValid })
+        self.campaigns = Set(campaigns.filter(\.isValid))
     }
 }
 

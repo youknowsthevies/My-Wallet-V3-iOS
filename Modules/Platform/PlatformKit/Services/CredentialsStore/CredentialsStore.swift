@@ -37,10 +37,12 @@ final class CredentialsStore: CredentialsStoreAPI {
 
     // MARK: Init
 
-    init(appSettings: AppSettingsAPI = resolve(),
-         appSettingsAuthenticating: AppSettingsAuthenticating = resolve(),
-         store: UbiquitousKeyValueStore = NSUbiquitousKeyValueStore.default,
-         cryptoService: WalletCryptoServiceAPI = resolve()) {
+    init(
+        appSettings: AppSettingsAPI = resolve(),
+        appSettingsAuthenticating: AppSettingsAuthenticating = resolve(),
+        store: UbiquitousKeyValueStore = NSUbiquitousKeyValueStore.default,
+        cryptoService: WalletCryptoServiceAPI = resolve()
+    ) {
         self.appSettings = appSettings
         self.appSettingsAuthenticating = appSettingsAuthenticating
         self.store = store
@@ -72,8 +74,8 @@ final class CredentialsStore: CredentialsStoreAPI {
                     let encryptedPinPassword = data.encryptedPinPassword,
                     let guid = data.guid,
                     let sharedKey = data.sharedKey
-                    else {
-                        throw CredentialsStoreError.incompleteData
+                else {
+                    throw CredentialsStoreError.incompleteData
                 }
 
                 // If we have both pin data and wallet data, we check that at least one of the values
@@ -81,20 +83,23 @@ final class CredentialsStore: CredentialsStoreAPI {
                 if let pinData = data.pinData, let walletData = data.walletData {
                     guard
                         pinData.encryptedPinPassword != encryptedPinPassword
-                            || pinData.pinKey != pinKey
-                            || walletData.guid != guid
-                            || walletData.sharedKey != sharedKey else {
-                                throw CredentialsStoreError.backupNotNeeded
+                        || pinData.pinKey != pinKey
+                        || walletData.guid != guid
+                        || walletData.sharedKey != sharedKey
+                    else {
+                        throw CredentialsStoreError.backupNotNeeded
                     }
                 }
                 return (pinKey: pinKey, encryptedPinPassword: encryptedPinPassword, guid: guid, sharedKey: sharedKey)
             }
             .flatMapCompletable(weak: self) { (self, data) in
-                self.backup(pinDecryptionKey: pinDecryptionKey,
-                            pinKey: data.pinKey,
-                            encryptedPinPassword: data.encryptedPinPassword,
-                            guid: data.guid,
-                            sharedKey: data.sharedKey)
+                self.backup(
+                    pinDecryptionKey: pinDecryptionKey,
+                    pinKey: data.pinKey,
+                    encryptedPinPassword: data.encryptedPinPassword,
+                    guid: data.guid,
+                    sharedKey: data.sharedKey
+                )
             }
             .catchError { error in
                 switch error {
@@ -106,18 +111,20 @@ final class CredentialsStore: CredentialsStoreAPI {
             }
     }
 
-    private func backup(pinDecryptionKey: String,
-                        pinKey: String,
-                        encryptedPinPassword: String,
-                        guid: String,
-                        sharedKey: String) -> Completable {
+    private func backup(
+        pinDecryptionKey: String,
+        pinKey: String,
+        encryptedPinPassword: String,
+        guid: String,
+        sharedKey: String
+    ) -> Completable {
         Single
             .zip(
                 cryptoService.encrypt(pair: KeyDataPair(key: pinDecryptionKey, data: guid), pbkdf2Iterations: PBKDF2Iterations.guid),
                 cryptoService.encrypt(pair: KeyDataPair(key: pinDecryptionKey, data: sharedKey), pbkdf2Iterations: PBKDF2Iterations.sharedKey)
             )
             .do(
-                onSuccess: { [weak self] (payload) in
+                onSuccess: { [weak self] payload in
                     let (encryptedGuid, encryptedSharedKey) = payload
                     let data = [
                         Keys.pinKey.rawValue: pinKey,
@@ -134,10 +141,10 @@ final class CredentialsStore: CredentialsStoreAPI {
 
     func pinData() -> CredentialsPinData? {
         guard
-            let data  = store.dictionary(forKey: Keys.data.rawValue),
+            let data = store.dictionary(forKey: Keys.data.rawValue),
             let pinKey = data[Keys.pinKey.rawValue] as? String,
             let encryptedPinPassword = data[Keys.encryptedPinPassword.rawValue] as? String
-            else { return nil }
+        else { return nil }
         return CredentialsPinData(
             pinKey: pinKey,
             encryptedPinPassword: encryptedPinPassword
@@ -146,18 +153,22 @@ final class CredentialsStore: CredentialsStoreAPI {
 
     func walletData(pinDecryptionKey: String) -> Single<CredentialsWalletData> {
         guard
-            let data  = store.dictionary(forKey: Keys.data.rawValue),
+            let data = store.dictionary(forKey: Keys.data.rawValue),
             let encryptedGuid = data[Keys.guid.rawValue] as? String,
             let encryptedSharedKey = data[Keys.sharedKey.rawValue] as? String
-            else { return .error(CredentialsStoreError.incompleteData) }
+        else { return .error(CredentialsStoreError.incompleteData) }
         return Single
             .zip(
-                self.cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey, data: encryptedGuid), pbkdf2Iterations: PBKDF2Iterations.guid),
-                self.cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey,
-                                                             data: encryptedSharedKey),
-                                           pbkdf2Iterations: PBKDF2Iterations.sharedKey)
+                cryptoService.decrypt(pair: KeyDataPair(key: pinDecryptionKey, data: encryptedGuid), pbkdf2Iterations: PBKDF2Iterations.guid),
+                cryptoService.decrypt(
+                    pair: KeyDataPair(
+                        key: pinDecryptionKey,
+                        data: encryptedSharedKey
+                    ),
+                    pbkdf2Iterations: PBKDF2Iterations.sharedKey
+                )
             )
-            .map { (payload) in
+            .map { payload in
                 let (guid, sharedKey) = payload
                 return CredentialsWalletData(guid: guid, sharedKey: sharedKey)
             }

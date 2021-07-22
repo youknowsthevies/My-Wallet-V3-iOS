@@ -8,12 +8,15 @@ extension CryptoCurrency {
     public var defaultInterestWalletName: String {
         LocalizedString.myInterestWallet
     }
+
     public var defaultTradingWalletName: String {
         LocalizedString.myTradingAccount
     }
+
     public var defaultWalletName: String {
         LocalizedString.myWallet
     }
+
     public var defaultExchangeWalletName: String {
         LocalizedString.myExchangeAccount
     }

@@ -39,9 +39,11 @@ public struct WelcomeEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let buildVersionProvider: () -> String
 
-    public init(mainQueue: AnySchedulerOf<DispatchQueue>,
-                deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
-                buildVersionProvider: @escaping () -> String) {
+    public init(
+        mainQueue: AnySchedulerOf<DispatchQueue>,
+        deviceVerificationService: DeviceVerificationServiceAPI = resolve(),
+        buildVersionProvider: @escaping () -> String
+    ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.buildVersionProvider = buildVersionProvider
@@ -70,7 +72,7 @@ public let welcomeReducer = Reducer.combine(
         case .start:
             state.buildVersion = environment.buildVersionProvider()
             return .none
-        case let .presentScreenFlow(screenFlow):
+        case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
             return .none
         case .emailLogin(.closeButtonTapped):

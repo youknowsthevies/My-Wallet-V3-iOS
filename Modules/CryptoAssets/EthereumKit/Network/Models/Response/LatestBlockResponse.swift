@@ -12,9 +12,11 @@ public struct LatestBlockResponse: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         guard let number = Int(try values.decode(String.self, forKey: .number)) else {
-            throw DecodingError.dataCorruptedError(forKey: .number,
-                                                   in: values,
-                                                   debugDescription: "'number' field can't be converted to Int")
+            throw DecodingError.dataCorruptedError(
+                forKey: .number,
+                in: values,
+                debugDescription: "'number' field can't be converted to Int"
+            )
         }
         self.number = number
     }

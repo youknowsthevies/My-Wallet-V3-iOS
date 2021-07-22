@@ -10,12 +10,14 @@ public final class InterestDashboardAnnouncementRouter: InterestDashboardAnnounc
     private let router: KYCRouterAPI
     private let navigationRouterAPI: NavigationRouterAPI
 
-    public init(topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-                routerAPI: KYCRouterAPI = resolve(),
-                navigationRouter: NavigationRouterAPI) {
+    public init(
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        routerAPI: KYCRouterAPI = resolve(),
+        navigationRouter: NavigationRouterAPI
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
-        self.router = routerAPI
-        self.navigationRouterAPI = navigationRouter
+        router = routerAPI
+        navigationRouterAPI = navigationRouter
     }
 
     public func dismiss(startKYC: Bool) {

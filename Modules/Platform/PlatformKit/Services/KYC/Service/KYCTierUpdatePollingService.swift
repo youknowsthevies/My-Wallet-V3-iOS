@@ -17,9 +17,11 @@ public protocol KYCTierUpdatePollingServiceAPI {
     /// - Parameter desiredTier: The desired tier.
     /// - Parameter desiredStatus: The desired status.
     /// - Parameter seconds: How many seconds long polling should happen.
-    func poll(untilTier desiredTier: KYC.Tier,
-              is desiredStatus: KYC.AccountStatus,
-              timeoutAfter seconds: TimeInterval) -> Single<KYC.AccountStatus>
+    func poll(
+        untilTier desiredTier: KYC.Tier,
+        is desiredStatus: KYC.AccountStatus,
+        timeoutAfter seconds: TimeInterval
+    ) -> Single<KYC.AccountStatus>
 }
 
 /// Service to poll for KYC Tiers updates
@@ -61,16 +63,20 @@ final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
     /// - Parameter desiredTier: The desired tier.
     /// - Parameter desiredStatus: The desired status.
     /// - Parameter seconds: How many seconds long polling should happen.
-    func poll(untilTier desiredTier: KYC.Tier,
-              is desiredStatus: KYC.AccountStatus,
-              timeoutAfter seconds: TimeInterval) -> Single<KYC.AccountStatus> {
+    func poll(
+        untilTier desiredTier: KYC.Tier,
+        is desiredStatus: KYC.AccountStatus,
+        timeoutAfter seconds: TimeInterval
+    ) -> Single<KYC.AccountStatus> {
         endDate = Date().addingTimeInterval(seconds)
         return start(desiredTier: desiredTier, shouldMatch: desiredStatus)
     }
 
     /// Start polling by triggering waitForCondition
-    private func start(desiredTier: KYC.Tier,
-                       shouldMatch desiredStatus: KYC.AccountStatus) -> Single<KYC.AccountStatus> {
+    private func start(
+        desiredTier: KYC.Tier,
+        shouldMatch desiredStatus: KYC.AccountStatus
+    ) -> Single<KYC.AccountStatus> {
         Single
             .create(weak: self) { (self, observer) -> Disposable in
                 self.isActiveRelay.accept(true)
@@ -97,8 +103,10 @@ final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
 
     /// Returns a Single that upon subscription polls until the desired KYC Tier level
     /// is reached or the service timeout.
-    private func waitForCondition(tier desiredTier: KYC.Tier,
-                                  shouldMatch desiredStatus: KYC.AccountStatus) -> Single<KYC.AccountStatus> {
+    private func waitForCondition(
+        tier desiredTier: KYC.Tier,
+        shouldMatch desiredStatus: KYC.AccountStatus
+    ) -> Single<KYC.AccountStatus> {
         stopPollingIfNecessary
             .flatMap(weak: self) { (self, _) -> Single<KYC.AccountStatus> in
                 self
@@ -114,7 +122,7 @@ final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
                     .catchError(weak: self) { (self, error) in
                         self.catchError(error: error, tier: desiredTier, shouldMatch: desiredStatus)
                     }
-        }
+            }
     }
 
     private var retryScheduler: Single<Int> {
@@ -144,7 +152,7 @@ final class KYCTierUpdatePollingService: KYCTierUpdatePollingServiceAPI {
     }
 
     private func checkForTimeout(status: KYC.AccountStatus) throws -> KYC.AccountStatus {
-        guard Date().timeIntervalSince(self.endDate) < 0 else {
+        guard Date().timeIntervalSince(endDate) < 0 else {
             throw ServiceError.timeout(status)
         }
         return status

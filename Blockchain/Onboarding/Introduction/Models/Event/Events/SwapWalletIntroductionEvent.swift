@@ -20,7 +20,8 @@ final class SwapWalletIntroductionEvent: CompletableWalletIntroductionEvent {
             action: { [weak self] in
                 self?.introductionEntry.updateLatestLocation(location)
                 self?.selection()
-            })
+            }
+        )
         return .pulse(viewModel)
     }
 
@@ -37,8 +38,10 @@ final class SwapWalletIntroductionEvent: CompletableWalletIntroductionEvent {
         return SwapWalletIntroductionEvent.location > location
     }
 
-    init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
-         selection: @escaping WalletIntroductionAction) {
+    init(
+        introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
+        selection: @escaping WalletIntroductionAction
+    ) {
         self.introductionRecorder = introductionRecorder
         self.selection = selection
     }
@@ -54,7 +57,8 @@ final class SwapDescriptionIntroductionEvent: WalletIntroductionEvent, WalletInt
             thumbnail: #imageLiteral(resourceName: "Icon-Swap"),
             onSelection: { [weak self] in
                 self?.selection()
-            })
+            }
+        )
         return .sheet(viewModel)
     }
 

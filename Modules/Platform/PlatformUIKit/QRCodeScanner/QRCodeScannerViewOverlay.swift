@@ -15,8 +15,8 @@ final class QRCodeScannerViewOverlay: UIView {
         let targetSquare = CGRect(
             x: targetBounds.midX - halfAxis,
             y: targetBounds.midY - halfAxis,
-            width: 2*halfAxis,
-            height: 2*halfAxis
+            width: 2 * halfAxis,
+            height: 2 * halfAxis
         )
         // We convert the rect from the target coordinate space into ours.
         return convert(targetSquare, from: targetCoordinateSpace)

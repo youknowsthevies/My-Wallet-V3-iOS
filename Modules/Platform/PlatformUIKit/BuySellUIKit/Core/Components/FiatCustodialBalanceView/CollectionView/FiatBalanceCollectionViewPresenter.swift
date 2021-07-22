@@ -67,5 +67,4 @@ public final class FiatBalanceCollectionViewPresenter: CurrencyViewPresenter, Fi
     public static func == (lhs: FiatBalanceCollectionViewPresenter, rhs: FiatBalanceCollectionViewPresenter) -> Bool {
         lhs.interactor.interactorsStateRelay.value == rhs.interactor.interactorsStateRelay.value
     }
-
 }

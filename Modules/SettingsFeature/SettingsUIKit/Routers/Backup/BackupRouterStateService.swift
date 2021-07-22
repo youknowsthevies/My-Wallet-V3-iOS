@@ -84,7 +84,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
     }
 
     var currentState: Observable<BackupRouterStateService.State> {
-        states.map { $0.current }
+        states.map(\.current)
     }
 
     var action: Observable<Action> {

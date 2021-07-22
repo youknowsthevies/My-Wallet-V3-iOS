@@ -5,7 +5,7 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum AuthenticationKit { }
+    public enum AuthenticationKit {}
 }
 
 extension LocalizationConstants.AuthenticationKit {
@@ -44,6 +44,7 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Welcome screen description: suffix"
             )
         }
+
         public enum Button {
             public static let createWallet = NSLocalizedString(
                 "Create a Wallet",
@@ -58,6 +59,7 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Welcome screen: restore wallet CTA button"
             )
         }
+
         public static let title = NSLocalizedString(
             "Welcome to Blockchain",
             comment: "Welcome screen: title"
@@ -76,11 +78,11 @@ extension LocalizationConstants.AuthenticationKit {
             )
             public static let description = NSLocalizedString(
                 "If you have an account registered with this email address, you will receive an email with a link to verify your device.",
-                comment: "Verify device screen: Verify device screen description")
-            public enum Button {
-
-            }
+                comment: "Verify device screen: Verify device screen description"
+            )
+            public enum Button {}
         }
+
         public enum TextFieldTitle {
             public static let email = NSLocalizedString(
                 "Email",
@@ -99,12 +101,14 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Login screen: verify with hardware key title prefix"
             )
         }
+
         public enum TextFieldPlaceholder {
             public static let email = NSLocalizedString(
                 "your@email.com",
                 comment: "Login screen: placeholder for email text field"
             )
         }
+
         public enum TextFieldFootnote {
             public static let wallet = NSLocalizedString(
                 "Wallet: ",
@@ -119,6 +123,7 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Login screen: a prompt for user to reset their 2FA if they lost their 2FA device"
             )
         }
+
         public enum TextFieldError {
             public static let invalidEmail = NSLocalizedString(
                 "Invalid Email",
@@ -145,6 +150,7 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Login screen: a message saying that the account is locked"
             )
         }
+
         public enum Link {
             public static let troubleLogInLink = NSLocalizedString(
                 "Trouble logging in?",
@@ -155,11 +161,14 @@ extension LocalizationConstants.AuthenticationKit {
                 comment: "Login screen: link for resetting 2FA"
             )
         }
+
         public enum Divider {
             public static let or = NSLocalizedString(
                 "or",
-                comment: "Login screen: Divider OR label")
+                comment: "Login screen: Divider OR label"
+            )
         }
+
         public enum Button {
             public static let scanPairingCode = NSLocalizedString(
                 "Scan Pairing Code",
@@ -183,7 +192,8 @@ extension LocalizationConstants.AuthenticationKit {
             )
             public static let _continue = NSLocalizedString(
                 "Continue",
-                comment: "Login screen: continue CTA button")
+                comment: "Login screen: continue CTA button"
+            )
             public static let resendSMS = NSLocalizedString(
                 "Resend SMS",
                 comment: "Login screen: resend SMS for 2FA CTA button"

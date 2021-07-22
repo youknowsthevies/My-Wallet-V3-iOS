@@ -45,7 +45,7 @@ public enum CryptoCurrenciesServiceError: Error, Equatable {
     case other(Error)
 
     var description: String? {
-        if case let .other(error) = self {
+        if case .other(let error) = self {
             return String(describing: error)
         }
         return nil
@@ -97,7 +97,7 @@ internal final class CryptoCurrenciesService: CryptoCurrenciesServiceAPI {
                                     .asPublisher()
                             )
                             .mapError(CryptoCurrenciesServiceError.other)
-                            .map { (quote, historicalPriceSeries) in
+                            .map { quote, historicalPriceSeries in
                                 CryptoCurrencyQuote(
                                     cryptoCurrency: pair.cryptoCurrency,
                                     fiatCurrency: pair.fiatCurrency,

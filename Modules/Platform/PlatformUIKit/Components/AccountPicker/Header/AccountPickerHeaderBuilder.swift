@@ -12,7 +12,7 @@ public struct AccountPickerHeaderBuilder: HeaderBuilder {
         switch headerType {
         case .none:
             return 0
-        case .`default`:
+        case .default:
             return AccountPickerHeaderModel.defaultHeight
         case .simple:
             return AccountPickerSimpleHeaderModel.defaultHeight
@@ -25,7 +25,7 @@ public struct AccountPickerHeaderBuilder: HeaderBuilder {
         switch headerType {
         case .none:
             return nil
-        case .`default`(let model):
+        case .default(let model):
             let headerView = AccountPickerHeaderView(frame: frame)
             headerView.model = model
             return headerView

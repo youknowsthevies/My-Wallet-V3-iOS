@@ -23,6 +23,7 @@ public struct LinkedBankData {
             number = accountNumber
         }
     }
+
     public enum LinkageError {
         case alreadyLinked
         case unsuportedAccount
@@ -30,6 +31,7 @@ public struct LinkedBankData {
         case timeout
         case unknown
     }
+
     public let currency: FiatCurrency
     public let identifier: String
     public let account: Account?

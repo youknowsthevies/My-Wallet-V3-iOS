@@ -58,8 +58,10 @@ final class SettingsScreenPresenter {
 
     // MARK: - Init
 
-    init(interactor: SettingsScreenInteractor,
-         router: SettingsRouterAPI) {
+    init(
+        interactor: SettingsScreenInteractor,
+        router: SettingsRouterAPI
+    ) {
         aboutSectionPresenter = AboutSectionPresenter()
 
         connectPresenter = .init(
@@ -122,7 +124,7 @@ final class SettingsScreenPresenter {
         sectionsProvider
             .sections
             .observeOn(MainScheduler.instance)
-            .map { $0.map { $0.sectionType } }
+            .map { $0.map(\.sectionType) }
             .bindAndCatch(to: sectionRelay)
             .disposed(by: disposeBag)
     }

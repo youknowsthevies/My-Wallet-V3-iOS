@@ -24,13 +24,14 @@ public final class BuySellIneligibleRegionViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
         view.addSubview(imageView)
@@ -64,7 +65,7 @@ public final class BuySellIneligibleRegionViewController: UIViewController {
         }
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         buttonView.viewModel = presenter.buttonViewModel
 

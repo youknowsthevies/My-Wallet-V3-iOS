@@ -27,13 +27,13 @@ class LocationSuggestionCell: UITableViewCell {
         let attributedTitle = NSMutableAttributedString(string: suggestion.title, attributes: titleAttributes)
         let attributedSubtitle = NSMutableAttributedString(string: suggestion.subtitle, attributes: subtitleAttributes)
 
-        suggestion.titleHighlights.forEach({
+        suggestion.titleHighlights.forEach {
             attributedTitle.addAttributes(titleHighlightedAttributes, range: $0)
-        })
+        }
 
-        suggestion.subtitleHighlights.forEach({
+        suggestion.subtitleHighlights.forEach {
             attributedSubtitle.addAttributes(subtitleHighlightedAttributes, range: $0)
-        })
+        }
 
         textLabel?.attributedText = attributedTitle
         detailTextLabel?.attributedText = attributedSubtitle

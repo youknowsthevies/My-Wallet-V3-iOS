@@ -59,11 +59,13 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Setup
 
-    init(using interactor: WalletActionScreenInteracting,
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         stateService: CustodyActionStateServiceAPI,
-         eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        using interactor: WalletActionScreenInteracting,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        stateService: CustodyActionStateServiceAPI,
+        eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
         self.eligiblePaymentService = eligiblePaymentService
@@ -109,7 +111,7 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 
         selectionRelay
             .bind { model in
-                guard case let .default(presenter) = model else { return }
+                guard case .default(let presenter) = model else { return }
                 switch presenter.action {
                 case .buy:
                     stateService.buyRelay.accept(())
@@ -132,8 +134,8 @@ final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
     }
 }
 
-fileprivate extension AssetAction {
-    var walletAction: WalletAction {
+extension AssetAction {
+    fileprivate var walletAction: WalletAction {
         switch self {
         case .viewActivity:
             return .activity

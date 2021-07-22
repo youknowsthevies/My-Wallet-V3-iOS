@@ -12,6 +12,7 @@ import TransactionKit
 final class BitcoinWallet: NSObject {
 
     // MARK: - Types
+
     fileprivate struct TransactionAmounts {
         let finalFee: MoneyValue
         let sweepAmount: MoneyValue
@@ -41,12 +42,14 @@ final class BitcoinWallet: NSObject {
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
 
-    @objc convenience public init(legacyWallet: Wallet) {
+    @objc public convenience init(legacyWallet: Wallet) {
         self.init(wallet: legacyWallet)
     }
 
-    init(wallet: WalletAPI,
-         dispatcher: Dispatcher = BitcoinJSInteropDispatcher.shared) {
+    init(
+        wallet: WalletAPI,
+        dispatcher: Dispatcher = BitcoinJSInteropDispatcher.shared
+    ) {
         self.wallet = wallet
         self.dispatcher = dispatcher
     }
@@ -97,31 +100,36 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
         Single.create(weak: self) { (self, observer) -> Disposable in
             self.wallet?.getSignedBitcoinPayment(
                 with: secondPassword,
-                success: { (transactionHex, weight) in
+                success: { transactionHex, weight in
                     observer(.success(BitPayEngineTransaction(msgSize: weight, txHash: transactionHex)))
                 },
                 error: { json in
                     Logger.shared.error("BTC payment signing failure: \(json)")
                     observer(.error(PlatformKitError.default))
-                })
+                }
+            )
             return Disposables.create()
         }
     }
 
-    func buildProposal<Token>(with destination: BitcoinChainReceiveAddress<Token>,
-                              amount: MoneyValue,
-                              fees: MoneyValue,
-                              source: CryptoAccount) -> Single<BitcoinChainTransactionProposal<Token>> where Token : BitcoinChainToken {
+    func buildProposal<Token>(
+        with destination: BitcoinChainReceiveAddress<Token>,
+        amount: MoneyValue,
+        fees: MoneyValue,
+        source: CryptoAccount
+    ) -> Single<BitcoinChainTransactionProposal<Token>> where Token: BitcoinChainToken {
         source
             .receiveAddress
             .map { $0 as! BitcoinChainReceiveAddress<Token> }
             .map(\.index)
             .map { index -> BitcoinChainTransactionProposal<Token> in
-                .init(destination: destination,
-                      amount: amount,
-                      fees: fees,
-                      walletIndex: index,
-                      source: source)
+                .init(
+                    destination: destination,
+                    amount: amount,
+                    fees: fees,
+                    walletIndex: index,
+                    source: source
+                )
             }
     }
 
@@ -188,7 +196,7 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             }
     }
 
-    static private func extractAmounts(
+    private static func extractAmounts(
         from json: [AnyHashable: Any],
         cryptoCurrency: CryptoCurrency
     ) -> TransactionAmounts {
@@ -285,7 +293,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
     }
 
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        let saveMemo: Completable = Completable.create { completable in
+        let saveMemo = Completable.create { completable in
             self.wallet?.saveBitcoinMemo(for: transactionHash, memo: memo)
             completable(.completed)
             return Disposables.create()
@@ -304,10 +312,10 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
                 }
                 wallet.getBitcoinMemo(
                     for: transactionHash,
-                    success: { (memo) in
+                    success: { memo in
                         observer(.success(memo))
                     },
-                    error: { (error) in
+                    error: { _ in
                         observer(.error(WalletError.unknown))
                     }
                 )
@@ -371,7 +379,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .replaceError(with: BitcoinWalletError.v3PayloadDecodingFailed)
             .map { payload -> [BitcoinWalletAccount] in
                 payload.enumerated()
-                    .map { (index, account) -> BitcoinWalletAccount in
+                    .map { index, account -> BitcoinWalletAccount in
                         BitcoinWalletAccount(index: index, account: account)
                     }
             }
@@ -382,7 +390,7 @@ extension BitcoinWallet: BitcoinWalletBridgeAPI {
             .replaceError(with: BitcoinWalletError.v4PayloadDecodingFailed)
             .map { payload -> [BitcoinWalletAccount] in
                 payload.enumerated()
-                    .map { (index, account) -> BitcoinWalletAccount in
+                    .map { index, account -> BitcoinWalletAccount in
                         BitcoinWalletAccount(index: index, account: account)
                     }
             }

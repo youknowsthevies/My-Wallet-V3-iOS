@@ -9,9 +9,9 @@ public protocol QRCodeScannerTextViewModel {
     var subtitleText: String? { get }
 }
 
-public extension QRCodeScannerTextViewModel {
-    var loadingText: String? { nil }
-    var subtitleText: String? { nil }
+extension QRCodeScannerTextViewModel {
+    public var loadingText: String? { nil }
+    public var subtitleText: String? { nil }
 }
 
 protocol QRCodeScannerViewModelProtocol: AnyObject {
@@ -70,16 +70,18 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
     private let parser: AnyQRCodeScannerParsing<P.Success, P.Failure>
     private let textViewModel: QRCodeScannerTextViewModel
     private let scanner: QRCodeScannerProtocol
-    private let completed: ((Result<P.Success, P.Failure>) -> Void)
+    private let completed: (Result<P.Success, P.Failure>) -> Void
     private let deepLinkQRCodeRouter: DeepLinkQRCodeRouter
 
-    init?(parser: P,
-          additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
-          textViewModel: QRCodeScannerTextViewModel,
-          supportsCameraRoll: Bool,
-          scanner: QRCodeScannerProtocol,
-          completed: CompletionHandler?,
-          closeHandler: (() -> Void)? = nil) {
+    init?(
+        parser: P,
+        additionalParsingOptions: QRCodeScannerParsingOptions = .strict,
+        textViewModel: QRCodeScannerTextViewModel,
+        supportsCameraRoll: Bool,
+        scanner: QRCodeScannerProtocol,
+        completed: CompletionHandler?,
+        closeHandler: (() -> Void)? = nil
+    ) {
         guard let completed = completed else { return nil }
 
         let additionalLinkRoutes: [DeepLinkRoute]
@@ -89,13 +91,13 @@ final class QRCodeScannerViewModel<P: QRCodeScannerParsing>: QRCodeScannerViewMo
         case .strict:
             additionalLinkRoutes = []
         }
-        self.deepLinkQRCodeRouter = DeepLinkQRCodeRouter(supportedRoutes: additionalLinkRoutes)
+        deepLinkQRCodeRouter = DeepLinkQRCodeRouter(supportedRoutes: additionalLinkRoutes)
         self.parser = AnyQRCodeScannerParsing(parser: parser)
         self.textViewModel = textViewModel
         self.scanner = scanner
         self.completed = completed
         self.closeHandler = closeHandler
-        self.overlayViewModel = .init(supportsCameraRoll: supportsCameraRoll, subtitleText: textViewModel.subtitleText)
+        overlayViewModel = .init(supportsCameraRoll: supportsCameraRoll, subtitleText: textViewModel.subtitleText)
         self.scanner.delegate = self
     }
 

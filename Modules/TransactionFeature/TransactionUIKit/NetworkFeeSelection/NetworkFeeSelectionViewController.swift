@@ -46,11 +46,11 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
 
         /// Wait for the screen to load.
         let stateWait: Driver<NetworkFeeSelectionPresenter.State> =
-            self.rx.viewDidLoad
-            .asDriver()
-            .flatMap { _ in
-                state
-            }
+            rx.viewDidLoad
+                .asDriver()
+                .flatMap { _ in
+                    state
+                }
 
         /// Setup `ButtonViewModel` that dismisses the view.
         let buttonView: ButtonViewModel = .primary(with: LocalizationConstants.okString)
@@ -80,7 +80,7 @@ final class NetworkFeeSelectionViewController: UIViewController, NetworkFeeSelec
             .map { [$0] }
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .label(let content):

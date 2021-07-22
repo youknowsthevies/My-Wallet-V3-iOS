@@ -12,7 +12,7 @@ public struct EthereumAddress: AssetAddress, Hashable {
         guard let eip55Address = EthereumAddressValidator.toChecksumAddress(address) else {
             throw AddressValidationError.eip55ChecksumFailed
         }
-        self.publicKey = eip55Address
+        publicKey = eip55Address
     }
 
     public init?(address: String) {

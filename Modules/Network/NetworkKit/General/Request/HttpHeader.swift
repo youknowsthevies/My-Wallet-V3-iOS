@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct HttpHeaderField {
+public enum HttpHeaderField {
     public static let userAgent = "User-Agent"
     public static let accept = "Accept"
     public static let contentLength = "Content-Length"
@@ -21,7 +21,7 @@ public struct HttpHeaderField {
     public static let xPayProVersion = "x-paypro-version"
 }
 
-public struct HttpHeaderValue {
+public enum HttpHeaderValue {
     public static let json = "application/json"
     public static let bitpayPaymentOptions = "application/payment-options"
     public static let bitpayPaymentRequest = "application/payment-request"

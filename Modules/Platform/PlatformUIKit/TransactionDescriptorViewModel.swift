@@ -45,7 +45,7 @@ public struct TransactionDescriptorViewModel {
             .map(BadgeImageAttributes.init)
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
-            .map { (attributes) -> BadgeImageViewModel in
+            .map { attributes -> BadgeImageViewModel in
                 provideBadgeImageViewModel(
                     accentColor: attributes.brandColor,
                     backgroundColor: attributes.brandColor.withAlphaComponent(0.15)
@@ -60,7 +60,7 @@ public struct TransactionDescriptorViewModel {
             .map(BadgeImageAttributes.init)
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
-            .map { (attributes) -> BadgeImageViewModel in
+            .map { attributes -> BadgeImageViewModel in
                 var model: BadgeImageViewModel
                 switch attributes.isFiat {
                 case true:
@@ -90,7 +90,7 @@ public struct TransactionDescriptorViewModel {
             .map(BadgeImageAttributes.init)
             // This should not happen.
             .asDriver(onErrorJustReturn: .empty)
-            .map { (attributes) -> BadgeImageViewModel in
+            .map { attributes -> BadgeImageViewModel in
                 let model = BadgeImageViewModel.default(
                     image: attributes.imageResource,
                     cornerRadius: attributes.isFiat ? .value(8.0) : .round,
@@ -144,17 +144,19 @@ public struct TransactionDescriptorViewModel {
     /// The `SingleAccount` that is the destination for the transaction
     public let toAccountRelay = BehaviorRelay<TransactionAccountValue>(value: .empty)
 
-    public init(sourceAccount: SingleAccount? = nil,
-                destinationAccount: SingleAccount? = nil,
-                assetAction: AssetAction,
-                adjustActionIconColor: Bool = false) {
+    public init(
+        sourceAccount: SingleAccount? = nil,
+        destinationAccount: SingleAccount? = nil,
+        assetAction: AssetAction,
+        adjustActionIconColor: Bool = false
+    ) {
         self.assetAction = assetAction
         self.adjustActionIconColor = adjustActionIconColor
         if let sourceAccount = sourceAccount {
-            self.fromAccountRelay.accept(.value(sourceAccount))
+            fromAccountRelay.accept(.value(sourceAccount))
         }
         if let destinationAccount = destinationAccount {
-            self.toAccountRelay.accept(.value(destinationAccount))
+            toAccountRelay.accept(.value(destinationAccount))
         }
     }
 
@@ -170,8 +172,8 @@ public struct TransactionDescriptorViewModel {
     }
 }
 
-private extension AssetAction {
-    var assetImageName: String {
+extension AssetAction {
+    fileprivate var assetImageName: String {
         switch self {
         case .deposit:
             return "deposit-icon"

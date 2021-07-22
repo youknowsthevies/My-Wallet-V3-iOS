@@ -21,14 +21,16 @@ public struct SegmentedViewModel {
         public let selectedContentColor: UIColor?
         public let borderColor: UIColor
 
-        public init(font: UIFont,
-                    selectedFont: UIFont,
-                    backgroundColor: UIColor? = nil,
-                    borderColor: UIColor = .clear,
-                    dividerColor: UIColor? = nil,
-                    contentColor: UIColor? = nil,
-                    selectedContentColor: UIColor? = nil,
-                    imageName: String? = nil) {
+        public init(
+            font: UIFont,
+            selectedFont: UIFont,
+            backgroundColor: UIColor? = nil,
+            borderColor: UIColor = .clear,
+            dividerColor: UIColor? = nil,
+            contentColor: UIColor? = nil,
+            selectedContentColor: UIColor? = nil,
+            imageName: String? = nil
+        ) {
             self.font = font
             self.selectedFont = selectedFont
             self.selectedContentColor = selectedContentColor
@@ -182,11 +184,13 @@ public struct SegmentedViewModel {
 
     /// - parameter cornerRadius: corner radius of the component
     /// - parameter accessibility: accessibility for the view
-    public init(isMomentary: Bool,
-                cornerRadius: CGFloat,
-                defaultSelectedSegmentIndex: Int,
-                accessibility: Accessibility,
-                items: [Item]) {
+    public init(
+        isMomentary: Bool,
+        cornerRadius: CGFloat,
+        defaultSelectedSegmentIndex: Int,
+        accessibility: Accessibility,
+        items: [Item]
+    ) {
         self.defaultSelectedSegmentIndex = defaultSelectedSegmentIndex
         self.isMomentary = isMomentary
         self.cornerRadius = cornerRadius
@@ -196,7 +200,7 @@ public struct SegmentedViewModel {
         tapRelay
             .filter { $0 >= 0 }
             .map { items[$0] }
-            .compactMap { $0.action }
+            .compactMap(\.action)
             .bind {
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
                 feedbackGenerator.prepare()
@@ -231,7 +235,7 @@ extension SegmentedViewModel {
         background: UIColor = .primaryButton,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
-        ) -> SegmentedViewModel {
+    ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
@@ -251,14 +255,14 @@ extension SegmentedViewModel {
     }
 
     /// Returns a white segmented control
-    public static func `plain`(
+    public static func plain(
         items: [Item],
         isMomentary: Bool,
         defaultSelectedSegmentIndex: Int = 1,
         background: UIColor = .white,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
-        ) -> SegmentedViewModel {
+    ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,
@@ -283,7 +287,7 @@ extension SegmentedViewModel {
         defaultSelectedSegmentIndex: Int = 1,
         cornerRadius: CGFloat = 8,
         accessibilityId: String = Accessibility.Identifier.General.primarySegmentedControl
-        ) -> SegmentedViewModel {
+    ) -> SegmentedViewModel {
         var viewModel = SegmentedViewModel(
             isMomentary: isMomentary,
             cornerRadius: cornerRadius,

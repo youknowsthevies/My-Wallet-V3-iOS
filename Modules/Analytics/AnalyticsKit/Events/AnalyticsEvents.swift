@@ -3,9 +3,9 @@
 import Foundation
 
 /// Public nampespace that can be extended with nested types of events.
-public class AnalyticsEvents { }
+public class AnalyticsEvents {}
 
-public extension AnalyticsEvents {
+extension AnalyticsEvents {
     /// Public nampespace that can be extended with nested types of new events.
-    class New { }
+    public class New {}
 }

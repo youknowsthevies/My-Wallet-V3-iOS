@@ -22,9 +22,11 @@ public final class Builder: Buildable {
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let analytics: AnalyticsEventRecorderAPI
 
-    public init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-                stateService: StateServiceAPI,
-                analytics: AnalyticsEventRecorderAPI = resolve()) {
+    public init(
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        stateService: StateServiceAPI,
+        analytics: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.stateService = stateService
         self.analytics = analytics

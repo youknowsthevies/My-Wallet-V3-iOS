@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import RxSwift
 import PlatformKit
+import RxSwift
 import TransactionKit
 
 final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
@@ -19,9 +19,11 @@ final class TransactionLimitsRepository: TransactionLimitsRepositoryAPI {
 
     // MARK: - TransactionLimitServiceAPI
 
-    func fetchTransactionLimits(currency: CurrencyType,
-                                networkFee: CurrencyType,
-                                product: TransactionLimitsProduct) -> Single<TransactionLimits> {
+    func fetchTransactionLimits(
+        currency: CurrencyType,
+        networkFee: CurrencyType,
+        product: TransactionLimitsProduct
+    ) -> Single<TransactionLimits> {
         client
             .fetchTransactionLimits(
                 currency: currency,

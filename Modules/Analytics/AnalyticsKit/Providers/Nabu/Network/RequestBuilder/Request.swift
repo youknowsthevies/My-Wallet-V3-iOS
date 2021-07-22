@@ -6,6 +6,7 @@ struct Request {
     enum HTTPMethod: String {
         case post = "POST"
     }
+
     let method: HTTPMethod
     let url: URL
     let body: Data?

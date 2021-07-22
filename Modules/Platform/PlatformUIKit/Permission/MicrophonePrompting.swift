@@ -13,15 +13,15 @@ public protocol MicrophonePrompting: AnyObject {
     func willUseMicrophone()
 }
 
-public extension MicrophonePrompting {
-    func checkMicrophonePermissions() {
+extension MicrophonePrompting {
+    public func checkMicrophonePermissions() {
         permissionsRequestor.requestPermissions([.microphone]) { [weak self] in
             guard let self = self else { return }
             self.microphonePromptingDelegate?.onMicrophonePromptingComplete()
         }
     }
 
-    func willUseMicrophone() {
+    public func willUseMicrophone() {
         if PermissionsRequestor.shouldDisplayMicrophonePermissionsRequest() {
             microphonePromptingDelegate?.promptToAcceptMicrophonePermissions(confirmHandler: {
                 self.checkMicrophonePermissions()
@@ -39,8 +39,8 @@ public protocol MicrophonePromptingDelegate: AnyObject {
     func promptToAcceptMicrophonePermissions(confirmHandler: @escaping (() -> Void))
 }
 
-public extension MicrophonePromptingDelegate {
-    func promptToAcceptMicrophonePermissions(confirmHandler: @escaping (() -> Void)) {
+extension MicrophonePromptingDelegate {
+    public func promptToAcceptMicrophonePermissions(confirmHandler: @escaping (() -> Void)) {
         let okay = AlertAction(style: .confirm(LocalizationConstants.okString))
         let notNow = AlertAction(style: .default(LocalizationConstants.KYC.notNow))
 

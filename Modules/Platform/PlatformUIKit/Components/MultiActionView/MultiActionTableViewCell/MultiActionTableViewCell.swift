@@ -12,11 +12,11 @@ public final class MultiActionTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override func awakeFromNib() {
+    override public func awakeFromNib() {
         super.awakeFromNib()
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         presenter = nil
     }

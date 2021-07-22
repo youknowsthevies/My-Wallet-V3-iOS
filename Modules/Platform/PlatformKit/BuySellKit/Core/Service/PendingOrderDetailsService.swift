@@ -19,7 +19,7 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
                     .filter { !$0.isFinal }
                     .filter { $0.isAwaitingAction || $0.is3DSConfirmedCardOrder }
             }
-            .map { $0.first }
+            .map(\.first)
     }
 
     var pendingActionOrderDetails: Single<OrderDetails?> {
@@ -27,9 +27,9 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
             .map { orders in
                 orders
                     .filter { !$0.isFinal }
-                    .filter { $0.isAwaitingAction }
+                    .filter(\.isAwaitingAction)
             }
-            .map { $0.first }
+            .map(\.first)
     }
 
     // MARK: - Injected
@@ -39,8 +39,10 @@ final class PendingOrderDetailsService: PendingOrderDetailsServiceAPI {
 
     // MARK: - Setup
 
-    init(ordersService: OrdersServiceAPI = resolve(),
-         cancallationService: OrderCancellationServiceAPI = resolve()) {
+    init(
+        ordersService: OrdersServiceAPI = resolve(),
+        cancallationService: OrderCancellationServiceAPI = resolve()
+    ) {
         self.ordersService = ordersService
         self.cancallationService = cancallationService
     }

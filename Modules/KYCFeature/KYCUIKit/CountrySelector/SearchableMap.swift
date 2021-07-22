@@ -57,12 +57,12 @@ class SearchableMap<Item: SearchableItem> {
     private func updateMap(with items: [Item]) {
         backingMap.removeAll()
 
-        let itemSectionHeaders = items.compactMap({ item -> String? in
+        let itemSectionHeaders = items.compactMap { item -> String? in
             guard let firstChar = item.name.first else {
                 return nil
             }
             return String(firstChar).uppercased()
-        }).unique
+        }.unique
 
         itemSectionHeaders.forEach { firstLetter in
             backingMap[firstLetter] = items.filter {

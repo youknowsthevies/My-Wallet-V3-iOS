@@ -27,8 +27,8 @@ extension ValidationFormView where Self: UIViewController {
         /// This is for handling when the `VerificationTextField`
         /// is covered by the keyboard. Depending on how many
         /// forms we have in the app this could be a candidate for abstraction.
-        validationFields.forEach { (field) in
-            field.becomeFirstResponderBlock = { [weak self] (validationField) in
+        validationFields.forEach { field in
+            field.becomeFirstResponderBlock = { [weak self] validationField in
                 guard let this = self else { return }
 
                 // Scroll so that the next field is also visible
@@ -43,7 +43,7 @@ extension ValidationFormView where Self: UIViewController {
 
     func checkFieldsValidity() -> Bool {
         var valid: Bool = true
-        validationFields.forEach({ $0.resignFocus() })
+        validationFields.forEach { $0.resignFocus() }
         for field in validationFields {
             guard case .valid = field.validate(withStyling: true) else {
                 valid = false

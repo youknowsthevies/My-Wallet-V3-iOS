@@ -41,6 +41,5 @@ extension DependencyContainer {
         factory(tag: CryptoCurrency.stellar) { StellarCryptoReceiveAddressFactory() as CryptoReceiveAddressFactory }
 
         factory { StellarHistoricalTransactionService() as StellarHistoricalTransactionServiceAPI }
-
     }
 }

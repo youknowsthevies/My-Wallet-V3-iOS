@@ -46,10 +46,12 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
 
     // MARK: - Init
 
-    init(viewController: AccountPickerViewControllable,
-         action: AssetAction,
-         navigationModel: ScreenNavigationModel,
-         headerModel: AccountPickerHeaderType) {
+    init(
+        viewController: AccountPickerViewControllable,
+        action: AssetAction,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType
+    ) {
         self.action = action
         self.navigationModel = navigationModel
         self.headerModel = headerModel

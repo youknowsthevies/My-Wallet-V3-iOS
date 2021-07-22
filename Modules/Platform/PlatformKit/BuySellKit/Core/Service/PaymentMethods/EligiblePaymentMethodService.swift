@@ -26,11 +26,13 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
 
     // MARK: - Setup
 
-    init(eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve(),
-         reactiveWallet: ReactiveWalletAPI = resolve(),
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
+    init(
+        eligibleMethodsClient: PaymentEligibleMethodsClientAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.eligibleMethodsClient = eligibleMethodsClient
         self.tiersService = tiersService
         self.fiatCurrencyService = fiatCurrencyService
@@ -39,7 +41,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
         let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
         let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
         let fetch = fiatCurrencyService.fiatCurrencyObservable
-            .flatMap { [tiersService, eligibleMethodsClient] (fiatCurrency) ->  Observable<[PaymentMethod]> in
+            .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Observable<[PaymentMethod]> in
                 let fetchTiers = tiersService.fetchTiers()
                 return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
                     tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
@@ -47,7 +49,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                         .asSingle()
                         .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
                 }
-                .flatMap { (tiersResult, sddEligility) -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
                     eligibleMethodsClient.eligiblePaymentMethods(
                         for: fiatCurrency.code,
                         currentTier: tiersResult.latestApprovedTier,
@@ -57,7 +59,7 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
                     )
                     .map { ($0, sddEligility.eligible) }
                 }
-                .map { (methods, sddEligible) -> [PaymentMethod] in
+                .map { methods, sddEligible -> [PaymentMethod] in
                     let paymentMethods: [PaymentMethod] = .init(
                         methods: methods,
                         currency: fiatCurrency,

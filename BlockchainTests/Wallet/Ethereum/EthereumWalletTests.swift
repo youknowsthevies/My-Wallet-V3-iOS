@@ -108,7 +108,7 @@ class EthereumWalletTests: XCTestCase {
             accountAddress: "0xE408d13921DbcD1CBcb69840e4DA465Ba07B7e5e",
             name: "My ETH Wallet"
         )
-        let ethereumAccounts: [[String : Any]] = [
+        let ethereumAccounts: [[String: Any]] = [
             [
                 "addr": expectedAccount.accountAddress,
                 "label": expectedAccount.name

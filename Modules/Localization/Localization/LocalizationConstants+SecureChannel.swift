@@ -5,7 +5,7 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum SecureChannel { }
+    public enum SecureChannel {}
 }
 
 extension LocalizationConstants.SecureChannel {
@@ -19,6 +19,7 @@ extension LocalizationConstants.SecureChannel {
             comment: "Secure Channel - QR Code Scanner - subtitle"
         )
     }
+
     public enum ConfirmationSheet {
         public enum Authorized {
             public static let title = NSLocalizedString(
@@ -30,6 +31,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Confirmation Sheet - Authorized - subtitle"
             )
         }
+
         public enum New {
             public static let title = NSLocalizedString(
                 "New Device Detected",
@@ -40,6 +42,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Confirmation Sheet - New Device - subtitle"
             )
         }
+
         public enum Fields {
             public static let location = NSLocalizedString(
                 "Location",
@@ -66,6 +69,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Confirmation Sheet - Field - Last seen - Never"
             )
         }
+
         public enum CTA {
             public static let deny = NSLocalizedString(
                 "Deny",
@@ -76,6 +80,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Confirmation Sheet - CTA"
             )
         }
+
         public enum Text {
             public static let warning = NSLocalizedString(
                 "If this was you, approve the device below. If you do not recognize this device, deny & block the device now.",
@@ -83,6 +88,7 @@ extension LocalizationConstants.SecureChannel {
             )
         }
     }
+
     public enum Notification {
         public enum Authorized {
             public static let title = NSLocalizedString(
@@ -94,6 +100,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Notification - Authorized - subtitle"
             )
         }
+
         public enum New {
             public static let title = NSLocalizedString(
                 "New Login Attempt",
@@ -105,6 +112,7 @@ extension LocalizationConstants.SecureChannel {
             )
         }
     }
+
     public enum ResultSheet {
         public enum Approved {
             public static let title = NSLocalizedString(
@@ -116,6 +124,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Result Sheet - Approved - subtitle"
             )
         }
+
         public enum Denied {
             public static let title = NSLocalizedString(
                 "Device Denied",
@@ -126,6 +135,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Result Sheet - Denied - subtitle"
             )
         }
+
         public enum Error {
             public static let title = NSLocalizedString(
                 "Error",
@@ -136,6 +146,7 @@ extension LocalizationConstants.SecureChannel {
                 comment: "Secure Channel - Result Sheet - Error - subtitle"
             )
         }
+
         public enum CTA {
             public static let ok = NSLocalizedString(
                 "OK",

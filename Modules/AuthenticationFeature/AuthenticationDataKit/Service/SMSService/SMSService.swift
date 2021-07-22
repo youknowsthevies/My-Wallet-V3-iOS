@@ -25,7 +25,7 @@ public final class SMSService: SMSServiceAPI {
     public func request() -> Completable {
         Single
             .zip(repository.guid, repository.sessionToken)
-            .map(weak: self) { (_, credentials) -> (guid: String, sessionToken: String) in
+            .map(weak: self) { _, credentials -> (guid: String, sessionToken: String) in
                 guard let guid = credentials.0 else {
                     throw MissingCredentialsError.guid
                 }

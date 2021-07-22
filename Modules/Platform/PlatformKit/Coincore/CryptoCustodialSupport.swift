@@ -17,37 +17,42 @@ public struct CryptoCustodialSupport {
             case brokerage = "Brokerage" // == CanBuy & CanSell & CanSwap
             case canBuySell = "CanBuySell" // == CanBuy & CanSell
         }
+
         public var canBuy: Bool {
             keys.contains(.canBuy)
                 || keys.contains(.canBuySell)
                 || keys.contains(.brokerage)
                 || keys.contains(.fullSupport)
         }
+
         public var canSell: Bool {
             keys.contains(.canSell)
                 || keys.contains(.canBuySell)
                 || keys.contains(.brokerage)
                 || keys.contains(.fullSupport)
         }
+
         public var canSwap: Bool {
             keys.contains(.canSwap)
                 || keys.contains(.brokerage)
                 || keys.contains(.fullSupport)
         }
+
         public var canSend: Bool {
             keys.contains(.canSend)
                 || keys.contains(.sendReceive)
                 || keys.contains(.fullSupport)
         }
+
         public var canReceive: Bool {
             keys.contains(.canReceive)
                 || keys.contains(.sendReceive)
                 || keys.contains(.fullSupport)
         }
+
         private let keys: [Keys]
         init(data: [String]) {
             keys = data.compactMap(Keys.init)
-
         }
     }
 

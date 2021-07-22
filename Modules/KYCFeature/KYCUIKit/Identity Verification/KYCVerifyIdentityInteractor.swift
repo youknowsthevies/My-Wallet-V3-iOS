@@ -34,8 +34,10 @@ class KYCVerifyIdentityInteractor {
 
     private var disposable: Disposable?
 
-    init(client: KYCClientAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        client: KYCClientAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.loadingViewPresenter = loadingViewPresenter
         self.client = client
     }
@@ -53,7 +55,7 @@ class KYCVerifyIdentityInteractor {
 
         return client
             .supportedDocuments(for: countryCode)
-            .map { $0.documentTypes }
+            .map(\.documentTypes)
             .do(onSuccess: { [weak self] types in
                 self?.cache[countryCode] = types
             })

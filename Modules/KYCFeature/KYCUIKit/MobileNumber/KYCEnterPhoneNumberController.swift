@@ -51,7 +51,7 @@ final class KYCEnterPhoneNumberController: KYCBaseViewController, BottomButtonCo
     // MARK: - KYCRouterDelegate
 
     override func apply(model: KYCPageModel) {
-        guard case let .phone(user) = model else { return }
+        guard case .phone(let user) = model else { return }
         self.user = user
 
         guard let mobile = user.mobile else { return }

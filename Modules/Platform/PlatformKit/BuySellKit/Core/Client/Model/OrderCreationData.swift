@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public struct Order {
+public enum Order {
     public enum Action: String, Codable {
         case buy = "BUY"
         case sell = "SELL"
     }
 }
 
-struct OrderPayload {
+enum OrderPayload {
 
     public enum CreateActionType: String, Encodable {
         case confirm
@@ -26,6 +26,7 @@ struct OrderPayload {
             struct EveryPay: Encodable {
                 let customerUrl: String
             }
+
             let everypay: EveryPay?
         }
 
@@ -62,12 +63,14 @@ struct OrderPayload {
         let paymentType: PaymentMethodPayloadType?
         let paymentMethodId: String?
 
-        init(action: Order.Action,
-             fiatValue: FiatValue,
-             fiatCurrency: FiatCurrency,
-             cryptoValue: CryptoValue,
-             paymentType: PaymentMethod.MethodType? = nil,
-             paymentMethodId: String? = nil) {
+        init(
+            action: Order.Action,
+            fiatValue: FiatValue,
+            fiatCurrency: FiatCurrency,
+            cryptoValue: CryptoValue,
+            paymentType: PaymentMethod.MethodType? = nil,
+            paymentMethodId: String? = nil
+        ) {
             self.action = action
             self.paymentMethodId = paymentMethodId
             self.paymentType = paymentType?.rawType
@@ -95,6 +98,7 @@ struct OrderPayload {
             case buy = "BUY"
             case sell = "SELL"
         }
+
         struct Attributes: Decodable {
             struct EveryPay: Decodable {
                 enum PaymentState: String, Decodable {

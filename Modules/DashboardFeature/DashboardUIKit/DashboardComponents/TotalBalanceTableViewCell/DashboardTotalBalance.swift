@@ -5,12 +5,12 @@ import PlatformKit
 import PlatformUIKit
 
 struct DashboardTotalBalance {
-    struct State {
+    enum State {
         typealias Interaction = LoadingState<Value.Interaction>
         typealias Presentation = LoadingState<Value.Presentation>
     }
 
-    struct Value {
+    enum Value {
 
         /// The interaction value of dashboard asset
         struct Interaction {

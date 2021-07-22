@@ -14,9 +14,11 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
     private let tiersService: KYCTiersServiceAPI
     private let currencyService: FiatCurrencyServiceAPI
 
-    init(limitsAPI: TradeLimitsAPI = resolve(),
-         currencyService: FiatCurrencyServiceAPI = resolve(),
-         tiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        limitsAPI: TradeLimitsAPI = resolve(),
+        currencyService: FiatCurrencyServiceAPI = resolve(),
+        tiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.limitsAPI = limitsAPI
         self.currencyService = currencyService
         self.tiersService = tiersService
@@ -32,7 +34,7 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
 
                 return Single.zip(tradeLimits, self.tiersService.tiers, .just(fiatCurrency))
             }
-            .map { (tradeLimits, tiers, fiatCurrency) -> (FiatValue, KYC.UserTiers) in
+            .map { tradeLimits, tiers, fiatCurrency -> (FiatValue, KYC.UserTiers) in
                 guard tiers.tierAccountStatus(for: .tier1).isApproved else {
                     return (FiatValue.zero(currency: fiatCurrency), tiers)
                 }
@@ -42,7 +44,7 @@ final class KYCTiersPageModelFactory: KYCTiersPageModelFactoryAPI {
                 )
                 return (maxTradableToday, tiers)
             }
-            .map { (maxTradableToday, tiers) -> KYCTiersPageModel in
+            .map { maxTradableToday, tiers -> KYCTiersPageModel in
                 KYCTiersPageModel.make(tiers: tiers, maxTradableToday: maxTradableToday, suppressCTA: suppressCTA)
             }
     }

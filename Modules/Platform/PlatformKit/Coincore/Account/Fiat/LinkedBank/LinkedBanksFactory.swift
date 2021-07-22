@@ -16,8 +16,10 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
     private let linkedBankService: LinkedBanksServiceAPI
     private let paymentMethodService: PaymentMethodTypesServiceAPI
 
-    init(linkedBankService: LinkedBanksServiceAPI = resolve(),
-         paymentMethodService: PaymentMethodTypesServiceAPI = resolve()) {
+    init(
+        linkedBankService: LinkedBanksServiceAPI = resolve(),
+        paymentMethodService: PaymentMethodTypesServiceAPI = resolve()
+    ) {
         self.linkedBankService = linkedBankService
         self.paymentMethodService = paymentMethodService
     }
@@ -26,7 +28,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
         linkedBankService
             .linkedBanks
             .map { linkedBankData in
-                linkedBankData.filter { $0.isActive }
+                linkedBankData.filter(\.isActive)
             }
             .map { linkedBankData in
                 linkedBankData.map { data in
@@ -79,7 +81,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
                 guard let item = paymentMetodTypes.first else {
                     fatalError("Expected a suggested payment method type")
                 }
-                guard case let .suggested(suggested) = item else {
+                guard case .suggested(let suggested) = item else {
                     fatalError("Expected a sugggested payment method type")
                 }
                 return .init(

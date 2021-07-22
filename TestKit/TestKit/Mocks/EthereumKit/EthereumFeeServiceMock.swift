@@ -9,6 +9,7 @@ class EthereumFeeServiceMock: EthereumFeeServiceAPI {
     func fees(cryptoCurrency: CryptoCurrency) -> Single<EthereumTransactionFee> {
         .just(underlyingFees)
     }
+
     init(underlyingFees: EthereumTransactionFee) {
         self.underlyingFees = underlyingFees
     }

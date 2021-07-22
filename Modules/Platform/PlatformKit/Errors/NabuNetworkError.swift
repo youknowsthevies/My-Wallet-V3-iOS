@@ -89,9 +89,9 @@ extension NabuNetworkError: CustomStringConvertible {
 
     public var description: String {
         switch self {
-        case let .nabuError(error):
+        case .nabuError(let error):
             return String(describing: error)
-        case let .communicatorError(error):
+        case .communicatorError(let error):
             return String(describing: error)
         }
     }
@@ -115,8 +115,8 @@ extension NabuNetworkError: FromNetworkErrorConvertible {
 /// Describes an error returned by Nabu
 public struct NabuError: Error, Codable, Equatable, Identifiable {
 
-    private enum CodingKeys : String, CodingKey {
-        case id = "id"
+    private enum CodingKeys: String, CodingKey {
+        case id
         case code
         case type
         case serverDescription = "description"
@@ -131,24 +131,28 @@ public struct NabuError: Error, Codable, Equatable, Identifiable {
         description
     }
 
-    public init(id: String?,
-                code: NabuErrorCode,
-                type: NabuErrorType,
-                description: String?) {
+    public init(
+        id: String?,
+        code: NabuErrorCode,
+        type: NabuErrorType,
+        description: String?
+    ) {
         self.id = id ?? Self.missingId()
         self.code = code
         self.type = type
-        self.serverDescription = description
+        serverDescription = description
     }
 
-    public init(id: String,
-                code: NabuErrorCode,
-                type: NabuErrorType,
-                description: String?) {
+    public init(
+        id: String,
+        code: NabuErrorCode,
+        type: NabuErrorType,
+        description: String?
+    ) {
         self.id = id
         self.code = code
         self.type = type
-        self.serverDescription = description
+        serverDescription = description
     }
 
     private static func missingId() -> String {
@@ -349,5 +353,4 @@ public enum NabuErrorType: String, Codable, Equatable {
     case invalidRole = "INVALID_ROLE"
     case alreadyLoggedIn = "ALREADY_LOGGED_IN"
     case invalidStatus = "INVALID_STATUS"
-
 }

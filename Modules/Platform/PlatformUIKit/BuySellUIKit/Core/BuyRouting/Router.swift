@@ -85,7 +85,7 @@ public final class Router: RouterAPI {
         self.supportedPairsInteractor = supportedPairsInteractor
         self.settingsService = settingsService
         self.alertViewPresenter = alertViewPresenter
-        self.stateService = builder.stateService
+        stateService = builder.stateService
         self.tiersService = tiersService
         self.kycRouter = kycRouter
         self.newKYCRouter = newKYCRouter
@@ -189,10 +189,10 @@ public final class Router: RouterAPI {
         case .bankTransferDetails(let data):
             showBankTransferDetailScreen(with: data)
         case .fundsTransferDetails(
-                let currency,
-                isOriginPaymentMethods: let isOriginPaymentMethods,
-                let isOriginDeposit
-            ):
+            let currency,
+            isOriginPaymentMethods: let isOriginPaymentMethods,
+            let isOriginDeposit
+        ):
             guard let fiatCurrency = currency.fiatCurrency else { return }
             showFundsTransferDetailsScreen(
                 with: fiatCurrency,
@@ -287,7 +287,7 @@ public final class Router: RouterAPI {
 
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap(weak: self, { (self, currency) -> Single<FiatCurrency> in
+            .flatMap(weak: self) { (self, currency) -> Single<FiatCurrency> in
                 // TICKET: IOS-3144
                 self.settingsService
                     .update(
@@ -295,7 +295,7 @@ public final class Router: RouterAPI {
                         context: .simpleBuy
                     )
                     .andThen(Single.just(currency))
-            })
+            }
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] currency in
@@ -338,7 +338,7 @@ public final class Router: RouterAPI {
 
         interactor.selectedIdOnDismissal
             .map { FiatCurrency(code: $0)! }
-            .flatMap(weak: self, { (self, currency) -> Single<(FiatCurrency, Bool)> in
+            .flatMap(weak: self) { (self, currency) -> Single<(FiatCurrency, Bool)> in
 
                 let isCurrencySupported = self.supportedPairsInteractor
                     .fetch()
@@ -356,7 +356,7 @@ public final class Router: RouterAPI {
                         Single.just(currency),
                         isCurrencySupported
                     ))
-            })
+            }
             .observeOn(MainScheduler.instance)
             .subscribe(
                 onSuccess: { [weak self] value in
@@ -415,7 +415,7 @@ public final class Router: RouterAPI {
         let builder = ACHFlowRootBuilder(stateService: stateService)
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build(presentingController: navigationRouter.navigationControllerAPI)
-        self.achFlowRouter = router
+        achFlowRouter = router
         let flowDimissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.achFlowRouter = nil
@@ -427,7 +427,7 @@ public final class Router: RouterAPI {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build()
-        self.linkBankFlowRouter = router
+        linkBankFlowRouter = router
         let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
@@ -438,7 +438,7 @@ public final class Router: RouterAPI {
             .skipWhile { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
                 guard let self = self else { return }
-                guard case let .closeFlow(isInteractive) = effect, !isInteractive else {
+                guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
                     self.stateService.previousRelay.accept(())
                     flowDismissed()
                     return

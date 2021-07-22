@@ -8,7 +8,7 @@ extension Accessibility {
 
 // MARK: - Public
 
-public extension Accessibility.Identifier {
+extension Accessibility.Identifier {
 
     public enum ContentLabelView {
         public static let title = "ContentLabelView.title"
@@ -16,7 +16,7 @@ public extension Accessibility.Identifier {
     }
 
     /// General accessibility
-    struct General {
+    public enum General {
 
         /// Main CTA button
         public static let mainCTAButton = "mainCTAButton"
@@ -40,7 +40,7 @@ public extension Accessibility.Identifier {
 // MARK: - Internal
 
 extension Accessibility.Identifier {
-    struct NavigationBar {
+    enum NavigationBar {
         static let prefix = "NavigationBar."
         static let backButton = "\(prefix)backButton"
         static let drawerButton = "\(prefix)drawerButton"
@@ -50,7 +50,7 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier {
-    struct IntroductionSheet {
+    enum IntroductionSheet {
         static let prefixFormat = "IntroductionSheet."
         static let titleLabel = "\(prefixFormat)titleLabel"
         static let subtitleLabel = "\(prefixFormat)subtitleLabel"
@@ -59,7 +59,7 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier {
-    struct LoadingView {
+    enum LoadingView {
         static let prefixFormat = "LoadingView."
         static let statusLabel = "\(prefixFormat)statusLabel"
         static let loadingView = "\(prefixFormat)loadingView"
@@ -67,7 +67,7 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier {
-    struct ReceiveCrypto {
+    enum ReceiveCrypto {
         private static let prefix = "ReceiveScreen."
         static let instructionLabel = "\(prefix)instructionLabel"
         static let addressLabel = "\(prefix)addressLabel"
@@ -77,15 +77,16 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier {
-    struct TextFieldView {
+    enum TextFieldView {
         private static let prefix = "TextFieldView."
-        struct Card {
+        enum Card {
             private static let prefix = "\(TextFieldView.prefix)Card."
             static let name = "\(prefix)cardholderName"
             static let expirationDate = "\(prefix)expirationDate"
             static let number = "\(prefix)number"
             static let cvv = "\(prefix)cvv"
         }
+
         static let email = "\(prefix)statusLabel"
         static let newPassword = "\(prefix)newPassword"
         static let confirmNewPassword = "\(prefix)confirmNewPassword"
@@ -108,20 +109,20 @@ extension Accessibility.Identifier {
 }
 
 extension Accessibility.Identifier {
-    struct SparklineView {
+    enum SparklineView {
         static let prefix = "SparklineView"
     }
 }
 
-public extension Accessibility.Identifier {
-    struct AnnouncementCard {
+extension Accessibility.Identifier {
+    public enum AnnouncementCard {
         static let prefix = "AnnouncementCard"
         public static let badge = "\(prefix).badge"
     }
 }
 
 extension Accessibility.Identifier {
-    struct MnemonicTextView {
+    enum MnemonicTextView {
         static let prefix = "MnemonicTextView."
         static let recoveryPhrase = "\(prefix)recoveryPhrase"
     }

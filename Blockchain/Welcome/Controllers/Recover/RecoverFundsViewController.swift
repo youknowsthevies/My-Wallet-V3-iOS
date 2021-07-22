@@ -28,15 +28,18 @@ final class RecoverFundsViewController: BaseScreenViewController {
         super.init(nibName: RecoverFundsViewController.objectName, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        set(barStyle: presenter.navBarStyle,
+        set(
+            barStyle: presenter.navBarStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleStyle
         descriptionLabel.textColor = .descriptionText
         keyboardInteractionController = KeyboardInteractionController(in: self)

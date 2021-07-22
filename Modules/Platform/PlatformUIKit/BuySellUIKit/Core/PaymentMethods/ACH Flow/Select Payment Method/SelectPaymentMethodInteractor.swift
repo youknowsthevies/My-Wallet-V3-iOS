@@ -47,10 +47,12 @@ final class SelectPaymentMethodInteractor: PresentableInteractor<SelectPaymentMe
 
     private let selectionRelay = PublishRelay<PaymentMethodType>()
 
-    init(presenter: SelectPaymentMethodPresentable,
-         paymentMethodService: SelectPaymentMethodService,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         eventRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        presenter: SelectPaymentMethodPresentable,
+        paymentMethodService: SelectPaymentMethodService,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.paymentMethodService = paymentMethodService
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder

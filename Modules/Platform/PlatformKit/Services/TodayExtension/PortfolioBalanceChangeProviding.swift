@@ -40,7 +40,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     }()
 
     private var date24hAgo: Date {
-        Date().addingTimeInterval(-24*60*60)
+        Date().addingTimeInterval(-24 * 60 * 60)
     }
 
     private func fetch(accountGroup: AccountGroup, fiatCurrency: FiatCurrency) -> Single<PortfolioBalanceChange> {
@@ -68,7 +68,6 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
                 change: change
             )
         }
-
     }
 
     private let coincore: CoincoreAPI
@@ -85,5 +84,4 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
         self.coincore = coincore
         self.fiatCurrencyService = fiatCurrencyService
     }
-
 }

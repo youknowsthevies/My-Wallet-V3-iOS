@@ -43,7 +43,7 @@ public struct MoneyBalancePairsCalculationStates {
     public var fiatBaseStates: MoneyBalancePairsCalculationStates {
         MoneyBalancePairsCalculationStates(
             identifier: identifier,
-            statePerCurrency: statePerCurrency.filter { $0.key.isFiatCurrency }
+            statePerCurrency: statePerCurrency.filter(\.key.isFiatCurrency)
         )
     }
 
@@ -70,8 +70,10 @@ public struct MoneyBalancePairsCalculationStates {
 
     // MARK: - Setup
 
-    public init(identifier: String,
-                statePerCurrency: [CurrencyType: MoneyBalancePairsCalculationState]) {
+    public init(
+        identifier: String,
+        statePerCurrency: [CurrencyType: MoneyBalancePairsCalculationState]
+    ) {
         self.identifier = identifier
         self.statePerCurrency = statePerCurrency
     }
@@ -82,7 +84,6 @@ public struct MoneyBalancePairsCalculationStates {
             statePerCurrency: statePerCurrency.filter { currencyTypes.contains($0.key) }
         )
     }
-
 }
 
 extension MoneyBalancePairsCalculationStates: CustomDebugStringConvertible {

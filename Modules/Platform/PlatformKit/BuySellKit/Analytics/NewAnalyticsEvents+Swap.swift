@@ -10,42 +10,56 @@ extension AnalyticsEvents.New {
 
         case swapClicked(origin: Origin)
         case swapViewed
-        case swapAmountEntered(inputAmount: Double,
-                               inputCurrency: String,
-                               inputType: AccountType,
-                               outputAmount: Double,
-                               outputCurrency: String,
-                               outputType: AccountType)
-        case swapAmountMinClicked(amountCurrency: String?,
-                                  inputCurrency: String,
-                                  inputType: AccountType,
-                                  outputCurrency: String,
-                                  outputType: AccountType)
-        case swapAmountMaxClicked(amountCurrency: String?,
-                                  inputCurrency: String,
-                                  inputType: AccountType,
-                                  outputCurrency: String,
-                                  outputType: AccountType)
-        case swapFromSelected(inputCurrency: String,
-                              inputType: AccountType)
-        case swapReceiveSelected(outputCurrency: String,
-                                 outputType: AccountType)
-        case swapAccountsSelected(inputCurrency: String,
-                                  inputType: AccountType,
-                                  outputCurrency: String,
-                                  outputType: AccountType,
-                                  wasSuggested: Bool)
-        case swapRequested(exchangeRate: Double,
-                           inputAmount: Double,
-                           inputCurrency: String,
-                           inputType: AccountType,
-                           networkFeeInputAmount: Double,
-                           networkFeeInputCurrency: String,
-                           networkFeeOutputAmount: Double,
-                           networkFeeOutputCurrency: String,
-                           outputAmount: Double,
-                           outputCurrency: String,
-                           outputType: AccountType)
+        case swapAmountEntered(
+            inputAmount: Double,
+            inputCurrency: String,
+            inputType: AccountType,
+            outputAmount: Double,
+            outputCurrency: String,
+            outputType: AccountType
+        )
+        case swapAmountMinClicked(
+            amountCurrency: String?,
+            inputCurrency: String,
+            inputType: AccountType,
+            outputCurrency: String,
+            outputType: AccountType
+        )
+        case swapAmountMaxClicked(
+            amountCurrency: String?,
+            inputCurrency: String,
+            inputType: AccountType,
+            outputCurrency: String,
+            outputType: AccountType
+        )
+        case swapFromSelected(
+            inputCurrency: String,
+            inputType: AccountType
+        )
+        case swapReceiveSelected(
+            outputCurrency: String,
+            outputType: AccountType
+        )
+        case swapAccountsSelected(
+            inputCurrency: String,
+            inputType: AccountType,
+            outputCurrency: String,
+            outputType: AccountType,
+            wasSuggested: Bool
+        )
+        case swapRequested(
+            exchangeRate: Double,
+            inputAmount: Double,
+            inputCurrency: String,
+            inputType: AccountType,
+            networkFeeInputAmount: Double,
+            networkFeeInputCurrency: String,
+            networkFeeOutputAmount: Double,
+            networkFeeOutputCurrency: String,
+            outputAmount: Double,
+            outputCurrency: String,
+            outputType: AccountType
+        )
     }
 
     public enum Origin: String, StringRawRepresentable {

@@ -23,8 +23,10 @@ class BiometryLabelContentPresenter: LabelContentPresenting {
     let interactor: LabelContentInteracting
     private let disposeBag = DisposeBag()
 
-    init(provider: BiometryProviding,
-         descriptors: LabelContent.Value.Presentation.Content.Descriptors) {
+    init(
+        provider: BiometryProviding,
+        descriptors: LabelContent.Value.Presentation.Content.Descriptors
+    ) {
         interactor = BiometryLabelContentInteractor(biometryProviding: provider)
         interactor.state
             .map { .init(with: $0, descriptors: descriptors) }

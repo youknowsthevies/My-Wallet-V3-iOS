@@ -20,7 +20,7 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
                     let cells: [SettingsCellViewModel] = [SettingsCellViewModel(cellType: .cards(.skeleton(0)))]
                     return .loaded(next: .some(.init(sectionType: .cards, items: cells)))
                 case .value(let cards):
-                    let presenters = Array.init(cards)
+                    let presenters = Array(cards)
                     let addCardCellViewModel = SettingsCellViewModel(
                         cellType: .cards(.add(self.addPaymentMethodCellPresenter))
                     )
@@ -48,15 +48,15 @@ final class CardsSectionPresenter: SettingsSectionPresenting {
     }
 }
 
-private extension Array where Element == LinkedCardCellPresenter {
+extension Array where Element == LinkedCardCellPresenter {
 
-    var viewModels: [SettingsCellViewModel] {
+    fileprivate var viewModels: [SettingsCellViewModel] {
         map {
             SettingsCellViewModel(cellType: .cards(.linked($0)))
         }
     }
 
-    init(_ cards: [CardData]) {
+    fileprivate init(_ cards: [CardData]) {
         self = cards.map { LinkedCardCellPresenter(acceptsUserInteraction: false, cardData: $0) }
     }
 }

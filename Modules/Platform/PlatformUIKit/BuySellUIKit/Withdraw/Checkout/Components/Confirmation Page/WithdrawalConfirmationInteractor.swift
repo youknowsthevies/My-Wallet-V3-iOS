@@ -41,7 +41,7 @@ final class WithdrawalConfirmationInteractor: Interactor {
 
     var errorDescription: String? {
         switch type {
-        case let .failure(_, error):
+        case .failure(_, let error):
             return String(describing: error)
         default:
             return nil

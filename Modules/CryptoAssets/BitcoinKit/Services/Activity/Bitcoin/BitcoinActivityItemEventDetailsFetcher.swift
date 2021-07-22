@@ -11,8 +11,10 @@ final class BitcoinActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
     private let bridge: BitcoinWalletBridgeAPI
     private let transactionsService: BitcoinHistoricalTransactionServiceAPI
 
-    init(transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
-         bridge: BitcoinWalletBridgeAPI = resolve()) {
+    init(
+        transactionsService: BitcoinHistoricalTransactionServiceAPI = resolve(),
+        bridge: BitcoinWalletBridgeAPI = resolve()
+    ) {
         self.transactionsService = transactionsService
         self.bridge = bridge
     }

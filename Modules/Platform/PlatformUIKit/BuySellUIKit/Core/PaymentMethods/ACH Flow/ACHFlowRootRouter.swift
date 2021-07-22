@@ -19,8 +19,9 @@ protocol ACHFlowRootViewControllable: ViewControllable {
 }
 
 final class ACHFlowRootRouter: RIBs.Router<ACHFlowRootInteractable>,
-                               ACHFlowRootRouting,
-                               ACHFlowStarter {
+    ACHFlowRootRouting,
+    ACHFlowStarter
+{
 
     private let navigationController: RootNavigatable
     private let navigation: NavigationControllerAPI?
@@ -29,14 +30,16 @@ final class ACHFlowRootRouter: RIBs.Router<ACHFlowRootInteractable>,
 
     private var dismissFlow: (() -> Void)?
 
-    init(interactor: ACHFlowRootInteractable,
-         navigation: NavigationControllerAPI?,
-         selectPaymentMethodBuilder: SelectPaymentMethodBuildable,
-         addNewPaymentMethodBuilder: AddNewPaymentMethodBuildable) {
+    init(
+        interactor: ACHFlowRootInteractable,
+        navigation: NavigationControllerAPI?,
+        selectPaymentMethodBuilder: SelectPaymentMethodBuildable,
+        addNewPaymentMethodBuilder: AddNewPaymentMethodBuildable
+    ) {
         self.navigation = navigation
         self.selectPaymentMethodBuilder = selectPaymentMethodBuilder
         self.addNewPaymentMethodBuilder = addNewPaymentMethodBuilder
-        self.navigationController = RootNavigation()
+        navigationController = RootNavigation()
         super.init(interactor: interactor)
         interactor.router = self
     }

@@ -26,13 +26,13 @@ public struct PrimaryButtonStyle: ButtonStyle {
 
 /**
  A simple wrapper to `LoadingButton` that applies`PrimaryButtonStyle` to it.
- 
+
  This is equivalent to writing:
  ```
  LoadingButton(...)
     .buttonStyle(PrimaryButtonStyle())
  ```
-*/
+ */
 public struct PrimaryButton: View {
 
     let title: String
@@ -42,7 +42,7 @@ public struct PrimaryButton: View {
 
     public init(title: String, action: @escaping () -> Void, loading: Binding<Bool> = .constant(false)) {
         self.title = title
-        self._loading = loading
+        _loading = loading
         self.action = action
     }
 

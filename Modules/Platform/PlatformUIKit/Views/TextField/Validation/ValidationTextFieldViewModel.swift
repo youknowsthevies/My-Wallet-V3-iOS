@@ -23,12 +23,14 @@ public final class ValidationTextFieldViewModel: TextFieldViewModel {
 
     // MARK: - Setup
 
-    public init(with type: TextFieldType,
-                validator: TextValidating,
-                accessibilitySuffix: String? = nil,
-                formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
-                textMatcher: CollectionTextMatchValidator? = nil,
-                messageRecorder: MessageRecording) {
+    public init(
+        with type: TextFieldType,
+        validator: TextValidating,
+        accessibilitySuffix: String? = nil,
+        formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
+        textMatcher: CollectionTextMatchValidator? = nil,
+        messageRecorder: MessageRecording
+    ) {
         super.init(
             with: type,
             accessibilitySuffix: accessibilitySuffix,

@@ -26,8 +26,10 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 
     init(using presenter: DashboardDetailsScreenPresenter) {
         self.presenter = presenter
-        super.init(nibName: DashboardDetailsViewController.objectName,
-                   bundle: DashboardDetailsViewController.bundle)
+        super.init(
+            nibName: DashboardDetailsViewController.objectName,
+            bundle: DashboardDetailsViewController.bundle
+        )
     }
 
     @available(*, unavailable)
@@ -68,7 +70,7 @@ final class DashboardDetailsViewController: BaseScreenViewController {
             .disposed(by: disposeBag)
 
         tableView.rx.itemSelected
-            .map { $0.row }
+            .map(\.row)
             .map(weak: self) { (self, row) in
                 self.presenter.cellArrangement[row]
             }
@@ -84,9 +86,11 @@ final class DashboardDetailsViewController: BaseScreenViewController {
     }
 
     private func setupNavigationBar() {
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleView
     }
 
@@ -103,13 +107,17 @@ final class DashboardDetailsViewController: BaseScreenViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         presenter.cellCount
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {
@@ -132,15 +140,19 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         return cell
     }
 
-    private func multiActionCell(for indexPath: IndexPath,
-                                 presenter: MultiActionViewPresenting) -> MultiActionTableViewCell {
+    private func multiActionCell(
+        for indexPath: IndexPath,
+        presenter: MultiActionViewPresenting
+    ) -> MultiActionTableViewCell {
         let cell = tableView.dequeue(MultiActionTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func currentBalanceCell(for indexPath: IndexPath,
-                                    account: BlockchainAccount) -> UITableViewCell {
+    private func currentBalanceCell(
+        for indexPath: IndexPath,
+        account: BlockchainAccount
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(CurrentBalanceTableViewCell.self, for: indexPath)
         switch account {
         case is NonCustodialAccount:
@@ -155,8 +167,10 @@ extension DashboardDetailsViewController: UITableViewDelegate, UITableViewDataSo
         return cell
     }
 
-    private func assetLineChartCell(for indexPath: IndexPath,
-                                    presenter: AssetLineChartTableViewCellPresenter) -> AssetLineChartTableViewCell {
+    private func assetLineChartCell(
+        for indexPath: IndexPath,
+        presenter: AssetLineChartTableViewCellPresenter
+    ) -> AssetLineChartTableViewCell {
         let cell = tableView.dequeue(AssetLineChartTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

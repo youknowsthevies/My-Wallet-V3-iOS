@@ -20,9 +20,11 @@ final class EmailAuthorizationPresenter {
 
     // MARK: - Setup
 
-    init(routerStateProvider: OnboardingRouterStateProviding = resolve(),
-         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-         alertPresenter: AlertViewPresenter = .shared) {
+    init(
+        routerStateProvider: OnboardingRouterStateProviding = resolve(),
+        emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
+        alertPresenter: AlertViewPresenter = .shared
+    ) {
         self.emailAuthorizationService = emailAuthorizationService
         self.alertPresenter = alertPresenter
         self.routerStateProvider = routerStateProvider

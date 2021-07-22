@@ -12,13 +12,13 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
         var errorDescription: String? {
             switch self {
-            case let .loadingFailed(asset, label, action, error):
+            case .loadingFailed(let asset, let label, let action, let error):
                 return "Failed to load: 'CryptoTradingAccount' asset '\(asset)' label '\(label)' action '\(action)' error '\(error)' ."
             }
         }
     }
 
-    private(set) public lazy var identifier: AnyHashable = "CryptoTradingAccount." + asset.code
+    public private(set) lazy var identifier: AnyHashable = "CryptoTradingAccount." + asset.code
     public let label: String
     public let asset: CryptoCurrency
     public let isDefault: Bool = false
@@ -86,7 +86,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
             guard let self = self else {
                 return .error(PlatformKitError.default)
             }
-            guard case let .hashed(hash, amount) = result else {
+            guard case .hashed(let hash, let amount) = result else {
                 return .error(PlatformKitError.default)
             }
             guard amount.isCrypto else {
@@ -122,17 +122,16 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 ordersActivity.activity(cryptoCurrency: asset).catchErrorJustReturn([]),
                 swapActivity.fetchActivity(cryptoCurrency: asset, directions: [.internal]).catchErrorJustReturn([])
             )
-            .map { (buySellActivity, ordersActivity, swapActivity) -> [ActivityItemEvent] in
+            .map { buySellActivity, ordersActivity, swapActivity -> [ActivityItemEvent] in
                 buySellActivity.map(ActivityItemEvent.buySell)
                     + ordersActivity.map(ActivityItemEvent.crypto)
                     + swapActivity.map(ActivityItemEvent.swap)
             }
-
     }
 
     public var actionsLegacyAsset: Single<AvailableActions> {
         Single.zip(balance, eligibilityService.isEligible)
-            .map { (balance, isEligible) -> AvailableActions in
+            .map { balance, isEligible -> AvailableActions in
                 var base: AvailableActions = [.viewActivity, .buy]
                 if balance.isPositive {
                     base.insert(.send)
@@ -148,7 +147,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
 
     private var actionsNewCustodialAsset: Single<AvailableActions> {
         Single.zip(balance, eligibilityService.isEligible, custodialSupport)
-            .map { [asset] (balance, isEligible, custodialSupport) -> AvailableActions in
+            .map { [asset] balance, isEligible, custodialSupport -> AvailableActions in
                 let canBuy = custodialSupport.data[asset.code]?.canBuy ?? false
                 let canSend = custodialSupport.data[asset.code]?.canSend ?? false
                 let canSell = custodialSupport.data[asset.code]?.canSell ?? false
@@ -207,7 +206,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         kycTiersService: KYCTiersServiceAPI = resolve()
     ) {
         self.asset = asset
-        self.label = asset.defaultTradingWalletName
+        label = asset.defaultTradingWalletName
         self.ordersActivity = ordersActivity
         self.swapActivity = swapActivity
         self.buySellActivity = buySellActivity
@@ -342,7 +341,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -353,7 +352,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

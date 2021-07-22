@@ -16,7 +16,7 @@ public enum AnnouncementType: String, Codable {
     case resubmitDocuments = "kyc_resubmit"
     case newSwap = "swap_v2"
     case cloudBackup = "cloud_backup"
-    case bitpay = "bitpay"
+    case bitpay
     case kycAirdrop = "kyc_airdrop"
     case fiatFundsKYC = "fiat_funds_kyc"
     case fiatFundsNoKYC = "fiat_funds_no_kyc"

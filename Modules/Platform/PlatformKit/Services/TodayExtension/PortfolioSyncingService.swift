@@ -38,11 +38,11 @@ final class PortfolioSyncingService: BalanceSharingSettingsServiceAPI {
         coincore: CoincoreAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        self.portfolioProviding = PortfolioProvider(
+        portfolioProviding = PortfolioProvider(
             coincore: coincore,
             fiatCurrencyService: fiatCurrencyService
         )
-        self.container = sharedContainerUserDefaults
+        container = sharedContainerUserDefaults
     }
 
     // MARK: - BalanceSharingSettingsServiceAPI

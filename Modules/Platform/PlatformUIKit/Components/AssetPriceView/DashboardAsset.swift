@@ -3,14 +3,14 @@
 import Localization
 import PlatformKit
 
-public struct DashboardAsset {
+public enum DashboardAsset {
 
     // MARK: - State Aliases
 
-    public struct State {
+    public enum State {
 
         /// The state of the `AssetPrice` interactor and presenter
-        public struct AssetPrice {
+        public enum AssetPrice {
             public typealias Interaction = LoadingState<Value.Interaction.AssetPrice>
             public typealias Presentation = LoadingState<Value.Presentation.AssetPrice>
         }
@@ -18,12 +18,12 @@ public struct DashboardAsset {
 
     // MARK: - Value Namespace
 
-    public struct Value {
+    public enum Value {
 
         // MARK: - Interaction
 
         /// The interaction value of dashboard asset
-        public struct Interaction {
+        public enum Interaction {
 
             public struct AssetPrice {
 
@@ -54,7 +54,7 @@ public struct DashboardAsset {
                         case .years(let number):
                             switch number > 1 {
                             case true:
-                                return  LocalizationConstants.TimeUnit.Plural.allTime
+                                return LocalizationConstants.TimeUnit.Plural.allTime
                             case false:
                                 return "\(number) \(LocalizationConstants.TimeUnit.Singular.year)"
                             }
@@ -83,12 +83,11 @@ public struct DashboardAsset {
                     self.fiatChange = fiatChange
                 }
             }
-
         }
 
         // MARK: - Presentation
 
-        public struct Presentation {
+        public enum Presentation {
 
             /// The presentation model for `AssetPriceView`
             public struct AssetPrice: CustomDebugStringConvertible {
@@ -225,9 +224,11 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
     }
 
     /// Returns a descriptor for dashboard asset price
-    public static func assetPrice(accessibilityIdSuffix: String,
-                                  priceFontSize: CGFloat = 16.0,
-                                  changeFontSize: CGFloat = 14.0) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
+    public static func assetPrice(
+        accessibilityIdSuffix: String,
+        priceFontSize: CGFloat = 16.0,
+        changeFontSize: CGFloat = 14.0
+    ) -> DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
         .init(
             contentOptions: [.percentage],
             priceFont: .main(.semibold, priceFontSize),
@@ -247,11 +248,11 @@ extension DashboardAsset.Value.Presentation.AssetPrice.Descriptors {
     }
 }
 
-public extension PriceWindow {
+extension PriceWindow {
 
-    typealias Time = DashboardAsset.Value.Interaction.AssetPrice.Time
+    public typealias Time = DashboardAsset.Value.Interaction.AssetPrice.Time
 
-    func time(for currency: CryptoCurrency) -> Time {
+    public func time(for currency: CryptoCurrency) -> Time {
         switch self {
         case .all:
             let years = max(1.0, currency.maxStartDate / 31536000)

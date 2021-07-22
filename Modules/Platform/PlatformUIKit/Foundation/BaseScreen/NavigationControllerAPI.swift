@@ -16,7 +16,8 @@ public protocol NavigationControllerAPI: ViewControllerAPI {
 
 extension UINavigationController: NavigationControllerAPI {
     public func popToRootViewControllerAnimated(animated: Bool) {
-        self.popToRootViewController(animated: true)
+        popToRootViewController(animated: true)
     }
+
     public var viewControllersCount: Int { viewControllers.count }
 }

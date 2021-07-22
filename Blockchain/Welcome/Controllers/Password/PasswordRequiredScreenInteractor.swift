@@ -20,7 +20,7 @@ final class PasswordRequiredScreenInteractor {
     let passwordRelay = BehaviorRelay<String>(value: "")
 
     private let walletPayloadService: WalletPayloadServiceAPI
-    private let walletFetcher: ((_ password: String) -> Void)
+    private let walletFetcher: (_ password: String) -> Void
     private let appSettings: BlockchainSettings.App
     private let walletManager: WalletManager
     private let credentialsStore: CredentialsStoreAPI
@@ -33,11 +33,13 @@ final class PasswordRequiredScreenInteractor {
 
     // MARK: - Setup
 
-    init(walletPayloadService: WalletPayloadServiceAPI = resolve(),
-         walletManager: WalletManager = resolve(),
-         appSettings: BlockchainSettings.App = resolve(),
-         credentialsStore: CredentialsStoreAPI = resolve(),
-         walletFetcher: @escaping ((_ password: String) -> Void)) {
+    init(
+        walletPayloadService: WalletPayloadServiceAPI = resolve(),
+        walletManager: WalletManager = resolve(),
+        appSettings: BlockchainSettings.App = resolve(),
+        credentialsStore: CredentialsStoreAPI = resolve(),
+        walletFetcher: @escaping ((_ password: String) -> Void)
+    ) {
         self.walletPayloadService = walletPayloadService
         self.walletManager = walletManager
         self.walletFetcher = walletFetcher

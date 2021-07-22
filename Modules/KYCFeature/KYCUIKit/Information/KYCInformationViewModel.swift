@@ -106,7 +106,7 @@ extension KYCInformationViewModel {
 }
 
 extension KYCInformationViewConfig {
-    static let defaultConfig: KYCInformationViewConfig = KYCInformationViewConfig(
+    static let defaultConfig = KYCInformationViewConfig(
         titleColor: UIColor.gray5,
         isPrimaryButtonEnabled: false,
         imageTintColor: nil

@@ -13,6 +13,7 @@ public enum VerifyDeviceAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
+
     case credentials(CredentialsAction)
     case didDisappear
     case didExtractWalletInfo(WalletInfo)
@@ -42,9 +43,11 @@ struct VerifyDeviceEnvironment {
     let deviceVerificationService: DeviceVerificationServiceAPI
     let errorRecorder: ErrorRecording
 
-    init(mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-         deviceVerificationService: DeviceVerificationServiceAPI,
-         errorRecorder: ErrorRecording = resolve()) {
+    init(
+        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        deviceVerificationService: DeviceVerificationServiceAPI,
+        errorRecorder: ErrorRecording = resolve()
+    ) {
         self.mainQueue = mainQueue
         self.deviceVerificationService = deviceVerificationService
         self.errorRecorder = errorRecorder
@@ -79,11 +82,11 @@ let verifyDeviceReducer = Reducer.combine(
             // handled in credentials reducer
             return .none
 
-        case let .didExtractWalletInfo(walletInfo):
+        case .didExtractWalletInfo(let walletInfo):
             state.walletInfo = walletInfo
             return Effect(value: .setCredentialsScreenVisible(true))
 
-        case let .didReceiveWalletInfoDeeplink(url):
+        case .didReceiveWalletInfoDeeplink(let url):
             return environment
                 .deviceVerificationService
                 .extractWalletInfoFromDeeplink(url: url)
@@ -91,7 +94,7 @@ let verifyDeviceReducer = Reducer.combine(
                 .catchToEffect()
                 .map { result -> VerifyDeviceAction in
                     switch result {
-                    case let .success(walletInfo):
+                    case .success(let walletInfo):
                         return .didExtractWalletInfo(walletInfo)
                     case .failure(let error):
                         environment.errorRecorder.error(error)
@@ -103,11 +106,11 @@ let verifyDeviceReducer = Reducer.combine(
             // handled in email login reducer
             return .none
 
-        case let .setCredentialsScreenVisible(isVisible):
+        case .setCredentialsScreenVisible(let isVisible):
             state.isCredentialsScreenVisible = isVisible
             return .none
 
-        case let .verifyDeviceFailureAlert(.show(title, message)):
+        case .verifyDeviceFailureAlert(.show(let title, let message)):
             state.verifyDeviceFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),

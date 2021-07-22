@@ -24,7 +24,7 @@ public final class Atomic<Value> {
     // MARK: - Init
 
     public init(_ value: Value) {
-        self._value = value
+        _value = value
     }
 
     // MARK: - Public methods

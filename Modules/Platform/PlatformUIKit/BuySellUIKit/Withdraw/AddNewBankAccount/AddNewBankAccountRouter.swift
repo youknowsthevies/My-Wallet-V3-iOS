@@ -7,18 +7,21 @@ public protocol AddNewBankAccountInteractable: Interactable {
     var listener: AddNewBankAccountListener? { get set }
 }
 
-public protocol AddNewBankAccountViewControllable: ViewControllable { }
+public protocol AddNewBankAccountViewControllable: ViewControllable {}
 
 public final class AddNewBankAccountRouter: ViewableRouter<AddNewBankAccountInteractable, AddNewBankAccountViewControllable>,
-                                     AddNewBankAccountRouting {
+    AddNewBankAccountRouting
+{
 
-    public override init(interactor: AddNewBankAccountInteractable,
-                         viewController: AddNewBankAccountViewControllable) {
+    override public init(
+        interactor: AddNewBankAccountInteractable,
+        viewController: AddNewBankAccountViewControllable
+    ) {
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
 
-    public override func didLoad() {
+    override public func didLoad() {
         super.didLoad()
     }
 

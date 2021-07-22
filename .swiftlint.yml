@@ -1,5 +1,4 @@
 only_rules:
-- anonymous_argument_in_multiline_closure
 - anyobject_protocol
 - block_based_kvo
 - class_delegate_protocol
@@ -27,7 +26,6 @@ only_rules:
 - discouraged_direct_init
 - duplicate_enum_cases
 - duplicate_imports
-- duplicated_key_in_dictionary_literal
 - dynamic_inline
 - empty_collection_literal
 - empty_count

@@ -22,20 +22,20 @@ public protocol SendAuxiliaryViewInteractorAPI: AnyObject {
     var imageRelay: PublishRelay<ImageViewContent> { get }
 }
 
-public extension SendAuxiliaryViewInteractorAPI {
+extension SendAuxiliaryViewInteractorAPI {
     /// Streams reset to max events
-    var resetToMaxAmount: Observable<Void> {
+    public var resetToMaxAmount: Observable<Void> {
         resetToMaxAmountRelay
             .asObservable()
     }
 
     /// Streams network fee tap events
-    var networkFeeTapped: Observable<Void> {
+    public var networkFeeTapped: Observable<Void> {
         networkFeeTappedRelay
             .asObservable()
     }
 
-    var availableBalanceTapped: Observable<Void> {
+    public var availableBalanceTapped: Observable<Void> {
         availableBalanceTappedRelay
             .asObservable()
     }

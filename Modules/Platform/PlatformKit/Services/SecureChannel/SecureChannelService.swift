@@ -159,7 +159,7 @@ final class SecureChannelService: SecureChannelAPI {
 
     private func validateTimestamp(candidate: SecureChannelConnectionCandidate) -> Completable {
         Completable.create { observer -> Disposable in
-            let fiveMinutesAgo = Date(timeIntervalSinceNow: -5*60)
+            let fiveMinutesAgo = Date(timeIntervalSinceNow: -5 * 60)
             if candidate.timestamp >= fiveMinutesAgo {
                 observer(.completed)
             } else {
@@ -231,7 +231,7 @@ final class SecureChannelService: SecureChannelAPI {
                 }
                 return (guid, sharedKey, password)
             }
-            .map { (guid, sharedKey, password) in
+            .map { guid, sharedKey, password in
                 SecureChannel.LoginMessage(guid: guid, password: password, sharedKey: sharedKey)
             }
             .flatMapCompletable(weak: self) { (self, message) in

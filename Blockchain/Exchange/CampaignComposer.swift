@@ -19,7 +19,7 @@ final class CampaignComposer {
     }
 
     /// Lists the current tracked campaigns
-    struct CampaignValue {
+    enum CampaignValue {
         /// Default query value types. any constant value that should be reported
         /// for any campaign
         enum General: String, Campaign {
@@ -35,9 +35,9 @@ final class CampaignComposer {
     // MARK: - Properties
 
     /// General query-value pairs that should be tracked for any campaign
-    var generalQueryValuePairs: [Key: Campaign] {[
-            .source: CampaignValue.General.source,
-            .medium: CampaignValue.Exchange.medium
-        ]
+    var generalQueryValuePairs: [Key: Campaign] { [
+        .source: CampaignValue.General.source,
+        .medium: CampaignValue.Exchange.medium
+    ]
     }
 }

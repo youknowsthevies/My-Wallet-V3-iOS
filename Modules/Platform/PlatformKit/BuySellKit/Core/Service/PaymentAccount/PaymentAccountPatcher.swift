@@ -25,8 +25,9 @@ final class PaymentAccountPatcher {
 
         /// Account must have an know bank code, and an empty bank country. If not, don't patch it.
         guard eurAccount.bankCode == Self.targetBankCode,
-              eurAccount.bankCountry.isEmpty else {
-                return account
+              eurAccount.bankCountry.isEmpty
+        else {
+            return account
         }
 
         /// Account matches the criteria, update it with hardcoded bankCountry and given recipientName.

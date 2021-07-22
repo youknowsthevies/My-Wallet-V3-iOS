@@ -64,6 +64,5 @@ struct KYCUserTiersBadgeModel {
         case .tier2:
             return LocalizationConstants.KYC.tierTwoVerification
         }
-
     }
 }

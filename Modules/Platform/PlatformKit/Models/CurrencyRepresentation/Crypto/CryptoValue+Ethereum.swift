@@ -11,7 +11,7 @@ extension CryptoValue {
     }
 
     public static func ether(gwei: BigInt) -> CryptoValue {
-        let wei = gwei * BigInt(1_000_000_000)
+        let wei = gwei * BigInt(1000000000)
         return CryptoValue(amount: wei, currency: .ethereum)
     }
 }

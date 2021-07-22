@@ -33,9 +33,11 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
 
     // MARK: - Init
 
-    init(fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()) {
+    init(
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        fiatWithdrawRepository: FiatWithdrawRepositoryAPI = resolve()
+    ) {
         self.fiatCurrencyService = fiatCurrencyService
         self.priceService = priceService
         self.fiatWithdrawRepository = fiatWithdrawRepository
@@ -49,42 +51,44 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        Single.zip(sourceAccount.actionableBalance,
-                   sourceAccount.balance,
-                   target.withdrawFeeAndMinLimit,
-                   fiatCurrencyService
-                       .fiatCurrency)
-            .map(weak: self) { (self, values) -> PendingTransaction in
-                let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
-                let zero: MoneyValue = .zero(currency: self.sourceAsset)
-                return PendingTransaction(
-                    amount: zero,
-                    // TODO: Total balance?
-                    available: actionableBalance,
-                    feeAmount: feeAndLimit.fee.moneyValue,
-                    feeForFullAvailable: zero,
-                    feeSelection: .init(
-                        selectedLevel: .none,
-                        availableLevels: []
-                    ),
-                    selectedFiatCurrency: fiatCurrency,
-                    minimumLimit: feeAndLimit.minLimit.moneyValue,
-                    maximumLimit: actionableBalance
-                )
-            }
+        Single.zip(
+            sourceAccount.actionableBalance,
+            sourceAccount.balance,
+            target.withdrawFeeAndMinLimit,
+            fiatCurrencyService
+                .fiatCurrency
+        )
+        .map(weak: self) { (self, values) -> PendingTransaction in
+            let (actionableBalance, _, feeAndLimit, fiatCurrency) = values
+            let zero: MoneyValue = .zero(currency: self.sourceAsset)
+            return PendingTransaction(
+                amount: zero,
+                // TODO: Total balance?
+                available: actionableBalance,
+                feeAmount: feeAndLimit.fee.moneyValue,
+                feeForFullAvailable: zero,
+                feeSelection: .init(
+                    selectedLevel: .none,
+                    availableLevels: []
+                ),
+                selectedFiatCurrency: fiatCurrency,
+                minimumLimit: feeAndLimit.minLimit.moneyValue,
+                maximumLimit: actionableBalance
+            )
+        }
     }
 
     func doBuildConfirmations(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
         .just(pendingTransaction
-                .update(
-                    confirmations: [
-                        .source(.init(value: sourceAccount.label)),
-                        .destination(.init(value: target.label)),
-                        .transactionFee(.init(fee: pendingTransaction.feeAmount)),
-                        .arrivalDate(.default),
-                        .total(.init(total: pendingTransaction.amount))
-                    ]
-                )
+            .update(
+                confirmations: [
+                    .source(.init(value: sourceAccount.label)),
+                    .destination(.init(value: target.label)),
+                    .transactionFee(.init(fee: pendingTransaction.feeAmount)),
+                    .arrivalDate(.default),
+                    .total(.init(total: pendingTransaction.amount))
+                ]
+            )
         )
     }
 
@@ -93,7 +97,7 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     }
 
     func validateAmount(pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        if pendingTransaction.validationState == .uninitialized && pendingTransaction.amount.isZero {
+        if pendingTransaction.validationState == .uninitialized, pendingTransaction.amount.isZero {
             return .just(pendingTransaction)
         } else {
             return validateAmountCompletable(pendingTransaction: pendingTransaction)
@@ -133,7 +137,8 @@ final class FiatWithdrawalTransactionEngine: TransactionEngine {
     private func validateAmountCompletable(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
             guard let maxLimit = pendingTransaction.maximumLimit,
-                  let minLimit = pendingTransaction.minimumLimit else {
+                  let minLimit = pendingTransaction.minimumLimit
+            else {
                 throw TransactionValidationFailure(state: .unknownError)
             }
             guard try pendingTransaction.amount >= minLimit else {

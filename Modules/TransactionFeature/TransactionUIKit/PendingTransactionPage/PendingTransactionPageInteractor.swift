@@ -9,8 +9,7 @@ import RxCocoa
 import RxSwift
 import TransactionKit
 
-protocol PendingTransactionPageRouting: Routing {
-}
+protocol PendingTransactionPageRouting: Routing {}
 
 protocol PendingTransactionPageListener: AnyObject {
     func closeFlow()
@@ -29,11 +28,13 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
     private let transactionModel: TransactionModel
     private let analyticsHook: TransactionAnalyticsHook
 
-    init(transactionModel: TransactionModel,
-         presenter: PendingTransactionPagePresentable,
-         action: AssetAction,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
-        self.pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(action: action)
+    init(
+        transactionModel: TransactionModel,
+        presenter: PendingTransactionPagePresentable,
+        action: AssetAction,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
+        pendingTransationStateProvider = PendingTransctionStateProviderFactory.pendingTransactionStateProvider(action: action)
         self.transactionModel = transactionModel
         self.analyticsHook = analyticsHook
         super.init(presenter: presenter)
@@ -60,7 +61,7 @@ final class PendingTransactionPageInteractor: PresentableInteractor<PendingTrans
         executionStatus
             .asObservable()
             .withLatestFrom(transactionState) { ($0, $1) }
-            .subscribe(onNext: { [weak self] (executionStatus, transactionState) in
+            .subscribe(onNext: { [weak self] executionStatus, transactionState in
                 switch executionStatus {
                 case .inProgress, .notStarted:
                     break

@@ -11,9 +11,11 @@ public enum AccountPickerListenerBridge {
 }
 
 public protocol AccountPickerBuildable: RIBs.Buildable {
-    func build(listener: AccountPickerListenerBridge,
-               navigationModel: ScreenNavigationModel,
-               headerModel: AccountPickerHeaderType) -> AccountPickerRouting
+    func build(
+        listener: AccountPickerListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType
+    ) -> AccountPickerRouting
 }
 
 public protocol AccountPickerListener: AnyObject {
@@ -32,8 +34,10 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
 
     // MARK: - Init
 
-    public convenience init(singleAccountsOnly: Bool,
-                            action: AssetAction) {
+    public convenience init(
+        singleAccountsOnly: Bool,
+        action: AssetAction
+    ) {
         let provider = AccountPickerAccountProvider(
             singleAccountsOnly: singleAccountsOnly,
             action: action,
@@ -42,17 +46,21 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
         self.init(accountProvider: provider, action: action)
     }
 
-    public init(accountProvider: AccountPickerAccountProviding,
-                action: AssetAction) {
+    public init(
+        accountProvider: AccountPickerAccountProviding,
+        action: AssetAction
+    ) {
         self.accountProvider = accountProvider
         self.action = action
     }
 
     // MARK: - Public Methods
 
-    public func build(listener: AccountPickerListenerBridge,
-                      navigationModel: ScreenNavigationModel,
-                      headerModel: AccountPickerHeaderType) -> AccountPickerRouting {
+    public func build(
+        listener: AccountPickerListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        headerModel: AccountPickerHeaderType
+    ) -> AccountPickerRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
         case .listener:

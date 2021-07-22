@@ -13,7 +13,7 @@ public protocol PITConnectionStatusProviding {
     var fetchTriggerRelay: PublishRelay<Void> { get }
 }
 
-final public class PITConnectionStatusProvider: PITConnectionStatusProviding {
+public final class PITConnectionStatusProvider: PITConnectionStatusProviding {
 
     // MARK: - PITConnectionStatusProviding
 
@@ -24,7 +24,7 @@ final public class PITConnectionStatusProvider: PITConnectionStatusProviding {
     private let dataRepository: DataRepositoryAPI
 
     public init(blockchainRepository: DataRepositoryAPI = resolve()) {
-        self.dataRepository = blockchainRepository
+        dataRepository = blockchainRepository
     }
 
     public var hasLinkedPITAccount: Observable<Bool> {

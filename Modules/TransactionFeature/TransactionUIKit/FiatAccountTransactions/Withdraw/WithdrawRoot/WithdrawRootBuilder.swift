@@ -9,7 +9,7 @@ public protocol WithdrawRootBuildable: Buildable {
 
 public final class WithdrawRootBuilder: WithdrawRootBuildable {
 
-    public init() { }
+    public init() {}
 
     public func build(sourceAccount: FiatAccount) -> WithdrawRootRouting {
         let interactor = WithdrawRootInteractor(sourceAccount: sourceAccount)

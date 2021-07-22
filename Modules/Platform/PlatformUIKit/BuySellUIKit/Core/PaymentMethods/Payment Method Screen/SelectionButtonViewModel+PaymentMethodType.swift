@@ -47,7 +47,8 @@ extension SelectionButtonViewModel {
                         image: .local(name: "icon-bank", bundle: .platformUIKit),
                         background: .lightBlueBackground,
                         cornerRadius: .round,
-                        size: .init(edge: 32))
+                        size: .init(edge: 32)
+                    )
                 )
                 title = LocalizedString.Types.bankAccount
             case .bankAccount:
@@ -102,7 +103,8 @@ extension SelectionButtonViewModel {
                     background: .lightBlueBackground,
                     cornerRadius: .round,
                     size: .init(edge: 32),
-                    renderingMode: .template(.defaultBadge))
+                    renderingMode: .template(.defaultBadge)
+                )
             )
             title = LocalizedString.Types.bankAccount
             let bankName = data.account?.bankName ?? ""

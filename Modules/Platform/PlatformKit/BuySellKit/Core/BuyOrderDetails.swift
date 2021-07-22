@@ -52,8 +52,8 @@ public struct BuyOrderDetails {
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
-        self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
-        self.paymentMethodId = response.paymentMethodId
+        paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
+        paymentMethodId = response.paymentMethodId
         authorizationData = PartnerAuthorizationData(orderPayloadResponse: response)
 
         if let price = response.price {

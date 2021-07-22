@@ -21,8 +21,10 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
 
     // MARK: - Setup
 
-    init(syncService: WalletNabuSynchronizerServiceAPI = resolve(),
-         settingsService: CompleteSettingsServiceAPI = resolve()) {
+    init(
+        syncService: WalletNabuSynchronizerServiceAPI = resolve(),
+        settingsService: CompleteSettingsServiceAPI = resolve()
+    ) {
         self.syncService = syncService
         self.settingsService = settingsService
     }
@@ -86,7 +88,7 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                     /// by converting it to a `Single`
                     .valueSingle
                     /// Make sure the email is verified, if not throw an error
-                    .map(weak: self) { (_, settings) -> Void in
+                    .map(weak: self) { _, settings -> Void in
                         guard settings.isEmailVerified else {
                             throw ServiceError.emailNotVerified
                         }
@@ -109,6 +111,5 @@ public final class EmailVerificationService: EmailVerificationServiceAPI {
                         }
                     }
             }
-
     }
 }

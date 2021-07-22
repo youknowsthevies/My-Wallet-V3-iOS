@@ -29,10 +29,10 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
     }
 
     private enum Path {
-        static let auth = [ "auth" ]
+        static let auth = ["auth"]
 
         static func recover(userId: String) -> [String] {
-            [ "users", "recover", userId ]
+            ["users", "recover", userId]
         }
     }
 
@@ -43,8 +43,10 @@ final class NabuAuthenticationClient: NabuAuthenticationClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

@@ -4,13 +4,13 @@ public struct ActionableTrigger: Equatable {
     public let primaryString: String
     public let callToAction: String
     public let secondaryString: String?
-    public let execute: (() -> Void)
+    public let execute: () -> Void
 
     public init(text: String, CTA: String, secondary: String? = nil, executionBlock: @escaping (() -> Void)) {
-        self.primaryString = text
-        self.secondaryString = secondary
-        self.callToAction = CTA
-        self.execute = executionBlock
+        primaryString = text
+        secondaryString = secondary
+        callToAction = CTA
+        execute = executionBlock
     }
 
     public func actionRange() -> NSRange? {

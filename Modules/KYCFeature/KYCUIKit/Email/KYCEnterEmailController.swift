@@ -48,7 +48,7 @@ class KYCEnterEmailController: KYCBaseViewController, BottomButtonContainerView,
     }
 
     override func apply(model: KYCPageModel) {
-        guard case let .email(user) = model else { return }
+        guard case .email(let user) = model else { return }
 
         validationTextFieldEmail.text = user.email.address
         validationTextFieldEmail.accessibilityIdentifier = "kyc.email_field"

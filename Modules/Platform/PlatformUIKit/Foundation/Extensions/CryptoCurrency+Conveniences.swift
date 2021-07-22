@@ -47,7 +47,7 @@ extension CryptoCurrency {
             return .local(name: "crypto-eth", bundle: .platformUIKit)
         case .stellar:
             return .local(name: "crypto-xlm", bundle: .platformUIKit)
-        case let .other(model):
+        case .other(let model):
             switch model.code {
             case LegacyCustodialCode.polkadot.rawValue:
                 return .local(name: "crypto-dot", bundle: .platformUIKit)
@@ -101,17 +101,17 @@ extension CryptoCurrency {
             case NewERC20Code.ogn.rawValue:
                 return .local(name: "crypto-ogn", bundle: .platformUIKit)
             case NewERC20Code.snx.rawValue:
-                 return .local(name: "crypto-snx", bundle: .platformUIKit)
+                return .local(name: "crypto-snx", bundle: .platformUIKit)
             case NewERC20Code.sushi.rawValue:
-                 return .local(name: "crypto-sushi", bundle: .platformUIKit)
+                return .local(name: "crypto-sushi", bundle: .platformUIKit)
             case NewERC20Code.tbtc.rawValue:
-                 return .local(name: "crypto-tbtc", bundle: .platformUIKit)
+                return .local(name: "crypto-tbtc", bundle: .platformUIKit)
             case NewERC20Code.uni.rawValue:
                 return .local(name: "crypto-uni", bundle: .platformUIKit)
             case NewERC20Code.usdc.rawValue:
                 return .local(name: "crypto-usdc", bundle: .platformUIKit)
             case NewERC20Code.wbtc.rawValue:
-                 return .local(name: "crypto-wbtc", bundle: .platformUIKit)
+                return .local(name: "crypto-wbtc", bundle: .platformUIKit)
             case NewERC20Code.zrx.rawValue:
                 return .local(name: "crypto-zrx", bundle: .platformUIKit)
             default:

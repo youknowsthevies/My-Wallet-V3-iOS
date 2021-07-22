@@ -50,9 +50,11 @@ public final class CardListService: CardListServiceAPI {
 
     // MARK: - Setup
 
-    public init(client: CardListClientAPI = resolve(),
-                reactiveWallet: ReactiveWalletAPI = resolve(),
-                fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()) {
+    public init(
+        client: CardListClientAPI = resolve(),
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        fiatCurrencyService: FiatCurrencySettingsServiceAPI = resolve()
+    ) {
         self.client = client
         self.reactiveWallet = reactiveWallet
         self.fiatCurrencyService = fiatCurrencyService
@@ -75,7 +77,7 @@ public final class CardListService: CardListServiceAPI {
     /// Always fetches data from API, updates relay on success.
     private func createFetchSingle() -> Single<[CardData]> {
         client.cardList
-            .map { Array<CardData>.init(response: $0) }
+            .map { [CardData].init(response: $0) }
             .do(onSuccess: { [weak self] (cards: [CardData]) in
                 self?.cardsRelay.accept(cards)
             })
@@ -92,9 +94,9 @@ public final class CardListService: CardListServiceAPI {
             .map {
                 $0.contains {
                     $0.number.suffix(4) == number.suffix(4) &&
-                    $0.month == expiryMonth &&
-                    $0.year.suffix(2) == expiryYear.suffix(2) &&
-                    $0.state != .blocked
+                        $0.month == expiryMonth &&
+                        $0.year.suffix(2) == expiryYear.suffix(2) &&
+                        $0.state != .blocked
                 }
             }
     }

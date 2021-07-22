@@ -20,6 +20,7 @@ final class LabeledButtonCollectionViewCell<ViewModel: LabeledButtonViewModelAPI
         contentView.addSubview(labeledButtonView)
         labeledButtonView.fillSuperview()
     }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 

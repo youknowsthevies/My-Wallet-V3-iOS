@@ -16,7 +16,7 @@ public final class LinkedBankTableViewCell: UITableViewCell {
 
     // MARK: - Setup
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(linkedBankView)
         linkedBankView.fillSuperview()

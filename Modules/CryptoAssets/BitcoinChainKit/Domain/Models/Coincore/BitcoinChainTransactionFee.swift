@@ -14,7 +14,8 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
         switch Token.coin {
         case .bitcoin:
             return BitcoinChainTransactionFee<Token>(
-                limits: BitcoinChainTransactionFee.defaultLimits, regular: 5, priority: 11)
+                limits: BitcoinChainTransactionFee.defaultLimits, regular: 5, priority: 11
+            )
         case .bitcoinCash:
             return BitcoinChainTransactionFee<Token>(
                 limits: BitcoinChainTransactionFee.defaultLimits,

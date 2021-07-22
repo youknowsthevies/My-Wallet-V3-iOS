@@ -17,16 +17,18 @@ public struct OrderQuotePayload {
     let createdAt: Date
     let updatedAt: Date
 
-    public init(identifier: String,
-                product: Product = .brokerage,
-                pair: OrderPair,
-                quote: OrderQuote,
-                networkFee: MoneyValue,
-                staticFee: MoneyValue,
-                sampleDepositAddress: String,
-                expiresAt: Date,
-                createdAt: Date,
-                updatedAt: Date) {
+    public init(
+        identifier: String,
+        product: Product = .brokerage,
+        pair: OrderPair,
+        quote: OrderQuote,
+        networkFee: MoneyValue,
+        staticFee: MoneyValue,
+        sampleDepositAddress: String,
+        expiresAt: Date,
+        createdAt: Date,
+        updatedAt: Date
+    ) {
         self.identifier = identifier
         self.product = product
         self.pair = pair

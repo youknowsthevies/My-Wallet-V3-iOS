@@ -6,7 +6,7 @@ import UIKit
 
 class KYCTiersFooterView: UICollectionReusableView {
 
-    static let identifier: String = String(describing: KYCTiersFooterView.self)
+    static let identifier = String(describing: KYCTiersFooterView.self)
 
     fileprivate static let verticalPadding: CGFloat = 32.0
     fileprivate static let horizontalPadding: CGFloat = 24.0
@@ -29,7 +29,8 @@ class KYCTiersFooterView: UICollectionReusableView {
         let adjustedWidth = width - (horizontalPadding * 2)
         let height = NSAttributedString(
             string: disclaimer,
-            attributes: [.font: disclaimerFont()]).heightForWidth(width: adjustedWidth)
+            attributes: [.font: disclaimerFont()]
+        ).heightForWidth(width: adjustedWidth)
         return height + verticalPadding
     }
 
@@ -39,13 +40,12 @@ class KYCTiersFooterView: UICollectionReusableView {
         let font = Font(.branded(.montserratRegular), size: .custom(12.0))
         return font.result
     }
-
 }
 
 extension KYCTiersFooterView {
     func configure(with actionableTrigger: ActionableTrigger) {
         disclaimerLabel.delegate = self
-        self.trigger = actionableTrigger
+        trigger = actionableTrigger
 
         let actionableText = NSMutableAttributedString(
             string: actionableTrigger.primaryString,
@@ -70,16 +70,16 @@ extension KYCTiersFooterView {
         disclaimerLabel.attributedText = actionableText
     }
 
-    private func actionAttributes() -> [NSAttributedString.Key: Any] {[
-            .font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
-            .foregroundColor: UIColor.brandSecondary
-        ]
+    private func actionAttributes() -> [NSAttributedString.Key: Any] { [
+        .font: Font(.branded(.montserratRegular), size: .custom(12.0)).result,
+        .foregroundColor: UIColor.brandSecondary
+    ]
     }
 
-    private func defaultAttributes() -> [NSAttributedString.Key: Any] {[
-            .font: KYCTiersFooterView.disclaimerFont(),
-            .foregroundColor: disclaimerLabel.textColor
-        ]
+    private func defaultAttributes() -> [NSAttributedString.Key: Any] { [
+        .font: KYCTiersFooterView.disclaimerFont(),
+        .foregroundColor: disclaimerLabel.textColor
+    ]
     }
 }
 

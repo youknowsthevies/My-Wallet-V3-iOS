@@ -32,7 +32,7 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .none
         contentView.addSubview(stackView)
@@ -51,13 +51,16 @@ public final class DoubleTextFieldTableViewCell: UITableViewCell {
         trailingTextFieldView.layout(dimension: .height, to: 80, priority: .defaultLow)
     }
 
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func setup(viewModel: ViewModel,
-                      keyboardInteractionController: KeyboardInteractionController,
-                      scrollView: UIScrollView) {
+    public func setup(
+        viewModel: ViewModel,
+        keyboardInteractionController: KeyboardInteractionController,
+        scrollView: UIScrollView
+    ) {
         leadingTextFieldView.setup(
             viewModel: viewModel.leading,
             keyboardInteractionController: keyboardInteractionController,

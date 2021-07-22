@@ -3,7 +3,7 @@
 // swiftlint:disable all
 
 extension LocalizationConstants {
-    public enum FiatWithdrawal { }
+    public enum FiatWithdrawal {}
 }
 
 extension LocalizationConstants.FiatWithdrawal {
@@ -54,6 +54,7 @@ extension LocalizationConstants.FiatWithdrawal {
                 comment: "Fiat Withdrawal: Order Details - transfer details button"
             )
         }
+
         public enum Title {
             public static let checkout = NSLocalizedString(
                 "Checkout",
@@ -64,6 +65,7 @@ extension LocalizationConstants.FiatWithdrawal {
                 comment: "Order Details screen Title"
             )
         }
+
         public enum Summary {
             public static let of = NSLocalizedString(
                 "of",
@@ -79,6 +81,7 @@ extension LocalizationConstants.FiatWithdrawal {
                     comment: "Fiat Withdrawal: checkout screen - title suffix"
                 )
             }
+
             public static let buyButtonPrefix = NSLocalizedString(
                 "Buy ",
                 comment: "Fiat Withdrawal: checkout screen - buy button prefix"
@@ -131,6 +134,7 @@ extension LocalizationConstants.FiatWithdrawal {
                     comment: "Fiat Withdrawal: final screen subtitle: We’re completing your withdrawal now."
                 )
             }
+
             public enum Success {
                 public static let titleSuffix = NSLocalizedString(
                     "%@ Withdrawal",
@@ -141,6 +145,7 @@ extension LocalizationConstants.FiatWithdrawal {
                     comment: "Success! We're are withdrawing the cash from your GBP Wallet now. The funds should be in your bank in 1-3 business days."
                 )
             }
+
             public enum Error {
                 public static let titleSuffix = NSLocalizedString(
                     "Oops! Something Went Wrong.",
@@ -160,4 +165,4 @@ extension LocalizationConstants.FiatWithdrawal {
     }
 }
 
-//swiftlint:enable all
+// swiftlint:enable all

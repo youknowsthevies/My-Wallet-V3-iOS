@@ -8,8 +8,9 @@ import UIKit
 @testable import RemoteNotificationsKit
 
 class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContaining,
-                                              RemoteNotificationTokenSending,
-                                              RemoteNotificationDeviceTokenReceiving, RemoteNotificationBackgroundReceiving {
+    RemoteNotificationTokenSending,
+    RemoteNotificationDeviceTokenReceiving, RemoteNotificationBackgroundReceiving
+{
 
     var authorizer: RemoteNotificationAuthorizing
 
@@ -53,9 +54,8 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
     }
 
     func didReceiveRemoteNotification(
-        _ userInfo: [AnyHashable : Any],
+        _ userInfo: [AnyHashable: Any],
         onApplicationState applicationState: UIApplication.State,
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
-    ) {
-    }
+    ) {}
 }

@@ -39,9 +39,11 @@ public final class AnnouncementCardViewModel {
         /// Computes the `UIImage` out of `imageName`
         var image: UIImage? {
             guard let imageName = imageName else { return nil }
-            return UIImage(named: imageName,
-                           in: bundle,
-                           compatibleWith: .none)
+            return UIImage(
+                named: imageName,
+                in: bundle,
+                compatibleWith: .none
+            )
         }
 
         public init(color: UIColor = .clear, imageName: String? = nil, bundle: Bundle = .main) {
@@ -72,19 +74,20 @@ public final class AnnouncementCardViewModel {
 
         /// Center alignment
         case center
-
     }
 
     public enum BadgeImage {
         case hidden
         case visible(BadgeImageViewModel, CGSize)
 
-        public init(image: ImageResource,
-                    contentColor: UIColor = .defaultBadge,
-                    backgroundColor: UIColor = .lightBadgeBackground,
-                    cornerRadius: BadgeImageViewModel.CornerRadius = .value(8.0),
-                    accessibilitySuffix: String = "\(AccessibilityId.badge)",
-                    size: CGSize) {
+        public init(
+            image: ImageResource,
+            contentColor: UIColor = .defaultBadge,
+            backgroundColor: UIColor = .lightBadgeBackground,
+            cornerRadius: BadgeImageViewModel.CornerRadius = .value(8.0),
+            accessibilitySuffix: String = "\(AccessibilityId.badge)",
+            size: CGSize
+        ) {
             self = .visible(
                 .template(
                     image: image,
@@ -137,15 +140,19 @@ public final class AnnouncementCardViewModel {
         case hidden
         case visible(ImageDescriptor)
 
-        public init(name: String,
-                    size: CGSize = CGSize(width: 40, height: 40),
-                    tintColor: UIColor? = nil,
-                    bundle: Bundle = .main) {
+        public init(
+            name: String,
+            size: CGSize = CGSize(width: 40, height: 40),
+            tintColor: UIColor? = nil,
+            bundle: Bundle = .main
+        ) {
             self = .visible(
-                .init(name: name,
-                      size: size,
-                      tintColor: tintColor,
-                      bundle: bundle)
+                .init(
+                    name: name,
+                    size: size,
+                    tintColor: tintColor,
+                    bundle: bundle
+                )
             )
         }
 
@@ -190,14 +197,16 @@ public final class AnnouncementCardViewModel {
             case .hidden:
                 return nil
             case .visible(let descriptor):
-                return UIImage(named: descriptor.name,
-                               in: descriptor.bundle,
-                               compatibleWith: .none)
-                    .map { value in
-                        if descriptor.tintColor != nil {
-                            return value.withRenderingMode(.alwaysTemplate)
-                        }
-                        return value
+                return UIImage(
+                    named: descriptor.name,
+                    in: descriptor.bundle,
+                    compatibleWith: .none
+                )
+                .map { value in
+                    if descriptor.tintColor != nil {
+                        return value.withRenderingMode(.alwaysTemplate)
+                    }
+                    return value
                 }
             }
         }
@@ -220,10 +229,12 @@ public final class AnnouncementCardViewModel {
                 }
         }
 
-        public init(name: String,
-                    size: CGSize = CGSize(width: 40, height: 40),
-                    tintColor: UIColor? = nil,
-                    bundle: Bundle = .main) {
+        public init(
+            name: String,
+            size: CGSize = CGSize(width: 40, height: 40),
+            tintColor: UIColor? = nil,
+            bundle: Bundle = .main
+        ) {
             self.name = name
             self.size = size
             self.tintColor = tintColor
@@ -329,19 +340,21 @@ public final class AnnouncementCardViewModel {
 
     // MARK: - Setup
 
-    public init(type: AnnouncementType? = nil,
-                presentation: Presentation = .regular,
-                interaction: Interaction = .none,
-                badgeImage: BadgeImage = .hidden,
-                contentAlignment: Alignment = .natural,
-                background: Background = .white,
-                border: Border = .bottomSeparator(.mediumBorder),
-                image: Image,
-                title: String? = nil,
-                description: String? = nil,
-                buttons: [ButtonViewModel] = [],
-                dismissState: DismissState,
-                didAppear: DidAppear? = nil) {
+    public init(
+        type: AnnouncementType? = nil,
+        presentation: Presentation = .regular,
+        interaction: Interaction = .none,
+        badgeImage: BadgeImage = .hidden,
+        contentAlignment: Alignment = .natural,
+        background: Background = .white,
+        border: Border = .bottomSeparator(.mediumBorder),
+        image: Image,
+        title: String? = nil,
+        description: String? = nil,
+        buttons: [ButtonViewModel] = [],
+        dismissState: DismissState,
+        didAppear: DidAppear? = nil
+    ) {
         self.type = type
         self.presentation = presentation
         self.interaction = interaction

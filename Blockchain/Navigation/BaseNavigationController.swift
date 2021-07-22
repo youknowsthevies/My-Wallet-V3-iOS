@@ -13,8 +13,9 @@ enum NavigationCTAType {
     case activityIndicator
     case none
 }
-fileprivate extension NavigationCTAType {
-    var image: UIImage? {
+
+extension NavigationCTAType {
+    fileprivate var image: UIImage? {
         switch self {
         case .qrCode:
             return #imageLiteral(resourceName: "qr-code-icon").withRenderingMode(.alwaysTemplate)
@@ -106,7 +107,7 @@ extension NavigatableView where Self: UIViewController {
 /// It relies on `NavigatableView` to properly layout it's `UIBarButtonItems` as well
 /// as style itself. There is no default behavior should the current `UIViewController`
 /// not conform to `NavigatableView`. This is because the behaviors across all our different
-/// screens are pretty different. 
+/// screens are pretty different.
 @objc class BaseNavigationController: UINavigationController {
 
     private var leftBarButtonItem: UIBarButtonItem!

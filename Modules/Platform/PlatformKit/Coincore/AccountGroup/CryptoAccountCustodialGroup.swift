@@ -49,10 +49,12 @@ public class CryptoAccountCustodialGroup: AccountGroup {
         self.init(asset: asset, accounts: [])
     }
 
-    private init(asset: CryptoCurrency,
-                 accounts: [SingleAccount]) {
+    private init(
+        asset: CryptoCurrency,
+        accounts: [SingleAccount]
+    ) {
         self.asset = asset
-        self.label = String(format: LocalizedString.myCustodialWallets, asset.name)
+        label = String(format: LocalizedString.myCustodialWallets, asset.name)
         self.accounts = accounts
         if let account = accounts.first {
             identifier = "\(type(of: self)).\(type(of: account)).\(asset.code)"

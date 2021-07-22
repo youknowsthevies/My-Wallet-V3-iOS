@@ -64,11 +64,11 @@ final class BuyCheckoutScreenContentReducer: CheckoutScreenContentReducing {
             accessibilityIdPrefix: AccessibilityId.lineItemPrefix
         )
 
-    private let cryptoAmountLabelPresenter: DefaultLabelContentPresenter = DefaultLabelContentPresenter(
+    private let cryptoAmountLabelPresenter = DefaultLabelContentPresenter(
         knownValue: " ",
         descriptors: .h1(accessibilityIdPrefix: AccessibilityId.cryptoAmountPrefix)
     )
-    private let fiatAmountLabelPresenter: DefaultLabelContentPresenter = DefaultLabelContentPresenter(
+    private let fiatAmountLabelPresenter = DefaultLabelContentPresenter(
         knownValue: " ",
         descriptors: .h1(accessibilityIdPrefix: AccessibilityId.fiatAmountPrefix)
     )

@@ -27,11 +27,13 @@ final class EthereumAsset: CryptoAsset {
     private let repository: EthereumWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
 
-    init(repository: EthereumWalletAccountRepositoryAPI = resolve(),
-         addressFactory: EthereumExternalAssetAddressFactory = .init(),
-         errorRecorder: ErrorRecording = resolve(),
-         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve()) {
+    init(
+        repository: EthereumWalletAccountRepositoryAPI = resolve(),
+        addressFactory: EthereumExternalAssetAddressFactory = .init(),
+        errorRecorder: ErrorRecording = resolve(),
+        exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve()
+    ) {
         self.addressFactory = addressFactory
         self.exchangeAccountProvider = exchangeAccountProvider
         self.repository = repository
@@ -109,7 +111,7 @@ final class EthereumAsset: CryptoAsset {
         let asset = self.asset
         return defaultAccount
             .map { account -> AccountGroup in
-                CryptoAccountNonCustodialGroup(asset: asset, accounts: [ account ])
+                CryptoAccountNonCustodialGroup(asset: asset, accounts: [account])
             }
             .recordErrors(on: errorRecorder)
             .catchErrorJustReturn(CryptoAccountNonCustodialGroup(asset: asset, accounts: []))

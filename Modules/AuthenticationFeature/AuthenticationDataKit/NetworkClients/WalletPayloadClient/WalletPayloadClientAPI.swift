@@ -15,6 +15,8 @@ public protocol WalletPayloadClientCombineAPI: AnyObject {
 }
 
 public protocol WalletPayloadClientAPI: WalletPayloadClientCombineAPI {
-    func payload(guid: String,
-                 identifier: WalletPayloadClient.Identifier) -> Single<WalletPayloadClient.ClientResponse>
+    func payload(
+        guid: String,
+        identifier: WalletPayloadClient.Identifier
+    ) -> Single<WalletPayloadClient.ClientResponse>
 }

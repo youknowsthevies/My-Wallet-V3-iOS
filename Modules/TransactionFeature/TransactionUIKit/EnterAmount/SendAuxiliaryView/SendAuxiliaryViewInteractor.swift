@@ -20,6 +20,7 @@ final class SendAuxiliaryViewInteractor: SendAuxiliaryViewInteractorAPI {
     var networkFeeContentViewInteractor: ContentLabelViewInteractorAPI {
         networkLabelViewInteractor
     }
+
     var availableBalanceContentViewInteractor: ContentLabelViewInteractorAPI {
         contentLabelViewInteractor
     }

@@ -24,4 +24,4 @@ extension BundleRetrievable {
     }
 }
 
-extension NSObject: BundleRetrievable { }
+extension NSObject: BundleRetrievable {}

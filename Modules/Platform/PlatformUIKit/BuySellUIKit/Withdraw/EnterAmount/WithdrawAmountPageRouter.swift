@@ -8,16 +8,19 @@ protocol WithdrawAmountPageInteractable: Interactable {
     var listener: WithdrawAmountPageListener? { get set }
 }
 
-protocol WithdrawAmountViewControllable: ViewControllable { }
+protocol WithdrawAmountViewControllable: ViewControllable {}
 
 final class WithdrawAmountPageRouter: ViewableRouter<WithdrawAmountPageInteractable, WithdrawAmountViewControllable>,
-                                      WithdrawAmountPageRouting {
+    WithdrawAmountPageRouting
+{
 
     private let alertViewPresenter: AlertViewPresenterAPI
 
-    init(interactor: WithdrawAmountPageInteractable,
-         viewController: WithdrawAmountViewControllable,
-         alertViewPresenter: AlertViewPresenterAPI = resolve()) {
+    init(
+        interactor: WithdrawAmountPageInteractable,
+        viewController: WithdrawAmountViewControllable,
+        alertViewPresenter: AlertViewPresenterAPI = resolve()
+    ) {
         self.alertViewPresenter = alertViewPresenter
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self

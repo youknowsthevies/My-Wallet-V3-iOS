@@ -31,7 +31,7 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
     ) {
         self.entry = entry
         self.navigationRouter = navigationRouter
-        self.recoveryPhraseVerifyingService = recoveryPhraseVerifying
+        recoveryPhraseVerifyingService = recoveryPhraseVerifying
     }
 
     public func start() {
@@ -56,10 +56,10 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
     private func complete() {
         switch entry {
         case .settings:
-            self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
-            self.completionRelay.accept(())
+            navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+            completionRelay.accept(())
         case .custody:
-            self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
+            navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: { [weak self] in
                 guard let self = self else { return }
                 self.completionRelay.accept(())
             })
@@ -69,9 +69,9 @@ public final class BackupFundsRouter: BackupFundsRouterAPI {
     private func dismiss() {
         switch entry {
         case .settings:
-            self.navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
+            navigationRouter.navigationControllerAPI?.popToRootViewControllerAnimated(animated: true)
         case .custody:
-            self.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
+            navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: nil)
         }
     }
 

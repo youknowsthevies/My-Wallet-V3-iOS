@@ -10,6 +10,7 @@ final class YodleePendingView: UIView {
     private(set) lazy var compositeView: CompositeStatusView = {
         CompositeStatusView(edge: 80, mainContainerViewRatio: 1.0, sideContainerViewRatio: 0.45)
     }()
+
     private(set) lazy var mainTitle = UILabel()
     private(set) lazy var subtitle = InteractableTextView()
     private(set) lazy var mainActionButton = ButtonView()
@@ -20,6 +21,7 @@ final class YodleePendingView: UIView {
         setupUI()
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -61,22 +63,22 @@ final class YodleePendingView: UIView {
 
     fileprivate func configureButtons(using content: YodleeButtonsContent) {
         if let continueViewModel = content.continueButtonViewModel {
-            self.mainActionButton.viewModel = continueViewModel
-            self.mainActionButton.isHidden = false
+            mainActionButton.viewModel = continueViewModel
+            mainActionButton.isHidden = false
         } else if let tryAgainViewModel = content.tryAgainButtonViewModel {
-            self.mainActionButton.viewModel = tryAgainViewModel
-            self.mainActionButton.isHidden = false
+            mainActionButton.viewModel = tryAgainViewModel
+            mainActionButton.isHidden = false
         }
         if let cancelViewModel = content.cancelActionButtonViewModel {
-            self.cancelActionButton.viewModel = cancelViewModel
+            cancelActionButton.viewModel = cancelViewModel
         }
-        self.cancelActionButton.isHidden = content.isCancelButtonHidden
+        cancelActionButton.isHidden = content.isCancelButtonHidden
     }
 }
 
 extension Reactive where Base: YodleePendingView {
     var content: Binder<YodleePendingContent> {
-        Binder<YodleePendingContent>(self.base) { base, model in
+        Binder<YodleePendingContent>(base) { base, model in
             base.compositeView.currentTypeRelay.accept(model.compositeViewType)
             base.mainTitle.content = model.mainTitleContent
             base.subtitle.viewModel = model.subtitleTextViewModel

@@ -11,8 +11,10 @@ struct DisplayBundle {
     let title: String
     let amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
 
-    init(title: String,
-         amountDisplayBundle: AmountTranslationPresenter.DisplayBundle) {
+    init(
+        title: String,
+        amountDisplayBundle: AmountTranslationPresenter.DisplayBundle
+    ) {
         self.title = title
         self.amountDisplayBundle = amountDisplayBundle
     }

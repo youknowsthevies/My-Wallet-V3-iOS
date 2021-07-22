@@ -18,19 +18,19 @@ public class AssetLineChartMarkerView: MarkerView {
 
     private let strokeWidth: CGFloat = 2
 
-    public override var layer: CAShapeLayer {
+    override public var layer: CAShapeLayer {
         super.layer as! CAShapeLayer
     }
 
-    public override class var layerClass: AnyClass {
+    override public class var layerClass: AnyClass {
         CAShapeLayer.self
     }
 
-    public override func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
+    override public func refreshContent(entry: ChartDataEntry, highlight: Highlight) {
         super.refreshContent(entry: entry, highlight: highlight)
     }
 
-    public override func draw(context: CGContext, point: CGPoint) {
+    override public func draw(context: CGContext, point: CGPoint) {
         super.draw(context: context, point: point)
         layer.fillColor = theme.fillColor.cgColor
         layer.strokeColor = theme.lineColor.cgColor
@@ -41,8 +41,8 @@ public class AssetLineChartMarkerView: MarkerView {
         layer.shadowRadius = 4
         layer.path = UIBezierPath(
             ovalIn: bounds.offsetBy(
-                dx: (-bounds.width / 2.0),
-                dy: (-bounds.height / 2.0)
+                dx: -bounds.width / 2.0,
+                dy: -bounds.height / 2.0
             )
         ).cgPath
         isAccessibilityElement = false

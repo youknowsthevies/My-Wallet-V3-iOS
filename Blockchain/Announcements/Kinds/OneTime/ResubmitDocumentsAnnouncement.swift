@@ -18,7 +18,7 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
             with: LocalizationConstants.AnnouncementCards.ResubmitDocuments.ctaButton
         )
         button.tapRelay
-            .bind {  [weak self] in
+            .bind { [weak self] in
                 guard let self = self else { return }
                 self.analyticsRecorder.record(event: self.actionAnalyticsEvent)
                 self.markRemoved()
@@ -64,16 +64,19 @@ final class ResubmitDocumentsAnnouncement: OneTimeAnnouncement & ActionableAnnou
     private let user: NabuUser
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(user: NabuUser,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        user: NabuUser,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.user = user
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

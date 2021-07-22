@@ -13,9 +13,11 @@ public struct BadgeViewModel {
         public let contentColor: UIColor
         public let text: String
 
-        public init(backgroundColor: UIColor,
-                    contentColor: UIColor,
-                    text: String) {
+        public init(
+            backgroundColor: UIColor,
+            contentColor: UIColor,
+            text: String
+        ) {
             self.backgroundColor = backgroundColor
             self.contentColor = contentColor
             self.text = text
@@ -31,9 +33,11 @@ public struct BadgeViewModel {
     /// The theme of the view
     public var theme: Theme {
         get {
-            Theme(backgroundColor: backgroundColorRelay.value,
-                  contentColor: contentColorRelay.value,
-                  text: textRelay.value)
+            Theme(
+                backgroundColor: backgroundColorRelay.value,
+                contentColor: contentColorRelay.value,
+                text: textRelay.value
+            )
         }
         set {
             backgroundColorRelay.accept(newValue.backgroundColor)
@@ -93,7 +97,7 @@ extension BadgeViewModel {
     public static func destructive(
         with text: String,
         accessibilityId: String = Accessibility.Identifier.General.destructiveBadgeView
-        ) -> BadgeViewModel {
+    ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
             accessibility: .id(accessibilityId)
         )
@@ -109,7 +113,7 @@ extension BadgeViewModel {
     public static func affirmative(
         with text: String,
         accessibilityId: String = Accessibility.Identifier.General.affirmativeBadgeView
-        ) -> BadgeViewModel {
+    ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
             accessibility: .id(accessibilityId)
         )
@@ -126,7 +130,7 @@ extension BadgeViewModel {
         with text: String,
         model: BadgeCircleViewModel,
         accessibilityId: String = Accessibility.Identifier.General.affirmativeBadgeView
-        ) -> BadgeViewModel {
+    ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
             accessory: .progress(model),
             accessibility: .id(accessibilityId)
@@ -165,7 +169,7 @@ extension BadgeViewModel {
         font: UIFont = .main(.semibold, 14),
         cornerRadius: CGFloat = 4,
         accessibilityId: String = Accessibility.Identifier.General.defaultBadgeView
-        ) -> BadgeViewModel {
+    ) -> BadgeViewModel {
         var viewModel = BadgeViewModel(
             font: font,
             cornerRadius: cornerRadius,

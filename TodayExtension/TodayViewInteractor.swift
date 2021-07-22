@@ -54,7 +54,7 @@ final class TodayViewInteractor {
     /// Returns the supported device biometrics, regardless if currently configured in app
     private var supportsBioAuthentication: Bool {
         let context = LAContext()
-        return context.canEvaluatePolicy( .deviceOwnerAuthenticationWithBiometrics, error: nil)
+        return context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: nil)
     }
 
     /// Performs authentication
@@ -80,6 +80,6 @@ final class TodayViewInteractor {
     }
 
     func refresh() {
-        self.historicalProvider.refresh(window: .day(.oneHour))
+        historicalProvider.refresh(window: .day(.oneHour))
     }
 }

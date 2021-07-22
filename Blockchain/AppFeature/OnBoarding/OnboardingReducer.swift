@@ -95,14 +95,14 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             }
         ),
     walletUpgradeReducer
-            .optional()
-            .pullback(
-                state: \.walletUpgradeState,
-                action: /Onboarding.Action.walletUpgrade,
-                environment: { _ in
-                    WalletUpgrade.Environment()
-                }
-            ),
+        .optional()
+        .pullback(
+            state: \.walletUpgradeState,
+            action: /Onboarding.Action.walletUpgrade,
+            environment: { _ in
+                WalletUpgrade.Environment()
+            }
+        ),
     Reducer<Onboarding.State, Onboarding.Action, Onboarding.Environment> { state, action, environment in
         switch action {
         case .start:

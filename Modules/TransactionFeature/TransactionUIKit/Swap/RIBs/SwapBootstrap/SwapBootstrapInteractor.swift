@@ -6,7 +6,7 @@ import KYCUIKit
 import RIBs
 import RxSwift
 
-protocol SwapBootstrapRouting: ViewableRouting { }
+protocol SwapBootstrapRouting: ViewableRouting {}
 
 protocol SwapBootstrapPresentable: Presentable {
     func showLoading()
@@ -41,9 +41,11 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
 
     // MARK: - Initializer
 
-    init(presenter: SwapBootstrapPresentable,
-         kycStatusChecker: KYCStatusChecking = resolve(),
-         kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()) {
+    init(
+        presenter: SwapBootstrapPresentable,
+        kycStatusChecker: KYCStatusChecking = resolve(),
+        kycTiersPageModelFactory: KYCTiersPageModelFactoryAPI = resolve()
+    ) {
         self.kycStatusChecker = kycStatusChecker
         self.kycTiersPageModelFactory = kycTiersPageModelFactory
         super.init(presenter: presenter)
@@ -62,35 +64,35 @@ final class SwapBootstrapInteractor: PresentableInteractor<SwapBootstrapPresenta
         kycStatusChecker.checkStatus(whileLoading: { [weak presenter] in
             presenter?.showLoading()
         })
-        .flatMap(weak: self) { (self, status) -> Single<Action> in
-            switch status {
-            case .unverified:
-                return .just(.userMustKYCForSwap)
-            case .verifying:
-                return self.kycTiersPageModelFactory
-                    .tiersPageModel(suppressCTA: true)
-                    .map({ (model) -> Action in
-                        .userMustCompleteKYC(model: model)
-                    })
-                    .observeOn(MainScheduler.asyncInstance)
-            case .verified:
-                return .just(.userReadyForSwap)
-            case .failed:
-                return .just(.kycCheckError)
+            .flatMap(weak: self) { (self, status) -> Single<Action> in
+                switch status {
+                case .unverified:
+                    return .just(.userMustKYCForSwap)
+                case .verifying:
+                    return self.kycTiersPageModelFactory
+                        .tiersPageModel(suppressCTA: true)
+                        .map { model -> Action in
+                            .userMustCompleteKYC(model: model)
+                        }
+                        .observeOn(MainScheduler.asyncInstance)
+                case .verified:
+                    return .just(.userReadyForSwap)
+                case .failed:
+                    return .just(.kycCheckError)
+                }
             }
-        }
-        .subscribe(onSuccess: { [weak self] action in
-            switch action {
-            case .userMustKYCForSwap:
-                self?.listener?.userMustKYCForSwap()
-            case .userMustCompleteKYC(let model):
-                self?.listener?.userMustCompleteKYC(model: model)
-            case .userReadyForSwap:
-                self?.listener?.userReadyForSwap()
-            case .kycCheckError:
-                break
-            }
-        })
-        .disposeOnDeactivate(interactor: self)
+            .subscribe(onSuccess: { [weak self] action in
+                switch action {
+                case .userMustKYCForSwap:
+                    self?.listener?.userMustKYCForSwap()
+                case .userMustCompleteKYC(let model):
+                    self?.listener?.userMustCompleteKYC(model: model)
+                case .userReadyForSwap:
+                    self?.listener?.userReadyForSwap()
+                case .kycCheckError:
+                    break
+                }
+            })
+            .disposeOnDeactivate(interactor: self)
     }
 }

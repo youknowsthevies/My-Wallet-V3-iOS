@@ -40,16 +40,18 @@ public protocol LinkBankFlowStarter: AnyObject {
 }
 
 protocol LinkBankFlowRootInteractable: Interactable,
-                                       LinkBankSplashScreenListener,
-                                       YodleeScreenListener,
-                                       LinkBankFailureScreenListener {
+    LinkBankSplashScreenListener,
+    YodleeScreenListener,
+    LinkBankFailureScreenListener
+{
     var linkBankFlowEffect: Observable<LinkBankFlowEffect> { get }
     var router: LinkBankFlowRootRouting? { get set }
 }
 
 final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
-                                    LinkBankFlowStarter,
-                                    LinkBankFlowRootRouting {
+    LinkBankFlowStarter,
+    LinkBankFlowRootRouting
+{
 
     private var dismissFlow: (() -> Void)?
 
@@ -57,17 +59,20 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     private var presentingController: UIViewController? {
         topMostViewControllerProvider.topMostViewController
     }
+
     private let splashScreenBuilder: LinkBankSplashScreenBuildable
     private let yodleeScreenBuilder: YodleeScreenBuildable
     private let failureScreenBuilder: LinkBankFailureScreenBuildable
 
     private var navigationController: UINavigationController?
 
-    init(interactor: LinkBankFlowRootInteractable,
-         topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
-         splashScreenBuilder: LinkBankSplashScreenBuildable,
-         yodleeScreenBuilder: YodleeScreenBuildable,
-         failureScreenBuilder: LinkBankFailureScreenBuildable) {
+    init(
+        interactor: LinkBankFlowRootInteractable,
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve(),
+        splashScreenBuilder: LinkBankSplashScreenBuildable,
+        yodleeScreenBuilder: YodleeScreenBuildable,
+        failureScreenBuilder: LinkBankFailureScreenBuildable
+    ) {
         self.topMostViewControllerProvider = topMostViewControllerProvider
         self.splashScreenBuilder = splashScreenBuilder
         self.yodleeScreenBuilder = yodleeScreenBuilder
@@ -103,7 +108,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
 
     func returnToSplashScreen() {
         detachCurrentChild()
-        self.navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)
     }
 
     func closeFlow(isInteractive: Bool) {
@@ -111,6 +116,7 @@ final class LinkBankFlowRootRouter: RIBs.Router<LinkBankFlowRootInteractable>,
     }
 
     // MARK: - LinkBankFlowStarter
+
     func startFlow() -> Observable<LinkBankFlowEffect> {
         interactable.activate()
         load()

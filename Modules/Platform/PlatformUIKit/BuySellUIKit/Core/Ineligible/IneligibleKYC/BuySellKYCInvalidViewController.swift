@@ -10,6 +10,7 @@ final class BuySellKYCInvalidViewController: BaseScreenViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -50,9 +51,11 @@ final class BuySellKYCInvalidViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(),
+        set(
+            barStyle: .lightContent(),
             leadingButtonStyle: .none,
-            trailingButtonStyle: .close)
+            trailingButtonStyle: .close
+        )
         titleViewStyle = .text(value: presenter.title)
     }
 }
@@ -60,13 +63,17 @@ final class BuySellKYCInvalidViewController: BaseScreenViewController {
 // MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension BuySellKYCInvalidViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
+    func tableView(
+        _ tableView: UITableView,
+        numberOfRowsInSection section: Int
+    ) -> Int {
         presenter.cellCount
     }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
         let cell: UITableViewCell
         let type = presenter.cellArrangement[indexPath.row]
         switch type {

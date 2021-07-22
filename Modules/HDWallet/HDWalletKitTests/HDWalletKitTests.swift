@@ -62,7 +62,5 @@ class HDWalletKitTests: XCTestCase {
         //        XCTAssertEqual(childKey.xpub, "xpub6D3Cj1d8RgE6BRaEyYiRsJ8T17QA6Vq8F4P8f13BvDQTfgiBVT5iSdeSJ2QLSRijq2PMBXRSgduEUq11mYggQz6vUEe7Ga9e86urZjkrmeR")
         //        // swiftlint:disable line_length
         //        XCTAssertEqual(childKey.xpriv, "xprv9z3rKW6EbJfnxwVmsXBRWABiT5Zfh37GsqTXrcdaMssUntP2wumTtqKxSkZsytaxQZknwAhb3U8UR5cc3cxoMxdo4871tPPCTmeqckJyrWL")
-
     }
-
 }

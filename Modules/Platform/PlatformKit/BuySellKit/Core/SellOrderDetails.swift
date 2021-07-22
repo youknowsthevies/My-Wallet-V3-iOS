@@ -50,7 +50,7 @@ public struct SellOrderDetails {
         self.fiatValue = fiatValue
         self.cryptoValue = cryptoValue
         self.state = state
-        self.paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
+        paymentMethod = PaymentMethod.MethodType(type: paymentType, currency: .fiat(fiatCurrency))
 
         if let price = response.price {
             self.price = FiatValue.create(minor: price, currency: fiatCurrency)

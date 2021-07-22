@@ -7,12 +7,11 @@ protocol LinkBankFailureScreenInteractable: Interactable {
     var listener: LinkBankFailureScreenListener? { get set }
 }
 
-protocol LinkBankFailureScreenViewControllable: ViewControllable {
-
-}
+protocol LinkBankFailureScreenViewControllable: ViewControllable {}
 
 final class LinkBankFailureScreenRouter: ViewableRouter<LinkBankFailureScreenInteractable, LinkBankFailureScreenViewControllable>,
-                                         LinkBankFailureScreenRouting {
+    LinkBankFailureScreenRouting
+{
 
     override init(interactor: LinkBankFailureScreenInteractable, viewController: LinkBankFailureScreenViewControllable) {
         super.init(interactor: interactor, viewController: viewController)

@@ -49,7 +49,7 @@ final class SellCheckoutContentReducer: CheckoutScreenContentReducing {
 
         let priceLineItemCellInteractor: CellInteractor = .init(
             title: TitleLabelInteractor(knownValue: "\(data.inputCurrency.code) \(LocalizedLineItem.price)"),
-            description: CheckoutContentDescriptionLabelInteractor.AssetPrice.init(
+            description: CheckoutContentDescriptionLabelInteractor.AssetPrice(
                 service: PriceService(),
                 baseCurrency: data.outputCurrency,
                 quoteCurrency: data.inputCurrency

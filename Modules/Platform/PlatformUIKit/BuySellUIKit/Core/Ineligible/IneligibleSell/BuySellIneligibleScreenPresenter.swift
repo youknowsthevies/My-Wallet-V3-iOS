@@ -13,12 +13,12 @@ public final class BuySellIneligibleScreenPresenter {
         regionName
             .map { "\(LocalizationId.title) \($0)" }
             .map { LabelContent(
-                    text: $0,
-                    font: .main(.semibold, 20.0),
-                    color: .textFieldText,
-                    alignment: .center,
-                    accessibility: .id(AccessibilityId.title)
-                )
+                text: $0,
+                font: .main(.semibold, 20.0),
+                color: .textFieldText,
+                alignment: .center,
+                accessibility: .id(AccessibilityId.title)
+            )
             }
             .asDriver(onErrorJustReturn: .empty)
     }
@@ -27,12 +27,12 @@ public final class BuySellIneligibleScreenPresenter {
         regionName
             .map { String(format: "\(LocalizationId.subtitle)", $0) }
             .map { LabelContent(
-                    text: $0,
-                    font: .main(.medium, 14.0),
-                    color: .descriptionText,
-                    alignment: .center,
-                    accessibility: .id(AccessibilityId.subtitle)
-                )
+                text: $0,
+                font: .main(.medium, 14.0),
+                color: .descriptionText,
+                alignment: .center,
+                accessibility: .id(AccessibilityId.subtitle)
+            )
             }
             .asDriver(onErrorJustReturn: .empty)
     }
@@ -55,8 +55,10 @@ public final class BuySellIneligibleScreenPresenter {
     private let interactor: BuySellIneligibleScreenInteractor
     private let disposeBag = DisposeBag()
 
-    init(interactor: BuySellIneligibleScreenInteractor,
-         router: SellRouterInteractor) {
+    init(
+        interactor: BuySellIneligibleScreenInteractor,
+        router: SellRouterInteractor
+    ) {
         self.interactor = interactor
         buttonViewModel = .secondary(
             with: LocalizationId.learnMore,

@@ -34,9 +34,11 @@ public final class SellTransferCancellationRoutingInteractor: TransferOrderRouti
     private let disposeBag = DisposeBag()
     private unowned let routingInteractor: SellRouterInteractor
 
-    public init(routingInteractor: SellRouterInteractor,
-                analyticsRecording: AnalyticsEventRecorderAPI = resolve()) {
-        self.analyticsRecorder = analyticsRecording
+    public init(
+        routingInteractor: SellRouterInteractor,
+        analyticsRecording: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        analyticsRecorder = analyticsRecording
         self.routingInteractor = routingInteractor
         _ = setup
     }

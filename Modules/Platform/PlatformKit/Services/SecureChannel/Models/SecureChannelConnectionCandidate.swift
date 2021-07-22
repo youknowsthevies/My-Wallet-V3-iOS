@@ -17,9 +17,9 @@ public struct SecureChannelConnectionCandidate {
     init(details: SecureChannelConnectionDetails, isAuthorized: Bool, timestamp: UInt64, lastUsed: UInt64?) {
         self.details = details
         self.isAuthorized = isAuthorized
-        self.timestamp = Date(timeIntervalSince1970: TimeInterval(timestamp)/1000)
+        self.timestamp = Date(timeIntervalSince1970: TimeInterval(timestamp) / 1000)
         if let lastUsed = lastUsed {
-            self.lastUsed = Date(timeIntervalSince1970: TimeInterval(lastUsed)/1000)
+            self.lastUsed = Date(timeIntervalSince1970: TimeInterval(lastUsed) / 1000)
         } else {
             self.lastUsed = nil
         }

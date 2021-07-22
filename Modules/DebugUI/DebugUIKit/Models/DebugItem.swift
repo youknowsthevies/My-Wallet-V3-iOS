@@ -24,7 +24,7 @@ struct DebugItem: Equatable {
     let type: DebugItemType
 
     init(type: DebugItemType) {
-        self.title = type.title
+        title = type.title
         self.type = type
     }
 }

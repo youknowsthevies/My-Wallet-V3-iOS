@@ -68,6 +68,6 @@ extension WalletIntroductionLocation.Position {
 }
 
 extension WalletIntroductionLocation {
-    /// The location that the user should start at on first launch. 
-    static let starter: WalletIntroductionLocation = WalletIntroductionLocation(screen: .dashboard, position: .home)
+    /// The location that the user should start at on first launch.
+    static let starter = WalletIntroductionLocation(screen: .dashboard, position: .home)
 }

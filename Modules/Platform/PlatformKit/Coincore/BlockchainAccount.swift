@@ -5,11 +5,11 @@ import ToolKit
 
 public typealias AvailableActions = Set<AssetAction>
 
-public protocol TradingAccount { }
+public protocol TradingAccount {}
 
-public protocol BankAccount { }
+public protocol BankAccount {}
 
-public protocol NonCustodialAccount { }
+public protocol NonCustodialAccount {}
 
 public protocol BlockchainAccount {
 

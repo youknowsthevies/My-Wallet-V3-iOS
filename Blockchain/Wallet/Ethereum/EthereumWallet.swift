@@ -34,6 +34,7 @@ final class EthereumWallet: NSObject {
     var delegate: EthereumJSInteropDelegateAPI {
         dispatcher
     }
+
     @available(*, deprecated, message: "making this so tests will compile")
     var interopDispatcher: EthereumJSInteropDispatcherAPI {
         dispatcher
@@ -53,10 +54,12 @@ final class EthereumWallet: NSObject {
         self.init(schedulerType: MainScheduler.instance, wallet: legacyWallet)
     }
 
-    init(schedulerType: SchedulerType = MainScheduler.instance,
-         secondPasswordPrompter: SecondPasswordPromptable = resolve(),
-         wallet: WalletAPI,
-         dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared) {
+    init(
+        schedulerType: SchedulerType = MainScheduler.instance,
+        secondPasswordPrompter: SecondPasswordPromptable = resolve(),
+        wallet: WalletAPI,
+        dispatcher: Dispatcher = EthereumJSInteropDispatcher.shared
+    ) {
         self.schedulerType = schedulerType
         self.secondPasswordPrompter = secondPasswordPrompter
         self.wallet = wallet
@@ -94,7 +97,7 @@ extension EthereumWallet: EthereumWalletBridgeAPI {
     }
 
     func updateMemo(for transactionHash: String, memo: String?) -> Completable {
-        let saveMemo: Completable = Completable.create { completable in
+        let saveMemo = Completable.create { completable in
             self.wallet?.setEthereumMemo(for: transactionHash, memo: memo)
             completable(.completed)
             return Disposables.create()

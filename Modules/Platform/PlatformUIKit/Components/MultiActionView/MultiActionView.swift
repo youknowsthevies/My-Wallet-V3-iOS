@@ -26,7 +26,7 @@ public final class MultiActionView: UIView {
 
     // MARK: - Init
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

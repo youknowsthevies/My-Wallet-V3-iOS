@@ -13,8 +13,8 @@ public enum AssetLineChartInteractionState: Equatable {
     case selected(Index)
 }
 
-public extension AssetLineChartInteractionState {
-    static func ==(lhs: AssetLineChartInteractionState, rhs: AssetLineChartInteractionState) -> Bool {
+extension AssetLineChartInteractionState {
+    public static func == (lhs: AssetLineChartInteractionState, rhs: AssetLineChartInteractionState) -> Bool {
         switch (lhs, rhs) {
         case (.deselected, .deselected):
             return true

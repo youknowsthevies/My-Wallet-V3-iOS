@@ -28,7 +28,7 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
 
     // MARK: Types
 
-    public typealias CalculationState = ValueCalculationState<(HistoricalFiatPriceResponse)>
+    public typealias CalculationState = ValueCalculationState<HistoricalFiatPriceResponse>
 
     // MARK: - HistoricalFiatPriceServiceAPI
 
@@ -75,11 +75,11 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
                 let fiatCurrency = tuple.0
                 let window = tuple.1
                 let prices = self.priceService.priceSeries(
-                        within: window,
-                        of: self.cryptoCurrency,
-                        in: fiatCurrency
-                    )
-                    .asObservable()
+                    within: window,
+                    of: self.cryptoCurrency,
+                    in: fiatCurrency
+                )
+                .asObservable()
                 return Observable.zip(prices, Observable.just(fiatCurrency.code), Observable.just(window))
             }
             .map { ($0.0, $0.2) }
@@ -98,10 +98,12 @@ public final class HistoricalFiatPriceService: HistoricalFiatPriceServiceAPI {
             .disposed(by: bag)
     }()
 
-    public init(cryptoCurrency: CryptoCurrency,
-                exchangeAPI: PairExchangeServiceAPI,
-                priceService: PriceServiceAPI = resolve(),
-                fiatCurrencyService: FiatCurrencyServiceAPI) {
+    public init(
+        cryptoCurrency: CryptoCurrency,
+        exchangeAPI: PairExchangeServiceAPI,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
         self.exchangeAPI = exchangeAPI
         self.cryptoCurrency = cryptoCurrency
         self.priceService = priceService

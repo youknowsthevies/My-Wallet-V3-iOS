@@ -53,9 +53,11 @@ final class AutoPairingScreenPresenter {
 
     // MARK: - Setup
 
-    init(interactor: AutoPairingScreenInteractor = AutoPairingScreenInteractor(),
-         alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        interactor: AutoPairingScreenInteractor = AutoPairingScreenInteractor(),
+        alertPresenter: AlertViewPresenter = .shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.interactor = interactor
         self.loadingViewPresenter = loadingViewPresenter
         self.alertPresenter = alertPresenter
@@ -79,14 +81,16 @@ final class AutoPairingScreenPresenter {
         loadingViewPresenter.hide()
         let tryAgain = UIAlertAction(
             title: LocalizedString.ErrorAlert.scanAgain,
-            style: .default) { [unowned self] _ in
-                self.fallbackActionRelay.accept(.retry)
-            }
+            style: .default
+        ) { [unowned self] _ in
+            self.fallbackActionRelay.accept(.retry)
+        }
         let manualPairing = UIAlertAction(
             title: LocalizedString.ErrorAlert.manualPairing,
-            style: .cancel) { [unowned self] _ in
-                self.fallbackActionRelay.accept(.cancel)
-            }
+            style: .cancel
+        ) { [unowned self] _ in
+            self.fallbackActionRelay.accept(.cancel)
+        }
         alertPresenter.standardNotify(
             title: LocalizedString.ErrorAlert.title,
             message: LocalizedString.ErrorAlert.message,

@@ -69,14 +69,17 @@ final class WalletIntroAnnouncement: PeriodicAnnouncement & RemovableAnnouncemen
     let appearanceRules: PeriodicAnnouncementAppearanceRules
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(cacheSuite: CacheSuite = resolve(),
-         reappearanceTimeInterval: TimeInterval,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         action: @escaping CardAnnouncementAction,
-         dismiss: @escaping CardAnnouncementAction) {
+    init(
+        cacheSuite: CacheSuite = resolve(),
+        reappearanceTimeInterval: TimeInterval,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        action: @escaping CardAnnouncementAction,
+        dismiss: @escaping CardAnnouncementAction
+    ) {
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         appearanceRules = PeriodicAnnouncementAppearanceRules(
             recessDurationBetweenDismissals: reappearanceTimeInterval,

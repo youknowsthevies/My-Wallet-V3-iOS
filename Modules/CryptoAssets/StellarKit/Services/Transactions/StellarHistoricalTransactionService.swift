@@ -15,13 +15,13 @@ final class StellarHistoricalTransactionService: StellarHistoricalTransactionSer
     // MARK: - Private Properties
 
     private var operationsService: Single<stellarsdk.OperationsService> {
-        sdk.map { $0.operations }
+        sdk.map(\.operations)
     }
 
     private var sdk: Single<stellarsdk.StellarSDK> {
         configurationService
             .configuration
-            .map { $0.sdk }
+            .map(\.sdk)
     }
 
     // MARK: - Private Properties
@@ -101,15 +101,15 @@ extension stellarsdk.OperationsService {
                         case .failure(error: let horizonError):
                             observer(.error(horizonError.toStellarServiceError()))
                         }
-
-                    })
+                    }
+                )
                 return Disposables.create()
             }
     }
 }
 
-fileprivate extension OperationResponse {
-    func buildOperation(accountID: String) -> StellarHistoricalTransaction? {
+extension OperationResponse {
+    fileprivate func buildOperation(accountID: String) -> StellarHistoricalTransaction? {
         guard let transaction = transaction else {
             return nil
         }
@@ -119,18 +119,22 @@ fileprivate extension OperationResponse {
             guard let self = self as? AccountCreatedOperationResponse else {
                 return nil
             }
-            let data = self.accountCreated(accountID: accountID,
-                                           feeCharged: Int(transaction.feeCharged ?? "0"),
-                                           memo: transaction.memo?.textMemo)
+            let data = self.accountCreated(
+                accountID: accountID,
+                feeCharged: Int(transaction.feeCharged ?? "0"),
+                memo: transaction.memo?.textMemo
+            )
             return .accountCreated(data)
 
         case .payment:
             guard let self = self as? PaymentOperationResponse else {
                 return nil
             }
-            let data = self.payment(accountID: accountID,
-                                    feeCharged: Int(transaction.feeCharged ?? "0"),
-                                    memo: transaction.memo?.textMemo)
+            let data = self.payment(
+                accountID: accountID,
+                feeCharged: Int(transaction.feeCharged ?? "0"),
+                memo: transaction.memo?.textMemo
+            )
             return .payment(data)
 
         case .accountMerge,
@@ -158,8 +162,8 @@ fileprivate extension OperationResponse {
     }
 }
 
-fileprivate extension AccountCreatedOperationResponse {
-    func accountCreated(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.AccountCreated {
+extension AccountCreatedOperationResponse {
+    fileprivate func accountCreated(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.AccountCreated {
         StellarHistoricalTransaction.AccountCreated(
             identifier: id,
             pagingToken: pagingToken,
@@ -176,8 +180,8 @@ fileprivate extension AccountCreatedOperationResponse {
     }
 }
 
-fileprivate extension PaymentOperationResponse {
-    func payment(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.Payment {
+extension PaymentOperationResponse {
+    fileprivate func payment(accountID: String, feeCharged: Int?, memo: String?) -> StellarHistoricalTransaction.Payment {
         StellarHistoricalTransaction.Payment(
             identifier: id,
             pagingToken: pagingToken,
@@ -193,8 +197,8 @@ fileprivate extension PaymentOperationResponse {
     }
 }
 
-fileprivate extension stellarsdk.Memo {
-    var textMemo: String? {
+extension stellarsdk.Memo {
+    fileprivate var textMemo: String? {
         switch self {
         case .text(let text):
             return text

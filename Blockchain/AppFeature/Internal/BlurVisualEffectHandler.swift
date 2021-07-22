@@ -35,6 +35,7 @@ final class BlurVisualEffectHandler {
                         self.visualEffectView.removeFromSuperview()
                     }
                 }
-            })
+            }
+        )
     }
 }

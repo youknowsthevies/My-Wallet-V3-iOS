@@ -56,15 +56,16 @@ public protocol WithdrawRootRouting: AnyObject {
 
 extension WithdrawRootRouting where Self: RIBs.Router<WithdrawRootInteractable> {
     func start() {
-        self.load()
+        load()
     }
 }
 
-protocol WithdrawRootListener: ViewListener { }
+protocol WithdrawRootListener: ViewListener {}
 
 final class WithdrawRootInteractor: Interactor,
-                                    WithdrawRootInteractable,
-                                    WithdrawRootListener {
+    WithdrawRootInteractable,
+    WithdrawRootListener
+{
 
     weak var router: WithdrawRootRouting?
     weak var listener: WithdrawRootListener?
@@ -86,10 +87,12 @@ final class WithdrawRootInteractor: Interactor,
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let sourceAccount: FiatAccount
 
-    init(sourceAccount: FiatAccount,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()) {
+    init(
+        sourceAccount: FiatAccount,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        linkedBanksFactory: LinkedBanksFactoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
+    ) {
         self.sourceAccount = sourceAccount
         self.analyticsRecorder = analyticsRecorder
         self.linkedBanksFactory = linkedBanksFactory
@@ -100,26 +103,28 @@ final class WithdrawRootInteractor: Interactor,
     override func didBecomeActive() {
         super.didBecomeActive()
 
-        Single.zip(linkedBanksFactory.linkedBanks,
-                   paymentMethodTypes,
-                   fiatCurrencyService.fiatCurrency)
-            .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onSuccess: { [weak self] values in
-                guard let self = self else { return }
-                let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
-                if linkedBanks.isEmpty {
-                    self.handleNoLinkedBanks(
-                        paymentMethodTypes,
-                        fiatCurrency: fiatCurrency
-                    )
-                } else {
-                    self.router?.startWithdraw(
-                        sourceAccount: self.sourceAccount,
-                        destination: linkedBanks.count > 1 ? nil : linkedBanks.first
-                    )
-                }
-            })
-            .disposeOnDeactivate(interactor: self)
+        Single.zip(
+            linkedBanksFactory.linkedBanks,
+            paymentMethodTypes,
+            fiatCurrencyService.fiatCurrency
+        )
+        .observeOn(MainScheduler.asyncInstance)
+        .subscribe(onSuccess: { [weak self] values in
+            guard let self = self else { return }
+            let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
+            if linkedBanks.isEmpty {
+                self.handleNoLinkedBanks(
+                    paymentMethodTypes,
+                    fiatCurrency: fiatCurrency
+                )
+            } else {
+                self.router?.startWithdraw(
+                    sourceAccount: self.sourceAccount,
+                    destination: linkedBanks.count > 1 ? nil : linkedBanks.first
+                )
+            }
+        })
+        .disposeOnDeactivate(interactor: self)
     }
 
     func bankLinkingComplete() {
@@ -174,12 +179,12 @@ final class WithdrawRootInteractor: Interactor,
     // MARK: - Private Functions
 
     private func handleNoLinkedBanks(_ paymentMethodTypes: [PaymentMethodPayloadType], fiatCurrency: FiatCurrency) {
-        if paymentMethodTypes.contains(.bankAccount) && paymentMethodTypes.contains(.bankTransfer) {
-            self.router?.routeToAddABank()
+        if paymentMethodTypes.contains(.bankAccount), paymentMethodTypes.contains(.bankTransfer) {
+            router?.routeToAddABank()
         } else if paymentMethodTypes.contains(.bankTransfer) {
-            self.router?.startWithLinkABank()
+            router?.startWithLinkABank()
         } else if paymentMethodTypes.contains(.bankAccount) {
-            self.router?.startWithWireInstructions(currency: fiatCurrency)
+            router?.startWithWireInstructions(currency: fiatCurrency)
         } else {
             // TODO: Show that withdraw is not supported
         }

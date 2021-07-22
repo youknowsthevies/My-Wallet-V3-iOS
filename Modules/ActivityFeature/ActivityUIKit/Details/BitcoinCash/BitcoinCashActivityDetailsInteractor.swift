@@ -15,9 +15,11 @@ final class BitcoinCashActivityDetailsInteractor {
 
     // MARK: - Init
 
-    init(fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()) {
+    init(
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<BitcoinCashActivityItemEventDetails> = resolve()
+    ) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService

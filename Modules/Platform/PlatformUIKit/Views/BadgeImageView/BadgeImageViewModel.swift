@@ -12,8 +12,10 @@ public struct BadgeImageViewModel {
         public let backgroundColor: UIColor
         public let imageViewContent: ImageViewContent
 
-        public init(backgroundColor: UIColor,
-                    imageViewContent: ImageViewContent) {
+        public init(
+            backgroundColor: UIColor,
+            imageViewContent: ImageViewContent
+        ) {
             self.backgroundColor = backgroundColor
             self.imageViewContent = imageViewContent
         }
@@ -93,7 +95,8 @@ extension BadgeImageViewModel {
     public static func `default`(
         image: ImageResource?,
         cornerRadius: CornerRadius = .value(8),
-        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        accessibilityIdSuffix: String
+    ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
         viewModel.set(
             theme: Theme(
@@ -113,7 +116,8 @@ extension BadgeImageViewModel {
         templateColor: UIColor,
         backgroundColor: UIColor,
         cornerRadius: CornerRadius = .round,
-        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        accessibilityIdSuffix: String
+    ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
         viewModel.set(
             theme: Theme(
@@ -137,7 +141,8 @@ extension BadgeImageViewModel {
         contentColor: UIColor = .defaultBadge,
         backgroundColor: UIColor = .lightBadgeBackground,
         cornerRadius: CornerRadius = .value(8),
-        accessibilityIdSuffix: String) -> BadgeImageViewModel {
+        accessibilityIdSuffix: String
+    ) -> BadgeImageViewModel {
         let viewModel = BadgeImageViewModel(cornerRadius: cornerRadius)
         viewModel.set(
             theme: Theme(

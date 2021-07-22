@@ -47,11 +47,11 @@ final class SMSSwitchViewInteractor: SwitchViewInteracting {
     }
 }
 
-fileprivate extension LoadingState where Content == (SwitchInteractionAsset) {
+extension LoadingState where Content == SwitchInteractionAsset {
 
     /// Initializer that receives the interaction state and
     /// maps it to `self`
-    init(with state: ValueCalculationState<WalletSettings>) {
+    fileprivate init(with state: ValueCalculationState<WalletSettings>) {
         switch state {
         case .calculating,
              .invalid:

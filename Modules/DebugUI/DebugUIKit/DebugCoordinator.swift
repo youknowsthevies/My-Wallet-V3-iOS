@@ -109,11 +109,11 @@ extension DebugCoordinator: UIAdaptivePresentationControllerDelegate {
 /// Needed as we're capturing the shake motion on a window level
 // swiftlint:disable all
 extension UIWindow {
-    open override var canBecomeFirstResponder: Bool {
+    override open var canBecomeFirstResponder: Bool {
         true
     }
 
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+    override open func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionEnded(motion, with: event)
     }
 }

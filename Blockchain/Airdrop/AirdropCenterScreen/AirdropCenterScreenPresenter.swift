@@ -16,7 +16,7 @@ final class AirdropCenterScreenPresenter {
         }
 
         var items: [AirdropTypeCellPresenter] {
-            switch  self {
+            switch self {
             case .started(let presenters):
                 return presenters.map { $0 }
             case .ended(let presenters):
@@ -62,8 +62,10 @@ final class AirdropCenterScreenPresenter {
 
     // MARK: - Setup
 
-    init(router: AirdropRouterAPI,
-         interactor: AirdropCenterScreenInteractor = AirdropCenterScreenInteractor()) {
+    init(
+        router: AirdropRouterAPI,
+        interactor: AirdropCenterScreenInteractor = AirdropCenterScreenInteractor()
+    ) {
         self.router = router
         self.interactor = interactor
 
@@ -93,7 +95,8 @@ final class AirdropCenterScreenPresenter {
             .bind { [weak router] presenter in
                 router?.presentAirdropStatusScreen(
                     for: presenter.campaignIdentifier,
-                    presentationType: .navigationFromCurrent)
+                    presentationType: .navigationFromCurrent
+                )
             }
             .disposed(by: disposeBag)
     }

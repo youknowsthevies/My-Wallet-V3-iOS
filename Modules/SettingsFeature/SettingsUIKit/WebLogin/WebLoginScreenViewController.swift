@@ -19,9 +19,10 @@ public final class WebLoginScreenViewController: BaseScreenViewController {
         self.presenter = presenter
         super.init(nibName: WebLoginScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
+
     @available(*, unavailable) required init?(coder: NSCoder) { nil }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         set(barStyle: presenter.barStyle, trailingButtonStyle: .close)
         titleViewStyle = presenter.titleView
@@ -34,7 +35,7 @@ public final class WebLoginScreenViewController: BaseScreenViewController {
             .bindAndCatch(to: imageView.rx.image)
             .disposed(by: disposeBag)
         presenter.qrCodeVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(qrCodeView.rx.isHidden)
             .disposed(by: disposeBag)
         presenter.qrCodeVisibility

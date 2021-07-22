@@ -22,17 +22,17 @@ public final class LinkedCardTableViewCell: UITableViewCell {
             button.isEnabled = presenter.acceptsUserInteraction
 
             presenter.badgeVisibility
-                .map { $0.isHidden }
+                .map(\.isHidden)
                 .drive(expiredBadgeView.rx.isHidden)
                 .disposed(by: disposeBag)
 
             presenter.badgeVisibility
-                .map { $0.invertedAlpha }
+                .map(\.invertedAlpha)
                 .drive(cardDigitsLabel.rx.alpha)
                 .disposed(by: disposeBag)
 
             presenter.badgeVisibility
-                .map { $0.invertedAlpha }
+                .map(\.invertedAlpha)
                 .drive(expirationDateLabel.rx.alpha)
                 .disposed(by: disposeBag)
 

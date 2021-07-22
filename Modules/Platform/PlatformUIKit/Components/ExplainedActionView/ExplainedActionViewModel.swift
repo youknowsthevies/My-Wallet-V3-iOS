@@ -38,11 +38,13 @@ public struct ExplainedActionViewModel {
 
     // MARK: - Setup
 
-    public init(thumbImage: String,
-                title: String,
-                descriptions: [DescriptionTitle],
-                badgeTitle: String?,
-                uniqueAccessibilityIdentifier: String) {
+    public init(
+        thumbImage: String,
+        title: String,
+        descriptions: [DescriptionTitle],
+        badgeTitle: String?,
+        uniqueAccessibilityIdentifier: String
+    ) {
         thumbBadgeImageViewModel = .primary(
             image: .local(name: thumbImage, bundle: .platformUIKit),
             cornerRadius: .round,

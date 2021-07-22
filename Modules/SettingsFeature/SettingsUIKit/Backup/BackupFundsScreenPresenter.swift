@@ -76,9 +76,11 @@ final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(stateService: BackupRouterStateServiceAPI,
-         entry: BackupRouterEntry,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        stateService: BackupRouterStateServiceAPI,
+        entry: BackupRouterEntry,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         self.entry = entry
@@ -92,14 +94,13 @@ final class BackupFundsScreenPresenter: DetailsScreenPresenterAPI {
 
                 self.stateService.nextRelay.accept(())
             }
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
     }
 
     func viewDidLoad() {
         guard entry == .custody else { return }
         analyticsRecorder.record(event: AnalyticsEvent.sbBackupWalletCardShown)
     }
-
 }
 
 extension BackupFundsScreenPresenter {
@@ -110,6 +111,7 @@ extension BackupFundsScreenPresenter {
         var startTapRelay: PublishRelay<Void> {
             startBackupButton.tapRelay
         }
+
         let cells: [DetailsScreen.CellType]
         let buttons: [ButtonViewModel]
 
@@ -156,7 +158,7 @@ extension BackupFundsScreenPresenter {
                 .label(bodyWarning),
                 .notice(notice)
             ]
-            buttons = [ startBackupButton ]
+            buttons = [startBackupButton]
         }
     }
 }

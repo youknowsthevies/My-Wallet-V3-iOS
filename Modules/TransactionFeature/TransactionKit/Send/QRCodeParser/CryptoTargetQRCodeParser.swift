@@ -25,8 +25,10 @@ public final class CryptoTargetQRCodeParser: QRCodeScannerParsing {
     private let payloadFactory: CryptoTargetPayloadFactoryAPI
     private let disposeBag = DisposeBag()
 
-    public init(assetType: CryptoCurrency,
-                payloadFactory: CryptoTargetPayloadFactoryAPI = resolve()) {
+    public init(
+        assetType: CryptoCurrency,
+        payloadFactory: CryptoTargetPayloadFactoryAPI = resolve()
+    ) {
         self.assetType = assetType
         self.payloadFactory = payloadFactory
     }

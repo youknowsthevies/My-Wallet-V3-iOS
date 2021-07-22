@@ -13,9 +13,11 @@ public final class DeepLinkQRCodeRouter {
     // MARK: - Setup
 
     /// Initialised with supported routes as we don't want the client to act on any known route
-    public init(supportedRoutes: [DeepLinkRoute],
-                deepLinkHandler: DeepLinkHandling = resolve(),
-                deepLinkRouter: DeepLinkRouting = resolve()) {
+    public init(
+        supportedRoutes: [DeepLinkRoute],
+        deepLinkHandler: DeepLinkHandling = resolve(),
+        deepLinkRouter: DeepLinkRouting = resolve()
+    ) {
         self.supportedRoutes = supportedRoutes
         self.deepLinkHandler = deepLinkHandler
         self.deepLinkRouter = deepLinkRouter

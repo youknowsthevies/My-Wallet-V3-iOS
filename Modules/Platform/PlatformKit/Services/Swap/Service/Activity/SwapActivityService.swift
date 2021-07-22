@@ -14,18 +14,22 @@ final class SwapActivityService: SwapActivityServiceAPI {
     private let fiatCurrencyProvider: FiatCurrencySettingsServiceAPI
     private let cache: CachedValue<[SwapActivityItemEvent]>
 
-    init(client: SwapClientAPI = resolve(),
-         fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()) {
+    init(
+        client: SwapClientAPI = resolve(),
+        fiatCurrencyProvider: CompleteSettingsServiceAPI = resolve()
+    ) {
         self.fiatCurrencyProvider = fiatCurrencyProvider
         self.client = client
-        self.cache = .init(configuration: .periodic(30))
+        cache = .init(configuration: .periodic(30))
         cache.setFetch {
             fiatCurrencyProvider.fiatCurrency
                 .flatMap { fiatCurrency -> Single<[SwapActivityItemEvent]> in
-                    client.fetchActivity(from: Date(),
-                                         fiatCurrency: fiatCurrency.code,
-                                         cryptoCurrency: nil,
-                                         limit: 50)
+                    client.fetchActivity(
+                        from: Date(),
+                        fiatCurrency: fiatCurrency.code,
+                        cryptoCurrency: nil,
+                        limit: 50
+                    )
                 }
         }
     }

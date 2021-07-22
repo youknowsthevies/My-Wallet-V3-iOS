@@ -23,7 +23,8 @@ extension DeepLinkPayload {
         parameterPairs?.forEach { pair in
             let paramComponents = pair.components(separatedBy: "=")
             guard let key = paramComponents.first,
-                  let value = paramComponents.last?.removingPercentEncoding else {
+                  let value = paramComponents.last?.removingPercentEncoding
+            else {
                 return
             }
             parameters[key] = value

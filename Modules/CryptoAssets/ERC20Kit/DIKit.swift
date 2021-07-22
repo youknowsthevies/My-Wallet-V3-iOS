@@ -30,7 +30,6 @@ extension DependencyContainer {
         factory { ERC20AccountAPIClient() as ERC20AccountAPIClientAPI }
 
         factory { ERC20AccountService() as ERC20AccountServiceAPI }
-
     }
 }
 

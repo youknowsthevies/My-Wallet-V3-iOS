@@ -10,14 +10,18 @@ enum TransactionAction: MviAction {
 
     case initialiseWithNoSourceOrTargetAccount(action: AssetAction, passwordRequired: Bool)
     case initialiseWithSourceAccount(action: AssetAction, sourceAccount: BlockchainAccount, passwordRequired: Bool)
-    case initialiseWithSourceAndPreferredTarget(action: AssetAction,
-                                                sourceAccount: BlockchainAccount,
-                                                target: TransactionTarget,
-                                                passwordRequired: Bool)
-    case initialiseWithSourceAndTargetAccount(action: AssetAction,
-                                              sourceAccount: BlockchainAccount,
-                                              target: TransactionTarget,
-                                              passwordRequired: Bool)
+    case initialiseWithSourceAndPreferredTarget(
+        action: AssetAction,
+        sourceAccount: BlockchainAccount,
+        target: TransactionTarget,
+        passwordRequired: Bool
+    )
+    case initialiseWithSourceAndTargetAccount(
+        action: AssetAction,
+        sourceAccount: BlockchainAccount,
+        target: TransactionTarget,
+        passwordRequired: Bool
+    )
     case initialiseWithTargetAndNoSource(action: AssetAction, target: TransactionTarget, passwordRequired: Bool)
     case bankLinkingFlowDismissed(AssetAction)
     case showBankLinkingFlow
@@ -81,7 +85,7 @@ enum TransactionAction: MviAction {
                 unimplemented()
             }
             return newState
-        case let .initialiseWithSourceAndTargetAccount(action, sourceAccount, target, passwordRequired):
+        case .initialiseWithSourceAndTargetAccount(let action, let sourceAccount, let target, let passwordRequired):
             /// If the user scans a BitPay QR code, the account will be a
             /// BitPayInvoiceTarget. This means we do not proceed to the enter amount
             /// screen but rather the confirmation detail screen.
@@ -95,7 +99,7 @@ enum TransactionAction: MviAction {
                 source: sourceAccount,
                 step: step
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithSourceAndPreferredTarget(action, sourceAccount, target, passwordRequired):
+        case .initialiseWithSourceAndPreferredTarget(let action, let sourceAccount, let target, let passwordRequired):
             return TransactionState(
                 action: action,
                 destination: target,
@@ -104,7 +108,7 @@ enum TransactionAction: MviAction {
                 source: sourceAccount,
                 step: .enterAmount
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithTargetAndNoSource(action, target, passwordRequired):
+        case .initialiseWithTargetAndNoSource(let action, let target, let passwordRequired):
             return TransactionState(
                 action: action,
                 destination: target,
@@ -113,14 +117,14 @@ enum TransactionAction: MviAction {
                 source: nil,
                 step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithNoSourceOrTargetAccount(action, passwordRequired):
+        case .initialiseWithNoSourceOrTargetAccount(let action, let passwordRequired):
             return TransactionState(
                 action: action,
                 errorState: .none,
                 passwordRequired: passwordRequired,
                 step: .selectSource
             ).withUpdatedBackstack(oldState: oldState)
-        case let .initialiseWithSourceAccount(action, sourceAccount, passwordRequired):
+        case .initialiseWithSourceAccount(let action, let sourceAccount, let passwordRequired):
             return TransactionState(
                 action: action,
                 errorState: .none,

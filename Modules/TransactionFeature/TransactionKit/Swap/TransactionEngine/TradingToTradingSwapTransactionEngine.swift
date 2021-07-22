@@ -20,13 +20,15 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
     var sourceAccount: BlockchainAccount!
     var transactionTarget: TransactionTarget!
 
-    init(quotesEngine: SwapQuotesEngine,
-         orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
-         orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
-         tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         kycTiersService: KYCTiersServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve()) {
+    init(
+        quotesEngine: SwapQuotesEngine,
+        orderQuoteRepository: OrderQuoteRepositoryAPI = resolve(),
+        orderCreationRepository: OrderCreationRepositoryAPI = resolve(),
+        tradeLimitsRepository: TransactionLimitsRepositoryAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve()
+    ) {
         self.quotesEngine = quotesEngine
         self.orderQuoteRepository = orderQuoteRepository
         self.orderCreationRepository = orderCreationRepository
@@ -46,8 +48,8 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
         Single
             .zip(
                 quotesEngine.getRate(direction: orderDirection, pair: pair).take(1).asSingle(),
-                self.fiatCurrencyService.fiatCurrency,
-                self.sourceAccount.actionableBalance
+                fiatCurrencyService.fiatCurrency,
+                sourceAccount.actionableBalance
             )
             .flatMap(weak: self) { (self, payload) -> Single<PendingTransaction> in
                 let (pricedQuote, fiatCurrency, actionableBalance) = payload
@@ -75,24 +77,28 @@ final class TradingToTradingSwapTransactionEngine: SwapTransactionEngine {
             }
     }
 
-    func doUpdateFeeLevel(pendingTransaction: PendingTransaction,
-                          level: FeeLevel,
-                          customFeeAmount: MoneyValue) -> Single<PendingTransaction> {
+    func doUpdateFeeLevel(
+        pendingTransaction: PendingTransaction,
+        level: FeeLevel,
+        customFeeAmount: MoneyValue
+    ) -> Single<PendingTransaction> {
         precondition(pendingTransaction.availableFeeLevels.contains(level))
         return Single.just(pendingTransaction)
     }
 
     func update(amount: MoneyValue, pendingTransaction: PendingTransaction) -> Single<PendingTransaction> {
-        Single.zip(validateUpdateAmount(amount),
-                   sourceAccount.actionableBalance)
-            .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
-                pendingTransaction.update(amount: normalized, available: balance)
-            }
-            .do(onSuccess: { [weak self] transaction in
-                self?.quotesEngine.updateAmount(transaction.amount.amount)
-            })
-            .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
-                self.clearConfirmations(pendingTransaction: pendingTransaction)
-            }
+        Single.zip(
+            validateUpdateAmount(amount),
+            sourceAccount.actionableBalance
+        )
+        .map { (normalized: MoneyValue, balance: MoneyValue) -> PendingTransaction in
+            pendingTransaction.update(amount: normalized, available: balance)
+        }
+        .do(onSuccess: { [weak self] transaction in
+            self?.quotesEngine.updateAmount(transaction.amount.amount)
+        })
+        .map(weak: self) { (self, pendingTransaction) -> PendingTransaction in
+            self.clearConfirmations(pendingTransaction: pendingTransaction)
+        }
     }
 }

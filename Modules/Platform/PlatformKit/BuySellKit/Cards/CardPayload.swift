@@ -179,13 +179,13 @@ extension CardPayload.CardDetails: Decodable {
         if let month = try values.decodeIfPresent(Int.self, forKey: .expireMonth) {
             self.month = String(format: "%02d", month)
         } else {
-            self.month = nil
+            month = nil
         }
 
         if let year = try values.decodeIfPresent(Int.self, forKey: .expireYear) {
             self.year = "\(year)"
         } else {
-            self.year = nil
+            year = nil
         }
 
         type = try values.decode(String.self, forKey: .type)

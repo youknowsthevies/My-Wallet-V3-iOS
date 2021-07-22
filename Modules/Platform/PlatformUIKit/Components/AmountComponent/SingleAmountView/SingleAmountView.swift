@@ -59,7 +59,7 @@ public final class SingleAmountView: UIView, AmountViewable {
         let limitButtonVisibility: Visibility
         switch state {
         case .showLimitButton(let viewModel):
-            self.labeledButtonView.viewModel = viewModel
+            labeledButtonView.viewModel = viewModel
             limitButtonVisibility = .visible
         case .empty:
             limitButtonVisibility = .hidden

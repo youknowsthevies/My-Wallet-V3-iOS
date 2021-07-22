@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import XCTest
 @testable import TransactionDataKit
+import XCTest
 
 class TransactionDataKitTests: XCTestCase {
 
@@ -20,9 +20,8 @@ class TransactionDataKitTests: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        self.measure {
+        measure {
             // Put the code you want to measure the time of here.
         }
     }
-
 }

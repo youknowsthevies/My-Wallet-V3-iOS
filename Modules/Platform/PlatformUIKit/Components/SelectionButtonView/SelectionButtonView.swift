@@ -136,7 +136,6 @@ public final class SelectionButtonView: UIView {
                 .map { $0 ? .hidden : .visible }
                 .drive(transactionDescriptorView.rx.visibility)
                 .disposed(by: disposeBag)
-
         }
     }
 
@@ -169,7 +168,7 @@ public final class SelectionButtonView: UIView {
 
     // MARK: - Setup
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         setup()
     }

@@ -7,12 +7,12 @@ public final class NavigationController: UINavigationController, UIGestureRecogn
         setup()
     }
 
-    public override init(rootViewController: UIViewController) {
+    override public init(rootViewController: UIViewController) {
         super.init(rootViewController: rootViewController)
         setup()
     }
 
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 

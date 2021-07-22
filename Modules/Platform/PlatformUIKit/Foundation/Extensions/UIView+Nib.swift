@@ -9,10 +9,10 @@ extension UIView {
     @discardableResult
     public func fromNib<T: UIView>(named nibName: String? = nil) -> T? {
         guard let contentView = Bundle(for: type(of: self)).loadNibNamed(
-                nibName ?? type(of: self).objectName,
-                owner: self,
-                options: nil
-            )?.first as? T else {
+            nibName ?? Self.objectName,
+            owner: self,
+            options: nil
+        )?.first as? T else {
             return nil
         }
         addSubview(contentView)

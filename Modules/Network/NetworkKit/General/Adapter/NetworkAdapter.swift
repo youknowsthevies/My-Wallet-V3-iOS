@@ -11,8 +11,10 @@ final class NetworkAdapter: NetworkAdapterAPI {
     private let communicator: NetworkCommunicatorAPI
     private let queue: DispatchQueue
 
-    init(communicator: NetworkCommunicatorAPI = resolve(),
-         queue: DispatchQueue = DispatchQueue.global(qos: .default)) {
+    init(
+        communicator: NetworkCommunicatorAPI = resolve(),
+        queue: DispatchQueue = DispatchQueue.global(qos: .default)
+    ) {
         self.communicator = communicator
         self.queue = queue
     }
@@ -57,7 +59,8 @@ final class NetworkAdapter: NetworkAdapterAPI {
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                            Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeOptional<ResponseType: Decodable>(
         responseType: ResponseType.Type,
@@ -93,7 +96,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeError<ErrorResponseType: FromNetworkErrorConvertible>(
         for request: NetworkRequest,
@@ -114,7 +118,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure: FromNetworkErrorConvertible {
+    Failure: FromNetworkErrorConvertible
+{
 
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,
@@ -145,7 +150,8 @@ extension AnyPublisher where Output == ServerResponse,
 }
 
 extension AnyPublisher where Output == ServerResponse,
-                             Failure == NetworkError {
+    Failure == NetworkError
+{
 
     fileprivate func decodeSuccess<ResponseType: Decodable>(
         for request: NetworkRequest,

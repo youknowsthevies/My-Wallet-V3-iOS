@@ -36,29 +36,31 @@ final class SecuritySectionPresenter: SettingsSectionPresenting {
     private let balanceSyncingCellPresenter: BalanceSharingSwitchCellPresenter
     private let cloudBackupSwitchCellPresenter: CloudBackupSwitchCellPresenter
 
-    init(smsTwoFactorService: SMSTwoFactorSettingsServiceAPI,
-         credentialsStore: CredentialsStoreAPI,
-         biometryProvider: BiometryProviding,
-         settingsAuthenticater: AppSettingsAuthenticating,
-         recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding,
-         balanceSharingService: BalanceSharingSettingsServiceAPI,
-         authenticationCoordinator: AuthenticationCoordinating,
-         appSettings: BlockchainSettings.App = resolve()) {
-        self.smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
+    init(
+        smsTwoFactorService: SMSTwoFactorSettingsServiceAPI,
+        credentialsStore: CredentialsStoreAPI,
+        biometryProvider: BiometryProviding,
+        settingsAuthenticater: AppSettingsAuthenticating,
+        recoveryPhraseStatusProvider: RecoveryPhraseStatusProviding,
+        balanceSharingService: BalanceSharingSettingsServiceAPI,
+        authenticationCoordinator: AuthenticationCoordinating,
+        appSettings: BlockchainSettings.App = resolve()
+    ) {
+        smsTwoFactorSwitchCellPresenter = SMSTwoFactorSwitchCellPresenter(
             service: smsTwoFactorService
         )
-        self.bioAuthenticationCellPresenter = BioAuthenticationSwitchCellPresenter(
+        bioAuthenticationCellPresenter = BioAuthenticationSwitchCellPresenter(
             biometryProviding: biometryProvider,
             appSettingsAuthenticating: settingsAuthenticater,
             authenticationCoordinator: authenticationCoordinator
         )
-        self.recoveryCellPresenter = RecoveryStatusCellPresenter(
+        recoveryCellPresenter = RecoveryStatusCellPresenter(
             recoveryStatusProviding: recoveryPhraseStatusProvider
         )
-        self.balanceSyncingCellPresenter = BalanceSharingSwitchCellPresenter(
+        balanceSyncingCellPresenter = BalanceSharingSwitchCellPresenter(
             service: balanceSharingService
         )
-        self.cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
+        cloudBackupSwitchCellPresenter = CloudBackupSwitchCellPresenter(
             appSettings: appSettings,
             credentialsStore: credentialsStore
         )

@@ -5,7 +5,7 @@ import RxCocoa
 import RxSwift
 
 /// Simple service for enabling and disabling the flash on the users
-/// camera. Useful in dark settings. 
+/// camera. Useful in dark settings.
 final class QRCodeScannerFlashService {
 
     /// Is the flash enabled

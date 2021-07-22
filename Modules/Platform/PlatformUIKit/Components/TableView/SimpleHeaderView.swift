@@ -13,7 +13,7 @@ public final class SimpleHeaderView: UITableViewHeaderFooterView {
 
     private lazy var label = UILabel()
 
-    public override init(reuseIdentifier: String?) {
+    override public init(reuseIdentifier: String?) {
         super.init(reuseIdentifier: reuseIdentifier)
         contentView.addSubview(label)
         let backgroundView = UIView()
@@ -28,6 +28,7 @@ public final class SimpleHeaderView: UITableViewHeaderFooterView {
         label.verticalContentCompressionResistancePriority = .required
     }
 
+    @available(*, unavailable)
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

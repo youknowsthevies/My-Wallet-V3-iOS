@@ -16,7 +16,6 @@ import KYCUIKit
 import NetworkKit
 import OnboardingKit
 import OnboardingUIKit
-import NetworkKit
 import PlatformKit
 import PlatformUIKit
 import RemoteNotificationsKit
@@ -30,15 +29,15 @@ import WalletPayloadKit
 
 // MARK: - Settings Dependencies
 
-extension AuthenticationCoordinator: SettingsUIKit.AuthenticationCoordinating { }
+extension AuthenticationCoordinator: SettingsUIKit.AuthenticationCoordinating {}
 
-extension AppCoordinator: SettingsUIKit.AppCoordinating { }
+extension AppCoordinator: SettingsUIKit.AppCoordinating {}
 
-extension ExchangeCoordinator: SettingsUIKit.ExchangeCoordinating { }
+extension ExchangeCoordinator: SettingsUIKit.ExchangeCoordinating {}
 
-extension UIApplication: SettingsUIKit.AppStoreOpening { }
+extension UIApplication: SettingsUIKit.AppStoreOpening {}
 
-extension Wallet: WalletRecoveryVerifing { }
+extension Wallet: WalletRecoveryVerifing {}
 
 // MARK: - Dashboard Dependencies
 
@@ -128,8 +127,10 @@ extension DependencyContainer {
             let appSettings: BlockchainSettings.App = DIKit.resolve()
             let isPinSet: () -> Bool = { appSettings.isPinSet }
             let deeplinkHandler = CoreDeeplinkHandler(isPinSet: isPinSet)
-            let blockchainHandler = BlockchainLinksHandler(validHosts: BlockchainLinks.validLinks,
-                                                           validRoutes: BlockchainLinks.validRoutes)
+            let blockchainHandler = BlockchainLinksHandler(
+                validHosts: BlockchainLinks.validLinks,
+                validRoutes: BlockchainLinks.validRoutes
+            )
             return AppDeeplinkHandler(
                 deeplinkHandler: deeplinkHandler,
                 blockchainHandler: blockchainHandler,
@@ -185,7 +186,8 @@ extension DependencyContainer {
         factory { FiatBalanceCollectionViewInteractor() as FiatBalancesInteracting }
 
         factory { FiatBalanceCollectionViewPresenter(interactor: FiatBalanceCollectionViewInteractor())
-            as FiatBalanceCollectionViewPresenting }
+            as FiatBalanceCollectionViewPresenting
+        }
 
         factory { SimpleBuyAnalyticsService() as PlatformKit.SimpleBuyAnalayticsServicing }
 
@@ -557,7 +559,7 @@ extension DependencyContainer {
             TransactionsAdapter()
         }
 
-        factory { () -> PlatformUIKit.KYCRouting  in
+        factory { () -> PlatformUIKit.KYCRouting in
             KYCAdapter()
         }
 
@@ -607,7 +609,7 @@ extension DependencyContainer {
         }
 
         factory { () -> EmailAuthorizationServiceAPI in
-            return EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
+            EmailAuthorizationService(guidService: DIKit.resolve()) as EmailAuthorizationServiceAPI
         }
 
         factory { () -> DeviceVerificationServiceAPI in
@@ -641,11 +643,13 @@ extension DependencyContainer {
         single { () -> AnalyticsEventRecorderAPI in
             let firebaseAnalyticsServiceProvider = FirebaseAnalyticsServiceProvider()
             let userAgent = UserAgentProvider().userAgent ?? ""
-            let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(platform: .wallet,
-                                                                     basePath: BlockchainAPI.shared.apiUrl,
-                                                                     userAgent: userAgent,
-                                                                     tokenRepository: DIKit.resolve(),
-                                                                     guidProvider: DIKit.resolve())
+            let nabuAnalyticsServiceProvider = NabuAnalyticsProvider(
+                platform: .wallet,
+                basePath: BlockchainAPI.shared.apiUrl,
+                userAgent: userAgent,
+                tokenRepository: DIKit.resolve(),
+                guidProvider: DIKit.resolve()
+            )
             return AnalyticsEventRecorder(analyticsServiceProviders: [
                 firebaseAnalyticsServiceProvider,
                 nabuAnalyticsServiceProvider

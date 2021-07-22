@@ -3,7 +3,9 @@
 import RxSwift
 
 public protocol CardAdditionClientAPI: AnyObject {
-    func add(for currency: String,
-             email: String,
-             billingAddress: CardPayload.BillingAddress) -> Single<CardPayload>
+    func add(
+        for currency: String,
+        email: String,
+        billingAddress: CardPayload.BillingAddress
+    ) -> Single<CardPayload>
 }

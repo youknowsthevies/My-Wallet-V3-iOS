@@ -31,6 +31,7 @@ class StellarCryptoReceiveAddressFactoryTests: XCTestCase {
                 .get()
         )
     }
+
     func testAddressOnly() throws {
         XCTAssertNoThrow(
             address = try sut

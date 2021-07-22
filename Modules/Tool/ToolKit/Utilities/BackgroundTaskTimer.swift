@@ -39,7 +39,7 @@ public final class BackgroundTaskTimer {
         self.timeInterval = timeInterval
         self.name = name
         self.invalidBackgroundTaskIdentifier = invalidBackgroundTaskIdentifier
-        self.backgroundTaskID = invalidBackgroundTaskIdentifier
+        backgroundTaskID = invalidBackgroundTaskIdentifier
     }
 
     // MARK: Public Methods

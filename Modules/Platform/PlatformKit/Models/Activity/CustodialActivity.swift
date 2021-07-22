@@ -10,6 +10,7 @@ public enum CustodialActivityEvent {
         public let type: EventType
         public let state: State
     }
+
     public struct Crypto: Equatable {
         public let amount: CryptoValue
         public let identifier: String
@@ -20,10 +21,12 @@ public enum CustodialActivityEvent {
         public let fee: CryptoValue
         public let txHash: String
     }
+
     public enum EventType: String {
         case deposit = "DEPOSIT"
         case withdrawal = "WITHDRAWAL"
     }
+
     public enum State: String {
         case completed
         case pending
@@ -44,6 +47,7 @@ extension OrdersActivityResponse.Item {
             return nil
         }
     }
+
     var custodialActivityEventType: CustodialActivityEvent.EventType? {
         switch type {
         case "DEPOSIT", "CHARGE":
@@ -55,6 +59,7 @@ extension OrdersActivityResponse.Item {
         }
     }
 }
+
 extension CustodialActivityEvent.Fiat {
     init?(item: OrdersActivityResponse.Item) {
         guard let state = item.custodialActivityState else {
@@ -93,12 +98,12 @@ extension CustodialActivityEvent.Crypto {
         let date: Date = DateFormatter.sessionDateFormat.date(from: item.insertedAt)
             ?? DateFormatter.iso8601Format.date(from: item.insertedAt)
             ?? Date()
-        let amount: CryptoValue = CryptoValue(
+        let amount = CryptoValue(
             amount: BigInt(item.amountMinor) ?? 0,
             currency: cryptoCurrency
         )
         let feeMinor: BigInt = item.feeMinor.flatMap { BigInt($0) } ?? 0
-        let fee: CryptoValue = CryptoValue(amount: feeMinor, currency: cryptoCurrency)
+        let fee = CryptoValue(amount: feeMinor, currency: cryptoCurrency)
         self.init(
             amount: amount,
             identifier: item.id,

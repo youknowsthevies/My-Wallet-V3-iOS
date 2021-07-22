@@ -11,30 +11,34 @@ final class CardExpirationDateFormatter: TextFormatting {
         return text == string ? .original(text: text) : .formatted(to: text)
     }
 
-    private func processYear(from string: String,
-                             year: String,
-                             output: inout String) {
+    private func processYear(
+        from string: String,
+        year: String,
+        output: inout String
+    ) {
         guard let yearInteger = Int(year) else { return }
         switch yearInteger {
         case 0, 1:
             output += "2"
-        case (2...9):
+        case 2...9:
             output += "\(year)"
-        case (20...99):
+        case 20...99:
             output += String(format: "%02d", yearInteger)
         default:
             break
         }
     }
 
-    private func processMonth(from string: String,
-                              operation: TextInputOperation,
-                              month: String,
-                              year: String,
-                              output: inout String) {
+    private func processMonth(
+        from string: String,
+        operation: TextInputOperation,
+        month: String,
+        year: String,
+        output: inout String
+    ) {
         guard let monthInteger = Int(month) else { return }
 
-        if string.count == 2 && operation == .deletion {
+        if string.count == 2, operation == .deletion {
             output = String(string.prefix(1))
         } else {
             switch monthInteger {
@@ -44,19 +48,19 @@ final class CardExpirationDateFormatter: TextFormatting {
                 if operation == .addition {
                     output += "\(monthInteger)"
                 }
-            case (1...9):
+            case 1...9:
                 if month.count == 1 {
                     output += String(format: "%02d/", monthInteger)
                 } else if !year.isEmpty { // The year is filled
                     output += String(format: "%02d/", monthInteger)
                 } else { // Year has not been filled yet
-                    if month.count >= 2 && month.first == "0" {
+                    if month.count >= 2, month.first == "0" {
                         output += String(format: "%02d/", monthInteger)
                     } else {
                         output += "\(monthInteger)"
                     }
                 }
-            case (10...12):
+            case 10...12:
                 output += String(format: "%02d/", monthInteger)
             default:
                 break

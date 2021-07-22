@@ -6,7 +6,7 @@ import ToolKit
 
 public typealias APICode = String
 
-struct Network {
+enum Network {
 
     struct Config {
 

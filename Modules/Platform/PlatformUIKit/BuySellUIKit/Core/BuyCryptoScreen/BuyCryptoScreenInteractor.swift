@@ -44,7 +44,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     /// Exposes a stream of the currently selected `CryptoCurrency` value
     override var selectedCurrencyType: Observable<CurrencyType> {
-        cryptoCurrencySelectionService.selectedData.map { $0.cryptoCurrency.currency }.asObservable()
+        cryptoCurrencySelectionService.selectedData.map(\.cryptoCurrency.currency).asObservable()
     }
 
     /// The state of the screen with associated data
@@ -86,7 +86,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
     /// Streams a `KycState` indicating whether the user should complete KYC
     var currentKycState: Single<Result<KycState, Error>> {
         kycTiersService.fetchTiers()
-            .map { $0.isTier2Approved }
+            .map(\.isTier2Approved)
             .mapToResult(successMap: { $0 ? .completed : .shouldComplete })
     }
 
@@ -152,15 +152,17 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
 
     // MARK: - Setup
 
-    init(kycTiersService: KYCTiersServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
-         cryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI,
-         pairsService: SupportedPairsInteractorServiceAPI = resolve(),
-         eligibilityService: EligibilityServiceAPI = resolve(),
-         orderCreationService: OrderCreationServiceAPI = resolve(),
-         suggestedAmountsService: SuggestedAmountsServiceAPI = resolve()) {
+    init(
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),
+        cryptoCurrencySelectionService: CryptoCurrencySelectionServiceAPI,
+        pairsService: SupportedPairsInteractorServiceAPI = resolve(),
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        orderCreationService: OrderCreationServiceAPI = resolve(),
+        suggestedAmountsService: SuggestedAmountsServiceAPI = resolve()
+    ) {
         self.kycTiersService = kycTiersService
         self.pairsService = pairsService
         self.suggestedAmountsService = suggestedAmountsService
@@ -241,7 +243,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         suggestedAmountsService.calculationState
-            .compactMap { $0.value }
+            .compactMap(\.value)
             .bindAndCatch(to: suggestedAmountsRelay)
             .disposed(by: disposeBag)
 
@@ -253,26 +255,26 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
             .disposed(by: disposeBag)
 
         let pairs = pairsCalculationState
-            .compactMap { $0.value }
+            .compactMap(\.value)
 
         let pairForCryptoCurrency = Observable
             .combineLatest(
                 pairs,
                 cryptoCurrencySelectionService.selectedData
             )
-            .map { (pairs, item) -> SupportedPairs.Pair? in
+            .map { pairs, item -> SupportedPairs.Pair? in
                 pairs.pairs(per: item.cryptoCurrency).first
             }
 
         Observable
             .combineLatest(
                 preferredPaymentMethodType.compactMap { $0 },
-                amountTranslationInteractor.fiatAmount.compactMap { $0.fiatValue },
-                amountTranslationInteractor.cryptoAmount.compactMap { $0.cryptoValue },
+                amountTranslationInteractor.fiatAmount.compactMap(\.fiatValue),
+                amountTranslationInteractor.cryptoAmount.compactMap(\.cryptoValue),
                 pairForCryptoCurrency,
                 fiatCurrencyService.fiatCurrencyObservable
             )
-            .map { (preferredPaymentMethod, fiat, crypto, pair, currency) -> State in
+            .map { preferredPaymentMethod, fiat, crypto, pair, currency -> State in
 
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair else {
@@ -301,7 +303,7 @@ final class BuyCryptoScreenInteractor: EnterAmountScreenInteractor {
                     paymentMethodId = data.identifier
                 }
 
-                guard fiat.currencyType == minFiatValue.currencyType && fiat.currencyType == maxFiatValue.currencyType else {
+                guard fiat.currencyType == minFiatValue.currencyType, fiat.currencyType == maxFiatValue.currencyType else {
                     return .empty(currency: currency)
                 }
 

@@ -5,19 +5,19 @@ import NetworkKit
 import RxSwift
 
 typealias SimpleBuyClientAPI = EligibilityClientAPI &
-                               SupportedPairsClientAPI &
-                               SuggestedAmountsClientAPI &
-                               OrderDetailsClientAPI &
-                               OrderCancellationClientAPI &
-                               PaymentAccountClientAPI &
-                               OrderCreationClientAPI &
-                               CardOrderConfirmationClientAPI &
-                               QuoteClientAPI &
-                               BeneficiariesClientAPI &
-                               OrdersActivityClientAPI &
-                               WithdrawalClientAPI &
-                               PaymentEligibleMethodsClientAPI &
-                               LinkedBanksClientAPI
+    SupportedPairsClientAPI &
+    SuggestedAmountsClientAPI &
+    OrderDetailsClientAPI &
+    OrderCancellationClientAPI &
+    PaymentAccountClientAPI &
+    OrderCreationClientAPI &
+    CardOrderConfirmationClientAPI &
+    QuoteClientAPI &
+    BeneficiariesClientAPI &
+    OrdersActivityClientAPI &
+    WithdrawalClientAPI &
+    PaymentEligibleMethodsClientAPI &
+    LinkedBanksClientAPI
 
 /// Simple-Buy network client
 final class APIClient: SimpleBuyClientAPI {
@@ -44,20 +44,20 @@ final class APIClient: SimpleBuyClientAPI {
 
     private enum Path {
         static let transactions = ["payments", "transactions"]
-        static let paymentMethods = [ "payments", "methods" ]
-        static let eligiblePaymentMethods = [ "eligible", "payment-methods" ]
-        static let beneficiaries = [ "payments", "beneficiaries" ]
+        static let paymentMethods = ["payments", "methods"]
+        static let eligiblePaymentMethods = ["eligible", "payment-methods"]
+        static let beneficiaries = ["payments", "beneficiaries"]
         static let banks = ["payments", "banks"]
-        static let supportedPairs = [ "simple-buy", "pairs" ]
-        static let suggestedAmounts = [ "simple-buy", "amounts" ]
-        static let trades = [ "simple-buy", "trades" ]
-        static let paymentAccount = [ "payments", "accounts", "simplebuy" ]
-        static let quote = [ "simple-buy", "quote" ]
-        static let eligible = [ "simple-buy", "eligible" ]
-        static let withdrawalFees = [ "payments", "withdrawals", "fees" ]
-        static let withdrawal = [ "payments", "withdrawals" ]
-        static let bankTransfer = [ "payments", "banktransfer" ]
-        static let linkedBanks = [ "payments", "banking-info" ]
+        static let supportedPairs = ["simple-buy", "pairs"]
+        static let suggestedAmounts = ["simple-buy", "amounts"]
+        static let trades = ["simple-buy", "trades"]
+        static let paymentAccount = ["payments", "accounts", "simplebuy"]
+        static let quote = ["simple-buy", "quote"]
+        static let eligible = ["simple-buy", "eligible"]
+        static let withdrawalFees = ["payments", "withdrawals", "fees"]
+        static let withdrawal = ["payments", "withdrawals"]
+        static let bankTransfer = ["payments", "banktransfer"]
+        static let linkedBanks = ["payments", "banking-info"]
         static func updateLinkedBank(id: String) -> [String] {
             bankTransfer + [id, "update"]
         }
@@ -75,8 +75,10 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }
@@ -110,8 +112,10 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - EligibilityClientAPI
 
-    func isEligible(for currency: String,
-                    methods: [String]) -> Single<EligibilityResponse> {
+    func isEligible(
+        for currency: String,
+        methods: [String]
+    ) -> Single<EligibilityResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.fiatCurrency,
@@ -234,7 +238,7 @@ final class APIClient: SimpleBuyClientAPI {
             ),
             URLQueryItem(
                 name: Parameter.states,
-                value: states.map({ $0.rawValue }).joined(separator: ",")
+                value: states.map(\.rawValue).joined(separator: ",")
             )
         ]
         let request = requestBuilder.get(
@@ -284,8 +288,10 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - OrderCreationClientAPI
 
-    func create(order: OrderPayload.Request,
-                createPendingOrder: Bool) -> Single<OrderPayload.Response> {
+    func create(
+        order: OrderPayload.Request,
+        createPendingOrder: Bool
+    ) -> Single<OrderPayload.Response> {
         var parameters: [URLQueryItem] = []
         if createPendingOrder {
             parameters.append(
@@ -312,9 +318,11 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - CardOrderConfirmationClientAPI
 
-    func confirmOrder(with identifier: String,
-                      partner: OrderPayload.ConfirmOrder.Partner,
-                      paymentMethodId: String?) -> Single<OrderPayload.Response> {
+    func confirmOrder(
+        with identifier: String,
+        partner: OrderPayload.ConfirmOrder.Partner,
+        paymentMethodId: String?
+    ) -> Single<OrderPayload.Response> {
         let payload = OrderPayload.ConfirmOrder(
             partner: partner,
             action: .confirm,
@@ -335,9 +343,11 @@ final class APIClient: SimpleBuyClientAPI {
 
     // MARK: - QuoteClientAPI
 
-    func getQuote(for action: Order.Action,
-                  to cryptoCurrency: CryptoCurrency,
-                  amount: FiatValue) -> Single<QuoteResponse> {
+    func getQuote(
+        for action: Order.Action,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue
+    ) -> Single<QuoteResponse> {
         let parameters = [
             URLQueryItem(
                 name: Parameter.currencyPair,
@@ -510,6 +520,7 @@ final class APIClient: SimpleBuyClientAPI {
                 let providerAccountId: String
                 let accountId: String
             }
+
             let attributes: Attributes
         }
         let path = Path.updateLinkedBank(id: id)

@@ -46,35 +46,35 @@ final class SingleAccountBadgeFactory {
     }
 }
 
-fileprivate extension DefaultBadgeAssetPresenter {
+extension DefaultBadgeAssetPresenter {
     private typealias LocalizedString = LocalizationConstants.Account
     private typealias BadgeItem = BadgeAsset.Value.Interaction.BadgeItem
 
-    static func makeNoFeesBadge() -> DefaultBadgeAssetPresenter {
+    fileprivate static func makeNoFeesBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .verified, description: LocalizedString.noFees)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    static func makeWireFeeBadge() -> DefaultBadgeAssetPresenter {
+    fileprivate static func makeWireFeeBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .warning, description: LocalizedString.wireFee)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    static func makeMinWithdrawFeeBadge(amount: String) -> DefaultBadgeAssetPresenter {
+    fileprivate static func makeMinWithdrawFeeBadge(amount: String) -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .default(accessibilitySuffix: "minWithdraw"), description: "\(amount) \(LocalizedString.minWithdraw)")
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    static func makeLowFeesBadge() -> DefaultBadgeAssetPresenter {
+    fileprivate static func makeLowFeesBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .verified, description: LocalizedString.lowFees)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)
     }
 
-    static func makeFasterBadge() -> DefaultBadgeAssetPresenter {
+    fileprivate static func makeFasterBadge() -> DefaultBadgeAssetPresenter {
         let item = BadgeItem(type: .verified, description: LocalizedString.faster)
         let interactor = DefaultBadgeAssetInteractor(initialState: .loaded(next: item))
         return DefaultBadgeAssetPresenter(interactor: interactor)

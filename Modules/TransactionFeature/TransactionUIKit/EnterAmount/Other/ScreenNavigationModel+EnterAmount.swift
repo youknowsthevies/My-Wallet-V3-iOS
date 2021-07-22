@@ -4,7 +4,7 @@ import Localization
 import PlatformUIKit
 
 extension ScreenNavigationModel {
-    enum EnterAmount { }
+    enum EnterAmount {}
 }
 
 extension ScreenNavigationModel.EnterAmount {

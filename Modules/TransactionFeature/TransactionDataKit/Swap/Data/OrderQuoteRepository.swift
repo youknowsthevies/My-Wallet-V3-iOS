@@ -1,9 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
-import ToolKit
-import RxSwift
 import PlatformKit
+import RxSwift
+import ToolKit
 import TransactionKit
 
 final class OrderQuoteRepository: OrderQuoteRepositoryAPI {
@@ -20,9 +20,11 @@ final class OrderQuoteRepository: OrderQuoteRepositoryAPI {
 
     // MARK: - OrderQuoteServiceAPI
 
-    func fetchQuote(direction: OrderDirection,
-                    sourceCurrencyType: CurrencyType,
-                    destinationCurrencyType: CurrencyType) -> Single<OrderQuotePayload> {
+    func fetchQuote(
+        direction: OrderDirection,
+        sourceCurrencyType: CurrencyType,
+        destinationCurrencyType: CurrencyType
+    ) -> Single<OrderQuotePayload> {
         let request = OrderQuoteRequest(
             product: .brokerage,
             direction: direction,

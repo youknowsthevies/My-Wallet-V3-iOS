@@ -14,17 +14,19 @@ public struct StellarAssetAccount: SingleAddressAssetAccount {
     public let subentryCount: UInt
     public let walletIndex: Int
 
-    public init(accountAddress: String,
-                name: String,
-                description: String,
-                sequence: Int,
-                subentryCount: UInt) {
-        self.walletIndex = 0
+    public init(
+        accountAddress: String,
+        name: String,
+        description: String,
+        sequence: Int,
+        subentryCount: UInt
+    ) {
+        walletIndex = 0
         self.accountAddress = accountAddress
         self.name = name
         self.description = description
         self.sequence = sequence
         self.subentryCount = subentryCount
-        self.address = StellarAssetAddress(publicKey: accountAddress)
+        address = StellarAssetAddress(publicKey: accountAddress)
     }
 }

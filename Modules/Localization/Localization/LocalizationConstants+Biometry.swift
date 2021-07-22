@@ -2,8 +2,8 @@
 
 // swiftlint:disable all
 
-public extension LocalizationConstants {
-    struct Biometry {
+extension LocalizationConstants {
+    public enum Biometry {
         public static let touchIDEnableInstructions = NSLocalizedString(
             "Touch ID is not enabled on this device. To enable Touch ID, go to Settings -> Touch ID & Passcode and add a fingerprint.",
             comment: "The error description for when the user is not enrolled in biometric authentication."

@@ -31,7 +31,8 @@ final class EthereumTransactionSendingService: EthereumTransactionSendingService
         feeService: EthereumFeeServiceAPI = resolve(),
         transactionBuilder: EthereumTransactionBuilderAPI = resolve(),
         transactionSigner: EthereumTransactionSignerAPI = resolve(),
-        transactionEncoder: EthereumTransactionEncoderAPI = resolve()) {
+        transactionEncoder: EthereumTransactionEncoderAPI = resolve()
+    ) {
         self.accountDetailsService = accountDetailsService
         self.client = client
         self.feeService = feeService

@@ -213,19 +213,19 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
                 }
             }
         case .crypto(let event):
-                switch event.state {
-                case .failed:
-                    return "activity-failed-icon"
-                case .pending:
-                    return "clock-icon"
-                case .completed:
-                    switch event.type {
-                    case .deposit:
-                        return "receive-icon"
-                    case .withdrawal:
-                        return "send-icon"
-                    }
+            switch event.state {
+            case .failed:
+                return "activity-failed-icon"
+            case .pending:
+                return "clock-icon"
+            case .completed:
+                switch event.type {
+                case .deposit:
+                    return "receive-icon"
+                case .withdrawal:
+                    return "send-icon"
                 }
+            }
         case .swap(let event):
             if event.status == .failed {
                 return "activity-failed-icon"
@@ -242,6 +242,7 @@ public final class ActivityItemViewModel: IdentifiableType, Hashable {
             }
         }
     }
+
     public let event: ActivityItemEvent
 
     public init(event: ActivityItemEvent) {

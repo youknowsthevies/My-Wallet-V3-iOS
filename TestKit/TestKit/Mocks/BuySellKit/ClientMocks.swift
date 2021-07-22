@@ -74,9 +74,11 @@ extension APIClient {
         ]
     }
 
-    static func mockQuote(for action: Order.Action,
-                          to cryptoCurrency: CryptoCurrency,
-                          amount: FiatValue) -> QuoteResponse {
+    static func mockQuote(
+        for action: Order.Action,
+        to cryptoCurrency: CryptoCurrency,
+        amount: FiatValue
+    ) -> QuoteResponse {
         QuoteResponse(
             time: "2020-01-15T22:09:45.600Z",
             rate: "1000000",

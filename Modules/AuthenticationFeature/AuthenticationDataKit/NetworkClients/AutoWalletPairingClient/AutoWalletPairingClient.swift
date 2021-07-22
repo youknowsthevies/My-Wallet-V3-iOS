@@ -13,8 +13,10 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = AutoWalletPairingClientRequestBuilder(requestBuilder: requestBuilder)
     }
@@ -23,7 +25,7 @@ public final class AutoWalletPairingClient: AutoWalletPairingClientAPI {
         let request = requestBuilder.build(guid: guid)
         return networkAdapter
             .perform(request: request, responseType: RawServerResponse.self)
-            .map { $0.data }
+            .map(\.data)
     }
 }
 
@@ -35,7 +37,7 @@ extension AutoWalletPairingClient {
 
         // MARK: - Types
 
-        private let pathComponents = [ "wallet" ]
+        private let pathComponents = ["wallet"]
 
         private struct Payload: Encodable {
             let guid: String

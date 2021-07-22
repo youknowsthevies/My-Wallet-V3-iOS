@@ -135,7 +135,6 @@ final class SettingsRouter: SettingsRouterAPI {
                     .disposed(by: self.disposeBag)
             }
             .disposed(by: disposeBag)
-
     }
 
     func presentSettings() {
@@ -144,7 +143,7 @@ final class SettingsRouter: SettingsRouterAPI {
             wallet: wallet,
             paymentMethodTypesService: paymentMethodTypesService,
             authenticationCoordinator: authenticationCoordinator
-       )
+        )
         let presenter = SettingsScreenPresenter(interactor: interactor, router: self)
         let controller = SettingsViewController(presenter: presenter)
         navigationRouter.present(viewController: controller, using: .modalOverTopMost)
@@ -225,15 +224,17 @@ final class SettingsRouter: SettingsRouterAPI {
             navigationRouter.present(viewController: viewController)
         case .promptGuidCopy:
             guidRepositoryAPI.guid
-                .map(weak: self) { (_, value) -> String in
+                .map(weak: self) { _, value -> String in
                     value ?? ""
                 }
                 .observeOn(MainScheduler.instance)
                 .subscribe(onSuccess: { [weak self] guid in
                     guard let self = self else { return }
-                    let alert = UIAlertController(title: LocalizationConstants.AddressAndKeyImport.copyWalletId,
-                                                  message: LocalizationConstants.AddressAndKeyImport.copyWarning,
-                                                  preferredStyle: .actionSheet)
+                    let alert = UIAlertController(
+                        title: LocalizationConstants.AddressAndKeyImport.copyWalletId,
+                        message: LocalizationConstants.AddressAndKeyImport.copyWarning,
+                        preferredStyle: .actionSheet
+                    )
                     let copyAction = UIAlertAction(
                         title: LocalizationConstants.AddressAndKeyImport.copyCTA,
                         style: .destructive,
@@ -311,7 +312,7 @@ final class SettingsRouter: SettingsRouterAPI {
         let builder = LinkBankFlowRootBuilder()
         // we need to pass the the navigation controller so we can present and dismiss from within the flow.
         let router = builder.build()
-        self.linkBankFlowRouter = router
+        linkBankFlowRouter = router
         let flowDismissed: () -> Void = { [weak self] in
             guard let self = self else { return }
             self.linkBankFlowRouter = nil
@@ -321,14 +322,13 @@ final class SettingsRouter: SettingsRouterAPI {
             .takeUntil(.inclusive, predicate: { $0.isCloseEffect })
             .skipWhile { $0.shouldSkipEffect }
             .subscribe(onNext: { [weak self] effect in
-                guard case let .closeFlow(isInteractive) = effect, !isInteractive else {
+                guard case .closeFlow(let isInteractive) = effect, !isInteractive else {
                     flowDismissed()
                     return
                 }
                 self?.navigationRouter.navigationControllerAPI?.dismiss(animated: true, completion: flowDismissed)
             })
             .disposed(by: disposeBag)
-
     }
 
     private func showFiatCurrencySelectionScreen(selectedCurrency: FiatCurrency) {

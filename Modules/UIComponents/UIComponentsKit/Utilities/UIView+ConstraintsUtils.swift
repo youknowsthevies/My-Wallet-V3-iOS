@@ -2,10 +2,10 @@
 
 import UIKit
 
-public extension UIView {
+extension UIView {
 
     @discardableResult
-    func constraint(edgesTo other: UIView, insets: UIEdgeInsets = .zero) -> [NSLayoutConstraint] {
+    public func constraint(edgesTo other: UIView, insets: UIEdgeInsets = .zero) -> [NSLayoutConstraint] {
         let constraints = [
             topAnchor.constraint(equalTo: other.topAnchor, constant: insets.top),
             leftAnchor.constraint(equalTo: other.leftAnchor, constant: insets.left),
@@ -17,7 +17,7 @@ public extension UIView {
     }
 
     @discardableResult
-    func constraint(centerTo other: UIView, insets: CGPoint = .zero) -> [NSLayoutConstraint] {
+    public func constraint(centerTo other: UIView, insets: CGPoint = .zero) -> [NSLayoutConstraint] {
         let constraints = [
             centerXAnchor.constraint(equalTo: other.centerXAnchor, constant: insets.x),
             centerYAnchor.constraint(equalTo: other.centerYAnchor, constant: insets.y)

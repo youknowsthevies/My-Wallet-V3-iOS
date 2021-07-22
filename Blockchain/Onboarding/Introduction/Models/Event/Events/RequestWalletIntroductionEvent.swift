@@ -19,7 +19,8 @@ final class RequestWalletIntroductionEvent: CompletableWalletIntroductionEvent {
             action: {
                 self.introductionEntry.updateLatestLocation(location)
                 self.selection()
-        })
+            }
+        )
         return .pulse(viewModel)
     }
 
@@ -36,8 +37,10 @@ final class RequestWalletIntroductionEvent: CompletableWalletIntroductionEvent {
         return RequestWalletIntroductionEvent.location > location
     }
 
-    init(introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
-         selection: @escaping WalletIntroductionAction) {
+    init(
+        introductionRecorder: WalletIntroductionRecorder = WalletIntroductionRecorder(),
+        selection: @escaping WalletIntroductionAction
+    ) {
         self.introductionRecorder = introductionRecorder
         self.selection = selection
     }
@@ -53,7 +56,8 @@ final class RequestDescriptionIntroductionEvent: WalletIntroductionEvent, Wallet
             thumbnail: #imageLiteral(resourceName: "Icon-Receive"),
             onSelection: {
                 self.selection()
-        })
+            }
+        )
         return .sheet(viewModel)
     }
 

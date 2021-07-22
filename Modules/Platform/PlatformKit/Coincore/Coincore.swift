@@ -38,7 +38,7 @@ final class Coincore: CoincoreAPI {
                 )
             }
             .map { accountGroups -> [SingleAccount] in
-                accountGroups.map { $0.accounts }.reduce([SingleAccount](), +)
+                accountGroups.map(\.accounts).reduce([SingleAccount](), +)
             }
             .map { accounts -> AccountGroup in
                 AllAccountsGroup(accounts: accounts)
@@ -50,6 +50,7 @@ final class Coincore: CoincoreAPI {
     var allAssets: [Asset] {
         [fiatAsset] + cryptoAssets
     }
+
     let fiatAsset: Asset
     let cryptoAssets: [CryptoAsset]
 
@@ -97,7 +98,7 @@ final class Coincore: CoincoreAPI {
             }
             return allAccounts
                 .map(\.accounts)
-                .map { (accounts) -> [SingleAccount] in
+                .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
                             sourceAccount: cryptoAccount,
@@ -112,7 +113,7 @@ final class Coincore: CoincoreAPI {
             }
             return self[cryptoAccount.asset]
                 .transactionTargets(account: cryptoAccount)
-                .map { (accounts) -> [SingleAccount] in
+                .map { accounts -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(
                             sourceAccount: cryptoAccount,

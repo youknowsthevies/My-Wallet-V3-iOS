@@ -34,8 +34,8 @@ enum APIErrorEvent: AnalyticsEvent {
             guard
                 let url = request.urlRequest.url,
                 let host = url.host
-                else {
-                    return nil
+            else {
+                return nil
             }
             var errorCode: String?
             if let statusCode = errorResponse?.response.statusCode {
@@ -46,7 +46,7 @@ enum APIErrorEvent: AnalyticsEvent {
                 requestId = requestIdHeader
             }
             self.host = host
-            self.path = url.path
+            path = url.path
             self.errorCode = errorCode
             self.body = body
             self.requestId = requestId
@@ -57,16 +57,18 @@ enum APIErrorEvent: AnalyticsEvent {
         "api_error"
     }
 
-    var params: [String : String]? {
+    var params: [String: String]? {
         switch self {
         case .payloadError(let details), .serverError(let details):
             return details?.params ?? [:]
         }
     }
 
-    init?(request: NetworkRequest,
-          error: NetworkError,
-          decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil) {
+    init?(
+        request: NetworkRequest,
+        error: NetworkError,
+        decodeErrorResponse: ((ServerErrorResponse) -> String?)? = nil
+    ) {
         switch error {
         case .rawServerError(let rawServerError):
             self = .serverError(ErrorDetails(

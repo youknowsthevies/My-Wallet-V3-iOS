@@ -29,13 +29,15 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
                 self.action()
                 self.dismiss()
             })
-            .disposed(by: self.disposeBag)
+            .disposed(by: disposeBag)
         return .init(
             type: type,
             badgeImage: .hidden,
-            image: .init(name: "icon-bank",
-                         tintColor: .secondary,
-                         bundle: .platformUIKit),
+            image: .init(
+                name: "icon-bank",
+                tintColor: .secondary,
+                bundle: .platformUIKit
+            ),
             title: LocalizationId.title,
             description: LocalizationId.description,
             buttons: [button],
@@ -73,14 +75,16 @@ final class FiatFundsLinkBankAnnouncement: OneTimeAnnouncement & ActionableAnnou
 
     // MARK: - Setup
 
-    init(shouldShowLinkBankAnnouncement: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        shouldShowLinkBankAnnouncement: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.shouldShowLinkBankAnnouncement = shouldShowLinkBankAnnouncement
-        self.recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
+        recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)
         self.analyticsRecorder = analyticsRecorder
         self.dismiss = dismiss
         self.action = action

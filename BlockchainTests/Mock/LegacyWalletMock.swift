@@ -17,7 +17,7 @@ class LegacyWalletMock: LegacyWalletAPI {
 
     func createOrderPayment(
         orderTransaction: OrderTransactionLegacy,
-        completion: @escaping (Result<[AnyHashable : Any], Wallet.CreateOrderError>) -> Void
+        completion: @escaping (Result<[AnyHashable: Any], Wallet.CreateOrderError>) -> Void
     ) {
         unimplemented()
     }

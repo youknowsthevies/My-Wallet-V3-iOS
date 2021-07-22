@@ -6,8 +6,10 @@ import ToolKit
 
 /// Types adopting the `TargetDestinationsStrategyAPI` should provide a way to output an array of `TargetSelectionPageSectionModel` items
 protocol TargetDestinationsStrategyAPI {
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel]
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel]
 }
 
 // MARK: - Main Concrete Class
@@ -22,8 +24,10 @@ struct TargetDestinationSections: TargetDestinationsStrategyAPI {
         self.strategy = strategy
     }
 
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel] {
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel] {
         strategy.sections(interactors: interactors, action: action)
     }
 }
@@ -57,8 +61,10 @@ struct AnySourceDestinationStrategy: TargetDestinationsStrategyAPI {
         self.sourceAccount = sourceAccount
     }
 
-    func sections(interactors: [TargetSelectionPageCellItem.Interactor],
-                  action: AssetAction) -> [TargetSelectionPageSectionModel] {
+    func sections(
+        interactors: [TargetSelectionPageCellItem.Interactor],
+        action: AssetAction
+    ) -> [TargetSelectionPageSectionModel] {
 
         let additionalWallets = interactors.compactMap { interactor -> TargetSelectionPageCellItem? in
             if !interactor.isWalletInputField {

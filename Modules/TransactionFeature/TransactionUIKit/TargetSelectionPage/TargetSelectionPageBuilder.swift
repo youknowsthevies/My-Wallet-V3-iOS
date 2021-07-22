@@ -17,9 +17,11 @@ enum TargetSelectionListenerBridge {
 typealias BackButtonInterceptor = () -> Observable<(step: TransactionStep, backStack: [TransactionStep], isGoingBack: Bool)>
 
 protocol TargetSelectionBuildable {
-    func build(listener: TargetSelectionListenerBridge,
-               navigationModel: ScreenNavigationModel,
-               backButtonInterceptor: @escaping BackButtonInterceptor) -> TargetSelectionPageRouting
+    func build(
+        listener: TargetSelectionListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        backButtonInterceptor: @escaping BackButtonInterceptor
+    ) -> TargetSelectionPageRouting
 }
 
 final class TargetSelectionPageBuilder: TargetSelectionBuildable {
@@ -31,17 +33,21 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
 
     // MARK: - Init
 
-    public init(accountProvider: SourceAndTargetAccountProviding,
-                action: AssetAction) {
+    public init(
+        accountProvider: SourceAndTargetAccountProviding,
+        action: AssetAction
+    ) {
         self.accountProvider = accountProvider
         self.action = action
     }
 
     // MARK: - Public Methods
 
-    public func build(listener: TargetSelectionListenerBridge,
-                      navigationModel: ScreenNavigationModel,
-                      backButtonInterceptor: @escaping BackButtonInterceptor) -> TargetSelectionPageRouting {
+    public func build(
+        listener: TargetSelectionListenerBridge,
+        navigationModel: ScreenNavigationModel,
+        backButtonInterceptor: @escaping BackButtonInterceptor
+    ) -> TargetSelectionPageRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
         case .listener:

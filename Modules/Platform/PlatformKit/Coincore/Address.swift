@@ -17,8 +17,8 @@ public protocol TransactionTarget {
     var onTxCompleted: TxCompleted { get }
 }
 
-public extension TransactionTarget {
-    var onTxCompleted: TxCompleted {
+extension TransactionTarget {
+    public var onTxCompleted: TxCompleted {
         { _ in Completable.empty() }
     }
 }
@@ -28,19 +28,19 @@ public protocol ReceiveAddress: TransactionTarget {
     var memo: String? { get }
 }
 
-public extension ReceiveAddress {
-    var memo: String? {
+extension ReceiveAddress {
+    public var memo: String? {
         nil
     }
 }
 
-public protocol InvoiceTarget { }
+public protocol InvoiceTarget {}
 
 public protocol CryptoTarget: TransactionTarget {
     var asset: CryptoCurrency { get }
 }
 
-public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget { }
+public protocol CryptoReceiveAddress: ReceiveAddress, CryptoTarget {}
 
 public protocol CryptoAssetQRMetadataProviding {
     var metadata: CryptoAssetQRMetadata { get }

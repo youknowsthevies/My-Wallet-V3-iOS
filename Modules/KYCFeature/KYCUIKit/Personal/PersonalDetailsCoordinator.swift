@@ -10,8 +10,10 @@ final class PersonalDetailsCoordinator {
     private let service: PersonalDetailsService
     private weak var interface: PersonalDetailsInterface?
 
-    init(interface: PersonalDetailsInterface,
-         service: PersonalDetailsService = PersonalDetailsService()) {
+    init(
+        interface: PersonalDetailsInterface,
+        service: PersonalDetailsService = PersonalDetailsService()
+    ) {
         self.service = service
         self.interface = interface
 

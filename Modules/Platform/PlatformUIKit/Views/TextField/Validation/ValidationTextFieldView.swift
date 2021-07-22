@@ -31,14 +31,16 @@ public final class ValidationTextFieldView: TextFieldView {
         invalidImageView.horizontalContentCompressionResistancePriority = .penultimateHigh
     }
 
-    public func setup(viewModel: ValidationTextFieldViewModel,
-                      keyboardInteractionController: KeyboardInteractionController) {
+    public func setup(
+        viewModel: ValidationTextFieldViewModel,
+        keyboardInteractionController: KeyboardInteractionController
+    ) {
         super.setup(viewModel: viewModel, keyboardInteractionController: keyboardInteractionController)
         self.viewModel = viewModel
 
         // Bind score title to score label
         self.viewModel.accessoryVisibility
-            .map { $0.defaultAlpha }
+            .map(\.defaultAlpha)
             .drive(accessoryView.rx.alpha)
             .disposed(by: disposeBag)
     }

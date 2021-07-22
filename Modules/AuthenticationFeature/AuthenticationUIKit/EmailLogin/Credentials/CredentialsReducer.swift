@@ -16,6 +16,7 @@ public enum CredentialsAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
+
     public enum WalletPairingAction: Equatable {
         case approveEmailAuthorization
         case authenticate
@@ -25,6 +26,7 @@ public enum CredentialsAction: Equatable {
         case requestSMSCode
         case setupSessionToken
     }
+
     case didAppear(walletInfo: WalletInfo)
     case didDisappear
     case password(PasswordAction)
@@ -79,19 +81,21 @@ struct CredentialsEnvironment {
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let errorRecorder: ErrorRecording
 
-    init(mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-         pollingQueue: AnySchedulerOf<DispatchQueue> = DispatchQueue(
+    init(
+        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        pollingQueue: AnySchedulerOf<DispatchQueue> = DispatchQueue(
             label: "com.blockchain.AuthenticationEnvironmentPollingQueue",
             qos: .utility
-         ).eraseToAnyScheduler(),
-         deviceVerificationService: DeviceVerificationServiceAPI,
-         emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-         sessionTokenService: SessionTokenServiceAPI = resolve(),
-         smsService: SMSServiceAPI = resolve(),
-         loginService: LoginServiceAPI = resolve(),
-         wallet: WalletAuthenticationKitWrapper = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording) {
+        ).eraseToAnyScheduler(),
+        deviceVerificationService: DeviceVerificationServiceAPI,
+        emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
+        sessionTokenService: SessionTokenServiceAPI = resolve(),
+        smsService: SMSServiceAPI = resolve(),
+        loginService: LoginServiceAPI = resolve(),
+        wallet: WalletAuthenticationKitWrapper = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording
+    ) {
 
         self.mainQueue = mainQueue
         self.pollingQueue = pollingQueue
@@ -134,7 +138,7 @@ let credentialsReducer = Reducer.combine(
         CredentialsEnvironment
     > { state, action, environment in
         switch action {
-        case let .didAppear(walletInfo):
+        case .didAppear(let walletInfo):
             state.emailAddress = walletInfo.email
             state.walletGuid = walletInfo.guid
             state.emailCode = walletInfo.emailCode
@@ -175,7 +179,7 @@ let credentialsReducer = Reducer.combine(
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
-                        if case let .failure(error) = result {
+                        if case .failure(let error) = result {
                             // If failed, an `Authorize Log In` will be sent to user for manual authorization
                             environment.errorRecorder.error(error)
                         }
@@ -189,7 +193,8 @@ let credentialsReducer = Reducer.combine(
             }
             guard let passwordState = state.passwordState,
                   let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState else {
+                  let hardwareKeyState = state.hardwareKeyState
+            else {
                 fatalError("States should not be nil")
             }
             return .merge(
@@ -206,11 +211,12 @@ let credentialsReducer = Reducer.combine(
                         switch result {
                         case .success:
                             return .walletPairing(.decryptWalletWithPassword(passwordState.password))
-                        case let .failure(error):
+                        case .failure(let error):
                             switch error {
                             case .twoFactorOTPRequired(let type):
                                 if twoFAState.isTwoFACodeFieldVisible ||
-                                    hardwareKeyState.isHardwareKeyCodeFieldVisible {
+                                    hardwareKeyState.isHardwareKeyCodeFieldVisible
+                                {
                                     return .walletPairing(.authenticateWithTwoFAOrHardwareKey)
                                 }
                                 switch type {
@@ -244,7 +250,8 @@ let credentialsReducer = Reducer.combine(
             }
             guard let passwordState = state.passwordState,
                   let twoFAState = state.twoFAState,
-                  let hardwareKeyState = state.hardwareKeyState else {
+                  let hardwareKeyState = state.hardwareKeyState
+            else {
                 fatalError("States should not be nil")
             }
             return .merge(
@@ -253,8 +260,10 @@ let credentialsReducer = Reducer.combine(
                 Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(false))),
                 environment
                     .loginService
-                    .loginPublisher(walletIdentifier: state.walletGuid,
-                                    code: twoFAState.twoFACode)
+                    .loginPublisher(
+                        walletIdentifier: state.walletGuid,
+                        code: twoFAState.twoFACode
+                    )
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
@@ -265,7 +274,7 @@ let credentialsReducer = Reducer.combine(
                             switch error {
                             case .twoFAWalletServiceError(let error):
                                 switch error {
-                                case let .wrongCode(attemptsLeft):
+                                case .wrongCode(let attemptsLeft):
                                     return .twoFA(.didChangeTwoFACodeAttemptsLeft(attemptsLeft))
                                 case .accountLocked:
                                     return .accountLockedErrorVisibility(true)
@@ -315,7 +324,7 @@ let credentialsReducer = Reducer.combine(
                     .receive(on: environment.mainQueue)
                     .catchToEffect()
                     .map { result -> CredentialsAction in
-                        if case let .failure(error) = result {
+                        if case .failure(let error) = result {
                             // TODO: Await design for error state
                             environment.errorRecorder.error(error)
                             return .credentialsFailureAlert(.show(title: "Send SMS Failed", message: error.localizedDescription))
@@ -331,7 +340,7 @@ let credentialsReducer = Reducer.combine(
                 .receive(on: environment.mainQueue)
                 .catchToEffect()
                 .map { result -> CredentialsAction in
-                    if case let .failure(error) = result {
+                    if case .failure(let error) = result {
                         // TODO: Await design for error state
                         environment.errorRecorder.error(error)
                         return .credentialsFailureAlert(.show(title: "Session Token Error", message: error.localizedDescription))
@@ -339,7 +348,7 @@ let credentialsReducer = Reducer.combine(
                     return .none
                 }
 
-        case let .setTwoFAOrHardwareKeyVerified(isVerified):
+        case .setTwoFAOrHardwareKeyVerified(let isVerified):
             guard let passwordState = state.passwordState else {
                 fatalError("Password state should not be nil")
             }
@@ -353,11 +362,11 @@ let credentialsReducer = Reducer.combine(
                 Effect(value: .walletPairing(.decryptWalletWithPassword(passwordState.password)))
             )
 
-        case let .accountLockedErrorVisibility(isVisible):
+        case .accountLockedErrorVisibility(let isVisible):
             state.isAccountLocked = isVisible
             return .none
 
-        case let .credentialsFailureAlert(.show(title, message)):
+        case .credentialsFailureAlert(.show(let title, let message)):
             state.credentialsFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),

@@ -51,15 +51,16 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
 
     private let fetchTokensPublisher: Atomic<AnyPublisher<Token, NabuAuthenticationExecutorError>?> = Atomic(nil)
 
-    init(userCreationClient: UserCreationClientAPI = resolve(),
-         store: NabuTokenStore = resolve(),
-         settingsService: SettingsServiceAPI = resolve(),
-         siftService: SiftServiceAPI = resolve(),
-         jwtService: JWTServiceAPI = resolve(),
-         authenticationClient: NabuAuthenticationClientAPI = resolve(),
-         credentialsRepository: NabuAuthenticationExecutor.CredentialsRepository = resolve(),
-         deviceInfo: DeviceInfo = resolve(),
-         queue: DispatchQueue =
+    init(
+        userCreationClient: UserCreationClientAPI = resolve(),
+        store: NabuTokenStore = resolve(),
+        settingsService: SettingsServiceAPI = resolve(),
+        siftService: SiftServiceAPI = resolve(),
+        jwtService: JWTServiceAPI = resolve(),
+        authenticationClient: NabuAuthenticationClientAPI = resolve(),
+        credentialsRepository: NabuAuthenticationExecutor.CredentialsRepository = resolve(),
+        deviceInfo: DeviceInfo = resolve(),
+        queue: DispatchQueue =
             DispatchQueue(
                 label: "com.blockchain.NabuAuthenticationExecutorNew",
                 qos: .background

@@ -34,11 +34,11 @@ class EthereumTransactionSignerTests: XCTestCase {
             data: Data(),
             transferType: .transfer
         )
-        guard case let .success(costed) = builder.build(transaction: candidate, nonce: 9) else {
+        guard case .success(let costed) = builder.build(transaction: candidate, nonce: 9) else {
             XCTFail("Transaction building failed")
             return
         }
-        guard case let .success(signed) = subject.sign(transaction: costed, keyPair: keyPair) else {
+        guard case .success(let signed) = subject.sign(transaction: costed, keyPair: keyPair) else {
             XCTFail("Transaction signing failed")
             return
         }

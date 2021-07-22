@@ -31,4 +31,3 @@ public enum WalletAuthenticationAction {
 
     case error(Error)
 }
-

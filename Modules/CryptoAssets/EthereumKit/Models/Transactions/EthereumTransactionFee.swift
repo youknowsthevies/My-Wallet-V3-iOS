@@ -12,12 +12,13 @@ public struct EthereumTransactionFee {
         case regular
         case priority
     }
+
     static let `default` = EthereumTransactionFee(
         limits: EthereumTransactionFee.defaultLimits,
         regular: 5,
         priority: 11,
-        gasLimit: 21_000,
-        gasLimitContract: 65_000
+        gasLimit: 21000,
+        gasLimitContract: 65000
     )
     static let defaultLimits = TransactionFeeLimits(min: 1, max: 1000)
 

@@ -22,8 +22,10 @@ final class PasswordScreenInteractor: PasswordScreenInteracting {
 
     // MARK: - Setup
 
-    init(type: PasswordScreenType,
-         wallet: Wallet = WalletManager.shared.wallet) {
+    init(
+        type: PasswordScreenType,
+        wallet: Wallet = WalletManager.shared.wallet
+    ) {
         self.type = type
         self.wallet = wallet
     }

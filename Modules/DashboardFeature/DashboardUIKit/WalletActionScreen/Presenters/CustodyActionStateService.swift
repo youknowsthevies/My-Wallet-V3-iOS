@@ -40,14 +40,14 @@ public protocol CustodySellEmitterAPI: AnyObject {
 }
 
 public typealias CustodyActionStateServiceAPI = CustodyActionStateReceiverServiceAPI &
-                                         RoutingNextStateEmitterAPI &
-                                         CustodyActivityEmitterAPI &
-                                         CustodyBuyEmitterAPI &
-                                         CustodySellEmitterAPI &
-                                         CustodyDepositEmitterAPI &
-                                         RoutingPreviousStateEmitterAPI &
-                                         CustodyWithdrawEmitterAPI &
-                                         CustodySwapEmitterAPI
+    RoutingNextStateEmitterAPI &
+    CustodyActivityEmitterAPI &
+    CustodyBuyEmitterAPI &
+    CustodySellEmitterAPI &
+    CustodyDepositEmitterAPI &
+    RoutingPreviousStateEmitterAPI &
+    CustodyWithdrawEmitterAPI &
+    CustodySwapEmitterAPI
 
 public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     public typealias State = CustodyActionState
@@ -104,7 +104,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
     }
 
     public var currentState: Observable<CustodyActionStateService.State> {
-        states.map { $0.current }
+        states.map(\.current)
     }
 
     public var action: Observable<Action> {
@@ -130,9 +130,11 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
 
     // MARK: - Setup
 
-    public init(cacheSuite: CacheSuite = resolve(),
-                kycTiersService: KYCTiersServiceAPI = resolve(),
-                recoveryStatusProviding: RecoveryPhraseStatusProviding) {
+    public init(
+        cacheSuite: CacheSuite = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        recoveryStatusProviding: RecoveryPhraseStatusProviding
+    ) {
         self.recoveryStatusProviding = recoveryStatusProviding
         self.cacheSuite = cacheSuite
 
@@ -166,10 +168,10 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
             .observeOn(MainScheduler.instance)
             .flatMap {
                 kycTiersService
-                .fetchTiers()
-                .asObservable()
+                    .fetchTiers()
+                    .asObservable()
             }
-            .map { $0.isTier2Approved }
+            .map(\.isTier2Approved)
             .catchErrorJustReturn(false)
             .bindAndCatch(weak: self) { (self, isKYCApproved) in
                 let nextStates = self.statesRelay.value.states(byAppending: .deposit(isKYCApproved: isKYCApproved))
@@ -200,7 +202,7 @@ public final class CustodyActionStateService: CustodyActionStateServiceAPI {
                     .fetchTiers()
                     .asObservable()
             }
-            .map { $0.isTier2Approved }
+            .map(\.isTier2Approved)
             .catchErrorJustReturn(false)
             .bindAndCatch(weak: self) { (self, isKYCApproved) in
                 let nextStates = self.statesRelay.value.states(byAppending: .withdrawalFiat(isKYCApproved: isKYCApproved))

@@ -10,6 +10,7 @@ import RxSwift
 class ExchangeEmailVerificationViewController: UIViewController, BottomButtonContainerView {
 
     // MARK: Public Properties (Rx)
+
     var verificationObserver: Observable<Void> {
         verificationRelay.asObservable().take(1)
     }
@@ -34,7 +35,8 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
             attributes: [
                 .font: primaryFont,
                 .foregroundColor: primaryFontColor
-            ])
+            ]
+        )
     }()
 
     private lazy var emailSentAttributedText: NSAttributedString = {
@@ -43,7 +45,8 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
             attributes: [
                 .font: primaryFont,
                 .foregroundColor: primaryFontColor
-            ])
+            ]
+        )
     }()
 
     private lazy var primaryAttributes: [NSAttributedString.Key: Any] = {
@@ -62,7 +65,7 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
 
     // MARK: Private Properties
 
-    private var bag: DisposeBag = DisposeBag()
+    private var bag = DisposeBag()
     private var verificationRelay: PublishRelay<Void> = PublishRelay()
     private var email: String = "" {
         didSet {
@@ -70,6 +73,7 @@ class ExchangeEmailVerificationViewController: UIViewController, BottomButtonCon
             emailTextField.text = email
         }
     }
+
     private var trigger: ActionableTrigger? {
         didSet {
             guard let trigger = trigger else { return }
@@ -167,7 +171,7 @@ extension ExchangeEmailVerificationViewController: EmailConfirmationInterface {
 
     func showError(message: String) {
         AlertViewPresenter.shared.standardError(message: message, in: self)
-        self.resendEmailActionableLabel.isHidden = false
+        resendEmailActionableLabel.isHidden = false
     }
 
     func emailVerifiedSuccess() {

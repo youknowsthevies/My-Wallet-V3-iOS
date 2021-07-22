@@ -35,8 +35,10 @@ final class BuyIntroScreenPresenter {
 
     // MARK: - Setup
 
-    init(stateService: StateServiceAPI,
-         analytics: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        stateService: StateServiceAPI,
+        analytics: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.stateService = stateService
 
         themeBackgroundImageViewContent = .init(

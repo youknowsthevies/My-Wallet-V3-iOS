@@ -35,14 +35,16 @@ public struct BuySellActivityItemEvent {
     public let outputValue: MoneyValue
     public var fee: MoneyValue
 
-    public init(identifier: String,
-                creationDate: Date,
-                status: EventStatus,
-                inputValue: MoneyValue,
-                outputValue: MoneyValue,
-                fee: MoneyValue,
-                isBuy: Bool,
-                paymentMethod: PaymentMethod) {
+    public init(
+        identifier: String,
+        creationDate: Date,
+        status: EventStatus,
+        inputValue: MoneyValue,
+        outputValue: MoneyValue,
+        fee: MoneyValue,
+        isBuy: Bool,
+        paymentMethod: PaymentMethod
+    ) {
         self.isBuy = isBuy
         self.creationDate = creationDate
         self.identifier = identifier

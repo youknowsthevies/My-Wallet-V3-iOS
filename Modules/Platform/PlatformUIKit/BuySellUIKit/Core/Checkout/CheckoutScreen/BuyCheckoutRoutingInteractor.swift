@@ -9,8 +9,8 @@ import ToolKit
 public class BuyCheckoutRoutingInteractor: CheckoutRoutingInteracting {
 
     typealias StateService = ConfirmCheckoutServiceAPI &
-                             TransferDetailsServiceAPI &
-                             CancelTransferServiceAPI
+        TransferDetailsServiceAPI &
+        CancelTransferServiceAPI
 
     private typealias AnalyticsEvent = AnalyticsEvents.SimpleBuy
 
@@ -36,8 +36,10 @@ public class BuyCheckoutRoutingInteractor: CheckoutRoutingInteracting {
     private unowned let stateService: StateService
     private let disposeBag = DisposeBag()
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         stateService: StateService) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        stateService: StateService
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         _ = setup

@@ -13,8 +13,10 @@ public struct ThumbnailViewModel {
 
     // MARK: - Setup
 
-    public init(imageViewContent: ImageViewContent,
-                backgroundColor: Color) {
+    public init(
+        imageViewContent: ImageViewContent,
+        backgroundColor: Color
+    ) {
         self.imageViewContent = imageViewContent
         self.backgroundColor = backgroundColor
     }

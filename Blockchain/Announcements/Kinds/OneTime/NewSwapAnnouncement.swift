@@ -91,6 +91,7 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
     var shouldShow: Bool {
         !isDismissed
     }
+
     let type: AnnouncementType = .newSwap
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let dismiss: CardAnnouncementAction
@@ -103,19 +104,22 @@ final class NewSwapAnnouncement: OneTimeAnnouncement & ActionableAnnouncement {
         }
         return isEligibleForSimpleBuy ? .eligible : .notEligible
     }
+
     private let isEligibleForSimpleBuy: Bool
     private let isTier1Or2Verified: Bool
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
 
-    init(isEligibleForSimpleBuy: Bool,
-         isTier1Or2Verified: Bool,
-         cacheSuite: CacheSuite = resolve(),
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         dismiss: @escaping CardAnnouncementAction,
-         action: @escaping CardAnnouncementAction) {
+    init(
+        isEligibleForSimpleBuy: Bool,
+        isTier1Or2Verified: Bool,
+        cacheSuite: CacheSuite = resolve(),
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        dismiss: @escaping CardAnnouncementAction,
+        action: @escaping CardAnnouncementAction
+    ) {
         self.isEligibleForSimpleBuy = isEligibleForSimpleBuy
         self.isTier1Or2Verified = isTier1Or2Verified
         recorder = AnnouncementRecorder(cache: cacheSuite, errorRecorder: errorRecorder)

@@ -32,8 +32,10 @@ public final class BuyTransferCancellationRoutingInteractor: TransferOrderRoutin
     private let disposeBag = DisposeBag()
     private unowned let stateService: StateServiceAPI
 
-    public init(stateService: StateServiceAPI,
-                analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    public init(
+        stateService: StateServiceAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.stateService = stateService
         _ = setup

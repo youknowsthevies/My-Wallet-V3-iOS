@@ -38,10 +38,10 @@ final class MobileCodeEntryInteractor {
         case unknown
 
         var isComplete: Bool {
-           switch self {
-           case .verified:
+            switch self {
+            case .verified:
                 return true
-           default:
+            default:
                 return false
             }
         }
@@ -94,33 +94,35 @@ final class MobileCodeEntryInteractor {
         verificationInteractor = VerifyCodeEntryInteractor(service: service)
         updateMobileInteractor = UpdateMobileScreenInteractor(service: service)
 
-        Observable.combineLatest(verificationInteractor.interactionState,
-                                 updateMobileInteractor.interactionState)
-            .map { payload -> InteractionState in
-                let verification = payload.0
-                let update = payload.1
-                switch (verification, update) {
-                case (.complete, .complete),
-                     (.complete, .ready):
-                    return .verified
-                case (.ready, .ready):
-                    return .ready
-                case (.verifying, .ready):
-                    return .submitting
-                case (.failed, .ready):
-                    return .error(.verifying)
-                case (.ready, .updating):
-                    return .resending
-                case (.ready, .complete):
-                    return .ready
-                case (.ready, .failed):
-                    return .error(.resending)
-                default:
-                    return .unknown
-                }
+        Observable.combineLatest(
+            verificationInteractor.interactionState,
+            updateMobileInteractor.interactionState
+        )
+        .map { payload -> InteractionState in
+            let verification = payload.0
+            let update = payload.1
+            switch (verification, update) {
+            case (.complete, .complete),
+                 (.complete, .ready):
+                return .verified
+            case (.ready, .ready):
+                return .ready
+            case (.verifying, .ready):
+                return .submitting
+            case (.failed, .ready):
+                return .error(.verifying)
+            case (.ready, .updating):
+                return .resending
+            case (.ready, .complete):
+                return .ready
+            case (.ready, .failed):
+                return .error(.resending)
+            default:
+                return .unknown
             }
-            .bindAndCatch(to: stateRelay)
-            .disposed(by: disposeBag)
+        }
+        .bindAndCatch(to: stateRelay)
+        .disposed(by: disposeBag)
 
         actionRelay
             .bindAndCatch(weak: self) { (self, action) in
@@ -138,7 +140,7 @@ final class MobileCodeEntryInteractor {
             .disposed(by: disposeBag)
 
         service.valueObservable
-            .compactMap { $0.smsNumber }
+            .compactMap(\.smsNumber)
             .bindAndCatch(to: updateMobileInteractor.contentRelay)
             .disposed(by: disposeBag)
     }

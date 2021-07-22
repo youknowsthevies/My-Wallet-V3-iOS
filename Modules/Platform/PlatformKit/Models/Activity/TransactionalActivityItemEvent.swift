@@ -51,12 +51,14 @@ public struct TransactionalActivityItemEvent {
         amount.currencyType
     }
 
-    public init(identifier: String,
-                transactionHash: String,
-                creationDate: Date,
-                status: EventStatus,
-                type: EventType,
-                amount: CryptoValue) {
+    public init(
+        identifier: String,
+        transactionHash: String,
+        creationDate: Date,
+        status: EventStatus,
+        type: EventType,
+        amount: CryptoValue
+    ) {
         self.identifier = identifier
         self.transactionHash = transactionHash
         self.creationDate = creationDate

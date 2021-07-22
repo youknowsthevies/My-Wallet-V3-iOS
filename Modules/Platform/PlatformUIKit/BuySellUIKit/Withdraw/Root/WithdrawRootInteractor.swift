@@ -15,15 +15,14 @@ protocol WithdrawFlowRouting: AnyObject {
     func closeFlow()
 }
 
-protocol WithdrawFlowListener: AnyObject {
-
-}
+protocol WithdrawFlowListener: AnyObject {}
 
 public final class WithdrawRootInteractor: Interactor,
-                                           WithdrawFlowInteractable,
-                                           WithdrawFlowListener,
-                                           LinkedBanksSelectionListener,
-                                           WithdrawAmountPageListener {
+    WithdrawFlowInteractable,
+    WithdrawFlowListener,
+    LinkedBanksSelectionListener,
+    WithdrawAmountPageListener
+{
 
     private typealias AnalyticsEvent = AnalyticsEvents.FiatWithdrawal
 
@@ -36,12 +35,13 @@ public final class WithdrawRootInteractor: Interactor,
         self.analyticsRecorder = analyticsRecorder
     }
 
-    public override func didBecomeActive() {
+    override public func didBecomeActive() {
         super.didBecomeActive()
         startFlow()
     }
 
     // MARK: - SelectLinkedBanksListener
+
     func bankSelected(beneficiary: Beneficiary) {
         router?.routeToBankSelected(beneficiary: beneficiary)
     }
@@ -67,6 +67,7 @@ public final class WithdrawRootInteractor: Interactor,
     }
 
     // MARK: - Private methods
+
     private func startFlow() {
         analyticsRecorder.record(events: [
             AnalyticsEvents.FiatWithdrawal.formShown,

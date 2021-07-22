@@ -106,9 +106,9 @@ extension Wallet: LegacyBitcoinWalletProtocol {
             !result.isEmpty,
             result != "null",
             result != "undefined"
-            else {
-                success(nil)
-                return
+        else {
+            success(nil)
+            return
         }
         success(result)
     }

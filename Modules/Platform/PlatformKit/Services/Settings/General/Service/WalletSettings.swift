@@ -34,7 +34,7 @@ public struct WalletSettings: Equatable {
         isEmailVerified = response.emailVerified
         isEmailNotificationsEnabled = response.emailNotificationsEnabled
         authenticator = WalletAuthenticatorType(rawValue: response.authenticator) ?? .standard
-        features = response.invited.reduce(into: [Feature: Bool]()) { (result, data) in
+        features = response.invited.reduce(into: [Feature: Bool]()) { result, data in
             guard let key = Feature(rawValue: data.key.rawValue) else {
                 return
             }

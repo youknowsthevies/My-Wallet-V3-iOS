@@ -29,8 +29,10 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
     private let router: InterestDashboardAnnouncementRouting
     private let disposeBag = DisposeBag()
 
-    public init(router: InterestDashboardAnnouncementRouting,
-                service: SavingAccountServiceAPI = resolve()) {
+    public init(
+        router: InterestDashboardAnnouncementRouting,
+        service: SavingAccountServiceAPI = resolve()
+    ) {
         self.router = router
         announcement = .init(
             badgeImage: .init(
@@ -49,7 +51,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
 
         let rates = DefaultLineItemCellInteractor(
             title: DefaultLabelContentInteractor(knownValue: LocalizationId.Cells.LineItem.Rate.title),
-            description: InterestAccountDetailsDescriptionLabelInteractor.Rates.init(
+            description: InterestAccountDetailsDescriptionLabelInteractor.Rates(
                 service: service,
                 cryptoCurrency: .bitcoin
             )

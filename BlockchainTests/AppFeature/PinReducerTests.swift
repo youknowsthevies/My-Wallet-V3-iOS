@@ -13,7 +13,7 @@ import XCTest
 class PinReducerTests: XCTestCase {
 
     var mockWalletManager: WalletManager!
-    var mockWallet: MockWallet = MockWallet()
+    var mockWallet = MockWallet()
     var settingsApp: MockBlockchainSettingsApp!
 
     override func setUp() {

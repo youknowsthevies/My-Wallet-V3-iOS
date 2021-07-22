@@ -11,13 +11,15 @@ class PaymentAccountPatcherTests: XCTestCase {
     }
 
     func testIdealEURAccountIsNotPatched() {
-        let eurAccount = PaymentAccountEUR(identifier: "identifier",
-                                                    state: .active,
-                                                    bankName: "bankName",
-                                                    bankCountry: "bankCountry",
-                                                    iban: "iban",
-                                                    bankCode: PaymentAccountPatcher.targetBankCode,
-                                                    recipientName: "recipientName")
+        let eurAccount = PaymentAccountEUR(
+            identifier: "identifier",
+            state: .active,
+            bankName: "bankName",
+            bankCountry: "bankCountry",
+            iban: "iban",
+            bankCode: PaymentAccountPatcher.targetBankCode,
+            recipientName: "recipientName"
+        )
 
         let result = sut.patch(eurAccount, recipientName: "patched") as! PaymentAccountEUR
 
@@ -25,13 +27,15 @@ class PaymentAccountPatcherTests: XCTestCase {
     }
 
     func testMinimumEURAccountIsNotPatched() {
-        let eurAccount = PaymentAccountEUR(identifier: "identifier",
-                                                    state: .active,
-                                                    bankName: "bankName",
-                                                    bankCountry: "",
-                                                    iban: "iban",
-                                                    bankCode: PaymentAccountPatcher.targetBankCode,
-                                                    recipientName: "")
+        let eurAccount = PaymentAccountEUR(
+            identifier: "identifier",
+            state: .active,
+            bankName: "bankName",
+            bankCountry: "",
+            iban: "iban",
+            bankCode: PaymentAccountPatcher.targetBankCode,
+            recipientName: ""
+        )
 
         let result = sut.patch(eurAccount, recipientName: "patched") as! PaymentAccountEUR
 
@@ -39,5 +43,4 @@ class PaymentAccountPatcherTests: XCTestCase {
         XCTAssertEqual(result.recipientName, "patched", "recipientName should be the given one")
         XCTAssertEqual(result.bankCountry, PaymentAccountPatcher.targetBankCountry, "bankCountry should be the targetBankCountry")
     }
-
 }

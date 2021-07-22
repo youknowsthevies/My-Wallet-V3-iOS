@@ -7,8 +7,8 @@ public protocol AnalyticsEventRecorderAPI: AnyObject {
     func record(events: [AnalyticsEvent])
 }
 
-public extension AnalyticsEventRecorderAPI {
-    func record(events: [AnalyticsEvent]) {
+extension AnalyticsEventRecorderAPI {
+    public func record(events: [AnalyticsEvent]) {
         events.forEach(record(event:))
     }
 }

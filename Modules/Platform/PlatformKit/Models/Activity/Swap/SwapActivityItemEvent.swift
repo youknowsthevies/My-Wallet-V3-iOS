@@ -32,8 +32,10 @@ public struct SwapActivityItemEvent: Decodable {
         public let inputCurrencyType: CurrencyType
         public let outputCurrencyType: CurrencyType
 
-        init(inputCurrencyType: CurrencyType,
-             outputCurrencyType: CurrencyType) {
+        init(
+            inputCurrencyType: CurrencyType,
+            outputCurrencyType: CurrencyType
+        ) {
             self.inputCurrencyType = inputCurrencyType
             self.outputCurrencyType = outputCurrencyType
         }
@@ -73,10 +75,12 @@ public struct SwapActivityItemEvent: Decodable {
         public let withdrawalFee: MoneyValue
         public let fiatValue: FiatValue
 
-        init(deposit: MoneyValue,
-             withdrawal: MoneyValue,
-             withdrawalFee: MoneyValue,
-             fiatValue: FiatValue) {
+        init(
+            deposit: MoneyValue,
+            withdrawal: MoneyValue,
+            withdrawalFee: MoneyValue,
+            fiatValue: FiatValue
+        ) {
             self.deposit = deposit
             self.withdrawal = withdrawal
             self.withdrawalFee = withdrawalFee
@@ -233,7 +237,7 @@ public struct SwapActivityItemEvent: Decodable {
             )
         }
 
-        self.amounts = Amounts(
+        amounts = Amounts(
             deposit: deposit,
             withdrawal: withdrawal,
             withdrawalFee: fee,
@@ -262,8 +266,10 @@ extension SwapActivityItemEvent: Equatable {
 }
 
 extension SwapActivityItemEvent.EventStatus: Equatable {
-    public static func == (lhs: SwapActivityItemEvent.EventStatus,
-                           rhs: SwapActivityItemEvent.EventStatus) -> Bool {
+    public static func == (
+        lhs: SwapActivityItemEvent.EventStatus,
+        rhs: SwapActivityItemEvent.EventStatus
+    ) -> Bool {
         switch (lhs, rhs) {
         case (.inProgress(let left), .inProgress(let right)):
             return left == right

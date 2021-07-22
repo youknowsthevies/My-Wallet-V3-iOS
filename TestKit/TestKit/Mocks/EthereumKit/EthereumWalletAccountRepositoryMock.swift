@@ -12,6 +12,7 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, K
     var keyPair: Single<EthereumKeyPair> {
         keyPairValue
     }
+
     func keyPair(with secondPassword: String?) -> Single<EthereumKeyPair> {
         keyPairValue
     }
@@ -29,7 +30,7 @@ class EthereumWalletAccountRepositoryMock: EthereumWalletAccountRepositoryAPI, K
     }
 
     var accounts: Single<[EthereumWalletAccount]> {
-        defaultAccount.map { [ $0 ] }
+        defaultAccount.map { [$0] }
     }
 
     var activeAccounts: Single<[EthereumWalletAccount]> {

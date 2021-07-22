@@ -4,8 +4,8 @@ import Foundation
 
 extension Accessibility.Identifier {
     public enum LineItem {
-        public enum Base { }
-        public enum Transactional { }
+        public enum Base {}
+        public enum Transactional {}
     }
 }
 

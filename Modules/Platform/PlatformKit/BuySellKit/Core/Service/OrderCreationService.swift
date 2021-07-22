@@ -24,9 +24,11 @@ final class OrderCreationService: OrderCreationServiceAPI {
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         client: OrderCreationClientAPI = resolve(),
-         pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        client: OrderCreationClientAPI = resolve(),
+        pendingOrderDetailsService: PendingOrderDetailsServiceAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
         self.pendingOrderDetailsService = pendingOrderDetailsService

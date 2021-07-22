@@ -45,11 +45,13 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(image: currency.logoResource,
-                                 contentColor: .white,
-                                 backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
-                                 cornerRadius: .value(8.0),
-                                 accessibilityIdSuffix: "PendingTransactionSuccessBadge")
+                        .primary(
+                            image: currency.logoResource,
+                            contentColor: .white,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            cornerRadius: .value(8.0),
+                            accessibilityIdSuffix: "PendingTransactionSuccessBadge"
+                        )
                     ),
                     sideViewAttributes: .init(
                         type: .image(PendingStateViewModel.Image.success.imageResource),
@@ -74,11 +76,13 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(image: amount.currency.logoResource,
-                                 contentColor: .white,
-                                 backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
-                                 cornerRadius: .value(8.0),
-                                 accessibilityIdSuffix: "PendingTransactionPendingBadge")
+                        .primary(
+                            image: amount.currency.logoResource,
+                            contentColor: .white,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            cornerRadius: .value(8.0),
+                            accessibilityIdSuffix: "PendingTransactionPendingBadge"
+                        )
                     ),
                     sideViewAttributes: .init(type: .loader, position: .radiusDistanceFromCenter),
                     cornerRadiusRatio: 0.5
@@ -96,11 +100,13 @@ final class DepositPendingTransactionStateProvider: PendingTransactionStateProvi
             compositeViewType: .composite(
                 .init(
                     baseViewType: .badgeImageViewModel(
-                        .primary(image: currency.logoResource,
-                                 contentColor: .white,
-                                 backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
-                                 cornerRadius: .value(8.0),
-                                 accessibilityIdSuffix: "PendingTransactionFailureBadge")
+                        .primary(
+                            image: currency.logoResource,
+                            contentColor: .white,
+                            backgroundColor: currency.isFiatCurrency ? .fiat : currency.brandColor,
+                            cornerRadius: .value(8.0),
+                            accessibilityIdSuffix: "PendingTransactionFailureBadge"
+                        )
                     ),
                     sideViewAttributes: .init(
                         type: .image(PendingStateViewModel.Image.circleError.imageResource),

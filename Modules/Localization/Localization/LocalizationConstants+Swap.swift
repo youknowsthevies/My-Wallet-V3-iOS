@@ -5,16 +5,18 @@
 import Foundation
 
 extension LocalizationConstants {
-    
+
     public enum Swap {
         public enum Trending {
             public enum Header {
                 public static let title = NSLocalizedString("Swap Your Crypto", comment: "Swap Your Crypto")
                 public static let description = NSLocalizedString("Instantly exchange your crypto into any currency we offer for your wallet.", comment: "Instantly exchange your crypto into any currency we offer for your wallet.")
             }
+
             public static let trending = NSLocalizedString("Trending", comment: "Trending")
             public static let newSwap = NSLocalizedString("New Swap", comment: "New Swap")
         }
+
         public static let available = NSLocalizedString("Available", comment: "")
         public static let your = NSLocalizedString("Your", comment: "")
         public static let balance = NSLocalizedString("Balance", comment: "")
@@ -62,30 +64,34 @@ extension LocalizationConstants {
         public static let swapInfo = NSLocalizedString("Swap Info", comment: "Swap Info")
         public static let close = NSLocalizedString("Close", comment: "Close")
         public static let orderHistory = NSLocalizedString("Order History", comment: "Order History")
-        
-        public struct Tutorial {
-            public struct PageOne {
+
+        public enum Tutorial {
+            public enum PageOne {
                 public static let title = NSLocalizedString("Welcome to Swap!", comment: "")
                 public static let subtitle = NSLocalizedString("The easiest way to exchange one crypto for another without leaving your wallet.", comment: "")
             }
-            public struct PageTwo {
+
+            public enum PageTwo {
                 public static let title = NSLocalizedString("Real-time Exchange Rates", comment: "")
                 public static let subtitle = NSLocalizedString("Access competitive crypto prices right at your fingertips.", comment: "")
             }
-            public struct PageThree {
+
+            public enum PageThree {
                 public static let title = NSLocalizedString("100% On-Chain", comment: "")
                 public static let subtitle = NSLocalizedString("All Swap trades are confirmed and settled directly on-chain.", comment: "")
             }
-            public struct PageFour {
+
+            public enum PageFour {
                 public static let title = NSLocalizedString("You Control Your Key", comment: "")
                 public static let subtitle = NSLocalizedString("With Swap your crypto is safe, secure, and your keys are always intact.", comment: "")
             }
-            public struct PageFive {
+
+            public enum PageFive {
                 public static let title = NSLocalizedString("Manage Risk Better", comment: "")
                 public static let subtitle = NSLocalizedString("Introducing Digital US Dollars (USD Digital) to de-risk your crypto investment or lock-in gains.", comment: "")
             }
         }
-        
+
         public static let navigationTitle = NSLocalizedString(
             "Exchange",
             comment: "Title text shown on navigation bar for exchanging a crypto asset for another"
@@ -151,16 +157,20 @@ extension LocalizationConstants {
         )
         public static let receive = NSLocalizedString(
             "Receive",
-            comment: "Text displayed when reviewing the amount to be received for an exchange order")
+            comment: "Text displayed when reviewing the amount to be received for an exchange order"
+        )
         public static let estimatedFees = NSLocalizedString(
             "Estimated fees",
-            comment: "Text displayed when reviewing the estimated amount of fees to pay for an exchange order")
+            comment: "Text displayed when reviewing the estimated amount of fees to pay for an exchange order"
+        )
         public static let value = NSLocalizedString(
             "Value",
-            comment: "Text displayed when reviewing the fiat value of an exchange order")
+            comment: "Text displayed when reviewing the fiat value of an exchange order"
+        )
         public static let sendTo = NSLocalizedString(
             "Send to",
-            comment: "Text displayed when reviewing where the result of an exchange order will be sent to")
+            comment: "Text displayed when reviewing where the result of an exchange order will be sent to"
+        )
         public static let expiredDescription = NSLocalizedString(
             "Your order has expired. No funds left your account.",
             comment: "Helper text shown when a user is viewing an order that has expired."
@@ -185,7 +195,7 @@ extension LocalizationConstants {
             "What do you want to receive?",
             comment: "Text displayed on the action sheet that is presented when the user is selecting an account to exchange into."
         )
-        
+
         public static let fees = NSLocalizedString("Fees", comment: "Fees")
         public static let confirmExchange = NSLocalizedString(
             "Confirm Exchange",
@@ -219,7 +229,7 @@ extension LocalizationConstants {
             "Insufficient funds",
             comment: "Error message shown when a user is attempting to exchange an amount greater than their balance"
         )
-        
+
         public static let yourMin = NSLocalizedString(
             "Your Min is",
             comment: "Error that displays what the minimum amount of fiat is required for a trade"

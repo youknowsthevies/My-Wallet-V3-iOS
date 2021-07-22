@@ -33,7 +33,7 @@ final class FiatCustodialAccount: FiatAccount {
             .catchErrorJustReturn(false)
 
         return Single.zip(canTransactWithBanks, hasActionableBalance)
-            .map { (fiatSupported, hasPositiveBalance) in
+            .map { fiatSupported, hasPositiveBalance in
                 var availableActions: AvailableActions = [.viewActivity]
                 if fiatSupported {
                     availableActions.insert(.deposit)
@@ -94,7 +94,7 @@ final class FiatCustodialAccount: FiatAccount {
         self.activityFetcher = activityFetcher
         self.paymentMethodService = paymentMethodService
         self.balanceService = balanceService
-        self.exchange = exchangeProviding[fiatCurrency]
+        exchange = exchangeProviding[fiatCurrency]
     }
 
     func can(perform action: AssetAction) -> Single<Bool> {

@@ -67,7 +67,7 @@ final class EmailLoginReducerTests: XCTestCase {
             }
         )
     }
-// TODO: Comment for now (wait until error states design are finalised)
+    // TODO: Comment for now (wait until error states design are finalised)
 //    func test_send_device_verification_email_failure() {
 //        testStore.assert(
 //            // should still go to verify device screen if it is a network error

@@ -12,7 +12,7 @@ struct EmailVerificationView: View {
 
     init(store: Store<EmailVerificationState, EmailVerificationAction>) {
         self.store = store
-        self.viewStore = ViewStore(store)
+        viewStore = ViewStore(store)
     }
 
     var body: some View {

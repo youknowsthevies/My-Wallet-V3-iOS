@@ -227,10 +227,10 @@ extension AnalyticsEvents {
             }
         }
 
-        var params: [String : String]? {
+        var params: [String: String]? {
             switch self {
             case .updatedAtParsingError(date: let date):
-                return ["data" : date]
+                return ["data": date]
             }
         }
     }

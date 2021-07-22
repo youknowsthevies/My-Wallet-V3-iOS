@@ -77,15 +77,14 @@ public class PBKDF2 {
         }
 
         return Result {
-                try derive(
-                    with: password,
-                    salt: salt,
-                    iterations: iterations,
-                    keySizeBytes: keySizeBytes,
-                    algorithm: algorithm.commonCryptoAlgorithm
-                )
-            }
-            .mapError { _ in PBKDF2Error.keyDerivationError }
+            try derive(
+                with: password,
+                salt: salt,
+                iterations: iterations,
+                keySizeBytes: keySizeBytes,
+                algorithm: algorithm.commonCryptoAlgorithm
+            )
+        }
+        .mapError { _ in PBKDF2Error.keyDerivationError }
     }
-
 }

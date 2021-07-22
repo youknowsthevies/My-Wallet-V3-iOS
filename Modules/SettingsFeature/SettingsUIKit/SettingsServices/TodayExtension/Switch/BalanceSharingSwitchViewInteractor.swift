@@ -56,8 +56,10 @@ final class BalanceSharingSwitchViewInteractor: SwitchViewInteracting {
     private let service: BalanceSharingSettingsServiceAPI
     private let analyticsRecorder: AnalyticsEventRecorderAPI
 
-    init(service: BalanceSharingSettingsServiceAPI,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        service: BalanceSharingSettingsServiceAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.service = service
         self.analyticsRecorder = analyticsRecorder
     }

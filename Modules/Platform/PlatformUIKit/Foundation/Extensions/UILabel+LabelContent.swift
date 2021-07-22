@@ -3,8 +3,8 @@
 import RxCocoa
 import RxSwift
 
-public extension UILabel {
-    var content: LabelContent {
+extension UILabel {
+    public var content: LabelContent {
         get {
             LabelContent(
                 text: text ?? "",

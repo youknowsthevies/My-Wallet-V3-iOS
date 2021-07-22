@@ -15,13 +15,13 @@ public protocol ShimmeringViewing: AnyObject {
     var isShimmering: Bool { get }
 }
 
-public extension ShimmeringViewing where Self: UIView {
+extension ShimmeringViewing where Self: UIView {
 
-    var shimmerDirection: ShimmerDirection {
+    public var shimmerDirection: ShimmerDirection {
         .leftToRight
     }
 
-    var isShimmering: Bool {
+    public var isShimmering: Bool {
         layer.mask != nil
     }
 
@@ -29,7 +29,7 @@ public extension ShimmeringViewing where Self: UIView {
     ///  This works by applying a `CAGradientLayer` mask to the receiving `UIView` layer.
     /// - parameter color: The color of the central section of the shimmering effect, this will be set to this view `backgroundColor`.
     /// - parameter alpha: The alpha value of the central section of the gradient mask that will be used.
-    func startShimmering(color: UIColor, alpha: CGFloat = 1) {
+    public func startShimmering(color: UIColor, alpha: CGFloat = 1) {
         stopShimmering()
         backgroundColor = color
         let gradientLayer = CAGradientLayer()
@@ -58,13 +58,13 @@ public extension ShimmeringViewing where Self: UIView {
     }
 
     /// Stops the shimerring effect
-    func stopShimmering() {
+    public func stopShimmering() {
         backgroundColor = .clear
         layer.mask = nil
     }
 
     /// Should be called directly from `layoutSubviews`.
-    func layoutShimmeringFrameIfNeeded() {
+    public func layoutShimmeringFrameIfNeeded() {
         layer.mask?.frame = bounds
     }
 }

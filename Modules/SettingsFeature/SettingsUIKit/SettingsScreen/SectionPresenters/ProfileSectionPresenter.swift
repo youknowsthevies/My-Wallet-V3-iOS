@@ -16,9 +16,11 @@ final class ProfileSectionPresenter: SettingsSectionPresenting {
     private let emailVerificationPresenter: EmailVerificationCellPresenter
     private let mobileVerificationPresenter: MobileVerificationCellPresenter
 
-    init(tiersLimitsProvider: TierLimitsProviding,
-         emailVerificationInteractor: EmailVerificationBadgeInteractor,
-         mobileVerificationInteractor: MobileVerificationBadgeInteractor) {
+    init(
+        tiersLimitsProvider: TierLimitsProviding,
+        emailVerificationInteractor: EmailVerificationBadgeInteractor,
+        mobileVerificationInteractor: MobileVerificationBadgeInteractor
+    ) {
         limitsPresenter = TierLimitsCellPresenter(tiersProviding: tiersLimitsProvider)
         emailVerificationPresenter = .init(interactor: emailVerificationInteractor)
         mobileVerificationPresenter = .init(interactor: mobileVerificationInteractor)

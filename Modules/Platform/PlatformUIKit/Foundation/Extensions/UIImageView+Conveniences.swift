@@ -23,20 +23,23 @@ public struct ImageViewContent: Equatable {
 
     // MARK: - Static Properties
 
-    public static let empty: ImageViewContent = ImageViewContent()
+    public static let empty = ImageViewContent()
 
     // MARK: - Properties
 
     var templateColor: UIColor? {
         renderingMode.templateColor
     }
+
     let accessibility: Accessibility
     let imageResource: ImageResource?
     let renderingMode: RenderingMode
 
-    public init(imageResource: ImageResource? = nil,
-                accessibility: Accessibility = .none,
-                renderingMode: RenderingMode = .normal) {
+    public init(
+        imageResource: ImageResource? = nil,
+        accessibility: Accessibility = .none,
+        renderingMode: RenderingMode = .normal
+    ) {
         self.imageResource = imageResource
         self.accessibility = accessibility
         self.renderingMode = renderingMode

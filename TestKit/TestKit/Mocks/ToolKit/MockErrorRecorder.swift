@@ -4,5 +4,5 @@ import ToolKit
 import XCTest
 
 class MockErrorRecorder: ErrorRecording {
-    func error(_ error: Error) { }
+    func error(_ error: Error) {}
 }

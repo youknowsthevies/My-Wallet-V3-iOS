@@ -66,10 +66,11 @@ protocol TransactionFlowListener: AnyObject {
 }
 
 final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPresentable>,
-                                       TransactionFlowInteractable,
-                                       AccountPickerListener,
-                                       TransactionFlowPresentableListener,
-                                       TargetSelectionPageListener {
+    TransactionFlowInteractable,
+    AccountPickerListener,
+    TransactionFlowPresentableListener,
+    TargetSelectionPageListener
+{
 
     weak var router: TransactionFlowRouting?
     weak var listener: TransactionFlowListener?
@@ -80,12 +81,14 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
     private let target: TransactionTarget?
     private let analyticsHook: TransactionAnalyticsHook
 
-    init(transactionModel: TransactionModel,
-         action: AssetAction,
-         sourceAccount: BlockchainAccount?,
-         target: TransactionTarget?,
-         presenter: TransactionFlowPresentable,
-         analyticsHook: TransactionAnalyticsHook = resolve()) {
+    init(
+        transactionModel: TransactionModel,
+        action: AssetAction,
+        sourceAccount: BlockchainAccount?,
+        target: TransactionTarget?,
+        presenter: TransactionFlowPresentable,
+        analyticsHook: TransactionAnalyticsHook = resolve()
+    ) {
         self.transactionModel = transactionModel
         self.action = action
         self.sourceAccount = sourceAccount
@@ -104,7 +107,7 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
         transactionModel
             .state
             .distinctUntilChanged(\.step)
-            .observeOn((MainScheduler.asyncInstance))
+            .observeOn(MainScheduler.asyncInstance)
             .subscribe { [weak self] state in
                 self?.handleStateChange(newState: state)
             }
@@ -197,7 +200,8 @@ final class TransactionFlowInteractor: PresentableInteractor<TransactionFlowPres
                 case .selectTarget:
                     self?.didSelectDestinationAccount(target: target)
                     if let selectedSource = state.source as? CryptoAccount,
-                       let target = target as? CryptoAccount {
+                       let target = target as? CryptoAccount
+                    {
                         self?.analyticsHook.onReceiveAccountSelected(
                             selectedSource,
                             target: target,

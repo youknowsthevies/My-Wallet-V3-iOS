@@ -3,11 +3,11 @@
 import Localization
 import PlatformKit
 
-public struct AssetBalanceViewModel {
+public enum AssetBalanceViewModel {
 
     // MARK: - State Aliases
 
-    public struct State {
+    public enum State {
         /// The state of the `AssetBalance` interactor and presenter
         public typealias Interaction = LoadingState<Value.Interaction>
         public typealias Presentation = LoadingState<Value.Presentation>
@@ -15,7 +15,7 @@ public struct AssetBalanceViewModel {
 
     // MARK: - Value Namespace
 
-    public struct Value {
+    public enum Value {
 
         // MARK: - Interaction
 
@@ -28,9 +28,11 @@ public struct AssetBalanceViewModel {
             /// The wallet's pending balance in crypto
             let pendingValue: MoneyValue
 
-            init(fiatValue: MoneyValue,
-                 cryptoValue: MoneyValue,
-                 pendingValue: MoneyValue) {
+            init(
+                fiatValue: MoneyValue,
+                cryptoValue: MoneyValue,
+                pendingValue: MoneyValue
+            ) {
                 self.fiatValue = fiatValue
                 self.cryptoValue = cryptoValue
                 self.pendingValue = pendingValue
@@ -68,13 +70,15 @@ public struct AssetBalanceViewModel {
                 let pendingTextColor: UIColor
                 let cryptoAccessibility: Accessibility
 
-                public init(fiatFont: UIFont,
-                            fiatTextColor: UIColor,
-                            fiatAccessibility: Accessibility,
-                            cryptoFont: UIFont,
-                            cryptoTextColor: UIColor,
-                            pendingTextColor: UIColor = .mutedText,
-                            cryptoAccessibility: Accessibility) {
+                public init(
+                    fiatFont: UIFont,
+                    fiatTextColor: UIColor,
+                    fiatAccessibility: Accessibility,
+                    cryptoFont: UIFont,
+                    cryptoTextColor: UIColor,
+                    pendingTextColor: UIColor = .mutedText,
+                    cryptoAccessibility: Accessibility
+                ) {
                     self.fiatFont = fiatFont
                     self.fiatTextColor = fiatTextColor
                     self.fiatAccessibility = fiatAccessibility
@@ -124,16 +128,15 @@ public struct AssetBalanceViewModel {
                     alignment: textAlignment,
                     accessibility: descriptors.cryptoAccessibility.with(idSuffix: value.cryptoValue.currencyType.code)
                 )
-
             }
         }
     }
 }
 
-public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
-    typealias Descriptors = AssetBalanceViewModel.Value.Presentation.Descriptors
+extension AssetBalanceViewModel.Value.Presentation.Descriptors {
+    public typealias Descriptors = AssetBalanceViewModel.Value.Presentation.Descriptors
 
-    static func `default`(
+    public static func `default`(
         cryptoAccessiblitySuffix: String,
         fiatAccessiblitySuffix: String
     ) -> Descriptors {
@@ -147,7 +150,7 @@ public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         )
     }
 
-    static func muted(
+    public static func muted(
         cryptoAccessiblitySuffix: String,
         fiatAccessiblitySuffix: String
     ) -> Descriptors {
@@ -161,7 +164,7 @@ public extension AssetBalanceViewModel.Value.Presentation.Descriptors {
         )
     }
 
-    static func activity(
+    public static func activity(
         cryptoAccessiblitySuffix: String,
         fiatAccessiblitySuffix: String
     ) -> Descriptors {

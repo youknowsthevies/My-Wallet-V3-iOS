@@ -44,8 +44,10 @@ final class OrdersService: OrdersServiceAPI {
 
     // MARK: - Setup
 
-    init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         client: OrderDetailsClientAPI = resolve()) {
+    init(
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        client: OrderDetailsClientAPI = resolve()
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.client = client
         ordersCachedValue.setFetch { [client, analyticsRecorder] in

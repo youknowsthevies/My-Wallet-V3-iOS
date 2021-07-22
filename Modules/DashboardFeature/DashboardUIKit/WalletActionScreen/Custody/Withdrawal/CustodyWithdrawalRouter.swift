@@ -32,7 +32,7 @@ final class CustodyWithdrawalRouter: CustodyWithdrawalRouterAPI {
 
     func start(with currency: CryptoCurrency) {
         self.currency = currency
-        self.stateService = CustodyWithdrawalStateService()
+        stateService = CustodyWithdrawalStateService()
 
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in

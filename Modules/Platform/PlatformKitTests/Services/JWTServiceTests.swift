@@ -64,7 +64,7 @@ final class JWTServiceTests: XCTestCase {
             .toBlocking()
             .first()
 
-        let correctTokenSetExpectation = self.expectation(
+        let correctTokenSetExpectation = expectation(
             description: "Correct token set"
         )
 
@@ -118,7 +118,7 @@ final class JWTServiceTests: XCTestCase {
             .toBlocking()
             .first()
 
-        let missingCredentialsErrorExpectation = self.expectation(
+        let missingCredentialsErrorExpectation = expectation(
             description: "Expect a missing credentials error"
         )
 

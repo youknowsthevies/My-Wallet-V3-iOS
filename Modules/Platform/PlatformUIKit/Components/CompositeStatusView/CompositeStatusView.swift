@@ -27,14 +27,16 @@ public final class CompositeStatusView: UIView {
         /// - Parameters:
         ///   - edge: The length of the axis of this element.
         ///   - contentSizeRatio: The ratio of the size of the elements that will be added to this view.
-        init(edge: CGFloat,
-             contentSizeRatio: CGFloat = 0.80) {
+        init(
+            edge: CGFloat,
+            contentSizeRatio: CGFloat = 0.80
+        ) {
             self.contentSizeRatio = contentSizeRatio
 
             let size = CGSize(edge: edge)
             super.init(frame: CGRect(origin: .zero, size: size))
 
-            self.backgroundColor = .white
+            backgroundColor = .white
 
             attributes
                 .drive(
@@ -126,9 +128,11 @@ public final class CompositeStatusView: UIView {
 
     // MARK: - Setup
 
-    public init(edge: CGFloat,
-                mainContainerViewRatio: CGFloat = 0.85,
-                sideContainerViewRatio: CGFloat = 0.35) {
+    public init(
+        edge: CGFloat,
+        mainContainerViewRatio: CGFloat = 0.85,
+        sideContainerViewRatio: CGFloat = 0.35
+    ) {
         self.mainContainerViewRatio = mainContainerViewRatio
         self.sideContainerViewRatio = sideContainerViewRatio
 
@@ -155,17 +159,17 @@ public final class CompositeStatusView: UIView {
                     self.mainContainerView.removeSubviews()
                     self.sideContainerView.removeSubviews()
                     switch type {
-                    case let .image(imageResource):
+                    case .image(let imageResource):
                         self.setupImageView(with: imageResource)
                     case .loader:
                         self.setupLoadingView()
                     case .composite(let composite):
                         switch composite.baseViewType {
-                        case let .badgeImageViewModel(viewModel):
+                        case .badgeImageViewModel(let viewModel):
                             self.setupBadgeImageView(with: viewModel)
-                        case let .image(imageResource):
+                        case .image(let imageResource):
                             self.setupImageView(with: imageResource)
-                        case let .templateImage(name, bundle, color):
+                        case .templateImage(let name, let bundle, let color):
                             self.setupTemplateImageView(with: name, bundle: bundle, templateColor: color)
                         case .text(let text):
                             self.setupLabel(with: text)

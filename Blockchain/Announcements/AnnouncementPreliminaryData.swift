@@ -49,17 +49,19 @@ struct AnnouncementPreliminaryData {
     private let isSimpleBuyAvailable: Bool
     private let simpleBuyEventCache: EventCache
 
-    init(user: NabuUser,
-         tiers: KYC.UserTiers,
-         isSDDEligible: Bool,
-         hasLinkedBanks: Bool,
-         countries: [CountryData],
-         simpleBuyEventCache: EventCache = resolve(),
-         authenticatorType: WalletAuthenticatorType,
-         pendingOrderDetails: OrderDetails?,
-         isSimpleBuyAvailable: Bool,
-         isSimpleBuyEligible: Bool,
-         hasAnyWalletBalance: Bool) {
+    init(
+        user: NabuUser,
+        tiers: KYC.UserTiers,
+        isSDDEligible: Bool,
+        hasLinkedBanks: Bool,
+        countries: [CountryData],
+        simpleBuyEventCache: EventCache = resolve(),
+        authenticatorType: WalletAuthenticatorType,
+        pendingOrderDetails: OrderDetails?,
+        isSimpleBuyAvailable: Bool,
+        isSimpleBuyEligible: Bool,
+        hasAnyWalletBalance: Bool
+    ) {
         self.user = user
         self.tiers = tiers
         self.isSDDEligible = isSDDEligible

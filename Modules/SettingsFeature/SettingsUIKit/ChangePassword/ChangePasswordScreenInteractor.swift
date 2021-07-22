@@ -58,9 +58,11 @@ final class ChangePasswordScreenInteractor {
 
     // MARK: - Init
 
-    init(passwordAPI: PasswordRepositoryAPI,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
-        self.passwordRepository = passwordAPI
+    init(
+        passwordAPI: PasswordRepositoryAPI,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
+        passwordRepository = passwordAPI
         self.analyticsRecorder = analyticsRecorder
 
         passwordRepository.hasPassword
@@ -103,14 +105,15 @@ final class ChangePasswordScreenInteractor {
                     self?.stateRelay.accept(.complete)
                     self?.analyticsRecorder.record(event: AnalyticsEvents.New.Security.accountPasswordChanged)
                 },
-                onError: { [weak self] (_) in
+                onError: { [weak self] _ in
                     self?.stateRelay.accept(.failed)
-                })
+                }
+            )
             .disposed(by: disposeBag)
     }
 
     private func update(state: State) -> Completable {
-        Completable.create { [weak self] (observer) -> Disposable in
+        Completable.create { [weak self] observer -> Disposable in
             self?.stateRelay.accept(state)
             observer(.completed)
             return Disposables.create()

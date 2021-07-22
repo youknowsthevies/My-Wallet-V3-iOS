@@ -19,7 +19,7 @@ enum AddNewPaymentMethodEffects {
     case navigate(method: PaymentMethod)
 }
 
-public protocol AddNewPaymentMethodRouting: ViewableRouting { }
+public protocol AddNewPaymentMethodRouting: ViewableRouting {}
 
 protocol AddNewPaymentMethodPresentable: Presentable {
     func connect(action: Driver<AddNewPaymentMethodAction>) -> Driver<AddNewPaymentMethodEffects>
@@ -31,7 +31,8 @@ public protocol AddNewPaymentMethodListener: AnyObject {
 }
 
 final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMethodPresentable>,
-                                           AddNewPaymentMethodInteractable {
+    AddNewPaymentMethodInteractable
+{
 
     // MARK: - Types
 
@@ -51,10 +52,12 @@ final class AddNewPaymentMethodInteractor: PresentableInteractor<AddNewPaymentMe
 
     private let selectionRelay = PublishRelay<(method: PaymentMethod, methodType: PaymentMethodType)>()
 
-    init(presenter: AddNewPaymentMethodPresentable,
-         paymentMethodService: SelectPaymentMethodService,
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         eventRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        presenter: AddNewPaymentMethodPresentable,
+        paymentMethodService: SelectPaymentMethodService,
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        eventRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.paymentMethodService = paymentMethodService
         self.loadingViewPresenter = loadingViewPresenter
         self.eventRecorder = eventRecorder

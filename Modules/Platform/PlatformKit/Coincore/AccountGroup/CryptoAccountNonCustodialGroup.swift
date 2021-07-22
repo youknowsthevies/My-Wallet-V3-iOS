@@ -9,7 +9,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
 
     private let asset: CryptoCurrency
 
-    private(set) public lazy var identifier: AnyHashable = "CryptoAccountNonCustodialGroup." + asset.code
+    public private(set) lazy var identifier: AnyHashable = "CryptoAccountNonCustodialGroup." + asset.code
 
     public let label: String
 
@@ -76,7 +76,7 @@ public class CryptoAccountNonCustodialGroup: AccountGroup {
 
     public init(asset: CryptoCurrency, accounts: [SingleAccount]) {
         self.asset = asset
-        self.label = String(format: LocalizedString.myWallets, asset.name)
+        label = String(format: LocalizedString.myWallets, asset.name)
         self.accounts = accounts
     }
 }

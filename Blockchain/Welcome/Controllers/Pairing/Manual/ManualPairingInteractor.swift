@@ -166,12 +166,12 @@ final class ManualPairingInteractor {
             default:
                 authenticationActionRelay.accept(.authorizeLoginWith2FA(type))
             }
-        case let LoginServiceError.twoFAWalletServiceError(.wrongCode(attemptsLeft: attempts)):
+        case LoginServiceError.twoFAWalletServiceError(.wrongCode(attemptsLeft: let attempts)):
             authenticationActionRelay.accept(.wrongOtpCode(type: authenticator.value, attemptsLeft: attempts))
         case LoginServiceError.twoFAWalletServiceError(.accountLocked),
              LoginServiceError.walletPayloadServiceError(.accountLocked):
             authenticationActionRelay.accept(.lockedAccount)
-        case let LoginServiceError.walletPayloadServiceError(.message(message)):
+        case LoginServiceError.walletPayloadServiceError(.message(let message)):
             authenticationActionRelay.accept(.message(message))
         default:
             authenticationActionRelay.accept(.error(error))
@@ -193,7 +193,7 @@ extension ManualPairingInteractor {
         fileprivate let loginService: LoginServiceAPI
         fileprivate let walletFetcher: WalletPairingFetcherAPI
 
-        /// TODO: Remove from dependencies
+        // TODO: Remove from dependencies
         fileprivate let wallet: Wallet
 
         // MARK: - General dependencies
@@ -201,14 +201,16 @@ extension ManualPairingInteractor {
         fileprivate let analyticsRecorder: AnalyticsEventRecorderAPI
         fileprivate let errorRecorder: ErrorRecording
 
-        init(analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-             errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-             sessionTokenService: SessionTokenServiceAPI = resolve(),
-             smsService: SMSServiceAPI = resolve(),
-             emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
-             loginService: LoginServiceAPI = resolve(),
-             wallet: Wallet = WalletManager.shared.wallet,
-             walletFetcher: WalletPairingFetcherAPI = resolve()) {
+        init(
+            analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+            errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+            sessionTokenService: SessionTokenServiceAPI = resolve(),
+            smsService: SMSServiceAPI = resolve(),
+            emailAuthorizationService: EmailAuthorizationServiceAPI = resolve(),
+            loginService: LoginServiceAPI = resolve(),
+            wallet: Wallet = WalletManager.shared.wallet,
+            walletFetcher: WalletPairingFetcherAPI = resolve()
+        ) {
             self.wallet = wallet
             self.walletFetcher = walletFetcher
             self.analyticsRecorder = analyticsRecorder

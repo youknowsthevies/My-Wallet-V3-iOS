@@ -8,7 +8,7 @@ protocol ExchangeAccountsProviderClientAPI {
     func exchangeAddress(with currency: CryptoCurrency) -> Single<CryptoExchangeAddressResponse>
 }
 
-protocol ExchangeAccountsClientAPI: ExchangeAccountsProviderClientAPI { }
+protocol ExchangeAccountsClientAPI: ExchangeAccountsProviderClientAPI {}
 
 final class ExchangeAccountsClient: ExchangeAccountsClientAPI {
 
@@ -18,7 +18,7 @@ final class ExchangeAccountsClient: ExchangeAccountsClientAPI {
     }
 
     private enum Path {
-        static let exchangeAddress = [ "payments", "accounts", "linked" ]
+        static let exchangeAddress = ["payments", "accounts", "linked"]
     }
 
     // MARK: - Properties
@@ -28,8 +28,10 @@ final class ExchangeAccountsClient: ExchangeAccountsClientAPI {
 
     // MARK: - Setup
 
-    init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
-         requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)) {
+    init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.retail)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
     }

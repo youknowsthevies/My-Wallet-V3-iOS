@@ -8,8 +8,9 @@ import RxSwift
 import UIKit
 
 final class SelectPaymentMethodViewController: BaseScreenViewController,
-                                               SelectPaymentMethodPresentable,
-                                               SelectPaymentMethodViewControllable {
+    SelectPaymentMethodPresentable,
+    SelectPaymentMethodViewControllable
+{
 
     private typealias RxDataSource = RxTableViewSectionedReloadDataSource<PaymentMethodCellModel>
 
@@ -43,7 +44,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
             }
 
         let dataSource = RxDataSource(
-            configureCell: { [weak self] (_, _, indexPath, item) -> UITableViewCell in
+            configureCell: { [weak self] _, _, indexPath, item -> UITableViewCell in
                 guard let self = self else { return UITableViewCell() }
                 switch item {
                 case .linkedCard(let presenter):
@@ -68,6 +69,7 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
 
         return closeTriggered
     }
+
     // MARK: - Navigation
 
     override func navigationBarTrailingButtonPressed() {
@@ -101,29 +103,37 @@ final class SelectPaymentMethodViewController: BaseScreenViewController,
 
     // MARK: - Private
 
-    private func accountTableViewCell(for indexPath: IndexPath,
-                                      presenter: FiatCustodialBalanceViewPresenter) -> UITableViewCell {
+    private func accountTableViewCell(
+        for indexPath: IndexPath,
+        presenter: FiatCustodialBalanceViewPresenter
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(FiatCustodialBalanceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func linkedCardTableViewCell(for indexPath: IndexPath,
-                                         presenter: LinkedCardCellPresenter) -> UITableViewCell {
+    private func linkedCardTableViewCell(
+        for indexPath: IndexPath,
+        presenter: LinkedCardCellPresenter
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(LinkedCardTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func addNewTableViewCell(for indexPath: IndexPath,
-                                     viewModel: AddNewPaymentMethodCellModel) -> UITableViewCell {
+    private func addNewTableViewCell(
+        for indexPath: IndexPath,
+        viewModel: AddNewPaymentMethodCellModel
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(AddNewPaymentMethodTableViewCell.self, for: indexPath)
         cell.configure(viewModel: viewModel)
         return cell
     }
 
-    private func linkedBankTableViewCell(for indexPath: IndexPath,
-                                         viewModel: LinkedBankViewModel) -> UITableViewCell {
+    private func linkedBankTableViewCell(
+        for indexPath: IndexPath,
+        viewModel: LinkedBankViewModel
+    ) -> UITableViewCell {
         let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

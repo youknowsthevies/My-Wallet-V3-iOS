@@ -55,13 +55,16 @@ final class SimpleBuyFinishSignupAnnouncement: PersistentAnnouncement & Actionab
     private let canCompleteTier2: Bool
 
     private let disposeBag = DisposeBag()
+
     // MARK: - Setup
 
-    init(canCompleteTier2: Bool,
-         hasIncompleteBuyFlow: Bool,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         errorRecorder: ErrorRecording = CrashlyticsRecorder(),
-         action: @escaping CardAnnouncementAction) {
+    init(
+        canCompleteTier2: Bool,
+        hasIncompleteBuyFlow: Bool,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        errorRecorder: ErrorRecording = CrashlyticsRecorder(),
+        action: @escaping CardAnnouncementAction
+    ) {
         self.canCompleteTier2 = canCompleteTier2
         self.hasIncompleteBuyFlow = hasIncompleteBuyFlow
         self.action = action

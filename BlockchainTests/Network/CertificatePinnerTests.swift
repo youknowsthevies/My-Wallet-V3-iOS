@@ -13,7 +13,5 @@ class CertificatePinnerTests: XCTestCase {
         super.tearDown()
     }
 
-    func testPinCertificate() {
-
-    }
+    func testPinCertificate() {}
 }

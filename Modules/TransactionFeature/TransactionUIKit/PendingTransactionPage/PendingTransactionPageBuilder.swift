@@ -8,9 +8,11 @@ import TransactionKit
 // MARK: - Builder
 
 protocol PendingTransactionPageBuildable: Buildable {
-    func build(withListener listener: PendingTransactionPageListener,
-               transactionModel: TransactionModel,
-               action: AssetAction) -> PendingTransactionPageRouter
+    func build(
+        withListener listener: PendingTransactionPageListener,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    ) -> PendingTransactionPageRouter
 }
 
 final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
@@ -21,9 +23,11 @@ final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
         self.pollingService = pollingService
     }
 
-    func build(withListener listener: PendingTransactionPageListener,
-               transactionModel: TransactionModel,
-               action: AssetAction) -> PendingTransactionPageRouter {
+    func build(
+        withListener listener: PendingTransactionPageListener,
+        transactionModel: TransactionModel,
+        action: AssetAction
+    ) -> PendingTransactionPageRouter {
         let viewController = PendingTransactionViewController()
         let interactor = PendingTransactionPageInteractor(
             transactionModel: transactionModel,

@@ -33,7 +33,7 @@ public final class DashboardViewController: BaseScreenViewController {
 
     public init(fiatBalanceCellProvider: FiatBalanceCellProviding = resolve()) {
         self.fiatBalanceCellProvider = fiatBalanceCellProvider
-        self.presenter = DashboardScreenPresenter()
+        presenter = DashboardScreenPresenter()
         super.init(nibName: DashboardViewController.objectName, bundle: DashboardViewController.bundle)
     }
 
@@ -44,12 +44,12 @@ public final class DashboardViewController: BaseScreenViewController {
 
     // MARK: - Lifecycle
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupTableView()
@@ -63,7 +63,7 @@ public final class DashboardViewController: BaseScreenViewController {
         presenter.refresh()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isTranslucent = false
     }
@@ -71,9 +71,11 @@ public final class DashboardViewController: BaseScreenViewController {
     // MARK: - Setup
 
     private func setupNavigationBar() {
-        set(barStyle: .lightContent(),
+        set(
+            barStyle: .lightContent(),
             leadingButtonStyle: .drawer,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = .text(value: LocalizationConstants.DashboardScreen.title)
     }
 
@@ -187,14 +189,14 @@ public final class DashboardViewController: BaseScreenViewController {
         switch walletScreenAction {
         case .hide:
             return
-        case let .show(wrapper):
+        case .show(let wrapper):
             router.showWalletActionScreen(for: wrapper.account)
         }
     }
 
     // MARK: - Navigation
 
-    public override func navigationBarLeadingButtonPressed() {
+    override public func navigationBarLeadingButtonPressed() {
         presenter.navigationBarLeadingButtonPressed()
     }
 

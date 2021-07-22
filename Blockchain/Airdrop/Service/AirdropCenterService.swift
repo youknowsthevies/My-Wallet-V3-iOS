@@ -14,14 +14,16 @@ protocol AirdropCenterServiceAPI: AnyObject {
     func fetchCampaignsCalculationState(useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns>>
 
     /// An `Observable` that streams an airdrop campaign by name
-    func fetchCampaignCalculationState(campaignName: AirdropCampaigns.Campaign.Name,
-                                       useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>>
+    func fetchCampaignCalculationState(
+        campaignName: AirdropCampaigns.Campaign.Name,
+        useCache: Bool
+    ) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>>
 
     /// Triggers a refresh on the service
     func refresh()
 }
 
-/// TODO: Move into `PlatformKit` when IOS-2724 is merged
+// TODO: Move into `PlatformKit` when IOS-2724 is merged
 final class AirdropCenterService: AirdropCenterServiceAPI {
 
     var campaignsCalculationState: Observable<ValueCalculationState<AirdropCampaigns>> {
@@ -44,7 +46,7 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
 
         fetchTriggerRelay
             .throttle(.milliseconds(500), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-            .flatMapLatest(weak: self) { (self, campaigns) -> Observable<AirdropCampaigns> in
+            .flatMapLatest(weak: self) { (self, _) -> Observable<AirdropCampaigns> in
                 self.client.campaigns.asObservable()
             }
             .map { .value($0) }
@@ -68,8 +70,10 @@ final class AirdropCenterService: AirdropCenterServiceAPI {
             })
     }
 
-    func fetchCampaignCalculationState(campaignName: AirdropCampaigns.Campaign.Name,
-                                       useCache: Bool) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
+    func fetchCampaignCalculationState(
+        campaignName: AirdropCampaigns.Campaign.Name,
+        useCache: Bool
+    ) -> Observable<ValueCalculationState<AirdropCampaigns.Campaign>> {
         fetchCampaignsCalculationState(useCache: useCache)
             .map { state in
                 switch state {

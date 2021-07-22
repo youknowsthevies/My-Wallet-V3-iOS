@@ -1,7 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension Accessibility.Identifier {
-    struct InfoScreen {
+    enum InfoScreen {
         private static let prefix = "InfoScreen."
         static let imageView = "\(prefix)imageView"
         static let titleLabel = "\(prefix)titleLabel"

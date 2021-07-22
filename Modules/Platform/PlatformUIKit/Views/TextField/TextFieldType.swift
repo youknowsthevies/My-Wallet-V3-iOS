@@ -226,7 +226,7 @@ extension TextFieldType {
              .cardNumber,
              .description,
              .memo:
-             return false
+            return false
         case .password,
              .currentPassword,
              .newPassword,
@@ -456,9 +456,9 @@ extension TextFieldType {
     }
 }
 
-private extension Int {
-    typealias Index = LocalizationConstants.VerifyBackupScreen.Index
-    var placeholder: String {
+extension Int {
+    fileprivate typealias Index = LocalizationConstants.VerifyBackupScreen.Index
+    fileprivate var placeholder: String {
         switch self {
         case 0:
             return Index.first
@@ -488,5 +488,4 @@ private extension Int {
             return ""
         }
     }
-
 }

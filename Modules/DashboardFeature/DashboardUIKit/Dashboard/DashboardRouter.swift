@@ -65,5 +65,4 @@ final class DashboardRouter {
             accountsRouter.route(to: account)
         }
     }
-
 }

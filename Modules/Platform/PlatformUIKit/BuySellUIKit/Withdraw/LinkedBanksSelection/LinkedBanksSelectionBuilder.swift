@@ -19,15 +19,20 @@ final class LinkedBanksSelectionBuilder: LinkedBanksSelectionBuildable {
 
     func build(listener: LinkedBanksSelectionListener) -> LinkedBanksSelectionRouter {
         let viewController = LinkedBanksSelectionViewController()
-        let interactor = LinkedBanksSelectionInteractor(presenter: viewController,
-                                                        currency: currency)
+        let interactor = LinkedBanksSelectionInteractor(
+            presenter: viewController,
+            currency: currency
+        )
         interactor.listener = listener
-        let addNewBankAccountBuilder = AddNewBankAccountBuilder(currency: currency,
-                                                                isOriginDeposit: false)
-        let router = LinkedBanksSelectionRouter(interactor: interactor,
-                                                viewController: viewController,
-                                                addNewBankBuilder: addNewBankAccountBuilder)
+        let addNewBankAccountBuilder = AddNewBankAccountBuilder(
+            currency: currency,
+            isOriginDeposit: false
+        )
+        let router = LinkedBanksSelectionRouter(
+            interactor: interactor,
+            viewController: viewController,
+            addNewBankBuilder: addNewBankAccountBuilder
+        )
         return router
     }
-
 }

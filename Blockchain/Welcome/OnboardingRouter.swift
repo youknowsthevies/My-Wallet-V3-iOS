@@ -110,8 +110,8 @@ final class OnboardingRouter: OnboardingRouterStateProviding {
         presenter.continueTappedRelay
             .bind { [weak self] mnemonic in
                 self?.navigateToCreateRecoveryWalletScreen(mnemonic)
-        }
-        .disposed(by: bag)
+            }
+            .disposed(by: bag)
         let controller = RecoverFundsViewController(presenter: presenter)
 
         navigate(to: controller)

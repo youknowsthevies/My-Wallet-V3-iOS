@@ -79,12 +79,12 @@ public final class SelfSizingTableView: UITableView {
     }
 
     private var compactDesiredHeight: CGFloat {
-        min(contentSize.height, (availableHeight - unavailableHeight))
+        min(contentSize.height, availableHeight - unavailableHeight)
     }
 
     // MARK: Setup
 
-    public override init(frame: CGRect, style: UITableView.Style) {
+    override public init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         setupContentSize()
     }

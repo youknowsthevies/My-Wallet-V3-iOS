@@ -76,8 +76,10 @@ extension WalletIntroductionRecorder {
 
         // MARK: - Equatable
 
-        static func == (lhs: WalletIntroductionRecorder.Entry,
-                        rhs: WalletIntroductionRecorder.Entry) -> Bool {
+        static func == (
+            lhs: WalletIntroductionRecorder.Entry,
+            rhs: WalletIntroductionRecorder.Entry
+        ) -> Bool {
             lhs.key == rhs.key
         }
     }

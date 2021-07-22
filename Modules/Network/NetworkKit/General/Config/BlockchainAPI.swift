@@ -43,7 +43,7 @@ public final class BlockchainAPI: NSObject {
         case everyPayEU = "every-pay.eu"
     }
 
-    public struct Parameters {
+    public enum Parameters {
         /// The API code to be used when making network calls to the Blockchain API
         public static let apiCode = "35e77459-723f-48b0-8c9e-6e9e8f54fbd3"
     }
@@ -51,7 +51,7 @@ public final class BlockchainAPI: NSObject {
     // MARK: - Initialization
 
     //: Prevent outside objects from creating their own instances of this class.
-    private override init() {
+    override private init() {
         super.init()
     }
 
@@ -198,7 +198,7 @@ public final class BlockchainAPI: NSObject {
     }
 }
 
-private struct InfoDictionaryHelper {
+private enum InfoDictionaryHelper {
     enum Key: String {
         case apiURL = "API_URL"
         case exchangeURL = "EXCHANGE_URL"

@@ -33,8 +33,8 @@ public protocol SessionTokenRepositoryAPI: SessionTokenRepositoryCombineAPI {
     func cleanSessionToken() -> Completable
 }
 
-public extension SessionTokenRepositoryAPI {
-    var hasSessionToken: Single<Bool> {
+extension SessionTokenRepositoryAPI {
+    public var hasSessionToken: Single<Bool> {
         sessionToken
             .map { token in
                 guard let token = token else { return false }
@@ -42,7 +42,7 @@ public extension SessionTokenRepositoryAPI {
             }
     }
 
-    var hasSessionTokenPublisher: AnyPublisher<Bool, Never> {
+    public var hasSessionTokenPublisher: AnyPublisher<Bool, Never> {
         sessionTokenPublisher
             .flatMap { token -> AnyPublisher<Bool, Never> in
                 guard let token = token else { return .just(false) }

@@ -18,7 +18,7 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
 
         var errorDescription: String? {
             switch self {
-            case let .loadingFailed(account, action, error):
+            case .loadingFailed(let account, let action, let error):
                 let type = String(reflecting: account)
                 let asset = account.currencyType.code
                 let label = account.label
@@ -69,11 +69,13 @@ public final class AccountPickerAccountProvider: AccountPickerAccountProviding {
     ///   - errorRecorder: An `ErrorRecording` instance.
     ///   - action: The desired action. This account provider will only return accounts/account groups that can execute this action.
     ///   - failSequence: A flag indicating if, in the event of a wallet erring out, the whole `accounts: Single<[BlockchainAccount]>` sequence should err or if the offending element should be filtered out. Check `flatMapFilter`.
-    public init(singleAccountsOnly: Bool,
-                coincore: CoincoreAPI = resolve(),
-                errorRecorder: ErrorRecording = resolve(),
-                action: AssetAction,
-                failSequence: Bool) {
+    public init(
+        singleAccountsOnly: Bool,
+        coincore: CoincoreAPI = resolve(),
+        errorRecorder: ErrorRecording = resolve(),
+        action: AssetAction,
+        failSequence: Bool
+    ) {
         self.action = action
         self.coincore = coincore
         self.singleAccountsOnly = singleAccountsOnly

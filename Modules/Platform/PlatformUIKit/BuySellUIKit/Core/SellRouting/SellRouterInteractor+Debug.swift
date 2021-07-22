@@ -38,8 +38,8 @@ extension SellRouterInteractor.State: CustomDebugStringConvertible {
 
 extension SellRouterInteractor.States: CustomDebugStringConvertible {
     var debugDescription: String {
-        self.all
-            .map { $0.debugDescription }
+        all
+            .map(\.debugDescription)
             .joined(separator: ",")
     }
 }

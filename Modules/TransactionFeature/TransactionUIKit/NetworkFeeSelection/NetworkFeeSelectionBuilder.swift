@@ -8,13 +8,17 @@ import TransactionKit
 // MARK: - Builder
 
 protocol NetworkFeeSelectionBuildable: Buildable {
-    func build(withListener listener: NetworkFeeSelectionListener,
-               transactionModel: TransactionModel) -> NetworkFeeSelectionRouting
+    func build(
+        withListener listener: NetworkFeeSelectionListener,
+        transactionModel: TransactionModel
+    ) -> NetworkFeeSelectionRouting
 }
 
 final class NetworkFeeSelectionBuilder: NetworkFeeSelectionBuildable {
-    func build(withListener listener: NetworkFeeSelectionListener,
-               transactionModel: TransactionModel) -> NetworkFeeSelectionRouting {
+    func build(
+        withListener listener: NetworkFeeSelectionListener,
+        transactionModel: TransactionModel
+    ) -> NetworkFeeSelectionRouting {
         let viewController = NetworkFeeSelectionViewController()
         let reducer = NetworkFeeSelectionReducer()
         let presenter = NetworkFeeSelectionPresenter(viewController: viewController, feeSelectionPageReducer: reducer)

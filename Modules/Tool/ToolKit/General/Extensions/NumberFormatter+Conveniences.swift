@@ -26,7 +26,8 @@ extension NumberFormatter {
         let formattedString = string(from: NSDecimalNumber(decimal: amount)) ?? "\(amount)"
         if let firstDigitIndex = formattedString.firstIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
            let lastDigitIndex = formattedString.lastIndex(where: { $0.inSet(characterSet: .decimalDigits) }),
-           !includeSymbol {
+           !includeSymbol
+        {
             return String(formattedString[firstDigitIndex...lastDigitIndex])
         }
         return formattedString

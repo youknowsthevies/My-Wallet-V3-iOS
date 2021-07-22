@@ -22,8 +22,10 @@ public final class GuidClient: GuidClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdpater: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    public init(
+        networkAdpater: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdpater = networkAdpater
         self.requestBuilder = GuidRequestBuilder(requestBuilder: requestBuilder)
     }
@@ -57,7 +59,7 @@ extension GuidClient {
 
     private struct GuidRequestBuilder {
 
-        private let pathComponents = [ "wallet", "poll-for-session-guid" ]
+        private let pathComponents = ["wallet", "poll-for-session-guid"]
 
         private enum HeaderKey: String {
             case cookie

@@ -30,7 +30,7 @@ public final class SegmentedTabViewController: UITabBarController {
 
     // MARK: - Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         setViewControllers(
             items.map(\.viewController),
             animated: true

@@ -39,21 +39,27 @@ public final class LinkedBankAccountCellPresenter {
             .asDriver(onErrorJustReturn: .init())
 
         title = .just(
-            .init(text: account.label,
-                  font: .main(.semibold, 16.0),
-                  color: .titleText,
-                  alignment: .left,
-                  accessibility: .none)
+            .init(
+                text: account.label,
+                font: .main(.semibold, 16.0),
+                color: .titleText,
+                alignment: .left,
+                accessibility: .none
+            )
         )
         description = .just(
-            .init(text: LocalizationConstants.accountEndingIn + " \(account.accountNumber)",
-                  font: .main(.medium, 14.0),
-                  color: .descriptionText,
-                  alignment: .left,
-                  accessibility: .none)
+            .init(
+                text: LocalizationConstants.accountEndingIn + " \(account.accountNumber)",
+                font: .main(.medium, 14.0),
+                color: .descriptionText,
+                alignment: .left,
+                accessibility: .none
+            )
         )
-        badgeImageViewModel = .just(.default(image: .local(name: "icon-bank", bundle: .platformUIKit),
-                                             cornerRadius: .round,
-                                             accessibilityIdSuffix: ""))
+        badgeImageViewModel = .just(.default(
+            image: .local(name: "icon-bank", bundle: .platformUIKit),
+            cornerRadius: .round,
+            accessibilityIdSuffix: ""
+        ))
     }
 }

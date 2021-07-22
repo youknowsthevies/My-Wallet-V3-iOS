@@ -20,10 +20,12 @@ final class SecureChannelRouter: SecureChannelRouting {
     private let store = SecureChannelCandidateStore()
     private weak var nav: UINavigationController?
 
-    init(service: SecureChannelAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         alertViewPresenter: AlertViewPresenterAPI = resolve(),
-         topMostViewControllerProvider: TopMostViewControllerProviding = resolve()) {
+    init(
+        service: SecureChannelAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        alertViewPresenter: AlertViewPresenterAPI = resolve(),
+        topMostViewControllerProvider: TopMostViewControllerProviding = resolve()
+    ) {
         self.service = service
         self.loadingViewPresenter = loadingViewPresenter
         self.alertViewPresenter = alertViewPresenter

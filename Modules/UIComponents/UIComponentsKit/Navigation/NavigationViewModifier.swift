@@ -83,7 +83,7 @@ struct NavigationConfigurator: UIViewControllerRepresentable {
     func updateUIViewController(
         _ uiViewController: NavigationConfigurationViewController,
         context: UIViewControllerRepresentableContext<NavigationConfigurator>
-    ) { }
+    ) {}
 }
 
 final class NavigationConfigurationViewController: UIViewController {
@@ -94,6 +94,7 @@ final class NavigationConfigurationViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

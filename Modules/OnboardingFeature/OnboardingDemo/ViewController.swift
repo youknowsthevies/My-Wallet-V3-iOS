@@ -21,7 +21,7 @@ final class ViewController: UIViewController {
         onboardingRouter?.presentOnboarding(from: self)
             .subscribe(on: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] (result) in
+            .sink { [weak self] result in
                 guard let self = self else {
                     fatalError("💣 ViewController not retained!")
                 }

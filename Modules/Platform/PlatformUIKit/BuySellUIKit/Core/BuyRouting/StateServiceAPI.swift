@@ -75,15 +75,15 @@ public protocol URLSelectionServiceAPI: AnyObject {
 
 /// A composition of all of Simple-Buy state-services
 public typealias StateServiceAPI = RoutingStateEmitterAPI &
-                                   StateReceiverServiceAPI &
-                                   TransferDetailsServiceAPI &
-                                   ConfirmCheckoutServiceAPI &
-                                   StateCacheProviderAPI &
-                                   CheckoutServiceAPI &
-                                   CancelTransferServiceAPI &
-                                   CurrencySelectionServiceAPI &
-                                   CardAuthorizationRoutingInteractorAPI &
-                                   PendingOrderCompletionStateServiceAPI &
-                                   ElibilityRelayAPI &
-                                   URLSelectionServiceAPI &
-                                   PaymentMethodsStateAPI
+    StateReceiverServiceAPI &
+    TransferDetailsServiceAPI &
+    ConfirmCheckoutServiceAPI &
+    StateCacheProviderAPI &
+    CheckoutServiceAPI &
+    CancelTransferServiceAPI &
+    CurrencySelectionServiceAPI &
+    CardAuthorizationRoutingInteractorAPI &
+    PendingOrderCompletionStateServiceAPI &
+    ElibilityRelayAPI &
+    URLSelectionServiceAPI &
+    PaymentMethodsStateAPI

@@ -47,13 +47,13 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
                 fiatCurrencyService.fiatCurrencyObservable,
                 refreshRelay.asObservable()
             )
-            .map { $0.0 }
+            .map(\.0)
             .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<MoneyValuePair> in
                 self.balancePair(fiatCurrency: fiatCurrency).asObservable()
             }
             .map { moneyValuePair -> InteractionState in
                 InteractionState.loaded(
-                    next: AssetBalanceViewModel.Value.Interaction.init(
+                    next: AssetBalanceViewModel.Value.Interaction(
                         fiatValue: moneyValuePair.quote,
                         cryptoValue: moneyValuePair.base,
                         pendingValue: .zero(currency: moneyValuePair.base.currency)
@@ -78,7 +78,7 @@ public final class AccountAssetBalanceViewInteractor: AssetBalanceViewInteractin
         cryptoAsset: CryptoAsset,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {
-        self.account = .asset(cryptoAsset)
+        account = .asset(cryptoAsset)
         self.fiatCurrencyService = fiatCurrencyService
     }
 

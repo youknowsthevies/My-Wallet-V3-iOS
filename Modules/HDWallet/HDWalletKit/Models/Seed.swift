@@ -9,5 +9,4 @@ struct Seed: HexRepresentable {
     init(data: Data) {
         self.data = data
     }
-
 }

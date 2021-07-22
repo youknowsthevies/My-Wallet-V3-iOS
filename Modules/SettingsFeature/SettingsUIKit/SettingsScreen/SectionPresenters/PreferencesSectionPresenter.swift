@@ -28,8 +28,10 @@ final class PreferencesSectionPresenter: SettingsSectionPresenting {
     private let emailNotificationsCellPresenter: EmailNotificationsSwitchCellPresenter
     private let preferredCurrencyCellPresenter: PreferredCurrencyCellPresenter
 
-    init(emailNotificationService: EmailNotificationSettingsServiceAPI,
-         preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor) {
+    init(
+        emailNotificationService: EmailNotificationSettingsServiceAPI,
+        preferredCurrencyBadgeInteractor: PreferredCurrencyBadgeInteractor
+    ) {
         emailNotificationsCellPresenter = .init(service: emailNotificationService)
         preferredCurrencyCellPresenter = .init(interactor: preferredCurrencyBadgeInteractor)
     }

@@ -30,6 +30,7 @@ final class SettingsViewController: BaseScreenViewController {
         super.init(nibName: SettingsViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -52,7 +53,8 @@ final class SettingsViewController: BaseScreenViewController {
 
     private func setupNavigationBar() {
         titleViewStyle = .text(value: LocalizationConstants.settings)
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
             trailingButtonStyle: presenter.trailingButton
         )
@@ -63,8 +65,10 @@ final class SettingsViewController: BaseScreenViewController {
         tableView.tableFooterView = AboutView()
         tableView.tableFooterView?.frame = .init(
             origin: .zero,
-            size: .init(width: tableView.bounds.width,
-                        height: AboutView.estimatedHeight(for: tableView.bounds.width))
+            size: .init(
+                width: tableView.bounds.width,
+                height: AboutView.estimatedHeight(for: tableView.bounds.width)
+            )
         )
         tableView.estimatedRowHeight = 80
         tableView.estimatedSectionHeaderHeight = 70
@@ -176,15 +180,19 @@ extension SettingsViewController: UITableViewDelegate {
         return cell
     }
 
-    private func linkedCardCell(for indexPath: IndexPath,
-                                presenter: LinkedCardCellPresenter) -> LinkedCardTableViewCell {
+    private func linkedCardCell(
+        for indexPath: IndexPath,
+        presenter: LinkedCardCellPresenter
+    ) -> LinkedCardTableViewCell {
         let cell = tableView.dequeue(LinkedCardTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }
 
-    private func linkedBankCell(for indexPath: IndexPath,
-                                viewModel: BeneficiaryLinkedBankViewModel) -> LinkedBankTableViewCell {
+    private func linkedBankCell(
+        for indexPath: IndexPath,
+        viewModel: BeneficiaryLinkedBankViewModel
+    ) -> LinkedBankTableViewCell {
         let cell = tableView.dequeue(LinkedBankTableViewCell.self, for: indexPath)
         cell.viewModel = viewModel
         return cell

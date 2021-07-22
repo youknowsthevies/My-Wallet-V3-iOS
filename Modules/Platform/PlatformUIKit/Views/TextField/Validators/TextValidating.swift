@@ -34,6 +34,6 @@ public protocol TextValidating: TextSource {
 
 extension TextValidating {
     public var isValid: Observable<Bool> {
-        validationState.map { $0.isValid }
+        validationState.map(\.isValid)
     }
 }

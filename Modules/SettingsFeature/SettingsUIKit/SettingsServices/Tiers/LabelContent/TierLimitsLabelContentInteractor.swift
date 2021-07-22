@@ -24,7 +24,7 @@ final class TierLimitsLabelContentInteractor: LabelContentInteracting {
 
     private let disposeBag = DisposeBag()
 
-    // MARK: - Setup 
+    // MARK: - Setup
 
     init(limitsProviding: TierLimitsProviding) {
         limitsProviding.tiers

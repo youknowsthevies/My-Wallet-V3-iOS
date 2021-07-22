@@ -15,14 +15,15 @@ public struct FormTextFieldGroup: View {
     @State private var isError: Bool = false
     @State private var hideSecuredText: Bool = true
 
-    public init(title: String,
-                text: Binding<String>,
-                textPlaceholder: String = "",
-                footnote: String? = nil,
-                isDisabled: Bool = false,
-                isSecure: Bool = false,
-                error: ((_ text: String) -> Bool)? = nil,
-                errorMessage: String? = nil
+    public init(
+        title: String,
+        text: Binding<String>,
+        textPlaceholder: String = "",
+        footnote: String? = nil,
+        isDisabled: Bool = false,
+        isSecure: Bool = false,
+        error: ((_ text: String) -> Bool)? = nil,
+        errorMessage: String? = nil
     ) {
         self.title = title
         self.text = text
@@ -49,11 +50,12 @@ public struct FormTextFieldGroup: View {
                         } else {
                             TextField(textPlaceholder, text: text)
                         }
-                        Button(action : { hideSecuredText.toggle() },
-                               label: {
-                                   Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
-                                       .foregroundColor(Color.passwordPeekEyeColor)
-                               }
+                        Button(
+                            action: { hideSecuredText.toggle() },
+                            label: {
+                                Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
+                                    .foregroundColor(Color.passwordPeekEyeColor)
+                            }
                         )
                     }
                 } else {
@@ -67,9 +69,11 @@ public struct FormTextFieldGroup: View {
                     isError = error(text.wrappedValue)
                 }
             })
-            .textFieldStyle(FormTextFieldStyle(isEditing: isEditing,
-                                               isActive: !isDisabled,
-                                               isError: isError))
+            .textFieldStyle(FormTextFieldStyle(
+                isEditing: isEditing,
+                isActive: !isDisabled,
+                isError: isError
+            ))
             .disabled(isDisabled)
             if let footnote = self.footnote {
                 Text(footnote)

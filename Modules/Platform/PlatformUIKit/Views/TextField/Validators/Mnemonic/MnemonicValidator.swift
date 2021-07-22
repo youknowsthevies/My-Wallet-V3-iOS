@@ -81,13 +81,13 @@ final class MnemonicValidator: MnemonicValidating {
                 .flatMap { $0 }
 
                 return .invalid(ranges)
-        }
-        .catchErrorJustReturn(.none)
-        .bindAndCatch(to: scoreRelay)
-        .disposed(by: disposeBag)
+            }
+            .catchErrorJustReturn(.none)
+            .bindAndCatch(to: scoreRelay)
+            .disposed(by: disposeBag)
 
         scoreRelay
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: isValidRelay)
             .disposed(by: disposeBag)
     }
@@ -95,12 +95,12 @@ final class MnemonicValidator: MnemonicValidating {
 
 // MARK: Convenience
 
-fileprivate extension String {
+extension String {
     /// A convenience function for getting an array of `NSRange` values
     /// for a particular substring.
-    func ranges(of substring: String) -> [NSRange] {
+    fileprivate func ranges(of substring: String) -> [NSRange] {
         var ranges: [Range<Index>] = []
-        enumerateSubstrings(in: self.startIndex ..< self.endIndex, options: .byWords) { word, value, _, _ in
+        enumerateSubstrings(in: startIndex..<endIndex, options: .byWords) { word, value, _, _ in
             if let word = word, word == substring {
                 ranges.append(value)
             }

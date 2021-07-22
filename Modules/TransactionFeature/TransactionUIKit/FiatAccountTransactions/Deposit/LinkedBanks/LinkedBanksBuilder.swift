@@ -10,7 +10,7 @@ protocol LinkedBanksBuildable: Buildable {
 
 final class LinkedBanksBuilder: LinkedBanksBuildable {
 
-    public init() { }
+    public init() {}
 
     func build(withListener listener: LinkedBanksListener) -> LinkedBanksRouting {
         let viewController = LinkedBanksViewController()

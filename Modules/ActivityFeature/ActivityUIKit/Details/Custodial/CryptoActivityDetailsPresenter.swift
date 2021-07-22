@@ -53,8 +53,10 @@ final class CryptoActivityDetailsPresenter: DetailsScreenPresenterAPI {
 
     // MARK: - Init
 
-    init(event: CustodialActivityEvent.Crypto,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        event: CustodialActivityEvent.Crypto,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         fiatAmountLabelPresenter = DefaultLabelContentPresenter(
             knownValue: event.amount.toDisplayString(includeSymbol: true),
             descriptors: .h1(accessibilityIdPrefix: "")

@@ -12,8 +12,10 @@ public struct SwitchViewModel {
         public let fillColor: UIColor
         public let thumbTintColor: UIColor?
 
-        public init(fillColor: UIColor,
-                    thumbTintColor: UIColor? = nil) {
+        public init(
+            fillColor: UIColor,
+            thumbTintColor: UIColor? = nil
+        ) {
             self.fillColor = fillColor
             self.thumbTintColor = thumbTintColor
         }
@@ -24,8 +26,10 @@ public struct SwitchViewModel {
     /// The theme of the view
     public var theme: Theme {
         get {
-            Theme(fillColor: fillColorRelay.value,
-                         thumbTintColor: thumbTintColorRelay.value)
+            Theme(
+                fillColor: fillColorRelay.value,
+                thumbTintColor: thumbTintColorRelay.value
+            )
         }
         set {
             fillColorRelay.accept(newValue.fillColor)
@@ -73,12 +77,14 @@ public struct SwitchViewModel {
     private let disposeBag = DisposeBag()
 
     /// - parameter accessibility: accessibility for the view
-    public init(accessibility: Accessibility,
-                isOn: Bool = false,
-                isEnabled: Bool = true) {
+    public init(
+        accessibility: Accessibility,
+        isOn: Bool = false,
+        isEnabled: Bool = true
+    ) {
         self.accessibility = accessibility
-        self.isEnabledRelay.accept(isEnabled)
-        self.isOnRelay.accept(isOn)
+        isEnabledRelay.accept(isEnabled)
+        isOnRelay.accept(isOn)
     }
 }
 
@@ -90,7 +96,7 @@ extension SwitchViewModel {
         accessibilityId: String = Accessibility.Identifier.General.defaultSwitchView,
         isOn: Bool = false,
         isEnabled: Bool = true
-        ) -> SwitchViewModel {
+    ) -> SwitchViewModel {
         var viewModel = SwitchViewModel(
             accessibility: .id(accessibilityId),
             isOn: isOn,

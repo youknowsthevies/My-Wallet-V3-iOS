@@ -50,10 +50,12 @@ final class ManualPairingScreenPresenter {
 
     // MARK: - Setup
 
-    init(interactor: ManualPairingInteractor = ManualPairingInteractor(),
-         routerStateProvider: OnboardingRouterStateProviding = resolve(),
-         alertPresenter: AlertViewPresenter = .shared,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        interactor: ManualPairingInteractor = ManualPairingInteractor(),
+        routerStateProvider: OnboardingRouterStateProviding = resolve(),
+        alertPresenter: AlertViewPresenter = .shared,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.routerStateProvider = routerStateProvider
         self.alertPresenter = alertPresenter
         self.loadingViewPresenter = loadingViewPresenter
@@ -91,13 +93,13 @@ final class ManualPairingScreenPresenter {
 
         /// Controls button `isEnabled` property
         stateObservable
-            .map { $0.isValid }
+            .map(\.isValid)
             .bindAndCatch(to: buttonViewModel.isEnabledRelay)
             .disposed(by: disposeBag)
 
         // Extract the latest valid values to the interaction layer
         latestStatesObservable
-            .compactMap { (walletIdState, passwordState) -> ManualPairingInteractor.Content? in
+            .compactMap { walletIdState, passwordState -> ManualPairingInteractor.Content? in
                 guard let walletId = walletIdState.value, let password = passwordState.value else { return nil }
                 return .init(walletIdentifier: walletId, password: password)
             }
@@ -217,9 +219,10 @@ final class ManualPairingScreenPresenter {
                 title: title,
                 message: message,
                 resendAction: resend,
-                cancel: cancel) { otp in
-                    self.pair(using: .twoFA(otp))
-                }
+                cancel: cancel
+            ) { otp in
+                self.pair(using: .twoFA(otp))
+            }
         }
     }
 
@@ -257,8 +260,8 @@ final class ManualPairingScreenPresenter {
 
 /// NOTE: This is here rather than in `PlatformKit` to prevent having to add
 /// `Localization.framework` as a dependency for `PlatformKit`
-fileprivate extension WalletAuthenticatorType {
-    var name: String {
+extension WalletAuthenticatorType {
+    fileprivate var name: String {
         switch self {
         case .google:
             return LocalizationConstants.AuthType.google

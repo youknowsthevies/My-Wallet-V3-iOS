@@ -16,7 +16,8 @@ public enum CryptoCurrency: Currency, Hashable, Codable, Comparable, CustomDebug
 
     public init?(code: String, enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve()) {
         guard let cryptoCurrency = enabledCurrenciesService.allEnabledCryptoCurrencies
-                .first(where: { $0.code == code }) else {
+            .first(where: { $0.code == code })
+        else {
             return nil
         }
         self = cryptoCurrency
@@ -64,9 +65,9 @@ extension CryptoCurrency {
         case .stellar:
             return 3
         case .other(let model):
-            return 100_000 + model.sortIndex
+            return 100000 + model.sortIndex
         case .erc20(let model):
-            return 200_000 + model.sortIndex
+            return 200000 + model.sortIndex
         }
     }
 
@@ -76,11 +77,11 @@ extension CryptoCurrency {
         switch self {
         case .other:
             return false
-        case.bitcoin,
-            .bitcoinCash,
-            .ethereum,
-            .stellar,
-            .erc20:
+        case .bitcoin,
+             .bitcoinCash,
+             .ethereum,
+             .stellar,
+             .erc20:
             return true
         }
     }
@@ -95,7 +96,7 @@ extension CryptoCurrency {
             return "Ether"
         case .stellar:
             return "Stellar"
-        case let .erc20(model) where model.code == LegacyERC20Code.pax.rawValue:
+        case .erc20(let model) where model.code == LegacyERC20Code.pax.rawValue:
             return "USD \(LocalizationConstants.digital)"
         case .erc20(let model):
             return model.name
@@ -133,9 +134,9 @@ extension CryptoCurrency {
             return code
         case .other(let model):
             return model.code
-        case let .erc20(model) where model.code == LegacyERC20Code.pax.rawValue:
+        case .erc20(let model) where model.code == LegacyERC20Code.pax.rawValue:
             return "USD-D"
-        case let .erc20(model) where model.code == LegacyERC20Code.wdgld.rawValue:
+        case .erc20(let model) where model.code == LegacyERC20Code.wdgld.rawValue:
             return "wDGLD"
         case .erc20(let model):
             return model.code
@@ -204,7 +205,7 @@ extension CryptoCurrency {
             return 1438992000
         case .stellar:
             return 1525716000
-        case let .erc20(model):
+        case .erc20(let model):
             switch model.code {
             case LegacyERC20Code.aave.rawValue:
                 return 1615831200
@@ -220,7 +221,7 @@ extension CryptoCurrency {
                 // TODO: IOS-4958: Use correct date from model.
                 return CryptoCurrency.ethereum.maxStartDate
             }
-        case let .other(model):
+        case .other(let model):
             switch model.code {
             case LegacyCustodialCode.polkadot.rawValue:
                 return 1615831200

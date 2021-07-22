@@ -35,6 +35,7 @@ struct TargetSelectionPageState: Equatable, StateType {
             Logger.shared.debug("TransactionTarget: \(String(describing: destination))")
         }
     }
+
     var stepsBackStack: [TargetSelectionPageStep] = []
     var step: TargetSelectionPageStep = .initial {
         didSet {
@@ -45,18 +46,19 @@ struct TargetSelectionPageState: Equatable, StateType {
     var inputRequiresAddressValidation: Bool {
         inputValidated.requiresValidation
     }
+
     // TODO: Handle alternate destination type
     // of an address
 
     static func == (lhs: TargetSelectionPageState, rhs: TargetSelectionPageState) -> Bool {
         lhs.nextEnabled == rhs.nextEnabled &&
-        lhs.destination?.label == rhs.destination?.label &&
-        lhs.sourceAccount?.identifier == rhs.sourceAccount?.identifier &&
-        lhs.step == rhs.step &&
-        lhs.stepsBackStack == rhs.stepsBackStack &&
-        lhs.inputValidated == rhs.inputValidated &&
-        lhs.isGoingBack == rhs.isGoingBack &&
-        lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
+            lhs.destination?.label == rhs.destination?.label &&
+            lhs.sourceAccount?.identifier == rhs.sourceAccount?.identifier &&
+            lhs.step == rhs.step &&
+            lhs.stepsBackStack == rhs.stepsBackStack &&
+            lhs.inputValidated == rhs.inputValidated &&
+            lhs.isGoingBack == rhs.isGoingBack &&
+            lhs.availableTargets.map(\.label) == rhs.availableTargets.map(\.label)
     }
 }
 

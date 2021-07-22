@@ -70,7 +70,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
                 .map(\.count)
                 .map { $0 > 1 }
         )
-        .map { (account, tapEnabled) -> State in
+        .map { account, tapEnabled -> State in
             switch account {
             case let bank as LinkedBankAccount:
                 let type = bank.accountType.title

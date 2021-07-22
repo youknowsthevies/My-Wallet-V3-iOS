@@ -91,7 +91,7 @@ class MultiBadgeView: UIView {
 
 extension Reactive where Base: MultiBadgeView {
     var viewModel: Binder<MultiBadgeViewModel> {
-        Binder(base) { (view, model) in
+        Binder(base) { view, model in
             view.model = model
         }
     }

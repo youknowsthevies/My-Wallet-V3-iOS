@@ -32,7 +32,7 @@ public final class AnnouncementTableViewCell: UITableViewCell {
 
     // MARK: - Lifecycle
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
         cardView.removeFromSuperview()
         cardView = nil

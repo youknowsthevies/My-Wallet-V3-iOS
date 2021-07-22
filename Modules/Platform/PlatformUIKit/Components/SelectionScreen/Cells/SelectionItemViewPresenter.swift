@@ -45,7 +45,7 @@ final class SelectionItemViewPresenter {
         let item = interactor.item
         accessibility = .id("\(AccessibilityId.selectionCellPrefix)\(item.id)")
         switch item.thumb {
-        case let .image(imageResource):
+        case .image(let imageResource):
             thumb = .image(
                 ImageViewContent(
                     imageResource: imageResource,

@@ -7,50 +7,59 @@ import Foundation
 extension LocalizationConstants {
     public enum Transaction {
         public enum TargetSource {
-            public enum Radio { }
-            public enum Card { }
+            public enum Radio {}
+            public enum Card {}
         }
+
         public enum Confirmation {
-            public enum Error { }
+            public enum Error {}
         }
+
         public enum Receive {
-            public enum KYC { }
+            public enum KYC {}
         }
+
         public enum Send {
             public enum AmountPresenter {
-                public enum LimitView { }
+                public enum LimitView {}
             }
+
             public enum Completion {
-                public enum Pending { }
-                public enum Success { }
-                public enum Failure { }
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
             }
         }
+
         public enum Withdraw {
             public enum Completion {
-                public enum Pending { }
-                public enum Success { }
-                public enum Failure { }
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
             }
         }
+
         public enum Deposit {
             public enum Completion {
-                public enum Pending { }
-                public enum Success { }
-                public enum Failure { }
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
             }
         }
+
         public enum Swap {
-            public enum KYC { }
+            public enum KYC {}
             public enum Completion {
-                public enum Pending { }
-                public enum Success { }
-                public enum Failure { }
+                public enum Pending {}
+                public enum Success {}
+                public enum Failure {}
             }
+
             public enum AmountPresenter {
-                public enum LimitView { }
+                public enum LimitView {}
             }
         }
+
         public enum Error {}
     }
 }
@@ -73,274 +82,273 @@ extension LocalizationConstants.Transaction.Swap.AmountPresenter.LimitView {
     )
 }
 
-public extension LocalizationConstants.Transaction.Receive.KYC {
+extension LocalizationConstants.Transaction.Receive.KYC {
 
-    static let title = NSLocalizedString(
+    public static let title = NSLocalizedString(
         "Verify to use the Trading Account",
         comment: ""
     )
-    static let subtitle = NSLocalizedString(
+    public static let subtitle = NSLocalizedString(
         "Get access to the Trading Account in seconds by completing your profile and getting Silver access.",
         comment: ""
     )
-    static let card1Title = NSLocalizedString(
+    public static let card1Title = NSLocalizedString(
         "Verify Your Email",
         comment: ""
     )
-    static let card1Subtitle = NSLocalizedString(
+    public static let card1Subtitle = NSLocalizedString(
         "Confirm your email address to protect your Blockchain.com Wallet.",
         comment: ""
     )
-    static let card2Title = NSLocalizedString(
+    public static let card2Title = NSLocalizedString(
         "Add Your Name & Address",
         comment: ""
     )
-    static let card2Subtitle = NSLocalizedString(
+    public static let card2Subtitle = NSLocalizedString(
         "We need to know your name and address to comply with local laws.",
         comment: ""
     )
-    static let card3Title = NSLocalizedString(
+    public static let card3Title = NSLocalizedString(
         "Use the Trading Account",
         comment: ""
     )
-    static let card3Subtitle = NSLocalizedString(
+    public static let card3Subtitle = NSLocalizedString(
         "Send, Receive, Buy and Swap cryptocurrencies with your Trading Account.",
         comment: ""
     )
-    static let verifyNow = NSLocalizedString(
+    public static let verifyNow = NSLocalizedString(
         "Verify Now",
         comment: ""
     )
-
 }
 
-public extension LocalizationConstants.Transaction.Swap.KYC {
+extension LocalizationConstants.Transaction.Swap.KYC {
 
-    static let overSilverLimitWarning = NSLocalizedString(
+    public static let overSilverLimitWarning = NSLocalizedString(
         "Tap here to upgrade your profile and swap this amount.",
         comment: "Tap here to upgrade your profile and swap this amount."
     )
-    static let title = NSLocalizedString(
+    public static let title = NSLocalizedString(
         "Verify Your Email & Swap Today.",
         comment: ""
     )
-    static let subtitle = NSLocalizedString(
+    public static let subtitle = NSLocalizedString(
         "Get access to swap in seconds by completing your profile and getting Silver access.",
         comment: ""
     )
-    static let card1Title = NSLocalizedString(
+    public static let card1Title = NSLocalizedString(
         "Verify Your Email",
         comment: ""
     )
-    static let card1Subtitle = NSLocalizedString(
+    public static let card1Subtitle = NSLocalizedString(
         "Confirm your email address to protect your Blockchain.com Wallet.",
         comment: ""
     )
-    static let card2Title = NSLocalizedString(
+    public static let card2Title = NSLocalizedString(
         "Add Your Name and Address",
         comment: ""
     )
-    static let card2Subtitle = NSLocalizedString(
+    public static let card2Subtitle = NSLocalizedString(
         "We need to know your name and address to comply with local laws.",
         comment: ""
     )
-    static let card3Title = NSLocalizedString(
+    public static let card3Title = NSLocalizedString(
         "Start Swapping",
         comment: ""
     )
-    static let card3Subtitle = NSLocalizedString(
+    public static let card3Subtitle = NSLocalizedString(
         "Instantly exchange your crypto.",
         comment: ""
     )
-    static let verifyNow = NSLocalizedString(
+    public static let verifyNow = NSLocalizedString(
         "Verify Now",
         comment: ""
     )
 }
 
-public extension LocalizationConstants.Transaction {
+extension LocalizationConstants.Transaction {
 
-    static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
-    static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
-    static let sell = NSLocalizedString("Sell", comment: "Sell")
-    static let send = NSLocalizedString("Send", comment: "Send")
-    static let swap = NSLocalizedString("Swap", comment: "Swap")
-    static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
-    static let buy = NSLocalizedString("Buy", comment: "Buy")
+    public static let viewActivity = NSLocalizedString("View Activity", comment: "View Activity")
+    public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let sell = NSLocalizedString("Sell", comment: "Sell")
+    public static let send = NSLocalizedString("Send", comment: "Send")
+    public static let swap = NSLocalizedString("Swap", comment: "Swap")
+    public static let withdraw = NSLocalizedString("Withdraw", comment: "Withdraw")
+    public static let buy = NSLocalizedString("Buy", comment: "Buy")
 
-    static let max = NSLocalizedString("Max", comment: "Max")
+    public static let max = NSLocalizedString("Max", comment: "Max")
 
-    static let savings = NSLocalizedString("Savings", comment: "Savings")
-    static let checking = NSLocalizedString("Checking", comment: "Checking")
-    static let account = NSLocalizedString("Account", comment: "Account")
+    public static let savings = NSLocalizedString("Savings", comment: "Savings")
+    public static let checking = NSLocalizedString("Checking", comment: "Checking")
+    public static let account = NSLocalizedString("Account", comment: "Account")
 
-    static let next = NSLocalizedString(
+    public static let next = NSLocalizedString(
         "Next",
         comment: "Next"
     )
-    static let receive = NSLocalizedString(
+    public static let receive = NSLocalizedString(
         "Receive",
         comment: "Receive"
     )
-    static let available = NSLocalizedString(
+    public static let available = NSLocalizedString(
         "Available",
         comment: "Available"
     )
-    static let networkFee = NSLocalizedString("Network Fee", comment: "Network Fee")
-    static let newSwap = NSLocalizedString(
+    public static let networkFee = NSLocalizedString("Network Fee", comment: "Network Fee")
+    public static let newSwap = NSLocalizedString(
         "New Swap",
         comment: "New Swap"
     )
-    static let from = NSLocalizedString(
+    public static let from = NSLocalizedString(
         "From",
         comment: "From"
     )
-    static let to = NSLocalizedString(
+    public static let to = NSLocalizedString(
         "To",
         comment: "To"
     )
-    static let selectAWallet = NSLocalizedString(
+    public static let selectAWallet = NSLocalizedString(
         "Select a Wallet",
         comment: "Select a Wallet"
     )
-    static let orSelectAWallet = NSLocalizedString(
+    public static let orSelectAWallet = NSLocalizedString(
         "or Select a Wallet",
         comment: "Select a Wallet"
     )
 }
 
-public extension LocalizationConstants.Transaction.Withdraw {
-    static let withdraw = NSLocalizedString(
+extension LocalizationConstants.Transaction.Withdraw {
+    public static let withdraw = NSLocalizedString(
         "Withdraw",
         comment: "Withdraw"
     )
-    static let withdrawTo = NSLocalizedString(
+    public static let withdrawTo = NSLocalizedString(
         "Withdraw to...",
         comment: "Withdraw to..."
     )
-    static let account = NSLocalizedString("Account", comment: "Account")
+    public static let account = NSLocalizedString("Account", comment: "Account")
 
     // swiftlint:disable line_length
-    static let confirmationDisclaimer = NSLocalizedString(
+    public static let confirmationDisclaimer = NSLocalizedString(
         "Your final amount might change due to market activity. For your security, buy orders with a bank account are subject up to a 14 day holding period. You can Swap or Sell during this time. We will notify you once the funds are fully available.",
         comment: "Your final amount might change due to market activity. For your security, buy orders with a bank account are subject up to a 14 day holding period. You can Swap or Sell during this time. We will notify you once the funds are fully available."
     )
 }
 
-public extension LocalizationConstants.Transaction.Deposit {
-    static let linkedBanks = NSLocalizedString(
+extension LocalizationConstants.Transaction.Deposit {
+    public static let linkedBanks = NSLocalizedString(
         "Linked Banks",
         comment: "Linked Banks"
     )
-    static let add = NSLocalizedString("Add", comment: "Add")
+    public static let add = NSLocalizedString("Add", comment: "Add")
 
-    static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
+    public static let dailyLimit = NSLocalizedString("Daily Limit", comment: "Daily Limit")
 
-    static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
+    public static let deposit = NSLocalizedString("Deposit", comment: "Deposit")
 }
 
-public extension LocalizationConstants.Transaction.Send {
-    static let send = NSLocalizedString(
+extension LocalizationConstants.Transaction.Send {
+    public static let send = NSLocalizedString(
         "Send",
         comment: "Send"
     )
-    static let sendMax = NSLocalizedString(
+    public static let sendMax = NSLocalizedString(
         "Send Max",
         comment: "Send Max"
     )
-    static let from = NSLocalizedString(
+    public static let from = NSLocalizedString(
         "From",
         comment: "From"
     )
-    static let to = NSLocalizedString(
+    public static let to = NSLocalizedString(
         "To",
         comment: "To"
     )
-    static let networkFee = NSLocalizedString(
+    public static let networkFee = NSLocalizedString(
         "Network Fee",
         comment: "Network Fee"
     )
-    static let regular = NSLocalizedString(
+    public static let regular = NSLocalizedString(
         "Regular",
         comment: "Regular"
     )
-    static let priority = NSLocalizedString(
+    public static let priority = NSLocalizedString(
         "Priority",
         comment: "Priority"
     )
-    static let custom = NSLocalizedString(
+    public static let custom = NSLocalizedString(
         "Custom",
         comment: "Custom"
     )
-    static let min = NSLocalizedString(
+    public static let min = NSLocalizedString(
         "Min",
         comment: "Abbreviation for minutes"
     )
-    static let minutes = NSLocalizedString(
+    public static let minutes = NSLocalizedString(
         "Minutes",
         comment: "Minutes"
     )
 }
 
-public extension LocalizationConstants.Transaction.TargetSource.Card {
-    static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
+extension LocalizationConstants.Transaction.TargetSource.Card {
+    public static let internalSendOnly = NSLocalizedString("Internal Send Only", comment: "Internal Send Only")
     // swiftlint:disable line_length
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses.",
         comment: "At this time you can only transfer %@ from your %@ Trading Account to your %@ Private Key Wallets. Once %@ is in your Private Key Wallet you can transfer to external addresses."
     )
 }
 
-public extension LocalizationConstants.Transaction.Send.AmountPresenter.LimitView {
-    static let useMin = NSLocalizedString(
+extension LocalizationConstants.Transaction.Send.AmountPresenter.LimitView {
+    public static let useMin = NSLocalizedString(
         "The minimum send is %@",
         comment: "The minimum send is"
     )
-    static let useMax = NSLocalizedString(
+    public static let useMax = NSLocalizedString(
         "You can send up to %@",
         comment: "You can send up to"
     )
 }
 
-public extension LocalizationConstants.Transaction.Swap {
-    static let title = swap
-    static let swap = NSLocalizedString(
+extension LocalizationConstants.Transaction.Swap {
+    public static let title = swap
+    public static let swap = NSLocalizedString(
         "Swap",
         comment: "Swap"
     )
-    static let swapMax = NSLocalizedString(
+    public static let swapMax = NSLocalizedString(
         "Swap Max",
         comment: "Swap Max"
     )
-    static let confirmationDisclaimer = NSLocalizedString(
+    public static let confirmationDisclaimer = NSLocalizedString(
         "The amounts you send and receive may change slightly due to market activity. Once an order starts, we are unable to stop it.",
         comment: "Confirmation screen disclaimer."
     )
-    static let sourceAccountPicketSubtitle = NSLocalizedString(
+    public static let sourceAccountPicketSubtitle = NSLocalizedString(
         "Which wallet do you want to Swap from?",
         comment: "Swap Source Account Picket Header Subtitle"
     )
-    static let destinationAccountPicketSubtitle = NSLocalizedString(
+    public static let destinationAccountPicketSubtitle = NSLocalizedString(
         "Which crypto do you want to Swap for?",
         comment: "Swap Destination Account Picket Header Subtitle"
     )
-    static let swapAForB = NSLocalizedString(
+    public static let swapAForB = NSLocalizedString(
         "Swap %@ for %@",
         comment: "Swap %@ for %@"
     )
-    static let send = NSLocalizedString(
+    public static let send = NSLocalizedString(
         "Send %@",
         comment: "Send %@"
     )
-    static let sell = NSLocalizedString(
+    public static let sell = NSLocalizedString(
         "Sell %@",
         comment: "Sell %@"
     )
-    static let deposit = NSLocalizedString(
+    public static let deposit = NSLocalizedString(
         "Confirm Transfer",
         comment: "Confirm Transfer"
     )
-    static let newSwapDisclaimer = NSLocalizedString(
+    public static let newSwapDisclaimer = NSLocalizedString(
         "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into.",
         comment: "Confirm the wallet you want to Swap from and choose the wallet you want to Receive into."
     )
@@ -348,28 +356,28 @@ public extension LocalizationConstants.Transaction.Swap {
 
 // MARK: - Withdraw Pending
 
-public extension LocalizationConstants.Transaction.Withdraw.Completion.Pending {
-    static let title = NSLocalizedString("Withdrawing %@", comment: "Withdrawing %@")
-    static let description = NSLocalizedString(
+extension LocalizationConstants.Transaction.Withdraw.Completion.Pending {
+    public static let title = NSLocalizedString("Withdrawing %@", comment: "Withdrawing %@")
+    public static let description = NSLocalizedString(
         "We're completing your withdraw now.",
         comment: "We're completing your withdraw now."
     )
 }
 
-public extension LocalizationConstants.Transaction.Withdraw.Completion.Success {
-    static let title = NSLocalizedString("%@ Withdrawal Started", comment: "%@ Withdrawal Started")
-    static let description = NSLocalizedString(
+extension LocalizationConstants.Transaction.Withdraw.Completion.Success {
+    public static let title = NSLocalizedString("%@ Withdrawal Started", comment: "%@ Withdrawal Started")
+    public static let description = NSLocalizedString(
         "We are sending the cash now. Expect the cash to hit your bank on %@. Check the status of your Withdrawal at anytime from your Activity screen.",
         comment: "We are sending the cash now. Expect the cash to hit your bank on %@. Check the status of your Withdrawal at anytime from your Activity screen."
     )
 }
 
-public extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
+    public static let title = NSLocalizedString(
         "Oops! Something Went Wrong.",
         comment: "Oops! Something Went Wrong."
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
         comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
     )
@@ -377,28 +385,28 @@ public extension LocalizationConstants.Transaction.Withdraw.Completion.Failure {
 
 // MARK: - Deposit Pending
 
-public extension LocalizationConstants.Transaction.Deposit.Completion.Pending {
-    static let title = NSLocalizedString("Depositing %@", comment: "Depositing %@")
-    static let description = NSLocalizedString(
+extension LocalizationConstants.Transaction.Deposit.Completion.Pending {
+    public static let title = NSLocalizedString("Depositing %@", comment: "Depositing %@")
+    public static let description = NSLocalizedString(
         "We're completing your deposit now.",
         comment: "We're completing your deposit now."
     )
 }
 
-public extension LocalizationConstants.Transaction.Deposit.Completion.Success {
-    static let title = NSLocalizedString("%@ Deposited", comment: "%@ Deposited")
-    static let description = NSLocalizedString(
+extension LocalizationConstants.Transaction.Deposit.Completion.Success {
+    public static let title = NSLocalizedString("%@ Deposited", comment: "%@ Deposited")
+    public static let description = NSLocalizedString(
         "While we wait for your bank to send the cash, here’s early access to %@ in your %@ Cash Account so you can buy crypto right now. Your funds will be available to withdraw once the bank transfer is complete on %@",
         comment: "While we wait for your bank to send the cash, here’s early access to $@ in your %@ Cash Account so you can buy crypto right now. Your funds will be available to withdraw once the bank transfer is complete on %@"
     )
 }
 
-public extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
+    public static let title = NSLocalizedString(
         "Oops! Something Went Wrong.",
         comment: "Oops! Something Went Wrong."
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help.",
         comment: "Don’t worry. Your funds are safe. Please try again or contact our Suppport Team for help."
     )
@@ -406,62 +414,62 @@ public extension LocalizationConstants.Transaction.Deposit.Completion.Failure {
 
 // MARK: - Send Pending
 
-public extension LocalizationConstants.Transaction.Send.Completion.Pending {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Send.Completion.Pending {
+    public static let title = NSLocalizedString(
         "Sending %@",
         comment: "Sending %@"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "We're sending your transaction now.",
         comment: "We're sending your transaction now."
     )
 }
 
-public extension LocalizationConstants.Transaction.Send.Completion.Success {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Send.Completion.Success {
+    public static let title = NSLocalizedString(
         "%@ Sent",
         comment: "Swap Complete"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Your %@ has been successfully sent.",
         comment: "Your %@ has been successfully sent."
     )
-    static let action = NSLocalizedString(
+    public static let action = NSLocalizedString(
         "OK",
         comment: "OK"
     )
 }
 
-public extension LocalizationConstants.Transaction.Send.Completion.Failure {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Send.Completion.Failure {
+    public static let title = NSLocalizedString(
         "Oops! Something Went Wrong.",
         comment: "Oops! Something Went Wrong."
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
         comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
     )
-    static let action = NSLocalizedString(
+    public static let action = NSLocalizedString(
         "OK",
         comment: "OK"
     )
 
-    static let insufficientFundsForFees = NSLocalizedString(
+    public static let insufficientFundsForFees = NSLocalizedString(
         "Not enough %@ in your wallet to send with current network fees.",
         comment: ""
     )
 
-    static let underMinLimit = NSLocalizedString(
+    public static let underMinLimit = NSLocalizedString(
         "Minimum send of %@ required.",
         comment: ""
     )
 
-    static let overGoldTierLimit = NSLocalizedString(
+    public static let overGoldTierLimit = NSLocalizedString(
         "You can send up to %1$s today.",
         comment: ""
     )
 
-    static let overSilverTierLimit = NSLocalizedString(
+    public static let overSilverTierLimit = NSLocalizedString(
         "Please upgrade your profile to send this amount.",
         comment: ""
     )
@@ -469,357 +477,358 @@ public extension LocalizationConstants.Transaction.Send.Completion.Failure {
 
 // MARK: - Swap Pending
 
-public extension LocalizationConstants.Transaction.Swap.Completion.Pending {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Swap.Completion.Pending {
+    public static let title = NSLocalizedString(
         "Swapping %@ for %@",
         comment: "Swapping %@ for %@"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "We're completing your swap now.",
         comment: "We're completing your swap now."
     )
 }
 
-public extension LocalizationConstants.Transaction.Swap.Completion.Success {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Swap.Completion.Success {
+    public static let title = NSLocalizedString(
         "Swap Complete",
         comment: "Swap Complete"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Your %@ is now available in your Wallet.",
         comment: "Your %@ is now available in your Wallet."
     )
-    static let action = NSLocalizedString(
+    public static let action = NSLocalizedString(
         "OK",
         comment: "OK"
     )
 }
 
-public extension LocalizationConstants.Transaction.Swap.Completion.Failure {
-    static let title = NSLocalizedString(
+extension LocalizationConstants.Transaction.Swap.Completion.Failure {
+    public static let title = NSLocalizedString(
         "Oops! Something Went Wrong.",
         comment: "Oops! Something Went Wrong."
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help.",
         comment: "Don’t worry. Your crypto is safe. Please try again or contact our Suppport Team for help."
     )
-    static let action = NSLocalizedString(
+    public static let action = NSLocalizedString(
         "OK",
         comment: "OK"
     )
 
-    static let insufficientFundsForFees = NSLocalizedString(
+    public static let insufficientFundsForFees = NSLocalizedString(
         "Not enough %@ in your wallet to swap with current network fees.",
         comment: ""
     )
 
-    static let underMinLimit = NSLocalizedString(
+    public static let underMinLimit = NSLocalizedString(
         "Minimum swap of %@ required.",
         comment: ""
     )
 
-    static let overGoldTierLimit = NSLocalizedString(
+    public static let overGoldTierLimit = NSLocalizedString(
         "You can swap up to %1$s today.",
         comment: ""
     )
 
-    static let overSilverTierLimit = NSLocalizedString(
+    public static let overSilverTierLimit = NSLocalizedString(
         "Please upgrade your profile to swap this amount.",
         comment: ""
     )
 }
 
-public extension LocalizationConstants.Transaction.Confirmation.Error {
-    static let title = NSLocalizedString("Error", comment: "Error")
-    static let insufficientFunds = NSLocalizedString(
+extension LocalizationConstants.Transaction.Confirmation.Error {
+    public static let title = NSLocalizedString("Error", comment: "Error")
+    public static let insufficientFunds = NSLocalizedString(
         "You have insufficient funds in this account to process this transaction",
         comment: ""
     )
-    static let insufficientGas = NSLocalizedString(
+    public static let insufficientGas = NSLocalizedString(
         "You do not have enough ETH to process this transaction.",
         comment: ""
     )
-    static let optionInvalid = NSLocalizedString(
+    public static let optionInvalid = NSLocalizedString(
         "Please ensure you've agreed to our Terms.",
         comment: ""
     )
-    static let invoiceExpired = NSLocalizedString(
+    public static let invoiceExpired = NSLocalizedString(
         "BitPay Invoice Expired",
         comment: ""
     )
-    static let underMinLimit = NSLocalizedString(
+    public static let underMinLimit = NSLocalizedString(
         "%@ Min",
         comment: ""
     )
-    static let underMinBitcoinFee = NSLocalizedString(
+    public static let underMinBitcoinFee = NSLocalizedString(
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    static let invalidAmount = NSLocalizedString(
+    public static let invalidAmount = NSLocalizedString(
         "Invalid fee",
         comment: ""
     )
-    static let transactionInFlight = NSLocalizedString(
+    public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
     )
-    static let pendingOrderLimitReached = NSLocalizedString(
+    public static let pendingOrderLimitReached = NSLocalizedString(
         "You have 1 Swap in-progress. Once that completes, create a New Swap.",
         comment: ""
     )
-    static let generic = NSLocalizedString(
+    public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
         comment: ""
     )
-    static let overMaximumLimit = NSLocalizedString(
+    public static let overMaximumLimit = NSLocalizedString(
         "Maximum limit exceeded",
         comment: ""
     )
 }
 
-public extension LocalizationConstants.Transaction.Confirmation {
-    static let price = NSLocalizedString(
+extension LocalizationConstants.Transaction.Confirmation {
+    public static let price = NSLocalizedString(
         "%@ Price",
         comment: "%@ Price"
     )
-    static let total = NSLocalizedString(
+    public static let total = NSLocalizedString(
         "Total",
         comment: "Total"
     )
-    static let to = NSLocalizedString(
+    public static let to = NSLocalizedString(
         "To",
         comment: "To"
     )
-    static let from = NSLocalizedString(
+    public static let from = NSLocalizedString(
         "From",
         comment: "From"
     )
-    static let transactionFee = NSLocalizedString(
+    public static let transactionFee = NSLocalizedString(
         "Transaction Fee",
         comment: "Network Fee"
     )
-    static let networkFee = NSLocalizedString(
+    public static let networkFee = NSLocalizedString(
         "%@ Network Fee",
         comment: "%@ Network Fee"
     )
-    static let exchangeRate = NSLocalizedString(
+    public static let exchangeRate = NSLocalizedString(
         "Exchange Rate",
         comment: "Exchange Rate"
     )
-    static let fundsArrivalDate = NSLocalizedString(
+    public static let fundsArrivalDate = NSLocalizedString(
         "Funds Will Arrive",
         comment: "Funds Will Arrive"
     )
-    static let description = NSLocalizedString(
+    public static let description = NSLocalizedString(
         "Description",
         comment: "Description"
     )
-    static let memo = NSLocalizedString(
+    public static let memo = NSLocalizedString(
         "Memo",
         comment: "Memo"
     )
-    static let confirm = NSLocalizedString(
+    public static let confirm = NSLocalizedString(
         "Confirm",
         comment: "Confirm"
     )
-    static let cancel = NSLocalizedString(
+    public static let cancel = NSLocalizedString(
         "Cancel",
         comment: "Cancel"
     )
-    static func transactionFee(feeType: String) -> String {
+    public static func transactionFee(feeType: String) -> String {
         let format = NSLocalizedString(
             "Fee - %@",
             comment: "Fee"
         )
         return String(format: format, feeType)
     }
-    static let remainingTime = NSLocalizedString(
+
+    public static let remainingTime = NSLocalizedString(
         "Remaining Time",
         comment: "Remaining Time"
     )
 }
 
-public extension LocalizationConstants.Transaction.Error {
-    static let title = NSLocalizedString("Error", comment: "Error")
-    static let insufficientFunds = NSLocalizedString(
+extension LocalizationConstants.Transaction.Error {
+    public static let title = NSLocalizedString("Error", comment: "Error")
+    public static let insufficientFunds = NSLocalizedString(
         "You have insufficient funds in this account to process this transaction",
         comment: ""
     )
-    static let insufficientGas = NSLocalizedString(
+    public static let insufficientGas = NSLocalizedString(
         "You do not have enough ETH to process this transaction.",
         comment: ""
     )
-    static let addressIsContract = NSLocalizedString(
+    public static let addressIsContract = NSLocalizedString(
         "Address is not a user address",
         comment: ""
     )
-    static let optionInvalid = NSLocalizedString(
+    public static let optionInvalid = NSLocalizedString(
         "Please ensure you've agreed to our Terms.",
         comment: ""
     )
-    static let invoiceExpired = NSLocalizedString(
+    public static let invoiceExpired = NSLocalizedString(
         "BitPay Invoice Expired",
         comment: ""
     )
-    static let underMinLimitGeneric = NSLocalizedString(
+    public static let underMinLimitGeneric = NSLocalizedString(
         "Minimum amount required.",
         comment: ""
     )
-    static let underMinBitcoinFee = NSLocalizedString(
+    public static let underMinBitcoinFee = NSLocalizedString(
         "Minimum 1 sat/byte required",
         comment: ""
     )
-    static let invalidAmount = NSLocalizedString(
+    public static let invalidAmount = NSLocalizedString(
         "Invalid fee",
         comment: ""
     )
-    static let transactionInFlight = NSLocalizedString(
+    public static let transactionInFlight = NSLocalizedString(
         "A transaction is already in progress",
         comment: ""
     )
-    static let pendingOrderLimitReached = NSLocalizedString(
+    public static let pendingOrderLimitReached = NSLocalizedString(
         "You have 1 Swap in-progress. Once that completes, create a New Swap.",
         comment: ""
     )
-    static let generic = NSLocalizedString(
+    public static let generic = NSLocalizedString(
         "An unexpected error has occurred. Please try again.",
         comment: ""
     )
-    static let errorCode = NSLocalizedString(
+    public static let errorCode = NSLocalizedString(
         "Error Code: %@",
         comment: ""
     )
-    static let overMaximumLimit = NSLocalizedString(
+    public static let overMaximumLimit = NSLocalizedString(
         "Maximum limit exceeded",
         comment: ""
     )
-    static let invalidPassword = NSLocalizedString(
+    public static let invalidPassword = NSLocalizedString(
         "Password is incorrect.",
         comment: ""
     )
-    static let invalidAddress = NSLocalizedString(
+    public static let invalidAddress = NSLocalizedString(
         "Not a valid address.",
         comment: ""
     )
-    static let insufficientFundsForFees = NSLocalizedString(
+    public static let insufficientFundsForFees = NSLocalizedString(
         "Not enough %@ in your wallet to send with current network fees.",
         comment: ""
     )
 
     // MARK: - Transaction Flow Pending Error Descriptions
 
-    static let unknownError = NSLocalizedString(
+    public static let unknownError = NSLocalizedString(
         "Oops! Something went wrong. Please try again.",
         comment: "Oops! Something went wrong. Please try again."
     )
 
-    static let tooManyTransaction = NSLocalizedString(
+    public static let tooManyTransaction = NSLocalizedString(
         "You have too many pending %@ transactions. Once those complete you can create a new one.",
         comment: "You have too many pending %@ transactions. Once those complete you can create a new one."
     )
 
-    static let orderNotCancellable = NSLocalizedString(
+    public static let orderNotCancellable = NSLocalizedString(
         "Oops! This %@ order is not cancellable.",
         comment: "Oops! This %@ order is not cancellable."
     )
 
-    static let pendingWithdraw = NSLocalizedString(
+    public static let pendingWithdraw = NSLocalizedString(
         "Oops! You’ve already got an existing pending withdrawal, please try again once that completes.",
         comment: "Oops! You’ve already got an existing pending withdrawal, please try again once that completes."
     )
 
-    static let withdrawBalanceLocked = NSLocalizedString(
+    public static let withdrawBalanceLocked = NSLocalizedString(
         "Oops! For security reasons, your balance is currently locked, please try again later.",
         comment: "Oops! For security reasons, your balance is currently locked, please try again later."
     )
 
-    static let tradingInsufficientFunds = NSLocalizedString(
+    public static let tradingInsufficientFunds = NSLocalizedString(
         "Oops! You don’t have enough funds to Withdraw",
         comment: "Oops! You don’t have enough funds to Withdraw"
     )
 
-    static let internalServiceError = NSLocalizedString(
+    public static let internalServiceError = NSLocalizedString(
         "Oops! This service is currently unavailable, please try again later.",
         comment: "Oops! This service is currently unavailable, please try again later."
     )
 
-    static let tradingAlbertError = NSLocalizedString(
+    public static let tradingAlbertError = NSLocalizedString(
         "Oops! Something Went Wrong. Please try again.",
         comment: "Oops! Something Went Wrong. Please try again."
     )
 
-    static let tradingServiceDisabled = NSLocalizedString(
+    public static let tradingServiceDisabled = NSLocalizedString(
         "This service will be back soon. We’re updating and fixing some bugs right now.",
         comment: "This service will be back soon. We’re updating and fixing some bugs right now."
     )
 
-    static let tradingInsufficientBalance = NSLocalizedString(
+    public static let tradingInsufficientBalance = NSLocalizedString(
         "Oops! You don’t have enough balance to %@.",
         comment: "Oops! You don’t have enough balance to %@."
     )
 
-    static let tradingBelowMin = NSLocalizedString(
+    public static let tradingBelowMin = NSLocalizedString(
         "Oops! The amount you selected is below the minimum %@ limit.",
         comment: "Oops! The amount you selected is below the minimum %@ limit."
     )
 
-    static let tradingAboveMax = NSLocalizedString(
+    public static let tradingAboveMax = NSLocalizedString(
         "Oops! The amount you selected is above the maximum %@ limit.",
         comment: "Oops! The amount you selected is above the maximum %@ limit."
     )
 
-    static let tradingDailyExceeded = NSLocalizedString(
+    public static let tradingDailyExceeded = NSLocalizedString(
         "Oops! You’ve exceeded your daily %@ limit",
         comment: "Oops! You’ve exceeded your daily %@ limit"
     )
 
-    static let tradingWeeklyExceeded = NSLocalizedString(
+    public static let tradingWeeklyExceeded = NSLocalizedString(
         "Oops! You’ve exceeded your weekly %@ limit",
         comment: "Oops! You’ve exceeded your weekly %@ limit"
     )
 
-    static let tradingYearlyExceeded = NSLocalizedString(
+    public static let tradingYearlyExceeded = NSLocalizedString(
         "Oops! You’ve exceeded your yearly %@ limit",
         comment: "Oops! You’ve exceeded your yearly %@ limit"
     )
 
-    static let tradingInvalidAddress = NSLocalizedString(
+    public static let tradingInvalidAddress = NSLocalizedString(
         "Oops! Looks like that address is invalid, please try again.",
         comment: "Oops! Looks like that address is invalid, please try again."
     )
 
-    static let tradingInvalidCurrency = NSLocalizedString(
+    public static let tradingInvalidCurrency = NSLocalizedString(
         "Oops! Looks like that cryptocurrency is invalid, please try again.",
         comment: "Oops! Looks like that cryptocurrency is invalid, please try again."
     )
 
-    static let tradingInvalidFiat = NSLocalizedString(
+    public static let tradingInvalidFiat = NSLocalizedString(
         "Oops! Looks like that fiat is invalid, please try again.",
         comment: "Oops! Looks like that fiat is invalid, please try again."
     )
 
-    static let tradingDirectionDisabled = NSLocalizedString(
+    public static let tradingDirectionDisabled = NSLocalizedString(
         "Oops! That service isn’t available at the moment, please try again later.",
         comment: "Oops! That service isn’t available at the moment, please try again later."
     )
 
-    static let tradingQuoteInvalidOrExpired = NSLocalizedString(
+    public static let tradingQuoteInvalidOrExpired = NSLocalizedString(
         "Oops! The amount we quoted you is no longer valid, please try again.",
         comment: "Oops! The amount we quoted you is no longer valid, please try again."
     )
 
-    static let executingTransactionError = NSLocalizedString(
+    public static let executingTransactionError = NSLocalizedString(
         "Oops! Something went wrong while executing the %@ on-chain transaction.",
         comment: "Oops! Something went wrong while executing the %@ on-chain transaction."
     )
 
-    static let tradingIneligibleForSwap = NSLocalizedString(
+    public static let tradingIneligibleForSwap = NSLocalizedString(
         "Oops! This service isn’t currently available. Please contact support.",
         comment: "Oops! This service isn’t currently available. Please contact support."
     )
 
-    static let tradingInvalidDestinationAmount = NSLocalizedString(
+    public static let tradingInvalidDestinationAmount = NSLocalizedString(
         "Oops! Looks like that isn’t a valid amount, please try again.",
         comment: "Oops! Looks like that isn’t a valid amount, please try again."
     )

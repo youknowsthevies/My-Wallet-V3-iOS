@@ -27,13 +27,16 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
 
     // MARK: - Init
 
-    init(presenter: UpdateMobileScreenPresenter,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(
+        presenter: UpdateMobileScreenPresenter,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
+    ) {
         self.presenter = presenter
         self.analyticsRecorder = analyticsRecorder
         super.init(nibName: UpdateMobileScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -41,9 +44,11 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         shimmer()
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: .none)
+            trailingButtonStyle: .none
+        )
         titleViewStyle = presenter.titleView
         keyboardInteractionController = KeyboardInteractionController(in: self)
         descriptionLabel.content = presenter.descriptionLabel
@@ -60,17 +65,17 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
             : analyticsRecorder.record(event: AnalyticsEvents.New.Settings.changeMobileNumberClicked)
 
         presenter.disable2FASMSVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(disable2FALabel.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter.continueVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(continueButtonView.rx.isHidden)
             .disposed(by: disposeBag)
 
         presenter.updateVisibility
-            .map { $0.isHidden }
+            .map(\.isHidden)
             .drive(updateButtonView.rx.isHidden)
             .disposed(by: disposeBag)
 
@@ -82,7 +87,7 @@ final class UpdateMobileScreenViewController: BaseScreenViewController {
     /// Should be called once when the parent view loads
     private func shimmer() {
         badgeShimmeringView = ShimmeringView(
-            in: self.view,
+            in: view,
             anchorView: badgeView,
             size: .init(width: 75, height: 24)
         )

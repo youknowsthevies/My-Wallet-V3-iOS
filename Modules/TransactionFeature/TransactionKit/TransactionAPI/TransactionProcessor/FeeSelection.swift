@@ -10,9 +10,11 @@ public struct FeeSelection: Equatable {
     public var feeState: FeeState?
     public var asset: CurrencyType?
 
-    public init(selectedLevel: FeeLevel,
-                availableLevels: Set<FeeLevel>,
-                asset: CurrencyType? = nil) {
+    public init(
+        selectedLevel: FeeLevel,
+        availableLevels: Set<FeeLevel>,
+        asset: CurrencyType? = nil
+    ) {
         self.selectedLevel = selectedLevel
         self.availableLevels = availableLevels
         self.asset = asset

@@ -18,22 +18,23 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
 
     public init(presenter: InterestAccountDetailsScreenPresenter) {
         self.presenter = presenter
-        self.tableView = SelfSizingTableView()
+        tableView = SelfSizingTableView()
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
 
-    public override func loadView() {
+    override public func loadView() {
         view = UIView()
         view.backgroundColor = .white
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupNavigationBar()
@@ -75,9 +76,11 @@ public final class InterestAccountDetailsViewController: BaseScreenViewControlle
     }
 
     private func setupNavigationBar() {
-        set(barStyle: presenter.barStyle,
+        set(
+            barStyle: presenter.barStyle,
             leadingButtonStyle: presenter.leadingButton,
-            trailingButtonStyle: presenter.trailingButton)
+            trailingButtonStyle: presenter.trailingButton
+        )
         titleViewStyle = presenter.titleView
     }
 }

@@ -10,11 +10,11 @@ enum ConfirmationPageType: Equatable {
 
     static func == (lhs: ConfirmationPageType, rhs: ConfirmationPageType) -> Bool {
         switch (lhs, rhs) {
-        case let (.loading(lhsFiatValue), .loading(rhsFiatValue)):
+        case (.loading(let lhsFiatValue), .loading(let rhsFiatValue)):
             return lhsFiatValue == rhsFiatValue
-        case let (.success(lhsFiatValue), .success(rhsFiatValue)):
+        case (.success(let lhsFiatValue), .success(let rhsFiatValue)):
             return lhsFiatValue == rhsFiatValue
-        case let (.failure(lhsCurrencyType, _), .failure(rhsCurrencyType, _)):
+        case (.failure(let lhsCurrencyType, _), .failure(let rhsCurrencyType, _)):
             return lhsCurrencyType == rhsCurrencyType
         default:
             return false

@@ -6,9 +6,9 @@ import Foundation
 
 extension LocalizationConstants {
     public enum Receive {
-        public enum Header { }
-        public enum Text { }
-        public enum Button { }
+        public enum Header {}
+        public enum Text {}
+        public enum Button {}
     }
 }
 
@@ -51,7 +51,7 @@ extension LocalizationConstants.Receive.Text {
         "If you send funds without the XLM Memo Text, your funds will be lost and not credited to your account. Please send only XLM to this address.",
         comment: "Note about Stellar Memos"
     )
-    
+
     public static let learnMore = NSLocalizedString(
         " Learn more.",
         comment: "Learn more"

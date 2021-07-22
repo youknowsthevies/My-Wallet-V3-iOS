@@ -23,16 +23,16 @@ let hardwareKeyReducer = Reducer<
     HardwareKeyAction,
     CredentialsEnvironment
 > {
-    state, action, environmnet in
+    state, action, _ in
     switch action {
-    case let .didChangeHardwareKeyCode(code):
+    case .didChangeHardwareKeyCode(let code):
         state.hardwareKeyCode = code
         return .none
-    case let .hardwareKeyCodeFieldVisibility(isVisible):
+    case .hardwareKeyCodeFieldVisibility(let isVisible):
         state.hardwareKeyCode = ""
         state.isHardwareKeyCodeFieldVisible = isVisible
         return .none
-    case let .incorrectHardwareKeyCodeErrorVisibility(isVisible):
+    case .incorrectHardwareKeyCodeErrorVisibility(let isVisible):
         state.isHardwareKeyCodeIncorrect = isVisible
         return .none
     }

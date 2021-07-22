@@ -20,5 +20,5 @@ public protocol URLEmitterAPI {
 }
 
 public typealias PendingOrderRoutingInteracting = PendingOrderStateAPI &
-                                                  RoutingPreviousStateEmitterAPI &
-                                                  URLEmitterAPI
+    RoutingPreviousStateEmitterAPI &
+    URLEmitterAPI

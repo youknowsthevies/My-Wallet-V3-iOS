@@ -13,6 +13,7 @@ public enum EmailLoginAction: Equatable {
         case show(title: String, message: String)
         case dismiss
     }
+
     case closeButtonTapped
     case didDisappear
     case didChangeEmailAddress(String)
@@ -31,7 +32,7 @@ struct EmailLoginState: Equatable {
     var isVerifyDeviceScreenVisible: Bool
     var verifyDeviceState: VerifyDeviceState?
     var emailLoginFailureAlert: AlertState<EmailLoginAction>?
-    
+
     init() {
         verifyDeviceState = .init()
         emailAddress = ""
@@ -45,9 +46,11 @@ struct EmailLoginEnvironment {
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let validateEmail: (String) -> Bool
 
-    init(deviceVerificationService: DeviceVerificationServiceAPI,
-         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
-         validateEmail: @escaping (String) -> Bool = { $0.isEmail }) {
+    init(
+        deviceVerificationService: DeviceVerificationServiceAPI,
+        mainQueue: AnySchedulerOf<DispatchQueue> = .main,
+        validateEmail: @escaping (String) -> Bool = { $0.isEmail }
+    ) {
         self.deviceVerificationService = deviceVerificationService
         self.mainQueue = mainQueue
         self.validateEmail = validateEmail
@@ -79,13 +82,13 @@ let emailLoginReducer = Reducer.combine(
             state.emailLoginFailureAlert = nil
             return .none
 
-        case let .didChangeEmailAddress(emailAddress):
+        case .didChangeEmailAddress(let emailAddress):
             state.emailAddress = emailAddress
             state.isEmailValid = environment.validateEmail(emailAddress)
             return .none
 
-        case let .didSendDeviceVerificationEmail(response):
-            if case let .failure(error) = response {
+        case .didSendDeviceVerificationEmail(let response):
+            if case .failure(let error) = response {
                 switch error {
                 case .recaptchaError:
                     return Effect(value: .emailLoginFailureAlert(.show(title: "Recaptcha Error", message: error.localizedDescription)))
@@ -98,7 +101,7 @@ let emailLoginReducer = Reducer.combine(
             }
             return Effect(value: .setVerifyDeviceScreenVisible(true))
 
-        case let .emailLoginFailureAlert(.show(title, message)):
+        case .emailLoginFailureAlert(.show(let title, let message)):
             state.emailLoginFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
@@ -127,15 +130,15 @@ let emailLoginReducer = Reducer.combine(
                     switch result {
                     case .success:
                         return .didSendDeviceVerificationEmail(.success(.noValue))
-                    case let .failure(error):
+                    case .failure(let error):
                         return .didSendDeviceVerificationEmail(.failure(error))
                     }
                 }
 
-        case let .setVerifyDeviceScreenVisible(isVisible):
+        case .setVerifyDeviceScreenVisible(let isVisible):
             state.isVerifyDeviceScreenVisible = isVisible
             return .none
-            
+
         case .verifyDevice(.didExtractWalletInfo),
              .verifyDevice(.didReceiveWalletInfoDeeplink),
              .verifyDevice(.verifyDeviceFailureAlert),

@@ -36,12 +36,14 @@ final class TransferCancellationScreenPresenter {
 
     private let disposeBag = DisposeBag()
 
-    init(routingInteractor: TransferOrderRoutingInteracting,
-         currency: CurrencyType,
-         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
-         loader: LoadingViewPresenting = resolve(),
-         alert: AlertViewPresenterAPI = resolve(),
-         interactor: TransferCancellationInteractor) {
+    init(
+        routingInteractor: TransferOrderRoutingInteracting,
+        currency: CurrencyType,
+        analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        loader: LoadingViewPresenting = resolve(),
+        alert: AlertViewPresenterAPI = resolve(),
+        interactor: TransferCancellationInteractor
+    ) {
         self.analyticsRecorder = analyticsRecorder
         self.interactor = interactor
         self.routingInteractor = routingInteractor
@@ -94,7 +96,7 @@ final class TransferCancellationScreenPresenter {
             .share(replay: 1)
 
         cancellationResult
-            .filter { $0.isSuccess }
+            .filter(\.isSuccess)
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
                 self.analyticsRecorder.record(event: AnalyticsEvent.sbCancelOrderConfirmed)
@@ -103,7 +105,7 @@ final class TransferCancellationScreenPresenter {
             .disposed(by: disposeBag)
 
         cancellationResult
-            .filter { $0.isFailure }
+            .filter(\.isFailure)
             .mapToVoid()
             .bindAndCatch(weak: self) { (self) in
                 self.cancellationDidFail()

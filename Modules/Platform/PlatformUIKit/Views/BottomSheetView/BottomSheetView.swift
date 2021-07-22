@@ -44,7 +44,7 @@ public class BottomSheetView: UIView {
         return verticalPadding + interitemPadding + buttonsHeight + titleHeight + window.safeAreaInsets.bottom
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
         applyRadius(12.0, to: [.topLeft, .topRight])

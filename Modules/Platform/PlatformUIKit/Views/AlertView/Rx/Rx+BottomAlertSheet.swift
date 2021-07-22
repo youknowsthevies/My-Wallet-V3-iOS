@@ -2,17 +2,17 @@
 
 import RxSwift
 
-public extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
+extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
 
     /// Show the alert and returns `Element`
-    func showSheetAfterCompletion(bottomAlertSheet: BottomAlertSheet) -> Completable {
+    public func showSheetAfterCompletion(bottomAlertSheet: BottomAlertSheet) -> Completable {
         self.do(afterCompleted: {
             bottomAlertSheet.show()
         })
     }
 
     /// Hides the alert and returns `Element`
-    func hideBottomSheetOnCompletionOrError(bottomAlertSheet: BottomAlertSheet) -> Completable {
+    public func hideBottomSheetOnCompletionOrError(bottomAlertSheet: BottomAlertSheet) -> Completable {
         self.do(onError: { _ in
             bottomAlertSheet.hide()
         }, onCompleted: {
@@ -21,52 +21,52 @@ public extension PrimitiveSequenceType where Trait == CompletableTrait, Element 
     }
 
     /// Show the alert and returns `Element`
-    func showSheetAfterFailure(bottomAlertSheet: BottomAlertSheet) -> Completable {
+    public func showSheetAfterFailure(bottomAlertSheet: BottomAlertSheet) -> Completable {
         self.do(afterError: { _ in
             bottomAlertSheet.show()
         })
     }
 
     /// Show the alert and returns `Element`
-    func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Completable {
+    public func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Completable {
         self.do(onSubscribe: {
             bottomAlertSheet.show()
         })
     }
 }
 
-public extension PrimitiveSequence where Trait == SingleTrait {
+extension PrimitiveSequence where Trait == SingleTrait {
 
     /// Show the alert and returns `Element`
-    func showSheetAfterSuccess(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
+    public func showSheetAfterSuccess(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
         self.do(afterSuccess: { _ in
             bottomAlertSheet.show()
         })
     }
 
     /// Show the alert and returns `Element`
-    func showSheetAfterFailure(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
+    public func showSheetAfterFailure(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
         self.do(afterError: { _ in
             bottomAlertSheet.show()
         })
     }
 
     /// Show the alert and returns `Element`
-    func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
+    public func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
         self.do(onSubscribe: {
             bottomAlertSheet.show()
         })
     }
 
     /// Hides the alert and returns `Element`
-    func hideBottomSheetOnDisposal(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
+    public func hideBottomSheetOnDisposal(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
         self.do(onDispose: {
             bottomAlertSheet.hide()
         })
     }
 
     /// Hides the alert and returns `Element`
-    func hideBottomSheetOnSuccessOrError(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
+    public func hideBottomSheetOnSuccessOrError(bottomAlertSheet: BottomAlertSheet) -> Single<Element> {
         self.do(onSuccess: { _ in
             bottomAlertSheet.hide()
         }, onError: { _ in
@@ -76,17 +76,17 @@ public extension PrimitiveSequence where Trait == SingleTrait {
 }
 
 /// Extension for `ObservableType` that enables the loader to take part in a chain of observables
-public extension ObservableType {
+extension ObservableType {
 
     /// Shows the alert upon subscription
-    func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Observable<Element> {
+    public func showSheetOnSubscription(bottomAlertSheet: BottomAlertSheet) -> Observable<Element> {
         self.do(onSubscribe: {
             bottomAlertSheet.show()
         })
     }
 
     /// Hides the alert upon disposal
-    func hideBottomSheetOnDisposal(bottomAlertSheet: BottomAlertSheet) -> Observable<Element> {
+    public func hideBottomSheetOnDisposal(bottomAlertSheet: BottomAlertSheet) -> Observable<Element> {
         self.do(onDispose: {
             bottomAlertSheet.hide()
         })

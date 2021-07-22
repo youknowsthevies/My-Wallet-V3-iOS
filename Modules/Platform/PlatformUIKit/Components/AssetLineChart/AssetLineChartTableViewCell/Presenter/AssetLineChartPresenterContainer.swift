@@ -7,9 +7,11 @@ public final class AssetLineChartPresenterContainer {
     let lineChartPresenter: AssetLineChartPresenter
     let lineChartView: LineChartView
 
-    public init(priceViewPresenter: AssetPriceViewPresenter,
-                lineChartPresenter: AssetLineChartPresenter,
-                lineChartView: LineChartView) {
+    public init(
+        priceViewPresenter: AssetPriceViewPresenter,
+        lineChartPresenter: AssetLineChartPresenter,
+        lineChartView: LineChartView
+    ) {
         self.priceViewPresenter = priceViewPresenter
         self.lineChartPresenter = lineChartPresenter
         self.lineChartView = lineChartView

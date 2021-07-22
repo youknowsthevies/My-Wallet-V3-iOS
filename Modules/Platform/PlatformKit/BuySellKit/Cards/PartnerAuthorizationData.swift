@@ -12,7 +12,7 @@ public struct PartnerAuthorizationData {
 
             init(paymentLink: URL) {
                 self.paymentLink = paymentLink
-                self.exitLink = URL(string: PartnerAuthorizationData.exitLink)!
+                exitLink = URL(string: PartnerAuthorizationData.exitLink)!
             }
         }
 

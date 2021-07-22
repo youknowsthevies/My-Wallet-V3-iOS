@@ -15,7 +15,7 @@ final class TransactionInteractor {
 
         var errorDescription: String? {
             switch self {
-            case let .loadingFailed(account, action, error):
+            case .loadingFailed(let account, let action, let error):
                 let type = String(reflecting: account)
                 let asset = account.currencyType.code
                 let label = account.label
@@ -48,9 +48,11 @@ final class TransactionInteractor {
         self.linkedBanksFactory = linkedBanksFactory
     }
 
-    func initializeTransaction(sourceAccount: BlockchainAccount,
-                               transactionTarget: TransactionTarget,
-                               action: AssetAction) -> Observable<PendingTransaction> {
+    func initializeTransaction(
+        sourceAccount: BlockchainAccount,
+        transactionTarget: TransactionTarget,
+        action: AssetAction
+    ) -> Observable<PendingTransaction> {
         coincore
             .createTransactionProcessor(
                 with: sourceAccount,
@@ -226,14 +228,14 @@ final class TransactionInteractor {
     }
 }
 
-fileprivate extension Array where Element == OrderPair {
-    func contains(source: CurrencyType, destination: CurrencyType) -> Bool {
+extension Array where Element == OrderPair {
+    fileprivate func contains(source: CurrencyType, destination: CurrencyType) -> Bool {
         contains(where: { $0.sourceCurrencyType == source && $0.destinationCurrencyType == destination })
     }
 }
 
-fileprivate extension CryptoAccount {
-    func isAvailableToSwapFrom(tradingPairs: [OrderPair]) -> Bool {
+extension CryptoAccount {
+    fileprivate func isAvailableToSwapFrom(tradingPairs: [OrderPair]) -> Bool {
         tradingPairs.contains { pair in
             pair.sourceCurrencyType == asset
         }

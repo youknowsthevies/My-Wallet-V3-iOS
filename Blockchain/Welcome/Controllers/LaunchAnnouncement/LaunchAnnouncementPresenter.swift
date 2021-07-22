@@ -16,8 +16,10 @@ final class LaunchAnnouncementPresenter: VersionUpdateAlertDisplaying {
 
     // MARK: - Setup
 
-    init(interactor: LaunchAnnouncementInteractor = LaunchAnnouncementInteractor(),
-         alertPresenter: AlertViewPresenter = .shared) {
+    init(
+        interactor: LaunchAnnouncementInteractor = LaunchAnnouncementInteractor(),
+        alertPresenter: AlertViewPresenter = .shared
+    ) {
         self.alertPresenter = alertPresenter
         self.interactor = interactor
     }

@@ -31,7 +31,7 @@ public final class AssetBalanceViewPresenter {
                 interactor.state.catchErrorJustReturn(.loading),
                 alignmentRelay.asObservable()
             )
-            .map { [descriptors] (state, alignment) in
+            .map { [descriptors] state, alignment in
                 .init(
                     with: state,
                     alignment: alignment,
@@ -53,11 +53,13 @@ public final class AssetBalanceViewPresenter {
 
     // MARK: - Setup
 
-    public init(alignment: UIStackView.Alignment = .fill,
-                interactor: AssetBalanceViewInteracting,
-                descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors) {
+    public init(
+        alignment: UIStackView.Alignment = .fill,
+        interactor: AssetBalanceViewInteracting,
+        descriptors: AssetBalanceViewModel.Value.Presentation.Descriptors
+    ) {
         self.interactor = interactor
         self.descriptors = descriptors
-        self.alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
+        alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
 }

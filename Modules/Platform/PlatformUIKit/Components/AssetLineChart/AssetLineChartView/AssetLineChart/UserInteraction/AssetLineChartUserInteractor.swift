@@ -33,6 +33,7 @@ public final class AssetLineChartUserInteractor: AssetLineChartUserInteracting, 
     private var selectedIndex: Observable<Int> {
         selectedIndexRelay.asObservable()
     }
+
     private var selectedIndexRelay = PublishRelay<Int>()
 
     public init(chartView: LineChartView) {

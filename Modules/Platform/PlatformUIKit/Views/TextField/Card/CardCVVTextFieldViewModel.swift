@@ -13,10 +13,12 @@ public final class CardCVVTextFieldViewModel: TextFieldViewModel {
 
     // MARK: - Setup
 
-    public init(validator: TextValidating,
-                cardTypeSource: CardTypeSource,
-                matchValidator: CVVToCreditCardMatchValidator,
-                messageRecorder: MessageRecording) {
+    public init(
+        validator: TextValidating,
+        cardTypeSource: CardTypeSource,
+        matchValidator: CVVToCreditCardMatchValidator,
+        messageRecorder: MessageRecording
+    ) {
         super.init(
             with: .cardCVV,
             validator: validator,

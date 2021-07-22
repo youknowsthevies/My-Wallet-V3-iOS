@@ -58,7 +58,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
             }
 
         return Single.zip(receiveAddress, account)
-            .map { [label, onTxCompleted] (address, account) -> ReceiveAddress in
+            .map { [label, onTxCompleted] address, account -> ReceiveAddress in
                 BitcoinChainReceiveAddress<BitcoinCashToken>(
                     address: address,
                     label: label,
@@ -99,15 +99,17 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     private let transactionsService: BitcoinCashHistoricalTransactionServiceAPI
     private let swapTransactionsService: SwapActivityServiceAPI
 
-    init(xPub: XPub,
-         label: String?,
-         isDefault: Bool,
-         hdAccountIndex: Int,
-         fiatPriceService: FiatPriceServiceAPI = resolve(),
-         transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
-         swapTransactionsService: SwapActivityServiceAPI = resolve(),
-         balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
-         bridge: BitcoinCashWalletBridgeAPI = resolve()) {
+    init(
+        xPub: XPub,
+        label: String?,
+        isDefault: Bool,
+        hdAccountIndex: Int,
+        fiatPriceService: FiatPriceServiceAPI = resolve(),
+        transactionsService: BitcoinCashHistoricalTransactionServiceAPI = resolve(),
+        swapTransactionsService: SwapActivityServiceAPI = resolve(),
+        balanceService: BalanceServiceAPI = resolve(tag: BitcoinChainCoin.bitcoinCash),
+        bridge: BitcoinCashWalletBridgeAPI = resolve()
+    ) {
         self.xPub = xPub
         self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
         self.isDefault = isDefault
@@ -141,7 +143,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }
@@ -152,7 +154,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
                 fiatPriceService.getPrice(cryptoCurrency: asset, fiatCurrency: fiatCurrency, date: date),
                 balance
             )
-            .map { (fiatPrice, balance) in
+            .map { fiatPrice, balance in
                 try MoneyValuePair(base: balance, exchangeRate: fiatPrice)
             }
     }

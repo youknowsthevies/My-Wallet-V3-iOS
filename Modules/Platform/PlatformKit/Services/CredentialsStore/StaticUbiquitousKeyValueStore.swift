@@ -7,7 +7,7 @@ class StaticUbiquitousKeyValueStore: UbiquitousKeyValueStore {
 
     // MARK: Types
 
-    private typealias DataFormat = [String: [String : Any]]
+    private typealias DataFormat = [String: [String: Any]]
 
     // MARK: Static Properties
 
@@ -30,11 +30,11 @@ class StaticUbiquitousKeyValueStore: UbiquitousKeyValueStore {
         data = userDefaults.dictionary(forKey: StaticUbiquitousKeyValueStore.userDefaultsKey) as? DataFormat ?? [:]
     }
 
-    func set(_ aDictionary: [String : Any]?, forKey aKey: String) {
+    func set(_ aDictionary: [String: Any]?, forKey aKey: String) {
         data[aKey] = aDictionary
     }
 
-    func dictionary(forKey aKey: String) -> [String : Any]? {
+    func dictionary(forKey aKey: String) -> [String: Any]? {
         data
     }
 

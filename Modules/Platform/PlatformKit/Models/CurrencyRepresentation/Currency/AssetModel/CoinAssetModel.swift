@@ -28,14 +28,16 @@ public struct CoinAssetModel: AssetModel, Hashable {
         self.sortIndex = sortIndex
     }
 
-    init(code: String,
-         name: String,
-         precision: Int,
-         products: [AssetModelProduct],
-         logoPngUrl: String?,
-         spotColor: String?,
-         minimumOnChainConfirmations: Int,
-         sortIndex: Int) {
+    init(
+        code: String,
+        name: String,
+        precision: Int,
+        products: [AssetModelProduct],
+        logoPngUrl: String?,
+        spotColor: String?,
+        minimumOnChainConfirmations: Int,
+        sortIndex: Int
+    ) {
         self.code = code
         self.name = name
         self.precision = precision
@@ -65,6 +67,7 @@ extension CoinAssetModel {
             sortIndex: 1
         )
     }
+
     static var polkadot: CoinAssetModel {
         CoinAssetModel(
             code: "DOT",
@@ -77,6 +80,7 @@ extension CoinAssetModel {
             sortIndex: 2
         )
     }
+
     static var dogecoin: CoinAssetModel {
         CoinAssetModel(
             code: "DOGE",
@@ -89,6 +93,7 @@ extension CoinAssetModel {
             sortIndex: 3
         )
     }
+
     static var bitClout: CoinAssetModel {
         CoinAssetModel(
             code: "CLOUT",
@@ -101,6 +106,7 @@ extension CoinAssetModel {
             sortIndex: 4
         )
     }
+
     static var ethereumClassic: CoinAssetModel {
         CoinAssetModel(
             code: "ETC",
@@ -113,6 +119,7 @@ extension CoinAssetModel {
             sortIndex: 5
         )
     }
+
     static var litecoin: CoinAssetModel {
         CoinAssetModel(
             code: "LTC",
@@ -125,6 +132,7 @@ extension CoinAssetModel {
             sortIndex: 6
         )
     }
+
     static var blockstack: CoinAssetModel {
         CoinAssetModel(
             code: "STX",
@@ -137,6 +145,7 @@ extension CoinAssetModel {
             sortIndex: 7
         )
     }
+
     static var tezos: CoinAssetModel {
         CoinAssetModel(
             code: "XTZ",
@@ -149,6 +158,7 @@ extension CoinAssetModel {
             sortIndex: 8
         )
     }
+
     static var mobileCoin: CoinAssetModel {
         CoinAssetModel(
             code: "MOB",
@@ -161,6 +171,7 @@ extension CoinAssetModel {
             sortIndex: 9
         )
     }
+
     static var theta: CoinAssetModel {
         CoinAssetModel(
             code: "THETA",
@@ -173,6 +184,7 @@ extension CoinAssetModel {
             sortIndex: 10
         )
     }
+
     static var near: CoinAssetModel {
         CoinAssetModel(
             code: "NEAR",
@@ -185,6 +197,7 @@ extension CoinAssetModel {
             sortIndex: 11
         )
     }
+
     static var eos: CoinAssetModel {
         CoinAssetModel(
             code: "EOS",

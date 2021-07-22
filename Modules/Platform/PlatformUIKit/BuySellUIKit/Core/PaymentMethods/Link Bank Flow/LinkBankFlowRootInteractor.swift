@@ -10,11 +10,13 @@ enum LinkBankFlow {
     enum FailureReason: Error {
         case generic
     }
+
     enum Screen {
         case splash(data: BankLinkageData)
         case yodlee(data: BankLinkageData)
         case failure(FailureReason)
     }
+
     enum Action: Equatable {
         case load
         case retry
@@ -29,25 +31,31 @@ protocol LinkBankFlowRootRouting: Routing {
 }
 
 final class LinkBankFlowRootInteractor: Interactor,
-                                        LinkBankFlowRootInteractable {
+    LinkBankFlowRootInteractable
+{
 
     // MARK: - Properties
+
     let linkBankFlowEffect: Observable<LinkBankFlowEffect>
     weak var router: LinkBankFlowRootRouting?
 
     // MARK: - Private Properties
+
     private let bankFlowEffectRelay = PublishRelay<LinkBankFlowEffect>()
     internal let retryAction = PublishRelay<LinkBankFlow.Action>()
     private let supportedParters: Set<BankLinkageData.Partner> = [.yodlee]
 
     // MARK: - Injected
+
     private let linkedBankService: LinkedBanksServiceAPI
     private let loadingViewPresenter: LoadingViewPresenting
     private let beneficiariesService: BeneficiariesServiceAPI
 
-    init(linkedBankService: LinkedBanksServiceAPI = resolve(),
-         loadingViewPresenter: LoadingViewPresenting = resolve(),
-         beneficiariesService: BeneficiariesServiceAPI = resolve()) {
+    init(
+        linkedBankService: LinkedBanksServiceAPI = resolve(),
+        loadingViewPresenter: LoadingViewPresenting = resolve(),
+        beneficiariesService: BeneficiariesServiceAPI = resolve()
+    ) {
         self.linkedBankService = linkedBankService
         self.loadingViewPresenter = loadingViewPresenter
         self.beneficiariesService = beneficiariesService

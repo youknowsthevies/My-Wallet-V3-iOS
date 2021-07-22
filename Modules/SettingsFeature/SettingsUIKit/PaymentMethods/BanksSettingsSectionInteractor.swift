@@ -42,10 +42,12 @@ final class BanksSettingsSectionInteractor {
 
     // MARK: - Setup
 
-    init(beneficiariesService: BeneficiariesServiceAPI = resolve(),
-         paymentMethodTypesService: PaymentMethodTypesServiceAPI,
-         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-         tierLimitsProvider: TierLimitsProviding) {
+    init(
+        beneficiariesService: BeneficiariesServiceAPI = resolve(),
+        paymentMethodTypesService: PaymentMethodTypesServiceAPI,
+        enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+        tierLimitsProvider: TierLimitsProviding
+    ) {
         self.beneficiariesService = beneficiariesService
         self.paymentMethodTypesService = paymentMethodTypesService
         self.tierLimitsProvider = tierLimitsProvider

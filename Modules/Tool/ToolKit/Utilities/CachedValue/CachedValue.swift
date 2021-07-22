@@ -44,7 +44,7 @@ public class CachedValue<Value> {
     /// Sets the fetch method. Must be called before any subscription.
     /// - Parameter fetch: The fetch method.
     public func setFetch(_ fetch: @escaping () -> Single<Value>) {
-        self.fetchMethod = fetch
+        fetchMethod = fetch
     }
 
     /// Sets the fetch method. Must be called before any subscription.
@@ -52,7 +52,7 @@ public class CachedValue<Value> {
     ///   - object: Weakly referenced object
     ///   - fetch: Fetch method
     public func setFetch<A: AnyObject>(weak object: A, fetch: @escaping (A) -> Single<Value>) {
-        self.fetchMethod = { [weak object] in
+        fetchMethod = { [weak object] in
             guard let object = object else {
                 return .error(ToolKitError.nullReference(A.self))
             }

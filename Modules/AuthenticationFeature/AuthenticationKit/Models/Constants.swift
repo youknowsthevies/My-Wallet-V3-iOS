@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public final class Constants {
+public enum Constants {
 
-    public struct Url {
+    public enum Url {
         public static var resetTwoFA: String {
             "https://\(loginHost)/#/reset-2fa"
         }
@@ -11,12 +11,14 @@ public final class Constants {
     private static let loginHost: String = InfoDictionaryHelper.value(for: .loginUrl)
 }
 
-private struct InfoDictionaryHelper {
+class AuthenticationKitBundle {}
+
+private enum InfoDictionaryHelper {
     enum Key: String {
         case loginUrl = "LOGIN_URL"
     }
 
-    private static let infoDictionary = Bundle(for: Constants.self).infoDictionary
+    private static let infoDictionary = Bundle(for: AuthenticationKitBundle.self).infoDictionary
 
     static func value(for key: Key) -> String! {
         infoDictionary?[key.rawValue] as? String

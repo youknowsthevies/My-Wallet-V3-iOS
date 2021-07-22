@@ -160,11 +160,13 @@ public final class SellRouterInteractor: Interactor {
 
     // MARK: - Setup
 
-    public init(accountSelectionService: AccountSelectionServiceAPI,
-                eligibilityService: EligibilityServiceAPI = resolve(),
-                kycTiersService: KYCTiersServiceAPI = resolve(),
-                loader: LoadingViewPresenting = resolve(),
-                alert: AlertViewPresenterAPI = resolve()) {
+    public init(
+        accountSelectionService: AccountSelectionServiceAPI,
+        eligibilityService: EligibilityServiceAPI = resolve(),
+        kycTiersService: KYCTiersServiceAPI = resolve(),
+        loader: LoadingViewPresenting = resolve(),
+        alert: AlertViewPresenterAPI = resolve()
+    ) {
         self.eligibilityService = eligibilityService
         self.kycTiersService = kycTiersService
         self.accountSelectionService = accountSelectionService
@@ -176,7 +178,7 @@ public final class SellRouterInteractor: Interactor {
 
     // MARK: - Lifecycle
 
-    public override func didBecomeActive() {
+    override public func didBecomeActive() {
         super.didBecomeActive()
 
         previousRelay
@@ -187,46 +189,46 @@ public final class SellRouterInteractor: Interactor {
         let eligibility: Single<Bool> = eligibilityService.fetch()
 
         Single.zip(
-                kycTiersService.fetchTiers(),
-                eligibility
-            )
-            .map { (tiers: $0.0, eligible: $0.1) }
-            .handleLoaderForLifecycle(
-                loader: loader,
-                style: .circle
-            )
-            .map { (tiers: KYC.UserTiers, eligible: Bool) -> State in
-                let status = tiers.tierAccountStatus(for: .tier2)
-                switch (status, eligible) {
-                case (.none, _):
-                    /// The user has not completed KYC
-                    return .introduction
-                case (.approved, true):
-                    /// The user is KYC approved and is eligible
-                    return .accountSelector
-                case (.approved, false):
-                    /// The user is KYC approved and is ineligible
-                    return .ineligible
-                case (.failed, _),
-                     (.expired, _):
-                    /// The user have been rejected
-                    return .verificationFailed
-                case (.underReview, _),
-                     (.pending, _):
-                    /// If the user's KYC status is still under-review
-                    /// or pending, we can just start KYC and it will show their status.
-                    return .kyc
-                }
+            kycTiersService.fetchTiers(),
+            eligibility
+        )
+        .map { (tiers: $0.0, eligible: $0.1) }
+        .handleLoaderForLifecycle(
+            loader: loader,
+            style: .circle
+        )
+        .map { (tiers: KYC.UserTiers, eligible: Bool) -> State in
+            let status = tiers.tierAccountStatus(for: .tier2)
+            switch (status, eligible) {
+            case (.none, _):
+                /// The user has not completed KYC
+                return .introduction
+            case (.approved, true):
+                /// The user is KYC approved and is eligible
+                return .accountSelector
+            case (.approved, false):
+                /// The user is KYC approved and is ineligible
+                return .ineligible
+            case (.failed, _),
+                 (.expired, _):
+                /// The user have been rejected
+                return .verificationFailed
+            case (.underReview, _),
+                 (.pending, _):
+                /// If the user's KYC status is still under-review
+                /// or pending, we can just start KYC and it will show their status.
+                return .kyc
             }
-            .map { States(current: $0, previous: [.inactive]) }
-            .subscribe(onSuccess: { [weak self] (states) in
-                guard let self = self else { return }
-                self.apply(action: .next(to: states.current), states: states)
-            })
-            .disposed(by: disposeBag)
+        }
+        .map { States(current: $0, previous: [.inactive]) }
+        .subscribe(onSuccess: { [weak self] states in
+            guard let self = self else { return }
+            self.apply(action: .next(to: states.current), states: states)
+        })
+        .disposed(by: disposeBag)
     }
 
-    public override func willResignActive() {
+    override public func willResignActive() {
         super.willResignActive()
         disposeBag = DisposeBag()
     }
@@ -257,7 +259,7 @@ public final class SellRouterInteractor: Interactor {
                 let states = States(current: state, previous: [.inactive])
                 return states
             }
-            .subscribe(onSuccess: { [weak self] (states) in
+            .subscribe(onSuccess: { [weak self] states in
                 guard let self = self else { return }
                 self.apply(action: .next(to: states.current), states: states)
             })
@@ -284,9 +286,9 @@ public final class SellRouterInteractor: Interactor {
     public func orderPending(with orderDetails: OrderDetails) {
         let checkoutData = CheckoutData(order: orderDetails)
         let state = State.checkout(checkoutData)
-        self.apply(
+        apply(
             action: .next(to: state),
-            states: self.states(byAppending: state)
+            states: states(byAppending: state)
         )
     }
 

@@ -5,12 +5,12 @@
 import Foundation
 
 extension LocalizationConstants {
-    public enum SimpleBuy { }
+    public enum SimpleBuy {}
 }
 
 extension LocalizationConstants.SimpleBuy {
     public enum IneligibleScreen {
-        public enum KYCInvalid { /* TODO */ }
+        public enum KYCInvalid { /* TODO: */ }
         public enum Country {
             public static let title = NSLocalizedString("Sell Coming Soon for", comment: "Sell Coming Soon for")
             public static let subtitle = NSLocalizedString(
@@ -20,6 +20,7 @@ extension LocalizationConstants.SimpleBuy {
             public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
         }
     }
+
     public enum KYCInvalid {
         public static let title = NSLocalizedString("Unable to Verify Your ID", comment: "")
         public static let subtitle = NSLocalizedString("We were unable to verify your identity. This can happen for a few reasons.", comment: "")
@@ -37,6 +38,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "The image or document uploaded did not match the requirements."
                 )
             }
+
             public enum Second {
                 public static let title = NSLocalizedString("Information Mismatch", comment: "Information Mismatch")
                 public static let description = NSLocalizedString(
@@ -44,6 +46,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "All information must appear exactly as it does on your legal documents. note: Please do not use a nickname."
                 )
             }
+
             public enum Third {
                 public static let title = NSLocalizedString("Blocked by Local Laws", comment: "Blocked by Local Laws")
                 public static let description = NSLocalizedString(
@@ -52,8 +55,8 @@ extension LocalizationConstants.SimpleBuy {
                 )
             }
         }
-        
     }
+
     public enum Withdrawal {
         public enum SummaryFailure {
             public enum Unknown {
@@ -63,6 +66,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Something went wrong. Please go back and try again."
                 )
             }
+
             public enum WithdrawLocked {
                 public static let title = NSLocalizedString("Funds Locked", comment: "Funds Locked")
                 public static let description = NSLocalizedString(
@@ -70,18 +74,28 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Your crypto will be available to be withdrawn within 3 days."
                 )
             }
+
             public static let action = NSLocalizedString("OK", comment: "OK")
         }
     }
+
     public enum Ineligible {
-        public static let title = NSLocalizedString("is Not Supported",
-                                                    comment: "is Not Supported")
-        public static let description = NSLocalizedString("Currently we don’t support buying crypto with",
-                                                          comment: "Currently we don’t support buying crypto with")
-        public static let changeCurrency = NSLocalizedString("Change Currency",
-                                                             comment: "Change Currency")
-        public static let viewHome = NSLocalizedString("View Home",
-                                                       comment: "View Home")
+        public static let title = NSLocalizedString(
+            "is Not Supported",
+            comment: "is Not Supported"
+        )
+        public static let description = NSLocalizedString(
+            "Currently we don’t support buying crypto with",
+            comment: "Currently we don’t support buying crypto with"
+        )
+        public static let changeCurrency = NSLocalizedString(
+            "Change Currency",
+            comment: "Change Currency"
+        )
+        public static let viewHome = NSLocalizedString(
+            "View Home",
+            comment: "View Home"
+        )
     }
 
     public enum PaymentMethodSelectionScreen {
@@ -103,7 +117,7 @@ extension LocalizationConstants.SimpleBuy {
             "Payment Methods",
             comment: "Simple Buy: Add Payment method selection screen title"
         )
-        public struct LinkABank {
+        public enum LinkABank {
             public static let title = NSLocalizedString(
                 "Link a Bank",
                 comment: "Simple Buy: Add Payment method selection screen: link a bank title"
@@ -117,7 +131,8 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy: Add Payment method selection screen: description of bank account"
             )
         }
-        public struct Card {
+
+        public enum Card {
             public static let title = NSLocalizedString(
                 "Credit or Debit Card",
                 comment: "Simple Buy: Add Payment method selection screen: card title"
@@ -135,7 +150,8 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy: Add Payment method selection screen: promotional text for card payment"
             )
         }
-        public struct DepositCash {
+
+        public enum DepositCash {
             public static let title = NSLocalizedString(
                 "Deposit Cash",
                 comment: "Simple Buy: Add Payment method selection screen: deposit funds title"
@@ -145,6 +161,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy: Add Payment method selection screen: description of Deposit Funds"
             )
         }
+
         public enum Types {
             public static let bankWireTitle = NSLocalizedString(
                 "Bank Wire Transfer",
@@ -176,6 +193,7 @@ extension LocalizationConstants.SimpleBuy {
             )
         }
     }
+
     public enum CryptoSelectionScreen {
         public static let title = NSLocalizedString(
             "Select Currency",
@@ -186,12 +204,14 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Simple Buy: Crypto selection screen search bar placeholder"
         )
     }
+
     public enum CountrySelectionScreen {
         public static let title = NSLocalizedString(
             "Select Country",
             comment: "Simple Buy: Country selection screen title"
         )
     }
+
     public enum BuyCryptoScreen {
         public static let title = NSLocalizedString(
             "Buy Crypto",
@@ -225,6 +245,7 @@ extension LocalizationConstants.SimpleBuy {
                     )
                 }
             }
+
             public enum Withdraw {
                 public static let upperLimit = NSLocalizedString(
                     "Up to %@",
@@ -246,6 +267,7 @@ extension LocalizationConstants.SimpleBuy {
             }
         }
     }
+
     public enum SellCryptoScreen {
         public static let from = NSLocalizedString(
             "From: My %@ Trading Account",
@@ -276,6 +298,7 @@ extension LocalizationConstants.SimpleBuy {
             comment: "Simple Buy: Sell Crypto Screen - Amount too high suffix"
         )
     }
+
     public enum IntroScreen {
         public enum Sell {
             public static let title = NSLocalizedString("Sell Your Crypto", comment: "Sell Your Crypto")
@@ -292,6 +315,7 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "To prevent identity theft or fraud, we’ll need to make sure it’s really you by uploading an ID."
                     )
                 }
+
                 public enum Second {
                     public static let title = NSLocalizedString("Sell Crypto for Cash", comment: "Sell Crypto for Cash")
                     public static let description = NSLocalizedString(
@@ -299,6 +323,7 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "Sell your crypto that you have purchased into your cash wallet."
                     )
                 }
+
                 public enum Third {
                     public static let title = NSLocalizedString("Buy Crypto with Cash", comment: "Buy Crypto with Cash")
                     public static let description = NSLocalizedString(
@@ -308,6 +333,7 @@ extension LocalizationConstants.SimpleBuy {
                 }
             }
         }
+
         public enum BuyCard {
             public static let title = NSLocalizedString(
                 "Own Crypto in a Few Minutes",
@@ -318,6 +344,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy Intro Screen - buy crypto card: description label"
             )
         }
+
         public static let title = NSLocalizedString(
             "Welcome to Blockchain.com",
             comment: "Simple Buy Intro Screen - title label"
@@ -376,6 +403,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Deposit"
                 )
             }
+
             public enum Notice {
                 public enum BankTransferOnly {
                     public static let title = NSLocalizedString(
@@ -387,12 +415,13 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "Please do not send any funds via ACH. A real bank transfer must be sent"
                     )
                 }
+
                 public enum ProcessingTime {
                     public static let title = NSLocalizedString(
                         "Processing Time",
                         comment: "Processing Time"
                     )
-                    
+
                     public enum Description {
                         public static let USD = NSLocalizedString(
                             "Processing Time Funds will be credited to your USD wallet as soon as we receive them. Funds are generally available within one business day.",
@@ -407,14 +436,13 @@ extension LocalizationConstants.SimpleBuy {
                             comment: "Funds will be credited to your GBP wallet as soon as we receive them. In the UK Faster Payments Network, this can take a couple of hours."
                         )
                     }
-
                 }
-                
+
                 public static let recipientNameUSD = NSLocalizedString(
                     "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID.",
                     comment: "Important Transfer Information Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected. Be sure to include your Reference ID."
                 )
-                
+
                 public static let recipientNameEUR = NSLocalizedString(
                     "Your Recipient name above must match the account holder's name on your bank account for your transfer to be successful. Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected.",
                     comment: "Your Recipient name above must match the account holder's name on your bank account for your transfer to be successful. Only send funds from a bank account in your name. If not, your deposit could be delayed or rejected."
@@ -432,9 +460,8 @@ extension LocalizationConstants.SimpleBuy {
                     comment: " , our banking partner."
                 )
             }
-
         }
-        
+
         public enum Title {
             public static let pendingOrderPrefix = NSLocalizedString(
                 "Pending",
@@ -449,7 +476,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy checkout screen title"
             )
         }
-        
+
         public enum Button {
             public static let ok = NSLocalizedString(
                 "OK",
@@ -534,6 +561,7 @@ extension LocalizationConstants.SimpleBuy {
                 )
                 public static let buyOrder = NSLocalizedString("Buy order.", comment: "Buy order.")
             }
+
             public static let no = LocalizationConstants.no
             public static let yes = LocalizationConstants.yes
         }
@@ -546,6 +574,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy: Order Details - transfer details button"
             )
         }
+
         public enum Title {
             public static let checkout = NSLocalizedString(
                 "Checkout",
@@ -556,6 +585,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Order Details screen Title"
             )
         }
+
         public enum Summary {
             public static let of = NSLocalizedString(
                 "of",
@@ -571,6 +601,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Simple buy checkout screen - title suffix"
                 )
             }
+
             public static let buyButtonPrefix = NSLocalizedString(
                 "Buy ",
                 comment: "Simple buy checkout screen - buy button prefix"
@@ -631,6 +662,7 @@ extension LocalizationConstants.SimpleBuy {
                     )
                     public static let learnMore = NSLocalizedString("Learn More", comment: "Learn More")
                 }
+
                 public enum Sell {
                     public static let titlePrefix = NSLocalizedString(
                         "Selling",
@@ -642,6 +674,7 @@ extension LocalizationConstants.SimpleBuy {
                     )
                 }
             }
+
             public enum Success {
                 public enum Buy {
                     public static let titleSuffix = NSLocalizedString(
@@ -651,6 +684,7 @@ extension LocalizationConstants.SimpleBuy {
                     public static let learnMore = NSLocalizedString("Learn more", comment: "Learn more")
                     public static let buyMore = NSLocalizedString("Want to buy more?", comment: "CTA to upgrade to a higher tier.")
                 }
+
                 public enum Sell {
                     public static let titleSuffix = NSLocalizedString(
                         "Sold",
@@ -658,6 +692,7 @@ extension LocalizationConstants.SimpleBuy {
                     )
                     public static let cash = NSLocalizedString("Cash", comment: "Cash")
                 }
+
                 public enum Subtitle {
                     public enum Buy {
                         public static let subtitle = NSLocalizedString(
@@ -665,6 +700,7 @@ extension LocalizationConstants.SimpleBuy {
                             comment: "These funds will be available to sell into your %@ fiat wallet immediately, but you will not be able to send or withdraw these funds from Blockchain.com for up to 3 days."
                         )
                     }
+
                     public static let prefix = NSLocalizedString(
                         "Your",
                         comment: "Simple buy: final screen subtitle prefix: Your Asset is now available in your Wallet."
@@ -675,6 +711,7 @@ extension LocalizationConstants.SimpleBuy {
                     )
                 }
             }
+
             public enum Timeout {
                 public enum Buy {
                     public static let titleSuffix = NSLocalizedString(
@@ -686,12 +723,14 @@ extension LocalizationConstants.SimpleBuy {
                         comment: "Pending active ach timeout screen: title"
                     )
                 }
+
                 public enum Sell {
                     public static let titleSuffix = NSLocalizedString(
                         "Sell In Progress",
                         comment: "Pending active card error screen: title"
                     )
                 }
+
                 public static let subtitle = NSLocalizedString(
                     "We’ll notify you when your order is complete.",
                     comment: "Pending active card error screen: subtitle"
@@ -708,7 +747,7 @@ extension LocalizationConstants.SimpleBuy {
             )
         }
     }
-    
+
     public enum CashIntroductionScreen {
         public static let title = NSLocalizedString("Keep Cash in Your Wallet", comment: "Keep Cash in Your Wallet")
         public static let description = NSLocalizedString(
@@ -725,6 +764,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "We need to make sure it's really you to prevent fraud by uploading an ID."
                 )
             }
+
             public enum Second {
                 public static let title = NSLocalizedString("Deposit Cash", comment: "Deposit Cash")
                 public static let description = NSLocalizedString(
@@ -732,6 +772,7 @@ extension LocalizationConstants.SimpleBuy {
                     comment: "Transfer cash from your bank and enable your cash balances."
                 )
             }
+
             public enum Third {
                 public static let title = NSLocalizedString("Buy Crypto with Cash", comment: "Buy Crypto with Cash")
                 public static let description = NSLocalizedString(
@@ -757,6 +798,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy KYC Screen - ineligible information: button"
             )
         }
+
         public enum Verifying {
             public static let title = NSLocalizedString(
                 "Verifying your information",
@@ -767,6 +809,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy KYC Screen - verifying information: subtitle label"
             )
         }
+
         public enum ManualReview {
             public static let title = NSLocalizedString(
                 "Manual Review Required",
@@ -777,6 +820,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy KYC Screen - manual review: subtitle label"
             )
         }
+
         public enum PendingReview {
             public static let title = NSLocalizedString(
                 "Pending Review",
@@ -787,6 +831,7 @@ extension LocalizationConstants.SimpleBuy {
                 comment: "Simple Buy KYC Screen - pending review: subtitle label"
             )
         }
+
         public static let title = NSLocalizedString(
             "KYC Status",
             comment: "Simple Buy KYC Screen - title label"
@@ -910,7 +955,7 @@ extension LocalizationConstants.SimpleBuy {
                     "Oops! Something went wrong.",
                     comment: "Yodlee Web Screen: likning bank error state title"
                 )
-                
+
                 public static let subtitle = NSLocalizedString(
                     "Please try linking your bank again. If this keeps happening, please",
                     comment: "Yodlee Web Screen: likning bank error state subtitle"

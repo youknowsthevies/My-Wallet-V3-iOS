@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import Combine
-import RxSwift
 import NetworkKit
+import RxSwift
 
 // MARK: - Types
 

@@ -26,6 +26,7 @@ final class WelcomeViewController: BaseScreenViewController {
         super.init(nibName: String(describing: WelcomeViewController.self), bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -61,6 +62,7 @@ final class WelcomeViewController: BaseScreenViewController {
             delay: 0,
             options: [.curveEaseOut],
             animations: { fade(1) },
-            completion: nil)
+            completion: nil
+        )
     }
 }

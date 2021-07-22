@@ -34,7 +34,7 @@ public final class AssetSparklinePresenter {
         self.interactor = interactor
 
         self.interactor.calculationState
-            .map(weak: self) { (_, calculationState) -> State in
+            .map(weak: self) { _, calculationState -> State in
                 switch calculationState {
                 case .calculating:
                     return .loading

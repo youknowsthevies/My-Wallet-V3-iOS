@@ -12,6 +12,6 @@ public struct StellarKeyPair: KeyPair {
 
     public init(accountID: String, secret: String) {
         self.accountID = accountID
-        self.privateKey = StellarPrivateKey(secret: secret)
+        privateKey = StellarPrivateKey(secret: secret)
     }
 }

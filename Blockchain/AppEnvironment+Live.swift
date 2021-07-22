@@ -10,7 +10,7 @@ import ToolKit
 extension AppEnvironment {
     static var live: AppEnvironment {
         AppEnvironment(
-            debugCoordinator: resolve(tag : DebugScreenContext.tag),
+            debugCoordinator: resolve(tag: DebugScreenContext.tag),
             loadingViewPresenter: resolve(),
             onboardingSettings: resolve(),
             blurEffectHandler: .init(),

@@ -26,9 +26,10 @@ protocol ACHFlowRootListener: AnyObject {
 }
 
 final class ACHFlowRootInteractor: Interactor,
-                                   ACHFlowRootInteractable,
-                                   SelectPaymentMethodListener,
-                                   AddNewPaymentMethodListener {
+    ACHFlowRootInteractable,
+    SelectPaymentMethodListener,
+    AddNewPaymentMethodListener
+{
 
     // MARK: - Injected
 
@@ -39,9 +40,11 @@ final class ACHFlowRootInteractor: Interactor,
     private let paymentMethodService: SelectPaymentMethodService
     private let loadingViewPresenter: LoadingViewPresenting
 
-    init(stateService: StateServiceAPI,
-         paymentMethodService: SelectPaymentMethodService,
-         loadingViewPresenter: LoadingViewPresenting = resolve()) {
+    init(
+        stateService: StateServiceAPI,
+        paymentMethodService: SelectPaymentMethodService,
+        loadingViewPresenter: LoadingViewPresenting = resolve()
+    ) {
         self.stateService = stateService
         self.paymentMethodService = paymentMethodService
         self.loadingViewPresenter = loadingViewPresenter
@@ -77,17 +80,17 @@ final class ACHFlowRootInteractor: Interactor,
     func navigate(with method: PaymentMethod) {
         switch method.type {
         case .bankAccount:
-            self.stateService.previousRelay.accept(())
+            stateService.previousRelay.accept(())
             router?.closeFlow()
         case .bankTransfer:
-            self.stateService.previousRelay.accept(())
+            stateService.previousRelay.accept(())
             router?.closeFlow()
         case .funds(.fiat(let currency)):
-            self.showFundsTransferDetailsIfNeeded(for: currency)
+            showFundsTransferDetailsIfNeeded(for: currency)
         case .funds(.crypto):
             fatalError("Funds with crypto currency is not a possible state")
         case .card:
-            self.stateService.previousRelay.accept(())
+            stateService.previousRelay.accept(())
             router?.closeFlow()
         }
     }
@@ -102,7 +105,6 @@ final class ACHFlowRootInteractor: Interactor,
                 } else {
                     self?.stateService.kyc()
                 }
-
             }, onError: { error in
                 Logger.shared.error(error)
             })

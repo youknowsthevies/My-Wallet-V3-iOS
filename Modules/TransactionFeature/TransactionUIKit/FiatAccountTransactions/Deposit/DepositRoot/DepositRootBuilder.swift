@@ -11,7 +11,7 @@ public protocol DepositRootBuildable: Buildable {
 
 public final class DepositRootBuilder: DepositRootBuildable {
 
-    public init() { }
+    public init() {}
 
     public func build(with account: FiatAccount) -> DepositRootRouting {
         let interactor = DepositRootInteractor(targetAccount: account)

@@ -52,8 +52,10 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     // MARK: - Setup
 
-    init(jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder,
-         interalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()) {
+    init(
+        jsonDecoder: JSONDecoder = NetworkResponseDecoder.defaultJSONDecoder,
+        interalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve()
+    ) {
         self.jsonDecoder = jsonDecoder
         self.interalFeatureFlagService = interalFeatureFlagService
     }
@@ -164,11 +166,11 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         if let data = response.payload, consoleLoggingEnabled {
             if let json = try? JSONSerialization.jsonObject(with: data, options: .allowFragments) {
                 Logger.shared.debug("""
-        \n----------------------
-        🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
-        📦 PAYLOAD: \n\(json)
-        ======================\n
-        """)
+                \n----------------------
+                🌎 ENDPOINT: \n\(response.response.url?.absoluteString ?? "Unknown")
+                📦 PAYLOAD: \n\(json)
+                ======================\n
+                """)
             }
         }
         #endif

@@ -37,7 +37,7 @@ extension CacheSuite {
 
     private func migrateBool(fromKey: String, toKey: String) {
         guard let value = object(forKey: fromKey) as? Bool else { return }
-        self.set(value, forKey: toKey)
-        self.removeObject(forKey: fromKey)
+        set(value, forKey: toKey)
+        removeObject(forKey: fromKey)
     }
 }

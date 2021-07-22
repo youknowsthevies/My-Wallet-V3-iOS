@@ -88,7 +88,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
         case identifier = "hash"
         case amount = "result"
         case blockHeight = "block_height"
-        case time = "time"
+        case time
         case fee
         case inputs
         case outputs = "out"
@@ -96,7 +96,7 @@ public class BitcoinCashHistoricalTransaction: Decodable, BitcoinChainHistorical
 
     // MARK: - Decodable
 
-    required public init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let amount = try values.decode(Int64.self, forKey: .amount)
         let value = BigInt(integerLiteral: amount)

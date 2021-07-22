@@ -17,7 +17,7 @@ class ERC20EthereumWalletBridgeMock: EthereumWalletBridgeAPI {
     var addressValue: Single<EthereumAddress> = .just(EthereumAddress(address: "0x0000000000000000000000000000000000000000")!)
     var nameValue: Single<String> = Single.just("")
     var transactionsValue: Single<[EthereumHistoricalTransaction]> = Single.just([])
-    var accountValue: EthereumAssetAccount = EthereumAssetAccount(walletIndex: 0, accountAddress: "", name: "")
+    var accountValue = EthereumAssetAccount(walletIndex: 0, accountAddress: "", name: "")
     var nonceValue = Single.just(BigUInt(1))
 
     init(cryptoCurrency: CryptoCurrency) {

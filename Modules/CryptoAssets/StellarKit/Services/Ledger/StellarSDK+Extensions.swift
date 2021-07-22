@@ -8,7 +8,8 @@ extension stellarsdk.LedgersService: LedgersServiceAPI {
         cursor: String?,
         order: stellarsdk.Order?,
         limit: Int?,
-        response: @escaping (Result<[StellarLedger], StellarLedgerServiceError>) -> Void) {
+        response: @escaping (Result<[StellarLedger], StellarLedgerServiceError>) -> Void
+    ) {
         getLedgers(cursor: cursor, order: order, limit: limit) { result in
             switch result {
             case .success(let value):

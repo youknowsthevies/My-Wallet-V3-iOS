@@ -24,7 +24,7 @@ public final class SessionTokenClient: SessionTokenClientAPI {
         )
         return networkAdapter
             .perform(request: request, responseType: Response.self)
-            .map { $0.token }
+            .map(\.token)
             .map { token -> String in
                 guard let token = token else { throw SessionTokenServiceError.missingToken }
                 return token
@@ -37,7 +37,8 @@ public final class SessionTokenClient: SessionTokenClientAPI {
     // MARK: - Setup
 
     public init(
-        networkAdapter: NetworkAdapterAPI = resolve()) {
+        networkAdapter: NetworkAdapterAPI = resolve())
+    {
         self.networkAdapter = networkAdapter
     }
 }

@@ -11,11 +11,12 @@ class MockWalletUpgradeService: WalletUpgradeServicing {
     var needsWalletUpgrade: Single<Bool> {
         needsWalletUpgradeRelay.asSingle()
     }
+
     var needsWalletUpgradePublisher: AnyPublisher<Bool, Error> {
         needsWalletUpgradeRelay.asPublisher()
     }
 
-    init() { }
+    init() {}
 
     func upgradeWallet() -> Observable<String> {
         .just("")

@@ -2,15 +2,15 @@
 import AuthenticationKit
 
 public typealias WalletRepositoryAPI = SessionTokenRepositoryAPI
-                                     & SharedKeyRepositoryAPI
-                                     & PasswordRepositoryAPI
-                                     & GuidRepositoryAPI
-                                     & SyncPubKeysRepositoryAPI
-                                     & LanguageRepositoryAPI
-                                     & AuthenticatorRepositoryAPI
-                                     & PayloadRepositoryAPI
-                                     & NabuOfflineTokenRepositoryAPI
-                                     & CredentialsRepositoryAPI
+    & SharedKeyRepositoryAPI
+    & PasswordRepositoryAPI
+    & GuidRepositoryAPI
+    & SyncPubKeysRepositoryAPI
+    & LanguageRepositoryAPI
+    & AuthenticatorRepositoryAPI
+    & PayloadRepositoryAPI
+    & NabuOfflineTokenRepositoryAPI
+    & CredentialsRepositoryAPI
 
 public protocol WalletRepositoryProvider {
 

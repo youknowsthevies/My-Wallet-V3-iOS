@@ -108,7 +108,7 @@ public final class MoneyValueInputScanner {
 
         public init(string: String) {
             self.string = string
-            self.caretIndex = string.count
+            caretIndex = string.count
         }
 
         public init(decimal: Decimal) {
@@ -221,7 +221,8 @@ public final class MoneyValueInputScanner {
         /// input is `` or `0` -> just return previous value
         if lastInput == .userInputZero ||
             lastInput == .placeholderZero ||
-            lastInput == .init(string: "0\(Constant.decimalSeparator)", caretIndex: 2) {
+            lastInput == .init(string: "0\(Constant.decimalSeparator)", caretIndex: 2)
+        {
             return .placeholderZero
         }
 
@@ -271,11 +272,11 @@ public final class MoneyValueInputScanner {
         var lastValue = lastInput.string
 
         /// Current character is `.` and the string so far already contains `.`
-        if lastValue.contains(Constant.decimalSeparator) && character.isDecimalSeparator {
+        if lastValue.contains(Constant.decimalSeparator), character.isDecimalSeparator {
             /// `12.30` + `.` = `12.30`
             return lastInput
-        /// Empty / Placeholder zero && The new character is the decimal separator -> move the caret before
-        /// further processing
+            /// Empty / Placeholder zero && The new character is the decimal separator -> move the caret before
+            /// further processing
         } else if lastInput.isEmptyOrPlaceholderZero {
             if character.isDecimalSeparator {
                 lastInput = Input(string: Constant.zero, caretIndex: 1)
@@ -285,7 +286,7 @@ public final class MoneyValueInputScanner {
                 /// `` + `0` = `0`
                 return .userInputZero
             }
-        } else if lastInput.isUserInputZero && character == Constant.zeroChar {
+        } else if lastInput.isUserInputZero, character == Constant.zeroChar {
             return .userInputZero
         }
 
@@ -386,8 +387,8 @@ public final class MoneyValueInputScanner {
     }
 }
 
-private extension Character {
-    var isDecimalSeparator: Bool {
+extension Character {
+    fileprivate var isDecimalSeparator: Bool {
         self == MoneyValueInputScanner.Constant.decimalSeparatorChar
     }
 }

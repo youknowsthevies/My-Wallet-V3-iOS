@@ -7,9 +7,9 @@ public enum LogLevel {
     case debug, info, warning, error
 }
 
-public extension LogLevel {
+extension LogLevel {
 
-    var emoji: String {
+    public var emoji: String {
         switch self {
         case .debug:
             return "🏗"

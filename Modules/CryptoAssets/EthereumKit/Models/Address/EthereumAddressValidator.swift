@@ -13,7 +13,7 @@ struct EthereumAddressValidator {
         for (i, char) in address.enumerated() {
             let startIdx = hash.index(hash.startIndex, offsetBy: i)
             let endIdx = hash.index(hash.startIndex, offsetBy: i + 1)
-            let hashChar = String(hash[startIdx ..< endIdx])
+            let hashChar = String(hash[startIdx..<endIdx])
             let c = String(char)
             guard let int = Int(hashChar, radix: 16) else { return nil }
             if int >= 8 {

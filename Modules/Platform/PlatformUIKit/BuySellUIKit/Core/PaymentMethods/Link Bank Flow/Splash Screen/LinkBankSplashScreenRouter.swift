@@ -17,14 +17,17 @@ protocol LinkBankSplashScreenInteractable: Interactable {
 protocol LinkBankSplashScreenViewControllable: ViewControllable {}
 
 final class LinkBankSplashScreenRouter: ViewableRouter<LinkBankSplashScreenInteractable, LinkBankSplashScreenViewControllable>,
-                                        LinkBankSplashScreenRouting {
+    LinkBankSplashScreenRouting
+{
 
     private let webViewService: WebViewServiceAPI
 
-    init(interactor: LinkBankSplashScreenInteractable,
-         viewController: LinkBankSplashScreenViewControllable,
-         webViewServiceAPI: WebViewServiceAPI = resolve()) {
-        self.webViewService = webViewServiceAPI
+    init(
+        interactor: LinkBankSplashScreenInteractable,
+        viewController: LinkBankSplashScreenViewControllable,
+        webViewServiceAPI: WebViewServiceAPI = resolve()
+    ) {
+        webViewService = webViewServiceAPI
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }

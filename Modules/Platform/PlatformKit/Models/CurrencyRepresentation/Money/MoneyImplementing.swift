@@ -25,13 +25,13 @@ extension MoneyImplementing {
     /// The `0` value of the currency (e.g. `0 USD`, or `0 BTC`)
     /// - Parameter currency: the currency
     public static func zero(currency: MoneyCurrency) -> Self {
-        Self.init(amount: BigInt.zero, currency: currency)
+        Self(amount: BigInt.zero, currency: currency)
     }
 
     /// The `1` value of the currency (e.g. `1 USD`, or `1 BTC`)
     /// - Parameter currency: the currency
     public static func one(currency: MoneyCurrency) -> Self {
-        Self.init(
+        Self(
             amount: BigInt.one.toMinor(maxDecimalPlaces: currency.maxDecimalPlaces),
             currency: currency
         )
@@ -92,7 +92,7 @@ extension MoneyImplementing {
         guard let valueInBigInt = BigInt(value) else {
             return nil
         }
-        return Self.init(amount: valueInBigInt, currency: currency)
+        return Self(amount: valueInBigInt, currency: currency)
     }
 
     /// Creates a `Money` conforming type from a provided a `BigInt` value in minor units and currency code.
@@ -101,7 +101,7 @@ extension MoneyImplementing {
     ///   - currency: the crypto currency
     /// - Returns: the `Money` conforming type
     public static func create(minor value: BigInt, currency: MoneyCurrency) -> Self {
-        Self.init(amount: value, currency: currency)
+        Self(amount: value, currency: currency)
     }
 
     /// Creates a `Money` conforming type from a provided a `Int` value in minor units and currency code.
@@ -110,7 +110,7 @@ extension MoneyImplementing {
     ///   - currency: the crypto currency
     /// - Returns: the `Money` conforming type
     public static func create(minor value: Int, currency: MoneyCurrency) -> Self {
-        Self.init(amount: BigInt(value), currency: currency)
+        Self(amount: BigInt(value), currency: currency)
     }
 
     // MARK: - Private methods
@@ -129,6 +129,6 @@ extension MoneyImplementing {
 
     private static func create(minor value: Decimal, currency: MoneyCurrency) -> Self {
         let amount = BigInt(stringLiteral: "\(value.roundTo(places: 0))")
-        return Self.init(amount: amount, currency: currency)
+        return Self(amount: amount, currency: currency)
     }
 }

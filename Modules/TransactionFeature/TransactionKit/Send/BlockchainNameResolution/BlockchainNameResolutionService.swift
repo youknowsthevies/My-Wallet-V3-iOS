@@ -23,8 +23,10 @@ final class BlockchainNameResolutionService: BlockchainNameResolutionServiceAPI 
     private let repository: BlockchainNameResolutionRepositoryAPI
     private let factory: CryptoReceiveAddressFactoryService
 
-    init(repository: BlockchainNameResolutionRepositoryAPI = resolve(),
-         factory: CryptoReceiveAddressFactoryService = resolve()) {
+    init(
+        repository: BlockchainNameResolutionRepositoryAPI = resolve(),
+        factory: CryptoReceiveAddressFactoryService = resolve()
+    ) {
         self.repository = repository
         self.factory = factory
     }

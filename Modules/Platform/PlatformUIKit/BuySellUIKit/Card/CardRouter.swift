@@ -19,12 +19,14 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
     private let internalInteractor: CardRouterInteractor
     private let builder: CardComponentBuilderAPI
 
-    public init(interactor: CardRouterInteractor,
-                builder: CardComponentBuilderAPI,
-                routingType: RoutingType = .modal,
-                navigationRouter: NavigationRouterAPI = NavigationRouter()) {
+    public init(
+        interactor: CardRouterInteractor,
+        builder: CardComponentBuilderAPI,
+        routingType: RoutingType = .modal,
+        navigationRouter: NavigationRouterAPI = NavigationRouter()
+    ) {
         self.builder = builder
-        self.internalInteractor = interactor
+        internalInteractor = interactor
         self.navigationRouter = navigationRouter
         self.routingType = routingType
         super.init(interactor: interactor)
@@ -32,7 +34,7 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
 
     // MARK: - Lifecycle
 
-    public override func didLoad() {
+    override public func didLoad() {
         super.didLoad()
 
         // Embed the entire flow in another navigation controller

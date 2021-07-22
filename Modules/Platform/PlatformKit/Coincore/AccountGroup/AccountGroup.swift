@@ -30,8 +30,8 @@ extension AccountGroup {
     public var activity: Single<[ActivityItemEvent]> {
         Single
             .zip(accounts
-                    .map(\.activity)
-                    .map { $0.catchErrorJustReturn([]) })
+                .map(\.activity)
+                .map { $0.catchErrorJustReturn([]) })
             .map { $0.flatMap { $0 } }
             .map { $0.unique.sorted(by: >) }
     }
@@ -106,7 +106,7 @@ extension AccountGroup {
 
     public func can(perform action: AssetAction) -> Single<Bool> {
         Single
-            .just(accounts.map({ $0.can(perform: action) }))
+            .just(accounts.map { $0.can(perform: action) })
             .flatMapConcatFirst()
     }
 }

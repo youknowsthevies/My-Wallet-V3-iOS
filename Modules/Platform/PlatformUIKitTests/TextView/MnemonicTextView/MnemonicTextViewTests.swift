@@ -77,6 +77,6 @@ final class MnemonicTextViewTests: XCTestCase {
 private enum WordList {
     public static var words: [String] {
         "client cruel tiny sniff girl crawl snap spice forum talk evidence tourist possible"
-        .components(separatedBy: " ")
+            .components(separatedBy: " ")
     }
 }

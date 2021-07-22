@@ -11,6 +11,5 @@ extension DependencyContainer {
     public static var buySellUIKit = module {
 
         // MARK: - Servives
-
     }
 }

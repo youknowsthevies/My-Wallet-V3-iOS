@@ -8,7 +8,7 @@ import PlatformUIKit
 /// If they're not enrolled in a tier or `Swap` is unavailable, please use `KYCCTAHeaderView`.
 class KYCAvailableFundsHeaderView: KYCTiersHeaderView {
 
-    static let identifier: String = String(describing: KYCAvailableFundsHeaderView.self)
+    static let identifier = String(describing: KYCAvailableFundsHeaderView.self)
 
     // MARK: Private Static Properties
 
@@ -63,7 +63,8 @@ class KYCAvailableFundsHeaderView: KYCTiersHeaderView {
         if let value = model.amount {
             availableAmountHeight = NSAttributedString(
                 string: value,
-                attributes: [.font: availableAmountFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: availableAmountFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         var availabilityHeadlineHeight: CGFloat = 0.0
@@ -72,13 +73,15 @@ class KYCAvailableFundsHeaderView: KYCTiersHeaderView {
         if let availabilityTitle = model.availabilityTitle {
             availabilityHeadlineHeight = NSAttributedString(
                 string: availabilityTitle,
-                attributes: [.font: availabilityHeadlineFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: availabilityHeadlineFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         if let availabilityDescription = model.availabilityDescription {
             availabilityDescriptionHeight = NSAttributedString(
                 string: availabilityDescription,
-                attributes: [.font: availabilityDescriptonFont()]).heightForWidth(width: adjustedWidth)
+                attributes: [.font: availabilityDescriptonFont()]
+            ).heightForWidth(width: adjustedWidth)
         }
 
         let availabilityHeights = availabilityHeadlineHeight + availabilityDescriptionHeight + availableAmountHeight

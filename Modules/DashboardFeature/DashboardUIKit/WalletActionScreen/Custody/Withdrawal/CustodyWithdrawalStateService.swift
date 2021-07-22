@@ -68,7 +68,7 @@ protocol CustodyWithdrawalStateEmitterServiceAPI: AnyObject {
 }
 
 typealias CustodyWithdrawalStateServiceAPI = CustodyWithdrawalStateReceiverServiceAPI &
-                                             CustodyWithdrawalStateEmitterServiceAPI
+    CustodyWithdrawalStateEmitterServiceAPI
 
 final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
 
@@ -133,7 +133,7 @@ final class CustodyWithdrawalStateService: CustodyWithdrawalStateServiceAPI {
     }
 
     var currentState: Observable<CustodyWithdrawalStateService.State> {
-        states.map { $0.current }
+        states.map(\.current)
     }
 
     var action: Observable<Action> {

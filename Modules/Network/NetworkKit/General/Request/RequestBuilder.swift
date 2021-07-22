@@ -24,13 +24,15 @@ public class RequestBuilder {
 
     // MARK: - GET
 
-    public func get(path components: [String] = [],
-                    parameters: [URLQueryItem]? = nil,
-                    headers: HTTPHeaders = [:],
-                    authenticated: Bool = false,
-                    contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = resolve(),
-                    recordErrors: Bool = false) -> NetworkRequest? {
+    public func get(
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         get(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
@@ -42,13 +44,15 @@ public class RequestBuilder {
         )
     }
 
-    public func get(path: String,
-                    parameters: [URLQueryItem]? = nil,
-                    headers: HTTPHeaders = [:],
-                    authenticated: Bool = false,
-                    contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = resolve(),
-                    recordErrors: Bool = false) -> NetworkRequest? {
+    public func get(
+        path: String,
+        parameters: [URLQueryItem]? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         buildRequest(
             method: .get,
             path: path,
@@ -63,14 +67,16 @@ public class RequestBuilder {
 
     // MARK: - PUT
 
-    public func put(path components: [String] = [],
-                    parameters: [URLQueryItem]? = nil,
-                    body: Data? = nil,
-                    headers: HTTPHeaders = [:],
-                    authenticated: Bool = false,
-                    contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = resolve(),
-                    recordErrors: Bool = false) -> NetworkRequest? {
+    public func put(
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         put(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
@@ -83,14 +89,16 @@ public class RequestBuilder {
         )
     }
 
-    public func put(path: String,
-                    parameters: [URLQueryItem]? = nil,
-                    body: Data? = nil,
-                    headers: HTTPHeaders = [:],
-                    authenticated: Bool = false,
-                    contentType: NetworkRequest.ContentType = .json,
-                    decoder: NetworkResponseDecoderAPI = resolve(),
-                    recordErrors: Bool = false) -> NetworkRequest? {
+    public func put(
+        path: String,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         buildRequest(
             method: .put,
             path: path,
@@ -106,14 +114,16 @@ public class RequestBuilder {
 
     // MARK: - POST
 
-    public func post(path components: [String] = [],
-                     parameters: [URLQueryItem]? = nil,
-                     body: Data? = nil,
-                     headers: HTTPHeaders = [:],
-                     authenticated: Bool = false,
-                     contentType: NetworkRequest.ContentType = .json,
-                     decoder: NetworkResponseDecoderAPI = resolve(),
-                     recordErrors: Bool = false) -> NetworkRequest? {
+    public func post(
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         post(
             path: RequestBuilder.path(from: components),
             parameters: parameters,
@@ -126,14 +136,16 @@ public class RequestBuilder {
         )
     }
 
-    public func post(path: String,
-                     parameters: [URLQueryItem]? = nil,
-                     body: Data? = nil,
-                     headers: HTTPHeaders = [:],
-                     authenticated: Bool = false,
-                     contentType: NetworkRequest.ContentType = .json,
-                     decoder: NetworkResponseDecoderAPI = resolve(),
-                     recordErrors: Bool = false) -> NetworkRequest? {
+    public func post(
+        path: String,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         buildRequest(
             method: .post,
             path: path,
@@ -149,13 +161,15 @@ public class RequestBuilder {
 
     // MARK: - Delete
 
-    public func delete(path components: [String] = [],
-                       parameters: [URLQueryItem]? = nil,
-                       headers: HTTPHeaders = [:],
-                       authenticated: Bool = false,
-                       contentType: NetworkRequest.ContentType = .json,
-                       decoder: NetworkResponseDecoderAPI = resolve(),
-                       recordErrors: Bool = false) -> NetworkRequest? {
+    public func delete(
+        path components: [String] = [],
+        parameters: [URLQueryItem]? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         buildRequest(
             method: .delete,
             path: RequestBuilder.path(from: components),
@@ -176,15 +190,17 @@ public class RequestBuilder {
 
     // MARK: - Private methods
 
-    private func buildRequest(method: NetworkRequest.NetworkMethod,
-                              path: String,
-                              parameters: [URLQueryItem]? = nil,
-                              body: Data? = nil,
-                              headers: HTTPHeaders = [:],
-                              authenticated: Bool = false,
-                              contentType: NetworkRequest.ContentType = .json,
-                              decoder: NetworkResponseDecoderAPI = resolve(),
-                              recordErrors: Bool = false) -> NetworkRequest? {
+    private func buildRequest(
+        method: NetworkRequest.NetworkMethod,
+        path: String,
+        parameters: [URLQueryItem]? = nil,
+        body: Data? = nil,
+        headers: HTTPHeaders = [:],
+        authenticated: Bool = false,
+        contentType: NetworkRequest.ContentType = .json,
+        decoder: NetworkResponseDecoderAPI = resolve(),
+        recordErrors: Bool = false
+    ) -> NetworkRequest? {
         guard let url = buildURL(path: path, parameters: parameters) else {
             return nil
         }

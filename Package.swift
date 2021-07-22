@@ -10,10 +10,11 @@ let package = Package(
     products: [
         .library(
             name: "AnalyticsKit",
-            targets: ["AnalyticsKit"]),
+            targets: ["AnalyticsKit"]
+        )
     ],
     dependencies: [
-        .package(url: "https://github.com/CombineCommunity/CombineExt", from: "1.2.0"),
+        .package(url: "https://github.com/CombineCommunity/CombineExt", from: "1.2.0")
     ],
     targets: [
         .target(

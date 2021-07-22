@@ -12,5 +12,5 @@ class MockOnboardingSettings: OnboardingSettingsAPI {
         resetCalled = true
     }
 
-    init() { }
+    init() {}
 }

@@ -14,8 +14,10 @@ final class ERC20AccountDetailsService: ERC20AccountDetailsServiceAPI {
     private let bridge: EthereumWalletBridgeAPI
     private let service: ERC20BalanceServiceAPI
 
-    init(with bridge: EthereumWalletBridgeAPI = resolve(),
-         service: ERC20BalanceServiceAPI = resolve()) {
+    init(
+        with bridge: EthereumWalletBridgeAPI = resolve(),
+        service: ERC20BalanceServiceAPI = resolve()
+    ) {
         self.bridge = bridge
         self.service = service
     }

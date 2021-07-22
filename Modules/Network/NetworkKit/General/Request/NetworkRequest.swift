@@ -21,11 +21,11 @@ public struct NetworkRequest {
     }
 
     var urlRequest: URLRequest {
-        if authenticated && headers[HttpHeaderField.authorization] == nil {
+        if authenticated, headers[HttpHeaderField.authorization] == nil {
             fatalError("Missing Autentication Header")
         }
 
-        let request: NSMutableURLRequest = NSMutableURLRequest(
+        let request = NSMutableURLRequest(
             url: endpoint,
             cachePolicy: allowsCachingResponse ? .useProtocolCachePolicy : .reloadIgnoringLocalCacheData,
             timeoutInterval: timeoutInterval
@@ -103,7 +103,7 @@ public struct NetworkRequest {
         self.decoder = decoder
         self.responseHandler = responseHandler
         self.recordErrors = recordErrors
-        self.allowsCachingResponse = method == .get
+        allowsCachingResponse = method == .get
     }
 
     func adding(authenticationToken: String) -> Self {
@@ -161,12 +161,12 @@ extension NetworkRequest: Hashable {
 
 extension NSMutableURLRequest {
 
-    public func encode(params: [String : String]) {
+    public func encode(params: [String: String]) {
         let encodedParamsArray = params.map { keyPair -> String in
             let (key, value) = keyPair
             return "\(key)=\(self.percentEscapeString(value))"
         }
-        self.httpBody = encodedParamsArray.joined(separator: "&").data(using: .utf8)
+        httpBody = encodedParamsArray.joined(separator: "&").data(using: .utf8)
     }
 
     private func percentEscapeString(_ stringToEscape: String) -> String {

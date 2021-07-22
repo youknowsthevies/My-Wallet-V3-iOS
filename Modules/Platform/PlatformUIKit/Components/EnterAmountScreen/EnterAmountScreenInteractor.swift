@@ -44,10 +44,12 @@ open class EnterAmountScreenInteractor: Interactor, EnterAmountScreenInteractorA
     /// Amount translation interactor
     public let amountTranslationInteractor: AmountTranslationInteractor
 
-    public init(priceService: PriceServiceAPI,
-                fiatCurrencyService: FiatCurrencyServiceAPI,
-                cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
-                initialActiveInput: ActiveAmountInput) {
+    public init(
+        priceService: PriceServiceAPI,
+        fiatCurrencyService: FiatCurrencyServiceAPI,
+        cryptoCurrencySelectionService: SelectionServiceAPI & CryptoCurrencyServiceAPI,
+        initialActiveInput: ActiveAmountInput
+    ) {
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService
         self.cryptoCurrencySelectionService = cryptoCurrencySelectionService

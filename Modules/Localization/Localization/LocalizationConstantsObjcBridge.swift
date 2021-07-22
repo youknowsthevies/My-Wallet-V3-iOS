@@ -22,7 +22,7 @@ import Foundation
 
     @objc public class func termsOfService() -> String { LocalizationConstants.tos }
 
-    @objc public class func privacyPolicy() -> String { LocalizationConstants.privacyPolicy     }
+    @objc public class func privacyPolicy() -> String { LocalizationConstants.privacyPolicy }
 
     @objc public class func twoFactorExchangeDisabled() -> String { LocalizationConstants.Exchange.twoFactorNotEnabled }
 
@@ -111,7 +111,7 @@ import Foundation
     @objc public class func myBitcoinWallet() -> String { LocalizationConstants.Account.myWallet }
 
     @objc public class func myEtherWallet() -> String { LocalizationConstants.Account.myWallet }
-    
+
     @objc public class func errorDecryptingWallet() -> String {
         LocalizationConstants.WalletPayloadKit.Error.decryptionFailed
     }

@@ -36,7 +36,7 @@ final class MobileVerificationCellPresenter: BadgeCellPresenting {
         )
 
         badgeAssetPresenting.state
-            .map { $0.isLoading }
+            .map(\.isLoading)
             .bindAndCatch(to: isLoadingRelay)
             .disposed(by: disposeBag)
     }

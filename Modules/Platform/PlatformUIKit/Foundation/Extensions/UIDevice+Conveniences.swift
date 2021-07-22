@@ -2,7 +2,7 @@
 
 import Foundation
 
-public final class DevicePresenter {
+public enum DevicePresenter {
     public enum DeviceType: Int, Comparable {
         case superCompact = 1 // SE
         case compact = 2 // 8
@@ -13,6 +13,7 @@ public final class DevicePresenter {
             lhs.rawValue < rhs.rawValue
         }
     }
+
     public static let type: DeviceType = {
         UIDevice.current.type
     }()
@@ -29,7 +30,7 @@ extension UIDevice {
 
     fileprivate var type: DevicePresenter.DeviceType {
         guard userInterfaceIdiom == .phone
-            else { return .regular }
+        else { return .regular }
         let size = UIScreen.main.bounds.size
         let height = max(size.width, size.height)
         switch height {

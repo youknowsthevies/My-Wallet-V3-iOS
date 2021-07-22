@@ -43,14 +43,16 @@ public struct CardViewViewModel {
 }
 
 extension CardViewViewModel {
-    public static func transactionViewModel(with title: String,
-                                            description: String) -> CardViewViewModel {
+    public static func transactionViewModel(
+        with title: String,
+        description: String
+    ) -> CardViewViewModel {
         .init(title: title, description: description, style: .transaction)
     }
 }
 
 extension CardViewViewModel: Equatable {
-    public static func ==(lhs: CardViewViewModel, rhs: CardViewViewModel) -> Bool {
+    public static func == (lhs: CardViewViewModel, rhs: CardViewViewModel) -> Bool {
         lhs.identifier == rhs.identifier
     }
 }

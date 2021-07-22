@@ -61,7 +61,7 @@ extension LoggedInHostingController {
         ) as! AccountsAndAddressesNavigationController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .coverVertical
-        self.accountsAndAddressesNavigationController = viewController
+        accountsAndAddressesNavigationController = viewController
         return viewController
     }
 

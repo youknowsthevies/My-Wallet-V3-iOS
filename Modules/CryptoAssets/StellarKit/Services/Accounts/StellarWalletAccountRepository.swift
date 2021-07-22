@@ -17,10 +17,12 @@ class StellarWalletAccountRepository: StellarWalletAccountRepositoryAPI, WalletA
 
     private let bridge: StellarWalletBridgeAPI
     private let mnemonicAccessAPI: MnemonicAccessAPI
-    private let deriver: StellarKeyPairDeriver = StellarKeyPairDeriver()
+    private let deriver = StellarKeyPairDeriver()
 
-    init(bridge: StellarWalletBridgeAPI = resolve(),
-         mnemonicAccessAPI: MnemonicAccessAPI = resolve()) {
+    init(
+        bridge: StellarWalletBridgeAPI = resolve(),
+        mnemonicAccessAPI: MnemonicAccessAPI = resolve()
+    ) {
         self.bridge = bridge
         self.mnemonicAccessAPI = mnemonicAccessAPI
     }

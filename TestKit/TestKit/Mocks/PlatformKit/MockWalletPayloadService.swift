@@ -13,8 +13,10 @@ final class MockWalletPayloadClient: WalletPayloadClientAPI {
         self.result = result
     }
 
-    func payload(guid: String,
-                 identifier: WalletPayloadClient.Identifier) -> Single<WalletPayloadClient.ClientResponse> {
+    func payload(
+        guid: String,
+        identifier: WalletPayloadClient.Identifier
+    ) -> Single<WalletPayloadClient.ClientResponse> {
         switch result {
         case .success(let response):
             do {
@@ -35,7 +37,7 @@ final class MockWalletPayloadClient: WalletPayloadClientAPI {
         case .success(let response):
             do {
                 return .just(try WalletPayloadClient.ClientResponse(response: response))
-            } catch let error {
+            } catch {
                 return .failure(.message(error.localizedDescription))
             }
         case .failure(let response):

@@ -31,10 +31,12 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
     private let reactiveWallet: ReactiveWalletAPI
     private let wallet: LegacyBitcoinCashWalletProtocol
 
-    init(reactiveWallet: ReactiveWalletAPI = resolve(),
-         walletManager: WalletManager = resolve()) {
+    init(
+        reactiveWallet: ReactiveWalletAPI = resolve(),
+        walletManager: WalletManager = resolve()
+    ) {
         self.reactiveWallet = reactiveWallet
-        self.wallet = walletManager.wallet
+        wallet = walletManager.wallet
     }
 
     func receiveAddress(forXPub xpub: String) -> Single<String> {
@@ -74,8 +76,8 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                     let index = data["index"] as? NSNumber,
                     let xpub = data["xpub"] as? String,
                     let archived = data["archived"] as? Bool
-                    else {
-                        return nil
+                else {
+                    return nil
                 }
 
                 return BitcoinCashWalletAccount(
@@ -102,10 +104,10 @@ final class BitcoinCashWallet: BitcoinCashWalletBridgeAPI {
                 let index = payload["index"] as? NSNumber,
                 let xpub = payload["xpub"] as? String,
                 let archived = payload["archived"] as? Bool
-                else {
-                    observer(.error(WalletError.unknown))
-                    return Disposables.create()
-                }
+            else {
+                observer(.error(WalletError.unknown))
+                return Disposables.create()
+            }
 
             let account = BitcoinCashWalletAccount(
                 index: index.intValue,

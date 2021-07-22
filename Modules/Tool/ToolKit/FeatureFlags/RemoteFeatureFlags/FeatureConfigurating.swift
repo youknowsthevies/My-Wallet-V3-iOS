@@ -5,7 +5,7 @@ import RxSwift
 
 /// Types adopting the `FeatureConfiguratorAPI` should provide a way to initialize and configure a
 /// remote based feature flag system
-public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring { }
+public protocol FeatureConfiguratorAPI: FeatureInitializer, FeatureConfiguring {}
 
 public enum FeatureConfigurationError: Error {
     case missingKeyRawValue
@@ -43,6 +43,8 @@ public protocol FeatureVariantFetching: AnyObject {
     /// - Parameter feature: the feature key
     /// - Parameter defaultVariant: expected value to be returned if an error occurs
     /// - Returns: the `FeatureTestingVariant` value wrapped in a `RxSwift.Single`
-    func fetchTestingVariant(for key: AppFeature,
-                             onErrorReturn defaultVariant: FeatureTestingVariant) -> Single<FeatureTestingVariant>
+    func fetchTestingVariant(
+        for key: AppFeature,
+        onErrorReturn defaultVariant: FeatureTestingVariant
+    ) -> Single<FeatureTestingVariant>
 }

@@ -27,9 +27,11 @@ final class ActivityServiceContainer: ActivityServiceContaining {
             .disposed(by: disposeBag)
     }()
 
-    init(fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
-         exchangeProviding: ExchangeProviding = resolve()) {
-        self.selectionService = WalletPickerSelectionService()
+    init(
+        fiatCurrency: FiatCurrencySettingsServiceAPI = resolve(),
+        exchangeProviding: ExchangeProviding = resolve()
+    ) {
+        selectionService = WalletPickerSelectionService()
         self.fiatCurrency = fiatCurrency
         self.exchangeProviding = exchangeProviding
     }

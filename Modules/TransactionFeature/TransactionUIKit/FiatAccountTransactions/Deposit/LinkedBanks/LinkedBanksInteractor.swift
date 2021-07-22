@@ -8,7 +8,7 @@ import RIBs
 import RxSwift
 import ToolKit
 
-protocol LinkedBanksRouting: ViewableRouting { }
+protocol LinkedBanksRouting: ViewableRouting {}
 
 protocol LinkedBanksListener: AnyObject {
     /// Routes to the TransactonFlow with a given `FiatAccount`

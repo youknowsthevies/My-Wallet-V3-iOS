@@ -16,10 +16,12 @@ final class EthereumActivityDetailsInteractor {
 
     // MARK: - Init
 
-    init(wallet: EthereumWalletBridgeAPI = resolve(),
-         fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
-         priceService: PriceServiceAPI = resolve(),
-         detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve()) {
+    init(
+        wallet: EthereumWalletBridgeAPI = resolve(),
+        fiatCurrencySettings: FiatCurrencySettingsServiceAPI = resolve(),
+        priceService: PriceServiceAPI = resolve(),
+        detailsService: AnyActivityItemEventDetailsFetcher<EthereumActivityItemEventDetails> = resolve()
+    ) {
         self.detailsService = detailsService
         self.fiatCurrencySettings = fiatCurrencySettings
         self.priceService = priceService

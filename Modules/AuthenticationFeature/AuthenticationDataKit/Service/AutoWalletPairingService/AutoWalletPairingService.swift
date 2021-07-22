@@ -29,12 +29,14 @@ public final class AutoWalletPairingService: AutoWalletPairingServiceAPI {
 
     // MARK: - Setup
 
-    public init(repository: WalletRepositoryAPI,
-                walletPayloadClient: WalletPayloadClientAPI = resolve(),
-                walletPairingClient: AutoWalletPairingClientAPI = resolve(),
-                walletCryptoService: WalletCryptoServiceAPI = resolve()) {
+    public init(
+        repository: WalletRepositoryAPI,
+        walletPayloadClient: WalletPayloadClientAPI = resolve(),
+        walletPairingClient: AutoWalletPairingClientAPI = resolve(),
+        walletCryptoService: WalletCryptoServiceAPI = resolve()
+    ) {
         self.walletPairingClient = walletPairingClient
-        self.walletPayloadService = WalletPayloadService(
+        walletPayloadService = WalletPayloadService(
             client: walletPayloadClient,
             repository: repository
         )

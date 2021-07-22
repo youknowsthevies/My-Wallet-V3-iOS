@@ -15,8 +15,10 @@ public final class SMSClient: SMSClientAPI {
 
     // MARK: - Setup
 
-    public init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
-                requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)) {
+    public init(
+        networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.wallet),
+        requestBuilder: RequestBuilder = resolve(tag: DIKitContext.wallet)
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = SMSRequestBuilder(requestBuilder: requestBuilder)
     }
@@ -49,7 +51,7 @@ extension SMSClient {
 
     private struct SMSRequestBuilder {
 
-        private let pathComponents = [ "wallet" ]
+        private let pathComponents = ["wallet"]
 
         private enum HeaderKey: String {
             case cookie

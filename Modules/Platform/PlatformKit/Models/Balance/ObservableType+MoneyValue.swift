@@ -19,6 +19,7 @@ extension PrimitiveSequence where Trait == SingleTrait, Element == CryptoValue {
         map(\.moneyValue)
     }
 }
+
 extension PrimitiveSequence where Trait == SingleTrait, Element == FiatValue {
     public var moneyValue: Single<MoneyValue> {
         map(\.moneyValue)

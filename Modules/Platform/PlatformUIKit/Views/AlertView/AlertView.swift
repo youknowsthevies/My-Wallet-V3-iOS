@@ -52,7 +52,7 @@ public class AlertView: UIView {
     /// assuming the user didn't tap one of the buttons.
     /// This is because users can swipe away the alert without actually selecting
     /// an action. Also, you shouldn't have to always provide an `AlertAction`
-    /// of type `.dismiss`.  
+    /// of type `.dismiss`.
     public class func make(with model: AlertModel, completion: ((AlertAction) -> Void)?) -> AlertView {
         let bundle = Bundle(for: AlertView.self)
         let nib = UINib(nibName: String(describing: AlertView.self), bundle: bundle)
@@ -102,7 +102,7 @@ public class AlertView: UIView {
             topNoteHeight = attributed.heightForWidth(width: adjustedWidth)
         }
 
-        if model.headline != nil && model.body != nil {
+        if model.headline != nil, model.body != nil {
             interItemPadding += headlineToMessagePadding
         }
         if model.note != nil {
@@ -113,8 +113,8 @@ public class AlertView: UIView {
         }
         /// A `.dismiss` action type is not a button but rather when the user
         /// swipes away the `AlertView` or taps outside of it.
-        let actions = model.actions.filter({ $0.style != .dismiss })
-        actions.forEach({ _ in actionsHeight += actionButtonHeight })
+        let actions = model.actions.filter { $0.style != .dismiss }
+        actions.forEach { _ in actionsHeight += actionButtonHeight }
         let result = messageToActionsPadding +
             actionsToBottomPadding +
             topToHeadingPadding +
@@ -148,7 +148,7 @@ public class AlertView: UIView {
         return font.result
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         apply(model: model)
     }
@@ -193,7 +193,7 @@ public class AlertView: UIView {
         defaultButton.isHidden = model.actions.first(where: { $0.style == .default($0.title ?? "") }) == nil
 
         if defaultButton.isHidden {
-           defaultButtonHeightConstraint.constant = 0.0
+            defaultButtonHeightConstraint.constant = 0.0
         }
 
         if confirmButton.isHidden {
@@ -203,7 +203,7 @@ public class AlertView: UIView {
         layer.cornerRadius = 8.0
         closeButton.tintColor = .gray4
         closeButton.isHidden = model.style == .sheet
-        if closeButton.isHidden && headlineTrailingConstraint.isActive {
+        if closeButton.isHidden, headlineTrailingConstraint.isActive {
             NSLayoutConstraint.deactivate([headlineTrailingConstraint])
         }
         model.actions.forEach { action in
@@ -232,13 +232,13 @@ public class AlertView: UIView {
                 break
             }
         }
-        [confirmButton, defaultButton].forEach({ $0?.layer.cornerRadius = 4.0 })
+        [confirmButton, defaultButton].forEach { $0?.layer.cornerRadius = 4.0 }
 
         defaultButton.layer.borderColor = UIColor.primaryButton.cgColor
         defaultButton.layer.borderWidth = 1.0
         confirmButton.backgroundColor = .primaryButton
 
-        if model.dismissable && model.style == .sheet {
+        if model.dismissable, model.style == .sheet {
             setupDynamicBehavior()
         }
     }
@@ -328,7 +328,7 @@ public class AlertView: UIView {
         addGestureRecognizer(panGesture)
     }
 
-    public override func didMoveToWindow() {
+    override public func didMoveToWindow() {
         super.didMoveToWindow()
         if window != nil {
             observeCenter()
@@ -342,7 +342,7 @@ public class AlertView: UIView {
             return
         }
         observer?.invalidate()
-        observer = observe(\.center, options: [.new]) { [weak self] (_, change) in
+        observer = observe(\.center, options: [.new]) { [weak self] _, change in
             guard let self = self else { return }
             guard let point = change.newValue else { return }
             guard UIScreen.main.bounds.contains(point) == false else { return }
@@ -519,7 +519,6 @@ public class AlertView: UIView {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismiss))
         return tap
     }()
-
 }
 
 extension CGPoint {

@@ -36,5 +36,4 @@ class AsyncBlockOperationTests: XCTestCase {
         queue.addOperations([asyncOperation, blockOperation], waitUntilFinished: false)
         waitForExpectations(timeout: 5)
     }
-
 }

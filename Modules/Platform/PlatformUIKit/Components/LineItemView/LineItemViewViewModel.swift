@@ -8,8 +8,10 @@ public final class LineItemViewViewModel {
         "\(title.text) \(subtitle.text)"
     }
 
-    public init(title: String,
-                subtitle: String) {
+    public init(
+        title: String,
+        subtitle: String
+    ) {
         self.title = .init(
             text: title,
             font: .main(.medium, 14),
@@ -26,8 +28,10 @@ public final class LineItemViewViewModel {
         )
     }
 
-    public init(title: LabelContent,
-                subtitle: LabelContent) {
+    public init(
+        title: LabelContent,
+        subtitle: LabelContent
+    ) {
         self.title = title
         self.subtitle = subtitle
     }

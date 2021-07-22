@@ -30,7 +30,7 @@ public final class PairExchangeService: PairExchangeServiceAPI {
                 fetchTriggerRelay.asObservable().startWith(())
             )
             .throttle(.milliseconds(250), scheduler: ConcurrentDispatchQueueScheduler(qos: .background))
-            .map { $0.0 }
+            .map(\.0)
             .flatMapLatest(weak: self) { (self, fiatCurrency) -> Observable<PriceQuoteAtTime> in
                 self.priceService
                     .price(for: self.currency, in: fiatCurrency)
@@ -73,9 +73,11 @@ public final class PairExchangeService: PairExchangeServiceAPI {
 
     // MARK: - Setup
 
-    public init(currency: Currency,
-                priceService: PriceServiceAPI = resolve(),
-                fiatCurrencyService: FiatCurrencyServiceAPI) {
+    public init(
+        currency: Currency,
+        priceService: PriceServiceAPI = resolve(),
+        fiatCurrencyService: FiatCurrencyServiceAPI
+    ) {
         self.currency = currency
         self.priceService = priceService
         self.fiatCurrencyService = fiatCurrencyService

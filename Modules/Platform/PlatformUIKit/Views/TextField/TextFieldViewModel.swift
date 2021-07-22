@@ -60,7 +60,7 @@ public class TextFieldViewModel {
         let cursorColor: Color
 
         init(isFocused: Bool, shouldShowHint: Bool, hint: String, title: String) {
-            if shouldShowHint && !hint.isEmpty {
+            if shouldShowHint, !hint.isEmpty {
                 self.title = hint
                 borderColor = .destructive
                 titleColor = .destructive
@@ -88,7 +88,7 @@ public class TextFieldViewModel {
         stateRelay.asObservable()
     }
 
-    /// Should text field gain / drop focus 
+    /// Should text field gain / drop focus
     public let focusRelay = BehaviorRelay<Focus>(value: .off(.setup))
     public var focus: Driver<Focus> {
         focusRelay
@@ -218,13 +218,15 @@ public class TextFieldViewModel {
 
     // MARK: - Setup
 
-    public init(with type: TextFieldType,
-                accessibilitySuffix: String? = nil,
-                returnKeyType: UIReturnKeyType = .done,
-                validator: TextValidating,
-                formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
-                textMatcher: TextMatchValidatorAPI? = nil,
-                messageRecorder: MessageRecording) {
+    public init(
+        with type: TextFieldType,
+        accessibilitySuffix: String? = nil,
+        returnKeyType: UIReturnKeyType = .done,
+        validator: TextValidating,
+        formatter: TextFormatting = TextFormatterFactory.alwaysCorrect,
+        textMatcher: TextMatchValidatorAPI? = nil,
+        messageRecorder: MessageRecording
+    ) {
         self.messageRecorder = messageRecorder
         self.formatter = formatter
         self.validator = validator
@@ -294,7 +296,7 @@ public class TextFieldViewModel {
             .bindAndCatch(to: stateRelay)
             .disposed(by: disposeBag)
 
-        self.state
+        state
             .map { $0.hint ?? "" }
             .bindAndCatch(to: hintRelay)
             .disposed(by: disposeBag)
@@ -453,8 +455,10 @@ extension TextFieldViewModel: Equatable {
 // MARK: - Equatable (Lossy - only the state, without associated values)
 
 extension TextFieldViewModel.State: Equatable {
-    public static func == (lhs: TextFieldViewModel.State,
-                           rhs: TextFieldViewModel.State) -> Bool {
+    public static func == (
+        lhs: TextFieldViewModel.State,
+        rhs: TextFieldViewModel.State
+    ) -> Bool {
         switch (lhs, rhs) {
         case (.valid, .valid),
              (.mismatch, .mismatch),

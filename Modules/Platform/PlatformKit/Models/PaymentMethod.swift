@@ -87,10 +87,12 @@ public struct PaymentMethod: Equatable, Comparable {
             }
         }
 
-        public init?(type: PaymentMethodPayloadType,
-                     subTypes: [String],
-                     currency: FiatCurrency,
-                     supportedFiatCurrencies: [FiatCurrency]) {
+        public init?(
+            type: PaymentMethodPayloadType,
+            subTypes: [String],
+            currency: FiatCurrency,
+            supportedFiatCurrencies: [FiatCurrency]
+        ) {
             switch type {
             case .card:
                 let cardTypes = Set(subTypes.compactMap { CardType(rawValue: $0) })

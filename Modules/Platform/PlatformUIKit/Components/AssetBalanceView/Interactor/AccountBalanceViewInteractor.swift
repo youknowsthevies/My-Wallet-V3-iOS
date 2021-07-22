@@ -19,7 +19,7 @@ public final class AccountBalanceViewInteractor: AssetBalanceViewInteracting {
                 fiatCurrencyService.fiatCurrencyObservable,
                 refreshRelay.asObservable()
             )
-            .map { $0.0 }
+            .map(\.0)
             .flatMapLatest(weak: self) { (self, fiatCurrency) in
                 self.stateSingle(fiatCurrency: fiatCurrency).asObservable()
             }

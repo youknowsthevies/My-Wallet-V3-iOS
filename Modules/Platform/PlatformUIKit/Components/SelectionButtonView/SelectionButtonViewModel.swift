@@ -72,12 +72,14 @@ public final class SelectionButtonViewModel: IdentifiableType {
             let size: CGSize
             let renderingMode: ImageViewContent.RenderingMode
 
-            public init(image: ImageResource,
-                        background: Color,
-                        offset: CGFloat = 4,
-                        cornerRadius: BadgeImageViewModel.CornerRadius,
-                        size: CGSize,
-                        renderingMode: ImageViewContent.RenderingMode = .normal) {
+            public init(
+                image: ImageResource,
+                background: Color,
+                offset: CGFloat = 4,
+                cornerRadius: BadgeImageViewModel.CornerRadius,
+                size: CGSize,
+                renderingMode: ImageViewContent.RenderingMode = .normal
+            ) {
                 self.image = image
                 self.background = background
                 self.offset = offset
@@ -206,7 +208,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 titleFontRelay.asObservable(),
                 titleFontColor.asObservable()
             )
-            .map { (title, accessibility, font, color) in
+            .map { title, accessibility, font, color in
                 LabelContent(
                     text: title,
                     font: font,
@@ -226,7 +228,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
                 subtitleFontRelay.asObservable(),
                 subtitleFontColor.asObservable()
             )
-            .map { (subtitle, accessibility, font, color) in
+            .map { subtitle, accessibility, font, color in
                 guard let subtitle = subtitle else {
                     return nil
                 }
@@ -250,7 +252,7 @@ public final class SelectionButtonViewModel: IdentifiableType {
     var accessibility: Driver<Accessibility> {
         accessibilityContentRelay
             .asDriver()
-            .map { $0.accessibility }
+            .map(\.accessibility)
     }
 
     // MARK: - Private Properties

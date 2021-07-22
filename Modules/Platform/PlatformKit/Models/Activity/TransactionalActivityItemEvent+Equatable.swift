@@ -1,8 +1,10 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 extension TransactionalActivityItemEvent.EventStatus: Equatable {
-    public static func == (lhs: TransactionalActivityItemEvent.EventStatus,
-                           rhs: TransactionalActivityItemEvent.EventStatus) -> Bool {
+    public static func == (
+        lhs: TransactionalActivityItemEvent.EventStatus,
+        rhs: TransactionalActivityItemEvent.EventStatus
+    ) -> Bool {
         switch (lhs, rhs) {
         case (.pending(confirmations: let left), .pending(confirmations: let right)):
             return left.current == right.current &&
@@ -30,7 +32,7 @@ extension TransactionalActivityItemEvent.EventType: Equatable {
 
 extension TransactionalActivityItemEvent: Equatable {
     public static func == (lhs: TransactionalActivityItemEvent, rhs: TransactionalActivityItemEvent) -> Bool {
-            lhs.status == rhs.status &&
+        lhs.status == rhs.status &&
             lhs.type == rhs.type &&
             lhs.identifier == rhs.identifier &&
             lhs.amount == rhs.amount

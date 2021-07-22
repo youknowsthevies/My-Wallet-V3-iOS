@@ -11,10 +11,12 @@ final class DebugViewModel {
     }
 
     // MARK: Inputs
+
     let itemTapped = PublishRelay<DebugItem>()
     let closeButtonTapped = PublishRelay<Void>()
 
     // MARK: Outputs
+
     let items: Driver<[DebugItem]>
     let routeTo: Observable<Effects>
 
@@ -22,13 +24,15 @@ final class DebugViewModel {
         items = Driver.just(itemsProvider())
 
         let selection = itemTapped
-            .map { $0.type }
+            .map(\.type)
             .map(Effects.route)
 
         let close = closeButtonTapped
             .map { Effects.close }
 
-        routeTo = Observable.merge(selection,
-                                   close)
+        routeTo = Observable.merge(
+            selection,
+            close
+        )
     }
 }

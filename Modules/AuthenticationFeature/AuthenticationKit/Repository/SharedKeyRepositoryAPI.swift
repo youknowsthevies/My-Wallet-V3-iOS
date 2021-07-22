@@ -25,8 +25,8 @@ public protocol SharedKeyRepositoryAPI: SharedKeyRepositoryCombineAPI {
     func set(sharedKey: String) -> Completable
 }
 
-public extension SharedKeyRepositoryAPI {
-    var hasSharedKey: Single<Bool> {
+extension SharedKeyRepositoryAPI {
+    public var hasSharedKey: Single<Bool> {
         sharedKey
             .map { sharedKey in
                 guard let sharedKey = sharedKey else { return false }
@@ -34,7 +34,7 @@ public extension SharedKeyRepositoryAPI {
             }
     }
 
-    var hasSharedKeyPublisher: AnyPublisher<Bool, Never> {
+    public var hasSharedKeyPublisher: AnyPublisher<Bool, Never> {
         sharedKeyPublisher
             .map { sharedKey -> Bool in
                 guard let sharedKey = sharedKey else { return false }
@@ -55,7 +55,7 @@ extension CredentialsRepositoryAPI {
     public var credentials: Single<(guid: String, sharedKey: String)> {
         Single
             .zip(guid, sharedKey)
-            .map { (guid, sharedKey) -> (guid: String, sharedKey: String) in
+            .map { guid, sharedKey -> (guid: String, sharedKey: String) in
                 guard let guid = guid else {
                     throw MissingCredentialsError.guid
                 }

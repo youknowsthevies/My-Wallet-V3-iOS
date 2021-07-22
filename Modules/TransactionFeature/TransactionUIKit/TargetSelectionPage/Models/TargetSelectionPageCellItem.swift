@@ -87,7 +87,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
     init(interactor: Interactor, assetAction: AssetAction) {
         switch interactor {
         case .singleAccountAvailableTarget(let interactor):
-            self.account = interactor.account
+            account = interactor.account
             presenter = .radioSelection(
                 RadioAccountCellPresenter(
                     interactor: interactor,

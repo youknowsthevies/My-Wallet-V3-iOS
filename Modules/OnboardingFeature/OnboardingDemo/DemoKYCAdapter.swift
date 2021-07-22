@@ -33,7 +33,7 @@ final class DemoKYCAdapter: OnboardingUIKit.EmailVerificationRouterAPI {
     }
 }
 
-fileprivate final class MockEmailVerificationService: KYCKit.EmailVerificationServiceAPI {
+private final class MockEmailVerificationService: KYCKit.EmailVerificationServiceAPI {
 
     fileprivate var stubbedVerificationStatus: EmailVerificationResponse.Status = .unverified
 

@@ -30,13 +30,13 @@ enum JSONValue: Codable, Equatable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case let .string(value):
+        case .string(let value):
             try container.encode(value)
-        case let .int(value):
+        case .int(let value):
             try container.encode(value)
-        case let .double(value):
+        case .double(let value):
             try container.encode(value)
-        case let .bool(value):
+        case .bool(let value):
             try container.encode(value)
         }
     }

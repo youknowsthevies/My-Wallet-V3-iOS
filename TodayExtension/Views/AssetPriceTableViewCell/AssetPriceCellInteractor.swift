@@ -7,8 +7,10 @@ final class AssetPriceCellInteractor {
     let priceViewInteractor: AssetPriceViewInteractor
     let currency: CryptoCurrency
 
-    init(cryptoCurrency: CryptoCurrency,
-         historicalFiatPriceServiceAPI: HistoricalFiatPriceServiceAPI) {
+    init(
+        cryptoCurrency: CryptoCurrency,
+        historicalFiatPriceServiceAPI: HistoricalFiatPriceServiceAPI
+    ) {
         currency = cryptoCurrency
         priceViewInteractor = AssetPriceViewInteractor(
             historicalPriceProvider: historicalFiatPriceServiceAPI

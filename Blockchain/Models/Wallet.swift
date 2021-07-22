@@ -52,10 +52,12 @@ extension Wallet {
         case .bitcoin:
             isSyncing = true
             context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.setLabelForAccount(\(index), \"\(label)\")")
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didSetLabelForAccount),
-                                                   name: Constants.NotificationKeys.backupSuccess,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didSetLabelForAccount),
+                name: Constants.NotificationKeys.backupSuccess,
+                object: nil
+            )
         case .bitcoinCash:
             context.evaluateScriptCheckIsOnMainQueue("MyWalletPhone.bch.setLabelForAccount(\(index), \"\(label)\")")
             getHistory()
@@ -79,9 +81,11 @@ extension Wallet {
     }
 
     @objc func didSetLabelForAccount() {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: Constants.NotificationKeys.backupSuccess,
-                                                  object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: Constants.NotificationKeys.backupSuccess,
+            object: nil
+        )
         getHistory()
     }
 }

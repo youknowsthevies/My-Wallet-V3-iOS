@@ -13,7 +13,7 @@ final class TwoFactorVerificationBadgeInteractor: DefaultBadgeAssetInteractor {
         super.init()
         service
             .valueObservable
-            .map { $0.authenticator.isTwoFactor }
+            .map(\.authenticator.isTwoFactor)
             .map { $0 ? .verified : .unverified }
             .map { .loaded(next: $0) }
             // TODO: Error handing

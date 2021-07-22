@@ -26,11 +26,12 @@ public final class SelectionScreenViewController: BaseScreenViewController {
         super.init(nibName: SelectionScreenViewController.objectName, bundle: Bundle(for: Self.self))
     }
 
+    @available(*, unavailable)
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         setupSearchController()
@@ -84,7 +85,8 @@ public final class SelectionScreenViewController: BaseScreenViewController {
                 size: .init(
                     width: width,
                     height: height
-                ))
+                )
+            )
             )
             headerView.viewModel = viewModel
             tableView.tableHeaderView = headerView
@@ -122,7 +124,7 @@ public final class SelectionScreenViewController: BaseScreenViewController {
             .take(1)
             .asSingle()
             .observeOn(MainScheduler.asyncInstance)
-            .subscribe(onSuccess: { [weak self] (index) in
+            .subscribe(onSuccess: { [weak self] index in
                 self?.tableView.scrollToRow(
                     at: IndexPath(row: index, section: 0),
                     at: .middle,

@@ -52,11 +52,13 @@ struct PaymentMethodsResponse: Decodable {
 
             // MARK: - Init
 
-            public init(min: String,
-                        max: String,
-                        annual: Limits? = nil,
-                        daily: Limits? = nil,
-                        weekly: Limits? = nil) {
+            public init(
+                min: String,
+                max: String,
+                annual: Limits? = nil,
+                daily: Limits? = nil,
+                weekly: Limits? = nil
+            ) {
                 self.min = min
                 self.max = max
                 self.annual = annual

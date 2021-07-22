@@ -53,16 +53,18 @@ public struct PendingTransaction: Equatable {
     public var validationState: TransactionValidationState = .uninitialized
     public var engineState: [EngineStateKey: Any] = [:]
 
-    public init(amount: MoneyValue,
-                available: MoneyValue,
-                feeAmount: MoneyValue,
-                feeForFullAvailable: MoneyValue,
-                feeSelection: FeeSelection,
-                selectedFiatCurrency: FiatCurrency,
-                minimumLimit: MoneyValue? = nil,
-                maximumLimit: MoneyValue? = nil,
-                maximumDailyLimit: MoneyValue? = nil,
-                maximumAnnualLimit: MoneyValue? = nil) {
+    public init(
+        amount: MoneyValue,
+        available: MoneyValue,
+        feeAmount: MoneyValue,
+        feeForFullAvailable: MoneyValue,
+        feeSelection: FeeSelection,
+        selectedFiatCurrency: FiatCurrency,
+        minimumLimit: MoneyValue? = nil,
+        maximumLimit: MoneyValue? = nil,
+        maximumDailyLimit: MoneyValue? = nil,
+        maximumAnnualLimit: MoneyValue? = nil
+    ) {
         self.amount = amount
         self.available = available
         self.feeAmount = feeAmount
@@ -183,8 +185,8 @@ public struct PendingTransaction: Equatable {
     }
 }
 
-public extension PendingTransaction {
-    static func zero(currencyType: CurrencyType) -> PendingTransaction {
+extension PendingTransaction {
+    public static func zero(currencyType: CurrencyType) -> PendingTransaction {
         .init(
             amount: .zero(currency: currencyType),
             available: .zero(currency: currencyType),

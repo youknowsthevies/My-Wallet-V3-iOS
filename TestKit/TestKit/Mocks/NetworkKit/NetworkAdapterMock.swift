@@ -55,5 +55,4 @@ final class NetworkAdapterMock: NetworkAdapterAPI {
         }
         return .just(fixture)
     }
-
 }

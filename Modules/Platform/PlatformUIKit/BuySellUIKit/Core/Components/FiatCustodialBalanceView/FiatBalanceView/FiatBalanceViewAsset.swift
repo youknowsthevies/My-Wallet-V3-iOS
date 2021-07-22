@@ -3,16 +3,16 @@
 import PlatformKit
 import UIKit
 
-public struct FiatBalanceViewAsset {
+public enum FiatBalanceViewAsset {
 
-    public struct State {
+    public enum State {
         public typealias Interaction = LoadingState<Value.Interaction>
         public typealias Presentation = LoadingState<Value.Presentation>
     }
 
     // MARK: - Value Namespace
 
-    public struct Value {
+    public enum Value {
 
         // MARK: - Interaction
 
@@ -61,12 +61,14 @@ public struct FiatBalanceViewAsset {
                 let quoteFiatTextColor: UIColor
                 let quoteFiatAccessibility: Accessibility
 
-                public init(baseFiatFont: UIFont,
-                            baseFiatTextColor: UIColor,
-                            baseFiatAccessibility: Accessibility,
-                            quoteFiatFont: UIFont,
-                            quoteFiatTextColor: UIColor,
-                            quoteFiatAccessibility: Accessibility) {
+                public init(
+                    baseFiatFont: UIFont,
+                    baseFiatTextColor: UIColor,
+                    baseFiatAccessibility: Accessibility,
+                    quoteFiatFont: UIFont,
+                    quoteFiatTextColor: UIColor,
+                    quoteFiatAccessibility: Accessibility
+                ) {
                     self.baseFiatFont = baseFiatFont
                     self.baseFiatTextColor = baseFiatTextColor
                     self.baseFiatAccessibility = baseFiatAccessibility
@@ -109,14 +111,13 @@ public struct FiatBalanceViewAsset {
                 )
             }
         }
-
     }
 }
 
-public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
-    typealias Descriptors = FiatBalanceViewAsset.Value.Presentation.Descriptors
+extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
+    public typealias Descriptors = FiatBalanceViewAsset.Value.Presentation.Descriptors
 
-    static func `default`(
+    public static func `default`(
         fiatAccessiblitySuffix: String,
         baseFiatAccessibilitySuffix: String? = nil
     ) -> Descriptors {
@@ -135,10 +136,10 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
     }
 }
 
-public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
-    typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
+extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
+    public typealias DashboardAccessibility = Accessibility.Identifier.Dashboard.FiatCustodialCell
 
-    static func dashboard(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
+    public static func dashboard(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,
@@ -149,7 +150,7 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
         )
     }
 
-    static func paymentMethods(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
+    public static func paymentMethods(baseAccessibilitySuffix: String, quoteAccessibilitySuffix: String) -> Descriptors {
         .init(
             baseFiatFont: .main(.medium, 14),
             baseFiatTextColor: .descriptionText,
@@ -162,8 +163,10 @@ public extension FiatBalanceViewAsset.Value.Presentation.Descriptors {
 }
 
 extension LoadingState where Content == FiatBalanceViewAsset.Value.Presentation {
-    init(with state: LoadingState<FiatBalanceViewAsset.Value.Interaction>,
-         descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors) {
+    init(
+        with state: LoadingState<FiatBalanceViewAsset.Value.Interaction>,
+        descriptors: FiatBalanceViewAsset.Value.Presentation.Descriptors
+    ) {
         switch state {
         case .loading:
             self = .loading

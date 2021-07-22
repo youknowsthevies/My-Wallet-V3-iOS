@@ -22,9 +22,11 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     private var disposeBag = DisposeBag()
     private var account: BlockchainAccount!
 
-    public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
-                walletOperationsRouter: WalletOperationsRouting = resolve(),
-                routing: CurrencyRouting & TabSwapping) {
+    public init(
+        navigationRouter: NavigationRouterAPI = NavigationRouter(),
+        walletOperationsRouter: WalletOperationsRouting = resolve(),
+        routing: CurrencyRouting & TabSwapping
+    ) {
         self.walletOperationsRouter = walletOperationsRouter
         self.navigationRouter = navigationRouter
         self.routing = routing
@@ -33,9 +35,9 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     public func start(with account: BlockchainAccount) {
         // TODO: Would much prefer a different form of injection
         // but we build our `Routers` in the AppCoordinator
-        self.disposeBag = DisposeBag()
+        disposeBag = DisposeBag()
         self.account = account
-        self.stateService = NonCustodialActionStateService()
+        stateService = NonCustodialActionStateService()
 
         stateService.action
             .bindAndCatch(weak: self) { (self, action) in
@@ -78,7 +80,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     }
 
     private func showSwapScreen() {
-        dismiss { [weak self] currencyType in
+        dismiss { [weak self] _ in
             self?.routing.switchTabToSwap()
         }
     }
@@ -97,7 +99,7 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
 
     private func showBuyScreen() {
         dismiss { [weak self] currencyType in
-            guard case let .crypto(cryptoCurrency) = currencyType else { return }
+            guard case .crypto(let cryptoCurrency) = currencyType else { return }
             self?.walletOperationsRouter.handleBuyCrypto(currency: cryptoCurrency)
         }
     }

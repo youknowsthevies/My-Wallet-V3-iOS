@@ -30,13 +30,15 @@ final class APIClient: EventSendingAPI {
         self.init(requestBuilder: RequestBuilder(basePath: basePath, userAgent: userAgent))
     }
 
-    init(networkAdapter: NetworkAdapterAPI = NetworkAdapter(),
-         requestBuilder: RequestBuilderAPI,
-         jsonEncoder: JSONEncoder = {
+    init(
+        networkAdapter: NetworkAdapterAPI = NetworkAdapter(),
+        requestBuilder: RequestBuilderAPI,
+        jsonEncoder: JSONEncoder = {
             let jsonEncoder = JSONEncoder()
             jsonEncoder.dateEncodingStrategy = .iso8601
             return jsonEncoder
-         }()) {
+        }()
+    ) {
         self.networkAdapter = networkAdapter
         self.requestBuilder = requestBuilder
         self.jsonEncoder = jsonEncoder

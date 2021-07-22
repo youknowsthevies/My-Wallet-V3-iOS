@@ -11,14 +11,14 @@ final class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
         scanCompleteCalled(result)
     }
 
-    var didStartScanningCalled: () -> Void = { }
+    var didStartScanningCalled: () -> Void = {}
     var didStartScanningCallCount: Int = 0
     func didStartScanning() {
         didStartScanningCallCount += 1
         didStartScanningCalled()
     }
 
-    var didStopScanningCalled: () -> Void = { }
+    var didStopScanningCalled: () -> Void = {}
     var didStopScanningCallCount: Int = 0
     func didStopScanning() {
         didStopScanningCallCount += 1

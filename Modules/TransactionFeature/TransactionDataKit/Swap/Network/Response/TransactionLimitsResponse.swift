@@ -50,17 +50,17 @@ struct TransactionLimitsResponse: Decodable {
         if let daily = try values.decodeIfPresent(Limit.self, forKey: .daily) {
             self.daily = .init(fiatCurrency: currency, limit: daily)
         } else {
-            self.daily = nil
+            daily = nil
         }
         if let weekly = try values.decodeIfPresent(Limit.self, forKey: .weekly) {
             self.weekly = .init(fiatCurrency: currency, limit: weekly)
         } else {
-            self.weekly = nil
+            weekly = nil
         }
         if let annual = try values.decodeIfPresent(Limit.self, forKey: .annual) {
             self.annual = .init(fiatCurrency: currency, limit: annual)
         } else {
-            self.annual = nil
+            annual = nil
         }
     }
 }
@@ -82,8 +82,10 @@ extension TransactionLimits {
 
 extension TransactionLimit {
 
-    fileprivate init(fiatCurrency: FiatCurrency,
-                     limit: TransactionLimitsResponse.Limit) {
+    fileprivate init(
+        fiatCurrency: FiatCurrency,
+        limit: TransactionLimitsResponse.Limit
+    ) {
         self.init(
             limit: FiatValue
                 .create(

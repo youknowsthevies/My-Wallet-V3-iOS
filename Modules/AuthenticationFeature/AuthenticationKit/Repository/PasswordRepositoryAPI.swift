@@ -40,8 +40,8 @@ public protocol PasswordRepositoryAPI: PasswordRepositoryCombineAPI {
     func sync() -> Completable
 }
 
-public extension PasswordRepositoryAPI {
-    var hasPassword: Single<Bool> {
+extension PasswordRepositoryAPI {
+    public var hasPassword: Single<Bool> {
         password
             .map { password in
                 guard let password = password else { return false }

@@ -8,11 +8,14 @@ public struct OrdersActivityResponse: Decodable {
             struct Beneficiary: Decodable {
                 let accountRef: String?
             }
+
             let beneficiary: Beneficiary?
         }
+
         struct Amount: Decodable {
             let symbol: String
         }
+
         let id: String
         let amount: Amount
         let amountMinor: String
@@ -23,5 +26,6 @@ public struct OrdersActivityResponse: Decodable {
         let extraAttributes: ExtraAttributes?
         let txHash: String?
     }
+
     let items: [Item]
 }

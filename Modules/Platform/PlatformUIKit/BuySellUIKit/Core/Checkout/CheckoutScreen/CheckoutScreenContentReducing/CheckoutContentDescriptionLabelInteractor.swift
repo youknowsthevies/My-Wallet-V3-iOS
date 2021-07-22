@@ -15,7 +15,7 @@ final class CheckoutContentDescriptionLabelInteractor {
             service
                 .price(for: quoteCurrency, in: baseCurrency)
                 .asObservable()
-                .map { $0.moneyValue }
+                .map(\.moneyValue)
                 /// This should never happen.
                 .catchErrorJustReturn(.zero(currency: quoteCurrency.currency))
                 .map { $0.toDisplayString(includeSymbol: true) }
@@ -39,13 +39,14 @@ final class CheckoutContentDescriptionLabelInteractor {
 
         // MARK: - Private Accessors
 
-        init(service: PriceServiceAPI,
-             baseCurrency: Currency,
-             quoteCurrency: Currency) {
+        init(
+            service: PriceServiceAPI,
+            baseCurrency: Currency,
+            quoteCurrency: Currency
+        ) {
             self.service = service
             self.baseCurrency = baseCurrency
             self.quoteCurrency = quoteCurrency
         }
     }
-
 }
