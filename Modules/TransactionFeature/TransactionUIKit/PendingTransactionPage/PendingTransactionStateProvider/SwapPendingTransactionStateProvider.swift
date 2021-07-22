@@ -47,6 +47,7 @@ final class SwapPendingTransactionStateProvider: PendingTransactionStateProvidin
                         type: .image(PendingStateViewModel.Image.success.imageResource),
                         position: .radiusDistanceFromCenter
                     ),
+                    backgroundColor: .primaryButton,
                     cornerRadiusRatio: 0.5
                 )
             ),
