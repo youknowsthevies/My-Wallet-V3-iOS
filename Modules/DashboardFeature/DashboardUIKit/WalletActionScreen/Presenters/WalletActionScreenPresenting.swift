@@ -2,10 +2,11 @@
 
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 
-public protocol WalletActionScreenPresenting: AnyObject {
+protocol WalletActionScreenPresenting: AnyObject {
 
     var selectionRelay: PublishRelay<WalletActionCellType> { get }
 

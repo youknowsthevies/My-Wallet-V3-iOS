@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import PlatformKit
+import PlatformUIKit
 import RxSwift
 
 public protocol WalletActionScreenInteracting: AnyObject {

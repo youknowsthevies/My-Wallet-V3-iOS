@@ -58,6 +58,8 @@ final class ERC20Asset: CryptoAsset {
             return interestGroup
         case .nonCustodial:
             return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
@@ -93,49 +95,16 @@ final class ERC20Asset: CryptoAsset {
     }
 
     private var interestGroup: Single<AccountGroup> {
-        guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return .just(
-            CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset))
-        )
+        .just(CryptoAccountCustodialGroup(asset: asset, account: CryptoInterestAccount(asset: asset)))
     }
 
-    /// Helper to decided if we should support custodial Accounts.
-    /// In the future this should use the `AssetModel.products` field to make this decision.
-    private lazy var isLegacyERC20: Bool = {
-        LegacyERC20Code.allCases.map(\.rawValue).contains(asset.code)
-    }()
-
     private var exchangeGroup: Single<AccountGroup> {
-        guard isLegacyERC20 else {
-            return .just(CryptoAccountCustodialGroup(asset: asset))
-        }
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
-            .optional()
-            .catchError { error in
-                /// TODO: This shouldn't prevent users from seeing all accounts.
-                /// Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    #if INTERNAL_BUILD
-                    Logger.shared.error(error)
-                    throw error
-                    #else
-                    return Single.just(nil)
-                    #endif
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return Single.just(nil)
-                }
-            }
             .map { [asset] account in
-                guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset)
-                }
-                return CryptoAccountCustodialGroup(asset: asset, account: account)
+                CryptoAccountCustodialGroup(asset: asset, account: account)
             }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {

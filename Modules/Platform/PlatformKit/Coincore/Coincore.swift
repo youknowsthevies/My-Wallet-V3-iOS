@@ -110,13 +110,8 @@ final class Coincore: CoincoreAPI {
             guard let cryptoAccount = sourceAccount as? CryptoAccount else {
                 fatalError("Expected CryptoAccount: \(sourceAccount)")
             }
-            let sourceCryptoAsset = self[cryptoAccount.asset]
-            return Single
-                .zip(
-                    sourceCryptoAsset.transactionTargets(account: cryptoAccount),
-                    fiatAsset.accountGroup(filter: .all).map(\.accounts)
-                )
-                .map(+)
+            return self[cryptoAccount.asset]
+                .transactionTargets(account: cryptoAccount)
                 .map { (accounts) -> [SingleAccount] in
                     accounts.filter { destinationAccount -> Bool in
                         Self.getActionFilter(

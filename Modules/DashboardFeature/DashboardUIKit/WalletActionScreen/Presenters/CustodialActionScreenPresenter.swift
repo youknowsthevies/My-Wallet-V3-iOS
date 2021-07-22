@@ -4,35 +4,36 @@ import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 
-public final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
+final class CustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Types
 
     private typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
-    public typealias CellType = WalletActionCellType
+    typealias CellType = WalletActionCellType
 
-    // MARK: - Public Properties
+    // MARK: - Properties
 
-    public var sections: Observable<[WalletActionItemsSectionViewModel]> {
+    var sections: Observable<[WalletActionItemsSectionViewModel]> {
         sectionsRelay
             .asObservable()
     }
 
-    public let assetBalanceViewPresenter: CurrentBalanceCellPresenter
+    let assetBalanceViewPresenter: CurrentBalanceCellPresenter
 
-    public var currency: CurrencyType {
+    var currency: CurrencyType {
         interactor.currency
     }
 
-    public let selectionRelay: PublishRelay<WalletActionCellType> = .init()
+    let selectionRelay: PublishRelay<WalletActionCellType> = .init()
 
     // MARK: - Private Properties
 
-    private var actionCellPresenters: Single<[DefaultWalletActionCellPresenter]> {
+    private var actionCellPresenters: Single<[WalletActionCellPresenter]> {
         interactor
             .availableActions
             .map { actions in
@@ -41,7 +42,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
             .map { $0.sorted() }
             .map { [currency] actions in
                 actions.map {
-                    DefaultWalletActionCellPresenter(
+                    WalletActionCellPresenter(
                         currencyType: currency,
                         action: $0
                     )
@@ -58,11 +59,11 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
 
     // MARK: - Setup
 
-    public init(using interactor: WalletActionScreenInteracting,
-                enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
-                stateService: CustodyActionStateServiceAPI,
-                eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
-                analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
+    init(using interactor: WalletActionScreenInteracting,
+         enabledCurrenciesService: EnabledCurrenciesServiceAPI = resolve(),
+         stateService: CustodyActionStateServiceAPI,
+         eligiblePaymentService: PaymentMethodsServiceAPI = resolve(),
+         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()) {
         self.interactor = interactor
         self.enabledCurrenciesService = enabledCurrenciesService
         self.eligiblePaymentService = eligiblePaymentService
@@ -96,7 +97,7 @@ public final class CustodialActionScreenPresenter: WalletActionScreenPresenting 
                 .just([])
             }
             .map { [assetBalanceViewPresenter] presenters -> [WalletActionCellType] in
-                 [.balance(assetBalanceViewPresenter)] +
+                [.balance(assetBalanceViewPresenter)] +
                     presenters.map { WalletActionCellType.default($0) }
             }
             .map { cellTypes in

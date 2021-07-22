@@ -2,6 +2,7 @@
 
 import DIKit
 import PlatformKit
+import PlatformUIKit
 import RxRelay
 import RxSwift
 
@@ -15,13 +16,16 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     // MARK: - `Router` Properties
 
     private var stateService: NonCustodialActionStateService!
+    private let walletOperationsRouter: WalletOperationsRouting
     private let navigationRouter: NavigationRouterAPI
     private let routing: CurrencyRouting & TabSwapping
     private var disposeBag = DisposeBag()
     private var account: BlockchainAccount!
 
     public init(navigationRouter: NavigationRouterAPI = NavigationRouter(),
+                walletOperationsRouter: WalletOperationsRouting = resolve(),
                 routing: CurrencyRouting & TabSwapping) {
+        self.walletOperationsRouter = walletOperationsRouter
         self.navigationRouter = navigationRouter
         self.routing = routing
     }
@@ -59,6 +63,8 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
             showSendScreen()
         case .receive:
             showReceiveScreen()
+        case .buy:
+            showBuyScreen()
         }
     }
 
@@ -72,39 +78,50 @@ public final class NonCustodialActionRouter: NonCustodialActionRouterAPI {
     }
 
     private func showSwapScreen() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.switchTabToSwap()
+        dismiss { [weak self] currencyType in
+            self?.routing.switchTabToSwap()
         }
     }
 
     private func showActivityScreen() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.switchToActivity(for: self.account.currencyType)
+        dismiss { [weak self] currencyType in
+            self?.routing.switchToActivity(for: currencyType)
         }
     }
 
     private func showReceiveScreen() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.toReceive(self.account.currencyType)
+        dismiss { [weak self] currencyType in
+            self?.routing.toReceive(currencyType)
+        }
+    }
+
+    private func showBuyScreen() {
+        dismiss { [weak self] currencyType in
+            guard case let .crypto(cryptoCurrency) = currencyType else { return }
+            self?.walletOperationsRouter.handleBuyCrypto(currency: cryptoCurrency)
         }
     }
 
     private func showSendScreen() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.routing.toSend(self.account.currencyType)
+        dismiss { [weak self] currencyType in
+            self?.routing.toSend(currencyType)
         }
     }
 
-    private func dismissTopMost(completion: (() -> Void)? = nil) {
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
+    /// Dismiss all presented ViewControllers and then execute callback.
+    private func dismiss(completion: ((CurrencyType) -> Void)? = nil) {
+        let currencyType = account.currencyType
+        var root: UIViewController? = navigationRouter.topMostViewControllerProvider.topMostViewController
+        while root?.presentingViewController != nil {
+            root = root?.presentingViewController
+        }
+        root?
+            .dismiss(
+                animated: true,
+                completion: {
+                    completion?(currencyType)
+                }
+            )
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {

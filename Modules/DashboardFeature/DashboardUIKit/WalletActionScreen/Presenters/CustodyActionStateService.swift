@@ -2,16 +2,11 @@
 
 import DIKit
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxRelay
 import RxSwift
 import ToolKit
-
-public protocol RecoveryPhraseStatusProviding {
-    var isRecoveryPhraseVerified: Bool { get }
-    var isRecoveryPhraseVerifiedObservable: Observable<Bool> { get }
-    var fetchTriggerRelay: PublishRelay<Void> { get }
-}
 
 public protocol CustodyActionStateReceiverServiceAPI: AnyObject {
 

@@ -1,10 +1,11 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxCocoa
 import RxDataSources
 import RxSwift
 
-public final class WalletActionScreenViewController: UIViewController {
+final class WalletActionScreenViewController: UIViewController {
 
     // MARK: - Private Types
 
@@ -24,7 +25,7 @@ public final class WalletActionScreenViewController: UIViewController {
 
     // MARK: - Setup
 
-    public init(using presenter: WalletActionScreenPresenting) {
+    init(using presenter: WalletActionScreenPresenting) {
         self.presenter = presenter
         super.init(nibName: nil, bundle: nil)
     }
@@ -34,7 +35,7 @@ public final class WalletActionScreenViewController: UIViewController {
 
     // MARK: - Lifecycle
 
-    public override func loadView() {
+    override func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -42,7 +43,7 @@ public final class WalletActionScreenViewController: UIViewController {
         tableView.fillSuperview(usesSafeAreaLayoutGuide: true)
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
     }
@@ -54,7 +55,7 @@ public final class WalletActionScreenViewController: UIViewController {
         tableView.estimatedRowHeight = 85
         tableView.rowHeight = UITableView.automaticDimension
         tableView.register(CurrentBalanceTableViewCell.self)
-        tableView.register(DefaultWalletActionTableViewCell.self)
+        tableView.register(WalletActionTableViewCell.self)
         tableView.separatorInset = .zero
         tableView.separatorColor = .lightBorder
 
@@ -93,8 +94,8 @@ extension WalletActionScreenViewController {
         return cell
     }
 
-    private func defaultActionCell(for indexPath: IndexPath, presenter: DefaultWalletActionCellPresenter) -> UITableViewCell {
-        let cell = tableView.dequeue(DefaultWalletActionTableViewCell.self, for: indexPath)
+    private func defaultActionCell(for indexPath: IndexPath, presenter: WalletActionCellPresenter) -> UITableViewCell {
+        let cell = tableView.dequeue(WalletActionTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell
     }

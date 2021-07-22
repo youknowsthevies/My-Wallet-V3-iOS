@@ -58,6 +58,8 @@ final class EthereumAsset: CryptoAsset {
             return interestGroup
         case .nonCustodial:
             return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
@@ -91,32 +93,12 @@ final class EthereumAsset: CryptoAsset {
     }
 
     private var exchangeGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
-            .optional()
-            .catchError { error in
-                /// TODO: This shouldn't prevent users from seeing all accounts.
-                /// Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    #if INTERNAL_BUILD
-                    Logger.shared.error(error)
-                    throw error
-                    #else
-                    return Single.just(nil)
-                    #endif
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return Single.just(nil)
-                }
+            .map { [asset] account in
+                CryptoAccountCustodialGroup(asset: asset, account: account)
             }
-            .map { account in
-                guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset)
-                }
-                return CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
     }
 
     private var interestGroup: Single<AccountGroup> {

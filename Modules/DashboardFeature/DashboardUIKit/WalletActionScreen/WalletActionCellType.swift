@@ -1,16 +1,17 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import PlatformUIKit
 import RxDataSources
 
-public enum WalletActionCellType: IdentifiableType, Equatable {
+enum WalletActionCellType: IdentifiableType, Equatable {
 
-    public typealias Identity = String
+    typealias Identity = String
 
     /// A cell that shows the wallets balance
     case balance(CurrentBalanceCellPresenter)
-    case `default`(DefaultWalletActionCellPresenter)
+    case `default`(WalletActionCellPresenter)
 
-    public var identity: String {
+    var identity: String {
         switch self {
         case .balance(let presenter):
             return presenter.currency.code
@@ -20,7 +21,7 @@ public enum WalletActionCellType: IdentifiableType, Equatable {
     }
 }
 
-public extension WalletActionCellType {
+extension WalletActionCellType {
     static func ==(lhs: WalletActionCellType, rhs: WalletActionCellType) -> Bool {
         switch (lhs, rhs) {
         case (.balance(let left), .balance(let right)):

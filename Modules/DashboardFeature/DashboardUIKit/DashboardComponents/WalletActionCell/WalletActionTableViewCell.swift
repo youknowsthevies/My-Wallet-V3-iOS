@@ -1,10 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-public class DefaultWalletActionTableViewCell: UITableViewCell {
+import PlatformUIKit
+import UIKit
 
-    // MARK: - Public
+final class WalletActionTableViewCell: UITableViewCell {
 
-    var presenter: DefaultWalletActionCellPresenter! {
+    // MARK: - Properties
+
+    var presenter: WalletActionCellPresenter! {
         didSet {
             badgeImageView.viewModel = presenter.badgeImageViewModel
             titleLabel.content = presenter.titleLabelContent

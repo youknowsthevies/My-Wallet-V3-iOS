@@ -61,6 +61,8 @@ class BitcoinCashAsset: CryptoAsset {
             return interestGroup
         case .nonCustodial:
             return nonCustodialGroup
+        case .exchange:
+            return exchangeGroup
         }
     }
 
@@ -94,32 +96,12 @@ class BitcoinCashAsset: CryptoAsset {
     }
 
     private var exchangeGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return exchangeAccountProvider
+        exchangeAccountProvider
             .account(for: asset)
-            .optional()
-            .catchError { error in
-                /// TODO: This shouldn't prevent users from seeing all accounts.
-                /// Potentially return nil should this fail.
-                guard let serviceError = error as? ExchangeAccountsNetworkError else {
-                    #if INTERNAL_BUILD
-                    Logger.shared.error(error)
-                    throw error
-                    #else
-                    return Single.just(nil)
-                    #endif
-                }
-                switch serviceError {
-                case .missingAccount:
-                    return Single.just(nil)
-                }
+            .map { [asset] account in
+                CryptoAccountCustodialGroup(asset: asset, account: account)
             }
-            .map { account in
-                guard let account = account else {
-                    return CryptoAccountCustodialGroup(asset: asset)
-                }
-                return CryptoAccountCustodialGroup(asset: asset, account: account)
-            }
+            .catchErrorJustReturn(CryptoAccountCustodialGroup(asset: asset))
     }
 
     private var interestGroup: Single<AccountGroup> {
@@ -127,8 +109,7 @@ class BitcoinCashAsset: CryptoAsset {
     }
 
     private var nonCustodialGroup: Single<AccountGroup> {
-        let asset = self.asset
-        return repository.activeAccounts
+        repository.activeAccounts
             .flatMap(weak: self) { (self, accounts) -> Single<(defaultAccount: BitcoinCashWalletAccount, accounts: [BitcoinCashWalletAccount])> in
                 self.repository.defaultAccount
                     .map { ($0, accounts) }
@@ -143,7 +124,7 @@ class BitcoinCashAsset: CryptoAsset {
                     )
                 }
             }
-            .map { accounts -> AccountGroup in
+            .map { [asset] accounts -> AccountGroup in
                 CryptoAccountNonCustodialGroup(asset: asset, accounts: accounts)
             }
             .recordErrors(on: errorRecorder)

@@ -66,7 +66,7 @@ public final class CryptoExchangeAccount: ExchangeAccount {
 
     public var pendingBalance: Single<MoneyValue> {
         /// Exchange API does not return a balance.
-        .just(MoneyValue.zero(currency: asset))
+        .just(.zero(currency: asset))
     }
 
     public var actions: Single<AvailableActions> {

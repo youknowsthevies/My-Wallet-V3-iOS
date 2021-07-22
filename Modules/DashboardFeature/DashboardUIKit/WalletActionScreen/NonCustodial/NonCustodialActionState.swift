@@ -18,4 +18,7 @@ public enum NonCustodialActionState {
 
     /// Route to receive
     case receive
+
+    /// Route to buy
+    case buy
 }

@@ -2,8 +2,9 @@
 
 import Localization
 import PlatformKit
+import PlatformUIKit
 
-public final class DefaultWalletActionCellPresenter {
+final class WalletActionCellPresenter {
 
     private typealias AccessibilityId = Accessibility.Identifier.WalletActionSheet
     private typealias LocalizationId = LocalizationConstants.WalletAction.Default
@@ -12,6 +13,7 @@ public final class DefaultWalletActionCellPresenter {
     let titleLabelContent: LabelContent
     let descriptionLabelContent: LabelContent
     let action: WalletAction
+
     init(currencyType: CurrencyType, action: WalletAction) {
         self.action = action
 

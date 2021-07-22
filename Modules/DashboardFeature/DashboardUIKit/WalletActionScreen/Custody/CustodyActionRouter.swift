@@ -135,14 +135,14 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             break
         case .introduction:
             /// The `topMost` screen is the `CustodyActionScreen`
-            dismissTopMost { [weak self] in
+            dismiss { [weak self] in
                 guard let self = self else { return }
                 self.showIntroductionScreen()
             }
         case .backup,
              .backupAfterIntroduction:
             /// The `topMost` screen is the `CustodyActionScreen`
-            dismissTopMost { [weak self] in
+            dismiss { [weak self] in
                 guard let self = self else { return }
                 self.backupRouterAPI.start()
             }
@@ -173,7 +173,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         case .withdrawal:
             /// The `topMost` screen is the `CustodyActionScreen`
             guard case let .crypto(currency) = currency else { return }
-            dismissTopMost { [weak self] in
+            dismiss { [weak self] in
                 guard let self = self else { return }
                 self.custodyWithdrawalRouter.start(with: currency)
             }
@@ -186,16 +186,15 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
                 showCashIdentityViewController()
             }
         case .end:
-            dismissTopMost()
+            dismiss()
         }
     }
 
     private func showSend() {
-        dismissTopMost { [unowned self] in
-            self.navigationRouter
-                .topMostViewControllerProvider
-                .topMostViewController?
-                .dismiss(animated: true, completion: nil)
+        dismiss { [weak self] in
+            guard let self = self else {
+                return
+            }
             self.tabSwapping.send(from: self.account)
         }
     }
@@ -216,16 +215,14 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showActivityScreen() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: nil)
-            self.tabSwapping.switchToActivity()
+        dismiss { [weak self] in
+            self?.tabSwapping.switchToActivity()
         }
     }
 
     private func showCashIdentityViewController() {
         guard case .fiat = currency else { return }
-        dismissTopMost { [weak self] in
+        dismiss { [weak self] in
             self?.walletOperationsRouter.showCashIdentityVerificationScreen()
         }
     }
@@ -248,12 +245,8 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showDepositFlow() {
-        self.dismissTopMost { [weak self] in
+        dismiss { [weak self] in
             guard let self = self else { return }
-            self.navigationRouter
-                .topMostViewControllerProvider
-                .topMostViewController?
-                .dismiss(animated: true, completion: nil)
             self.accountProviding
                 .accounts(for: self.currency)
                 .compactMap(\.first)
@@ -266,7 +259,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showFundTransferDetails(_ currency: FiatCurrency) {
-        self.dismissTopMost { [weak self] in
+        dismiss { [weak self] in
             self?.walletOperationsRouter.showFundTrasferDetails(
                 fiatCurrency: currency,
                 isOriginDeposit: true
@@ -275,30 +268,21 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showSwap() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                self.walletOperationsRouter.switchTabToSwap()
-            })
+        dismiss { [weak self] in
+            self?.walletOperationsRouter.switchTabToSwap()
         }
     }
 
     private func showBuy() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                guard case let .crypto(currency) = self.currency else { return }
-                self.walletOperationsRouter.handleBuyCrypto(currency: currency)
-            })
+        dismiss { [weak self] in
+            guard case let .crypto(cryptoCurrency) = self?.currency else { return }
+            self?.walletOperationsRouter.handleBuyCrypto(currency: cryptoCurrency)
         }
     }
 
     private func showSell() {
-        dismissTopMost { [weak self] in
-            guard let self = self else { return }
-            self.navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: {
-                self.walletOperationsRouter.handleSellCrypto()
-            })
+        dismiss { [weak self] in
+            self?.walletOperationsRouter.handleSellCrypto()
         }
     }
 
@@ -326,19 +310,16 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
     }
 
     private func showWithdrawTransactionFlow(_ currency: FiatCurrency) {
-        dismissTopMost { [unowned self] in
-            self.navigationRouter
-                .topMostViewControllerProvider
-                .topMostViewController?
-                .dismiss(animated: true, completion: nil)
+        dismiss { [weak self] in
+            guard let self = self else { return }
             self.accountProviding
                 .accounts(for: .fiat(currency))
                 .compactMap(\.first)
                 .observeOn(MainScheduler.instance)
-                .subscribe(onSuccess: { [unowned self] account in
-                    self.tabSwapping.withdraw(from: account)
+                .subscribe(onSuccess: { [weak self] account in
+                    self?.tabSwapping.withdraw(from: account)
                 })
-                .disposed(by: disposeBag)
+                .disposed(by: self.disposeBag)
         }
     }
 
@@ -350,7 +331,7 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
             guard let self = self else { return }
             self.withdrawFiatRouter = nil
         }
-        dismissTopMost { [weak navigationRouter] in
+        dismiss { [weak navigationRouter] in
             navigationRouter?.present(viewController: controller, using: .modalOverTopMost)
         }
     }
@@ -359,8 +340,19 @@ public final class CustodyActionRouter: CustodyActionRouterAPI {
         navigationRouter.dismiss()
     }
 
-    private func dismissTopMost(completion: (() -> Void)? = nil) {
-        navigationRouter.topMostViewControllerProvider.topMostViewController?.dismiss(animated: true, completion: completion)
+    /// Dismiss all presented ViewControllers and then execute callback.
+    private func dismiss(completion: (() -> Void)? = nil) {
+        var root: UIViewController? = navigationRouter.topMostViewControllerProvider.topMostViewController
+        while root?.presentingViewController != nil {
+            root = root?.presentingViewController
+        }
+        root?
+            .dismiss(
+                animated: true,
+                completion: {
+                    completion?()
+                }
+            )
     }
 
     private lazy var sheetPresenter: BottomSheetPresenting = {

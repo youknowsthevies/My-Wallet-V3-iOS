@@ -4,6 +4,7 @@ import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
+import PlatformUIKit
 import RxCocoa
 import RxSwift
 import ToolKit
@@ -33,7 +34,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
 
     // MARK: - Private Properties
 
-    private var actionCellPresenters: Single<[DefaultWalletActionCellPresenter]> {
+    private var actionCellPresenters: Single<[WalletActionCellPresenter]> {
         interactor
             .availableActions
             .map { actions in
@@ -42,7 +43,7 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
             .map { $0.sorted() }
             .map { [currency] actions in
                 actions.map {
-                    DefaultWalletActionCellPresenter(
+                    WalletActionCellPresenter(
                         currencyType: currency,
                         action: $0
                     )
@@ -109,7 +110,19 @@ final class NonCustodialActionScreenPresenter: WalletActionScreenPresenting {
                     stateService.selectionRelay.accept(.next(.send))
                 case .receive:
                     stateService.selectionRelay.accept(.next(.receive))
-                default:
+                case .buy:
+                    stateService.selectionRelay.accept(.next(.buy))
+                case .deposit:
+                    // Not possible for a Non Custodial wallet to 'deposit'.
+                    break
+                case .interest:
+                    // Not possible for a Non Custodial wallet to 'interest'.
+                    break
+                case .sell:
+                    // Not possible for a Non Custodial wallet to 'sell'.
+                    break
+                case .withdraw:
+                    // Not possible for a Non Custodial wallet to 'withdraw'.
                     break
                 }
             }
