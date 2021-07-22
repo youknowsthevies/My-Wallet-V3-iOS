@@ -12,6 +12,8 @@ swiftlint.lint_files
 swiftlint.lint_files inline_mode: true
 swiftlint.lint_all_files = false
 
+swiftformat.check_format(fail_on_error: true)
+
 failure "Please add labels to this PR" if github.pr_labels.empty?
 
 # Warn when there is a big PR
