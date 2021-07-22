@@ -13,11 +13,12 @@ import XCTest
 class OnboardingReducerTests: XCTestCase {
 
     var mockWalletManager: WalletManager!
-    var mockWallet = MockWallet()
+    var mockWallet: MockWallet!
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
 
     override func setUp() {
+        mockWallet = MockWallet()
         settingsApp = MockBlockchainSettingsApp(
             enabledCurrenciesService: MockEnabledCurrenciesService(),
             keychainItemWrapper: MockKeychainItemWrapping(),
