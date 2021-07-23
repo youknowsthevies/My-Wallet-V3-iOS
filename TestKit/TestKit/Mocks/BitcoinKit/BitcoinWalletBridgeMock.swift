@@ -19,11 +19,13 @@ class BitcoinWalletBridgeMock: BitcoinWalletBridgeAPI {
     }
 
     var receiveAddressValue: Single<String> = .error(MockError.error)
+
     func receiveAddress(forXPub xpub: String) -> Single<String> {
         receiveAddressValue
     }
 
     var memoValue: Single<String?> = .just(nil)
+
     func memo(for transactionHash: String) -> Single<String?> {
         memoValue
     }

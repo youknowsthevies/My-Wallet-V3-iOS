@@ -26,6 +26,7 @@ struct EthereumActivityDetailsViewModel: Equatable {
 
     struct Amounts: Equatable {
         fileprivate static let empty: Amounts = .init(fee: .empty, trade: .empty, gasFor: nil, isGas: false)
+
         struct Value: Equatable {
             fileprivate static let empty: Value = .init(cryptoAmount: "", amount: "", value: "")
             let cryptoAmount: String

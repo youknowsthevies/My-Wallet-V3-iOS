@@ -35,7 +35,7 @@ final class CardAuthorizationScreenPresenter: RibBridgePresenter {
     }
 
     func redirect() {
-        /// Might get called multiple times from the `WKNavigationDelegate`
+        // Might get called multiple times from the `WKNavigationDelegate`
         guard !hasRedirected else { return }
         hasRedirected = true
         eventRecorder.record(event: AnalyticsEvents.SimpleBuy.sbThreeDSecureComplete)

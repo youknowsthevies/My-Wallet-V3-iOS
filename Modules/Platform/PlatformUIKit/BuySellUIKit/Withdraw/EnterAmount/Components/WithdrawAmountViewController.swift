@@ -86,7 +86,7 @@ final class WithdrawAmountViewController: BaseScreenViewController,
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    override public func loadView() {
+    override func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -146,26 +146,26 @@ final class WithdrawAmountViewController: BaseScreenViewController,
         digitPadTopSeparatorView.backgroundColor = displayBundle.colors.digitPadTopSeparator
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavigationBar()
     }
 
-    override public func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
 
-    override public func viewWillLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        /// NOTE: This must be in `viewWillLayoutSubviews`
-        /// This is a special treatment due to the manner view controllers
-        /// are modally displayed on iOS 13 (with additional gap on the top that enable
-        /// dismissal of the screen.
+        // NOTE: This must be in `viewWillLayoutSubviews`
+        // This is a special treatment due to the manner view controllers
+        // are modally displayed on iOS 13 (with additional gap on the top that enable
+        // dismissal of the screen.
         if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
             digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
@@ -287,11 +287,11 @@ final class WithdrawAmountViewController: BaseScreenViewController,
 
     // MARK: - Navigation
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         backTriggered.onNext(())
     }
 
-    override public func navigationBarTrailingButtonPressed() {
+    override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
     }
 }

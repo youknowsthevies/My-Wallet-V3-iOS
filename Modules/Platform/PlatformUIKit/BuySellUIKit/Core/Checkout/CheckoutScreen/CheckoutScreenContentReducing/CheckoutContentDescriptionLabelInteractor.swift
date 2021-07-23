@@ -16,7 +16,7 @@ final class CheckoutContentDescriptionLabelInteractor {
                 .price(for: quoteCurrency, in: baseCurrency)
                 .asObservable()
                 .map(\.moneyValue)
-                /// This should never happen.
+                // This should never happen.
                 .catchErrorJustReturn(.zero(currency: quoteCurrency.currency))
                 .map { $0.toDisplayString(includeSymbol: true) }
                 .map { .loaded(next: .init(text: $0)) }

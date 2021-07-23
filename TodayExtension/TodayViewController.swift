@@ -19,14 +19,12 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     // MARK: - Private Properties
 
     private static var setupDependencies: Void = {
-        // swiftlint:disable trailing_semicolon
         DependencyContainer.defined(by: modules {
             DependencyContainer.today
             DependencyContainer.toolKit
             DependencyContainer.networkKit
             DependencyContainer.platformKit
         })
-        // swiftlint:enable trailing_semicolon
     }()
 
     private let tableView: SelfSizingTableView
@@ -128,7 +126,10 @@ extension TodayViewController {
         return cell
     }
 
-    private func assetPriceCell(for indexPath: IndexPath, presenter: AssetPriceCellPresenter) -> AssetPriceTableViewCell {
+    private func assetPriceCell(
+        for indexPath: IndexPath,
+        presenter: AssetPriceCellPresenter
+    ) -> AssetPriceTableViewCell {
         let cell = tableView.dequeue(AssetPriceTableViewCell.self, for: indexPath)
         cell.presenter = presenter
         return cell

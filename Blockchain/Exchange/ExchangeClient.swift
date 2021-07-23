@@ -11,6 +11,7 @@ protocol ExchangeClientAPI {
     typealias LinkID = String
 
     var linkID: Single<LinkID> { get }
+
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable
     func syncDepositAddress(accounts: [CryptoReceiveAddress]) -> Completable
 }

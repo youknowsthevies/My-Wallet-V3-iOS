@@ -27,7 +27,7 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
 
     private var isDisplayed = PublishRelay<Bool>()
 
-    public func enableDebugMenu(for window: UIWindow?) {
+    func enableDebugMenu(for window: UIWindow?) {
         guard let window = window else { return }
 
         let motionEnded = window.rx.motionEnded
@@ -51,7 +51,7 @@ final class DebugCoordinator: NSObject, DebugCoordinating {
             .disposed(by: disposeBag)
     }
 
-    public func disableDebugMenu() {
+    func disableDebugMenu() {
         disposeBag = DisposeBag()
     }
 

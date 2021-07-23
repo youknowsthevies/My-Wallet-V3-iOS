@@ -185,13 +185,21 @@ import ToolKit
 
             switch position {
             case .home:
-                PulseViewPresenter.shared.show(viewModel: .init(container: homePassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: homePassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .send:
-                PulseViewPresenter.shared.show(viewModel: .init(container: sendPassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: sendPassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .receive:
-                PulseViewPresenter.shared.show(viewModel: .init(container: receivePassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: receivePassthroughContainer, onSelection: pulseViewModel.action)
+                )
             case .swap:
-                PulseViewPresenter.shared.show(viewModel: .init(container: swapPassthroughContainer, onSelection: pulseViewModel.action))
+                PulseViewPresenter.shared.show(
+                    viewModel: .init(container: swapPassthroughContainer, onSelection: pulseViewModel.action)
+                )
             }
         }
     }

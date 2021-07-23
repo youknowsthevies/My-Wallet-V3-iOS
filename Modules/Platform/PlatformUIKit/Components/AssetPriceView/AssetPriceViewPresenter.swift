@@ -28,8 +28,8 @@ public final class AssetPriceViewPresenter {
     // MARK: - Private Accessors
 
     private lazy var setup: Void = {
-        /// Map interaction state into presentation state
-        /// and bind it to `stateRelay`
+        // Map interaction state into presentation state
+        // and bind it to `stateRelay`
         interactor.state
             .map(weak: self) { (self, state) -> PresentationState in
                 PresentationState(with: state, descriptors: self.descriptors)

@@ -29,17 +29,17 @@ public final class TwoFAWalletService: TwoFAWalletServiceAPI {
         // Trim whitespaces before verifying and sending
         let code = code.trimmingWhitespaces
 
-        /// Verify the code is not empty to save network call
+        // Verify the code is not empty to save network call
         guard !code.isEmpty else {
             return .error(TwoFAWalletServiceError.missingCode)
         }
 
-        /// 1. Zip guid and session-token
-        /// 2. Verify they have values
-        /// 3. Send payload request using client
-        /// 4. Validate the payload (by checking it is not empty) and cache it
-        /// 5. Convert to `Completable`
-        /// *. Errors along the way should be caught and mapped
+        // 1. Zip guid and session-token
+        // 2. Verify they have values
+        // 3. Send payload request using client
+        // 4. Validate the payload (by checking it is not empty) and cache it
+        // 5. Convert to `Completable`
+        // *. Errors along the way should be caught and mapped
         return Single
             .zip(repository.guid, repository.sessionToken)
             .map(weak: self) { _, credentials -> (guid: String, sessionToken: String) in
@@ -81,7 +81,7 @@ extension TwoFAWalletService {
         // Trim whitespaces before verifying and sending
         let code = code.trimmingWhitespaces
 
-        /// Verify the code is not empty to save network call
+        // Verify the code is not empty to save network call
         guard !code.isEmpty else {
             return .failure(.missingCode)
         }

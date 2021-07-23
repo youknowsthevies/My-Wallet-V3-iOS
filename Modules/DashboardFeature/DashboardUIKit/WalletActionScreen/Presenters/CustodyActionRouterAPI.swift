@@ -8,5 +8,6 @@ public protocol CustodyActionRouterAPI: AnyObject {
     func next(to state: CustodyActionStateService.State)
     func previous()
     func start(with account: BlockchainAccount)
+
     var completionRelay: PublishRelay<Void> { get }
 }

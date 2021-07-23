@@ -3,7 +3,10 @@
 import ToolKit
 
 extension UIApplication: ApplicationBackgroundTaskAPI {
-    public func beginToolKitBackgroundTask(withName taskName: String?, expirationHandler handler: (() -> Void)?) -> BackgroundTaskIdentifier {
+    public func beginToolKitBackgroundTask(
+        withName taskName: String?,
+        expirationHandler handler: (() -> Void)?
+    ) -> BackgroundTaskIdentifier {
         BackgroundTaskIdentifier(identifier: beginBackgroundTask(withName: taskName, expirationHandler: handler))
     }
 

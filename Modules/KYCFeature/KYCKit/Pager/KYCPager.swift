@@ -208,7 +208,7 @@ extension KYCPageType {
                 if tiersResponse.canCompleteTier2 {
                     return user.needsDocumentResubmission == nil ? .verifyIdentity : .resubmitIdentity
                 }
-                /// The user can't complete tier2, so they should see their account status.
+                // The user can't complete tier2, so they should see their account status.
                 return .accountStatus
             }
             return .enterPhone

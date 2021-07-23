@@ -16,6 +16,7 @@ extension Screen {
         let title: String?
         let image: UIImage?
         let accessibility: Accessibility?
+
         public init(
             title: String? = nil,
             image: UIImage? = nil,

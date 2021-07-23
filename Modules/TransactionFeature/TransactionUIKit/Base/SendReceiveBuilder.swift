@@ -15,6 +15,7 @@ public final class ReceiveBuilder {
     }
 
     var receiveAccountPickerRouter: AccountPickerRouting!
+
     public func receive() -> UIViewController {
         let header = AccountPickerHeaderModel(
             title: LocalizedReceive.Header.receiveCryptoNow,

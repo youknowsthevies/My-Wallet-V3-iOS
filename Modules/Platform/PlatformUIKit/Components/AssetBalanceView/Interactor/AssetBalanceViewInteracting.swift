@@ -5,5 +5,6 @@ import RxSwift
 
 public protocol AssetBalanceViewInteracting: AnyObject {
     var state: Observable<AssetBalanceViewModel.State.Interaction> { get }
+
     func refresh()
 }

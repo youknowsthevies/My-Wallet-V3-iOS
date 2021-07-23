@@ -41,8 +41,8 @@ public final class FiatBalanceViewPresenter {
         self.interactor = interactor
         alignmentRelay.accept(alignment)
 
-        /// Map interaction state into presentation state
-        /// and bind it to `stateRelay`
+        // Map interaction state into presentation state
+        // and bind it to `stateRelay`
         interactor.state
             .map {
                 .init(with: $0, descriptors: descriptors)

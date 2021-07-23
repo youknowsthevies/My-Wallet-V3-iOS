@@ -21,7 +21,9 @@ final class EmailVerificationAdapter {
 
     // MARK: - Public Interface
 
-    func fetchEmailVerificationStatus(force: Bool) -> AnyPublisher<EmailVerificationStatusResponse, EmailVerificationError> {
+    func fetchEmailVerificationStatus(
+        force: Bool
+    ) -> AnyPublisher<EmailVerificationStatusResponse, EmailVerificationError> {
         settingsService.fetchPublisher(force: force)
             .map { response in
                 EmailVerificationStatusResponse(

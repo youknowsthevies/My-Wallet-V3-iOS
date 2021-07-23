@@ -46,6 +46,7 @@ final class APIClient: TransactionKitClientAPI {
         static let bankTransfer = ["payments", "banktransfer"]
         static let transferFees = ["payments", "withdrawals", "fees"]
         static let domainResolution = ["resolve"]
+
         static func updateOrder(transactionID: String) -> [String] {
             createOrder + [transactionID]
         }

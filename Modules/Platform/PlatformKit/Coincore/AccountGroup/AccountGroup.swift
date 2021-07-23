@@ -8,6 +8,7 @@ public protocol AccountGroup: BlockchainAccount {
     var accounts: [SingleAccount] { get }
 
     func includes(account: BlockchainAccount) -> Bool
+
     var activityObservable: Observable<[ActivityItemEvent]> { get }
 }
 

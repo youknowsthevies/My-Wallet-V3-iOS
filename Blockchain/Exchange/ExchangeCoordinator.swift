@@ -194,8 +194,8 @@ final class ExchangeCoordinator {
     }
 
     private func syncAddressAndLinkWalletToExchange() {
-        /// Users that have linked their Exchange account should be sent to the `/trade`
-        /// page and not the Exchange landing page.
+        // Users that have linked their Exchange account should be sent to the `/trade`
+        // page and not the Exchange landing page.
         guard let exchangeURL = URL(string: BlockchainAPI.shared.exchangeURL + "/trade") else { return }
         repository.syncDepositAddresses()
             .andThen(hasLinkedExchangeAccount())
@@ -280,7 +280,10 @@ final class ExchangeCoordinator {
 
 extension ObservableType {
 
-    fileprivate func dismissNavControllerOnDisposal(navController: BaseNavigationController, drawerRouter: DrawerRouting) -> Observable<Element> {
+    fileprivate func dismissNavControllerOnDisposal(
+        navController: BaseNavigationController,
+        drawerRouter: DrawerRouting
+    ) -> Observable<Element> {
         self.do(onDispose: {
             navController.popToRootViewController(animated: true)
             navController.dismiss(animated: true, completion: nil)
@@ -291,7 +294,10 @@ extension ObservableType {
 
 extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Never {
 
-    fileprivate func dismissNavControllerOnDisposal(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
+    fileprivate func dismissNavControllerOnDisposal(
+        navController: BaseNavigationController?,
+        drawerRouter: DrawerRouting
+    ) -> Completable {
         self.do(onDispose: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)
@@ -299,7 +305,10 @@ extension PrimitiveSequenceType where Trait == CompletableTrait, Element == Neve
         })
     }
 
-    fileprivate func dismissNavControllerOnSubscription(navController: BaseNavigationController?, drawerRouter: DrawerRouting) -> Completable {
+    fileprivate func dismissNavControllerOnSubscription(
+        navController: BaseNavigationController?,
+        drawerRouter: DrawerRouting
+    ) -> Completable {
         self.do(onSubscribed: {
             navController?.popToRootViewController(animated: true)
             navController?.dismiss(animated: true, completion: nil)

@@ -71,7 +71,10 @@ final class CashIdentityVerificationPresenter {
         verifyIdentityButtonViewModel = .primary(with: LocalizationId.verifyIdentity)
 
         let badgedNumberedItems: [CellType] = badgeNumberedItemViewModels.map { .numberedItem($0) }
-        cellArrangement = [.announcement(announcement)] + badgedNumberedItems + [.buttons([notNowButtonViewModel, verifyIdentityButtonViewModel])]
+        cellArrangement =
+            [.announcement(announcement)]
+                + badgedNumberedItems
+                + [.buttons([notNowButtonViewModel, verifyIdentityButtonViewModel])]
 
         notNowButtonViewModel
             .tapRelay

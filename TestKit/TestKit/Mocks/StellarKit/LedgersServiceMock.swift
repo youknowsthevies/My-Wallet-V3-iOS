@@ -9,7 +9,12 @@ final class LedgersServiceMock: LedgersServiceAPI {
 
     var result: Result<[StellarLedger], StellarLedgerServiceError> = .success([.mock])
 
-    func ledgers(cursor: String?, order: Order?, limit: Int?, response: @escaping (Result<[StellarLedger], StellarLedgerServiceError>) -> Void) {
+    func ledgers(
+        cursor: String?,
+        order: Order?,
+        limit: Int?,
+        response: @escaping (Result<[StellarLedger], StellarLedgerServiceError>) -> Void
+    ) {
         response(result)
     }
 }

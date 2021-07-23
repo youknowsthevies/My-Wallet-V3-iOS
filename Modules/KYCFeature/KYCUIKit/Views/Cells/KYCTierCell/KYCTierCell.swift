@@ -39,14 +39,15 @@ class KYCTierCell: UICollectionViewCell {
     @IBOutlet fileprivate var tierRequirements: UILabel!
     @IBOutlet fileprivate var shadowView: UIView!
 
-    fileprivate var allLabels: [UILabel] { [
-        headlineDescription,
-        tierDescription,
-        limitAmountDescription,
-        limitTimeframe,
-        limitDurationEstimate,
-        tierApprovalStatus
-    ]
+    fileprivate var allLabels: [UILabel] {
+        [
+            headlineDescription,
+            tierDescription,
+            limitAmountDescription,
+            limitTimeframe,
+            limitDurationEstimate,
+            tierApprovalStatus
+        ]
     }
 
     // MARK: Private Properties

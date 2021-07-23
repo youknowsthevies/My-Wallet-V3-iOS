@@ -21,14 +21,14 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
     }
 
     public var hasEnabled2FA: Single<Bool> {
-        /// It does not matter what asset we fetch.
+        // It does not matter what asset we fetch.
         client.exchangeAddress(with: .bitcoin)
-            /// If the user has accounts returned,
-            /// then they have 2FA enabled.
+            // If the user has accounts returned,
+            // then they have 2FA enabled.
             .map { _ in true }
-            /// If an error is thrown when fetching accounts
-            /// parse the error to determine if it is because 2FA is
-            /// not enabled.
+            // If an error is thrown when fetching accounts
+            // parse the error to determine if it is because 2FA is
+            // not enabled.
             .catchError { error in
                 guard let networkError = error as? NabuNetworkError else {
                     throw error

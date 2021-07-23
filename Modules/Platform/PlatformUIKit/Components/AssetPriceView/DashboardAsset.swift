@@ -100,6 +100,7 @@ public enum DashboardAsset {
                     /// Options to display content
                     struct ContentOptions: OptionSet {
                         let rawValue: Int
+
                         init(rawValue: Int) {
                             self.rawValue = rawValue
                         }

@@ -63,7 +63,7 @@ final class TargetSelectionViewController: BaseScreenViewController, TargetSelec
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         keyboardInteractionController = KeyboardInteractionController(in: self)
         setupUI()

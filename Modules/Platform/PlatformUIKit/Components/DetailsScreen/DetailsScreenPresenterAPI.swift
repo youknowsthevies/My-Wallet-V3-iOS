@@ -7,6 +7,7 @@ import RxSwift
 
 public protocol HeaderBuilder {
     var defaultHeight: CGFloat { get }
+
     func view(fittingWidth width: CGFloat, customHeight: CGFloat?) -> UIView?
 }
 

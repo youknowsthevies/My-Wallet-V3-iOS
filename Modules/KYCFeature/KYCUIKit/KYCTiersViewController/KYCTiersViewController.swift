@@ -247,7 +247,11 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
             for: collectionView.bounds.width,
             model: pageModel.header
         )
-        let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let width =
+            collectionView.bounds.size.width
+                - layoutAttributes.sectionInsets.left
+                - layoutAttributes.sectionInsets.right
+
         return CGSize(width: width, height: height)
     }
 
@@ -261,16 +265,20 @@ extension KYCTiersViewController: UICollectionViewDelegateFlowLayout {
             for: disclaimer,
             width: collectionView.bounds.width
         )
-        let width = collectionView.bounds.size.width - layoutAttributes.sectionInsets.left - layoutAttributes.sectionInsets.right
+        let width =
+            collectionView.bounds.size.width
+                - layoutAttributes.sectionInsets.left
+                - layoutAttributes.sectionInsets.right
+
         return CGSize(width: width, height: height)
     }
 }
 
 extension KYCTiersViewController: KYCTierCellDelegate {
     func tierCell(_ cell: KYCTierCell, selectedTier: KYC.Tier) {
-        /// When a user is selecting a tier from `Swap` (which only happens
-        /// when the user isn't KYC approved) we want to present KYC from the applications
-        /// rootViewController rather than from `self`.
+        // When a user is selecting a tier from `Swap` (which only happens
+        // when the user isn't KYC approved) we want to present KYC from the applications
+        // rootViewController rather than from `self`.
         if let block = self.selectedTier {
             block(selectedTier)
         } else {

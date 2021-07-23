@@ -7,6 +7,7 @@ import SettingsKit
 class ExchangeDeepLinkRouter: DeepLinkRouting {
 
     private let appSettings: BlockchainSettings.App
+
     init(appSettings: BlockchainSettings.App = resolve()) {
         self.appSettings = appSettings
     }

@@ -26,7 +26,9 @@ struct MockOneTimeAnnouncement: OneTimeAnnouncement {
     init(
         type: AnnouncementType,
         cacheSuite: CacheSuite,
-        analyticsRecorder: AnalyticsEventRecorderAPI = AnalyticsEventRecorder(analyticsServiceProviders: [MockAnalyticsService()]),
+        analyticsRecorder: AnalyticsEventRecorderAPI = AnalyticsEventRecorder(
+            analyticsServiceProviders: [MockAnalyticsService()]
+        ),
         dismiss: @escaping CardAnnouncementAction
     ) {
         self.type = type

@@ -51,6 +51,7 @@ public final class KYCClient: KYCClientAPI {
         static let currentUser = ["users", "current"]
         static let simplifiedDueDiligenceEligibility = ["sdd", "eligible"]
         static let simplifiedDueDiligenceVerification = ["sdd", "verified"]
+
         static func supportedDocuments(for country: String) -> [String] {
             ["kyc", "supported-documents", country]
         }

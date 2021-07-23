@@ -26,6 +26,7 @@ public struct Font {
     public enum FontSize {
         case standard(StandardSize)
         case custom(Double)
+
         var value: Double {
             switch self {
             case .standard(let size):

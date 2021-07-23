@@ -140,6 +140,7 @@ extension TransactionConfirmation.Model {
         public let type: TransactionConfirmation.Kind = .invoiceCountdown
 
         private let countdownFormatter: DateComponentsFormatter
+
         init(secondsRemaining: TimeInterval, countdownFormatter: DateComponentsFormatter = .countdownFormatter) {
             self.secondsRemaining = secondsRemaining
             self.countdownFormatter = countdownFormatter

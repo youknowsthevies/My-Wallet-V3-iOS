@@ -7,6 +7,7 @@ public protocol KeyPairProviderAPI {
     associatedtype Pair: KeyPair
 
     var keyPair: Single<Pair> { get }
+
     func keyPair(with secondPassword: String?) -> Single<Pair>
 }
 

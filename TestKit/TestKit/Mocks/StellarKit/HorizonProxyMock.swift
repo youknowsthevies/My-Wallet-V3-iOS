@@ -9,6 +9,7 @@ final class HorizonProxyMock: HorizonProxyAPI {
     /// Add an entry for each account you want to mock:
     /// e.g. "<id>":  AccountResponse.JSON.valid(accountID: "1", balance: "10000")
     var underlyingAccountResponseJSONMap: [String: String] = [:]
+
     func accountResponse(for accountID: String) -> Single<AccountResponse> {
         guard let json = underlyingAccountResponseJSONMap[accountID] else {
             return .error(StellarAccountError.noDefaultAccount)
@@ -24,6 +25,7 @@ final class HorizonProxyMock: HorizonProxyAPI {
     }
 
     var underlyingMinimumBalance: CryptoValue = .init(amount: 1, currency: .stellar)
+
     func minimumBalance(subentryCount: UInt) -> CryptoValue {
         underlyingMinimumBalance
     }

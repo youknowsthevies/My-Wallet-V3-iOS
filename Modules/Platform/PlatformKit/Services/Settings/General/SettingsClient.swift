@@ -245,7 +245,7 @@ final class SettingsClient: SettingsClientAPI {
         )
     }
 
-    public func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
+    func update(email: String, context: FlowContext?, guid: String, sharedKey: String) -> AnyPublisher<String, NetworkError> {
         networkAdapter.perform(
             request: request(
                 guid: guid,

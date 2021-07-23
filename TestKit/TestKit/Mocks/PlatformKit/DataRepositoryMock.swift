@@ -5,6 +5,7 @@ import RxSwift
 
 class DataRepositoryMock: DataRepositoryAPI {
     var underlyingTiers = KYC.UserTiers(tiers: [])
+
     func fetchTiers() -> Single<KYC.UserTiers> {
         Single.just(underlyingTiers)
     }

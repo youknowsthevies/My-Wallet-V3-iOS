@@ -125,10 +125,10 @@ final class TransactionModel {
             }
             return processTransactionInvalidation(action: previousState.action)
         case .sourceAccountSelected(let sourceAccount):
-            /// The user has already selected a destination
-            /// such as through `Deposit`. In this case we want to
-            /// go straight to the Enter Amount screen after they have
-            /// selected a `LinkedBankAccount` to deposit from.
+            // The user has already selected a destination
+            // such as through `Deposit`. In this case we want to
+            // go straight to the Enter Amount screen after they have
+            // selected a `LinkedBankAccount` to deposit from.
             if let target = previousState.destination {
                 return processTargetSelectionConfirmed(
                     sourceAccount: sourceAccount,

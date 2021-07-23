@@ -24,9 +24,9 @@ final class BeneficiariesService: BeneficiariesServiceAPI {
 
     // MARK: - Properties
 
-    public let beneficiaries: Observable<[Beneficiary]>
+    let beneficiaries: Observable<[Beneficiary]>
 
-    public let hasLinkedBank: Observable<Bool>
+    let hasLinkedBank: Observable<Bool>
 
     let availableCurrenciesForBankLinkage: Observable<Set<FiatCurrency>>
 

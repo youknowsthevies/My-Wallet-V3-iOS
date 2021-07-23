@@ -32,6 +32,7 @@ extension LabelContent.Value.Interaction {
 
     public struct Content {
         public let text: String
+
         public init(text: String) {
             self.text = text
         }

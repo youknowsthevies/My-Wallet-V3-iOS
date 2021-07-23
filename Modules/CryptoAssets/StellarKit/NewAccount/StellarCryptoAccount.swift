@@ -47,7 +47,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         .just(StellarReceiveAddress(address: publicKey, label: label))
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    var activity: Single<[ActivityItemEvent]> {
         Single.zip(nonCustodialActivity, swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)

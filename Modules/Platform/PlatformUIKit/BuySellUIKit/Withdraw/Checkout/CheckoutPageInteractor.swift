@@ -19,6 +19,7 @@ protocol CheckoutPageListener: AnyObject {
 
 protocol CheckoutPagePresentable: Presentable {
     var continueButtonTapped: Signal<Void> { get }
+
     func connect(action: Driver<CheckoutPageInteractor.Action>) -> Driver<CheckoutPageInteractor.Effects>
 }
 

@@ -6,6 +6,7 @@ import RxSwift
 
 class EthereumFeeServiceMock: EthereumFeeServiceAPI {
     var underlyingFees: EthereumTransactionFee
+
     func fees(cryptoCurrency: CryptoCurrency) -> Single<EthereumTransactionFee> {
         .just(underlyingFees)
     }

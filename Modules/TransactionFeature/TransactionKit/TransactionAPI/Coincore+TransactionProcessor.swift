@@ -75,7 +75,7 @@ extension CoincoreAPI {
                 }
         case (is CryptoReceiveAddress, .send):
 
-            /// `Target` must be a `CryptoReceiveAddress`
+            // `Target` must be a `CryptoReceiveAddress`
             guard let receiveAddress = target as? CryptoReceiveAddress else {
                 fatalError("Expected a receiveAddress: \(target)")
             }
@@ -91,7 +91,7 @@ extension CoincoreAPI {
 
         case (is CryptoAccount, .send):
 
-            /// `Target` must be a `CryptoReceiveAddress`
+            // `Target` must be a `CryptoReceiveAddress`
             guard let destination = target as? SingleAccount else {
                 fatalError("Expected a SingleAccount: \(target)")
             }

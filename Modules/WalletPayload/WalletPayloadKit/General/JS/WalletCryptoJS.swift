@@ -98,7 +98,6 @@ extension PayloadCryptoError {
     }
 }
 
-// swiftlint:disable:next private_over_fileprivate
 private struct WalletCryptoResult: Codable {
 
     var encodedJSON: String {

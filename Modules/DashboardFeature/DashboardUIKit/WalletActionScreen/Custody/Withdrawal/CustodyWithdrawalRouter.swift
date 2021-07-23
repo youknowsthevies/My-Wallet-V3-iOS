@@ -10,6 +10,7 @@ protocol CustodyWithdrawalRouterAPI: AnyObject {
     func next(to state: CustodyWithdrawalStateService.State)
     func previous()
     func start(with currency: CryptoCurrency)
+
     var completionRelay: PublishRelay<Void> { get }
     var internalSendRelay: PublishRelay<Void> { get }
 }

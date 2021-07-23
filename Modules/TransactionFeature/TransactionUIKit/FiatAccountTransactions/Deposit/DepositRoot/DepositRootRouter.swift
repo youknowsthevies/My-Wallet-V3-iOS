@@ -47,7 +47,7 @@ final class DepositRootRouter: RIBs.Router<DepositRootInteractable>, DepositRoot
 
     // MARK: - Overrides
 
-    override public func didLoad() {
+    override func didLoad() {
         super.didLoad()
         interactor.activate()
     }

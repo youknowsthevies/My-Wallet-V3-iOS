@@ -63,10 +63,10 @@ final class DashboardScreenInteractor {
                     interactor.refresh()
                 }
 
-                /// Refresh dashboard interaction layer
+                // Refresh dashboard interaction layer
                 self.historicalProvider.refresh(window: .day(.oneHour))
 
-                /// Record user properties once wallet is initialized
+                // Record user properties once wallet is initialized
                 self.userPropertyInteractor.record()
             })
             .disposed(by: disposeBag)

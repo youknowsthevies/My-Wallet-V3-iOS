@@ -10,6 +10,7 @@ class MockWalletCredentialsProvider: WalletCredentialsProviding {
     }
 
     let legacyPassword: String?
+
     init(legacyPassword: String?) {
         self.legacyPassword = legacyPassword
     }

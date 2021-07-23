@@ -21,6 +21,7 @@ protocol WithdrawAmountPageListener: AnyObject {
 
 protocol WithdrawAmountPagePresentable: Presentable {
     var continueButtonTapped: Signal<Void> { get }
+
     func connect(state: Driver<WithdrawAmountPageInteractor.State>) -> Driver<WithdrawAmountPageInteractor.Effects>
 }
 

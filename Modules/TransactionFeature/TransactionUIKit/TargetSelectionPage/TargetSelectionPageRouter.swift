@@ -34,8 +34,8 @@ final class TargetSelectionPageRouter: ViewableRouter<TargetSelectionPageInterac
                 if case .success(let value) = result {
                     switch value {
                     case .address(let cryptoReceiveAddress):
-                        /// We need to validate the address as if it were a
-                        /// value provided by user entry in the text field.
+                        // We need to validate the address as if it were a
+                        // value provided by user entry in the text field.
                         model.process(action: .validateQRScanner(cryptoReceiveAddress))
                     case .bitpay(let value):
                         model.process(action: .validateBitPayPayload(value, currency))

@@ -11,6 +11,7 @@ import SettingsKit
 
 protocol ExchangeAccountRepositoryAPI {
     var hasLinkedExchangeAccount: Single<Bool> { get }
+
     func syncDepositAddresses() -> Completable
     func syncDepositAddressesIfLinked() -> Completable
     func syncDepositAddressesIfLinkedPublisher() -> AnyPublisher<Void, Error>

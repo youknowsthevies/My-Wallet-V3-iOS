@@ -5,7 +5,7 @@ import PlatformKit
 
 enum StellarHistoricalTransaction {
 
-    public var fee: CryptoValue? {
+    var fee: CryptoValue? {
         switch self {
         case .accountCreated(let value):
             guard let fee = value.fee else { return nil }
@@ -16,7 +16,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var memo: String? {
+    var memo: String? {
         switch self {
         case .accountCreated(let value):
             return value.memo
@@ -32,7 +32,7 @@ enum StellarHistoricalTransaction {
         For Stellar, this is different than `transactionHash`.
         See [Stellar Operation Object](https://developers.stellar.org/api/resources/operations/object/) for more info.
      */
-    public var identifier: String {
+    var identifier: String {
         switch self {
         case .accountCreated(let value):
             return value.identifier
@@ -41,7 +41,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var fromAddress: StellarAssetAddress {
+    var fromAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.funder)
@@ -50,7 +50,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var toAddress: StellarAssetAddress {
+    var toAddress: StellarAssetAddress {
         switch self {
         case .accountCreated(let value):
             return StellarAssetAddress(publicKey: value.account)
@@ -59,7 +59,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var direction: Direction {
+    var direction: Direction {
         switch self {
         case .accountCreated(let value):
             return value.direction
@@ -68,7 +68,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var amount: CryptoValue {
+    var amount: CryptoValue {
         CryptoValue.create(majorDisplay: amountString, currency: .stellar) ?? .zero(currency: .stellar)
     }
 
@@ -82,7 +82,7 @@ enum StellarHistoricalTransaction {
     }
 
     /// The transaction hash, used in Explorer URLs.
-    public var transactionHash: String {
+    var transactionHash: String {
         switch self {
         case .accountCreated(let value):
             return value.transactionHash
@@ -91,7 +91,7 @@ enum StellarHistoricalTransaction {
         }
     }
 
-    public var createdAt: Date {
+    var createdAt: Date {
         switch self {
         case .accountCreated(let value):
             return value.createdAt
@@ -107,7 +107,7 @@ enum StellarHistoricalTransaction {
      Historical transaction representing the creation of an account.
      See [Stellar Create Account Object](https://developers.stellar.org/api/resources/operations/object/create-account/) for more info.
      */
-    public struct AccountCreated {
+    struct AccountCreated {
 
         /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String
@@ -133,7 +133,7 @@ enum StellarHistoricalTransaction {
      Historical transaction representing a payment.
      See [Stellar Payment Object](https://developers.stellar.org/api/resources/operations/object/payment/) for more info.
      */
-    public struct Payment {
+    struct Payment {
 
         /// The transaction identifier, used for equality checking and backend calls.
         let identifier: String

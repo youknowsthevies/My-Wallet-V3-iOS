@@ -27,6 +27,7 @@ public struct ServerIncidents: Decodable {
     public struct Component: Decodable {
         /// we check against this parameter
         fileprivate static let wallet = "Wallet"
+
         public enum Status: String, Decodable {
             case operational
             case majorOutage = "major_outage"

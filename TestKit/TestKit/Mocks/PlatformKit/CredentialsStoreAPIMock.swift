@@ -11,22 +11,26 @@ class CredentialsStoreAPIMock: CredentialsStoreAPI {
 
     var expectedPinDataCalled: Bool = false
     var expectedPinData: CredentialsPinData?
+
     func pinData() -> CredentialsPinData? {
         expectedPinDataCalled = true
         return expectedPinData
     }
 
     var expectedWalletData: Single<CredentialsWalletData> = .error(NSError(domain: "Error", code: 1, userInfo: nil))
+
     func walletData(pinDecryptionKey: String) -> Single<CredentialsWalletData> {
         expectedWalletData
     }
 
     var synchronizeCalled = false
+
     func synchronize() {
         synchronizeCalled = true
     }
 
     var eraseCalled = false
+
     func erase() {
         eraseCalled = true
     }

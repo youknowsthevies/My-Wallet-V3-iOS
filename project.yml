@@ -527,7 +527,6 @@ targets:
     - framework: Carthage/Build/CryptoSwift.xcframework
     - framework: Carthage/Build/Differentiator.xcframework
     - framework: Carthage/Build/DIKit.xcframework
-    - framework: Carthage/Build/Differentiator.xcframework
     - framework: Carthage/Build/FirebaseABTesting.xcframework
       embed: false
     - framework: Carthage/Build/FirebaseAnalytics.xcframework

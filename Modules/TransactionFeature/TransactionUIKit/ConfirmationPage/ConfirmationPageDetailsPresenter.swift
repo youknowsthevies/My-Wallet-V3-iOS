@@ -13,6 +13,7 @@ import ToolKit
 
 protocol ConfirmationPagePresentable: Presentable {
     var continueButtonTapped: Signal<Void> { get }
+
     func connect(action: Driver<ConfirmationPageInteractor.Action>) -> Driver<ConfirmationPageInteractor.Effects>
 }
 

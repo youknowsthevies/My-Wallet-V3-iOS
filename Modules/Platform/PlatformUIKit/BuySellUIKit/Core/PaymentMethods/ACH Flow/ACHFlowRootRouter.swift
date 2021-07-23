@@ -73,7 +73,7 @@ final class ACHFlowRootRouter: RIBs.Router<ACHFlowRootInteractable>,
 
     // MARK: - ACHFlowStarter
 
-    public func startFlow(flowDismissed: @escaping () -> Void) {
+    func startFlow(flowDismissed: @escaping () -> Void) {
         dismissFlow = flowDismissed
         interactable.activate()
         load()

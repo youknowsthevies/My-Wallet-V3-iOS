@@ -5,7 +5,7 @@ import PlatformKit
 import RxSwift
 
 final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetcherAPI {
-    public typealias Model = StellarActivityItemEventDetails
+    typealias Model = StellarActivityItemEventDetails
 
     private let repository: StellarWalletAccountRepositoryAPI
     private let operationsService: StellarHistoricalTransactionServiceAPI
@@ -18,7 +18,7 @@ final class StellarActivityItemEventDetailsFetcher: ActivityItemEventDetailsFetc
         self.operationsService = operationsService
     }
 
-    public func details(for identifier: String) -> Observable<StellarActivityItemEventDetails> {
+    func details(for identifier: String) -> Observable<StellarActivityItemEventDetails> {
         guard let accountID = repository.defaultAccount?.publicKey else {
             return .error(StellarAccountError.noDefaultAccount)
         }

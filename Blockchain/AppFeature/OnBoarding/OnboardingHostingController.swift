@@ -113,7 +113,10 @@ final class OnboardingHostingController: UIViewController {
                     self?.viewStore.send(.passwordScreen(.forgetWallet))
                 }
                 let interactor = PasswordRequiredScreenInteractor(walletFetcher: walletFetcher)
-                let presenter = PasswordRequiredScreenPresenter(interactor: interactor, forgetWalletRouting: forgetWalletRouting)
+                let presenter = PasswordRequiredScreenPresenter(
+                    interactor: interactor,
+                    forgetWalletRouting: forgetWalletRouting
+                )
                 let viewController = PasswordRequiredViewController(presenter: presenter)
                 let navigationController = UINavigationController(rootViewController: viewController)
 
@@ -288,7 +291,10 @@ extension OnboardingHostingController {
                     }
                 )
                 forgetWalletAlert.addAction(
-                    UIAlertAction(title: LocalizationConstants.Authentication.forgetWallet, style: .default) { [weak self] _ in
+                    UIAlertAction(
+                        title: LocalizationConstants.Authentication.forgetWallet,
+                        style: .default
+                    ) { [weak self] _ in
                         self?.viewStore.send(.forgetWallet)
                     }
                 )

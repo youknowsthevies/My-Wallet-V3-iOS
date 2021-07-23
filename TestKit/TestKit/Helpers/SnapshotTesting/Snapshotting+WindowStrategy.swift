@@ -42,7 +42,11 @@ extension Snapshotting where Value: UIViewController, Format == UIImage {
     ///   - precision: A value between 0.0 and 1.0 representing how close the images need to look alike for the test to pass. Defaults to 0.99 to let a 1% difference through to avoid false failures.
     ///   - scale: The scale of the image. This should match the screen of the config provided. The configic has traits that don't override scale, so this is defaulted to Retina (2x).
     /// - Returns: A snapshotting strategy that can be used in a Snapshot Test's assertion.
-    static func windowedImage(on config: ViewImageConfig?, precision: Float = 0.99, scale: CGFloat = 2) -> Snapshotting {
+    static func windowedImage(
+        on config: ViewImageConfig?,
+        precision: Float = 0.99,
+        scale: CGFloat = 2
+    ) -> Snapshotting {
         SimplySnapshotting.image(precision: precision, scale: scale).asyncPullback { vc in
             Async<UIImage> { callback in
                 UIView.setAnimationsEnabled(false)
@@ -84,9 +88,16 @@ extension Snapshotting where Value: View, Format == UIImage {
             .init(traitsFrom: [config.traits]),
             .init(displayScale: scale)
         ])
-        return Snapshotting<UIViewController, UIImage>.image(on: config, precision: precision, size: nil, traits: traits).pullback { view in
-            UIHostingController(rootView: view)
-        }
+        return Snapshotting<UIViewController, UIImage>
+            .image(
+                on: config,
+                precision: precision,
+                size: nil,
+                traits: traits
+            )
+            .pullback { view in
+                UIHostingController(rootView: view)
+            }
     }
 
     /// Snapshots a `SwiftUI.View` by embedding it within a `UIWindow`. Animations are disabled while snapshotting.

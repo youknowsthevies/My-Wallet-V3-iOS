@@ -54,8 +54,8 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
             if currentBalance.isZero {
                 percentage = 0
             } else {
-                /// `zero` shouldn't be possible but is handled in any case
-                /// in a way that would not throw
+                // `zero` shouldn't be possible but is handled in any case
+                // in a way that would not throw
                 if previousBalance.isZero || previousBalance.isNegative {
                     percentage = 0
                 } else {

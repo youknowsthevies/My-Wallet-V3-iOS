@@ -11,6 +11,7 @@ public typealias BuyCryptoSupportedPairsCalculationState = ValueCalculationState
 /// A Simple Buy Service that provides the supported pairs for the current Fiat Currency.
 public protocol SupportedPairsInteractorServiceAPI: AnyObject {
     var pairs: Observable<SupportedPairs> { get }
+
     func fetch() -> Observable<SupportedPairs>
 }
 
@@ -18,7 +19,7 @@ final class SupportedPairsInteractorService: SupportedPairsInteractorServiceAPI 
 
     // MARK: - Public properties
 
-    public var pairs: Observable<SupportedPairs> {
+    var pairs: Observable<SupportedPairs> {
         pairsRelay
             .flatMap(weak: self) { (self, pairs) -> Observable<SupportedPairs> in
                 guard let pairs = pairs else {

@@ -5,7 +5,7 @@ import DIKit
 import SettingsKit
 import ToolKit
 
-struct AppCancellations {
+enum AppCancellations {
     struct DeeplinkId: Hashable {}
 }
 
@@ -110,7 +110,9 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             }
         )
     case .appDelegate(.userActivity(let activity)):
-        state.appSettings.userActivityHandled = environment.deeplinkAppHandler.canHandle(deeplink: .userActivity(activity))
+        state.appSettings.userActivityHandled = environment.deeplinkAppHandler.canHandle(
+            deeplink: .userActivity(activity)
+        )
         return environment.deeplinkAppHandler
             .handle(deeplink: .userActivity(activity))
             .catchToEffect()

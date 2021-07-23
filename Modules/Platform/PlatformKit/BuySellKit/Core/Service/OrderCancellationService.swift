@@ -28,7 +28,7 @@ final class OrderCancellationService: OrderCancellationServiceAPI {
 
     // MARK: - Exposed
 
-    public func cancel(order id: String) -> Completable {
+    func cancel(order id: String) -> Completable {
         // Cancel the order
         client.cancel(order: id)
             // Fetch the orders anew

@@ -18,7 +18,7 @@ class MultiBadgeView: UIView {
 
     // MARK: - Public Properties
 
-    public var model: MultiBadgeViewModel! {
+    var model: MultiBadgeViewModel! {
         willSet {
             disposeBag = DisposeBag()
             stackView.removeSubviews()

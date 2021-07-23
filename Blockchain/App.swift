@@ -65,7 +65,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 
 /// Registers the dependencies from each module in the `DependencyContainer` of `DIKit`
 func defineDependencies() {
-    // swiftlint:disable trailing_semicolon
     DependencyContainer.defined(by: modules {
         DependencyContainer.toolKit
         DependencyContainer.networkKit

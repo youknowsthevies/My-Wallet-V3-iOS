@@ -43,7 +43,7 @@ public final class AssetLineChartTableViewCellPresenter: AssetLineChartTableView
     ) {
         self.cryptoCurrency = cryptoCurrency
 
-        /// Setup `lineChartView`
+        // Setup `lineChartView`
         lineChartView = LineChartView()
         lineChartView.chartDescription?.enabled = false
         lineChartView.drawGridBackgroundEnabled = false

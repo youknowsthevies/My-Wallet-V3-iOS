@@ -10,6 +10,7 @@ final class MockQRCodeScanner: QRCodeScannerProtocol {
 
     var startReadingQRCodeCalled: () -> Void = {}
     var startReadingQRCodeCallCount: Int = 0
+
     func startReadingQRCode(from scannableArea: QRCodeScannableArea) {
         startReadingQRCodeCallCount += 1
         startReadingQRCodeCalled()
@@ -17,6 +18,7 @@ final class MockQRCodeScanner: QRCodeScannerProtocol {
 
     var handleSelectedQRImageCalled: () -> Void = {}
     var handleSelectedQRImageCallCount: Int = 0
+
     func handleSelectedQRImage(_ image: UIImage) {
         handleSelectedQRImageCallCount += 1
         handleSelectedQRImageCalled()
@@ -24,6 +26,7 @@ final class MockQRCodeScanner: QRCodeScannerProtocol {
 
     var stopReadingQRCodeCalled: () -> Void = {}
     var stopReadingQRCodeCallCount: Int = 0
+
     func stopReadingQRCode(complete: (() -> Void)?) {
         stopReadingQRCodeCallCount += 1
         stopReadingQRCodeCalled()

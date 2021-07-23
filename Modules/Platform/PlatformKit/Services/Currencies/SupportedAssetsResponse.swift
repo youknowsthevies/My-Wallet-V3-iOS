@@ -9,6 +9,7 @@ struct SupportedAssetsResponse: Decodable {
         let precision: Int // eg 18
         let products: [String] // eg ["PrivateKey"]
         let type: AssetType
+
         struct AssetType: Decodable {
             enum Name: String {
                 case coin = "COIN"

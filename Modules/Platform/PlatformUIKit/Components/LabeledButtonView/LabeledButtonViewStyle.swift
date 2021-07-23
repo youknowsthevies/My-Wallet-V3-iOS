@@ -6,6 +6,7 @@ public struct LabeledButtonViewStyle {
     let textColor: Color
     let cornerRadius: CGFloat
     let border: ButtonContent.Border
+
     init(
         backgroundColor: Color,
         font: UIFont,

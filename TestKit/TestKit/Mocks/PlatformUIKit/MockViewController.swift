@@ -11,7 +11,11 @@ public final class MockViewController: UIViewController {
 
     public private(set) var recordedInvocations = RecordedInvocations()
 
-    override public func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+    override public func present(
+        _ viewControllerToPresent: UIViewController,
+        animated flag: Bool,
+        completion: (() -> Void)? = nil
+    ) {
         recordedInvocations.presentViewController.append(viewControllerToPresent)
     }
 

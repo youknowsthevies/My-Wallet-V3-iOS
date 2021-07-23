@@ -316,6 +316,7 @@ final class TargetSelectionPageInteractor: PresentableInteractor<TargetSelection
     }
 
     private var initialStep: Bool = true
+
     private func handleStateChange(newState: TargetSelectionPageState, sourceAccount: BlockchainAccount) {
         if !initialStep, newState.step == TargetSelectionPageStep.initial {
             // no-op

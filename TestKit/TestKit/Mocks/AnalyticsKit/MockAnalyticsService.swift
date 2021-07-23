@@ -15,11 +15,13 @@ class MockAnalyticsRecorder: AnalyticsEventRecorderAPI {
     func trackEvent(title: String, parameters: [String: Any]?) {}
 
     var recordEventCalled: (called: Bool, event: AnalyticsEvent?) = (false, nil)
+
     func record(event: AnalyticsEvent) {
         recordEventCalled = (true, event)
     }
 
     var recordEventsCalled: (called: Bool, events: [AnalyticsEvent]?) = (false, nil)
+
     func record(events: [AnalyticsEvent]) {
         recordEventsCalled = (true, events)
     }

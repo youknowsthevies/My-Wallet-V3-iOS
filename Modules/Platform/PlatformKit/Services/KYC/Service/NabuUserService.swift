@@ -6,6 +6,7 @@ import ToolKit
 
 public protocol NabuUserServiceAPI: AnyObject {
     var user: Single<NabuUser> { get }
+
     func fetchUser() -> Single<NabuUser>
 }
 

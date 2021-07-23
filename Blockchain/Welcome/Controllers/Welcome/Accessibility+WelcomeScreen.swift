@@ -5,6 +5,7 @@ import PlatformUIKit
 extension Accessibility.Identifier {
     enum WelcomeScreen {
         static let prefix = "WelcomeScreen."
+
         enum Button {
             static let prefix = "\(WelcomeScreen.prefix)Button."
             static let createWallet = "\(prefix)createWallet"

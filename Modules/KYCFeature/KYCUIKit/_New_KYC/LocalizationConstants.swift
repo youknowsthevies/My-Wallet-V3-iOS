@@ -111,6 +111,7 @@ enum L10n {
             "Verify Your Email",
             comment: "The title for the view asking the user to confirm their email address within the Email Verification Flow"
         )
+
         static func message(with emailAddress: String) -> String {
             let format = NSLocalizedString(
                 "We sent a verification email to %@. Please click the link in the email to continue.",

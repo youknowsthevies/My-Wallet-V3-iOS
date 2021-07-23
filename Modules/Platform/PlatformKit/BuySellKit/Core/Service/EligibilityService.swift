@@ -9,7 +9,7 @@ final class EligibilityService: EligibilityServiceAPI {
 
     // MARK: - Properties
 
-    public var isEligible: Single<Bool> {
+    var isEligible: Single<Bool> {
         isEligibileValue.valueSingle
     }
 

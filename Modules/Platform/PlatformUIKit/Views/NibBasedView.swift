@@ -7,7 +7,6 @@ import UIKit
 /// as your class
 open class NibBasedView: UIView {
 
-    // swiftlint:disable strong_iboutlet
     @IBOutlet var view: UIView!
 
     override open func prepareForInterfaceBuilder() {

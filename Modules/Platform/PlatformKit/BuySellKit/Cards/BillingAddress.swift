@@ -26,7 +26,7 @@ public struct BillingAddress {
             return nil
         }
 
-        /// Countries that have state subdomain require `state` to be initialized
+        // Countries that have state subdomain require `state` to be initialized
         if country.hasStatesSubdomain {
             guard let state = state else { return nil }
             self.state = state

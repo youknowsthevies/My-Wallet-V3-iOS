@@ -5,5 +5,6 @@ import Foundation
 /// An `AssetAccount` that only supports a single address (e.g. XLM)
 public protocol SingleAddressAssetAccount: AssetAccount {
     associatedtype Address: AssetAddress
+
     var address: Address { get }
 }

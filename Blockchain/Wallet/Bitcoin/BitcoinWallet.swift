@@ -27,7 +27,7 @@ final class BitcoinWallet: NSObject {
     typealias Dispatcher = BitcoinJSInteropDispatcherAPI & BitcoinJSInteropDelegateAPI
     typealias WalletAPI = LegacyBitcoinWalletProtocol & LegacyWalletAPI & MnemonicAccessAPI
 
-    @objc public var delegate: BitcoinJSInteropDelegateAPI {
+    @objc var delegate: BitcoinJSInteropDelegateAPI {
         dispatcher
     }
 
@@ -42,7 +42,7 @@ final class BitcoinWallet: NSObject {
     private weak var wallet: WalletAPI?
     private let dispatcher: Dispatcher
 
-    @objc public convenience init(legacyWallet: Wallet) {
+    @objc convenience init(legacyWallet: Wallet) {
         self.init(wallet: legacyWallet)
     }
 
@@ -54,7 +54,7 @@ final class BitcoinWallet: NSObject {
         self.dispatcher = dispatcher
     }
 
-    @objc public func setup(with context: JSContext) {
+    @objc func setup(with context: JSContext) {
 
         context.setJsFunction(named: "objc_on_didGetDefaultBitcoinWalletIndexAsync" as NSString) { [weak self] defaultWalletIndex in
             self?.delegate.didGetDefaultWalletIndex(defaultWalletIndex)
@@ -133,7 +133,9 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
             }
     }
 
-    func buildCandidate<Token>(with proposal: BitcoinChainTransactionProposal<Token>) -> Single<BitcoinChainTransactionCandidate<Token>> {
+    func buildCandidate<Token>(
+        with proposal: BitcoinChainTransactionProposal<Token>
+    ) -> Single<BitcoinChainTransactionCandidate<Token>> {
         func buildCandidate(
             with legacyOrderCandidate: OrderTransactionLegacy
         ) -> Single<BitcoinChainTransactionCandidate<Token>> {
@@ -208,10 +210,16 @@ extension BitcoinWallet: BitcoinChainSendBridgeAPI {
         }
 
         let sweepAmountAny: Any = paymentJSON["sweepAmount"] ?? ""
-        let sweepAmount = CryptoValue.create(minor: "\(sweepAmountAny)", currency: cryptoCurrency) ?? .zero(currency: cryptoCurrency)
+        let sweepAmount = CryptoValue.create(
+            minor: "\(sweepAmountAny)",
+            currency: cryptoCurrency
+        ) ?? .zero(currency: cryptoCurrency)
 
         let sweepFeeAny: Any = paymentJSON["sweepFee"] ?? ""
-        let sweepFee = CryptoValue.create(minor: "\(sweepFeeAny)", currency: cryptoCurrency) ?? .zero(currency: cryptoCurrency)
+        let sweepFee = CryptoValue.create(
+            minor: "\(sweepFeeAny)",
+            currency: cryptoCurrency
+        ) ?? .zero(currency: cryptoCurrency)
 
         return TransactionAmounts(
             finalFee: finalFee.moneyValue,

@@ -45,7 +45,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         .just(EthereumReceiveAddress(address: publicKey, label: label, onTxCompleted: onTxCompleted))
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    var activity: Single<[ActivityItemEvent]> {
         Single.zip(nonCustodialActivity, swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)

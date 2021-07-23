@@ -5,6 +5,7 @@ import Foundation
 /// A URI scheme that conforms to BIP 21 (https://github.com/bitcoin/bips/blob/master/bip-0021.mediawiki)
 public protocol BIP21URI: CryptoAssetQRMetadata {
     static var scheme: String { get }
+
     init(address: String, amount: String?)
 }
 

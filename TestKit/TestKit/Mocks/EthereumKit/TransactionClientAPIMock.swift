@@ -11,12 +11,14 @@ class TransactionClientAPIMock: TransactionClientAPI {
     }
 
     var transactionValue: Single<EthereumHistoricalTransactionResponse> = .error(EthereumAPIClientMockError.mockError)
+
     func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse> {
         transactionValue
     }
 
     var lastTransactionsForAccount: String?
     var transactionsForAccountValue: Single<[EthereumHistoricalTransactionResponse]> = .just([])
+
     func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]> {
         lastTransactionsForAccount = account
         return transactionsForAccountValue

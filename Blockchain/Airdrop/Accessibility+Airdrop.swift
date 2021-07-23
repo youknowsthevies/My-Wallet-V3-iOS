@@ -5,6 +5,7 @@ import PlatformUIKit
 extension Accessibility.Identifier {
     enum AirdropCenterScreen {
         static let prefix = "AirdropCenterScreen."
+
         enum Cell {
             static let prefix = "\(AirdropCenterScreen.prefix)Cell."
             static let image = "\(prefix)image-"
@@ -22,6 +23,7 @@ extension Accessibility.Identifier {
 
         enum Cell {
             private static let prefix = "\(AirdropStatusScreen.prefix)Cell."
+
             enum Status {
                 private static let prefix = "\(Cell.prefix)Status."
                 static let title = "\(prefix)title"

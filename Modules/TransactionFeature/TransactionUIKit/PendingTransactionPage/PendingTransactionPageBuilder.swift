@@ -19,7 +19,7 @@ final class PendingTransactionPageBuilder: PendingTransactionPageBuildable {
 
     private let pollingService: PendingSwapCompletionServiceAPI
 
-    public init(pollingService: PendingSwapCompletionServiceAPI = resolve()) {
+    init(pollingService: PendingSwapCompletionServiceAPI = resolve()) {
         self.pollingService = pollingService
     }
 

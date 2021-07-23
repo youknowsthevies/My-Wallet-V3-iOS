@@ -4,7 +4,7 @@ import BigInt
 @testable import EthereumKit
 import PlatformKit
 
-struct MockEthereumWalletTestData {
+enum MockEthereumWalletTestData {
     static let walletId = MockWalletTestData.walletId
     static let email = MockWalletTestData.email
 

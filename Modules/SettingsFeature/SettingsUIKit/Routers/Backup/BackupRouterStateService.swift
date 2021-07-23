@@ -45,7 +45,7 @@ final class BackupRouterStateService: BackupRouterStateServiceAPI {
 
     // MARK: - Types
 
-    public enum State {
+    enum State {
         case start
 
         /// The CTA for funds backup

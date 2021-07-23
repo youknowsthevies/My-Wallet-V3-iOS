@@ -40,7 +40,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
         interactor.router = self
     }
 
-    override public func didLoad() {
+    override func didLoad() {
         super.didLoad()
     }
 
@@ -73,7 +73,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawFlowInteractable>,
 
     // MARK: - WithdrawFlowStarter
 
-    public func startFlow(flowDismissed: @escaping () -> Void) {
+    func startFlow(flowDismissed: @escaping () -> Void) {
         dismissFlow = flowDismissed
         interactable.activate()
         load()

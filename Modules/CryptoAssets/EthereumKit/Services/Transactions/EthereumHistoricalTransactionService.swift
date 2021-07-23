@@ -10,6 +10,7 @@ import ToolKit
 public protocol EthereumHistoricalTransactionServiceAPI: AnyObject {
     var isWaitingOnTransaction: Single<Bool> { get }
     var transactions: Single<[EthereumHistoricalTransaction]> { get }
+
     func transaction(identifier: String) -> Single<EthereumHistoricalTransaction>
 }
 

@@ -5,6 +5,7 @@ import XCTest
 
 struct MockNabuUserSunriverAirdropRegistered: NabuUserSunriverAirdropRegistering {
     let isSunriverAirdropRegistered: Bool
+
     init(isRegistered: Bool) {
         isSunriverAirdropRegistered = isRegistered
     }

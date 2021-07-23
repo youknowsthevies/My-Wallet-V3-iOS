@@ -35,6 +35,7 @@ extension MicrophonePrompting {
 
 public protocol MicrophonePromptingDelegate: AnyObject {
     var analyticsRecorder: AnalyticsEventRecorderAPI { get }
+
     func onMicrophonePromptingComplete()
     func promptToAcceptMicrophonePermissions(confirmHandler: @escaping (() -> Void))
 }

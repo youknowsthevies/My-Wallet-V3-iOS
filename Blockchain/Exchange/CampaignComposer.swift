@@ -35,9 +35,10 @@ final class CampaignComposer {
     // MARK: - Properties
 
     /// General query-value pairs that should be tracked for any campaign
-    var generalQueryValuePairs: [Key: Campaign] { [
-        .source: CampaignValue.General.source,
-        .medium: CampaignValue.Exchange.medium
-    ]
+    var generalQueryValuePairs: [Key: Campaign] {
+        [
+            .source: CampaignValue.General.source,
+            .medium: CampaignValue.Exchange.medium
+        ]
     }
 }

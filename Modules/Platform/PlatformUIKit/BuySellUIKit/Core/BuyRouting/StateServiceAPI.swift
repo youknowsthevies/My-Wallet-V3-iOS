@@ -16,6 +16,7 @@ public protocol StateReceiverServiceAPI: AnyObject {
 /// A checkout service API
 public protocol CheckoutServiceAPI: RoutingPreviousStateEmitterAPI {
     var previousRelay: PublishRelay<Void> { get }
+
     func nextFromBuyCrypto(with checkoutData: CheckoutData)
     func nextFromBankLinkSelection()
     func ineligible(with checkoutData: CheckoutData)

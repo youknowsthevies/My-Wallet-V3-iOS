@@ -30,7 +30,7 @@ final class Coincore: CoincoreAPI {
 
     // MARK: - Public Properties
 
-    public var allAccounts: Single<AccountGroup> {
+    var allAccounts: Single<AccountGroup> {
         reactiveWallet.waitUntilInitializedSingle
             .flatMap(weak: self) { (self, _) in
                 Single.zip(
@@ -69,7 +69,7 @@ final class Coincore: CoincoreAPI {
     }
 
     /// Gives a chance for all assets to initialize themselves.
-    public func initialize() -> Completable {
+    func initialize() -> Completable {
         var completables = cryptoAssets
             .map { asset -> Completable in
                 asset.initialize()
@@ -78,7 +78,7 @@ final class Coincore: CoincoreAPI {
         return Completable.concat(completables)
     }
 
-    public subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
+    subscript(cryptoCurrency: CryptoCurrency) -> CryptoAsset {
         guard let asset = cryptoAssets.first(where: { $0.asset == cryptoCurrency }) else {
             fatalError("Unknown crypto currency '\(cryptoCurrency.code)'.")
         }
@@ -87,7 +87,7 @@ final class Coincore: CoincoreAPI {
 
     /// We are looking for targets of our action.
     /// Action is considered what the source account wants to do.
-    public func getTransactionTargets(
+    func getTransactionTargets(
         sourceAccount: BlockchainAccount,
         action: AssetAction
     ) -> Single<[SingleAccount]> {

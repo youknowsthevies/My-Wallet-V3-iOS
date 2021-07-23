@@ -2,5 +2,6 @@
 
 extension Bundle {
     private class PlatformUIKitBundle {}
+
     public static let platformUIKit = Bundle(for: PlatformUIKitBundle.self)
 }

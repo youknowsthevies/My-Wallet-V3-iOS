@@ -9,14 +9,14 @@ public enum Order {
 
 enum OrderPayload {
 
-    public enum CreateActionType: String, Encodable {
+    enum CreateActionType: String, Encodable {
         case confirm
         case pending
     }
 
-    public struct ConfirmOrder: Encodable {
+    struct ConfirmOrder: Encodable {
 
-        public enum Partner {
+        enum Partner {
             case everyPay(customerUrl: String)
             case bank
             case funds
@@ -46,7 +46,7 @@ enum OrderPayload {
         }
     }
 
-    public struct Request: Encodable {
+    struct Request: Encodable {
         struct Input: Encodable {
             let symbol: String
             let amount: String
@@ -93,7 +93,7 @@ enum OrderPayload {
         }
     }
 
-    public struct Response: Decodable {
+    struct Response: Decodable {
         enum Side: String, Decodable {
             case buy = "BUY"
             case sell = "SELL"

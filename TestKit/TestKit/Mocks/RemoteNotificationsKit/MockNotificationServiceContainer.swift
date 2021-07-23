@@ -26,7 +26,7 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
         self
     }
 
-    public init(authorizer: RemoteNotificationAuthorizing) {
+    init(authorizer: RemoteNotificationAuthorizing) {
         self.authorizer = authorizer
     }
 
@@ -44,11 +44,13 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
     }
 
     var appDidFailToRegisterForRemoteNotificationsCalled = false
+
     func appDidFailToRegisterForRemoteNotifications(with error: Error) {
         appDidFailToRegisterForRemoteNotificationsCalled = true
     }
 
     var appDidRegisterForRemoteNotificationsCalled: (called: Bool, token: Data?) = (false, nil)
+
     func appDidRegisterForRemoteNotifications(with deviceToken: Data) {
         appDidRegisterForRemoteNotificationsCalled = (true, deviceToken)
     }

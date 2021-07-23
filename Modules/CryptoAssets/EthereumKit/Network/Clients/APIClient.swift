@@ -12,6 +12,7 @@ protocol TransactionPushClientAPI: AnyObject {
 
 protocol TransactionClientAPI {
     var latestBlock: Single<LatestBlockResponse> { get }
+
     func transaction(with hash: String) -> Single<EthereumHistoricalTransactionResponse>
     func transactions(for account: String) -> Single<[EthereumHistoricalTransactionResponse]>
 }

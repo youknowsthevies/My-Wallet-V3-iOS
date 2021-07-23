@@ -62,7 +62,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
 
     // MARK: - NetworkResponseDecoderAPI
 
-    public func decodeOptional<ResponseType: Decodable>(
+    func decodeOptional<ResponseType: Decodable>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
@@ -79,7 +79,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
 
-    public func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    func decodeOptional<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         responseType: ResponseType.Type,
         for request: NetworkRequest
@@ -97,7 +97,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         .mapError(ErrorResponseType.from)
     }
 
-    public func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
+    func decode<ResponseType: Decodable, ErrorResponseType: FromNetworkErrorConvertible>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, ErrorResponseType> {
@@ -105,7 +105,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
             .mapError(ErrorResponseType.from)
     }
 
-    public func decode<ResponseType: Decodable>(
+    func decode<ResponseType: Decodable>(
         response: ServerResponse,
         for request: NetworkRequest
     ) -> Result<ResponseType, NetworkError> {
@@ -118,7 +118,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         )
     }
 
-    public func decode<ErrorResponseType: FromNetworkErrorConvertible>(
+    func decode<ErrorResponseType: FromNetworkErrorConvertible>(
         error: ServerErrorResponse,
         for request: NetworkRequest
     ) -> ErrorResponseType {
@@ -147,7 +147,7 @@ final class NetworkResponseDecoder: NetworkResponseDecoderAPI {
         return decodedErrorResponse
     }
 
-    public func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
+    func decodeFailureToString(errorResponse: ServerErrorResponse) -> String? {
         guard let payload = errorResponse.payload else {
             return nil
         }

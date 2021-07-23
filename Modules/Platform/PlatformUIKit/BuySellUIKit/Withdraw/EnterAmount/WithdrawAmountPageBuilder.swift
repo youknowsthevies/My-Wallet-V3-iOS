@@ -16,7 +16,7 @@ final class WithdrawAmountPageBuilder: WithdrawAmountPageBuildable {
     private let currency: FiatCurrency
     private let fiatCurrencyService: FiatCurrencyServiceAPI
 
-    public init(
+    init(
         currency: FiatCurrency,
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve()
     ) {

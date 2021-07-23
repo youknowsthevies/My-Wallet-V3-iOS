@@ -18,7 +18,10 @@ final class TradeLimitsService: TradeLimitsAPI {
 
     init(networkAdapter: NetworkAdapterAPI = resolve(tag: DIKitContext.retail)) {
         self.networkAdapter = networkAdapter
-        cachedLimitsTimer = Timer.scheduledTimer(withTimeInterval: clearCachedLimitsInterval, repeats: true) { [weak self] _ in
+        cachedLimitsTimer = Timer.scheduledTimer(
+            withTimeInterval: clearCachedLimitsInterval,
+            repeats: true
+        ) { [weak self] _ in
             self?.clearCachedLimits()
         }
         cachedLimitsTimer?.tolerance = clearCachedLimitsInterval / 10
@@ -49,7 +52,10 @@ final class TradeLimitsService: TradeLimitsAPI {
         _ = disposables.insert(disposable)
     }
 
-    func getTradeLimits(withFiatCurrency currency: String, withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void)) {
+    func getTradeLimits(
+        withFiatCurrency currency: String,
+        withCompletion: @escaping ((Result<TradeLimits, Error>) -> Void)
+    ) {
         let disposable = getTradeLimits(withFiatCurrency: currency, ignoringCache: false)
             .subscribeOn(MainScheduler.asyncInstance)
             .observeOn(MainScheduler.instance)

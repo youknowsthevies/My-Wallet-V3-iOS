@@ -6,6 +6,7 @@ import UIKit
 
 public protocol QRCodeAPI {
     var image: UIImage? { get }
+
     init?(string: String)
     init(data: Data)
 }

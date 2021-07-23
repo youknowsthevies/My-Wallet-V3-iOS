@@ -9,6 +9,7 @@ import ToolKit
 public protocol EnterAmountScreenInteractorAPI: AnyObject {
     var hasValidState: Observable<Bool> { get }
     var selectedCurrencyType: Observable<CurrencyType> { get }
+
     func didLoad()
 }
 

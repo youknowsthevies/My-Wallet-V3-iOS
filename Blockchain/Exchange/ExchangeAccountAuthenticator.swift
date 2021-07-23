@@ -9,8 +9,10 @@ import ToolKit
 
 protocol ExchangeAccountAuthenticatorAPI {
     typealias LinkID = String
+
     var exchangeLinkID: Single<LinkID> { get }
     var exchangeURL: Single<URL> { get }
+
     func linkToExistingExchangeUser(linkID: LinkID) -> Completable
 }
 

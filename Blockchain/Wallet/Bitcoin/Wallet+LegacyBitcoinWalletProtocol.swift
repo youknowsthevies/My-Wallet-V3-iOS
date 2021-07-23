@@ -5,19 +5,45 @@ import JavaScriptCore
 
 protocol LegacyBitcoinWalletProtocol: AnyObject {
 
-    func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void)
+    func bitcoinDefaultWalletIndex(
+        with secondPassword: String?,
+        success: @escaping (Int) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void)
+    func bitcoinWalletIndex(
+        receiveAddress: String,
+        success: @escaping (Int32) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void)
+    func bitcoinWallets(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void)
+    func getBitcoinMemo(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    )
 
-    func saveBitcoinMemo(for transaction: String, memo: String?)
+    func saveBitcoinMemo(
+        for transaction: String,
+        memo: String?
+    )
 
-    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError>
+    func getBitcoinReceiveAddress(
+        forXPub xpub: String,
+        derivation: BitcoinDerivation
+    ) -> Result<String, BitcoinReceiveAddressError>
 
-    func getSignedBitcoinPayment(with secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void)
+    func getSignedBitcoinPayment(
+        with secondPassword: String?,
+        success: @escaping (String, Int) -> Void,
+        error: @escaping (String) -> Void
+    )
 }
 
 enum BitcoinReceiveAddressError: Error {
@@ -35,7 +61,11 @@ enum BitcoinDerivation {
 
 extension Wallet: LegacyBitcoinWalletProtocol {
 
-    func getSignedBitcoinPayment(with secondPassword: String?, success: @escaping (String, Int) -> Void, error: @escaping (String) -> Void) {
+    func getSignedBitcoinPayment(
+        with secondPassword: String?,
+        success: @escaping (String, Int) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -58,7 +88,10 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
-    func getBitcoinReceiveAddress(forXPub xpub: String, derivation: BitcoinDerivation) -> Result<String, BitcoinReceiveAddressError> {
+    func getBitcoinReceiveAddress(
+        forXPub xpub: String,
+        derivation: BitcoinDerivation
+    ) -> Result<String, BitcoinReceiveAddressError> {
         guard isInitialized() else {
             return .failure(.uninitialized)
         }
@@ -95,7 +128,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScriptCheckIsOnMainQueue(function)
     }
 
-    func getBitcoinMemo(for transaction: String, success: @escaping (String?) -> Void, error: @escaping (String) -> Void) {
+    func getBitcoinMemo(
+        for transaction: String,
+        success: @escaping (String?) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -113,7 +150,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         success(result)
     }
 
-    func bitcoinDefaultWalletIndex(with secondPassword: String?, success: @escaping (Int) -> Void, error: @escaping (String) -> Void) {
+    func bitcoinDefaultWalletIndex(
+        with secondPassword: String?,
+        success: @escaping (Int) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -136,7 +177,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
-    func bitcoinWalletIndex(receiveAddress: String, success: @escaping (Int32) -> Void, error: @escaping (String) -> Void) {
+    func bitcoinWalletIndex(
+        receiveAddress: String,
+        success: @escaping (Int32) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -157,7 +202,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
-    func bitcoinWallets(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
+    func bitcoinWallets(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return
@@ -180,7 +229,11 @@ extension Wallet: LegacyBitcoinWalletProtocol {
         context.evaluateScriptCheckIsOnMainQueue(script)
     }
 
-    func hdWallet(with secondPassword: String?, success: @escaping (String) -> Void, error: @escaping (String) -> Void) {
+    func hdWallet(
+        with secondPassword: String?,
+        success: @escaping (String) -> Void,
+        error: @escaping (String) -> Void
+    ) {
         guard isInitialized() else {
             error("Wallet is not yet initialized.")
             return

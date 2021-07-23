@@ -6,7 +6,11 @@ import XCTest
 extension XCTestCase {
 
     @discardableResult
-    func wait<Output, Error>(for publisher: AnyPublisher<Output, Error>, file: StaticString = #file, line: UInt = #line) -> Result<Output, Error>? {
+    func wait<Output, Error>(
+        for publisher: AnyPublisher<Output, Error>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Result<Output, Error>? {
         let e = expectation(description: "Waiting for publisher to complete")
         var value: Output?, error: Error?
         let cancellable = publisher.sink { result in

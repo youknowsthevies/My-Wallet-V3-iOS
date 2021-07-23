@@ -4,8 +4,10 @@ import PlatformKit
 @testable import PlatformUIKit
 
 final class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
+
     var scanCompleteCalled: (Result<String, QRScannerError>) -> Void = { _ in }
     var scanCompleteResults: [Result<String, QRScannerError>] = []
+
     func scanComplete(with result: Result<String, QRScannerError>) {
         scanCompleteResults.append(result)
         scanCompleteCalled(result)
@@ -13,6 +15,7 @@ final class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
 
     var didStartScanningCalled: () -> Void = {}
     var didStartScanningCallCount: Int = 0
+
     func didStartScanning() {
         didStartScanningCallCount += 1
         didStartScanningCalled()
@@ -20,6 +23,7 @@ final class QRCodeScannerDelegateMock: QRCodeScannerDelegate {
 
     var didStopScanningCalled: () -> Void = {}
     var didStopScanningCallCount: Int = 0
+
     func didStopScanning() {
         didStopScanningCallCount += 1
         didStopScanningCalled()

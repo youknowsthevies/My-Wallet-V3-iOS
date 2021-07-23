@@ -57,8 +57,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
 
     @LazyInject private var remoteNotificationServiceContainer: RemoteNotificationServiceContaining
 
-    @LazyInject(tag: DebugScreenContext.tag)
-    private var debugCoordinator: DebugCoordinating
+    @LazyInject(tag: DebugScreenContext.tag) private var debugCoordinator: DebugCoordinating
 
     private let disposeBag = DisposeBag()
     private var appCoordinator: AppCoordinator { .shared }
@@ -161,8 +160,8 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         // TODO: Remove this - we don't want any such logic in `AppDelegate`
-        /// We have to make sure the 2FA alerts (email / auth app) are still showing
-        /// when the user goes back to foreground
+        // We have to make sure the 2FA alerts (email / auth app) are still showing
+        // when the user goes back to foreground
         if appCoordinator.onboardingRouter.state != .pending2FA {
             UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
         }
@@ -177,8 +176,9 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     var backgroundTaskTimer = BackgroundTaskTimer(
-        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(
-            identifier: UIBackgroundTaskIdentifier.invalid))
+        invalidBackgroundTaskIdentifier: BackgroundTaskIdentifier(identifier: UIBackgroundTaskIdentifier.invalid)
+    )
+
     func applicationDidEnterBackground(_ application: UIApplication) {
         let portfolioSyncingService: BalanceSharingSettingsServiceAPI = resolve()
         portfolioSyncingService.sync()

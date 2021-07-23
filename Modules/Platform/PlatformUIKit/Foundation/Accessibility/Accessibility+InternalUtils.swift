@@ -79,6 +79,7 @@ extension Accessibility.Identifier {
 extension Accessibility.Identifier {
     enum TextFieldView {
         private static let prefix = "TextFieldView."
+
         enum Card {
             private static let prefix = "\(TextFieldView.prefix)Card."
             static let name = "\(prefix)cardholderName"

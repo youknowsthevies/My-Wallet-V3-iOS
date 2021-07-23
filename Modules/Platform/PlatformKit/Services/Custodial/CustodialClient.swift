@@ -7,6 +7,7 @@ import ToolKit
 
 public protocol TradingBalanceClientAPI: AnyObject {
     var balance: Single<CustodialBalanceResponse?> { get }
+
     func balance(for currencyType: CurrencyType) -> Single<CustodialBalanceResponse?>
 }
 
@@ -25,7 +26,7 @@ final class CustodialClient: TradingBalanceClientAPI,
 
     // MARK: - Properties
 
-    public var balance: Single<CustodialBalanceResponse?> {
+    var balance: Single<CustodialBalanceResponse?> {
         let path = Path.custodialBalance
         let request = requestBuilder.get(
             path: path,

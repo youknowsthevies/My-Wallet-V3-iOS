@@ -277,6 +277,7 @@ open class BaseScreenViewController: UIViewController {
     }
 
     private lazy var drawerRouter: DrawerRouting = resolve()
+
     open func navigationBarLeadingButtonPressed() {
         switch leadingButtonStyle {
         case .back:

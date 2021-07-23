@@ -25,6 +25,7 @@ public enum SettingsServiceError: Error {
 public protocol SettingsServiceCombineAPI: AnyObject {
     var singleValuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> { get }
     var valuePublisher: AnyPublisher<WalletSettings, SettingsServiceError> { get }
+
     func fetchPublisher(force: Bool) -> AnyPublisher<WalletSettings, SettingsServiceError>
 }
 

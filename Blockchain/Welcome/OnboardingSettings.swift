@@ -16,7 +16,10 @@ final class OnboardingSettings: OnboardingSettingsAPI {
 
     var walletIntroLatestLocation: WalletIntroductionLocation? {
         get {
-            guard let value = defaults.object(forKey: UserDefaults.Keys.walletIntroLatestLocation.rawValue) as? Data else { return nil }
+            let value = defaults.object(forKey: UserDefaults.Keys.walletIntroLatestLocation.rawValue)
+            guard let value = value as? Data else {
+                return nil
+            }
             return try? JSONDecoder().decode(WalletIntroductionLocation.self, from: value)
         }
         set {

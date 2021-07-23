@@ -9,7 +9,7 @@ final class AccountAuxiliaryView: UIView {
 
     // MARK: - Public Properties
 
-    public var presenter: AccountAuxiliaryViewPresenter! {
+    var presenter: AccountAuxiliaryViewPresenter! {
         willSet {
             disposeBag = DisposeBag()
         }
@@ -53,7 +53,7 @@ final class AccountAuxiliaryView: UIView {
     private let badgeImageView = BadgeImageView()
     private var disposeBag = DisposeBag()
 
-    public init() {
+    init() {
         super.init(frame: UIScreen.main.bounds)
 
         addSubview(stackView)

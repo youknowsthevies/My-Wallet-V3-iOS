@@ -12,6 +12,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
 
     var underlyingEthereumAccounts: ((String?, ([[String: Any]]) -> Void, (String) -> Void) -> Void)?
+
     func ethereumAccounts(
         with secondPassword: String?,
         success: @escaping ([[String: Any]]) -> Void,
@@ -21,6 +22,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
 
     var underlyingGetLabelForEthereumAccount: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+
     func getLabelForEthereumAccount(
         with secondPassword: String?,
         success: @escaping (String) -> Void,
@@ -30,6 +32,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
     }
 
     var underlyingGetEthereumAddress: ((String?, (String) -> Void, (String) -> Void) -> Void)?
+
     func getEthereumAddress(
         with secondPassword: String?,
         success: @escaping (String) -> Void,

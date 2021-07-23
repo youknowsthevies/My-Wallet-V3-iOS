@@ -19,7 +19,7 @@ final class GeneralInformationClient: GeneralInformationClientAPI {
     // MARK: - Properties
 
     /// Requests a session token for the wallet, if not available already
-    public var countries: Single<[CountryData]> {
+    var countries: Single<[CountryData]> {
         let request = requestBuilder.get(
             path: Path.countries
         )!

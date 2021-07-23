@@ -57,7 +57,7 @@ final class PendingOrderStateScreenPresenter: RibBridgePresenter, PendingStatePr
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         let isBuy = interactor.isBuy
         let prefix = isBuy ? LocalizedString.Loading.Buy.titlePrefix : LocalizedString.Loading.Sell.titlePrefix

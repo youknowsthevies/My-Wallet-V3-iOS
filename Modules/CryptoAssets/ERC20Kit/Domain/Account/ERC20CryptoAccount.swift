@@ -59,7 +59,7 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(ERC20ReceiveAddress(asset: asset, address: publicKey, label: label, onTxCompleted: onTxCompleted))
     }
 
-    public var activity: Single<[ActivityItemEvent]> {
+    var activity: Single<[ActivityItemEvent]> {
         Single.zip(nonCustodialActivity, swapActivity)
             .map { nonCustodialActivity, swapActivity in
                 Self.reconcile(swapEvents: swapActivity, noncustodial: nonCustodialActivity)

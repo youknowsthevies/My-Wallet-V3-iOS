@@ -82,7 +82,7 @@ final class EnterAmountViewController: BaseScreenViewController,
     @available(*, unavailable)
     required init?(coder: NSCoder) { nil }
 
-    override public func loadView() {
+    override func loadView() {
         view = UIView()
         view.backgroundColor = .white
 
@@ -142,16 +142,16 @@ final class EnterAmountViewController: BaseScreenViewController,
         digitPadTopSeparatorView.backgroundColor = .lightBorder
     }
 
-    override public func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
     }
 
-    override public func viewWillLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        /// NOTE: This must be in `viewWillLayoutSubviews`
-        /// This is a special treatment due to the manner view controllers
-        /// are modally displayed on iOS 13 (with additional gap on the top that enable
-        /// dismissal of the screen.
+        // NOTE: This must be in `viewWillLayoutSubviews`
+        // This is a special treatment due to the manner view controllers
+        // are modally displayed on iOS 13 (with additional gap on the top that enable
+        // dismissal of the screen.
         if view.bounds.height <= UIDevice.PhoneHeight.eight.rawValue {
             digitPadHeightConstraint.constant = Constant.SuperCompact.digitPadHeight
             digitPadSeparatorTopConstraint.constant = Constant.SuperCompact.continueButtonViewBottomOffset
@@ -162,7 +162,9 @@ final class EnterAmountViewController: BaseScreenViewController,
         }
     }
 
-    func connect(state: Driver<EnterAmountPageInteractor.State>) -> Driver<EnterAmountPageInteractor.NavigationEffects> {
+    func connect(
+        state: Driver<EnterAmountPageInteractor.State>
+    ) -> Driver<EnterAmountPageInteractor.NavigationEffects> {
 
         let topSelection = state.map(\.topSelection)
 
@@ -318,11 +320,11 @@ final class EnterAmountViewController: BaseScreenViewController,
 
     // MARK: - Navigation
 
-    override public func navigationBarLeadingButtonPressed() {
+    override func navigationBarLeadingButtonPressed() {
         backTriggered.onNext(())
     }
 
-    override public func navigationBarTrailingButtonPressed() {
+    override func navigationBarTrailingButtonPressed() {
         closeTriggerred.onNext(())
     }
 }

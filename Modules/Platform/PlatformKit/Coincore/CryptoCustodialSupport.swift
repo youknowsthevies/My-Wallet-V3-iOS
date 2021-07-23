@@ -4,6 +4,7 @@ import Foundation
 
 public struct CryptoCustodialSupport {
     public static let empty: CryptoCustodialSupport = .init(data: [:])
+
     public struct Actions {
         private enum Keys: String {
             case canBuy = "CanBuy" // Brokerage support - simple buy
@@ -51,6 +52,7 @@ public struct CryptoCustodialSupport {
         }
 
         private let keys: [Keys]
+
         init(data: [String]) {
             keys = data.compactMap(Keys.init)
         }

@@ -23,7 +23,7 @@ final class SwapLandingViewController: BaseTableViewController, SwapLandingPrese
 
     weak var listener: SwapLandingPresentableListener?
 
-    override public init() {
+    override init() {
         super.init()
     }
 

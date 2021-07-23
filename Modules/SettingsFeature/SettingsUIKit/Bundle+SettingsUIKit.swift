@@ -4,5 +4,6 @@ import Foundation
 
 extension Bundle {
     private class SettingsUIKitBundle {}
+
     static let settingsUIKit = Bundle(for: SettingsUIKitBundle.self)
 }

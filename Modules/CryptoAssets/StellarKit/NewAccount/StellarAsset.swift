@@ -34,6 +34,7 @@ final class StellarAsset: CryptoAsset {
     private let accountRepository: StellarWalletAccountRepositoryAPI
     private let errorRecorder: ErrorRecording
     private let addressFactory: StellarCryptoReceiveAddressFactory
+
     init(
         accountRepository: StellarWalletAccountRepositoryAPI = resolve(),
         errorRecorder: ErrorRecording = resolve(),

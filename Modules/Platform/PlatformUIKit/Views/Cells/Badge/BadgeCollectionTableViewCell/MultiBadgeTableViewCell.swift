@@ -10,7 +10,7 @@ class MultiBadgeTableViewCell: UITableViewCell {
 
     // MARK: - Public Properites
 
-    public var model: MultiBadgeViewModel! {
+    var model: MultiBadgeViewModel! {
         get { multiBadgeView.model }
         set { multiBadgeView.model = newValue }
     }

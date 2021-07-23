@@ -43,6 +43,7 @@ extension BigUInt {
     /// Number to string convertion options
     public struct StringOptions: OptionSet {
         public let rawValue: Int
+
         public init(rawValue: Int) {
             self.rawValue = rawValue
         }

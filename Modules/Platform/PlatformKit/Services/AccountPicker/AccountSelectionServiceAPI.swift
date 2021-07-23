@@ -6,6 +6,7 @@ import RxSwift
 /// A interface for a service used to select a `BlockchainAccount`.
 public protocol AccountSelectionServiceAPI: AnyObject {
     var selectedData: Observable<BlockchainAccount> { get }
+
     func record(selection: BlockchainAccount)
 }
 

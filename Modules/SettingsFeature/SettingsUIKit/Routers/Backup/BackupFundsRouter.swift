@@ -9,6 +9,7 @@ import SettingsKit
 
 public protocol BackupFundsRouterAPI {
     var completionRelay: PublishRelay<Void> { get }
+
     func start()
 }
 

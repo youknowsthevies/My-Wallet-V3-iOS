@@ -7,6 +7,7 @@ import ToolKit
 public protocol PendingOrderDetailsServiceAPI: AnyObject {
     var pendingOrderDetails: Single<OrderDetails?> { get }
     var pendingActionOrderDetails: Single<OrderDetails?> { get }
+
     func cancel() -> Completable
 }
 

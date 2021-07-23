@@ -68,7 +68,7 @@ final class AccountPickerViewController: BaseScreenViewController, AccountPicker
 
     // MARK: - Lifecycle
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         _ = setupTableView
         view.addSubview(tableView)

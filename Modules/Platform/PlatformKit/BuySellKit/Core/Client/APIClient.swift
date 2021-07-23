@@ -58,6 +58,7 @@ final class APIClient: SimpleBuyClientAPI {
         static let withdrawal = ["payments", "withdrawals"]
         static let bankTransfer = ["payments", "banktransfer"]
         static let linkedBanks = ["payments", "banking-info"]
+
         static func updateLinkedBank(id: String) -> [String] {
             bankTransfer + [id, "update"]
         }

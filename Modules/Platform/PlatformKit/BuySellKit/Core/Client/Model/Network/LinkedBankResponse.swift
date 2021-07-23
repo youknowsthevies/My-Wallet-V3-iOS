@@ -67,6 +67,7 @@ extension LinkedBankResponse {
         let media: [Media]
         let status: String
         let authorisationUrl: URL
+
         struct Media: Decodable {
             let source: String
             let type: String

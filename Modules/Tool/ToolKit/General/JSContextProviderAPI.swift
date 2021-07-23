@@ -4,6 +4,7 @@ import JavaScriptCore
 
 public protocol JSContextProviderAPI: AnyObject {
     var jsContext: JSContext { get }
+
     func fetchJSContext() -> JSContext
 }
 

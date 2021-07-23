@@ -22,6 +22,7 @@ public enum EmailAuthorizationServiceError: Error {
 
 public protocol EmailAuthorizationServiceAPI {
     var authorize: Completable { get }
+
     func cancel()
 
     /// Checks whether the email authorization has been approved by checking the existence of GUID set at the backend

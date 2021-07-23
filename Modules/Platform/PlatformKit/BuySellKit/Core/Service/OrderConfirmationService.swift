@@ -31,7 +31,7 @@ final class OrderConfirmationService: OrderConfirmationServiceAPI {
         self.client = client
     }
 
-    public func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
+    func confirm(checkoutData: CheckoutData) -> Single<CheckoutData> {
         let orderId = checkoutData.order.identifier
         let paymentMethodId = checkoutData.order.paymentMethodId
         let partner: OrderPayload.ConfirmOrder.Partner

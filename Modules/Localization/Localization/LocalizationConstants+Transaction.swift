@@ -635,6 +635,7 @@ extension LocalizationConstants.Transaction.Confirmation {
         "Cancel",
         comment: "Cancel"
     )
+
     public static func transactionFee(feeType: String) -> String {
         let format = NSLocalizedString(
             "Fee - %@",

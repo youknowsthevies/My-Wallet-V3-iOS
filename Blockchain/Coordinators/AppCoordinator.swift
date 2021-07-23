@@ -210,7 +210,11 @@ import WalletPayloadKit
         sideMenuViewController?.reload()
     }
 
-    private func setRootViewController(_ rootViewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
+    private func setRootViewController(
+        _ rootViewController: UIViewController,
+        animated: Bool,
+        completion: @escaping () -> Void
+    ) {
         // Sets root view controller
         window.setRootViewController(rootViewController)
         // Animate if needed
@@ -529,8 +533,10 @@ extension AppCoordinator: WalletBackupDelegate {
 
 extension AppCoordinator: WalletHistoryDelegate {
     func didFailGetHistory(error: String?) {
-        guard let errorMessage = error, errorMessage.count > 0 else {
-            AlertViewPresenter.shared.standardError(message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork)
+        guard let errorMessage = error, !errorMessage.isEmpty else {
+            AlertViewPresenter.shared.standardError(
+                message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
+            )
             return
         }
         recorder.record(event: AnalyticsEvents.AppCoordinatorEvent.btcHistoryError(errorMessage))

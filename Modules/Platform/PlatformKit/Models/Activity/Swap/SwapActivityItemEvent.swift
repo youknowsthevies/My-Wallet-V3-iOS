@@ -181,9 +181,9 @@ public struct SwapActivityItemEvent: Decodable {
         let formatter = DateFormatter.sessionDateFormat
         let legacyFormatter = DateFormatter.iso8601Format
 
-        /// Some trades don't have a consistant date format. Some
-        /// use the same format as what we use for establishing a
-        /// secure session, some use ISO8601.
+        // Some trades don't have a consistant date format. Some
+        // use the same format as what we use for establishing a
+        // secure session, some use ISO8601.
         if let value = formatter.date(from: createdAt) {
             date = value
         } else if let value = legacyFormatter.date(from: createdAt) {

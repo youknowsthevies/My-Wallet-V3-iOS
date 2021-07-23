@@ -52,7 +52,7 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
 
     /// Receives a `KeyDataPair` and decrypt `data` using `key`
     /// - Parameter pair: A pair of key and data used in the decription process.
-    public func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
+    func decrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
         Single.just(decryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)))
             .flatMap(weak: self) { (self, result) -> Single<String> in
                 switch result {
@@ -74,17 +74,23 @@ final class WalletCryptoService: WalletCryptoServiceAPI {
 
     /// Receives a `KeyDataPair` and encrypt `data` using `key`.
     /// - Parameter pair: A pair of key and data used in the encription process.
-    public func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
+    func encrypt(pair: KeyDataPair<String, String>, pbkdf2Iterations: Int) -> Single<String> {
         encryptNative(pair: pair, pbkdf2Iterations: UInt32(pbkdf2Iterations)).single
     }
 
     // MARK: - Private methods
 
-    private func encryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
+    private func encryptNative(
+        pair: KeyDataPair<String, String>,
+        pbkdf2Iterations: UInt32
+    ) -> Result<String, PayloadCryptoError> {
         payloadCryptor.encrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
 
-    private func decryptNative(pair: KeyDataPair<String, String>, pbkdf2Iterations: UInt32) -> Result<String, PayloadCryptoError> {
+    private func decryptNative(
+        pair: KeyDataPair<String, String>,
+        pbkdf2Iterations: UInt32
+    ) -> Result<String, PayloadCryptoError> {
         payloadCryptor.decrypt(pair: pair, pbkdf2Iterations: pbkdf2Iterations)
     }
 

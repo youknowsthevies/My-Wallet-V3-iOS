@@ -13,7 +13,7 @@ final class LinkedBanksSelectionBuilder: LinkedBanksSelectionBuildable {
 
     private let currency: FiatCurrency
 
-    public init(currency: FiatCurrency) {
+    init(currency: FiatCurrency) {
         self.currency = currency
     }
 

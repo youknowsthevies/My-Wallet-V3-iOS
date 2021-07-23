@@ -24,8 +24,8 @@ public final class AssetBalanceViewPresenter {
     // MARK: - Injected
 
     private lazy var setup: Void = {
-        /// Map interaction state into presentation state
-        ///  and bind it to `stateRelay`.
+        // Map interaction state into presentation state
+        //  and bind it to `stateRelay`.
         Observable
             .combineLatest(
                 interactor.state.catchErrorJustReturn(.loading),

@@ -91,11 +91,13 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
     }
 
     var clearPinCalled = false
+
     override func clearPin() {
         clearPinCalled = true
     }
 
     var resetCalled = false
+
     override func reset() {
         resetCalled = true
     }

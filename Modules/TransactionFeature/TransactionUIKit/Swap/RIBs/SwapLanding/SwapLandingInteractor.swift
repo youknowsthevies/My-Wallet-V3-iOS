@@ -28,6 +28,7 @@ struct SwapLandingScreenState {
 
 protocol SwapLandingPresentable: Presentable {
     var listener: SwapLandingPresentableListener? { get set }
+
     func connect(state: Driver<SwapLandingScreenState>) -> Driver<SwapLandingSelectionEffects>
 }
 

@@ -46,9 +46,7 @@ public final class BlockchainSettings: NSObject {
         PermissionSettingsAPI
     {
 
-        @Inject
-        @objc
-        public static var shared: App
+        @Inject @objc public static var shared: App
 
         @LazyInject private var defaults: CacheSuite
 

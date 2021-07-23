@@ -60,7 +60,10 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 
         let sideMenu = sideMenuProvider()
         let tabController = tabControllerProvider()
-        let slidingViewController = slidingControllerProvider(sideMenuController: sideMenu, tabController: tabController)
+        let slidingViewController = slidingControllerProvider(
+            sideMenuController: sideMenu,
+            tabController: tabController
+        )
         add(child: slidingViewController)
         self.slidingViewController = slidingViewController
         sideMenuViewController = sideMenu
@@ -368,7 +371,9 @@ extension LoggedInHostingController {
     }
 
     func reloadAfterMultiAddressResponse() {
-        guard let tabControllerManager = tabControllerManager, tabControllerManager.tabViewController.isViewLoaded else {
+        guard let tabControllerManager = tabControllerManager,
+              tabControllerManager.tabViewController.isViewLoaded
+        else {
             // Nothing to reload
             return
         }

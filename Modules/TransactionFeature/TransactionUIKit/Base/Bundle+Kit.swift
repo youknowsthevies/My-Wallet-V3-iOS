@@ -2,5 +2,6 @@
 
 extension Bundle {
     private class TransactionUIKitBundle {}
+
     static let transactionUIKit = Bundle(for: TransactionUIKitBundle.self)
 }

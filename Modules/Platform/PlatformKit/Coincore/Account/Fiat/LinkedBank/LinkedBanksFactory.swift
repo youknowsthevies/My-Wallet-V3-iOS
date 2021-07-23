@@ -7,6 +7,7 @@ import ToolKit
 public protocol LinkedBanksFactoryAPI {
     var linkedBanks: Single<[LinkedBankAccount]> { get }
     var nonWireTransferBanks: Single<[LinkedBankAccount]> { get }
+
     func bankPaymentMethods(for currency: FiatCurrency) -> Single<[PaymentMethodType]>
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits>
 }

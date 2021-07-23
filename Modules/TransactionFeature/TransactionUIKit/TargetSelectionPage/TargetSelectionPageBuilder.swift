@@ -33,7 +33,7 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
 
     // MARK: - Init
 
-    public init(
+    init(
         accountProvider: SourceAndTargetAccountProviding,
         action: AssetAction
     ) {
@@ -43,7 +43,7 @@ final class TargetSelectionPageBuilder: TargetSelectionBuildable {
 
     // MARK: - Public Methods
 
-    public func build(
+    func build(
         listener: TargetSelectionListenerBridge,
         navigationModel: ScreenNavigationModel,
         backButtonInterceptor: @escaping BackButtonInterceptor

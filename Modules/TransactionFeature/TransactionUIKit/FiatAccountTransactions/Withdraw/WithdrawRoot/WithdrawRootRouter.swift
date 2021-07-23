@@ -47,7 +47,7 @@ final class WithdrawRootRouter: RIBs.Router<WithdrawRootInteractable>, WithdrawR
 
     // MARK: - Overrides
 
-    override public func didLoad() {
+    override func didLoad() {
         super.didLoad()
         interactor.activate()
     }

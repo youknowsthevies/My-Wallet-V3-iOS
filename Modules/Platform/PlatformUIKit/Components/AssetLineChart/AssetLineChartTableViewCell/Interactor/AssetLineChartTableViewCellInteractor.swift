@@ -45,8 +45,8 @@ final class AssetLineChartTableViewCellInteractor: AssetLineChartTableViewCellIn
             .bindAndCatch(to: isDeselectedRelay)
             .disposed(by: disposeBag)
 
-        /// Bind window relay to the `PublishRelay<PriceWindow>` on
-        /// both the `AssetLineChartInteractor` and the `HistoricalFiatPriceService`.
+        // Bind window relay to the `PublishRelay<PriceWindow>` on
+        // both the `AssetLineChartInteractor` and the `HistoricalFiatPriceService`.
         window
             .bindAndCatch(to: lineChartInteractor.priceWindowRelay)
             .disposed(by: disposeBag)

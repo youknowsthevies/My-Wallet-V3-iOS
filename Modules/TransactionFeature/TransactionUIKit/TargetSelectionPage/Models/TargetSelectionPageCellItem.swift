@@ -43,7 +43,7 @@ struct TargetSelectionPageCellItem: Equatable, IdentifiableType {
             }
         }
 
-        public static func == (lhs: Interactor, rhs: Interactor) -> Bool {
+        static func == (lhs: Interactor, rhs: Interactor) -> Bool {
             lhs.account.identifier == rhs.account.identifier
         }
     }

@@ -5,6 +5,7 @@ import Foundation
 protocol LoadingViewProtocol {
     func animate(from oldState: LoadingViewPresenter.State, text: String?)
     func fadeOut()
+
     var viewRepresentation: UIView { get }
 }
 

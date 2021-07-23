@@ -13,5 +13,6 @@ public protocol NabuOfflineTokenRepositoryCombineAPI: AnyObject {
 
 public protocol NabuOfflineTokenRepositoryAPI: NabuOfflineTokenRepositoryCombineAPI {
     var offlineTokenResponse: Single<NabuOfflineTokenResponse> { get }
+
     func set(offlineTokenResponse: NabuOfflineTokenResponse) -> Completable
 }

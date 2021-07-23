@@ -10,6 +10,7 @@ protocol LinkBankFailureScreenPresentable: Presentable {}
 
 protocol LinkBankFailureScreenListener: AnyObject {
     var retryAction: PublishRelay<LinkBankFlow.Action> { get }
+
     func closeFlow(isInteractive: Bool)
 }
 

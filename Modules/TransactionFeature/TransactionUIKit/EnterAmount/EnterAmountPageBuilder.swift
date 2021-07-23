@@ -27,7 +27,7 @@ final class EnterAmountPageBuilder: EnterAmountPageBuildable {
     private let priceService: PriceServiceAPI
     private let analyticsEventRecorder: AnalyticsEventRecorderAPI
 
-    public init(
+    init(
         transactionModel: TransactionModel,
         priceService: PriceServiceAPI = resolve(),
         fiatCurrencyService: FiatCurrencyServiceAPI = resolve(),

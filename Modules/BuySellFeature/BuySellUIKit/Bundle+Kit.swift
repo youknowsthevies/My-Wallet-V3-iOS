@@ -4,5 +4,6 @@ import Foundation
 
 extension Bundle {
     private class BuySellKitBundle {}
+
     static let buySellKit = Bundle(for: BuySellKitBundle.self)
 }

@@ -5,6 +5,7 @@ import RxSwift
 
 class EthereumAccountDetailsServiceAPIMock: EthereumAccountDetailsServiceAPI {
     var underlyingAccountDetails: Single<EthereumAssetAccountDetails> = .just(.defaultMock)
+
     func accountDetails() -> Single<EthereumAssetAccountDetails> {
         underlyingAccountDetails
     }

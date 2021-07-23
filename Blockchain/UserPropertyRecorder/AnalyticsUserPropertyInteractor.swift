@@ -127,8 +127,12 @@ final class AnalyticsUserPropertyInteractor {
 
         let totalFiatBalance = try? balances.values.reduce(FiatValue.zero(currency: .USD).moneyValue, +)
 
-        recorder.record(StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ",")))
-        recorder.record(StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0)))
+        recorder.record(
+            StandardUserProperty(key: .fundedCoins, value: positives.joined(separator: ","))
+        )
+        recorder.record(
+            StandardUserProperty(key: .totalBalance, value: balanceBucket(for: totalFiatBalance?.amount ?? 0))
+        )
     }
 
     /// Total balance (measured in USD) in buckets: 0, 0-10, 10-100, 100-1000, >1000

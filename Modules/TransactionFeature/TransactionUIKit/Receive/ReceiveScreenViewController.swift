@@ -69,7 +69,7 @@ final class ReceiveScreenViewController: BaseScreenViewController {
         setupNavigationBar()
         setupPresenter()
 
-        /// Prevent unecessary rendering
+        // Prevent unecessary rendering
         displayMemo(show: false)
     }
 

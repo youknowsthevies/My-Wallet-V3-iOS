@@ -18,7 +18,7 @@ struct VerifyDeviceView: View {
         viewStore = ViewStore(store)
     }
 
-    public var body: some View {
+    var body: some View {
         VStack {
             Image.CircleIcon.verifyDevice
                 .frame(width: 72, height: 72)

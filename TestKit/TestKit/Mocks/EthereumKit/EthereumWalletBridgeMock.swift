@@ -10,7 +10,11 @@ enum EthereumWalletBridgeMockError: Error {
     case mockError
 }
 
-class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBridgeAPI, MnemonicAccessAPI, PasswordAccessAPI {
+class EthereumWalletBridgeMock: EthereumWalletBridgeAPI,
+    EthereumWalletAccountBridgeAPI,
+    MnemonicAccessAPI,
+    PasswordAccessAPI
+{
     func update(accountIndex: Int, label: String) -> Completable {
         .empty()
     }
@@ -77,6 +81,7 @@ class EthereumWalletBridgeMock: EthereumWalletBridgeAPI, EthereumWalletAccountBr
 
     var recordLastTransactionValue = Single<EthereumTransactionPublished>.error(EthereumKitError.unknown)
     var lastRecordedTransaction: EthereumTransactionPublished?
+
     func recordLast(transaction: EthereumTransactionPublished) -> Single<EthereumTransactionPublished> {
         lastRecordedTransaction = transaction
         return recordLastTransactionValue

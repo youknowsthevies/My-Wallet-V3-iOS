@@ -3,6 +3,7 @@
 extension Accessibility.Identifier {
     public enum Activity {
         static let prefix = "Activity."
+
         public enum WalletPickerView {}
         public enum WalletBalance {}
         public enum ActivityCell {}

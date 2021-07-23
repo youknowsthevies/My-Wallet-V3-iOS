@@ -8,12 +8,14 @@ class MockURIHandler: URIHandlingAPI {
     var canHandle = false
 
     var canHandleCalled = false
+
     func canHandle(url: URL) -> Bool {
         canHandleCalled = true
         return canHandle
     }
 
     var handleCalled = false
+
     func handle(url: URL) -> AnyPublisher<DeeplinkOutcome, AppDeeplinkError> {
         handleCalled = true
         return passthroughSubject.eraseToAnyPublisher()

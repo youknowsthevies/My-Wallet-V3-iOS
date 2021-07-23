@@ -56,7 +56,11 @@ class WalletManager: NSObject, JSContextProviderAPI, WalletRepositoryProvider {
         self.wallet = wallet
         self.reactiveWallet = reactiveWallet
         super.init()
-        let repository = WalletRepository(jsContextProvider: self, settings: appSettings, reactiveWallet: reactiveWallet)
+        let repository = WalletRepository(
+            jsContextProvider: self,
+            settings: appSettings,
+            reactiveWallet: reactiveWallet
+        )
         legacyRepository = repository
         self.repository = repository
         self.wallet.repository = repository
