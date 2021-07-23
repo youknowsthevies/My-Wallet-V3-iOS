@@ -71,7 +71,7 @@ final class MnemonicValidator: MnemonicValidating {
 
                 /// Combine the `set` and `duplicates` to form a `Set<String>` of all
                 /// words that are not included in the `WordList`
-                let difference = (set.union(duplicates)).subtracting(self.words)
+                let difference = set.union(duplicates).subtracting(self.words)
 
                 /// Find the `NSRange` value for each word or incomplete word that is not
                 /// included in the `WordList`

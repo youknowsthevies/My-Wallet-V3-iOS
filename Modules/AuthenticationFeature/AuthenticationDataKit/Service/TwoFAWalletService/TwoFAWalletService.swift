@@ -88,7 +88,6 @@ extension TwoFAWalletService {
 
         return repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
-            .setFailureType(to: TwoFAWalletServiceError.self)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), TwoFAWalletServiceError> in
                 guard let guid = credentials.0 else {
                     return .failure(.missingCredentials(.guid))
@@ -104,6 +103,17 @@ extension TwoFAWalletService {
                     sessionToken: credentails.sessionToken,
                     code: code
                 )
+                .mapError { error in
+                    switch error {
+                    case .wrongCode(attemptsLeft: let attemptsLeft):
+                        return .wrongCode(attemptsLeft: attemptsLeft)
+                    case .accountLocked:
+                        return .accountLocked
+                    case .networkError(let error):
+                        return .networkError(error)
+                    }
+                }
+                .eraseToAnyPublisher()
             }
             .flatMap { response -> AnyPublisher<String, TwoFAWalletServiceError> in
                 guard let rawPayload = response.stringRepresentation, !rawPayload.isEmpty else {
@@ -114,16 +124,6 @@ extension TwoFAWalletService {
             .flatMap { [repository] rawPayload -> AnyPublisher<Void, TwoFAWalletServiceError> in
                 repository.setPublisher(payload: rawPayload)
                     .mapError()
-            }
-            .catch { error -> AnyPublisher<Void, TwoFAWalletServiceError> in
-                switch error {
-                case .wrongCode(attemptsLeft: let attempts):
-                    return .failure(.wrongCode(attemptsLeft: attempts))
-                case .accountLocked:
-                    return .failure(.accountLocked)
-                default:
-                    return .failure(error)
-                }
             }
             .eraseToAnyPublisher()
     }

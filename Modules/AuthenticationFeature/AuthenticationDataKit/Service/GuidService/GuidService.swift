@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import NetworkKit
 import RxSwift
 
 public final class GuidService: GuidServiceAPI {
@@ -39,12 +38,12 @@ extension GuidService {
     public var guidPublisher: AnyPublisher<String, GuidServiceError> {
         sessionTokenRepository
             .sessionTokenPublisher
-            .setFailureType(to: GuidServiceError.self)
             .flatMap { [client] token -> AnyPublisher<String, GuidServiceError> in
                 guard let token = token else {
                     return .failure(.missingSessionToken)
                 }
                 return client.guidPublisher(by: token)
+                    .mapError(GuidServiceError.networkError)
                     .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

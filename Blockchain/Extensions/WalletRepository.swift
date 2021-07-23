@@ -7,7 +7,7 @@ import RxRelay
 import RxSwift
 import ToolKit
 
-/// TODO: Remove `NSObject` when `Wallet` is killed
+// TODO: Remove `NSObject` when `Wallet` is killed
 /// A bridge to `Wallet` since it is an ObjC object.
 @objc
 final class WalletRepository: NSObject, WalletRepositoryAPI, WalletCredentialsProviding {

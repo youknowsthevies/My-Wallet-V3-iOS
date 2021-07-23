@@ -6,7 +6,7 @@ import RxSwift
 
 public enum SessionTokenServiceError: Error {
     case networkError(NetworkError)
-    case missingToken
+    case missingSessionToken
 }
 
 public protocol SessionTokenServiceCombineAPI: AnyObject {

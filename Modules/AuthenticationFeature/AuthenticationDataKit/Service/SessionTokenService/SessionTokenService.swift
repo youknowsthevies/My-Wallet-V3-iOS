@@ -40,12 +40,19 @@ extension SessionTokenService {
 
     public func setupSessionTokenPublisher() -> AnyPublisher<Void, SessionTokenServiceError> {
         repository.hasSessionTokenPublisher
-            .setFailureType(to: SessionTokenServiceError.self)
-            .flatMap { [client] hasSessionToken -> AnyPublisher<String, SessionTokenServiceError> in
+            .flatMap { [client] hasSessionToken -> AnyPublisher<String?, SessionTokenServiceError> in
                 guard !hasSessionToken else {
                     return .just("")
                 }
                 return client.tokenPublisher
+                    .mapError(SessionTokenServiceError.networkError)
+                    .eraseToAnyPublisher()
+            }
+            .flatMap { sessionTokenOrNil -> AnyPublisher<String, SessionTokenServiceError> in
+                guard let sessionToken = sessionTokenOrNil else {
+                    return .failure(.missingSessionToken)
+                }
+                return .just(sessionToken)
             }
             .flatMap { [repository] sessionToken -> AnyPublisher<Void, SessionTokenServiceError> in
                 repository.setPublisher(sessionToken: sessionToken)

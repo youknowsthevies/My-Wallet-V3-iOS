@@ -142,7 +142,7 @@ final class ManualPairingInteractor {
             .subscribe(
                 onCompleted: { [weak self] in
                     guard let self = self else { return }
-                    /// TODO: Continue refactoring wallet fetching logic
+                    // TODO: Continue refactoring wallet fetching logic
                     /// by removing `walletFetcher` reference in favor of a dedicated
                     /// Rx based service.
                     self.dependencies.walletFetcher.authenticate(

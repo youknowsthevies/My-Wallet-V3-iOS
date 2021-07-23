@@ -69,7 +69,6 @@ extension CredentialsRepositoryAPI {
     public var credentialsPublisher: AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError> {
         guidPublisher
             .zip(sharedKeyPublisher)
-            .setFailureType(to: MissingCredentialsError.self)
             .flatMap { credentials -> AnyPublisher<(guid: String, sharedKey: String), MissingCredentialsError> in
                 guard let guid = credentials.0 else {
                     return .failure(.guid)

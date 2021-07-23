@@ -127,7 +127,6 @@ extension WalletPayloadService {
         let requestPublisher = self.requestPublisher(guid:sessionToken:)
         return repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
-            .setFailureType(to: WalletPayloadServiceError.self)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), WalletPayloadServiceError> in
                 guard let guid = credentials.0 else {
                     return .failure(.missingCredentials(.guid))
@@ -147,7 +146,6 @@ extension WalletPayloadService {
         let requestPublisher = self.requestPublisher(guid:sharedKey:)
         return repository.guidPublisher
             .zip(repository.sharedKeyPublisher)
-            .setFailureType(to: WalletPayloadServiceError.self)
             .flatMap { credentials -> AnyPublisher<(guid: String, sharedKey: String), WalletPayloadServiceError> in
                 guard let guid = credentials.0 else {
                     return .failure(.missingCredentials(.guid))
@@ -206,20 +204,17 @@ extension WalletPayloadService {
         repository.setPublisher(guid: clientResponse.guid)
             .zip(repository.setPublisher(language: clientResponse.language))
             .zip(repository.setPublisher(syncPubKeys: clientResponse.shouldSyncPubkeys))
-            .setFailureType(to: WalletPayloadServiceError.self)
             .flatMap { [repository] _ -> AnyPublisher<Void, WalletPayloadServiceError> in
                 guard let type = WalletAuthenticatorType(rawValue: clientResponse.authType) else {
                     return .failure(.unsupported2FAType)
                 }
                 return repository.setPublisher(authenticatorType: type)
-                    .setFailureType(to: WalletPayloadServiceError.self)
-                    .eraseToAnyPublisher()
+                    .mapError()
             }
             .flatMap { [repository] _ -> AnyPublisher<Void, WalletPayloadServiceError> in
                 if let rawPayload = clientResponse.payload?.stringRepresentation, !rawPayload.isEmpty {
                     return repository.setPublisher(payload: rawPayload)
-                        .setFailureType(to: WalletPayloadServiceError.self)
-                        .eraseToAnyPublisher()
+                        .mapError()
                 }
                 return .just(())
             }

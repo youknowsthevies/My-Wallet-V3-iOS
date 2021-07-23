@@ -3,7 +3,7 @@
 import RxCocoa
 import RxSwift
 
-/// TODO: Modularize to play nicer with different flows.
+// TODO: Modularize to play nicer with different flows.
 /// At the moment all the logic is centralized in the view model - there should be
 /// another object to take up responsibility for logic.
 public final class DigitPadViewModel {

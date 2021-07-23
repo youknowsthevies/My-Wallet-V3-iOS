@@ -56,7 +56,7 @@ public final class CardRouter: RIBs.Router<CardRouterInteractor> {
             }
             .disposed(by: disposeBag)
 
-        /// TODO: Remove once BuySell moves into RIBs because Should be automatically
+        // TODO: Remove once BuySell moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
 

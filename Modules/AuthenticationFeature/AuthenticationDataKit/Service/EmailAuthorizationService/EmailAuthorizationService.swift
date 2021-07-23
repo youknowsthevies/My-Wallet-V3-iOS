@@ -55,8 +55,8 @@ public final class EmailAuthorizationService: EmailAuthorizationServiceAPI {
                 switch error {
                 case .missingSessionToken:
                     return .failure(.missingSessionToken)
-                case .guidClientError(let networkError):
-                    return .failure(.guidService(.guidClientError(networkError)))
+                case .networkError(let networkError):
+                    return .failure(.guidService(.networkError(networkError)))
                 }
             }
             .eraseToAnyPublisher()

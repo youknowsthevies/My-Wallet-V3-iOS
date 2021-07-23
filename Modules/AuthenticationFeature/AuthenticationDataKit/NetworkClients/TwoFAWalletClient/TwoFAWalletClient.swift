@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
 import DIKit
 import NetworkKit
@@ -24,6 +23,8 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 
         // Account locked
         case accountLocked
+
+        case networkError(NetworkError)
 
         /// Initialized with plain server error
         init?(plainServerError: String) {
@@ -93,7 +94,7 @@ public final class TwoFAWalletClient: TwoFAWalletClientAPI {
 // MARK: - TwoFAWalletClientCombineAPI
 
 extension TwoFAWalletClient {
-    public func payloadPublisher(guid: String, sessionToken: String, code: String) -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletServiceError> {
+    public func payloadPublisher(guid: String, sessionToken: String, code: String) -> AnyPublisher<WalletPayloadWrapper, ClientError> {
         let request = requestBuilder.build(
             guid: guid,
             sessionToken: sessionToken,
@@ -104,7 +105,7 @@ extension TwoFAWalletClient {
                 request: request,
                 responseType: WalletPayloadWrapper.self
             )
-            .catch { error -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletServiceError> in
+            .catch { error -> AnyPublisher<WalletPayloadWrapper, ClientError> in
                 switch error {
                 case .payloadError(.badData(rawPayload: let payload)):
                     guard let clientError = ClientError(plainServerError: payload) else {
@@ -115,6 +116,8 @@ extension TwoFAWalletClient {
                         return .failure(.wrongCode(attemptsLeft: attemptsLeft))
                     case .accountLocked:
                         return .failure(.accountLocked)
+                    case .networkError(let error):
+                        return .failure(.networkError(error))
                     }
                 case .rawServerError(let response):
                     guard let payloadData = response.payload,
@@ -128,6 +131,8 @@ extension TwoFAWalletClient {
                         return .failure(.wrongCode(attemptsLeft: attemptsLeft))
                     case .accountLocked:
                         return .failure(.accountLocked)
+                    case .networkError(let error):
+                        return .failure(.networkError(error))
                     }
                 default:
                     return .failure(.networkError(error))

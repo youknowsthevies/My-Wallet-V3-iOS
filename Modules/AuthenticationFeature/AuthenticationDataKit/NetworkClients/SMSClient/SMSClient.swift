@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
 import DIKit
 import NetworkKit
@@ -35,14 +34,13 @@ public final class SMSClient: SMSClientAPI {
 
 extension SMSClient {
 
-    public func requestOTPPublisher(sessionToken: String, guid: String) -> AnyPublisher<Void, SMSServiceError> {
+    public func requestOTPPublisher(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError> {
         let request = requestBuilder.build(sessionToken: sessionToken, guid: guid)
         return networkAdapter.perform(
             request: request,
             responseType: EmptyNetworkResponse.self
         )
         .mapToVoid()
-        .mapError(SMSServiceError.networkError)
         .eraseToAnyPublisher()
     }
 }

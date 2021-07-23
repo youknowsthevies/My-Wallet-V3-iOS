@@ -8,7 +8,7 @@ import RxSwift
 
 public enum GuidServiceError: Error {
     case missingSessionToken
-    case guidClientError(NetworkError)
+    case networkError(NetworkError)
 }
 
 public protocol GuidServiceCombineAPI: AnyObject {

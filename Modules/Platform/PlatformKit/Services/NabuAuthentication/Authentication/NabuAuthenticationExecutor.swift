@@ -241,7 +241,6 @@ struct NabuAuthenticationExecutor: NabuAuthenticationExecutorAPI {
             .eraseToAnyPublisher()
 
         let guid = credentialsRepository.guidPublisher
-            .setFailureType(to: NabuAuthenticationExecutorError.self)
             .flatMap { guid -> AnyPublisher<String, NabuAuthenticationExecutorError> in
                 guard let guid = guid else {
                     return .failure(.missingCredentials(MissingCredentialsError.guid))

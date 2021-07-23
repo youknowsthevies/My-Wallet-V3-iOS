@@ -88,7 +88,6 @@ extension LoginService {
     public func loginPublisher(walletIdentifier: String) -> AnyPublisher<Void, LoginServiceError> {
         repository
             .setPublisher(guid: walletIdentifier)
-            .setFailureType(to: WalletPayloadServiceError.self)
             .flatMap { [payloadService] _ -> AnyPublisher<WalletAuthenticatorType, WalletPayloadServiceError> in
                 payloadService.requestUsingSessionTokenPublisher()
             }

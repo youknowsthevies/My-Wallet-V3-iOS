@@ -59,7 +59,7 @@ public final class SellRouter: RIBs.Router<SellRouterInteractor> {
             }
             .disposed(by: disposeBag)
 
-        /// TODO: Remove once `AppCoordinator` moves into RIBs because Should be automatically
+        // TODO: Remove once `AppCoordinator` moves into RIBs because Should be automatically
         /// called by `Router` once `self` is attached as a child router.
         interactor.activate()
     }

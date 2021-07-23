@@ -140,7 +140,7 @@ public enum BlockchainLinks: Equatable {
     public static let validRoutes: Set<String> = Set(BlockchainLinks.Route.allCases.map(\.rawValue))
 
     /// Defines url links that can be handled as part of a universal-link
-    /// TODO: These should not be hard-coded here, define them in environment variables?
+    // TODO: These should not be hard-coded here, define them in environment variables?
     public static let validLinks: Set<String> = [
         "login.blockchain.com",
         "login-staging.blockchain.com",

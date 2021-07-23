@@ -2,7 +2,6 @@
 
 import AuthenticationKit
 import Combine
-import NetworkKit
 import RxSwift
 import ToolKit
 
@@ -50,7 +49,6 @@ extension SMSService {
     public func requestPublisher() -> AnyPublisher<Void, SMSServiceError> {
         repository.guidPublisher
             .zip(repository.sessionTokenPublisher)
-            .setFailureType(to: SMSServiceError.self)
             .flatMap { credentials -> AnyPublisher<(guid: String, sessionToken: String), SMSServiceError> in
                 guard let guid = credentials.0 else {
                     return .failure(.missingCredentials(.guid))
@@ -65,6 +63,7 @@ extension SMSService {
                     sessionToken: credentials.sessionToken,
                     guid: credentials.guid
                 )
+                .mapError(SMSServiceError.networkError)
                 .eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()

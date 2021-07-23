@@ -20,7 +20,7 @@ final class SettingsScreenInteractor {
 
     // MARK: - Services
 
-    /// TODO: All interactors should be created inside this class,
+    // TODO: All interactors should be created inside this class,
     /// and services should be injected into them through the main class.
     /// The presenter should not contain any interaction logic
 

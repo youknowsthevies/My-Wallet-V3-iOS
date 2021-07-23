@@ -37,7 +37,7 @@ final class DashboardRouter {
             currency: currency,
             exchangeAPI: exchangeProviding[currency]
         )
-        /// FIXME: The dashboard model is not reactive to fiat currency change - at the tap
+        // FIXME: The dashboard model is not reactive to fiat currency change - at the tap
         /// time we may not have the fiat currency fetched - that can lead to a crash if the fiat is not set.
         /// alternatively (current solution) - the fiat currency defaults to USD
         let fiatCurrency = settingsService.legacyCurrency ?? .USD

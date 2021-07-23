@@ -1,12 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
+import NetworkKit
 import RxSwift
 
 public protocol SessionTokenClientCombineAPI: AnyObject {
     /// A Single that streams the session token
-    var tokenPublisher: AnyPublisher<String, SessionTokenServiceError> { get }
+    var tokenPublisher: AnyPublisher<String?, NetworkError> { get }
 }
 
 public protocol SessionTokenClientAPI: SessionTokenClientCombineAPI {

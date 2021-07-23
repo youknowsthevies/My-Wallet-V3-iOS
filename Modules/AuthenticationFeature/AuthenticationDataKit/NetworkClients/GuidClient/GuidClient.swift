@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
 import DIKit
 import NetworkKit
@@ -43,12 +42,11 @@ public final class GuidClient: GuidClientAPI {
 
 extension GuidClient {
 
-    public func guidPublisher(by sessionToken: String) -> AnyPublisher<String, GuidServiceError> {
+    public func guidPublisher(by sessionToken: String) -> AnyPublisher<String, NetworkError> {
         let request = requestBuilder.build(sessionToken: sessionToken)
         return networkAdpater
             .perform(request: request, responseType: Response.self)
             .map(\.guid)
-            .mapError(GuidServiceError.guidClientError)
             .eraseToAnyPublisher()
     }
 }

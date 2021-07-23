@@ -25,7 +25,7 @@ final class PasswordRequiredScreenInteractor {
     private let walletManager: WalletManager
     private let credentialsStore: CredentialsStoreAPI
 
-    /// TODO: Consider the various of error types from the service layer,
+    // TODO: Consider the various of error types from the service layer,
     /// translate them into a interaction layer errors
     private let errorRelay = PublishRelay<Error>()
 

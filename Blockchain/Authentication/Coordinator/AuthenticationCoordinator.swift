@@ -17,7 +17,7 @@ import ToolKit
 
 extension AuthenticationCoordinator: WalletPairingFetcherAPI {
     /// A new method for fetching wallet - is being used after manual pairing
-    /// TODO: Remove once done migrating JS to native
+    // TODO: Remove once done migrating JS to native
     func authenticate(using password: String) {
         loadingViewPresenter.showCircular()
         temporaryAuthHandler = authenticationHandler
@@ -68,11 +68,11 @@ extension AuthenticationCoordinator: WalletPairingFetcherAPI {
 
     @LazyInject private var analyticsRecoder: AnalyticsEventRecorderAPI
 
-    /// TODO: Delete when `AuthenticationCoordinator` is removed
+    // TODO: Delete when `AuthenticationCoordinator` is removed
     /// Temporary handler since `AuthenticationManager` was refactored.
     var temporaryAuthHandler: WalletAuthHandler?
 
-    /// TODO: Delete when `AuthenticationCoordiantor` is removed and
+    // TODO: Delete when `AuthenticationCoordiantor` is removed and
     /// `PasswordViewController` had it's own router.
     var isShowingSecondPasswordScreen = false
 
@@ -466,7 +466,7 @@ extension AuthenticationCoordinator {
         pinRouter = PinRouter(flow: flow) { [weak self] _ in
             guard let self = self else { return }
             self.alertPresenter.showMobileNoticeIfNeeded()
-            /// TODO: Inject app coordinator instead - currently there is
+            // TODO: Inject app coordinator instead - currently there is
             /// a crash related to circle-dependency between `AuthenticationCoordinator`
             /// and `AppCoordinator`.
             AppCoordinator.shared.startAfterWalletAuthentication(

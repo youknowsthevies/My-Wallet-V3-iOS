@@ -358,7 +358,7 @@ final class SettingsRouter: SettingsRouterAPI {
             .subscribe(
                 onSuccess: { [weak self] currency in
                     guard let self = self else { return }
-                    /// TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
+                    // TODO: Remove this and `fiatCurrencySelected` once `ReceiveBTC` and
                     /// `SendBTC` are replaced with Swift implementations.
                     NotificationCenter.default.post(name: .fiatCurrencySelected, object: nil)
                     self.analyticsRecording.record(events: [

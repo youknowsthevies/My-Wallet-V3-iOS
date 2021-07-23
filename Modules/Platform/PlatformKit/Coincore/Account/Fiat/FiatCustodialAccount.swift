@@ -47,7 +47,7 @@ final class FiatCustodialAccount: FiatAccount {
     }
 
     var canWithdrawFunds: Single<Bool> {
-        /// TODO: Fetch transaction history and filer
+        // TODO: Fetch transaction history and filer
         /// for transactions that are `withdrawals` and have a
         /// transactionState of `.pending`.
         /// If there are no items, the user can withdraw funds.

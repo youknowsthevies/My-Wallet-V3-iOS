@@ -315,7 +315,7 @@ extension TransactionConfirmation.Model {
         public let date: Date
         public let type: TransactionConfirmation.Kind = .readOnly
 
-        public init(date: Date = (Calendar.current.date(byAdding: .day, value: 5, to: Date())) ?? Date()) {
+        public init(date: Date = Calendar.current.date(byAdding: .day, value: 5, to: Date()) ?? Date()) {
             self.date = date
         }
 

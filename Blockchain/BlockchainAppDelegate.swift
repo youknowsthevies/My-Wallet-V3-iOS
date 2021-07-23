@@ -160,7 +160,7 @@ class BlockchainAppDelegate: UIResponder, UIApplicationDelegate {
             WalletManager.shared.close()
         }
 
-        /// TODO: Remove this - we don't want any such logic in `AppDelegate`
+        // TODO: Remove this - we don't want any such logic in `AppDelegate`
         /// We have to make sure the 2FA alerts (email / auth app) are still showing
         /// when the user goes back to foreground
         if appCoordinator.onboardingRouter.state != .pending2FA {

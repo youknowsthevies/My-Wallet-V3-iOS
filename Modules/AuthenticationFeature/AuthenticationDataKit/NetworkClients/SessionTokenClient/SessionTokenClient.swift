@@ -26,7 +26,7 @@ public final class SessionTokenClient: SessionTokenClientAPI {
             .perform(request: request, responseType: Response.self)
             .map(\.token)
             .map { token -> String in
-                guard let token = token else { throw SessionTokenServiceError.missingToken }
+                guard let token = token else { throw SessionTokenServiceError.missingSessionToken }
                 return token
             }
     }
@@ -47,7 +47,7 @@ public final class SessionTokenClient: SessionTokenClientAPI {
 
 extension SessionTokenClient {
 
-    public var tokenPublisher: AnyPublisher<String, SessionTokenServiceError> {
+    public var tokenPublisher: AnyPublisher<String?, NetworkError> {
         let request = NetworkRequest(
             endpoint: url,
             method: .post,
@@ -55,14 +55,7 @@ extension SessionTokenClient {
         )
         return networkAdapter
             .perform(request: request, responseType: Response.self)
-            .mapError(SessionTokenServiceError.networkError)
             .map(\.token)
-            .flatMap { token -> AnyPublisher<String, SessionTokenServiceError> in
-                guard let token = token else {
-                    return .failure(.missingToken)
-                }
-                return .just(token)
-            }
             .eraseToAnyPublisher()
     }
 }

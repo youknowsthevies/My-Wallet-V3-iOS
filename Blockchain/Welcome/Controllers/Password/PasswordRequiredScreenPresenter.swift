@@ -121,7 +121,7 @@ final class PasswordRequiredScreenPresenter {
         launchAnnouncementPresenter.execute()
     }
 
-    /// TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
+    // TODO: Refactor when the interaction layer and `AuthenticationCoordinator` are refactored.
     /// Handles any interaction error
     private func handle(error: Error) {
         alertPresenter.showKeychainReadError()

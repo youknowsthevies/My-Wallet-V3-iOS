@@ -1,6 +1,5 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
 import RxSwift
 import WalletPayloadKit
@@ -10,7 +9,7 @@ public protocol TwoFAWalletClientCombineAPI: AnyObject {
         guid: String,
         sessionToken: String,
         code: String
-    ) -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletServiceError>
+    ) -> AnyPublisher<WalletPayloadWrapper, TwoFAWalletClient.ClientError>
 }
 
 public protocol TwoFAWalletClientAPI: TwoFAWalletClientCombineAPI {

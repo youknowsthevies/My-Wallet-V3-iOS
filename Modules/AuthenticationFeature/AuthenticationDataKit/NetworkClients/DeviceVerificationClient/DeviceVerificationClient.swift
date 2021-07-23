@@ -50,7 +50,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
 
     // MARK: - Methods
 
-    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+    func sendGuidReminder(emailAddress: String, captcha: String) -> AnyPublisher<Void, NetworkError> {
         let parameters = [
             URLQueryItem(
                 name: Parameters.SendGuidReminder.method,
@@ -75,11 +75,12 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             contentType: .json
         )!
         return networkAdapter.perform(request: request)
-            .mapError(DeviceVerificationServiceError.networkError)
-            .eraseToAnyPublisher()
     }
 
-    func authorizeApprove(sessionToken: String, emailCode: String) -> AnyPublisher<Void, DeviceVerificationServiceError> {
+    func authorizeApprove(
+        sessionToken: String,
+        emailCode: String
+    ) -> AnyPublisher<Void, NetworkError> {
         let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
@@ -102,7 +103,5 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             contentType: .json
         )!
         return networkAdapter.perform(request: request)
-            .mapError(DeviceVerificationServiceError.networkError)
-            .eraseToAnyPublisher()
     }
 }

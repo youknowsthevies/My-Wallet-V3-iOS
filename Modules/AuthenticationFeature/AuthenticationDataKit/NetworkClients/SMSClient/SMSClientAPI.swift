@@ -1,13 +1,13 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import AuthenticationKit
 import Combine
+import NetworkKit
 import RxSwift
 
 public protocol SMSClientCombineAPI: AnyObject {
 
     /// Requests the server to send a new OTP
-    func requestOTPPublisher(sessionToken: String, guid: String) -> AnyPublisher<Void, SMSServiceError>
+    func requestOTPPublisher(sessionToken: String, guid: String) -> AnyPublisher<Void, NetworkError>
 }
 
 /// Client API for SMS
