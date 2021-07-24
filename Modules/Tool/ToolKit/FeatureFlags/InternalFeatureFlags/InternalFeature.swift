@@ -16,11 +16,31 @@ public enum InternalFeature: String, CaseIterable {
 
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
+
+    /// Disable the guid login at welcome screen, useful for demo purposes
+    /// - Note: Old manual guid login screen is used only for internal builds
+    case disableGUIDLogin
 }
 
 extension InternalFeature {
 
     internal var defaultsKey: String {
         "internal-flag-\(rawValue)-key"
+    }
+
+    /// The title displayed at the Debug menu.
+    public var displayTitle: String {
+        switch self {
+        case .secureChannel:
+            return "Secure Channel"
+        case .newOnboarding:
+            return "Disable New Pin/Onboarding"
+        case .requestConsoleLogging:
+            return "Enable Network Request Console Logs"
+        case .useTransactionsFlowToBuyCrypto:
+            return "Uses Transactions Flow to Buy Crypto"
+        case .disableGUIDLogin:
+            return "Disable manual (guid) login option"
+        }
     }
 }

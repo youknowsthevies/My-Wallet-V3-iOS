@@ -2,10 +2,13 @@
 
 @testable import AuthenticationUIKit
 import ComposableArchitecture
+@testable import ToolKit
 import XCTest
 
 final class WelcomeReducerTests: XCTestCase {
 
+    private var dummyUserDefaults: UserDefaults!
+    private var mockInternalFeatureFlagService: InternalFeatureFlagServiceAPI!
     private var mockMainQueue: TestSchedulerOf<DispatchQueue>!
     private var testStore: TestStore<
         WelcomeState,
@@ -18,12 +21,16 @@ final class WelcomeReducerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         mockMainQueue = DispatchQueue.test
+        dummyUserDefaults = UserDefaults(suiteName: "welcome.reducer.tests.defaults")!
+        mockInternalFeatureFlagService = InternalFeatureFlagService(defaultsProvider: { dummyUserDefaults })
+        mockInternalFeatureFlagService.enable(.disableGUIDLogin)
         testStore = TestStore(
             initialState: .init(),
             reducer: welcomeReducer,
-            environment: .init(
+            environment: WelcomeEnvironment(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
                 deviceVerificationService: MockDeviceVerificationService(),
+                featureFlags: mockInternalFeatureFlagService,
                 buildVersionProvider: { "Test Version" }
             )
         )
@@ -32,6 +39,8 @@ final class WelcomeReducerTests: XCTestCase {
     override func tearDownWithError() throws {
         mockMainQueue = nil
         testStore = nil
+        mockInternalFeatureFlagService = nil
+        dummyUserDefaults.removeSuite(named: "welcome.reducer.tests.defaults")
         try super.tearDownWithError()
     }
 
@@ -43,6 +52,14 @@ final class WelcomeReducerTests: XCTestCase {
     func test_start_updates_the_build_version() {
         testStore.send(.start) { state in
             state.buildVersion = "Test Version"
+        }
+    }
+
+    func test_start_shows_manual_pairing_when_feature_flag_is_not_enabled() {
+        mockInternalFeatureFlagService.disable(.disableGUIDLogin)
+        testStore.send(.start) { state in
+            state.buildVersion = "Test Version"
+            state.manualPairingEnabled = true
         }
     }
 

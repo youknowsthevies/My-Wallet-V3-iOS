@@ -30,6 +30,14 @@ class PinReducerTests: XCTestCase {
         )
     }
 
+    override func tearDownWithError() throws {
+        mockWallet = nil
+        settingsApp = nil
+        mockWalletManager = nil
+
+        try super.tearDownWithError()
+    }
+
     func test_verify_initial_state_is_correct() {
         let state = PinCore.State()
         XCTAssertFalse(state.authenticate)

@@ -116,7 +116,7 @@ let credentialsReducer = Reducer.combine(
         .pullback(
             state: \CredentialsState.passwordState,
             action: /CredentialsAction.password,
-            environment: { $0 }
+            environment: { _ in PasswordEnvironment() }
         ),
     twoFAReducer
         .optional()

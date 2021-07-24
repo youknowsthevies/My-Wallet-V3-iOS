@@ -90,6 +90,23 @@ class MockBlockchainSettingsApp: BlockchainSettings.App {
         }
     }
 
+    var mockSymbolLocal: Bool = false
+
+    override public var symbolLocal: Bool {
+        get {
+            mockSymbolLocal
+        }
+        set {
+            let oldValue = mockSymbolLocal
+
+            mockSymbolLocal = newValue
+
+            if oldValue != newValue {
+                onSymbolLocalChanged?(newValue)
+            }
+        }
+    }
+
     var clearPinCalled = false
 
     override func clearPin() {

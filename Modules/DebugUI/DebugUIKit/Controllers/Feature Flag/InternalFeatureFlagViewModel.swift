@@ -11,16 +11,7 @@ struct InternalFeatureItem: Equatable {
     let enabled: Bool
 
     var title: String {
-        switch type {
-        case .secureChannel:
-            return "Secure Channel"
-        case .newOnboarding:
-            return "Disable New Pin/Onboarding"
-        case .requestConsoleLogging:
-            return "Enable Network Request Console Logs"
-        case .useTransactionsFlowToBuyCrypto:
-            return "Uses Transactions Flow to Buy Crypto"
-        }
+        type.displayTitle
     }
 }
 

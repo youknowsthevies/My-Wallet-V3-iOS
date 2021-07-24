@@ -8,6 +8,7 @@ import RxSwift
 import SettingsKit
 import XCTest
 
+@testable import AuthenticationUIKit
 @testable import Blockchain
 
 class OnboardingReducerTests: XCTestCase {
@@ -16,8 +17,12 @@ class OnboardingReducerTests: XCTestCase {
     var mockWallet: MockWallet!
     var settingsApp: MockBlockchainSettingsApp!
     var mockAlertPresenter: MockAlertViewPresenter!
+    var mockInternalFeatureFlags: InternalFeatureFlagServiceMock!
+    var mockQueue: TestSchedulerOf<DispatchQueue>!
 
     override func setUp() {
+        super.setUp()
+
         mockWallet = MockWallet()
         settingsApp = MockBlockchainSettingsApp(
             enabledCurrenciesService: MockEnabledCurrenciesService(),
@@ -29,7 +34,21 @@ class OnboardingReducerTests: XCTestCase {
             appSettings: settingsApp,
             reactiveWallet: MockReactiveWallet()
         )
+        mockInternalFeatureFlags = InternalFeatureFlagServiceMock()
         mockAlertPresenter = MockAlertViewPresenter()
+        mockQueue = DispatchQueue.test
+
+        // disable the manual login
+        mockInternalFeatureFlags.enable(.disableGUIDLogin)
+    }
+
+    override func tearDownWithError() throws {
+        mockWallet = nil
+        settingsApp = nil
+        mockAlertPresenter = nil
+        mockQueue = nil
+
+        try super.tearDownWithError()
     }
 
     func test_verify_initial_state_is_correct() {
@@ -46,7 +65,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -73,7 +93,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -102,7 +123,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -129,7 +151,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -158,7 +181,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -189,7 +213,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )
@@ -227,7 +252,8 @@ class OnboardingReducerTests: XCTestCase {
                 blockchainSettings: settingsApp,
                 walletManager: mockWalletManager,
                 alertPresenter: mockAlertPresenter,
-                mainQueue: .main,
+                mainQueue: mockQueue.eraseToAnyScheduler(),
+                featureFlags: mockInternalFeatureFlags,
                 buildVersionProvider: { "v1.0.0" }
             )
         )

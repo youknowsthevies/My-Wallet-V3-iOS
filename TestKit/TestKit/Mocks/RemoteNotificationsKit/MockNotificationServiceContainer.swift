@@ -28,6 +28,7 @@ class MockRemoteNotificationServiceContainer: RemoteNotificationServiceContainin
 
     init(authorizer: RemoteNotificationAuthorizing) {
         self.authorizer = authorizer
+        sendTokenIfNeededSubject.send(completion: .finished)
     }
 
     func sendTokenIfNeeded() -> Single<Void> {

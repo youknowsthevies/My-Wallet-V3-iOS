@@ -4,6 +4,7 @@ import AuthenticationKit
 import ComposableArchitecture
 import Localization
 import SwiftUI
+import ToolKit
 import UIComponentsKit
 
 typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
@@ -33,6 +34,15 @@ public struct WelcomeView: View {
                     action: WelcomeAction.emailLogin
                 ),
                 then: EmailLoginView.init(store:)
+            )
+        }
+        .sheet(isPresented: .constant(viewStore.screenFlow == .guidLoginScreen)) {
+            IfLetStore(
+                store.scope(
+                    state: \.manualPairingState,
+                    action: WelcomeAction.manualPairing
+                ),
+                then: ManualPairingView.init(store:)
             )
         }
     }
@@ -86,13 +96,19 @@ private struct WelcomeActionSection: View {
 
     var body: some View {
         VStack {
-            PrimaryButton(title: WelcomeViewString.Button.createWallet) {
-                viewStore.send(.presentScreenFlow(.createWalletScreen))
-            }
-            .padding(.bottom, 10)
+            VStack(spacing: 10) {
+                PrimaryButton(title: WelcomeViewString.Button.createWallet) {
+                    viewStore.send(.presentScreenFlow(.createWalletScreen))
+                }
 
-            SecondaryButton(title: WelcomeViewString.Button.login) {
-                viewStore.send(.presentScreenFlow(.emailLoginScreen))
+                SecondaryButton(title: WelcomeViewString.Button.login) {
+                    viewStore.send(.presentScreenFlow(.emailLoginScreen))
+                }
+
+                if viewStore.manualPairingEnabled {
+                    Divider()
+                    manualPairingButton()
+                }
             }
             .padding(.bottom, 20)
 
@@ -111,6 +127,26 @@ private struct WelcomeActionSection: View {
         .padding(.leading, 24)
         .padding(.trailing, 24)
     }
+
+    // MARK: - Private
+
+    private func manualPairingButton() -> some View {
+        Button("Manual Login") {
+            viewStore.send(.presentScreenFlow(.guidLoginScreen))
+        }
+        .font(Font(weight: .semibold, size: 16))
+        .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
+        .padding(.horizontal)
+        .foregroundColor(Color.textSubheading)
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .fill(Color.buttonSecondaryBackground)
+        )
+        .background(
+            RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
+                .stroke(Color.borderPrimary)
+        )
+    }
 }
 
 #if DEBUG
@@ -123,6 +159,7 @@ struct WelcomeView_Previews: PreviewProvider {
                 environment: .init(
                     mainQueue: .main,
                     deviceVerificationService: NoOpDeviceVerificationService(),
+                    featureFlags: NoOpInternalFeatureFlagService(),
                     buildVersionProvider: { "Test version" }
                 )
             )

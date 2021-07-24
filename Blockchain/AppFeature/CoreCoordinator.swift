@@ -87,6 +87,7 @@ let mainAppReducer = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment>.co
                     walletManager: environment.walletManager,
                     alertPresenter: environment.alertPresenter,
                     mainQueue: .main,
+                    featureFlags: environment.internalFeatureService,
                     buildVersionProvider: environment.buildVersionProvider
                 )
             }
@@ -387,6 +388,10 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             value: .initializeWallet
         )
     case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
+        return Effect(
+            value: .fetchWallet(password)
+        )
+    case .onboarding(.welcomeScreen(.manualPairing(.authenticate(let password)))):
         return Effect(
             value: .fetchWallet(password)
         )

@@ -115,21 +115,17 @@ let loggedInReducer = Reducer<
                 },
             environment.exchangeRepository
                 .syncDepositAddressesIfLinkedPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationTokenSender
                 .sendTokenIfNeededPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.remoteNotificationAuthorizer
                 .requestAuthorizationIfNeededPublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             environment.coincore.initializePublisher()
-                .ignoreOutput()
                 .catchToEffect()
                 .fireAndForget(),
             .fireAndForget {

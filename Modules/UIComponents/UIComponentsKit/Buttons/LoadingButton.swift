@@ -19,8 +19,8 @@ public struct LoadingButton: View {
 
     public var body: some View {
         if loading {
-            ActivityIndicatorView()
-                .frame(minHeight: LayoutConstants.buttonMinHeight)
+            ProgressView()
+                .frame(maxWidth: .infinity, minHeight: LayoutConstants.buttonMinHeight)
         } else {
             if icon != nil {
                 Button(action: action, label: {

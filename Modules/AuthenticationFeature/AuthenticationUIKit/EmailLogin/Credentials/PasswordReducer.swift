@@ -15,18 +15,23 @@ struct PasswordState: Equatable {
     var password: String
     var isPasswordIncorrect: Bool
 
+    var isValid: Bool {
+        !password.isEmpty && !isPasswordIncorrect
+    }
+
     init() {
         password = ""
         isPasswordIncorrect = false
     }
 }
 
+struct PasswordEnvironment {}
+
 let passwordReducer = Reducer<
     PasswordState,
     PasswordAction,
-    CredentialsEnvironment
-> {
-    state, action, _ in
+    PasswordEnvironment
+> { state, action, _ in
     switch action {
     case .didChangePassword(let password):
         state.password = password

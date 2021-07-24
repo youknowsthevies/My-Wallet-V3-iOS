@@ -2,6 +2,7 @@
 
 import AuthenticationKit
 import Combine
+import ToolKit
 
 /// Intend for SwiftUI Previews and only available in DEBUG
 final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
@@ -34,4 +35,16 @@ final class NoOpDeviceVerificationService: DeviceVerificationServiceAPI {
         }
         .eraseToAnyPublisher()
     }
+}
+
+final class NoOpInternalFeatureFlagService: InternalFeatureFlagServiceAPI {
+    func isEnabled(_ feature: InternalFeature) -> Bool {
+        true
+    }
+
+    func enable(_ feature: InternalFeature) {}
+
+    func enable(_ features: [InternalFeature]) {}
+
+    func disable(_ feature: InternalFeature) {}
 }

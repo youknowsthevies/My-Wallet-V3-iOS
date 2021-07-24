@@ -13,6 +13,7 @@ import XCTest
 
 @testable import Blockchain
 
+// swiftlint:disable type_body_length
 final class LoggedInReducerTests: XCTestCase {
 
     var mockWalletManager: WalletManager!
@@ -91,27 +92,25 @@ final class LoggedInReducerTests: XCTestCase {
         )
     }
 
-    // TODO: Tests fail when the mock instances are deallocated at the end of the test
-//    override func tearDownWithError() throws {
-//        mockSettingsApp = nil
-//        mockWalletManager = nil
-//        mockAlertPresenter = nil
-//        mockExchangeAccountRepository = nil
-//        mockRemoteNotificationAuthorizer = nil
-//        mockRemoteNotificationServiceContainer = nil
-//        mockCoincore = nil
-//        mockAnalyticsRecorder = nil
-//        onboardingSettings = nil
-//        mockAppDeeplinkHandler = nil
-//        mockMainQueue = nil
-//        mockDeepLinkRouter = nil
-//        mockFeatureFlagsService = nil
-//        fiatCurrencySettingsServiceMock = nil
-//
-//        testStore = nil
-//
-//        try super.tearDownWithError()
-//    }
+    override func tearDownWithError() throws {
+        mockSettingsApp = nil
+        mockAlertPresenter = nil
+        mockExchangeAccountRepository = nil
+        mockRemoteNotificationAuthorizer = nil
+        mockRemoteNotificationServiceContainer = nil
+        mockCoincore = nil
+        mockAnalyticsRecorder = nil
+        onboardingSettings = nil
+        mockAppDeeplinkHandler = nil
+        mockMainQueue = nil
+        mockDeepLinkRouter = nil
+        mockFeatureFlagsService = nil
+        fiatCurrencySettingsServiceMock = nil
+
+        testStore = nil
+
+        try super.tearDownWithError()
+    }
 
     func test_verify_initial_state_is_correct() {
         let state = LoggedIn.State()
@@ -124,12 +123,15 @@ final class LoggedInReducerTests: XCTestCase {
         let expectation = self.expectation(forNotification: .login, object: nil)
 
         testStore.send(.start(.none))
+        mockMainQueue.advance()
 
         wait(for: [expectation], timeout: 2)
+        testStore.send(.logout)
     }
 
     func test_calling_start_calls_required_services() {
         testStore.send(.start(.none))
+        mockMainQueue.advance()
 
         XCTAssertTrue(mockExchangeAccountRepository.syncDepositAddressesIfLinkedPublisherCalled)
 
@@ -138,6 +140,8 @@ final class LoggedInReducerTests: XCTestCase {
         XCTAssertTrue(mockRemoteNotificationAuthorizer.requestAuthorizationIfNeededPublisherCalled)
 
         XCTAssertTrue(mockCoincore.initializePublisherCalled)
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_new_wallet_correctly_should_show_new_onboarding() {
@@ -155,6 +159,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.showOnboarding) { state in
             state.displayOnboardingFlow = true
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_new_wallet_correctly_should_show_legacy_flow() {
@@ -172,6 +178,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.showLegacyBuyFlow) { state in
             state.displayLegacyBuyFlow = true
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_deeplink_sendCrypto_correctly() {
@@ -188,6 +196,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.deeplinkHandled) { state in
             state.displaySendCryptoScreen = false
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_deeplink_executeDeeplinkRouting_correctly() {
@@ -200,6 +210,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.deeplink(uriContent))
 
         XCTAssertTrue(mockDeepLinkRouter.routeIfNeededCalled)
+
+        testStore.send(.logout)
     }
 
     func test_verify_start_action_observers_symbol_changes() {
@@ -215,6 +227,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.symbolChangedHandled) { state in
             state.reloadAfterSymbolChanged = false
         }
+
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_accountInfoAndExchangeRates_updates_the_state() {
@@ -236,6 +250,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.send(.wallet(.handleWalletBackup))
 
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+
+        testStore.send(.logout)
     }
 
     func test_verify_sending_wallet_handleFailToLoadHistory() {
@@ -257,6 +273,8 @@ final class LoggedInReducerTests: XCTestCase {
                 message: LocalizationConstants.Errors.balancesGeneric
             )
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_walletDidGetAccountInfoAndExchangeRates() {
@@ -274,6 +292,8 @@ final class LoggedInReducerTests: XCTestCase {
         testStore.receive(.wallet(.accountInfoAndExchangeRatesHandled)) { state in
             state.reloadAfterMultiAddressResponse = false
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_walletBackupFailed() {
@@ -286,6 +306,9 @@ final class LoggedInReducerTests: XCTestCase {
 
         // then
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+        testStore.receive(.wallet(.handleWalletBackup))
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_walletBackupSuccess() {
@@ -298,6 +321,9 @@ final class LoggedInReducerTests: XCTestCase {
 
         // then
         XCTAssertTrue(mockWallet.getHistoryForAllAssetsCalled)
+        testStore.receive(.wallet(.handleWalletBackup))
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_walletFailedToGetHistory_with_an_error_message() {
@@ -317,6 +343,8 @@ final class LoggedInReducerTests: XCTestCase {
                 message: LocalizationConstants.Errors.balancesGeneric
             )
         }
+
+        testStore.send(.logout)
     }
 
     func test_reducer_handles_walletFailedToGetHistory_with_an_empty_error_message() {
@@ -335,5 +363,9 @@ final class LoggedInReducerTests: XCTestCase {
                 message: LocalizationConstants.Errors.noInternetConnectionPleaseCheckNetwork
             )
         }
+
+        testStore.send(.logout)
     }
 }
+
+// swiftlint:enable type_body_length

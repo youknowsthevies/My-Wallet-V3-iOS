@@ -2,6 +2,7 @@
 
 import Localization
 import PlatformKit
+import ToolKit
 
 /// A factory for text validators
 public enum TextValidationFactory {

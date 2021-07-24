@@ -54,6 +54,7 @@ public enum Onboarding {
         var walletManager: WalletManager
         var alertPresenter: AlertViewPresenterAPI
         var mainQueue: AnySchedulerOf<DispatchQueue>
+        let featureFlags: InternalFeatureFlagServiceAPI
         var buildVersionProvider: () -> String
     }
 }
@@ -68,6 +69,7 @@ let onBoardingReducer = Reducer<Onboarding.State, Onboarding.Action, Onboarding.
             environment: {
                 WelcomeEnvironment(
                     mainQueue: $0.mainQueue,
+                    featureFlags: $0.featureFlags,
                     buildVersionProvider: $0.buildVersionProvider
                 )
             }
