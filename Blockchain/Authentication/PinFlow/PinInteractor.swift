@@ -139,6 +139,12 @@ final class PinInteractor: PinInteracting {
             }
             .catchError { error in
                 if let response = error as? PinStoreResponse {
+                    // TODO: Check for invalid numerical value error by string comparison for now, should revisit when backend make necessary changes
+                    if let error = response.error,
+                       error.contains("Invalid Numerical Value")
+                    {
+                        throw PinError.invalid
+                    }
                     switch response.statusCode {
                     case .incorrect:
                         self.recordWrongPinAttemptRecord()
@@ -259,7 +265,12 @@ final class PinInteractor: PinInteracting {
     // Returns the pin decryption key, or throws error if cannot
     private func pinValidationStatus(from response: PinStoreResponse) throws -> String {
 
-        // First verify that the status code was received
+        // TODO: Check for invalid numerical value error by string comparison for now, should revisit when backend make necessary changes
+        if let error = response.error, error.contains("Invalid Numerical Value") {
+            throw PinError.invalid
+        }
+
+        // Verify that the status code was received
         guard let statusCode = response.statusCode else {
             let error = PinError.serverError(LocalizationConstants.Errors.genericError)
             recorder.error(error)

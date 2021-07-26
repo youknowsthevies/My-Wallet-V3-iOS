@@ -110,6 +110,27 @@ class PinInteractorTests: XCTestCase {
         }
     }
 
+    // MARK: - Invalid Numerical Value
+
+    func testInvalidPinValidation() throws {
+        let interactor = PinInteractor(
+            pinClient: MockPinClient(statusCode: nil, error: "Invalid Numerical Value"),
+            maintenanceService: maintenanceService,
+            wallet: wallet,
+            appSettings: appSettings
+        )
+        let payload = PinPayload(
+            pinCode: "0000",
+            keyPair: try .generateNewKeyPair(),
+            persistsLocally: false
+        )
+        do {
+            _ = try interactor.validate(using: payload).toBlocking().first()
+        } catch PinError.invalid {
+            XCTAssert(true)
+        }
+    }
+
     // MARK: - Incorrect PIN validation
 
     // Incorrect pin returns proper error
