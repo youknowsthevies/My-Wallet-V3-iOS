@@ -50,7 +50,7 @@ struct VerifyDeviceView: View {
                         action: VerifyDeviceAction.credentials
                     ),
                     then: { store in
-                        CredentialsView(walletInfo: viewStore.walletInfo, store: store)
+                        CredentialsView(context: viewStore.credentialsContext, store: store)
                     }
                 ),
                 isActive: viewStore.binding(
@@ -75,7 +75,7 @@ struct VerifyDeviceView_Previews: PreviewProvider {
         VerifyDeviceView(
             store:
             Store(
-                initialState: .init(),
+                initialState: .init(emailAddress: ""),
                 reducer: verifyDeviceReducer,
                 environment: .init(
                     mainQueue: .main,

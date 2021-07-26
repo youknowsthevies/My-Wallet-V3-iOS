@@ -49,6 +49,7 @@ public struct PrimaryButton: View {
     public var body: some View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(PrimaryButtonStyle(isEnabled: isEnabled))
+            .progressViewStyle(CircularProgressViewStyle(tint: .buttonPrimaryText))
     }
 }
 

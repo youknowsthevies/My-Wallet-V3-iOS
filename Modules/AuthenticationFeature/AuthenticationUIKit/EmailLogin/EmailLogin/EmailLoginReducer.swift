@@ -34,7 +34,7 @@ struct EmailLoginState: Equatable {
     var emailLoginFailureAlert: AlertState<EmailLoginAction>?
 
     init() {
-        verifyDeviceState = .init()
+        verifyDeviceState = .init(emailAddress: "")
         emailAddress = ""
         isEmailValid = false
         isVerifyDeviceScreenVisible = false
@@ -99,6 +99,7 @@ let emailLoginReducer = Reducer.combine(
                     break
                 }
             }
+            state.verifyDeviceState = .init(emailAddress: state.emailAddress)
             return Effect(value: .setVerifyDeviceScreenVisible(true))
 
         case .emailLoginFailureAlert(.show(let title, let message)):
@@ -144,7 +145,8 @@ let emailLoginReducer = Reducer.combine(
              .verifyDevice(.verifyDeviceFailureAlert),
              .verifyDevice(.credentials),
              .verifyDevice(.setCredentialsScreenVisible),
-             .verifyDevice(.didDisappear):
+             .verifyDevice(.didDisappear),
+             .verifyDevice(.fallbackToWalletIdentifier):
             // handled in verify device reducer
             return .none
         }

@@ -46,6 +46,7 @@ public struct IconButton: View {
     public var body: some View {
         LoadingButton(title: title, icon: icon, action: action, loading: $loading)
             .buttonStyle(IconButtonStyle(isEnabled: isEnabled))
+            .progressViewStyle(CircularProgressViewStyle(tint: .black))
     }
 }
 

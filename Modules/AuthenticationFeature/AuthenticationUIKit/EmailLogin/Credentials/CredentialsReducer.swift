@@ -27,8 +27,9 @@ public enum CredentialsAction: Equatable {
         case setupSessionToken
     }
 
-    case didAppear(walletInfo: WalletInfo)
+    case didAppear(context: CredentialsContext)
     case didDisappear
+    case didChangeWalletIdentifier(String)
     case password(PasswordAction)
     case twoFA(TwoFAAction)
     case hardwareKey(HardwareKeyAction)
@@ -46,6 +47,12 @@ enum WalletPairingCancelations {
     struct WalletIdentifierPollingId: Hashable {}
 }
 
+public enum CredentialsContext: Equatable {
+    case walletInfo(WalletInfo)
+    case walletIdentifier(email: String)
+    case none
+}
+
 struct CredentialsState: Equatable {
     var passwordState: PasswordState?
     var twoFAState: TwoFAState?
@@ -55,7 +62,10 @@ struct CredentialsState: Equatable {
     var emailCode: String
     var isTwoFACodeOrHardwareKeyVerified: Bool
     var isAccountLocked: Bool
+    var isWalletIdentifierIncorrect: Bool
     var credentialsFailureAlert: AlertState<CredentialsAction>?
+
+    var isLoading: Bool
 
     init() {
         passwordState = .init()
@@ -66,10 +76,14 @@ struct CredentialsState: Equatable {
         emailCode = ""
         isTwoFACodeOrHardwareKeyVerified = false
         isAccountLocked = false
+        isWalletIdentifierIncorrect = false
+        isLoading = false
     }
 }
 
 struct CredentialsEnvironment {
+    typealias WalletValidation = (String) -> Bool
+
     let mainQueue: AnySchedulerOf<DispatchQueue>
     let pollingQueue: AnySchedulerOf<DispatchQueue>
     let deviceVerificationService: DeviceVerificationServiceAPI
@@ -80,6 +94,7 @@ struct CredentialsEnvironment {
     let wallet: WalletAuthenticationKitWrapper
     let analyticsRecorder: AnalyticsEventRecorderAPI
     let errorRecorder: ErrorRecording
+    let walletIdentifierValidator: WalletValidation
 
     init(
         mainQueue: AnySchedulerOf<DispatchQueue> = .main,
@@ -94,6 +109,7 @@ struct CredentialsEnvironment {
         loginService: LoginServiceAPI = resolve(),
         wallet: WalletAuthenticationKitWrapper = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
+        walletIdentifierValidator: @escaping WalletValidation = identifierValidator,
         errorRecorder: ErrorRecording
     ) {
 
@@ -106,6 +122,7 @@ struct CredentialsEnvironment {
         self.loginService = loginService
         self.wallet = wallet
         self.analyticsRecorder = analyticsRecorder
+        self.walletIdentifierValidator = walletIdentifierValidator
         self.errorRecorder = errorRecorder
     }
 }
@@ -138,11 +155,18 @@ let credentialsReducer = Reducer.combine(
         CredentialsEnvironment
     > { state, action, environment in
         switch action {
-        case .didAppear(let walletInfo):
-            state.emailAddress = walletInfo.email
-            state.walletGuid = walletInfo.guid
-            state.emailCode = walletInfo.emailCode
+        case .didAppear(.walletInfo(let info)):
+            state.emailAddress = info.email
+            state.walletGuid = info.guid
+            state.emailCode = info.emailCode
             return Effect(value: .walletPairing(.setupSessionToken))
+
+        case .didAppear(.walletIdentifier(let email)):
+            state.emailAddress = email
+            return Effect(value: .walletPairing(.setupSessionToken))
+
+        case .didAppear:
+            return .none
 
         case .didDisappear:
             state.emailAddress = ""
@@ -157,6 +181,15 @@ let credentialsReducer = Reducer.combine(
 
         case .password, .twoFA, .hardwareKey:
             // handled in respective reducers
+            return .none
+
+        case .didChangeWalletIdentifier(let guid):
+            state.walletGuid = guid
+            guard !guid.isEmpty else {
+                state.isWalletIdentifierIncorrect = false
+                return .none
+            }
+            state.isWalletIdentifierIncorrect = !environment.walletIdentifierValidator(guid)
             return .none
 
         case .walletPairing(.approveEmailAuthorization):
@@ -197,6 +230,7 @@ let credentialsReducer = Reducer.combine(
             else {
                 fatalError("States should not be nil")
             }
+            state.isLoading = true
             return .merge(
                 // Clear error states
                 Effect(value: .accountLockedErrorVisibility(false)),
@@ -254,6 +288,7 @@ let credentialsReducer = Reducer.combine(
             else {
                 fatalError("States should not be nil")
             }
+            state.isLoading = false
             return .merge(
                 // clear error states
                 Effect(value: .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))),
@@ -293,7 +328,8 @@ let credentialsReducer = Reducer.combine(
             )
 
         case .walletPairing(.decryptWalletWithPassword):
-            // handled in core coordinator
+            // also handled in welcome reducer
+            state.isLoading = true
             return .none
 
         case .walletPairing(.pollWalletIdentifier):
@@ -364,6 +400,7 @@ let credentialsReducer = Reducer.combine(
 
         case .accountLockedErrorVisibility(let isVisible):
             state.isAccountLocked = isVisible
+            state.isLoading = false
             return .none
 
         case .credentialsFailureAlert(.show(let title, let message)):
@@ -386,3 +423,9 @@ let credentialsReducer = Reducer.combine(
         }
     }
 )
+
+// MARK: - Private
+
+private func identifierValidator(_ value: String) -> Bool {
+    value.range(of: TextRegex.walletIdentifier.rawValue, options: .regularExpression) != nil
+}

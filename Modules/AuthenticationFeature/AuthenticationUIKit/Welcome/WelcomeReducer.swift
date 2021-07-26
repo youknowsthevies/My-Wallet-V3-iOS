@@ -11,6 +11,8 @@ public enum WelcomeAction: Equatable {
     case start
     case presentScreenFlow(WelcomeState.ScreenFlow)
     case emailLogin(EmailLoginAction)
+    case deeplinkReceived(URL)
+    case requestedToDecryptWallet(String)
     /// should only be used on internal builds
     case manualPairing(ManualPairing.Action)
 }
@@ -104,10 +106,24 @@ public let welcomeReducer = Reducer.combine(
             }
             #endif
             return .none
-        case .emailLogin(.closeButtonTapped):
+        case .deeplinkReceived(let url):
+            // we currently only support deeplink if we're on the verify device screen
+            guard let loginState = state.emailLoginState,
+                  loginState.verifyDeviceState != nil
+            else {
+                return .none
+            }
+            return Effect(value: .emailLogin(.verifyDevice(.didReceiveWalletInfoDeeplink(url))))
+        case .requestedToDecryptWallet(let password):
+            // handled in core coordinator
+            return .none
+        case .emailLogin(.closeButtonTapped),
+             .emailLogin(.didDisappear):
             state.screenFlow = .welcomeScreen
             state.emailLoginState = .init()
             return .none
+        case .emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))):
+            return Effect(value: .requestedToDecryptWallet(password))
         case .emailLogin:
             // handled in email login reducer
             return .none

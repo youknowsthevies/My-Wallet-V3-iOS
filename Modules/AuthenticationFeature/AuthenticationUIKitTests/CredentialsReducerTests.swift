@@ -62,7 +62,7 @@ final class CredentialsReducerTests: XCTestCase {
     func test_did_appear_should_set_wallet_info_and_session_token() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
-            .send(.didAppear(walletInfo: mockWalletInfo)) { state in
+            .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
                 state.emailAddress = mockWalletInfo.email
                 state.walletGuid = mockWalletInfo.guid
                 state.emailCode = mockWalletInfo.emailCode
@@ -88,15 +88,20 @@ final class CredentialsReducerTests: XCTestCase {
 
         testStore.assert(
             // authentication without 2FA
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
-            .receive(.walletPairing(.decryptWalletWithPassword("")))
+            .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
+                state.isLoading = true
+            }
         )
     }
 
@@ -119,9 +124,12 @@ final class CredentialsReducerTests: XCTestCase {
 
         testStore.assert(
             // authentication
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
@@ -146,14 +154,19 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.walletPairing(.pollWalletIdentifier)),
             .do { self.mockMainQueue.advance() },
-            .receive(.walletPairing(.authenticate)),
+            .receive(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
             },
-            .receive(.walletPairing(.decryptWalletWithPassword(""))),
+            .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
+                state.isLoading = true
+            },
             .do { self.mockMainQueue.advance() }
         )
     }
@@ -176,9 +189,12 @@ final class CredentialsReducerTests: XCTestCase {
 
         testStore.assert(
             // authentication
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
@@ -215,9 +231,12 @@ final class CredentialsReducerTests: XCTestCase {
 
         testStore.assert(
             // authentication
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
@@ -248,9 +267,12 @@ final class CredentialsReducerTests: XCTestCase {
 
         testStore.assert(
             // authentication
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
@@ -288,9 +310,12 @@ final class CredentialsReducerTests: XCTestCase {
                 state.twoFAState?.isTwoFACodeFieldVisible = true
             },
             // authentication
-            .send(.walletPairing(.authenticate)),
+            .send(.walletPairing(.authenticate)) { state in
+                state.isLoading = true
+            },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
+                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
                 state.passwordState?.isPasswordIncorrect = false
@@ -314,7 +339,9 @@ final class CredentialsReducerTests: XCTestCase {
             .receive(.hardwareKey(.hardwareKeyCodeFieldVisibility(false))) { state in
                 state.hardwareKeyState?.isHardwareKeyCodeFieldVisible = false
             },
-            .receive(.walletPairing(.decryptWalletWithPassword("")))
+            .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
+                state.isLoading = true
+            }
         )
     }
 
@@ -353,7 +380,7 @@ final class CredentialsReducerTests: XCTestCase {
     private func setupWalletInfoAndSessionToken() {
         let mockWalletInfo = MockDeviceVerificationService.mockWalletInfo
         testStore.assert(
-            .send(.didAppear(walletInfo: mockWalletInfo)) { state in
+            .send(.didAppear(context: .walletInfo(mockWalletInfo))) { state in
                 state.emailAddress = mockWalletInfo.email
                 state.walletGuid = mockWalletInfo.guid
                 state.emailCode = mockWalletInfo.emailCode

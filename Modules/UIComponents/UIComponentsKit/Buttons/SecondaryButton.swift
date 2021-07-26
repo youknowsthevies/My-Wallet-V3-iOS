@@ -55,6 +55,7 @@ public struct SecondaryButton: View {
     public var body: some View {
         LoadingButton(title: title, action: action, loading: $loading)
             .buttonStyle(SecondaryButtonStyle(isEnabled: isEnabled))
+            .progressViewStyle(CircularProgressViewStyle(tint: .buttonSecondaryText))
     }
 }
 

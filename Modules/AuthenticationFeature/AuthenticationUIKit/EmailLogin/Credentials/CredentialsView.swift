@@ -12,17 +12,18 @@ struct CredentialsView: View {
     @Binding var isTwoFACodeVisible: Bool
     @Binding var isResendSMSButtonVisible: Bool
     @Binding var isHardwareKeyCodeFieldVisible: Bool
+    @Binding var isWalletIdentifierIncorrect: Bool
     @Binding var isPasswordIncorrect: Bool
     @Binding var isTwoFACodeIncorrect: Bool
     @Binding var isHardwareKeyCodeVisible: Bool
     @Binding var isAccountLocked: Bool
 
-    private let walletInfo: WalletInfo
+    private let context: CredentialsContext
     private let store: Store<CredentialsState, CredentialsAction>
     @ObservedObject private var viewStore: ViewStore<CredentialsState, CredentialsAction>
 
-    init(walletInfo: WalletInfo, store: Store<CredentialsState, CredentialsAction>) {
-        self.walletInfo = walletInfo
+    init(context: CredentialsContext, store: Store<CredentialsState, CredentialsAction>) {
+        self.context = context
         self.store = store
         let newViewStore = ViewStore(store)
         viewStore = newViewStore
@@ -37,6 +38,10 @@ struct CredentialsView: View {
         _isPasswordIncorrect = newViewStore.binding(
             get: { $0.passwordState?.isPasswordIncorrect ?? false },
             send: { _ in .none }
+        )
+        _isWalletIdentifierIncorrect = newViewStore.binding(
+            get: \.isWalletIdentifierIncorrect,
+            send: .none
         )
         _isTwoFACodeIncorrect = newViewStore.binding(
             get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false },
@@ -58,14 +63,7 @@ struct CredentialsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            FormTextFieldGroup(
-                title: EmailLoginString.TextFieldTitle.email,
-                text: .constant(walletInfo.email),
-                footnote: EmailLoginString.TextFieldFootnote.wallet + walletInfo.guid,
-                isDisabled: true
-            )
-            .padding(.top, 20)
-            .padding(.bottom, 20)
+            emailOrWalletIdentifierView()
 
             FormTextFieldGroup(
                 title: EmailLoginString.TextFieldTitle.password,
@@ -158,13 +156,17 @@ struct CredentialsView: View {
 
             Spacer()
 
-            PrimaryButton(title: EmailLoginString.Button._continue) {
-                if viewStore.isTwoFACodeOrHardwareKeyVerified {
-                    viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState?.password ?? "")))
-                } else {
-                    viewStore.send(.walletPairing(.authenticate))
-                }
-            }
+            PrimaryButton(
+                title: EmailLoginString.Button._continue,
+                action: {
+                    if viewStore.isTwoFACodeOrHardwareKeyVerified {
+                        viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState?.password ?? "")))
+                    } else {
+                        viewStore.send(.walletPairing(.authenticate))
+                    }
+                },
+                loading: viewStore.binding(get: \.isLoading, send: .none)
+            )
             .padding(.bottom, 58)
         }
         .disableAutocorrection(true)
@@ -172,12 +174,52 @@ struct CredentialsView: View {
         .padding(.leading, 24)
         .padding(.trailing, 24)
         .onAppear {
-            viewStore.send(.didAppear(walletInfo: walletInfo))
+            viewStore.send(.didAppear(context: context))
         }
         .onDisappear {
             viewStore.send(.didDisappear)
         }
         .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .credentialsFailureAlert(.dismiss))
+    }
+
+    // MARK: - Private
+
+    private func emailOrWalletIdentifierView() -> AnyView {
+        switch context {
+        case .walletInfo(let info):
+            return AnyView(emailTextfield(info: info))
+        case .walletIdentifier:
+            return AnyView(walletIdentifierTextfield())
+        case .none:
+            return AnyView(Divider().foregroundColor(.clear))
+        }
+    }
+
+    private func emailTextfield(info: WalletInfo) -> some View {
+        FormTextFieldGroup(
+            title: EmailLoginString.TextFieldTitle.email,
+            text: .constant(info.email),
+            footnote: EmailLoginString.TextFieldFootnote.wallet + info.guid,
+            isDisabled: true
+        )
+        .padding(.top, 20)
+        .padding(.bottom, 20)
+    }
+
+    private func walletIdentifierTextfield() -> some View {
+        FormTextFieldGroup(
+            title: EmailLoginString.TextFieldTitle.walletIdentifier,
+            text: viewStore.binding(
+                get: { $0.walletGuid },
+                send: { .didChangeWalletIdentifier($0) }
+            ),
+            footnote: EmailLoginString.TextFieldFootnote.email + viewStore.emailAddress,
+            isDisabled: false,
+            error: { _ in isWalletIdentifierIncorrect },
+            errorMessage: ""
+        )
+        .padding(.top, 20)
+        .padding(.bottom, 20)
     }
 }
 
@@ -185,7 +227,7 @@ struct CredentialsView: View {
 struct PasswordLoginView_Previews: PreviewProvider {
     static var previews: some View {
         CredentialsView(
-            walletInfo: WalletInfo.empty,
+            context: .none,
             store: Store(
                 initialState: .init(),
                 reducer: credentialsReducer,

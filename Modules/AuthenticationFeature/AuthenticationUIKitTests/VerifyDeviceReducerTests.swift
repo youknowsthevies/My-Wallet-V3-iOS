@@ -22,7 +22,7 @@ final class VerifyDeviceReducerTests: XCTestCase {
         try super.setUpWithError()
         mockMainQueue = DispatchQueue.test
         testStore = TestStore(
-            initialState: .init(),
+            initialState: .init(emailAddress: ""),
             reducer: verifyDeviceReducer,
             environment: .init(
                 mainQueue: mockMainQueue.eraseToAnyScheduler(),
@@ -39,9 +39,9 @@ final class VerifyDeviceReducerTests: XCTestCase {
     }
 
     func test_verify_initial_state_is_correct() {
-        let state = VerifyDeviceState()
+        let state = VerifyDeviceState(emailAddress: "")
         XCTAssertNotNil(state.credentialsState)
-        XCTAssertEqual(state.walletInfo, WalletInfo.empty)
+        XCTAssertEqual(state.credentialsContext, .none)
         XCTAssertFalse(state.isCredentialsScreenVisible)
     }
 
@@ -50,12 +50,25 @@ final class VerifyDeviceReducerTests: XCTestCase {
             .send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.validDeeplink)),
             .do { self.mockMainQueue.advance() },
             .receive(.didExtractWalletInfo(MockDeviceVerificationService.mockWalletInfo)) { state in
-                state.walletInfo = MockDeviceVerificationService.mockWalletInfo
+                state.credentialsContext = .walletInfo(MockDeviceVerificationService.mockWalletInfo)
             },
             .receive(.setCredentialsScreenVisible(true)) { state in
                 state.isCredentialsScreenVisible = true
             }
         )
+    }
+
+    func test_deeplink_parsing_failure_should_fallback_to_wallet_identifier() {
+        testStore.send(.didReceiveWalletInfoDeeplink(MockDeviceVerificationService.invalidDeeplink))
+        mockMainQueue.advance()
+
+        testStore.receive(.fallbackToWalletIdentifier) { state in
+            state.credentialsContext = .walletIdentifier(email: "")
+        }
+
+        testStore.receive(.setCredentialsScreenVisible(true)) { state in
+            state.isCredentialsScreenVisible = true
+        }
     }
 
     // TODO: Comment for now (wait until error states design are finalised)

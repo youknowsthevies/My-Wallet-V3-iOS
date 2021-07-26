@@ -164,9 +164,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             return .none
         }
         // Pass content to welcomeScreen to be handled
-        return Effect(
-            value: .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.didReceiveWalletInfoDeeplink(content.url)))))
-        )
+        return Effect(value: .onboarding(.welcomeScreen(.deeplinkReceived(content.url))))
     case .deeplink(.handleLink(let content)):
         // we first check if we're logged in, if not we need to defer the deeplink routing
         guard state.isLoggedIn else {
@@ -387,7 +385,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(
             value: .initializeWallet
         )
-    case .onboarding(.welcomeScreen(.emailLogin(.verifyDevice(.credentials(.walletPairing(.decryptWalletWithPassword(let password))))))):
+    case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
         return Effect(
             value: .fetchWallet(password)
         )

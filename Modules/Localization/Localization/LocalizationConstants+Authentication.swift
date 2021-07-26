@@ -84,6 +84,10 @@ extension LocalizationConstants.AuthenticationKit {
         }
 
         public enum TextFieldTitle {
+            public static let walletIdentifier = NSLocalizedString(
+                "Wallet Identifier",
+                comment: "Login screen: wallet identifier field title"
+            )
             public static let email = NSLocalizedString(
                 "Email",
                 comment: "Login screen: email text field title"
@@ -110,6 +114,10 @@ extension LocalizationConstants.AuthenticationKit {
         }
 
         public enum TextFieldFootnote {
+            public static let email = NSLocalizedString(
+                "Email: ",
+                comment: "Login screen: prefix for email on footnote"
+            )
             public static let wallet = NSLocalizedString(
                 "Wallet: ",
                 comment: "Login screen: prefix for wallet identifier footnote"

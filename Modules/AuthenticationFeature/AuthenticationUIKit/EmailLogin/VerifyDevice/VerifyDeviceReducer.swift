@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AuthenticationKit
+import Combine
 import ComposableArchitecture
 import DIKit
 import Localization
@@ -16,6 +17,7 @@ public enum VerifyDeviceAction: Equatable {
 
     case credentials(CredentialsAction)
     case didDisappear
+    case fallbackToWalletIdentifier
     case didExtractWalletInfo(WalletInfo)
     case didReceiveWalletInfoDeeplink(URL)
     case sendDeviceVerificationEmail
@@ -27,14 +29,16 @@ public enum VerifyDeviceAction: Equatable {
 
 struct VerifyDeviceState: Equatable {
     var isCredentialsScreenVisible: Bool
-    var walletInfo: WalletInfo
+    var credentialsContext: CredentialsContext
     var credentialsState: CredentialsState?
     var verifyDeviceFailureAlert: AlertState<VerifyDeviceAction>?
+    var emailAddress: String
 
-    init() {
+    init(emailAddress: String) {
+        self.emailAddress = emailAddress
         credentialsState = .init()
         isCredentialsScreenVisible = false
-        walletInfo = WalletInfo.empty
+        credentialsContext = .none
     }
 }
 
@@ -83,7 +87,13 @@ let verifyDeviceReducer = Reducer.combine(
             return .none
 
         case .didExtractWalletInfo(let walletInfo):
-            state.walletInfo = walletInfo
+            state.credentialsState = .init()
+            state.credentialsContext = .walletInfo(walletInfo)
+            return Effect(value: .setCredentialsScreenVisible(true))
+
+        case .fallbackToWalletIdentifier:
+            state.credentialsState = .init()
+            state.credentialsContext = .walletIdentifier(email: state.emailAddress)
             return Effect(value: .setCredentialsScreenVisible(true))
 
         case .didReceiveWalletInfoDeeplink(let url):
@@ -98,7 +108,7 @@ let verifyDeviceReducer = Reducer.combine(
                         return .didExtractWalletInfo(walletInfo)
                     case .failure(let error):
                         environment.errorRecorder.error(error)
-                        return .verifyDeviceFailureAlert(.show(title: "Deeplink Error", message: error.localizedDescription))
+                        return .fallbackToWalletIdentifier
                     }
                 }
 
