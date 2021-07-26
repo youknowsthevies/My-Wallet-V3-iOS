@@ -92,9 +92,12 @@ extension AnalyticsEvents {
         case sideNavAirdropCenter
         case sideNavLockbox
         case sideNavExchange
+        case sideNavInterest
 
         var name: String {
             switch self {
+            case .sideNavInterest:
+                return "side_nav_interest"
             // Menu - accounts and addresses clicked
             case .sideNavAccountsAndAddresses:
                 return "side_nav_accounts_and_addresses"

@@ -17,6 +17,12 @@ public enum InternalFeature: String, CaseIterable {
     /// Uses the Transactions Flow implementation of Buy when enabled
     case useTransactionsFlowToBuyCrypto
 
+    /// Enable interest withdraw and deposit
+    case interestWithdrawAndDeposit
+
+    /// Enable non-custodial sell
+    case nonCustodialSell
+
     /// Disable the guid login at welcome screen, useful for demo purposes
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
@@ -24,6 +30,10 @@ public enum InternalFeature: String, CaseIterable {
     /// Enables the feature for alpha release overriding internal config.
     var isAlphaReady: Bool {
         switch self {
+        case .interestWithdrawAndDeposit:
+            return false
+        case .nonCustodialSell:
+            return false
         case .secureChannel:
             return false
         case .disableNewWelcomeScreen:
@@ -47,6 +57,10 @@ extension InternalFeature {
     /// The title displayed at the Debug menu.
     public var displayTitle: String {
         switch self {
+        case .nonCustodialSell:
+            return "Non-Custodial Sell"
+        case .interestWithdrawAndDeposit:
+            return "Interest - Deposit and Withdraw"
         case .secureChannel:
             return "Secure Channel"
         case .disableNewWelcomeScreen:

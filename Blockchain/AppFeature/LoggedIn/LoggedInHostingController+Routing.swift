@@ -69,6 +69,10 @@ extension LoggedInHostingController {
         present(createAccountsAndAddressesViewController(), animated: true)
     }
 
+    func handleInterest() {
+        unimplemented()
+    }
+
     func handleSettings() {
         showSettingsView()
     }

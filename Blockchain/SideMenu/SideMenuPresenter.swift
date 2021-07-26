@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import AnalyticsKit
+import Combine
 import DIKit
 import PlatformKit
 import PlatformUIKit
@@ -16,28 +17,66 @@ class SideMenuPresenter {
 
     // MARK: Public Properties
 
-    var sideMenuItems: Observable<[SideMenuItem]> {
-        reactiveWallet.waitUntilInitialized
-            .map(weak: self) { (self, _) in
-                self.menuItems()
+    var sideMenuItems: AnyPublisher<[SideMenuItem], Never> {
+        reactiveWallet
+            .waitUntilInitializedSinglePublisher
+            .flatMap { [menuItems] _ -> AnyPublisher<[SideMenuItem], Never> in
+                menuItems
             }
-            .startWith([])
-            .observeOn(MainScheduler.instance)
+            .replaceError(with: [])
+            .receive(on: DispatchQueue.main)
+            .eraseToAnyPublisher()
     }
 
-    var sideMenuFooterItems: Observable<(top: SideMenuItem, bottom: SideMenuItem)> {
-        let secureChannelEnabled = secureChannelInternalEnabled || secureChannelConfiguration.isEnabled
-        return Observable.just((
-            top: secureChannelEnabled ? .secureChannel : .webLogin,
-            bottom: .logout
-        ))
+    var sideMenuFooterItems: AnyPublisher<(top: SideMenuItem, bottom: SideMenuItem), Never> {
+        featureFlagsService
+            .isEnabled(.local(.secureChannel))
+            .receive(on: DispatchQueue.main)
+            .map { [secureChannelConfiguration] isSecureChannelEnabled -> (top: SideMenuItem, bottom: SideMenuItem) in
+                return (
+                    top: (secureChannelConfiguration.isEnabled || isSecureChannelEnabled) ? .secureChannel : .webLogin,
+                    bottom: .logout
+                )
+            }
+            .eraseToAnyPublisher()
     }
 
     var itemSelection: Signal<SideMenuItem> {
         itemSelectionRelay.asSignal()
     }
 
-    private let secureChannelInternalEnabled: Bool
+    // MARK: - Private Properties
+
+    private var menuItems: AnyPublisher<[SideMenuItem], Never> {
+        featureFlagsService
+            .isEnabled(.local(.interestWithdrawAndDeposit))
+            .receive(on: DispatchQueue.main)
+            .map { [wallet] interestWithdrawDepositIsEnabled -> [SideMenuItem] in
+                var items: [SideMenuItem] = []
+
+                if wallet.isLockboxEnabled() {
+                    items.append(.lockbox)
+                }
+
+                if interestWithdrawDepositIsEnabled {
+                    items.append(.interest)
+                }
+
+                items += [
+                    .accountsAndAddresses,
+                    .buy,
+                    .sell,
+                    .support,
+                    .airdrops,
+                    .settings,
+                    .exchange
+                ]
+                return items
+            }
+            .eraseToAnyPublisher()
+    }
+
+    private let featureFlagsService: FeatureFlagsServiceAPI
     private var introductionSequence = WalletIntroductionSequence()
     private let introInterator: WalletIntroductionInteractor
     private let introductionRelay = PublishRelay<WalletIntroductionEventType>()
@@ -53,11 +92,14 @@ class SideMenuPresenter {
     private let disposeBag = DisposeBag()
     private var disposable: Disposable?
 
+    // MARK: - Init
+
     init(
         wallet: Wallet = WalletManager.shared.wallet,
         walletService: WalletOptionsAPI = resolve(),
         reactiveWallet: ReactiveWalletAPI = WalletManager.shared.reactiveWallet,
         appFeatureConfigurator: AppFeatureConfigurator = resolve(),
+        featureFlagsService: FeatureFlagsServiceAPI = resolve(),
         internalFeatureFlagService: InternalFeatureFlagServiceAPI = resolve(),
         onboardingSettings: OnboardingSettings = resolve(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
@@ -65,10 +107,10 @@ class SideMenuPresenter {
         self.wallet = wallet
         self.walletService = walletService
         self.reactiveWallet = reactiveWallet
+        self.featureFlagsService = featureFlagsService
         introInterator = WalletIntroductionInteractor(onboardingSettings: onboardingSettings, screen: .sideMenu)
         self.analyticsRecorder = analyticsRecorder
         secureChannelConfiguration = appFeatureConfigurator.configuration(for: .secureChannel)
-        secureChannelInternalEnabled = internalFeatureFlagService.isEnabled(.secureChannel)
     }
 
     deinit {
@@ -122,17 +164,5 @@ class SideMenuPresenter {
     private func execute(events: [WalletIntroductionEvent]) {
         introductionSequence.reset(to: events)
         triggerNextStep()
-    }
-
-    private func menuItems() -> [SideMenuItem] {
-        var items: [SideMenuItem] = [.accountsAndAddresses]
-
-        if wallet.isLockboxEnabled() {
-            items.append(.lockbox)
-        }
-
-        items += [.buy, .sell, .support, .airdrops, .settings, .exchange]
-
-        return items
     }
 }

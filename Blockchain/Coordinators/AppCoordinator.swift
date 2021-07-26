@@ -292,6 +292,8 @@ import WalletPayloadKit
 extension AppCoordinator: SideMenuViewControllerDelegate {
     func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem) {
         switch item {
+        case .interest:
+            handleInterest()
         case .backup:
             startBackupFlow()
         case .accountsAndAddresses:
@@ -447,6 +449,10 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
         tabControllerManager = nil
         slidingViewController = nil
         sideMenuViewController = nil
+    }
+
+    func handleInterest() {
+        unimplemented()
     }
 
     /// Starts Buy Crypto flow.

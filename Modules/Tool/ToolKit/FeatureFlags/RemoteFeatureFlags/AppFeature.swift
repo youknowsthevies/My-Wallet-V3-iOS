@@ -41,12 +41,22 @@ public enum AppFeature: Int, CaseIterable {
 
     /// Enable ACH withdraw and deposit
     case withdrawAndDepositACH
+
+    /// Enable interest withdraw and deposit
+    case interestWithdrawAndDeposit
+
+    /// Enable non-custodial sell
+    case nonCustodialSell
 }
 
 extension AppFeature {
     /// The remote key which determines if this feature is enabled or not
     public var remoteEnabledKey: String? {
         switch self {
+        case .interestWithdrawAndDeposit:
+            return "ios_interest_deposit_withdraw"
+        case .nonCustodialSell:
+            return "ios_non_custodial_sell"
         case .announcements:
             return "announcements"
         case .siftScienceEnabled:
@@ -73,6 +83,10 @@ extension AppFeature {
     /// Enables the feature for alpha release by overriding remote config settings.
     var isAlphaReady: Bool {
         switch self {
+        case .interestWithdrawAndDeposit:
+            return false
+        case .nonCustodialSell:
+            return false
         case .announcements:
             return false
         case .siftScienceEnabled:

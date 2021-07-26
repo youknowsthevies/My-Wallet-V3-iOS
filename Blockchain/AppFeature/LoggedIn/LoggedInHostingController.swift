@@ -236,6 +236,8 @@ final class LoggedInHostingController: UIViewController, LoggedInBridge {
 extension LoggedInHostingController: SideMenuViewControllerDelegate {
     func sideMenuViewController(_ viewController: SideMenuViewController, didTapOn item: SideMenuItem) {
         switch item {
+        case .interest:
+            handleInterest()
         case .backup:
             startBackupFlow()
         case .accountsAndAddresses:
