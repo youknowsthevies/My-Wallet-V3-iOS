@@ -64,6 +64,7 @@ public struct ActionableView<Content: View>: View {
                             loading: .constant(button.loading)
                         )
                         .disabled(!button.enabled)
+                        .frame(maxWidth: .infinity)
                     case .secondary:
                         UIComponentsKit.SecondaryButton(
                             title: button.title,
@@ -71,6 +72,7 @@ public struct ActionableView<Content: View>: View {
                             loading: .constant(button.loading)
                         )
                         .disabled(!button.enabled)
+                        .frame(maxWidth: .infinity)
                     }
                 }
             }

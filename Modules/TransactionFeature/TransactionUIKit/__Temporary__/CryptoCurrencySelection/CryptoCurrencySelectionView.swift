@@ -66,7 +66,7 @@ let cryptoCurrencySelectionReducer = CryptoCurrencySelectionReducer { state, act
                 .didReceiveCryptoLoadingResponse(result)
             }
 
-    case .cellTapped(let (_, subAction)):
+    case .cellTapped(_, let subAction):
         switch subAction {
         case .select(let quote):
             environment.select(quote.cryptoCurrency)
@@ -130,7 +130,6 @@ struct CryptoCurrencySelectionView: View {
             .onAppear {
                 viewStore.send(.loadCryptoCurrencies)
             }
-            .navigationBarTitle("", displayMode: .inline)
             .trailingNavigationButton(.close) {
                 viewStore.send(.closeButtonTapped)
             }

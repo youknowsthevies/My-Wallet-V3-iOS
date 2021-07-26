@@ -18,24 +18,24 @@ public struct LoadingButton: View {
     }
 
     public var body: some View {
-        if loading {
-            Button(action: {}, label: {
+        ZStack(alignment: .center) {
+            if loading {
                 ProgressView()
                     .frame(minHeight: LayoutConstants.buttonMinHeight)
-            })
-                .disabled(true)
-        } else {
-            if icon != nil {
-                Button(action: action, label: {
-                    HStack(spacing: 12) {
-                        icon?
-                            .renderingMode(.template)
-                            .frame(width: 15, height: 15)
-                        Text(title)
-                    }
-                })
+                    .disabled(true)
             } else {
-                Button(title, action: action)
+                if icon != nil {
+                    Button(action: action, label: {
+                        HStack(spacing: 12) {
+                            icon?
+                                .renderingMode(.template)
+                                .frame(width: 15, height: 15)
+                            Text(title)
+                        }
+                    })
+                } else {
+                    Button(title, action: action)
+                }
             }
         }
     }
