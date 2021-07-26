@@ -182,7 +182,7 @@ struct AirdropCampaigns {
             case .blockstack:
                 return .blockstack
             case .sunriver:
-                return TriageCryptoCurrency(cryptoCurrency: .stellar)
+                return TriageCryptoCurrency(cryptoCurrency: .coin(.stellar))
             }
         }
 

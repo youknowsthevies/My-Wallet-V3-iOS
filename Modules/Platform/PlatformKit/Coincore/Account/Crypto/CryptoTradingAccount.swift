@@ -108,7 +108,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
         switch asset {
         case .erc20(let model) where NewERC20Code.allCases.map(\.rawValue).contains(model.code):
             return actionsNewCustodialAsset
-        case .other(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
+        case .coin(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
             return actionsNewCustodialAsset
         default:
             return actionsLegacyAsset
@@ -240,7 +240,7 @@ public class CryptoTradingAccount: CryptoAccount, TradingAccount {
                     }
                     return self.canLegacyAsset(perform: action)
                 }
-        case .other(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
+        case .coin(let model) where NewCustodialCode.allCases.map(\.rawValue).contains(model.code):
             return canNewCustodialAsset(perform: action)
                 .flatMap(weak: self) { (self, canDoAction) in
                     guard canDoAction else {

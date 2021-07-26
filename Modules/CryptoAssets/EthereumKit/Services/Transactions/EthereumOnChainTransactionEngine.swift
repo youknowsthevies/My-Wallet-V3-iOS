@@ -70,13 +70,13 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         self.ethereumTransactionDispatcher = ethereumTransactionDispatcher
         feeCache = CachedValue(configuration: .periodic(90))
         feeCache.setFetch(weak: self) { (self) -> Single<EthereumTransactionFee> in
-            self.feeService.fees(cryptoCurrency: .ethereum)
+            self.feeService.fees(cryptoCurrency: .coin(.ethereum))
         }
     }
 
     func assertInputsValid() {
         defaultAssertInputsValid()
-        precondition(sourceCryptoCurrency == .ethereum)
+        precondition(sourceCryptoCurrency == .coin(.ethereum))
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
@@ -84,14 +84,14 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .map { fiatCurrency -> PendingTransaction in
                 .init(
-                    amount: MoneyValue.zero(currency: .ethereum),
-                    available: MoneyValue.zero(currency: .ethereum),
-                    feeAmount: MoneyValue.zero(currency: .ethereum),
-                    feeForFullAvailable: MoneyValue.zero(currency: .ethereum),
+                    amount: .zero(currency: .coin(.ethereum)),
+                    available: .zero(currency: .coin(.ethereum)),
+                    feeAmount: .zero(currency: .coin(.ethereum)),
+                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: .crypto(.ethereum)
+                        asset: .crypto(.coin(.ethereum))
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )
@@ -149,7 +149,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
         guard let crypto = amount.cryptoValue else {
             preconditionFailure("Not a `CryptoValue`")
         }
-        guard crypto.currencyType == .ethereum else {
+        guard crypto.currencyType == .coin(.ethereum) else {
             preconditionFailure("Not an ethereum value")
         }
         return Single.zip(
@@ -206,7 +206,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     }
 
     func execute(pendingTransaction: PendingTransaction, secondPassword: String) -> Single<TransactionResult> {
-        guard pendingTransaction.amount.currencyType == .crypto(.ethereum) else {
+        guard pendingTransaction.amount.currencyType == .crypto(.coin(.ethereum)) else {
             preconditionFailure("Not an ethereum value")
         }
 
@@ -261,7 +261,7 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
 
     private func validateAmounts(pendingTransaction: PendingTransaction) -> Completable {
         Completable.fromCallable {
-            if try pendingTransaction.amount <= .init(cryptoValue: .etherZero) {
+            guard pendingTransaction.amount.isPositive else {
                 throw TransactionValidationFailure(state: .invalidAmount)
             }
         }
@@ -314,8 +314,8 @@ final class EthereumOnChainTransactionEngine: OnChainTransactionEngine {
     private func fiatAmountAndFees(from pendingTransaction: PendingTransaction) -> Single<(amount: FiatValue, fees: FiatValue)> {
         Single.zip(
             sourceExchangeRatePair,
-            .just(pendingTransaction.amount.cryptoValue ?? .etherZero),
-            .just(pendingTransaction.feeAmount.cryptoValue ?? .etherZero)
+            .just(pendingTransaction.amount.cryptoValue ?? .zero(currency: .coin(.ethereum))),
+            .just(pendingTransaction.feeAmount.cryptoValue ?? .zero(currency: .coin(.ethereum)))
         )
         .map { (quote: $0.0.quote.fiatValue ?? .zero(currency: .USD), amount: $0.1, fees: $0.2) }
         .map { (quote: FiatValue, amount: CryptoValue, fees: CryptoValue) -> (FiatValue, FiatValue) in

@@ -21,7 +21,7 @@ class EthereumTransactionBuilderTests: XCTestCase {
 
     func test_build_transaction() {
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
-        let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let value = BigUInt("0.01658472", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit
@@ -57,7 +57,7 @@ class EthereumTransactionBuilderTests: XCTestCase {
 
     func test_build_transaction_failure_gas_limit() {
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
-        let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let value = BigUInt("0.01658472", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice: BigUInt = MockEthereumWalletTestData.Transaction.gasPrice
         let gasLimit: BigUInt = 0
@@ -85,7 +85,7 @@ class EthereumTransactionBuilderTests: XCTestCase {
 
     func test_build_transaction_failure_gas_price() {
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
-        let value = BigUInt("0.01658472", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let value = BigUInt("0.01658472", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!
         let nonce = MockEthereumWalletTestData.Transaction.nonce
         let gasPrice: BigUInt = 0
         let gasLimit = MockEthereumWalletTestData.Transaction.gasLimit

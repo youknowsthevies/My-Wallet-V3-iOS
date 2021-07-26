@@ -11,7 +11,7 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         case limits
     }
 
-    public static var cryptoType: HasPathComponent = CryptoCurrency.stellar
+    public static var cryptoType: HasPathComponent = CryptoCurrency.coin(.stellar)
     public static let `default` = StellarTransactionFee(
         limits: StellarTransactionFee.defaultLimits,
         regular: 100,
@@ -27,14 +27,14 @@ public struct StellarTransactionFee: TransactionFee, Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let regularFee = try values.decode(Int.self, forKey: .regular)
         let priorityFee = try values.decode(Int.self, forKey: .priority)
-        regular = CryptoValue(amount: BigInt(regularFee), currency: .stellar)
-        priority = CryptoValue(amount: BigInt(priorityFee), currency: .stellar)
+        regular = CryptoValue(amount: BigInt(regularFee), currency: .coin(.stellar))
+        priority = CryptoValue(amount: BigInt(priorityFee), currency: .coin(.stellar))
         limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
     }
 
     public init(limits: TransactionFeeLimits, regular: Int, priority: Int) {
         self.limits = limits
-        self.regular = CryptoValue(amount: BigInt(regular), currency: .stellar)
-        self.priority = CryptoValue(amount: BigInt(priority), currency: .stellar)
+        self.regular = CryptoValue(amount: BigInt(regular), currency: .coin(.stellar))
+        self.priority = CryptoValue(amount: BigInt(priority), currency: .coin(.stellar))
     }
 }

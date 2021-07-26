@@ -69,7 +69,7 @@ final class BitPayTransactionEngine: TransactionEngine {
 
     func assertInputsValid() {
         precondition(sourceAccount is CryptoNonCustodialAccount)
-        precondition(sourceCryptoCurrency == .bitcoin)
+        precondition(sourceCryptoCurrency == .coin(.bitcoin))
         precondition(transactionTarget is BitPayInvoiceTarget)
         precondition(onChainEngine is BitPayClientEngine)
         onChainEngine.assertInputsValid()

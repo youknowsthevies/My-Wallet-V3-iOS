@@ -11,7 +11,7 @@ public struct EthereumURLPayload: EIP67URI {
 
     private static let scheme: String = "ethereum"
 
-    public let cryptoCurrency: CryptoCurrency = .ethereum
+    public let cryptoCurrency: CryptoCurrency = .coin(.ethereum)
     public let address: String
     public private(set) var amount: String?
     public private(set) var gas: String?

@@ -463,12 +463,12 @@ extension DependencyContainer {
             return ethereum
         }
 
-        factory(tag: CryptoCurrency.ethereum) { () -> MnemonicAccessAPI in
+        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> MnemonicAccessAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }
 
-        factory(tag: CryptoCurrency.ethereum) { () -> PasswordAccessAPI in
+        factory(tag: CryptoCurrency.coin(.ethereum)) { () -> PasswordAccessAPI in
             let ethereum: EthereumWallet = DIKit.resolve()
             return ethereum
         }

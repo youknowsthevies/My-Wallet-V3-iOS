@@ -18,12 +18,12 @@ public struct StellarLedger: Equatable {
 
     public var baseFeeInXlm: CryptoValue? {
         guard let baseFeeInStroops = baseFeeInStroops else { return nil }
-        return CryptoValue(amount: BigInt(baseFeeInStroops), currency: .stellar)
+        return CryptoValue(amount: BigInt(baseFeeInStroops), currency: .coin(.stellar))
     }
 
     public var baseReserveInXlm: CryptoValue? {
         guard let baseReserveInStroops = baseReserveInStroops else { return nil }
-        return CryptoValue(amount: BigInt(baseReserveInStroops), currency: .stellar)
+        return CryptoValue(amount: BigInt(baseReserveInStroops), currency: .coin(.stellar))
     }
 
     func apply(baseFeeInStroops: Int) -> StellarLedger {

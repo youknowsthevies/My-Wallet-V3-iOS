@@ -86,7 +86,7 @@ final class EthereumActivityDetailsPresenter: DetailsScreenPresenterAPI {
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve(),
         messageRecorder: MessageRecording = resolve()
     ) {
-        precondition(event.currency == .ethereum, "Using EthereumActivityDetailsPresenter with \(event.currency) event.")
+        precondition(event.currency == .coin(.ethereum), "Using EthereumActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.loadingViewPresenter = loadingViewPresenter
         self.router = router

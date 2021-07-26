@@ -7,7 +7,7 @@ import ToolKit
 
 final class EthereumAsset: CryptoAsset {
 
-    let asset: CryptoCurrency = .ethereum
+    let asset: CryptoCurrency = .coin(.ethereum)
 
     var defaultAccount: Single<SingleAccount> {
         repository

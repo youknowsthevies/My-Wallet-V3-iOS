@@ -111,9 +111,9 @@ extension APIClient {
             OrderPayload.Response(
                 state: OrderDetails.State.pendingDeposit.rawValue,
                 id: "111111-aaaaaaaa-111111",
-                inputCurrency: FiatCurrency.GBP.code,
+                inputCurrency: "GBP",
                 inputQuantity: "10000",
-                outputCurrency: CryptoCurrency.ethereum.code,
+                outputCurrency: "ETH",
                 outputQuantity: "100000",
                 updatedAt: "2020-01-01T12:20:42.849Z",
                 expiresAt: "2020-01-01T12:20:42.849Z",

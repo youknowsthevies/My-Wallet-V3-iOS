@@ -17,7 +17,7 @@ struct OrderTransactionLegacy {
 protocol LegacyWalletAPI: AnyObject {
 
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable

@@ -24,16 +24,19 @@ final class TransactionDetailService: TransactionDetailServiceAPI {
 
     func transactionDetailURL(for transactionHash: String, cryptoCurrency: CryptoCurrency) -> String? {
         switch cryptoCurrency {
-        case .other:
-            return nil
-        case .bitcoin:
-            return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"
-        case .ethereum:
-            return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
-        case .bitcoinCash:
-            return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
-        case .stellar:
-            return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
+        case .coin(let model):
+            switch model.code {
+            case NonCustodialCoinCode.bitcoin.rawValue:
+                return "\(blockchainAPI.bitcoinExplorerUrl)/tx/\(transactionHash)"
+            case NonCustodialCoinCode.ethereum.rawValue:
+                return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
+            case NonCustodialCoinCode.bitcoinCash.rawValue:
+                return "\(blockchainAPI.bitcoinCashExplorerUrl)/tx/\(transactionHash)"
+            case NonCustodialCoinCode.stellar.rawValue:
+                return "\(blockchainAPI.stellarchainUrl)/tx/\(transactionHash)"
+            default:
+                return nil
+            }
         case .erc20:
             return "\(blockchainAPI.etherExplorerUrl)/tx/\(transactionHash)"
         }

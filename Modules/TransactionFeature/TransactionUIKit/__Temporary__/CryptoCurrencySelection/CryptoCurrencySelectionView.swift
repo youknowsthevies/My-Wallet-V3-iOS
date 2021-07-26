@@ -143,7 +143,7 @@ struct SDDIntroBuyView_Previews: PreviewProvider {
 
     static var testCurrencyPairs = [
         CryptoCurrencyQuote(
-            cryptoCurrency: .bitcoin,
+            cryptoCurrency: .coin(.bitcoin),
             fiatCurrency: .USD,
             quote: 5000000,
             formattedQuote: "$50,000",
@@ -152,7 +152,7 @@ struct SDDIntroBuyView_Previews: PreviewProvider {
             timestamp: Date()
         ),
         CryptoCurrencyQuote(
-            cryptoCurrency: .ethereum,
+            cryptoCurrency: .coin(.ethereum),
             fiatCurrency: .USD,
             quote: 150000,
             formattedQuote: "$1,500",
@@ -161,7 +161,7 @@ struct SDDIntroBuyView_Previews: PreviewProvider {
             timestamp: Date()
         ),
         CryptoCurrencyQuote(
-            cryptoCurrency: .bitcoinCash,
+            cryptoCurrency: .coin(.bitcoinCash),
             fiatCurrency: .USD,
             quote: 100,
             formattedQuote: "$1,00",

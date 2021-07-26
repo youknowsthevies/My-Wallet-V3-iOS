@@ -8,7 +8,7 @@ import ToolKit
 
 final class StellarAsset: CryptoAsset {
 
-    let asset: CryptoCurrency = .stellar
+    let asset: CryptoCurrency = .coin(.stellar)
 
     var defaultAccount: Single<SingleAccount> {
         Single.just(())
@@ -61,7 +61,7 @@ final class StellarAsset: CryptoAsset {
     func parse(address: String) -> Single<ReceiveAddress?> {
         let result = try? addressFactory
             .makeExternalAssetAddress(
-                asset: .stellar,
+                asset: .coin(.stellar),
                 address: address,
                 label: address,
                 onTxCompleted: { _ in Completable.empty() }

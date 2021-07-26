@@ -14,36 +14,59 @@ public final class AllAccountsGroup: AccountGroup {
     let actions: AvailableActions = [.viewActivity]
 
     public var isFunded: Single<Bool> {
-        if accounts.isEmpty {
+        guard !accounts.isEmpty else {
             return .just(false)
         }
-        return Single.zip(accounts.map(\.isFunded))
+        return Single
+            .zip(accounts.map(\.isFunded))
             .map { values -> Bool in
                 !values.contains(false)
             }
     }
 
     public var requireSecondPassword: Single<Bool> {
-        if accounts.isEmpty {
+        guard !accounts.isEmpty else {
             return .just(false)
         }
 
-        return Single.zip(accounts.map(\.requireSecondPassword))
+        return Single
+            .zip(accounts.map(\.requireSecondPassword))
             .map { values -> Bool in
                 !values.contains(false)
             }
     }
 
     public var pendingBalance: Single<MoneyValue> {
-        .error(MoneyValueError.invalidInput)
+        guard !accounts.isEmpty else {
+            return .error(MoneyValueError.invalidInput)
+        }
+        return Single
+            .zip(accounts.map(\.pendingBalance))
+            .map { [currencyType] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+            }
     }
 
     public var balance: Single<MoneyValue> {
-        .error(MoneyValueError.invalidInput)
+        guard !accounts.isEmpty else {
+            return .error(MoneyValueError.invalidInput)
+        }
+        return Single
+            .zip(accounts.map(\.balance))
+            .map { [currencyType] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+            }
     }
 
     public var actionableBalance: Single<MoneyValue> {
-        .error(MoneyValueError.invalidInput)
+        guard !accounts.isEmpty else {
+            return .error(MoneyValueError.invalidInput)
+        }
+        return Single
+            .zip(accounts.map(\.actionableBalance))
+            .map { [currencyType] values -> MoneyValue in
+                try values.reduce(MoneyValue.zero(currency: currencyType), +)
+            }
     }
 
     public var receiveAddress: Single<ReceiveAddress> {

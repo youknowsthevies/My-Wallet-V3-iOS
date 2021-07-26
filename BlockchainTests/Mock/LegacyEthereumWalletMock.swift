@@ -78,7 +78,7 @@ class MockLegacyEthereumWallet: LegacyEthereumWalletAPI, LegacyWalletAPI, Mnemon
         unimplemented()
     }
 
-    func updateAccountLabel(_ cryptoCurrency: CryptoCurrency, index: Int, label: String) -> Completable {
+    func updateAccountLabel(_ cryptoCurrency: NonCustodialCoinCode, index: Int, label: String) -> Completable {
         unimplemented()
     }
 

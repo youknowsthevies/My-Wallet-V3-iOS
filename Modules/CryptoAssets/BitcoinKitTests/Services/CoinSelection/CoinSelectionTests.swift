@@ -30,7 +30,7 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_ascent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .bitcoin))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .coin(.bitcoin)))
         let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -53,7 +53,7 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_ascent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 472000, currency: .bitcoin))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 472000, currency: .coin(.bitcoin)))
         let coins = unspents([200000, 300000, 500000])
         let strategy = AscentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -75,7 +75,7 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_descent_draw_selection_with_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .bitcoin))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 100000, currency: .coin(.bitcoin)))
         let coins = unspents([1, 20000, 0, 0, 300000, 50000, 30000])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -96,7 +96,7 @@ class CoinSelectionTests: XCTestCase {
     }
 
     func test_descent_draw_selection_with_no_change_output() throws {
-        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 485000, currency: .bitcoin))
+        let outputAmount = try BitcoinValue(crypto: CryptoValue(amount: 485000, currency: .coin(.bitcoin)))
         let coins = unspents([200000, 300000, 500000])
         let strategy = DescentDrawSortingStrategy()
         let result = subject.select(inputs:
@@ -157,7 +157,7 @@ class CoinSelectionTests: XCTestCase {
 private func unspents(_ values: [Int]) -> [UnspentOutput] {
     values.compactMap { value in
         let absolute = abs(value)
-        let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .bitcoin)
+        let cryptoValue = CryptoValue(amount: BigInt(absolute), currency: .coin(.bitcoin))
         guard let bitcoinValue = try? BitcoinValue(crypto: cryptoValue) else {
             return nil
         }

@@ -23,7 +23,7 @@ class EthereumTransactionSignerTests: XCTestCase {
     }
 
     func test_sign_transaction() throws {
-        let amount = BigUInt("0.1", decimals: CryptoCurrency.ethereum.maxDecimalPlaces)!
+        let amount = BigUInt("0.1", decimals: CryptoCurrency.coin(.ethereum).maxDecimalPlaces)!
         let toAddress = EthereumAddress(address: "0x3535353535353535353535353535353535353535")!
         let keyPair = MockEthereumWalletTestData.keyPair
         let candidate = EthereumTransactionCandidate(

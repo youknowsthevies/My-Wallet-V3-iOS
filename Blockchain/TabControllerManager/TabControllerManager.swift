@@ -173,9 +173,9 @@ final class TabControllerManager: NSObject {
 
     func setupBitpayPayment(from url: URL) {
         let data = url.absoluteString
-        let asset = coincore[.bitcoin]
+        let asset = coincore[.coin(.bitcoin)]
         let transactionPair = Single.zip(
-            BitPayInvoiceTarget.make(from: data, asset: .bitcoin),
+            BitPayInvoiceTarget.make(from: data, asset: .coin(.bitcoin)),
             asset.defaultAccount
         )
         BitPayInvoiceTarget

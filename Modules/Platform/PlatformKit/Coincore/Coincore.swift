@@ -38,7 +38,11 @@ final class Coincore: CoincoreAPI {
                 )
             }
             .map { accountGroups -> [SingleAccount] in
-                accountGroups.map(\.accounts).reduce([SingleAccount](), +)
+                accountGroups
+                    .map(\.accounts)
+                    .reduce(into: [SingleAccount]()) { result, accounts in
+                        result.append(contentsOf: accounts)
+                    }
             }
             .map { accounts -> AccountGroup in
                 AllAccountsGroup(accounts: accounts)

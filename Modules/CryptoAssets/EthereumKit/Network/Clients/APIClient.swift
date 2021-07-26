@@ -103,7 +103,7 @@ final class APIClient: TransactionPushClientAPI, TransactionClientAPI, BalanceCl
     }
 
     func fees(cryptoCurrency: CryptoCurrency) -> Single<TransactionFeeResponse> {
-        guard cryptoCurrency == .ethereum || cryptoCurrency.isERC20 else {
+        guard cryptoCurrency == .coin(.ethereum) || cryptoCurrency.isERC20 else {
             fatalError("Using Ethereum APIClient for incompatible CryptoCurrency")
         }
         var parameters: [URLQueryItem] = []

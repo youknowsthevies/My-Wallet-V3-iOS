@@ -9,24 +9,16 @@ extension CryptoCurrency {
 
     public var brandColor: UIColor {
         switch self {
-        case .bitcoin:
-            return .bitcoin
-        case .bitcoinCash:
-            return .bitcoinCash
-        case .ethereum:
-            return .ethereum
-        case .stellar:
-            return .stellar
-        case .other(let model):
+        case .coin(let model):
             guard let spotColor = model.spotColor else {
                 return .black
             }
             return UIColor(hex: spotColor) ?? .black
         case .erc20(let model):
             guard let spotColor = model.spotColor else {
-                return .ethereum
+                return CryptoCurrency.coin(.ethereum).brandColor
             }
-            return UIColor(hex: spotColor) ?? .ethereum
+            return UIColor(hex: spotColor) ?? .black
         }
     }
 
@@ -39,16 +31,16 @@ extension CryptoCurrency {
 
     public var logoResource: ImageResource {
         switch self {
-        case .bitcoin:
-            return .local(name: "crypto-btc", bundle: .platformUIKit)
-        case .bitcoinCash:
-            return .local(name: "crypto-bch", bundle: .platformUIKit)
-        case .ethereum:
-            return .local(name: "crypto-eth", bundle: .platformUIKit)
-        case .stellar:
-            return .local(name: "crypto-xlm", bundle: .platformUIKit)
-        case .other(let model):
+        case .coin(let model):
             switch model.code {
+            case NonCustodialCoinCode.bitcoin.rawValue:
+                return .local(name: "crypto-btc", bundle: .platformUIKit)
+            case NonCustodialCoinCode.bitcoinCash.rawValue:
+                return .local(name: "crypto-bch", bundle: .platformUIKit)
+            case NonCustodialCoinCode.ethereum.rawValue:
+                return .local(name: "crypto-eth", bundle: .platformUIKit)
+            case NonCustodialCoinCode.stellar.rawValue:
+                return .local(name: "crypto-xlm", bundle: .platformUIKit)
             case LegacyCustodialCode.polkadot.rawValue:
                 return .local(name: "crypto-dot", bundle: .platformUIKit)
             case LegacyCustodialCode.algorand.rawValue:

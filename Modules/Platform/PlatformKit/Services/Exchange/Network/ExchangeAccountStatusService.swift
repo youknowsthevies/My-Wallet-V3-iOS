@@ -22,7 +22,7 @@ public final class ExchangeAccountStatusService: ExchangeAccountStatusServiceAPI
 
     public var hasEnabled2FA: Single<Bool> {
         // It does not matter what asset we fetch.
-        client.exchangeAddress(with: .bitcoin)
+        client.exchangeAddress(with: .coin(.bitcoin))
             // If the user has accounts returned,
             // then they have 2FA enabled.
             .map { _ in true }

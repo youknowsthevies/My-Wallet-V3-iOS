@@ -208,7 +208,7 @@ class LegacyBuyFlowPresenter {
         // This is just levereging the existing buy flow, which isn't great but is getting replaced buy the new `Transactions` implementation
         presentBuyScreen(
             from: presenter,
-            targetCurrency: .bitcoin, // not important for simple buy
+            targetCurrency: .coin(.bitcoin), // not important for simple buy
             sourceCurrency: .locale, // not imporant for simple buy
             isSDDEligible: false
         )

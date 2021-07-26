@@ -13,7 +13,7 @@ extension DependencyContainer {
 
         factory { BitcoinWalletAccountRepository() }
 
-        factory(tag: CryptoCurrency.bitcoin) { BitcoinAsset() as CryptoAsset }
+        factory(tag: CryptoCurrency.coin(.bitcoin)) { BitcoinAsset() as CryptoAsset }
 
         single { BitcoinHistoricalTransactionService() as BitcoinHistoricalTransactionServiceAPI }
 

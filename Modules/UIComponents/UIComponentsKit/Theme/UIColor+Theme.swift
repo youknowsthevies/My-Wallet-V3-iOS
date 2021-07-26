@@ -5,13 +5,6 @@ import UIKit
 // LEGACY, for UIKit support
 extension UIColor {
 
-    // MARK: Crypto
-
-    static let _bch = UIColor(paletteColor: .bch)
-    static let _btc = UIColor(paletteColor: .btc)
-    static let _eth = UIColor(paletteColor: .eth)
-    static let _xlm = UIColor(paletteColor: .xlm)
-
     // MARK: Tiers
 
     static let tiersSilver = UIColor(paletteColor: .tierSilver)
@@ -248,10 +241,6 @@ extension UIColor {
 
     // MARK: Currency
 
-    public static let bitcoin = _btc
-    public static let bitcoinCash = _bch
-    public static let ethereum = _eth
-    public static let stellar = _xlm
     public static let fiat = green500
 
     // MARK: Tiers

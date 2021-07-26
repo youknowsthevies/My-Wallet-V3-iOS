@@ -8,7 +8,7 @@ import ToolKit
 
 final class BitcoinAsset: CryptoAsset {
 
-    let asset: CryptoCurrency = .bitcoin
+    let asset: CryptoCurrency = .coin(.bitcoin)
 
     var defaultAccount: Single<SingleAccount> {
         repository.defaultAccount
@@ -27,7 +27,7 @@ final class BitcoinAsset: CryptoAsset {
     private let repository: BitcoinWalletAccountRepository
 
     init(
-        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CryptoCurrency.bitcoin),
+        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CryptoCurrency.coin(.bitcoin)),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),

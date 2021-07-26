@@ -140,18 +140,4 @@ enum PaletteColor: String, CaseIterable {
     case tierSilver
     case tierGold
     case tierDiamond
-
-    // MARK: Cryptocurrencies
-
-    case aave = "Aave"
-    case algo = "Algorand"
-    case bch = "BitcoinCash"
-    case btc = "Bitcoin"
-    case dot = "Polkadot"
-    case eth = "Ethereum"
-    case pax = "Pax"
-    case usdt = "Tether"
-    case wDGLD = "WDGLD"
-    case xlm = "Stellar"
-    case yfi = "YearnFinance"
 }

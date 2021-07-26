@@ -70,7 +70,7 @@ public final class Router: RouterAPI {
 
     public init(
         builder: Buildable,
-        currency: CryptoCurrency = .bitcoin,
+        currency: CryptoCurrency,
         navigationRouter: NavigationRouterAPI = resolve(),
         paymentMethodTypesService: PaymentMethodTypesServiceAPI = resolve(),
         settingsService: CompleteSettingsServiceAPI = resolve(),

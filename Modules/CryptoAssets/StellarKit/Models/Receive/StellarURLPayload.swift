@@ -7,7 +7,7 @@ struct StellarURLPayload: SEP7URI {
 
     private static let scheme: String = "web+stellar"
 
-    let cryptoCurrency: CryptoCurrency = .stellar
+    let cryptoCurrency: CryptoCurrency = .coin(.stellar)
     let address: String
     let amount: String?
     let includeScheme: Bool = true

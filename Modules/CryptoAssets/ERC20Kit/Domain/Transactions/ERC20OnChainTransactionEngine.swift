@@ -93,12 +93,12 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
                 .init(
                     amount: .zero(currency: erc20Token.cryptoCurrency),
                     available: .zero(currency: erc20Token.cryptoCurrency),
-                    feeAmount: MoneyValue.zero(currency: .ethereum),
-                    feeForFullAvailable: MoneyValue.zero(currency: .ethereum),
+                    feeAmount: .zero(currency: .coin(.ethereum)),
+                    feeForFullAvailable: .zero(currency: .coin(.ethereum)),
                     feeSelection: .init(
                         selectedLevel: .regular,
                         availableLevels: [.regular, .priority],
-                        asset: .crypto(.ethereum)
+                        asset: .crypto(.coin(.ethereum))
                     ),
                     selectedFiatCurrency: fiatCurrency
                 )
@@ -343,11 +343,11 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
     private var sourceExchangeRatePair: Single<MoneyValuePair> {
         fiatCurrencyService
             .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
+            .flatMap(weak: self) { [sourceAsset] (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: self.sourceAsset, in: fiatCurrency)
+                    .price(for: sourceAsset, in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: self.sourceAsset), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: sourceAsset), quote: $0) }
             }
     }
 
@@ -357,9 +357,9 @@ final class ERC20OnChainTransactionEngine: OnChainTransactionEngine {
             .fiatCurrency
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<MoneyValuePair> in
                 self.priceService
-                    .price(for: CryptoCurrency.ethereum.currency, in: fiatCurrency)
+                    .price(for: CurrencyType.crypto(.coin(.ethereum)), in: fiatCurrency)
                     .map(\.moneyValue)
-                    .map { MoneyValuePair(base: .one(currency: CryptoCurrency.ethereum.currency), quote: $0) }
+                    .map { MoneyValuePair(base: .one(currency: .crypto(.coin(.ethereum))), quote: $0) }
             }
     }
 }

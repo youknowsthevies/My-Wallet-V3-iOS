@@ -5,7 +5,7 @@ import RxSwift
 
 struct EthereumReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
 
-    let asset: CryptoCurrency = .ethereum
+    let asset: CryptoCurrency = .coin(.ethereum)
     let address: String
     let label: String
     let onTxCompleted: TxCompleted

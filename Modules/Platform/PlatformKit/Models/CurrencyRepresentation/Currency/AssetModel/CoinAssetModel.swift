@@ -55,6 +55,59 @@ public struct CoinAssetModel: AssetModel, Hashable {
 }
 
 extension CoinAssetModel {
+
+    public static var bitcoin: CoinAssetModel {
+        CoinAssetModel(
+            code: "BTC",
+            name: "Bitcoin",
+            precision: 8,
+            products: AssetModelProduct.allCases,
+            logoPngUrl: nil,
+            spotColor: "FF9B22",
+            minimumOnChainConfirmations: 2,
+            sortIndex: 1
+        )
+    }
+
+    public static var bitcoinCash: CoinAssetModel {
+        CoinAssetModel(
+            code: "BCH",
+            name: "Bitcoin Cash",
+            precision: 8,
+            products: AssetModelProduct.allCases,
+            logoPngUrl: nil,
+            spotColor: "8DC351",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 3
+        )
+    }
+
+    public static var ethereum: CoinAssetModel {
+        CoinAssetModel(
+            code: "ETH",
+            name: "Ethereum",
+            precision: 18,
+            products: AssetModelProduct.allCases,
+            logoPngUrl: nil,
+            spotColor: "473BCB",
+            minimumOnChainConfirmations: 30,
+            sortIndex: 2
+        )
+    }
+
+    public static var stellar: CoinAssetModel {
+        CoinAssetModel(
+            code: "XLM",
+            name: "Stellar",
+            precision: 7,
+            products: AssetModelProduct.allCases,
+            logoPngUrl: nil,
+            spotColor: "000000",
+            minimumOnChainConfirmations: 3,
+            sortIndex: 4
+        )
+    }
+
     static var algorand: CoinAssetModel {
         CoinAssetModel(
             code: "ALGO",
@@ -64,7 +117,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "000000",
             minimumOnChainConfirmations: 3,
-            sortIndex: 1
+            sortIndex: 101
         )
     }
 
@@ -77,7 +130,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "E6007A",
             minimumOnChainConfirmations: 3,
-            sortIndex: 2
+            sortIndex: 102
         )
     }
 
@@ -90,7 +143,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "C2A633",
             minimumOnChainConfirmations: 3,
-            sortIndex: 3
+            sortIndex: 103
         )
     }
 
@@ -103,7 +156,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "",
             minimumOnChainConfirmations: 3,
-            sortIndex: 4
+            sortIndex: 104
         )
     }
 
@@ -116,7 +169,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "",
             minimumOnChainConfirmations: 3,
-            sortIndex: 5
+            sortIndex: 105
         )
     }
 
@@ -129,7 +182,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "BFBBBB",
             minimumOnChainConfirmations: 3,
-            sortIndex: 6
+            sortIndex: 106
         )
     }
 
@@ -142,7 +195,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "211F6D",
             minimumOnChainConfirmations: 3,
-            sortIndex: 7
+            sortIndex: 107
         )
     }
 
@@ -155,7 +208,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "2C7DF7",
             minimumOnChainConfirmations: 3,
-            sortIndex: 8
+            sortIndex: 108
         )
     }
 
@@ -168,7 +221,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "243855",
             minimumOnChainConfirmations: 3,
-            sortIndex: 9
+            sortIndex: 109
         )
     }
 
@@ -181,7 +234,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "2AB8E6",
             minimumOnChainConfirmations: 3,
-            sortIndex: 10
+            sortIndex: 110
         )
     }
 
@@ -194,7 +247,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "000000",
             minimumOnChainConfirmations: 3,
-            sortIndex: 11
+            sortIndex: 111
         )
     }
 
@@ -207,7 +260,7 @@ extension CoinAssetModel {
             logoPngUrl: nil,
             spotColor: "000000",
             minimumOnChainConfirmations: 3,
-            sortIndex: 12
+            sortIndex: 112
         )
     }
 }

@@ -2,6 +2,14 @@
 
 import Foundation
 
+/// An enumeration of coin codes that the App supports non-custodial.
+public enum NonCustodialCoinCode: String, CaseIterable {
+    case bitcoin = "BTC"
+    case bitcoinCash = "BCH"
+    case stellar = "XLM"
+    case ethereum = "ETH"
+}
+
 /// An enumeration of the hardcoded already known ERC20 coins.
 /// This shall be removed once we fully support the new `AssetModel` architecture.
 public enum LegacyERC20Code: String, CaseIterable {

@@ -87,7 +87,7 @@ final class EthereumCryptoAccount: CryptoNonCustodialAccount {
         fiatPriceService: FiatPriceServiceAPI = resolve(),
         exchangeProviding: ExchangeProviding = resolve()
     ) {
-        let asset = CryptoCurrency.ethereum
+        let asset = CryptoCurrency.coin(.ethereum)
         self.asset = asset
         self.publicKey = publicKey
         self.hdAccountIndex = hdAccountIndex

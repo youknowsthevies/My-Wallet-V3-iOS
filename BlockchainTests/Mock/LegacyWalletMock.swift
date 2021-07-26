@@ -8,7 +8,7 @@ import ToolKit
 class LegacyWalletMock: LegacyWalletAPI {
 
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable {

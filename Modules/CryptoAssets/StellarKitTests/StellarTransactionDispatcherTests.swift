@@ -63,8 +63,8 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 
     func testDryRunTransaction_BelowMinimumSend_NewAccount() throws {
-        let sendDetails = SendDetails.valid(value: .init(amount: 10000000, currency: .stellar))
-        horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .stellar)
+        let sendDetails = SendDetails.valid(value: .init(amount: 10000000, currency: .coin(.stellar)))
+        horizonProxy.underlyingMinimumBalance = .create(major: 5, currency: .coin(.stellar))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
 
@@ -72,7 +72,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
     }
 
     func testDryRunTransaction_BelowMinimumSend() throws {
-        let sendDetails = SendDetails.valid(value: .init(amount: 1, currency: .stellar))
+        let sendDetails = SendDetails.valid(value: .init(amount: 1, currency: .coin(.stellar)))
         let fromJSON = AccountResponse.JSON.valid(accountID: sendDetails.fromAddress, balance: "100")
         let toJSON = AccountResponse.JSON.valid(accountID: sendDetails.toAddress, balance: "100")
         horizonProxy.underlyingAccountResponseJSONMap[sendDetails.fromAddress] = fromJSON
@@ -97,7 +97,7 @@ class StellarTransactionDispatcherTests: XCTestCase {
 extension SendDetails {
     fileprivate static func valid(
         toAddress: String = "GCJD4FLZFAEYXYLZYCNH3PVUHAQGEBLXHTJHLWXG5Q6XA6YXCPCYJGPA",
-        value: CryptoValue = .create(major: 50, currency: .stellar)
+        value: CryptoValue = .create(major: 50, currency: .coin(.stellar))
     ) -> SendDetails {
         SendDetails(
             fromAddress: "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN7",
@@ -105,7 +105,7 @@ extension SendDetails {
             toAddress: toAddress,
             toLabel: "To Label",
             value: value,
-            fee: .create(major: 1, currency: .stellar),
+            fee: .create(major: 1, currency: .coin(.stellar)),
             memo: .text("1234567890")
         )
     }

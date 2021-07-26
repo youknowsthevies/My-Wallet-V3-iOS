@@ -53,7 +53,7 @@ public final class InterestDashboardAnnouncementScreenPresenter: InterestDashboa
             title: DefaultLabelContentInteractor(knownValue: LocalizationId.Cells.LineItem.Rate.title),
             description: InterestAccountDetailsDescriptionLabelInteractor.Rates(
                 service: service,
-                cryptoCurrency: .bitcoin
+                cryptoCurrency: .coin(.bitcoin)
             )
         )
         rateLineCellPresenter = DefaultLineItemCellPresenter(

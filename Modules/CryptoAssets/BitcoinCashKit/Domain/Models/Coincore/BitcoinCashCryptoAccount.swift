@@ -11,7 +11,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
 
     private(set) lazy var identifier: AnyHashable = "BitcoinCashCryptoAccount.\(xPub.address).\(xPub.derivationType)"
     let label: String
-    let asset: CryptoCurrency = .bitcoinCash
+    let asset: CryptoCurrency = .coin(.bitcoinCash)
     let isDefault: Bool
 
     func createTransactionEngine() -> Any {
@@ -19,7 +19,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
     }
 
     var pendingBalance: Single<MoneyValue> {
-        .just(.zero(currency: .bitcoinCash))
+        .just(.zero(currency: .coin(.bitcoinCash)))
     }
 
     var balance: Single<MoneyValue> {
@@ -111,7 +111,7 @@ final class BitcoinCashCryptoAccount: CryptoNonCustodialAccount {
         bridge: BitcoinCashWalletBridgeAPI = resolve()
     ) {
         self.xPub = xPub
-        self.label = label ?? CryptoCurrency.bitcoinCash.defaultWalletName
+        self.label = label ?? CryptoCurrency.coin(.bitcoinCash).defaultWalletName
         self.isDefault = isDefault
         self.hdAccountIndex = hdAccountIndex
         self.fiatPriceService = fiatPriceService

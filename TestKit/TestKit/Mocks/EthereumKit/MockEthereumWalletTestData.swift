@@ -52,7 +52,7 @@ extension EthereumAssetAccountDetails {
     static var defaultMock: EthereumAssetAccountDetails {
         .init(
             account: .defaultMock,
-            balance: .zero(currency: .ethereum),
+            balance: .zero(currency: .coin(.ethereum)),
             nonce: UInt64(MockEthereumWalletTestData.Transaction.nonce)
         )
     }

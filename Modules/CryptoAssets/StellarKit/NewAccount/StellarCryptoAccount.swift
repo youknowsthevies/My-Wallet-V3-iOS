@@ -89,7 +89,7 @@ class StellarCryptoAccount: CryptoNonCustodialAccount {
         accountDetailsService: StellarAccountDetailsServiceAPI = resolve(),
         fiatPriceService: FiatPriceServiceAPI = resolve()
     ) {
-        let asset = CryptoCurrency.stellar
+        let asset = CryptoCurrency.coin(.stellar)
         self.asset = asset
         self.bridge = bridge
         self.publicKey = publicKey

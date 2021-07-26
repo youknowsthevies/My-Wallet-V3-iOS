@@ -27,7 +27,7 @@ public struct SupportedPairs: Equatable {
 
     /// Array of supported unique crypto-currencies, sorted following `CryptoCurrency` default order.
     public var cryptoCurrencies: [CryptoCurrency] {
-        .init(cryptoCurrencySet)
+        .init(cryptoCurrencySet).sorted()
     }
 
     var fiatCurrencySet: Set<FiatCurrency> {

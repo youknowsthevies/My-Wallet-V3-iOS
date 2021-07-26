@@ -21,19 +21,19 @@ class EthereumTransactionFeeTests: XCTestCase {
     func testAbsoluteFee() {
         XCTAssertEqual(
             sut.absoluteFee(with: .regular, isContract: false),
-            CryptoValue.create(minor: "55000000000", currency: .ethereum)
+            CryptoValue.create(minor: "55000000000", currency: .coin(.ethereum))
         )
         XCTAssertEqual(
             sut.absoluteFee(with: .regular, isContract: true),
-            CryptoValue.create(minor: "65000000000", currency: .ethereum)
+            CryptoValue.create(minor: "65000000000", currency: .coin(.ethereum))
         )
         XCTAssertEqual(
             sut.absoluteFee(with: .priority, isContract: false),
-            CryptoValue.create(minor: "77000000000", currency: .ethereum)
+            CryptoValue.create(minor: "77000000000", currency: .coin(.ethereum))
         )
         XCTAssertEqual(
             sut.absoluteFee(with: .priority, isContract: true),
-            CryptoValue.create(minor: "91000000000", currency: .ethereum)
+            CryptoValue.create(minor: "91000000000", currency: .coin(.ethereum))
         )
     }
 }

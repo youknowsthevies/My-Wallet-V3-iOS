@@ -82,7 +82,7 @@ public class PriceService: PriceServiceAPI {
         if let date = date {
             timestamp = UInt64(date.timeIntervalSince1970)
         }
-        let conversionCurrency = CryptoCurrency.bitcoin
+        let conversionCurrency = CryptoCurrency.coin(.bitcoin)
         let basePrice = client
             .price(for: conversionCurrency.code, in: baseCurrency.code, at: timestamp)
         let quotePrice = client

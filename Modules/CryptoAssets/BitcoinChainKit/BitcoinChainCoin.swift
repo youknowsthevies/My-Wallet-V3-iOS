@@ -10,9 +10,9 @@ public enum BitcoinChainCoin: String {
     public var cryptoCurrency: CryptoCurrency {
         switch self {
         case .bitcoin:
-            return .bitcoin
+            return .coin(.bitcoin)
         case .bitcoinCash:
-            return .bitcoinCash
+            return .coin(.bitcoinCash)
         }
     }
 

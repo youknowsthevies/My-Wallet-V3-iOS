@@ -12,49 +12,65 @@ public protocol EnabledCurrenciesServiceAPI {
 
 final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
-    private var nonErc20Currencies: [CryptoCurrency] = [
-        .bitcoin,
-        .ethereum,
-        .bitcoinCash,
-        .stellar,
-        .other(.algorand),
-        .other(.polkadot)
+    private let nonErc20Currencies: [CryptoCurrency] = [
+        .coin(.bitcoin),
+        .coin(.ethereum),
+        .coin(.bitcoinCash),
+        .coin(.stellar),
+        .coin(.algorand),
+        .coin(.polkadot)
     ].sorted()
 
-    private var erc20Currencies: [CryptoCurrency] {
-        repository.erc20Assets
+    private lazy var erc20Currencies: [CryptoCurrency] = {
+        var models: [ERC20AssetModel] = repository.erc20Assets
             .currencies
             .compactMap { $0 as? ERC20AssetModel }
-            .map { .erc20($0) }
-    }
+
+        // Some ERC20 coins are been controlled by Firebase feature flag `custodial_only_token`, so
+        // we will iterate between the known set of ERC20 coins `repository` returned and overwrite
+        // these coins 'products' field with `.privateKey` if they are enabled. The ones that aren't
+        // enabled will be filtered out.
+        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator
+            .configuration(for: .custodialOnlyTokens)
+        switch enabledCustodial {
+        case .failure:
+            return models
+                .filter { !$0.products.isEmpty }
+                .map(CryptoCurrency.erc20)
+        case .success(let enabledCustodial):
+            let legacyERC20Codes = LegacyERC20Code.allCases.map(\.rawValue)
+            return models
+                .compactMap { model in
+                    guard !legacyERC20Codes.contains(model.code) else {
+                        // This is one of the currently supported ERC20 currency, do nothing.
+                        return model
+                    }
+                    guard enabledCustodial.keys.contains(model.code) else {
+                        // This currency is completely disabled.
+                        return nil
+                    }
+                    return model.with(products: [.privateKey])
+                }
+                .filter { !$0.products.isEmpty }
+                .map(CryptoCurrency.erc20)
+        }
+    }()
 
     private lazy var enabledOptionalCustodial: [CryptoCurrency] = {
         let optionalCustodial: [CryptoCurrency] = [
-            .erc20(.bat),
-            .erc20(.comp),
-            .erc20(.dai),
-            .erc20(.enj),
-            .erc20(.link),
-            .erc20(.ogn),
-            .erc20(.snx),
-            .erc20(.sushi),
-            .erc20(.tbtc),
-            .erc20(.uni),
-            .erc20(.usdc),
-            .erc20(.wbtc),
-            .erc20(.zrx),
-            .other(.bitClout),
-            .other(.blockstack),
-            .other(.dogecoin),
-            .other(.eos),
-            .other(.ethereumClassic),
-            .other(.litecoin),
-            .other(.mobileCoin),
-            .other(.near),
-            .other(.tezos),
-            .other(.theta)
+            .coin(.bitClout),
+            .coin(.blockstack),
+            .coin(.dogecoin),
+            .coin(.eos),
+            .coin(.ethereumClassic),
+            .coin(.litecoin),
+            .coin(.mobileCoin),
+            .coin(.near),
+            .coin(.tezos),
+            .coin(.theta)
         ]
-        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator.configuration(for: .custodialOnlyTokens)
+        let enabledCustodial: Result<[String: [String]], FeatureConfigurationError> = featureConfigurator
+            .configuration(for: .custodialOnlyTokens)
         switch enabledCustodial {
         case .failure:
             return []

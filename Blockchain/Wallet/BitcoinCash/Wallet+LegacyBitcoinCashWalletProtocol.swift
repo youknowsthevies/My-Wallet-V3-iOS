@@ -8,7 +8,7 @@ protocol LegacyBitcoinCashWalletProtocol: AnyObject {
     var hasBitcoinCashAccount: Bool { get }
 
     func updateAccountLabel(
-        _ cryptoCurrency: CryptoCurrency,
+        _ cryptoCurrency: NonCustodialCoinCode,
         index: Int,
         label: String
     ) -> Completable

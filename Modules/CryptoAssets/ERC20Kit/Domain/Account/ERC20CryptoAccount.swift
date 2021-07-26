@@ -30,7 +30,6 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
         .just(.zero(currency: asset))
     }
 
-    // TODO: Use ERC20AssetModel.products field to dictate if swap is enabled for this currency.
     private lazy var isLegacyAsset: Bool = LegacyERC20Code.allCases.map(\.rawValue).contains(erc20Token.code)
 
     var actions: Single<AvailableActions> {
@@ -130,18 +129,29 @@ final class ERC20CryptoAccount: CryptoNonCustodialAccount {
              .withdraw:
             return .just(false)
         case .buy:
-            guard isLegacyAsset else {
+            switch isLegacyAsset {
+            case true:
+                return .just(true)
+            case false:
                 return custodialSupport
                     .map { [asset] support in
                         support.data[asset.code]?.canBuy ?? false
                     }
             }
-            return .just(true)
         case .swap:
-            guard isLegacyAsset else {
-                return .just(false)
+            switch isLegacyAsset {
+            case true:
+                return isFunded
+            case false:
+                let canSwap = custodialSupport
+                    .map { [asset] support in
+                        support.data[asset.code]?.canSwap ?? false
+                    }
+                return Single.zip(canSwap, isFunded)
+                    .map { canSwap, isFunded in
+                        canSwap && isFunded
+                    }
             }
-            return isFunded
         }
     }
 

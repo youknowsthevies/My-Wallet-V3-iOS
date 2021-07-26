@@ -41,7 +41,7 @@ final class TransactionsRouterTests: XCTestCase {
     func test_routesTo_legacyBuyFlow_featueFlagOff() throws {
         mockFeatureFlagsService.disable(.useTransactionsFlowToBuyCrypto)
         let mockViewController = MockViewController()
-        let cancellable = router.presentTransactionFlow(to: .buy(.bitcoin), from: mockViewController)
+        let cancellable = router.presentTransactionFlow(to: .buy(.coin(.bitcoin)), from: mockViewController)
             .sink { _ in
                 // no-op
             }
@@ -53,7 +53,7 @@ final class TransactionsRouterTests: XCTestCase {
     func test_routesTo_legacyBuyFlow_featueFlagOn() throws {
         mockFeatureFlagsService.enable(.useTransactionsFlowToBuyCrypto)
         let mockViewController = MockViewController()
-        let cancellable = router.presentTransactionFlow(to: .buy(.bitcoin), from: mockViewController)
+        let cancellable = router.presentTransactionFlow(to: .buy(.coin(.bitcoin)), from: mockViewController)
             .sink { _ in
                 // no-op
             }

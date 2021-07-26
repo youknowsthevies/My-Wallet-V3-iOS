@@ -117,7 +117,7 @@ final class StellarActivityDetailsPresenter: DetailsScreenPresenterAPI {
         interactor: StellarActivityDetailsInteractor = .init(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        precondition(event.currency == .stellar, "Using StellarActivityDetailsPresenter with \(event.currency) event.")
+        precondition(event.currency == .coin(.stellar), "Using StellarActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.router = router

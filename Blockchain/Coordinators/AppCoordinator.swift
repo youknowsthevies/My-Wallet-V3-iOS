@@ -450,7 +450,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
     }
 
     /// Starts Buy Crypto flow.
-    func handleBuyCrypto(currency: CryptoCurrency = .bitcoin) {
+    func handleBuyCrypto(currency: CryptoCurrency = .coin(.bitcoin)) {
         transactionsAdapter.presentTransactionFlow(to: .buy(currency), from: topMostViewController) { result in
             Logger.shared.info("[AppCoordinator] Transaction Flow completed with result '\(result)'")
         }
@@ -480,7 +480,7 @@ extension AppCoordinator: SideMenuViewControllerDelegate {
             stateService: stateService
         )
 
-        buyRouter = PlatformUIKit.Router(builder: builder)
+        buyRouter = PlatformUIKit.Router(builder: builder, currency: .coin(.bitcoin))
         buyRouter.setup(startImmediately: false)
         stateService.showFundsTransferDetails(
             for: fiatCurrency,

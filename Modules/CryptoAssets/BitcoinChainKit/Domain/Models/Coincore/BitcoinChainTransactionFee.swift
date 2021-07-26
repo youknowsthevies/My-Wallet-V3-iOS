@@ -45,12 +45,12 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
         let priorityFee = try values.decode(Int.self, forKey: .priority)
         switch Token.coin {
         case .bitcoin:
-            regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoin)
-            priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoin)
+            regular = CryptoValue(amount: BigInt(regularFee), currency: .coin(.bitcoin))
+            priority = CryptoValue(amount: BigInt(priorityFee), currency: .coin(.bitcoin))
             limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
         case .bitcoinCash:
-            regular = CryptoValue(amount: BigInt(regularFee), currency: .bitcoinCash)
-            priority = CryptoValue(amount: BigInt(priorityFee), currency: .bitcoinCash)
+            regular = CryptoValue(amount: BigInt(regularFee), currency: .coin(.bitcoinCash))
+            priority = CryptoValue(amount: BigInt(priorityFee), currency: .coin(.bitcoinCash))
             limits = try values.decode(TransactionFeeLimits.self, forKey: .limits)
         }
     }
@@ -59,11 +59,11 @@ public struct BitcoinChainTransactionFee<Token: BitcoinChainToken>: TransactionF
         self.limits = limits
         switch Token.coin {
         case .bitcoin:
-            self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoin)
-            self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoin)
+            self.regular = CryptoValue(amount: BigInt(regular), currency: .coin(.bitcoin))
+            self.priority = CryptoValue(amount: BigInt(priority), currency: .coin(.bitcoin))
         case .bitcoinCash:
-            self.regular = CryptoValue(amount: BigInt(regular), currency: .bitcoinCash)
-            self.priority = CryptoValue(amount: BigInt(priority), currency: .bitcoinCash)
+            self.regular = CryptoValue(amount: BigInt(regular), currency: .coin(.bitcoinCash))
+            self.priority = CryptoValue(amount: BigInt(priority), currency: .coin(.bitcoinCash))
         }
     }
 }

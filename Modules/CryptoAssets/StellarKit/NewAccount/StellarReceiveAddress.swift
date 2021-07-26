@@ -5,7 +5,7 @@ import RxSwift
 
 struct StellarReceiveAddress: CryptoReceiveAddress, CryptoAssetQRMetadataProviding {
 
-    let asset: CryptoCurrency = .stellar
+    let asset: CryptoCurrency = .coin(.stellar)
     let address: String
     let label: String
     let memo: String?

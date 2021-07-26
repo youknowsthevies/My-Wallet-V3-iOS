@@ -31,11 +31,17 @@ public final class CryptoReceiveAddressFactoryService {
     ) -> Result<CryptoReceiveAddress, CryptoReceiveAddressFactoryError> {
         let factory: CryptoReceiveAddressFactory
         switch asset {
-        case .other:
-            factory = PlainCryptoReceiveAddressFactory()
-        default:
+        case .coin(let model):
+            switch model.code {
+            case let code where NonCustodialCoinCode.allCases.map(\.rawValue).contains(code):
+                factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset.typeTag) }()
+            default:
+                factory = PlainCryptoReceiveAddressFactory()
+            }
+        case .erc20:
             factory = { () -> CryptoReceiveAddressFactory in resolve(tag: asset.typeTag) }()
         }
+
         return factory.makeExternalAssetAddress(
             asset: asset,
             address: address,

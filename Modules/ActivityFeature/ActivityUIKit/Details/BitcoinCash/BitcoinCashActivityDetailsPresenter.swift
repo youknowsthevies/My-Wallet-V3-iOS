@@ -76,7 +76,7 @@ final class BitcoinCashActivityDetailsPresenter: DetailsScreenPresenterAPI {
         interactor: BitcoinCashActivityDetailsInteractor = .init(),
         analyticsRecorder: AnalyticsEventRecorderAPI = resolve()
     ) {
-        precondition(event.currency == .bitcoinCash, "Using BitcoinCashActivityDetailsPresenter with \(event.currency) event.")
+        precondition(event.currency == .coin(.bitcoinCash), "Using BitcoinCashActivityDetailsPresenter with \(event.currency) event.")
         self.alertViewPresenter = alertViewPresenter
         self.event = event
         self.interactor = interactor

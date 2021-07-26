@@ -7,7 +7,7 @@ class TradingAccountBalanceTests: XCTestCase {
 
     func testInitialiser() {
         let bitcoin = CustodialAccountBalance(
-            currency: .crypto(.bitcoin),
+            currency: .crypto(.coin(.bitcoin)),
             response: .init(
                 pending: "0",
                 pendingDeposit: "0",
@@ -18,7 +18,7 @@ class TradingAccountBalanceTests: XCTestCase {
         )
         XCTAssertEqual(bitcoin.available.amount, 0, "CryptoCurrency.bitcoin available should be 0")
         let ethereum = CustodialAccountBalance(
-            currency: .crypto(.ethereum),
+            currency: .crypto(.coin(.ethereum)),
             response: .init(
                 pending: "0",
                 pendingDeposit: "0",
