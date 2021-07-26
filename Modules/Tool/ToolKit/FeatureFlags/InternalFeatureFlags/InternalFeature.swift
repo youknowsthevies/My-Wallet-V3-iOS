@@ -9,7 +9,7 @@ public enum InternalFeature: String, CaseIterable {
     case secureChannel
 
     /// Enable the new Pin/OnBoarding which uses ComposableArchitecture
-    case newOnboarding
+    case disableNewWelcomeScreen
 
     /// Enabled console logging of network requests for debug builds
     case requestConsoleLogging
@@ -26,7 +26,7 @@ public enum InternalFeature: String, CaseIterable {
         switch self {
         case .secureChannel:
             return false
-        case .newOnboarding:
+        case .disableNewWelcomeScreen:
             return false
         case .requestConsoleLogging:
             return false
@@ -49,8 +49,8 @@ extension InternalFeature {
         switch self {
         case .secureChannel:
             return "Secure Channel"
-        case .newOnboarding:
-            return "Disable New Pin/Onboarding"
+        case .disableNewWelcomeScreen:
+            return "Disable New Welcome Screen (SSO)"
         case .requestConsoleLogging:
             return "Enable Network Request Console Logs"
         case .useTransactionsFlowToBuyCrypto:

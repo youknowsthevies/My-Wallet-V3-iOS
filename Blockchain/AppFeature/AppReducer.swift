@@ -75,7 +75,7 @@ let appReducer = Reducer<AppState, AppAction, AppEnvironment>.combine(
 let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, action, environment in
     switch action {
     case .appDelegate(.didFinishLaunching(let window)):
-        guard !newOnboardingDisabled() else {
+        guard !newWelcomeScreenIsDisabled() else {
             return .fireAndForget {
                 environment.appCoordinator.window = window
                 environment.appCoordinator.start()
@@ -87,13 +87,18 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
             environment.portfolioSyncingService.sync()
         }
     case .appDelegate(.willEnterForeground):
-        guard !newOnboardingDisabled() else {
+        guard !newWelcomeScreenIsDisabled() else {
             return .fireAndForget {
                 handleWillEnterForeground(coordinator: environment.appCoordinator)
             }
         }
         return Effect(value: .core(.appForegrounded))
     case .appDelegate(.handleDelayedEnterBackground):
+        guard !newWelcomeScreenIsDisabled() else {
+            return .fireAndForget {
+                delayedApplicationDidEnterBackground(environment: environment)
+            }
+        }
         return .merge(
             .fireAndForget {
                 if environment.walletManager.wallet.isInitialized() {
@@ -142,7 +147,7 @@ let appReducerCore = Reducer<AppState, AppAction, AppEnvironment> { state, actio
     }
 }
 
-@available(*, deprecated, message: "this is for compatibility, it should be removed when we add onBoardingReducer")
+@available(*, deprecated, message: "this is for compatibility, it should be removed when we remove old app delegate")
 private func handleWillEnterForeground(coordinator: AppCoordinator) {
     if !WalletManager.shared.wallet.isInitialized() {
         if BlockchainSettings.App.shared.guid != nil, BlockchainSettings.App.shared.sharedKey != nil {
@@ -152,5 +157,33 @@ private func handleWillEnterForeground(coordinator: AppCoordinator) {
                 coordinator.onboardingRouter.start(in: UIApplication.shared.keyWindow!)
             }
         }
+    }
+}
+
+@available(*, deprecated, message: "this is for compatibility, it should be removed when we remove old app delegate")
+private func delayedApplicationDidEnterBackground(environment: AppEnvironment) {
+    // Wallet-related background actions
+
+    let appSettings = environment.blockchainSettings // BlockchainSettings.App.shared
+    let wallet = environment.walletManager.wallet // WalletManager.shared.wallet
+
+    if wallet.isInitialized() {
+        if appSettings.guid != nil, appSettings.sharedKey != nil {
+            appSettings.hasEndedFirstSession = true
+        }
+        environment.walletManager.close() // WalletManager.shared.close()
+    }
+
+    let appCoordinator = environment.appCoordinator
+    if appCoordinator.onboardingRouter.state != .pending2FA {
+        UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: false)
+    }
+
+    appCoordinator.cleanupOnAppBackgrounded()
+    AuthenticationCoordinator.shared.cleanupOnAppBackgrounded()
+
+    let defaultSession: URLSession = resolve()
+    defaultSession.reset {
+        Logger.shared.debug("URLSession reset completed.")
     }
 }

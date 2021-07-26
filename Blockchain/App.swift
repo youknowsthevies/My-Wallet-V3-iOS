@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             window.setRootViewController(UIViewController())
             return true
         }
-        guard !newOnboardingDisabled() else {
+        guard !newWelcomeScreenIsDisabled() else {
             viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
             return true
         }
@@ -105,11 +105,16 @@ func defineDependencies() {
 private func bootstrap() {
     FirebaseApp.configure()
     defineDependencies()
+    #if !INTERNAL_BUILD
+    // Intentionally disable the new welcome screen on prod
+    let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
+    featureFlagService.enable(.disableNewWelcomeScreen)
+    #endif
 }
 
-func newOnboardingDisabled() -> Bool {
+func newWelcomeScreenIsDisabled() -> Bool {
     let featureFlagService: InternalFeatureFlagServiceAPI = DIKit.resolve()
-    return featureFlagService.isEnabled(.newOnboarding)
+    return featureFlagService.isEnabled(.disableNewWelcomeScreen)
 }
 
 private func eraseWalletForUITestsIfNeeded() {
