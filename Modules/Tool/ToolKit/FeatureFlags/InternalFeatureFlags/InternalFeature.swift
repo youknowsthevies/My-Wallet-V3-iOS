@@ -20,6 +20,22 @@ public enum InternalFeature: String, CaseIterable {
     /// Disable the guid login at welcome screen, useful for demo purposes
     /// - Note: Old manual guid login screen is used only for internal builds
     case disableGUIDLogin
+
+    /// Enables the feature for alpha release overriding internal config.
+    var isAlphaReady: Bool {
+        switch self {
+        case .secureChannel:
+            return false
+        case .newOnboarding:
+            return false
+        case .requestConsoleLogging:
+            return false
+        case .useTransactionsFlowToBuyCrypto:
+            return false
+        case .disableGUIDLogin:
+            return false
+        }
+    }
 }
 
 extension InternalFeature {

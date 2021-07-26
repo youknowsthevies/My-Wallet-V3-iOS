@@ -263,13 +263,13 @@ settings:
     Debug Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Debug Alpha:
-      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
+      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD -DALPHA_BUILD
     Release Internal:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Staging:
       OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
     Release Alpha:
-      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD
+      OTHER_SWIFT_FLAGS: -DINTERNAL_BUILD -DALPHA_BUILD
 targetTemplates:
   Module:
     dependencies:

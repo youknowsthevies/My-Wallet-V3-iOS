@@ -69,4 +69,30 @@ extension AppFeature {
             return "sdd_enabled_ios"
         }
     }
+
+    /// Enables the feature for alpha release by overriding remote config settings.
+    var isAlphaReady: Bool {
+        switch self {
+        case .announcements:
+            return false
+        case .siftScienceEnabled:
+            return false
+        case .secureChannel:
+            return false
+        case .withdrawAndDepositACH:
+            return false
+        case .custodialOnlyTokens:
+            return false
+        case .biometry:
+            return false
+        case .showOnboardingAfterSignUp:
+            return false
+        case .showEmailVerificationInOnboarding:
+            return false
+        case .showEmailVerificationInBuyFlow:
+            return false
+        case .sddEnabled:
+            return false
+        }
+    }
 }
