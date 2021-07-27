@@ -733,43 +733,6 @@ public enum LocalizationConstants {
         )
     }
 
-    public enum SendAsset {
-        public static let useTotalSpendableBalance = NSLocalizedString(
-            "Use total spendable balance: ",
-            comment: "String displayed to the user when they want to send their full balance to an address."
-        )
-        public static let invalidXAddressY = NSLocalizedString(
-            "Invalid %@ address: %@",
-            comment: "String presented to the user when they try to scan a QR code with an invalid address."
-        )
-        public static let send = NSLocalizedString(
-            "Send",
-            comment: "Text displayed on the button for when a user wishes to send crypto."
-        )
-        public static let confirmPayment = NSLocalizedString(
-            "Confirm Payment",
-            comment: "Header displayed asking the user to confirm their payment."
-        )
-        public static let paymentSent = NSLocalizedString(
-            "Payment sent",
-            comment: "Alert message shown when crypto is successfully sent to a recipient."
-        )
-        public static let transferAllFunds = NSLocalizedString(
-            "Confirm Transfer",
-            comment: "Title shown to use when transferring funds from legacy addresses to their new wallet"
-        )
-
-        public static let paxComingSoonTitle = NSLocalizedString("USD Digital Coming Soon!", comment: "")
-        public static let paxComingSoonMessage = NSLocalizedString("We’re bringing USD Digital to iOS. While you wait, Send, Receive & Exchange USD Digital on the web.", comment: "")
-        public static let paxComingSoonLinkText = NSLocalizedString("What is USD Digital?", comment: "")
-        public static let notEnoughEth = NSLocalizedString("Not Enough ETH", comment: "")
-        public static let notEnoughEthDescription = NSLocalizedString("You'll need ETH to send your ERC20 Token", comment: "")
-        public static let invalidDestinationAddress = NSLocalizedString("Invalid ETH Address", comment: "")
-        public static let invalidDestinationDescription = NSLocalizedString("You must enter a valid ETH address to send your ERC20 Token", comment: "")
-        public static let notEnough = NSLocalizedString("Not Enough", comment: "")
-        public static let myPaxWallet = NSLocalizedString("My USD Digital Wallet", comment: "")
-    }
-
     public enum WalletPicker {
         public static let title = selectAWallet
         public static let selectAWallet = NSLocalizedString("Select a Wallet", comment: "Select a Wallet")
@@ -837,7 +800,6 @@ public enum LocalizationConstants {
     }
 
     public enum Transactions {
-        public static let paxfee = NSLocalizedString("USD-D Fee", comment: "String displayed to indicate that a transaction is due to a fee associated to sending USD-D.")
         public static let allWallets = NSLocalizedString("All Wallets", comment: "Label of selectable item that allows user to show all transactions of a certain asset")
         public static let noTransactions = NSLocalizedString("No Transactions", comment: "Text displayed when no recent transactions are being shown")
         public static let noTransactionsAssetArgument = NSLocalizedString("Transactions occur when you send and receive %@.", comment: "Helper text displayed when no recent transactions are being shown")

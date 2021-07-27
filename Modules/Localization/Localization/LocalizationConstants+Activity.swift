@@ -55,15 +55,6 @@ extension LocalizationConstants.Activity.Message {
     public static let name = NSLocalizedString("My Transaction", comment: "My Transaction")
 }
 
-// MARK: Pax
-
-extension LocalizationConstants.Activity.Pax {
-    public static let emptyStateTitle = NSLocalizedString("USD Digital", comment: "")
-    public static let emptyStateMessage = NSLocalizedString("Your USD Digital transactions will show up here once you make your first transaction.", comment: "")
-    public static let emptyStateLinkText = NSLocalizedString("Learn more about USD Digital", comment: "")
-    public static let emptyStateCTATitle = NSLocalizedString("Swap for USD Digital Now", comment: "")
-}
-
 // MARK: Details
 
 extension LocalizationConstants.Activity.Details {

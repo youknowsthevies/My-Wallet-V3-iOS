@@ -154,7 +154,7 @@ extension CoinAssetModel {
             precision: 9,
             products: [],
             logoPngUrl: nil,
-            spotColor: "",
+            spotColor: "000000",
             minimumOnChainConfirmations: 3,
             sortIndex: 104
         )
@@ -167,7 +167,7 @@ extension CoinAssetModel {
             precision: 18,
             products: [],
             logoPngUrl: nil,
-            spotColor: "",
+            spotColor: "33FF99",
             minimumOnChainConfirmations: 3,
             sortIndex: 105
         )

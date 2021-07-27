@@ -61,8 +61,6 @@ extension CryptoCurrency {
 
     public var name: String {
         switch self {
-        case .erc20(let model) where model.code == LegacyERC20Code.pax.rawValue:
-            return "USD \(LocalizationConstants.digital)"
         case .erc20(let model):
             return model.name
         case .coin(let model):
@@ -85,10 +83,6 @@ extension CryptoCurrency {
         switch self {
         case .coin(let model):
             return model.code
-        case .erc20(let model) where model.code == LegacyERC20Code.pax.rawValue:
-            return "USD-D"
-        case .erc20(let model) where model.code == LegacyERC20Code.wdgld.rawValue:
-            return "wDGLD"
         case .erc20(let model):
             return model.code
         }

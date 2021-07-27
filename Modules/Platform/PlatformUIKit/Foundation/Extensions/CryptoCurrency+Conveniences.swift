@@ -73,7 +73,7 @@ extension CryptoCurrency {
             case LegacyERC20Code.aave.rawValue:
                 return .local(name: "crypto-aave", bundle: .platformUIKit)
             case LegacyERC20Code.pax.rawValue:
-                return .local(name: "crypto-usdd", bundle: .platformUIKit)
+                return .local(name: "crypto-pax", bundle: .platformUIKit)
             case LegacyERC20Code.tether.rawValue:
                 return .local(name: "crypto-usdt", bundle: .platformUIKit)
             case LegacyERC20Code.wdgld.rawValue:

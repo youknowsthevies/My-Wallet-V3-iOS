@@ -154,6 +154,21 @@ extension LocalizationConstants {
             )
         }
 
+        public enum PaxRenaming {
+            public static let title = NSLocalizedString(
+                "USD Digital is now Paxos Standard",
+                comment: "PAX announcement card title"
+            )
+            public static let description = NSLocalizedString(
+                "We’ve updated the naming of USD Digital (USD-D) to Paxos Standard (PAX). USD Digital was built using the Paxos standard. If you held USD-D, your funds are not affected.",
+                comment: "PAX announcement card description"
+            )
+            public static let ctaButton = NSLocalizedString(
+                "Learn more",
+                comment: "PAX announcement card CTA button title"
+            )
+        }
+
         public enum CloudBackup {
             public static let title = NSLocalizedString(
                 "Introducing Cloud Backups",
