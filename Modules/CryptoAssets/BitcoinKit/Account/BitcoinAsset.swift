@@ -27,7 +27,7 @@ final class BitcoinAsset: CryptoAsset {
     private let repository: BitcoinWalletAccountRepository
 
     init(
-        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CryptoCurrency.coin(.bitcoin)),
+        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CoinAssetModel.bitcoin.typeTag),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),

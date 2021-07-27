@@ -29,7 +29,7 @@ class BitcoinCashAsset: CryptoAsset {
     private let repository: BitcoinCashWalletAccountRepository
 
     init(
-        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CryptoCurrency.coin(.bitcoinCash)),
+        addressFactory: CryptoReceiveAddressFactory = resolve(tag: CoinAssetModel.bitcoinCash.typeTag),
         errorRecorder: ErrorRecording = resolve(),
         exchangeAccountProvider: ExchangeAccountsProviderAPI = resolve(),
         kycTiersService: KYCTiersServiceAPI = resolve(),
