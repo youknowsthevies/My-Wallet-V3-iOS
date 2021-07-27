@@ -13,8 +13,6 @@ import ToolKit
 import WalletPayloadKit
 
 public struct AppEnvironment {
-    public var debugCoordinator: DebugCoordinating
-
     var loadingViewPresenter: LoadingViewPresenting
     var onboardingSettings: OnboardingSettings
     var blurEffectHandler: BlurVisualEffectHandler
