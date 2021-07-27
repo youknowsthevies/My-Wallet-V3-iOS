@@ -38,6 +38,7 @@ public enum CoreAppAction: Equatable {
     case proceedToLoggedIn
     case appForegrounded
     case deeplink(DeeplinkOutcome)
+    case requirePin
     // Wallet Related Actions
     case walletInitialized
     case fetchWallet(String)
@@ -139,9 +140,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             guard state.isLoggedIn else {
                 return .none
             }
-            state.loggedIn = nil
-            state.onboarding = .init()
-            return Effect(value: .onboarding(.start))
+            // We need to send the `stop` action prior we show the pin entry,
+            // this clears any running operation from the logged-in state.
+            return .concatenate(
+                Effect(value: .loggedIn(.stop)),
+                Effect(value: .requirePin)
+            )
         }
         return .none
     case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
@@ -202,7 +206,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
     case .deeplink(.ignore):
         return .none
+    case .requirePin:
+        state.loggedIn = nil
+        state.onboarding = .init()
+        return Effect(value: .onboarding(.start))
     case .fetchWallet(let password):
+        environment.loadingViewPresenter.showCircular()
         environment.walletManager.wallet.fetch(with: password)
         return Effect(value: .authenticate)
     case .authenticate:
@@ -236,6 +245,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // for context the underlying implementation of showing the circular loader
         // relies on attaching the loader to the top window's view!!, this is error-prone and there are cases
         // where the loader would not show above a presented view controller...
+        environment.loadingViewPresenter.hide()
         environment.loadingViewPresenter.showCircular()
         environment.blockchainSettings.guid = decryption.guid
         environment.blockchainSettings.sharedKey = decryption.sharedKey

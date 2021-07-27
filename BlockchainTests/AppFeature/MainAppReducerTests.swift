@@ -540,6 +540,41 @@ final class MainAppReducerTests: XCTestCase {
         testStore.receive(.onboarding(.passwordScreen(.start)))
     }
 
+    func test_sending_appForegrounded_while_wallet_not_initialized_and_logged_in_state() {
+        // given
+        mockSettingsApp.guid = String(repeating: "a", count: 36)
+        mockSettingsApp.sharedKey = String(repeating: "b", count: 36)
+        mockSettingsApp.isPinSet = true
+
+        mockWalletUpgradeService.needsWalletUpgradeRelay.on(.next(false))
+        testStore.send(.walletInitialized)
+        mockMainQueue.advance()
+        testStore.receive(.walletNeedsUpgrade(false))
+        testStore.receive(.proceedToLoggedIn) { state in
+            state.loggedIn = LoggedIn.State()
+            state.onboarding = nil
+        }
+        testStore.receive(.loggedIn(.start(.none)))
+
+        // when
+        mockWallet.mockIsInitialized = false
+        testStore.send(.appForegrounded)
+
+        // then
+
+        testStore.receive(.loggedIn(.stop))
+        testStore.receive(.requirePin) { state in
+            state.loggedIn = nil
+            state.onboarding = .init()
+        }
+        testStore.receive(.onboarding(.start)) { state in
+            state.onboarding?.pinState = .init()
+        }
+        testStore.receive(.onboarding(.pin(.authenticate))) { state in
+            state.onboarding?.pinState?.authenticate = true
+        }
+    }
+
     func test_clearPinIfNeeded_correctly_clears_pin() {
         // given a hashed password
         mockSettingsApp.passwordPartHash = "a-hash"
