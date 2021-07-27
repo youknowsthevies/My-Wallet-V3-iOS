@@ -32,7 +32,6 @@ public enum AppDelegateAction: Equatable {
 /// Holds the dependencies
 struct AppDelegateEnvironment {
     var appSettings: BlockchainSettings.App
-    var debugCoordinator: DebugCoordinating
     var onboardingSettings: OnboardingSettings
     var cacheSuite: CacheSuite
     var remoteNotificationAuthorizer: RemoteNotificationRegistering
@@ -72,12 +71,7 @@ let appDelegateReducer = Reducer<
 
             applyCertificatePinning(using: environment.certificatePinner),
 
-            enableSift(using: environment.siftService),
-
-            enableDebugMenuIfNeeded(
-                coordinator: environment.debugCoordinator,
-                on: window
-            )
+            enableSift(using: environment.siftService)
         )
     case .willResignActive:
         return applyBlurFilter(
@@ -176,14 +170,4 @@ private func migrateAnnouncements() -> AppDelegateEffect {
     Effect.fireAndForget {
         AnnouncementRecorder.migrate(errorRecorder: CrashlyticsRecorder())
     }
-}
-
-private func enableDebugMenuIfNeeded(coordinator: DebugCoordinating, on window: UIWindow) -> AppDelegateEffect {
-    #if INTERNAL_BUILD
-    return Effect<AppDelegateAction, Never>.fireAndForget {
-        coordinator.enableDebugMenu(for: window)
-    }
-    #else
-    return .none
-    #endif
 }

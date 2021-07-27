@@ -10,6 +10,8 @@ import ToolKit
 import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
+    @LazyInject(tag: DebugScreenContext.tag) var debugCoordinator: DebugCoordinating
+
     var window: UIWindow?
     /// The main model passed to the view store that powers the app
     private let store: Store<AppState, AppAction>
@@ -45,6 +47,11 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             window.setRootViewController(UIViewController())
             return true
         }
+
+        #if INTERNAL_BUILD
+        debugCoordinator.enableDebugMenu(for: window)
+        #endif
+
         guard !newWelcomeScreenIsDisabled() else {
             viewStore.send(.appDelegate(.didFinishLaunching(window: window)))
             return true
