@@ -29,6 +29,8 @@ final class AvailableTradingPairsService: AvailableTradingPairsServiceAPI {
     private lazy var setup: Void = {
         pairsCachedValue.setFetch(weak: self) { (self) in
             self.repository.availableOrderPairs
+                .asObservable()
+                .asSingle()
         }
     }()
 

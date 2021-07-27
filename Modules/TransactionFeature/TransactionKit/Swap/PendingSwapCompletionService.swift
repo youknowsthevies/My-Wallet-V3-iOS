@@ -34,6 +34,8 @@ final class PendingSwapCompletionService: PendingSwapCompletionServiceAPI {
         pollService.setFetch(weak: self) { (self) in
             self.ordersService
                 .fetchTransaction(with: transactionId)
+                .asObservable()
+                .asSingle()
         }
         return pollService.poll(timeoutAfter: Constant.pollingDuration)
     }

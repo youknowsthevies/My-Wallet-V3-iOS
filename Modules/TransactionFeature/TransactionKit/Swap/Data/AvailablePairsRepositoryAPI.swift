@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import RxSwift
+import Combine
+import PlatformKit
 
 public protocol AvailablePairsRepositoryAPI {
 
-    var availableOrderPairs: Single<[OrderPair]> { get }
+    var availableOrderPairs: AnyPublisher<[OrderPair], NabuNetworkError> { get }
 }

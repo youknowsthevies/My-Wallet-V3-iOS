@@ -3,7 +3,6 @@
 import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class BankTransferRepository: BankTransferRepositoryAPI {
@@ -23,10 +22,9 @@ final class BankTransferRepository: BankTransferRepositoryAPI {
     func startBankTransfer(
         id: String,
         amount: MoneyValue
-    ) -> Single<BankTranferPayment> {
+    ) -> AnyPublisher<BankTranferPayment, NabuNetworkError> {
         client.startBankTransfer(id: id, amount: amount)
             .map(BankTranferPayment.init)
-            .asObservable()
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 }

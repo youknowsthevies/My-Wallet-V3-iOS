@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
-import RxSwift
-import ToolKit
 
 public protocol OrderQuoteRepositoryAPI: AnyObject {
 
@@ -11,5 +9,5 @@ public protocol OrderQuoteRepositoryAPI: AnyObject {
         direction: OrderDirection,
         sourceCurrencyType: CurrencyType,
         destinationCurrencyType: CurrencyType
-    ) -> Single<OrderQuotePayload>
+    ) -> AnyPublisher<OrderQuotePayload, NabuNetworkError>
 }

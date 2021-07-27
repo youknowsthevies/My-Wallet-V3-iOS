@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class FiatWithdrawRepository: FiatWithdrawRepositoryAPI {
@@ -19,9 +19,10 @@ final class FiatWithdrawRepository: FiatWithdrawRepositoryAPI {
 
     // MARK: - BankTransferServiceAPI
 
-    func createWithdrawOrder(id: String, amount: MoneyValue) -> Completable {
+    func createWithdrawOrder(
+        id: String,
+        amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError> {
         client.createWithdrawOrder(id: id, amount: amount)
-            .asObservable()
-            .ignoreElements()
     }
 }

@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class OrderFetchingRepository: OrderFetchingRepositoryAPI {
@@ -17,22 +17,11 @@ final class OrderFetchingRepository: OrderFetchingRepositoryAPI {
         self.client = client
     }
 
-    // MARK: - OrderFetchingClientAPI
+    // MARK: - OrderFetchingRepositoryAPI
 
     func fetchTransaction(
         with transactionId: String
-    ) -> Single<SwapActivityItemEvent> {
+    ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError> {
         client.fetchTransaction(with: transactionId)
-            .asObservable()
-            .asSingle()
-    }
-
-    func fetchTransactionStatus(
-        with transactionId: String
-    ) -> Single<SwapActivityItemEvent.EventStatus> {
-        client.fetchTransaction(with: transactionId)
-            .map(\.status)
-            .asObservable()
-            .asSingle()
     }
 }

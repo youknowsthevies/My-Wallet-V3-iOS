@@ -1,10 +1,12 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
-import RxSwift
 
 public protocol FiatWithdrawRepositoryAPI {
 
-    func createWithdrawOrder(id: String, amount: MoneyValue) -> Completable
+    func createWithdrawOrder(
+        id: String,
+        amount: MoneyValue
+    ) -> AnyPublisher<Void, NabuNetworkError>
 }
