@@ -137,25 +137,68 @@ final class Coincore: CoincoreAPI {
         }
     }
 
-    private static func getActionFilter(sourceAccount: CryptoAccount, destinationAccount: SingleAccount, action: AssetAction) -> Bool {
+    private static func getActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
         switch action {
         case .buy:
             unimplemented("WIP")
         case .sell:
             return destinationAccount is FiatAccount
         case .swap:
-            return destinationAccount is CryptoAccount
-                && destinationAccount.currencyType != sourceAccount.currencyType
-                && !(destinationAccount is FiatAccount)
-                && !(destinationAccount is CryptoInterestAccount)
-                && (sourceAccount is TradingAccount ? destinationAccount is TradingAccount : true)
+            return swapActionFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .send:
-            return !(destinationAccount is FiatAccount)
-                && !(destinationAccount is CryptoInterestAccount)
+            return sendActionFilter(
+                sourceAccount: sourceAccount,
+                destinationAccount: destinationAccount,
+                action: action
+            )
         case .deposit,
              .receive,
              .viewActivity,
              .withdraw:
+            return false
+        }
+    }
+
+    private static func swapActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType != sourceAccount.currencyType else {
+            return false
+        }
+        switch (sourceAccount, destinationAccount) {
+        case (is CryptoTradingAccount, is CryptoTradingAccount),
+             (is CryptoNonCustodialAccount, is CryptoTradingAccount),
+             (is CryptoNonCustodialAccount, is CryptoNonCustodialAccount):
+            return true
+        default:
+            return false
+        }
+    }
+
+    private static func sendActionFilter(
+        sourceAccount: CryptoAccount,
+        destinationAccount: SingleAccount,
+        action: AssetAction
+    ) -> Bool {
+        guard destinationAccount.currencyType == sourceAccount.currencyType else {
+            return false
+        }
+        switch destinationAccount {
+        case is CryptoTradingAccount,
+             is CryptoExchangeAccount,
+             is CryptoNonCustodialAccount:
+            return true
+        default:
             return false
         }
     }
