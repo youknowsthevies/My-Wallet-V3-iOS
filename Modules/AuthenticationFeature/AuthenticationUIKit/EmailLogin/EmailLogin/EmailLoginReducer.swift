@@ -22,6 +22,7 @@ public enum EmailLoginAction: Equatable {
     case sendDeviceVerificationEmail
     case setVerifyDeviceScreenVisible(Bool)
     case verifyDevice(VerifyDeviceAction)
+    case none
 }
 
 // MARK: - Properties
@@ -32,12 +33,14 @@ struct EmailLoginState: Equatable {
     var isVerifyDeviceScreenVisible: Bool
     var verifyDeviceState: VerifyDeviceState?
     var emailLoginFailureAlert: AlertState<EmailLoginAction>?
+    var isLoading: Bool
 
     init() {
         verifyDeviceState = .init(emailAddress: "")
         emailAddress = ""
         isEmailValid = false
         isVerifyDeviceScreenVisible = false
+        isLoading = false
     }
 }
 
@@ -88,6 +91,8 @@ let emailLoginReducer = Reducer.combine(
             return .none
 
         case .didSendDeviceVerificationEmail(let response):
+            state.isLoading = false
+            state.verifyDeviceState?.sendEmailButtonIsLoading = false
             if case .failure(let error) = response {
                 switch error {
                 case .recaptchaError:
@@ -122,6 +127,8 @@ let emailLoginReducer = Reducer.combine(
             guard state.isEmailValid else {
                 return .none
             }
+            state.isLoading = true
+            state.verifyDeviceState?.sendEmailButtonIsLoading = true
             return environment
                 .deviceVerificationService
                 .sendDeviceVerificationEmail(to: state.emailAddress)
@@ -146,8 +153,12 @@ let emailLoginReducer = Reducer.combine(
              .verifyDevice(.credentials),
              .verifyDevice(.setCredentialsScreenVisible),
              .verifyDevice(.didDisappear),
+             .verifyDevice(.none),
              .verifyDevice(.fallbackToWalletIdentifier):
             // handled in verify device reducer
+            return .none
+
+        case .none:
             return .none
         }
     }

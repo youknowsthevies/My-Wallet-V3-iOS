@@ -23,6 +23,7 @@ public enum VerifyDeviceAction: Equatable {
     case sendDeviceVerificationEmail
     case setCredentialsScreenVisible(Bool)
     case verifyDeviceFailureAlert(AlertAction)
+    case none
 }
 
 // MARK: - Properties
@@ -33,12 +34,14 @@ struct VerifyDeviceState: Equatable {
     var credentialsState: CredentialsState?
     var verifyDeviceFailureAlert: AlertState<VerifyDeviceAction>?
     var emailAddress: String
+    var sendEmailButtonIsLoading: Bool
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
         credentialsState = .init()
         isCredentialsScreenVisible = false
         credentialsContext = .none
+        sendEmailButtonIsLoading = false
     }
 }
 
@@ -133,6 +136,8 @@ let verifyDeviceReducer = Reducer.combine(
 
         case .verifyDeviceFailureAlert(.dismiss):
             state.verifyDeviceFailureAlert = nil
+            return .none
+        case .none:
             return .none
         }
     }

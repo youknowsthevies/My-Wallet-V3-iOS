@@ -20,28 +20,38 @@ struct VerifyDeviceView: View {
 
     var body: some View {
         VStack {
-            Image.CircleIcon.verifyDevice
-                .frame(width: 72, height: 72)
+            VStack {
+                Spacer()
+                Image.CircleIcon.verifyDevice
+                    .frame(width: 72, height: 72)
 
-            Text(EmailLoginString.VerifyDevice.title)
-                .textStyle(.title)
-                .padding(.top, 16)
+                Text(EmailLoginString.VerifyDevice.title)
+                    .textStyle(.title)
+                    .padding(.top, 16)
 
-            Text(EmailLoginString.VerifyDevice.description)
-                .font(Font(weight: .medium, size: 16))
-                .foregroundColor(.textSubheading)
-                .lineSpacing(4)
-
-            Spacer()
-
-            SecondaryButton(title: EmailLoginString.Button.sendAgain) {
-                viewStore.send(.sendDeviceVerificationEmail)
+                Text(EmailLoginString.VerifyDevice.description)
+                    .font(Font(weight: .medium, size: 16))
+                    .foregroundColor(.textSubheading)
+                    .lineSpacing(4)
+                Spacer()
             }
-            .padding(.bottom, 10)
 
-            PrimaryButton(title: EmailLoginString.Button.openEmail) {
-                UIApplication.shared.openMailApplication()
+            VStack {
+                SecondaryButton(
+                    title: EmailLoginString.Button.sendAgain,
+                    action: {
+                        viewStore.send(.sendDeviceVerificationEmail)
+                    },
+                    loading: viewStore.binding(get: \.sendEmailButtonIsLoading, send: .none)
+                )
+                .padding(.bottom, 10)
+                .disabled(viewStore.sendEmailButtonIsLoading)
+
+                PrimaryButton(title: EmailLoginString.Button.openEmail) {
+                    UIApplication.shared.openMailApplication()
+                }
             }
+            .padding(.bottom, 24)
 
             NavigationLink(
                 destination: IfLetStore(
@@ -61,7 +71,8 @@ struct VerifyDeviceView: View {
             )
         }
         .multilineTextAlignment(.center)
-        .padding(EdgeInsets(top: 247, leading: 24, bottom: 58, trailing: 24))
+        .navigationBarTitleDisplayMode(.inline)
+        .padding([.leading, .trailing], 24)
         .onDisappear {
             viewStore.send(.didDisappear)
         }

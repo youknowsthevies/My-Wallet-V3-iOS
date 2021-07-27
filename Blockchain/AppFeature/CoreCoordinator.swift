@@ -136,9 +136,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         guard environment.walletManager.wallet.isInitialized() else {
             // do nothing if we're on the authentication state,
             // meaning we either need to register, login or recover
-            guard let onboarding = state.onboarding,
-                  onboarding.welcomeState == nil
-            else {
+            guard state.isLoggedIn else {
                 return .none
             }
             state.loggedIn = nil

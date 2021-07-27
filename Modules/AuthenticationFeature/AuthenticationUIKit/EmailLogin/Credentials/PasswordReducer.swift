@@ -16,7 +16,7 @@ struct PasswordState: Equatable {
     var isPasswordIncorrect: Bool
 
     var isValid: Bool {
-        !password.isEmpty && !isPasswordIncorrect
+        !isPasswordIncorrect && !password.isEmpty
     }
 
     init() {
@@ -34,6 +34,7 @@ let passwordReducer = Reducer<
 > { state, action, _ in
     switch action {
     case .didChangePassword(let password):
+        state.isPasswordIncorrect = false
         state.password = password
         return .none
     case .incorrectPasswordErrorVisibility(let isVisible):

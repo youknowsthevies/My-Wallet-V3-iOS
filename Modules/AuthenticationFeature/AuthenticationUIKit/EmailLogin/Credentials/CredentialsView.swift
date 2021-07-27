@@ -36,7 +36,7 @@ struct CredentialsView: View {
             send: { _ in .none }
         )
         _isPasswordIncorrect = newViewStore.binding(
-            get: { $0.passwordState?.isPasswordIncorrect ?? false },
+            get: \.passwordState.isPasswordIncorrect,
             send: { _ in .none }
         )
         _isWalletIdentifierIncorrect = newViewStore.binding(
@@ -63,96 +63,102 @@ struct CredentialsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            emailOrWalletIdentifierView()
+            Group {
+                emailOrWalletIdentifierView()
 
-            FormTextFieldGroup(
-                title: EmailLoginString.TextFieldTitle.password,
-                text: viewStore.binding(
-                    get: { $0.passwordState?.password ?? "" },
-                    send: { .password(.didChangePassword($0)) }
-                ),
-                isSecure: true,
-                error: { _ in isPasswordIncorrect || isAccountLocked },
-                errorMessage: isAccountLocked ?
-                    EmailLoginString.TextFieldError.accountLocked :
-                    EmailLoginString.TextFieldError.incorrectPassword
-            )
-            .padding(.bottom, 1)
-
-            Button(
-                action: {
-                    // TODO: Link to Account recovery
-                },
-                label: {
-                    Text(EmailLoginString.Link.troubleLogInLink)
-                        .font(Font(weight: .medium, size: 14))
-                        .foregroundColor(.buttonLinkText)
-                }
-            )
-            .padding(.bottom, 16)
-
-            if isTwoFACodeVisible {
                 FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.twoFACode,
+                    title: EmailLoginString.TextFieldTitle.password,
                     text: viewStore.binding(
-                        get: { $0.twoFAState?.twoFACode ?? "" },
-                        send: { .twoFA(.didChangeTwoFACode($0)) }
-                    ),
-                    error: { _ in isTwoFACodeIncorrect || isAccountLocked },
-                    errorMessage:
-                    isAccountLocked ?
-                        EmailLoginString.TextFieldError.accountLocked :
-                        String(
-                            format: EmailLoginString.TextFieldError.incorrectTwoFACode,
-                            viewStore.twoFAState?.twoFACodeAttemptsLeft ?? 0
-                        )
-                )
-
-                if isResendSMSButtonVisible {
-                    Button(
-                        action: {
-                            viewStore.send(.walletPairing(.requestSMSCode))
-                        },
-                        label: {
-                            Text(EmailLoginString.Button.resendSMS)
-                                .font(Font(weight: .medium, size: 14))
-                                .foregroundColor(.buttonLinkText)
-                        }
-                    )
-                }
-
-                HStack {
-                    Text(EmailLoginString.TextFieldFootnote.lostTwoFACodePrompt)
-                        .textStyle(.subheading)
-                    Button(
-                        action: {
-                            guard let url = URL(string: Constants.Url.resetTwoFA) else { return }
-                            UIApplication.shared.open(url)
-                        },
-                        label: {
-                            Text(EmailLoginString.Link.resetTwoFALink)
-                                .font(Font(weight: .medium, size: 14))
-                                .foregroundColor(.buttonLinkText)
-                        }
-                    )
-                }
-                .padding(.bottom, 16)
-            }
-
-            if isHardwareKeyCodeFieldVisible {
-                FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.hardwareKeyCode,
-                    text: viewStore.binding(
-                        get: { $0.hardwareKeyState?.hardwareKeyCode ?? "" },
-                        send: { .hardwareKey(.didChangeHardwareKeyCode($0)) }
+                        get: \.passwordState.password,
+                        send: { .password(.didChangePassword($0)) }
                     ),
                     isSecure: true,
-                    error: { _ in isHardwareKeyCodeFieldVisible },
-                    errorMessage: EmailLoginString.TextFieldError.incorrectHardwareKeyCode
+                    error: { _ in isPasswordIncorrect || isAccountLocked },
+                    errorMessage: isAccountLocked ?
+                        EmailLoginString.TextFieldError.accountLocked :
+                        EmailLoginString.TextFieldError.incorrectPassword
                 )
-                Text(EmailLoginString.TextFieldFootnote.hardwareKeyInstruction)
-                    .textStyle(.subheading)
+                .textContentType(.password)
+                .padding(.bottom, 1)
+
+                Button(
+                    action: {
+                        // TODO: Link to Account recovery
+                    },
+                    label: {
+                        Text(EmailLoginString.Link.troubleLogInLink)
+                            .font(Font(weight: .medium, size: 14))
+                            .foregroundColor(.buttonLinkText)
+                    }
+                )
+                .padding(.bottom, 16)
+
+                if isTwoFACodeVisible {
+                    FormTextFieldGroup(
+                        title: EmailLoginString.TextFieldTitle.twoFACode,
+                        text: viewStore.binding(
+                            get: { $0.twoFAState?.twoFACode ?? "" },
+                            send: { .twoFA(.didChangeTwoFACode($0)) }
+                        ),
+                        error: { _ in isTwoFACodeIncorrect || isAccountLocked },
+                        errorMessage:
+                        isAccountLocked ?
+                            EmailLoginString.TextFieldError.accountLocked :
+                            String(
+                                format: EmailLoginString.TextFieldError.incorrectTwoFACode,
+                                viewStore.twoFAState?.twoFACodeAttemptsLeft ?? 0
+                            )
+                    )
+                    .textContentType(.oneTimeCode)
+
+                    if isResendSMSButtonVisible {
+                        Button(
+                            action: {
+                                viewStore.send(.walletPairing(.requestSMSCode))
+                            },
+                            label: {
+                                Text(EmailLoginString.Button.resendSMS)
+                                    .font(Font(weight: .medium, size: 14))
+                                    .foregroundColor(.buttonLinkText)
+                            }
+                        )
+                    }
+
+                    HStack {
+                        Text(EmailLoginString.TextFieldFootnote.lostTwoFACodePrompt)
+                            .textStyle(.subheading)
+                        Button(
+                            action: {
+                                guard let url = URL(string: Constants.Url.resetTwoFA) else { return }
+                                UIApplication.shared.open(url)
+                            },
+                            label: {
+                                Text(EmailLoginString.Link.resetTwoFALink)
+                                    .font(Font(weight: .medium, size: 14))
+                                    .foregroundColor(.buttonLinkText)
+                            }
+                        )
+                    }
+                    .padding(.bottom, 16)
+                }
+
+                if isHardwareKeyCodeFieldVisible {
+                    FormTextFieldGroup(
+                        title: EmailLoginString.TextFieldTitle.hardwareKeyCode,
+                        text: viewStore.binding(
+                            get: { $0.hardwareKeyState?.hardwareKeyCode ?? "" },
+                            send: { .hardwareKey(.didChangeHardwareKeyCode($0)) }
+                        ),
+                        isSecure: true,
+                        error: { _ in isHardwareKeyCodeFieldVisible },
+                        errorMessage: EmailLoginString.TextFieldError.incorrectHardwareKeyCode
+                    )
+                    .textContentType(.oneTimeCode)
+                    Text(EmailLoginString.TextFieldFootnote.hardwareKeyInstruction)
+                        .textStyle(.subheading)
+                }
             }
+            .disabled(viewStore.isLoading)
 
             Spacer()
 
@@ -160,15 +166,17 @@ struct CredentialsView: View {
                 title: EmailLoginString.Button._continue,
                 action: {
                     if viewStore.isTwoFACodeOrHardwareKeyVerified {
-                        viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState?.password ?? "")))
+                        viewStore.send(.walletPairing(.decryptWalletWithPassword(viewStore.passwordState.password)))
                     } else {
                         viewStore.send(.walletPairing(.authenticate))
                     }
                 },
                 loading: viewStore.binding(get: \.isLoading, send: .none)
             )
+            .disabled(!viewStore.passwordState.isValid)
             .padding(.bottom, 58)
         }
+        .navigationBarTitleDisplayMode(.inline)
         .disableAutocorrection(true)
         .autocapitalization(.none)
         .padding(.leading, 24)
@@ -202,6 +210,9 @@ struct CredentialsView: View {
             footnote: EmailLoginString.TextFieldFootnote.wallet + info.guid,
             isDisabled: true
         )
+        // Intentionally setting the content type to nil here
+        // to avoid email autofill from password managers
+        .textContentType(nil)
         .padding(.top, 20)
         .padding(.bottom, 20)
     }
@@ -218,6 +229,7 @@ struct CredentialsView: View {
             error: { _ in isWalletIdentifierIncorrect },
             errorMessage: ""
         )
+        .textContentType(.username)
         .padding(.top, 20)
         .padding(.bottom, 20)
     }

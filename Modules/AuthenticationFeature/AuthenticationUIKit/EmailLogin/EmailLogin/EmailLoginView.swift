@@ -35,12 +35,17 @@ struct EmailLoginView: View {
                 .disableAutocorrection(true)
                 .autocapitalization(.none)
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
+                .disabled(viewStore.isLoading)
 
                 Spacer()
 
-                PrimaryButton(title: EmailLoginString.Button._continue) {
-                    viewStore.send(.sendDeviceVerificationEmail)
-                }
+                PrimaryButton(
+                    title: EmailLoginString.Button._continue,
+                    action: {
+                        viewStore.send(.sendDeviceVerificationEmail)
+                    },
+                    loading: viewStore.binding(get: \.isLoading, send: { _ in .none })
+                )
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.isEmailValid)
 
