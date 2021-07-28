@@ -6,6 +6,7 @@ import ComposableArchitecture
 
 public enum PasswordAction: Equatable {
     case didChangePassword(String)
+    case didChangeFocusedState(Bool)
     case incorrectPasswordErrorVisibility(Bool)
 }
 
@@ -13,6 +14,7 @@ public enum PasswordAction: Equatable {
 
 struct PasswordState: Equatable {
     var password: String
+    var isFocused: Bool
     var isPasswordIncorrect: Bool
 
     var isValid: Bool {
@@ -21,6 +23,7 @@ struct PasswordState: Equatable {
 
     init() {
         password = ""
+        isFocused = false
         isPasswordIncorrect = false
     }
 }
@@ -36,6 +39,9 @@ let passwordReducer = Reducer<
     case .didChangePassword(let password):
         state.isPasswordIncorrect = false
         state.password = password
+        return .none
+    case .didChangeFocusedState(let isFocused):
+        state.isFocused = isFocused
         return .none
     case .incorrectPasswordErrorVisibility(let isVisible):
         state.isPasswordIncorrect = isVisible

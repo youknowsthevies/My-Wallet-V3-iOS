@@ -36,6 +36,7 @@ struct EmailLoginView: View {
                 .autocapitalization(.none)
                 .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
                 .disabled(viewStore.isLoading)
+                .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.emailGroup)
 
                 Spacer()
 
@@ -48,6 +49,7 @@ struct EmailLoginView: View {
                 )
                 .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
                 .disabled(!viewStore.isEmailValid)
+                .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
 
                 NavigationLink(
                     destination: IfLetStore(
@@ -64,11 +66,19 @@ struct EmailLoginView: View {
                     label: EmptyView.init
                 )
             }
-            .navigationBarTitle(EmailLoginString.navigationTitle)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Text(EmailLoginString.navigationTitle)
+                        .font(Font(weight: .semibold, size: 20))
+                        .padding(.top, 15)
+                        .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.loginTitleText)
+                }
+            }
             .trailingNavigationButton(.close) {
                 viewStore.send(.closeButtonTapped)
             }
-            .updateNavigationBarStyle()
+            .whiteNavigationBarStyle()
+            .hideBackButtonTitle()
         }
         .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .emailLoginFailureAlert(.dismiss))
         .onDisappear {

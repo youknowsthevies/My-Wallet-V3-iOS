@@ -82,6 +82,7 @@ let emailLoginReducer = Reducer.combine(
         case .didDisappear:
             state.emailAddress = ""
             state.isEmailValid = false
+            state.isVerifyDeviceScreenVisible = false
             state.emailLoginFailureAlert = nil
             return .none
 
@@ -147,14 +148,7 @@ let emailLoginReducer = Reducer.combine(
             state.isVerifyDeviceScreenVisible = isVisible
             return .none
 
-        case .verifyDevice(.didExtractWalletInfo),
-             .verifyDevice(.didReceiveWalletInfoDeeplink),
-             .verifyDevice(.verifyDeviceFailureAlert),
-             .verifyDevice(.credentials),
-             .verifyDevice(.setCredentialsScreenVisible),
-             .verifyDevice(.didDisappear),
-             .verifyDevice(.none),
-             .verifyDevice(.fallbackToWalletIdentifier):
+        case .verifyDevice:
             // handled in verify device reducer
             return .none
 

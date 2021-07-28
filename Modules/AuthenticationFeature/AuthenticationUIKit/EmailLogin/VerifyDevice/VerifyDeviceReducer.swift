@@ -16,6 +16,7 @@ public enum VerifyDeviceAction: Equatable {
     }
 
     case credentials(CredentialsAction)
+    case didAppear
     case didDisappear
     case fallbackToWalletIdentifier
     case didExtractWalletInfo(WalletInfo)
@@ -81,6 +82,11 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceEnvironment
     > { state, action, environment in
         switch action {
+        case .didAppear:
+            // making sure credentials view is not immediately pushed when going to verify device view
+            state.isCredentialsScreenVisible = false
+            return .none
+
         case .didDisappear:
             state.verifyDeviceFailureAlert = nil
             return .none

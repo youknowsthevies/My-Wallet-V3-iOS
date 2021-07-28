@@ -9,6 +9,7 @@ import UIComponentsKit
 
 typealias WelcomeViewString = LocalizationConstants.AuthenticationKit.Welcome
 
+/// Entry point to Create Wallet/Login/Restore Wallet
 public struct WelcomeView: View {
 
     private let store: Store<WelcomeState, WelcomeAction>
@@ -54,13 +55,16 @@ private struct WelcomeMessageSection: View {
             Image.Logo.blockchain
                 .frame(width: 64, height: 64)
                 .padding(.bottom, 40)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.blockchainImage)
             Text(WelcomeViewString.title)
                 .font(Font(weight: .semibold, size: 24))
                 .foregroundColor(.textHeading)
                 .padding(.bottom, 16)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeTitleText)
             WelcomeMessageDescription()
                 .font(Font(weight: .medium, size: 16))
                 .lineSpacing(4)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.welcomeMessageText)
         }
         .multilineTextAlignment(.center)
     }
@@ -71,6 +75,8 @@ private struct WelcomeMessageDescription: View {
         .foregroundColor(.textMuted)
     let comma = Text(WelcomeViewString.Description.comma)
         .foregroundColor(.textMuted)
+    let send = Text(WelcomeViewString.Description.send)
+        .foregroundColor(.textHeading)
     let receive = Text(WelcomeViewString.Description.receive)
         .foregroundColor(.textHeading)
     let store = Text(WelcomeViewString.Description.store + "\n")
@@ -84,7 +90,7 @@ private struct WelcomeMessageDescription: View {
 
     var body: some View {
         Group {
-            prefix + receive + comma + store + and + trade + suffix
+            prefix + send + comma + receive + comma + store + and + trade + suffix
         }
     }
 }
@@ -100,14 +106,17 @@ private struct WelcomeActionSection: View {
                 PrimaryButton(title: WelcomeViewString.Button.createWallet) {
                     viewStore.send(.presentScreenFlow(.createWalletScreen))
                 }
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.createWalletButton)
 
                 SecondaryButton(title: WelcomeViewString.Button.login) {
                     viewStore.send(.presentScreenFlow(.emailLoginScreen))
                 }
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.emailLoginButton)
 
                 if viewStore.manualPairingEnabled {
                     Divider()
                     manualPairingButton()
+                        .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.manualPairingButton)
                 }
             }
             .padding(.bottom, 20)
@@ -118,20 +127,21 @@ private struct WelcomeActionSection: View {
                 }
                 .font(Font(weight: .semibold, size: 12))
                 .foregroundColor(.buttonLinkText)
+                .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.restoreWalletButton)
                 Spacer()
                 Text(viewStore.buildVersion)
                     .font(Font(weight: .medium, size: 12))
                     .foregroundColor(.textMuted)
+                    .accessibility(identifier: AccessibilityIdentifiers.WelcomeScreen.buildVersionText)
             }
         }
-        .padding(.leading, 24)
-        .padding(.trailing, 24)
+        .padding([.leading, .trailing], 24)
     }
 
     // MARK: - Private
 
     private func manualPairingButton() -> some View {
-        Button("Manual Login") {
+        Button(WelcomeViewString.Button.manualPairing) {
             viewStore.send(.presentScreenFlow(.guidLoginScreen))
         }
         .font(Font(weight: .semibold, size: 16))

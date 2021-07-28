@@ -36,17 +36,17 @@ struct ManualPairingView: View {
             VStack(alignment: .leading) {
                 Group {
                     FormTextFieldGroup(
-                        title: "Wallet Identifier",
+                        title: LocalizedTitles.TextFieldTitle.walletIdentifier,
                         text: viewStore.binding(
                             get: { $0.walletIdentifier },
                             send: { value in .walletIdentifier(value) }
                         ),
                         isDisabled: false,
                         error: { _ in isWalletIdentifierIncorrect },
-                        errorMessage: "Incorrect wallet identifier"
+                        errorMessage: LocalizedTitles.TextFieldError.incorrectWalletIdentifier
                     )
-                    .padding(.top, 20)
-                    .padding(.bottom, 20)
+                    .padding([.top, .bottom], 20)
+                    .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.guidGroup)
 
                     FormTextFieldGroup(
                         title: LocalizedTitles.TextFieldTitle.password,
@@ -59,11 +59,10 @@ struct ManualPairingView: View {
                         errorMessage: LocalizedTitles.TextFieldError.incorrectPassword
                     )
                     .padding(.bottom, 10)
+                    .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.passwordGroup)
 
-                    Text(
-                        warningTitle
-                    )
-                    .font(.caption)
+                    Text(warningTitle)
+                        .font(.caption)
 
                     Spacer()
 
@@ -77,6 +76,7 @@ struct ManualPairingView: View {
                         )
                         .padding(.bottom, 58)
                         .disabled(!viewStore.isValid)
+                        .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.continueButton)
                     }
                 }
                 .disableAutocorrection(true)
@@ -84,11 +84,12 @@ struct ManualPairingView: View {
                 .padding(.leading, 24)
                 .padding(.trailing, 24)
             }
-            .navigationBarTitle("Manual Pairing Login")
+            .navigationBarTitle(LocalizedTitles.manualPairingTitle, displayMode: .inline)
             .trailingNavigationButton(.close) {
                 viewStore.send(.closeButtonTapped)
             }
-            .updateNavigationBarStyle()
+            .whiteNavigationBarStyle()
+            .largeInlineNavigationBarTitle()
             .alert(
                 self.store.scope(state: \.alertState),
                 dismiss: .alert(.dismiss)

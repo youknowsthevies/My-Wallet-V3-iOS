@@ -57,7 +57,8 @@ struct EmailVerificationView: View {
                             action: EmailVerificationAction.verifyEmail
                         )
                     )
-                    .updateNavigationBarStyle()
+                    .navigationBarTitle("", displayMode: .inline)
+                    .whiteNavigationBarStyle()
                     .trailingNavigationButton(.close) {
                         viewStore.send(.closeButtonTapped)
                     }

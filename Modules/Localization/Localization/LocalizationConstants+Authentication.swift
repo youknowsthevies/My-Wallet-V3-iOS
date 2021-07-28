@@ -54,6 +54,10 @@ extension LocalizationConstants.AuthenticationKit {
                 "Log In",
                 comment: "Welcome screen: login CTA button"
             )
+            public static let manualPairing = NSLocalizedString(
+                "Manual Login",
+                comment: "Welcome screen: manual pairing CTA button"
+            )
             public static let restoreWallet = NSLocalizedString(
                 "Restore Wallet",
                 comment: "Welcome screen: restore wallet CTA button"
@@ -68,8 +72,12 @@ extension LocalizationConstants.AuthenticationKit {
 
     public enum EmailLogin {
         public static let navigationTitle = NSLocalizedString(
-            "Login",
+            "Log In",
             comment: "Login screen: login form title"
+        )
+        public static let manualPairingTitle = NSLocalizedString(
+            "Manual Pairing Login",
+            comment: "Manual Pairing screen: title"
         )
         public enum VerifyDevice {
             public static let title = NSLocalizedString(
@@ -136,6 +144,10 @@ extension LocalizationConstants.AuthenticationKit {
             public static let invalidEmail = NSLocalizedString(
                 "Invalid Email",
                 comment: "Login screen: invalid email error"
+            )
+            public static let incorrectWalletIdentifier = NSLocalizedString(
+                "Incorrect Wallet Identifier",
+                comment: "Manual Login screen: incorrect wallet identifier"
             )
             public static let incorrectPassword = NSLocalizedString(
                 "Incorrect Password",

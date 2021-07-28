@@ -18,7 +18,7 @@ extension LocalizationConstants {
                     comment: "Instantly exchange your crypto into any currency we offer for your wallet."
                 )
             }
-            
+
             public static let trending = NSLocalizedString(
                 "Trending", comment: "Trending"
             )

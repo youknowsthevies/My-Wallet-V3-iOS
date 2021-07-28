@@ -33,7 +33,7 @@ class SideMenuPresenter {
             .isEnabled(.local(.secureChannel))
             .receive(on: DispatchQueue.main)
             .map { [secureChannelConfiguration] isSecureChannelEnabled -> (top: SideMenuItem, bottom: SideMenuItem) in
-                return (
+                (
                     top: (secureChannelConfiguration.isEnabled || isSecureChannelEnabled) ? .secureChannel : .webLogin,
                     bottom: .logout
                 )

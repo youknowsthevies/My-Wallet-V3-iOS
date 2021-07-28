@@ -9,11 +9,12 @@ public struct FormTextFieldGroup: View {
     public let footnote: String?
     public let isDisabled: Bool
     public let isSecure: Bool
+    public let isSecureFieldFocused: Binding<Bool>
     public let error: ((_ text: String) -> Bool)?
     public let errorMessage: String?
-    @State private var isEditing: Bool = false
+    public var resetFocus: (() -> Void)?
+    @State private var isFocused: Bool = false
     @State private var isError: Bool = false
-    @State private var hideSecuredText: Bool = true
 
     public init(
         title: String,
@@ -22,8 +23,10 @@ public struct FormTextFieldGroup: View {
         footnote: String? = nil,
         isDisabled: Bool = false,
         isSecure: Bool = false,
+        isSecureFieldFocused: Binding<Bool> = .constant(false),
         error: ((_ text: String) -> Bool)? = nil,
-        errorMessage: String? = nil
+        errorMessage: String? = nil,
+        resetFocus: (() -> Void)? = nil
     ) {
         self.title = title
         self.text = text
@@ -31,8 +34,10 @@ public struct FormTextFieldGroup: View {
         self.footnote = footnote
         self.isDisabled = isDisabled
         self.isSecure = isSecure
+        self.isSecureFieldFocused = isSecureFieldFocused
         self.error = error
         self.errorMessage = errorMessage
+        self.resetFocus = resetFocus
     }
 
     public var body: some View {
@@ -44,23 +49,20 @@ public struct FormTextFieldGroup: View {
                 .textStyle(.body)
             VStack {
                 if isSecure {
-                    HStack {
-                        if hideSecuredText {
-                            SecureField(textPlaceholder, text: text)
-                        } else {
-                            TextField(textPlaceholder, text: text)
-                        }
-                        Button(
-                            action: { hideSecuredText.toggle() },
-                            label: {
-                                Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
-                                    .foregroundColor(Color.passwordPeekEyeColor)
-                            }
-                        )
-                    }
+                    ViewableSecureField(
+                        text: text,
+                        textPlaceholder: textPlaceholder
+                    )
+                    .onTapGesture { resetFocus?() }
+                    .onReceive(Just(isSecureFieldFocused), perform: { isFocused in
+                        self.isFocused = isFocused.wrappedValue
+                    })
                 } else {
                     TextField(textPlaceholder, text: text) { isEditing in
-                        self.isEditing = isEditing
+                        if isEditing {
+                            resetFocus?()
+                        }
+                        self.isFocused = isEditing
                     }
                 }
             }
@@ -70,11 +72,12 @@ public struct FormTextFieldGroup: View {
                 }
             })
             .textFieldStyle(FormTextFieldStyle(
-                isEditing: isEditing,
+                isEditing: isFocused,
                 isActive: !isDisabled,
                 isError: isError
             ))
             .disabled(isDisabled)
+
             if let footnote = self.footnote {
                 Text(footnote)
                     .textStyle(.subheading)
@@ -84,6 +87,39 @@ public struct FormTextFieldGroup: View {
                     .font(Font(weight: .medium, size: 14))
                     .foregroundColor(Color.borderError)
             }
+        }
+    }
+}
+
+struct ViewableSecureField: View {
+
+    private let text: Binding<String>
+    private let textPlaceholder: String
+    @State private var hideSecuredText: Bool = true
+
+    init(
+        text: Binding<String>,
+        textPlaceholder: String
+    ) {
+        self.text = text
+        self.textPlaceholder = textPlaceholder
+    }
+
+    var body: some View {
+        ZStack(alignment: .trailing) {
+            if hideSecuredText {
+                SecureField(textPlaceholder, text: text)
+            } else {
+                TextField(textPlaceholder, text: text)
+            }
+            Button(
+                action: { hideSecuredText.toggle() },
+                label: {
+                    Image(systemName: hideSecuredText ? "eye.fill" : "eye.slash.fill")
+                        .foregroundColor(Color.passwordPeekEyeColor)
+                }
+            )
+            .padding(.trailing, 15)
         }
     }
 }

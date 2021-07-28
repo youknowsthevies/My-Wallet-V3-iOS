@@ -203,9 +203,10 @@ extension SideMenuViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let sideMenuCell = tableView
-                .dequeueReusableCell(
-                    withIdentifier: SideMenuCell.identifier
-                ) as? SideMenuCell else {
+            .dequeueReusableCell(
+                withIdentifier: SideMenuCell.identifier
+            ) as? SideMenuCell
+        else {
             Logger.shared.debug("Could not get SideMenuCell")
             return UITableViewCell()
         }
