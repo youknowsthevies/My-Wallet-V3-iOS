@@ -63,10 +63,10 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
 
     // MARK: - Connect API
 
-    func connect(stream: Observable<BlockchainAccount>, targets: Observable<[TransactionTarget]>) -> Disposable {
+    func connect(stream: Observable<BlockchainAccount>, accounts: Observable<[BlockchainAccount]>) -> Disposable {
         Observable.zip(
             stream,
-            targets
+            accounts
                 .map(\.count)
                 .map { $0 > 1 }
         )
