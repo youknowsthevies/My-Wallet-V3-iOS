@@ -11,10 +11,18 @@ public enum AccountPickerListenerBridge {
 }
 
 public protocol AccountPickerBuildable: RIBs.Buildable {
+
+    /// Builder for the Account Picker
+    /// - Parameters:
+    ///   - listener: Listener for interaction callbacks.
+    ///   - navigationModel: Navigation Model for the UINavigationController
+    ///   - headerModel: Header Model
+    ///   - buttonViewModel: Optional button. (e.g. `+Add New` below a list of banks)
     func build(
         listener: AccountPickerListenerBridge,
         navigationModel: ScreenNavigationModel,
-        headerModel: AccountPickerHeaderType
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel?
     ) -> AccountPickerRouting
 }
 
@@ -59,7 +67,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
     public func build(
         listener: AccountPickerListenerBridge,
         navigationModel: ScreenNavigationModel,
-        headerModel: AccountPickerHeaderType
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel? = nil
     ) -> AccountPickerRouting {
         let shouldOverrideNavigationEffects: Bool
         switch listener {
@@ -75,7 +84,8 @@ public final class AccountPickerBuilder: AccountPickerBuildable {
             viewController: viewController,
             action: action,
             navigationModel: navigationModel,
-            headerModel: headerModel
+            headerModel: headerModel,
+            buttonViewModel: buttonViewModel
         )
         let interactor = AccountPickerInteractor(
             presenter: presenter,

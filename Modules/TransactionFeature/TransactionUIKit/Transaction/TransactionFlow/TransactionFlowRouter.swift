@@ -1,6 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
 import DIKit
+import Localization
 import PlatformKit
 import PlatformUIKit
 import RIBs
@@ -227,12 +228,14 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             ),
             action: action
         )
+        let button: ButtonViewModel? = action == .deposit ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: ScreenNavigationModel.AccountPicker.modal(
                 title: TransactionFlowDescriptor.AccountPicker.sourceTitle(action: action)
             ),
-            headerModel: action == .deposit ? .none : .simple(header)
+            headerModel: action == .deposit ? .none : .simple(header),
+            buttonViewModel: button
         )
     }
 
@@ -251,10 +254,12 @@ final class TransactionFlowRouter: ViewableRouter<TransactionFlowInteractable, T
             ),
             action: action
         )
+        let button: ButtonViewModel? = action == .withdraw ? .secondary(with: LocalizationConstants.addNew) : nil
         return builder.build(
             listener: .listener(interactor),
             navigationModel: navigationModel,
-            headerModel: action == .withdraw ? .none : .simple(header)
+            headerModel: action == .withdraw ? .none : .simple(header),
+            buttonViewModel: button
         )
     }
 }
