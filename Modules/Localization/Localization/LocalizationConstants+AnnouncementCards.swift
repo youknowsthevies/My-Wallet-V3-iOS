@@ -156,11 +156,11 @@ extension LocalizationConstants {
 
         public enum PaxRenaming {
             public static let title = NSLocalizedString(
-                "USD Digital is now Paxos Standard",
+                "USD-D is now PAX",
                 comment: "PAX announcement card title"
             )
             public static let description = NSLocalizedString(
-                "We’ve updated the naming of USD Digital (USD-D) to Paxos Standard (PAX). USD Digital was built using the Paxos standard. If you held USD-D, your funds are not affected.",
+                "We've updated the name of USD Digital (USD-D) to Paxos Standard (PAX). Any held funds are not affected.",
                 comment: "PAX announcement card description"
             )
             public static let ctaButton = NSLocalizedString(
