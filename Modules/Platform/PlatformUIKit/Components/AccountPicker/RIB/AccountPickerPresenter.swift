@@ -21,22 +21,7 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
 
     // MARK: - Public Properties
 
-    var button: ButtonViewModel? {
-        switch action {
-        case .withdraw,
-             .deposit:
-            return .secondary(with: LocalizationConstants.addNew)
-        case .buy,
-             .sell:
-            // TICKET: IOS-5041 - Support linking a bank or card in Buy and Sell
-            return nil
-        case .send,
-             .receive,
-             .viewActivity,
-             .swap:
-            return nil
-        }
-    }
+    let button: ButtonViewModel?
 
     // MARK: - Private Properties
 
@@ -50,9 +35,11 @@ final class AccountPickerPresenter: Presenter<AccountPickerViewControllable>, Ac
         viewController: AccountPickerViewControllable,
         action: AssetAction,
         navigationModel: ScreenNavigationModel,
-        headerModel: AccountPickerHeaderType
+        headerModel: AccountPickerHeaderType,
+        buttonViewModel: ButtonViewModel? = nil
     ) {
         self.action = action
+        self.button = buttonViewModel
         self.navigationModel = navigationModel
         self.headerModel = headerModel
         super.init(viewController: viewController)
