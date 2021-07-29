@@ -14,21 +14,13 @@ struct ManualPairingView: View {
     private let store: Store<ManualPairing.State, ManualPairing.Action>
     @ObservedObject private var viewStore: ViewStore<ManualPairing.State, ManualPairing.Action>
 
-    @Binding var isWalletIdentifierIncorrect: Bool
-    @Binding var isPasswordIncorrect: Bool
+    @State private var isWalletIdentifierFieldFirstResponder: Bool = true
+    @State private var isPasswordFieldFirstResponder: Bool = false
+    @State private var isPasswordVisible: Bool = false
 
     init(store: Store<ManualPairing.State, ManualPairing.Action>) {
         self.store = store
-        let viewStore = ViewStore(store)
-        self.viewStore = viewStore
-        _isPasswordIncorrect = viewStore.binding(
-            get: { $0.passwordState.isPasswordIncorrect },
-            send: { _ in .none }
-        )
-        _isWalletIdentifierIncorrect = viewStore.binding(
-            get: \.incorrectWalletIdentifier,
-            send: .none
-        )
+        viewStore = ViewStore(store)
     }
 
     var body: some View {
@@ -36,27 +28,72 @@ struct ManualPairingView: View {
             VStack(alignment: .leading) {
                 Group {
                     FormTextFieldGroup(
-                        title: LocalizedTitles.TextFieldTitle.walletIdentifier,
                         text: viewStore.binding(
                             get: { $0.walletIdentifier },
-                            send: { value in .walletIdentifier(value) }
+                            send: { .walletIdentifier($0) }
                         ),
-                        isDisabled: false,
-                        error: { _ in isWalletIdentifierIncorrect },
-                        errorMessage: LocalizedTitles.TextFieldError.incorrectWalletIdentifier
+                        isFirstResponder: $isWalletIdentifierFieldFirstResponder,
+                        isError: viewStore.binding(
+                            get: { $0.incorrectWalletIdentifier },
+                            send: .none
+                        ),
+                        title: LocalizedTitles.TextFieldTitle.walletIdentifier,
+                        configuration: {
+                            $0.autocorrectionType = .no
+                            $0.autocapitalizationType = .none
+                            $0.textContentType = .username
+                            $0.returnKeyType = .next
+                        },
+                        errorMessage: LocalizedTitles.TextFieldError.incorrectWalletIdentifier,
+                        onPaddingTapped: {
+                            self.isWalletIdentifierFieldFirstResponder = true
+                            self.isPasswordFieldFirstResponder = false
+                        },
+                        onReturnTapped: {
+                            self.isWalletIdentifierFieldFirstResponder = false
+                            self.isPasswordFieldFirstResponder = true
+                        }
                     )
                     .padding([.top, .bottom], 20)
                     .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.guidGroup)
 
                     FormTextFieldGroup(
-                        title: LocalizedTitles.TextFieldTitle.password,
                         text: viewStore.binding(
                             get: { $0.passwordState.password },
                             send: { .password(.didChangePassword($0)) }
                         ),
-                        isSecure: true,
-                        error: { _ in isPasswordIncorrect },
-                        errorMessage: LocalizedTitles.TextFieldError.incorrectPassword
+                        isFirstResponder: $isPasswordFieldFirstResponder,
+                        isError: viewStore.binding(
+                            get: { $0.passwordState.isPasswordIncorrect },
+                            send: { _ in .none }
+                        ),
+                        title: LocalizedTitles.TextFieldTitle.password,
+                        configuration: {
+                            $0.autocorrectionType = .no
+                            $0.autocapitalizationType = .none
+                            $0.textContentType = .password
+                            $0.isSecureTextEntry = !isPasswordVisible
+                            $0.returnKeyType = .done
+                            $0.enablesReturnKeyAutomatically = true
+                        },
+                        errorMessage: LocalizedTitles.TextFieldError.incorrectPassword,
+                        onPaddingTapped: {
+                            self.isWalletIdentifierFieldFirstResponder = false
+                            self.isPasswordFieldFirstResponder = true
+                        },
+                        onReturnTapped: {
+                            self.isWalletIdentifierFieldFirstResponder = false
+                            self.isPasswordFieldFirstResponder = false
+                        },
+                        trailingAccessoryView: {
+                            Button(
+                                action: { isPasswordVisible.toggle() },
+                                label: {
+                                    Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                        .foregroundColor(Color.secureFieldEyeSymbol)
+                                }
+                            )
+                        }
                     )
                     .padding(.bottom, 10)
                     .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.passwordGroup)
@@ -74,15 +111,12 @@ struct ManualPairingView: View {
                             },
                             loading: viewStore.binding(get: \.isLoggingIn, send: .none)
                         )
-                        .padding(.bottom, 58)
+                        .padding(.bottom, 34)
                         .disabled(!viewStore.isValid)
                         .accessibility(identifier: AccessibilityIdentifiers.ManualPairingScreen.continueButton)
                     }
                 }
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-                .padding(.leading, 24)
-                .padding(.trailing, 24)
+                .padding([.leading, .trailing], 24)
             }
             .navigationBarTitle(LocalizedTitles.manualPairingTitle, displayMode: .inline)
             .trailingNavigationButton(.close) {

@@ -14,6 +14,8 @@ struct EmailLoginView: View {
     private let store: Store<EmailLoginState, EmailLoginAction>
     @ObservedObject private var viewStore: ViewStore<EmailLoginState, EmailLoginAction>
 
+    @State private var isEmailFieldFirstResponder: Bool = true
+
     init(store: Store<EmailLoginState, EmailLoginAction>) {
         self.store = store
         viewStore = ViewStore(self.store)
@@ -23,18 +25,35 @@ struct EmailLoginView: View {
         NavigationView {
             VStack {
                 FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.email,
                     text: viewStore.binding(
                         get: { $0.emailAddress },
                         send: { .didChangeEmailAddress($0) }
                     ),
-                    textPlaceholder: EmailLoginString.TextFieldPlaceholder.email,
-                    error: { _ in !viewStore.isEmailValid && !viewStore.emailAddress.isEmpty },
-                    errorMessage: EmailLoginString.TextFieldError.invalidEmail
+                    isFirstResponder: $isEmailFieldFirstResponder,
+                    isError: viewStore.binding(
+                        get: { !$0.isEmailValid && !$0.emailAddress.isEmpty },
+                        send: .none
+                    ),
+                    title: EmailLoginString.TextFieldTitle.email,
+                    configuration: {
+                        $0.autocorrectionType = .no
+                        $0.autocapitalizationType = .none
+                        $0.textContentType = .emailAddress
+                        $0.keyboardType = .emailAddress
+                        $0.placeholder = EmailLoginString.TextFieldPlaceholder.email
+                        $0.returnKeyType = .done
+                        $0.enablesReturnKeyAutomatically = true
+                    },
+                    errorMessage: EmailLoginString.TextFieldError.invalidEmail,
+                    onPaddingTapped: {
+                        self.isEmailFieldFirstResponder = true
+                    },
+                    onReturnTapped: {
+                        self.isEmailFieldFirstResponder = false
+                    }
                 )
-                .disableAutocorrection(true)
-                .autocapitalization(.none)
-                .padding(EdgeInsets(top: 34, leading: 24, bottom: 20, trailing: 24))
+                .padding(.top, 34)
+                .padding(.bottom, 20)
                 .disabled(viewStore.isLoading)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.emailGroup)
 
@@ -47,7 +66,7 @@ struct EmailLoginView: View {
                     },
                     loading: viewStore.binding(get: \.isLoading, send: { _ in .none })
                 )
-                .padding(EdgeInsets(top: 0, leading: 24, bottom: 34, trailing: 24))
+                .padding(.bottom, 34)
                 .disabled(!viewStore.isEmailValid)
                 .accessibility(identifier: AccessibilityIdentifiers.EmailLoginScreen.continueButton)
 
@@ -66,6 +85,7 @@ struct EmailLoginView: View {
                     label: EmptyView.init
                 )
             }
+            .padding([.leading, .trailing], 24)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Text(EmailLoginString.navigationTitle)

@@ -89,6 +89,8 @@ struct EditEmailView: View {
 
     let store: Store<EditEmailState, EditEmailAction>
 
+    @State private var isEmailFieldFirstResponder: Bool = true
+
     var body: some View {
         WithViewStore(store) { viewStore in
             ActionableView(
@@ -106,11 +108,23 @@ struct EditEmailView: View {
 
                         VStack(spacing: LayoutConstants.VerticalSpacing.betweenContentGroups) {
                             FormTextFieldGroup(
-                                title: L10n.EditEmail.editEmailFieldLabel,
                                 text: viewStore.binding(
                                     get: { $0.emailAddress },
                                     send: { .didChangeEmailAddress($0) }
-                                )
+                                ),
+                                isFirstResponder: $isEmailFieldFirstResponder,
+                                isError: .constant(false),
+                                title: L10n.EditEmail.editEmailFieldLabel,
+                                configuration: {
+                                    $0.textContentType = .emailAddress
+                                    $0.returnKeyType = .done
+                                },
+                                onPaddingTapped: {
+                                    self.isEmailFieldFirstResponder = true
+                                },
+                                onReturnTapped: {
+                                    self.isEmailFieldFirstResponder = false
+                                }
                             )
                             .accessibility(identifier: "KYC.EmailVerification.edit.email.group")
 

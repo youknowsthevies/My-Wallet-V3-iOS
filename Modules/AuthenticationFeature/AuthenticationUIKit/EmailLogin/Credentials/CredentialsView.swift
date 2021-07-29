@@ -9,86 +9,66 @@ import UIComponentsKit
 
 struct CredentialsView: View {
 
-    @Binding var isTwoFACodeVisible: Bool
-    @Binding var isResendSMSButtonVisible: Bool
-    @Binding var isHardwareKeyCodeFieldVisible: Bool
-    @Binding var isHardwareKeyCodeFieldFocused: Bool
-    @Binding var isWalletIdentifierIncorrect: Bool
-    @Binding var isPasswordIncorrect: Bool
-    @Binding var isPasswordFieldFocused: Bool
-    @Binding var isTwoFACodeIncorrect: Bool
-    @Binding var isHardwareKeyCodeIncorrect: Bool
-    @Binding var isAccountLocked: Bool
-
     private let context: CredentialsContext
     private let store: Store<CredentialsState, CredentialsAction>
     @ObservedObject private var viewStore: ViewStore<CredentialsState, CredentialsAction>
 
+    @State private var isWalletIdentifierFirstResponder: Bool = false
+    @State private var isPasswordFieldFirstResponder: Bool = false
+    @State private var isTwoFAFieldFirstResponder: Bool = false
+    @State private var isHardwareKeyCodeFieldFirstResponder: Bool = false
+    @State private var isPasswordVisible: Bool = false
+    @State private var isHardwareKeyCodeVisible: Bool = false
+
     init(context: CredentialsContext, store: Store<CredentialsState, CredentialsAction>) {
         self.context = context
         self.store = store
-        let viewStore = ViewStore(store)
-        self.viewStore = viewStore
-        _isTwoFACodeVisible = viewStore.binding(
-            get: { $0.twoFAState?.isTwoFACodeFieldVisible ?? false },
-            send: { _ in .none }
-        )
-        _isHardwareKeyCodeFieldVisible = viewStore.binding(
-            get: { $0.hardwareKeyState?.isHardwareKeyCodeFieldVisible ?? false },
-            send: { _ in .none }
-        )
-        _isPasswordIncorrect = viewStore.binding(
-            get: \.passwordState.isPasswordIncorrect,
-            send: { _ in .none }
-        )
-        _isWalletIdentifierIncorrect = viewStore.binding(
-            get: \.isWalletIdentifierIncorrect,
-            send: .none
-        )
-        _isTwoFACodeIncorrect = viewStore.binding(
-            get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false },
-            send: { _ in .none }
-        )
-        _isHardwareKeyCodeIncorrect = viewStore.binding(
-            get: { $0.hardwareKeyState?.isHardwareKeyCodeIncorrect ?? false },
-            send: { _ in .none }
-        )
-        _isAccountLocked = viewStore.binding(
-            get: { $0.isAccountLocked },
-            send: { _ in .none }
-        )
-        _isResendSMSButtonVisible = viewStore.binding(
-            get: { $0.twoFAState?.isResendSMSButtonVisible ?? false },
-            send: { _ in .none }
-        )
-        _isPasswordFieldFocused = viewStore.binding(
-            get: \.passwordState.isFocused,
-            send: { _ in .none }
-        )
-        _isHardwareKeyCodeFieldFocused = viewStore.binding(
-            get: { $0.hardwareKeyState?.isFocused ?? false },
-            send: { _ in .none }
-        )
+        viewStore = ViewStore(store)
     }
 
     var body: some View {
         VStack(alignment: .leading) {
             emailOrWalletIdentifierView()
             FormTextFieldGroup(
-                title: EmailLoginString.TextFieldTitle.password,
                 text: viewStore.binding(
                     get: \.passwordState.password,
                     send: { .password(.didChangePassword($0)) }
                 ),
-                isSecure: true,
-                isSecureFieldFocused: $isPasswordFieldFocused,
-                error: { _ in isPasswordIncorrect || isAccountLocked },
-                errorMessage: isAccountLocked ?
+                isFirstResponder: $isPasswordFieldFirstResponder,
+                isError: viewStore.binding(
+                    get: { $0.passwordState.isPasswordIncorrect || $0.isAccountLocked },
+                    send: .none
+                ),
+                title: EmailLoginString.TextFieldTitle.password,
+                configuration: {
+                    $0.autocorrectionType = .no
+                    $0.autocapitalizationType = .none
+                    $0.isSecureTextEntry = !isPasswordVisible
+                    $0.textContentType = .password
+                },
+                errorMessage: viewStore.isAccountLocked ?
                     EmailLoginString.TextFieldError.accountLocked :
                     EmailLoginString.TextFieldError.incorrectPassword,
-                resetFocus: {
-                    viewStore.send(.password(.didChangeFocusedState(true)))
-                    viewStore.send(.hardwareKey(.didChangeFocusedState(false)))
+                onPaddingTapped: {
+                    self.isWalletIdentifierFirstResponder = false
+                    self.isPasswordFieldFirstResponder = true
+                    self.isTwoFAFieldFirstResponder = false
+                    self.isHardwareKeyCodeFieldFirstResponder = false
+                },
+                onReturnTapped: {
+                    self.isWalletIdentifierFirstResponder = false
+                    self.isPasswordFieldFirstResponder = false
+                    self.isTwoFAFieldFirstResponder = true
+                    self.isHardwareKeyCodeFieldFirstResponder = true
+                },
+                trailingAccessoryView: {
+                    Button(
+                        action: { isPasswordVisible.toggle() },
+                        label: {
+                            Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                                .foregroundColor(Color.secureFieldEyeSymbol)
+                        }
+                    )
                 }
             )
             .padding(.bottom, 1)
@@ -107,29 +87,46 @@ struct CredentialsView: View {
             .padding(.bottom, 16)
             .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.troubleLoggingInButton)
 
-            if isTwoFACodeVisible {
+            if let state = viewStore.twoFAState, state.isTwoFACodeFieldVisible {
                 FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.twoFACode,
                     text: viewStore.binding(
                         get: { $0.twoFAState?.twoFACode ?? "" },
                         send: { .twoFA(.didChangeTwoFACode($0)) }
                     ),
-                    error: { _ in isTwoFACodeIncorrect || isAccountLocked },
-                    errorMessage:
-                    isAccountLocked ?
+                    isFirstResponder: $isTwoFAFieldFirstResponder,
+                    isError: viewStore.binding(
+                        get: { $0.twoFAState?.isTwoFACodeIncorrect ?? false || $0.isAccountLocked },
+                        send: .none
+                    ),
+                    title: EmailLoginString.TextFieldTitle.twoFACode,
+                    configuration: {
+                        $0.autocorrectionType = .no
+                        $0.autocapitalizationType = .none
+                        $0.textContentType = .oneTimeCode
+                        $0.returnKeyType = .done
+                    },
+                    errorMessage: viewStore.isAccountLocked ?
                         EmailLoginString.TextFieldError.accountLocked :
                         String(
                             format: EmailLoginString.TextFieldError.incorrectTwoFACode,
                             viewStore.twoFAState?.twoFACodeAttemptsLeft ?? 0
                         ),
-                    resetFocus: {
-                        viewStore.send(.password(.didChangeFocusedState(false)))
-                        viewStore.send(.hardwareKey(.didChangeFocusedState(false)))
+                    onPaddingTapped: {
+                        self.isWalletIdentifierFirstResponder = false
+                        self.isPasswordFieldFirstResponder = false
+                        self.isTwoFAFieldFirstResponder = true
+                        self.isHardwareKeyCodeFieldFirstResponder = false
+                    },
+                    onReturnTapped: {
+                        self.isWalletIdentifierFirstResponder = false
+                        self.isPasswordFieldFirstResponder = false
+                        self.isTwoFAFieldFirstResponder = false
+                        self.isHardwareKeyCodeFieldFirstResponder = false
                     }
                 )
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.twoFAGroup)
 
-                if isResendSMSButtonVisible {
+                if let state = viewStore.twoFAState, state.isResendSMSButtonVisible {
                     Button(
                         action: {
                             viewStore.send(.walletPairing(.requestSMSCode))
@@ -162,20 +159,47 @@ struct CredentialsView: View {
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.resetTwoFAButton)
             }
 
-            if isHardwareKeyCodeFieldVisible {
+            if let state = viewStore.hardwareKeyState, state.isHardwareKeyCodeFieldVisible {
                 FormTextFieldGroup(
-                    title: EmailLoginString.TextFieldTitle.hardwareKeyCode,
                     text: viewStore.binding(
                         get: { $0.hardwareKeyState?.hardwareKeyCode ?? "" },
                         send: { .hardwareKey(.didChangeHardwareKeyCode($0)) }
                     ),
-                    isSecure: true,
-                    isSecureFieldFocused: $isHardwareKeyCodeFieldFocused,
-                    error: { _ in isHardwareKeyCodeFieldVisible },
-                    errorMessage: EmailLoginString.TextFieldError.incorrectHardwareKeyCode,
-                    resetFocus: {
-                        viewStore.send(.password(.didChangeFocusedState(false)))
-                        viewStore.send(.hardwareKey(.didChangeFocusedState(true)))
+                    isFirstResponder: $isHardwareKeyCodeFieldFirstResponder,
+                    isError: viewStore.binding(
+                        get: { $0.hardwareKeyState?.isHardwareKeyCodeIncorrect ?? false || $0.isAccountLocked },
+                        send: .none
+                    ),
+                    title: EmailLoginString.TextFieldTitle.hardwareKeyCode,
+                    configuration: {
+                        $0.autocorrectionType = .no
+                        $0.autocapitalizationType = .none
+                        $0.isSecureTextEntry = !isHardwareKeyCodeVisible
+                        $0.textContentType = .password
+                    },
+                    errorMessage: viewStore.isAccountLocked ?
+                        EmailLoginString.TextFieldError.accountLocked :
+                        EmailLoginString.TextFieldError.incorrectHardwareKeyCode,
+                    onPaddingTapped: {
+                        self.isWalletIdentifierFirstResponder = false
+                        self.isPasswordFieldFirstResponder = false
+                        self.isTwoFAFieldFirstResponder = false
+                        self.isHardwareKeyCodeFieldFirstResponder = true
+                    },
+                    onReturnTapped: {
+                        self.isWalletIdentifierFirstResponder = false
+                        self.isPasswordFieldFirstResponder = false
+                        self.isTwoFAFieldFirstResponder = false
+                        self.isHardwareKeyCodeFieldFirstResponder = false
+                    },
+                    trailingAccessoryView: {
+                        Button(
+                            action: { isHardwareKeyCodeVisible.toggle() },
+                            label: {
+                                Image(systemName: isHardwareKeyCodeVisible ? "eye.slash.fill" : "eye.fill")
+                                    .foregroundColor(Color.secureFieldEyeSymbol)
+                            }
+                        )
                     }
                 )
                 .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.hardwareKeyGroup)
@@ -199,8 +223,6 @@ struct CredentialsView: View {
             .padding(.bottom, 34)
         }
         .padding([.leading, .trailing], 24)
-        .disableAutocorrection(true)
-        .autocapitalization(.none)
         .navigationBarTitle(EmailLoginString.navigationTitle, displayMode: .inline)
         .onAppear {
             viewStore.send(.didAppear(context: context))
@@ -226,14 +248,12 @@ struct CredentialsView: View {
 
     private func emailTextfield(info: WalletInfo) -> some View {
         FormTextFieldGroup(
-            title: EmailLoginString.TextFieldTitle.email,
             text: .constant(viewStore.emailAddress),
+            isFirstResponder: .constant(false),
+            isError: .constant(false),
+            title: EmailLoginString.TextFieldTitle.email,
             footnote: EmailLoginString.TextFieldFootnote.wallet + viewStore.walletGuid,
-            isDisabled: true,
-            resetFocus: {
-                viewStore.send(.password(.didChangeFocusedState(false)))
-                viewStore.send(.hardwareKey(.didChangeFocusedState(false)))
-            }
+            isPrefilledAndDisabled: true
         )
         .padding([.top, .bottom], 20)
         .accessibility(identifier: AccessibilityIdentifiers.CredentialsScreen.emailGuidGroup)
@@ -241,18 +261,34 @@ struct CredentialsView: View {
 
     private func walletIdentifierTextfield() -> some View {
         FormTextFieldGroup(
-            title: EmailLoginString.TextFieldTitle.walletIdentifier,
             text: viewStore.binding(
                 get: { $0.walletGuid },
                 send: { .didChangeWalletIdentifier($0) }
             ),
+            isFirstResponder: $isWalletIdentifierFirstResponder,
+            isError: viewStore.binding(
+                get: \.isWalletIdentifierIncorrect,
+                send: .none
+            ),
+            title: EmailLoginString.TextFieldTitle.walletIdentifier,
             footnote: EmailLoginString.TextFieldFootnote.email + viewStore.emailAddress,
-            isDisabled: false,
-            error: { _ in isWalletIdentifierIncorrect },
-            errorMessage: "",
-            resetFocus: {
-                viewStore.send(.password(.didChangeFocusedState(false)))
-                viewStore.send(.hardwareKey(.didChangeFocusedState(false)))
+            configuration: {
+                $0.autocorrectionType = .no
+                $0.autocapitalizationType = .none
+                $0.textContentType = .username
+                $0.returnKeyType = .next
+            },
+            onPaddingTapped: {
+                self.isWalletIdentifierFirstResponder = true
+                self.isPasswordFieldFirstResponder = false
+                self.isTwoFAFieldFirstResponder = false
+                self.isHardwareKeyCodeFieldFirstResponder = false
+            },
+            onReturnTapped: {
+                self.isWalletIdentifierFirstResponder = false
+                self.isPasswordFieldFirstResponder = true
+                self.isTwoFAFieldFirstResponder = false
+                self.isHardwareKeyCodeVisible = false
             }
         )
         .padding([.top, .bottom], 20)
