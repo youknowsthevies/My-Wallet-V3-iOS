@@ -29,14 +29,6 @@ final class FiatDepositTransactionEngine: TransactionEngine {
 
     // MARK: - Private Properties
 
-    private var paymentMethodTypes: Single<[PaymentMethodType]> {
-        fiatCurrencyService
-            .fiatCurrency
-            .flatMap(weak: self) { (self, fiatCurrency) -> Single<[PaymentMethodType]> in
-                self.linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
-            }
-    }
-
     private let linkedBanksFactory: LinkedBanksFactoryAPI
     private let bankTransferRepository: BankTransferRepositoryAPI
 
@@ -62,8 +54,8 @@ final class FiatDepositTransactionEngine: TransactionEngine {
     }
 
     func initializeTransaction() -> Single<PendingTransaction> {
-        fiatCurrencyService
-            .fiatCurrency
+        Single
+            .just(target.fiatCurrency)
             .flatMap(weak: self) { (self, fiatCurrecy) -> Single<PaymentLimits> in
                 self.fetchBankTransferLimits(fiatCurrency: fiatCurrecy)
             }

@@ -68,8 +68,8 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
     // MARK: - Private Properties
 
     private var paymentMethodTypes: Single<[PaymentMethodPayloadType]> {
-        fiatCurrencyService
-            .fiatCurrency
+        Single
+            .just(targetAccount.fiatCurrency)
             .flatMap { [linkedBanksFactory] fiatCurrency -> Single<[PaymentMethodType]> in
                 linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
             }
@@ -101,13 +101,17 @@ final class DepositRootInteractor: Interactor, DepositRootInteractable, DepositR
         Single.zip(
             linkedBanksFactory.linkedBanks,
             paymentMethodTypes,
-            fiatCurrencyService.fiatCurrency
+            .just(targetAccount.fiatCurrency)
         )
         .observeOn(MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
             guard let self = self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
-            if linkedBanks.isEmpty {
+            let filteredLinkedBanks = linkedBanks.filter { linkedBank in
+                linkedBank.fiatCurrency == fiatCurrency && linkedBank.paymentType == .bankTransfer
+            }
+
+            if filteredLinkedBanks.isEmpty {
                 self.handleNoLinkedBanks(
                     paymentMethodTypes,
                     fiatCurrency: fiatCurrency

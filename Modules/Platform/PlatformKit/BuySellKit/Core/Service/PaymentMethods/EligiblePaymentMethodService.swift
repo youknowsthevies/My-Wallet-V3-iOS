@@ -120,6 +120,62 @@ final class EligiblePaymentMethodsService: PaymentMethodsServiceAPI {
             }
     }
 
+    func supportedPaymentMethods(
+        for currency: FiatCurrency
+    ) -> Single<[PaymentMethod]> {
+        let enabledFiatCurrencies = enabledCurrenciesService.allEnabledFiatCurrencies
+        let bankTransferEligibleFiatCurrencies = enabledCurrenciesService.bankTransferEligibleFiatCurrencies
+        return Single
+            .just(currency)
+            .flatMap { [tiersService, eligibleMethodsClient] fiatCurrency -> Single<[PaymentMethod]> in
+                let fetchTiers = tiersService.fetchTiers()
+                return fetchTiers.flatMap { tiersResult -> Single<(KYC.UserTiers, SimplifiedDueDiligenceResponse)> in
+                    tiersService.simplifiedDueDiligenceEligibility(for: tiersResult.latestApprovedTier)
+                        .asObservable()
+                        .asSingle()
+                        .map { sddEligibiliy in (tiersResult, sddEligibiliy) }
+                }
+                .flatMap { tiersResult, sddEligility -> Single<([PaymentMethodsResponse.Method], Bool)> in
+                    eligibleMethodsClient.eligiblePaymentMethods(
+                        for: fiatCurrency.code,
+                        currentTier: tiersResult.latestApprovedTier,
+                        sddEligibleTier: ( // get SDD limits for eligible users
+                            (tiersResult.isTier0 || tiersResult.isTier1Approved) && sddEligility.eligible
+                        ) ? sddEligility.tier : nil
+                    )
+                    .map { ($0, sddEligility.eligible) }
+                }
+                .map { methods, sddEligible -> [PaymentMethod] in
+                    let paymentMethods: [PaymentMethod] = .init(
+                        methods: methods,
+                        currency: fiatCurrency,
+                        supportedFiatCurrencies: enabledFiatCurrencies
+                    )
+                    guard sddEligible else {
+                        return paymentMethods
+                    }
+                    return paymentMethods.filter(\.isVisible) // only visible payment methods should be shown to the user
+                }
+                .map { paymentMethods in
+                    paymentMethods.filter { paymentMethod in
+                        switch paymentMethod.type {
+                        case .card:
+                            return true
+                        case .funds(let currencyType):
+                            return currencyType.code == fiatCurrency.code
+                        case .bankTransfer:
+                            // this gets special treatment as we currently only support bank linkage in the US.
+                            return bankTransferEligibleFiatCurrencies.contains(paymentMethod.min.currencyType)
+                        case .bankAccount:
+                            // Filter out bank transfer details from currencies we do not
+                            //  have local support/UI.
+                            return enabledFiatCurrencies.contains(paymentMethod.min.currencyType)
+                        }
+                    }
+                }
+            }
+    }
+
     func refresh() {
         DispatchQueue.main.async { [weak self] in
             self?.refreshAction.accept(())
