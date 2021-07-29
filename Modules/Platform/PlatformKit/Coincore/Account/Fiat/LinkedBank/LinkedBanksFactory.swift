@@ -34,7 +34,7 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
             .map { linkedBankData in
                 linkedBankData.map { data in
                     LinkedBankAccount(
-                        label: data.account?.name ?? "",
+                        label: data.account?.bankName ?? "",
                         accountNumber: data.account?.number ?? "",
                         accountId: data.identifier,
                         accountType: data.account?.type ?? .checking,
