@@ -74,7 +74,7 @@ final class AccountAuxiliaryViewInteractor: AccountAuxiliaryViewInteractorAPI {
             switch account {
             case let bank as LinkedBankAccount:
                 let type = bank.accountType.title
-                let description = type + " \(LocalizationIds.account)"
+                let description = type + (type.isEmpty ? "" : " ") + "\(LocalizationIds.account) -"
                 let subtitle = description + " \(bank.accountNumber)"
                 return .init(
                     title: bank.label,
