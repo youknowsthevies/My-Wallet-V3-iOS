@@ -6,6 +6,11 @@ import Localization
 /// Represents any error that might occur during the pin flow
 public enum PinError: Error {
 
+    public enum PinAlert {
+        case tooManyAttempts
+        case cannotLogin
+    }
+
     /// Signifies that the selected pin is invalid. See `Pin` for more info about it.
     case invalid
 
@@ -15,11 +20,11 @@ public enum PinError: Error {
     /// Signified that the second pin entered on creation/change flow didn't match the selected one
     case pinMismatch(recovery: () -> Void)
 
-    /// Signifies that the user has entered an incorrect pin code. Has an associated message with the numbers of retries left, and the seconds for the PIN lock time.
-    case incorrectPin(String, Int)
+    /// Signifies that the user has entered an incorrect pin code. Has an associated message with the seconds for the PIN lock time, with an optional incorrect pin reminder.
+    case incorrectPin(String, Int, PinAlert?)
 
     /// Signifies that the PIN auth is locked due to exponential backoff. Has an associated message with the remaining lock time.
-    case backoff(String, Int)
+    case backoff(String, Int, PinAlert?)
 
     /// Signifies that the user tried to authenticate with the wrong pin too many times
     case tooManyAttempts

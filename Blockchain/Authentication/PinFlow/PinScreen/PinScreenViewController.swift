@@ -251,16 +251,22 @@ extension PinScreenViewController {
             showInlineError(with: LocalizationConstants.Pin.newPinMustBeDifferent)
         case .invalid:
             showInlineError(with: LocalizationConstants.Pin.chooseAnotherPin)
-        case .incorrectPin(let message, let remaining):
-            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining - 1))
-            // TODO: Replace this with a custom error type
-            if remaining == 300 {
-                displayTooManyAttemptsAlert()
+        case .incorrectPin(let message, let remaining, let pinAlert):
+            let remainingSeconds = Int(remaining / 1000)
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remainingSeconds)
+            remainingSeconds > 0 ?
+                showInlineError(with: message, for: TimeInterval(remainingSeconds - 1)) :
+                showInlineError(with: message)
+            if let alert = pinAlert {
+                displayPinAlert(pinAlert: alert)
             }
-        case .backoff(let message, let remaining):
-            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remaining)
-            showInlineError(with: message, for: TimeInterval(remaining - 1))
+        case .backoff(let message, let remaining, let pinAlert):
+            let remainingSeconds = Int(remaining / 1000)
+            presenter.digitPadViewModel.remainingLockTimeDidChange(remaining: remainingSeconds)
+            showInlineError(with: message, for: TimeInterval(remainingSeconds - 1))
+            if let alert = pinAlert {
+                displayPinAlert(pinAlert: alert)
+            }
         case .tooManyAttempts:
             displayLogoutAlert()
         case .noInternetConnection(recovery: let recovery):
@@ -303,10 +309,24 @@ extension PinScreenViewController {
         }
     }
 
+    private func displayPinAlert(pinAlert: PinError.PinAlert) {
+        switch pinAlert {
+        case .tooManyAttempts:
+            displayTooManyAttemptsAlert()
+        case .cannotLogin:
+            displayCannotLoginAlert()
+        }
+    }
+
     /// Displays a warning alert when users have too many wrong attempts
     private func displayTooManyAttemptsAlert() {
         let alertController = TooManyAttemptsAlertViewController()
-        alertController.modalPresentationStyle = .overCurrentContext
+        present(alertController, animated: true)
+    }
+
+    /// Displays forgot your PIN warning alert when users have used up all PIN login attempts
+    private func displayCannotLoginAlert() {
+        let alertController = CannotLoginAlertViewController()
         present(alertController, animated: true)
     }
 
