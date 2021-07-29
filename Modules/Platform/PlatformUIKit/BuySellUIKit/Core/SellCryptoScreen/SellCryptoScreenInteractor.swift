@@ -210,10 +210,9 @@ final class SellCryptoScreenInteractor: EnterAmountScreenInteractor {
                 amountTranslationInteractor.fiatAmount,
                 amountTranslationInteractor.cryptoAmount,
                 balance,
-                fiatCurrencyService.fiatCurrencyObservable,
                 pairForCryptoCurrency
             )
-            .map { fiatAmount, cryptoAmount, balance, _, pair -> State in
+            .map { fiatAmount, cryptoAmount, balance, pair -> State in
                 /// There must be a pair to compare to before calculation begins
                 guard let pair = pair else {
                     return .empty
