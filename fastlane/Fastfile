@@ -37,14 +37,13 @@ platform :ios do
   end
   
   desc "Builds and uploads the app using the production environment but a different bundle ID and enabling internal features."
-  desc "Builds are uploaded to AppCenter."
+  desc "Builds are uploaded to TestFlight."
   desc "Available options: skip_tests | skip_dsym_upload | skip_build_upload"
   lane :alpha do | options |
     final_options = options.merge(
       {
         environment: "Alpha",
-        app_center_app_name: ENV["APPCENTER_APP_NAME_ALPHA"],
-        app_center_app_owner: ENV["APPCENTER_OWNER_NAME_ALPHA"],
+        build_type: "appstore"
       }
     )
     produce_build(final_options)
@@ -93,10 +92,11 @@ platform :ios do
   desc "Upload to TestFlight"
   lane :upload do
     api_key = fetch_app_store_connect_api_key
+    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier).first
     match(type: "appstore", readonly: true, api_key: api_key)
     upload_to_testflight(
       api_key: api_key,
-      app_identifier: "com.rainydayapps.Blockchain",
+      app_identifier: app_identifier,
       ipa: "output/Blockchain.ipa",
       skip_submission: true,
       skip_waiting_for_build_processing: true

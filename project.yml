@@ -163,7 +163,7 @@ settingGroups:
   release_signing_alpha:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
-      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.alpha
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.alpha
     groups:
     - base_signing
   debug_signing:
@@ -223,7 +223,7 @@ settingGroups:
     base:
       CODE_SIGN_IDENTITY: iPhone Distribution
       PRODUCT_BUNDLE_IDENTIFIER: com.rainydayapps.Blockchain.alpha.TodayExtension
-      PROVISIONING_PROFILE_SPECIFIER: match AdHoc com.rainydayapps.Blockchain.alpha.TodayExtension
+      PROVISIONING_PROFILE_SPECIFIER: match AppStore com.rainydayapps.Blockchain.alpha.TodayExtension
     groups:
     - base_signing_today_extension
   debug_signing_today_extension:

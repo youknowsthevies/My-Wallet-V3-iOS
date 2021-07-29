@@ -3,6 +3,10 @@ username(ENV["FASTLANE_USER"])
 
 type "adhoc"
 
+for_lane :alpha do
+    type "appstore"
+end
+
 for_lane :release do
     type "appstore"
 end
