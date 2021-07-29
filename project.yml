@@ -314,6 +314,9 @@ packages:
   SnapshotTesting:
     url: https://github.com/pointfreeco/swift-snapshot-testing
     version: 1.9.0
+  Mockingbird:
+    url: https://github.com/birdrides/mockingbird
+    version: 0.16.0
 targets:
   ActivityKit:
     dependencies:
@@ -386,6 +389,9 @@ targets:
   AnalyticsKit:
     dependencies:
     - target: SharedPackagesKit
+    scheme:
+      testTargets:
+        - AnalyticsKitTests
     templateAttributes:
       featureName: Analytics
     templates:
@@ -393,6 +399,7 @@ targets:
   AnalyticsKitTests:
     dependencies:
     - target: AnalyticsKit
+    - package: Mockingbird
     templateAttributes:
       featureName: Analytics
     templates:
@@ -405,13 +412,6 @@ targets:
       featureName: Analytics
     templates:
     - Module
-  AnalyticsKitTests:
-    dependencies:
-    - target: AnalyticsKit
-    templateAttributes:
-      featureName: Analytics
-    templates:
-    - ModuleTests
   BitcoinCashKit:
     dependencies:
     - framework: Carthage/Build/BigInt.xcframework
@@ -584,7 +584,6 @@ targets:
     - framework: Carthage/Build/Zxcvbn.xcframework
     - embed: false
       framework: Submodules/OpenSSL-for-iPhone/lib/libcrypto.a
-    - target: AnalyticsKit
     - target: PlatformUIKit
     - target: TodayExtension
     - target: PlatformKit
@@ -622,6 +621,7 @@ targets:
     - target: AuthenticationKit
     - target: AuthenticationUIKit
     - target: AuthenticationDataKit
+    - target: AnalyticsKit
     - target: RxAnalyticsKit
     platform: iOS
     postBuildScripts:
@@ -1193,8 +1193,8 @@ targets:
     - target: NetworkKit
     - target: ToolKit
     - target: WalletPayloadKit
-    - target: SharedPackagesKit
     - target: RxAnalyticsKit
+    - target: SharedPackagesKit
     scheme:
       testTargets:
       - PlatformKitTests

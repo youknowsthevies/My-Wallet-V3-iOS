@@ -9,16 +9,23 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
 
     public var supportedEventTypes: [AnalyticsEventType] = [.nabu]
 
-    private enum Constants {
-        static let batchSize = 20
-        static let updateLatency: TimeInterval = 30
+    private let platform: Platform
+    private let batchSize: Int
+    private let updateTimeInterval: TimeInterval
+    private var lastFailureTimeInterval: TimeInterval = 0
+    private var consequentFailureCount: Double = 0
+    private var backoffDelay: Double {
+        let delay = Int(pow(2, consequentFailureCount) * 10).subtractingReportingOverflow(1)
+        return Double(delay.overflow ? .max : delay.partialValue + 1)
     }
 
     private let fileCache: FileCacheAPI
-    private let platform: Platform
     private let eventsRepository: NabuAnalyticsEventsRepositoryAPI
     private let contextProvider: ContextProviderAPI
-    private let queue = DispatchQueue(label: "AnalyticsKit", qos: .background)
+    private let notificationCenter: NotificationCenter
+
+    private let queue: DispatchQueue
+
     private var cancellables = Set<AnyCancellable>()
 
     @Published private var events = [Event]()
@@ -41,32 +48,42 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
     }
 
     init(
-        fileCache: FileCacheAPI = FileCache(),
         platform: Platform,
+        batchSize: Int = 20,
+        updateTimeInterval: TimeInterval = 30,
+        fileCache: FileCacheAPI = FileCache(),
         eventsRepository: NabuAnalyticsEventsRepositoryAPI,
-        contextProvider: ContextProviderAPI
+        contextProvider: ContextProviderAPI,
+        notificationCenter: NotificationCenter = .default,
+        queue: DispatchQueue = .init(label: "AnalyticsKit", qos: .background)
     ) {
-
-        self.fileCache = fileCache
         self.platform = platform
+        self.batchSize = batchSize
+        self.updateTimeInterval = updateTimeInterval
+        self.fileCache = fileCache
         self.eventsRepository = eventsRepository
         self.contextProvider = contextProvider
+        self.notificationCenter = notificationCenter
+        self.queue = queue
 
         setupBatching()
     }
 
     private func setupBatching() {
-        queue.async { [weak self] in
+        queue.sync { [weak self] in
             guard let self = self else { return }
+
+            // Sending triggers
+
             let updateRateTimer = Timer
-                .publish(every: Constants.updateLatency, on: .current, in: .default)
+                .publish(every: self.updateTimeInterval, on: .current, in: .default)
                 .autoconnect()
                 .withLatestFrom(self.$events)
 
             let batchFull = self.$events
-                .filter { $0.count >= Constants.batchSize }
+                .filter { $0.count >= self.batchSize }
 
-            let enteredBackground = NotificationCenter.default
+            let enteredBackground = self.notificationCenter
                 .publisher(for: UIApplication.willResignActiveNotification)
                 .withLatestFrom(self.$events)
 
@@ -75,45 +92,69 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
                 .merge(with: enteredBackground)
                 .filter { !$0.isEmpty }
                 .removeDuplicates()
+                .subscribe(on: queue)
+                .receive(on: queue)
                 .sink(receiveValue: self.send)
                 .store(in: &self.cancellables)
 
-            NotificationCenter.default
-                .publisher(for: UIApplication.willEnterForegroundNotification)
+            // Reading cache
+
+            self.notificationCenter
+                .publisher(for: UIApplication.didEnterBackgroundNotification)
                 .receive(on: self.queue)
                 .compactMap { _ in self.fileCache.read() }
                 .filter { !$0.isEmpty }
                 .removeDuplicates()
+                .subscribe(on: queue)
+                .receive(on: queue)
                 .sink(receiveValue: self.send)
-                .store(in: &self.cancellables)
-
-            NotificationCenter.default
-                .publisher(for: UIApplication.willTerminateNotification)
-                .withLatestFrom(self.$events)
-                .sink(receiveValue: self.fileCache.save)
                 .store(in: &self.cancellables)
         }
     }
 
     public func trackEvent(title: String, parameters: [String: Any]?) {
-        queue.async { [weak self] in
+        queue.sync { [weak self] in
             self?.events.append(Event(title: title, properties: parameters))
         }
     }
 
     private func send(events: [Event]) {
         self.events = self.events.filter { !events.contains($0) }
+
+        // This is simple backoff logic:
+        // If time elapsed between now and last failure is greater than backoffDelay - try sending,
+        // Otherwise - save to file cache and don't send the request.
+        if Date().timeIntervalSince1970 - lastFailureTimeInterval <= backoffDelay {
+            fileCache.save(events: events)
+            return
+        }
+
         let eventsWrapper = EventsWrapper(contextProvider: contextProvider, events: events, platform: platform)
         eventsRepository.publish(events: eventsWrapper)
-            .sink { [fileCache] completion in
-                if case .failure(let error) = completion {
-                    if (500...599).contains(error.errorCode) || error.networkUnavailableReason != nil {
-                        fileCache.save(events: events)
+            .subscribe(on: queue)
+            .receive(on: queue)
+            .sink { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .failure(let error):
+                    if (Constants.allowedErrorCodes).contains(error.errorCode)
+                        || error.networkUnavailableReason != nil
+                    {
+                        self.fileCache.save(events: events)
                     }
+                    self.consequentFailureCount += 1
+                    self.lastFailureTimeInterval = Date().timeIntervalSince1970
+                case .finished:
+                    self.consequentFailureCount = 0
+                    self.lastFailureTimeInterval = 0
                 }
             } receiveValue: { _ in
-                /* NOOP */
+                // NOOP
             }
             .store(in: &cancellables)
+    }
+
+    private enum Constants {
+        static let allowedErrorCodes = 500...599
     }
 }

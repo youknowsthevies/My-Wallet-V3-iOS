@@ -18,6 +18,9 @@ sh ./scripts/carthage.sh bootstrap --use-ssh --cache-builds --platform iOS --use
 echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh
 
+echo "Install Mockingbird"
+sh /scripts/install-mockingbird.sh
+
 echo "Generating project"
 sh scripts/generate_projects.sh
 
