@@ -44,6 +44,7 @@ enum TransactionAction: MviAction {
     case fatalTransactionError(Error)
     case validateTransaction
     case resetFlow
+    case showSourceSelection
     case showTargetSelection
     case returnToPreviousStep
     case pendingTransactionStarted(allowFiatInput: Bool)
@@ -188,6 +189,10 @@ enum TransactionAction: MviAction {
             newState.nextEnabled = pendingTransaction.validationState == .canExecute
             newState.errorState = pendingTransaction.validationState.mapToTransactionErrorState
             return newState.withUpdatedBackstack(oldState: oldState)
+        case .showSourceSelection:
+            return oldState
+                .update(keyPath: \.step, value: .selectSource)
+                .update(keyPath: \.isGoingBack, value: true)
         case .showTargetSelection:
             // TODO: If the user is going through `Buy`, the user
             // is not going back. The target selection screen should be presented modally.

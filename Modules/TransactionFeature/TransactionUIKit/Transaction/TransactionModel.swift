@@ -145,6 +145,8 @@ final class TransactionModel {
             return processInvalidateTransaction()
         case .showTargetSelection:
             return nil
+        case .showSourceSelection:
+            return nil
         }
     }
 

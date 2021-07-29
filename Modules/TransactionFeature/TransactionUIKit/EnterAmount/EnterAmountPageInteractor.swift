@@ -7,6 +7,7 @@ import PlatformUIKit
 import RIBs
 import RxCocoa
 import RxSwift
+import ToolKit
 import TransactionKit
 
 protocol EnterAmountPageRouting: AnyObject {
@@ -147,7 +148,18 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
 
         let availableTargets = transactionState
             .map(\.availableTargets)
+            .map { $0.compactMap { $0 as? BlockchainAccount } }
             .share(scope: .whileConnected)
+
+        let availableSources = transactionState
+            .map(\.availableSources)
+            .share(scope: .whileConnected)
+
+        let accounts = transactionState
+            .map(\.action)
+            .flatMap { action -> Observable<[BlockchainAccount]> in
+                action == .withdraw ? availableTargets : availableSources
+            }
 
         let fee = transactionState
             .takeWhile { $0.action == .send }
@@ -176,15 +188,21 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
             .share(scope: .whileConnected)
 
         accountAuxiliaryViewInteractor
-            .connect(stream: bank, targets: availableTargets)
+            .connect(stream: bank, accounts: accounts)
             .disposeOnDeactivate(interactor: self)
 
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
             .withLatestFrom(transactionState)
-            .subscribe(onNext: { [weak self] state in
-                guard state.availableTargets.count > 1 else { return }
-                self?.transactionModel.process(action: .showTargetSelection)
+            .subscribe(onNext: { [transactionModel, action] state in
+                switch action {
+                case .withdraw:
+                    transactionModel.process(action: .showTargetSelection)
+                case .deposit:
+                    transactionModel.process(action: .showSourceSelection)
+                default:
+                    unimplemented("This view only supports withdraw and deposit at this time")
+                }
             })
             .disposeOnDeactivate(interactor: self)
 
