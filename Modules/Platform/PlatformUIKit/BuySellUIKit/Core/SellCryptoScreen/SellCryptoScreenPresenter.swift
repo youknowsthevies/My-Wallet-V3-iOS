@@ -82,12 +82,12 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
             .withLatestFrom(interactor.candidateOrderDetails)
             .compactMap { $0 }
             .show(loader: loader, style: .circle)
-            .flatMap(weak: interactor) { interactor, candidateOrderDetails -> Observable<Result<CTAData, Error>> in
+            .flatMap { [analyticsRecorder, interactor] candidateOrderDetails -> Observable<Result<CTAData, Error>> in
                 Observable.zip(
                     interactor.currentKycState.asObservable(),
                     interactor.currentEligibilityState
                 )
-                .map { [weak self] currentKycState, currentEligibilityState -> Result<CTAData, Error> in
+                .map { currentKycState, currentEligibilityState -> Result<CTAData, Error> in
                     switch (currentKycState, currentEligibilityState) {
                     case (.success(let kycState), .success(let isSimpleBuyEligible)):
                         let ctaData = CTAData(
@@ -95,7 +95,7 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
                             isSimpleBuyEligible: isSimpleBuyEligible,
                             candidateOrderDetails: candidateOrderDetails
                         )
-                        self?.analyticsRecorder.record(event:
+                        analyticsRecorder.record(event:
                             AnalyticsEvents.New.Sell.sellAmountEntered(
                                 fromAccountType: .init(interactor.data.source),
                                 inputAmount: candidateOrderDetails.cryptoValue.displayMajorValue.doubleValue,
@@ -117,21 +117,21 @@ final class SellCryptoScreenPresenter: EnterAmountScreenPresenter {
 
         ctaObservable
             .observeOn(MainScheduler.instance)
-            .bindAndCatch(weak: self) { (self, result) in
+            .bindAndCatch(weak: self) { [loader, routerInteractor] (self, result) in
                 switch result {
                 case .success(let data):
                     switch (data.kycState, data.isSimpleBuyEligible) {
                     case (.completed, false):
-                        self.loader.hide()
+                        loader.hide()
                     // TODO: inelligible
                     case (.completed, true):
-                        self.createOrder(from: data.candidateOrderDetails) { [weak self] checkoutData in
-                            self?.loader.hide()
-                            self?.routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
+                        self.createOrder(from: data.candidateOrderDetails) { checkoutData in
+                            loader.hide()
+                            routerInteractor.nextFromSellCrypto(checkoutData: checkoutData)
                         }
                     case (.shouldComplete, _):
-                        self.createOrder(from: data.candidateOrderDetails) { [weak self] _ in
-                            self?.loader.hide()
+                        self.createOrder(from: data.candidateOrderDetails) { _ in
+                            loader.hide()
                             // TODO: KYC with checkout data
                         }
                     }
