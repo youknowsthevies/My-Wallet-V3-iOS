@@ -70,13 +70,17 @@ final class LinkedBanksFactory: LinkedBanksFactoryAPI {
 
     func bankPaymentMethods(for currency: FiatCurrency) -> Single<[PaymentMethodType]> {
         paymentMethodService
-            .suggestedPaymentMethodTypes
-            .map { $0.filter { $0.method == .bankAccount(.fiat(currency)) || $0.method == .bankTransfer(.fiat(currency)) } }
+            .eligiblePaymentMethods(for: currency)
+            .map { paymentMethodTyps in
+                paymentMethodTyps.filter { paymentType in
+                    paymentType.method == .bankAccount(.fiat(currency)) || paymentType.method == .bankTransfer(.fiat(currency))
+                }
+            }
     }
 
     func bankTransferLimits(for currency: FiatCurrency) -> Single<PaymentLimits> {
         paymentMethodService
-            .suggestedPaymentMethodTypes
+            .eligiblePaymentMethods(for: currency)
             .map { $0.filter { $0.method == .bankTransfer(.fiat(currency)) } }
             .map { paymentMetodTypes in
                 guard let item = paymentMetodTypes.first else {

@@ -73,8 +73,8 @@ final class WithdrawRootInteractor: Interactor,
     // MARK: - Private Properties
 
     private var paymentMethodTypes: Single<[PaymentMethodPayloadType]> {
-        fiatCurrencyService
-            .fiatCurrency
+        Single
+            .just(sourceAccount.fiatCurrency)
             .flatMap(weak: self) { (self, fiatCurrency) -> Single<[PaymentMethodType]> in
                 self.linkedBanksFactory.bankPaymentMethods(for: fiatCurrency)
             }
@@ -106,13 +106,15 @@ final class WithdrawRootInteractor: Interactor,
         Single.zip(
             linkedBanksFactory.linkedBanks,
             paymentMethodTypes,
-            fiatCurrencyService.fiatCurrency
+            .just(sourceAccount.fiatCurrency)
         )
         .observeOn(MainScheduler.asyncInstance)
         .subscribe(onSuccess: { [weak self] values in
             guard let self = self else { return }
             let (linkedBanks, paymentMethodTypes, fiatCurrency) = values
-            if linkedBanks.isEmpty {
+            let filteredLinkedBanks = linkedBanks.filter { $0.fiatCurrency == fiatCurrency }
+
+            if filteredLinkedBanks.isEmpty {
                 self.handleNoLinkedBanks(
                     paymentMethodTypes,
                     fiatCurrency: fiatCurrency

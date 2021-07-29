@@ -90,6 +90,11 @@ public protocol PaymentMethodTypesServiceAPI {
     /// Streams the preferred method type
     var preferredPaymentMethodType: Observable<PaymentMethodType?> { get }
 
+    /// Fetches eligible payment methods for a given currence
+    ///
+    /// - Parameter currency: A `FiatCurrency`
+    func eligiblePaymentMethods(for currency: FiatCurrency) -> Single<[PaymentMethodType]>
+
     /// Fetches any linked cards and marks the given cardId as the preferred payment method
     ///
     /// - Parameter cardId: A `String` for the bank account to be preferred
@@ -126,7 +131,11 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
     var suggestedPaymentMethodTypes: Single<[PaymentMethodType]> {
         paymentMethodsService
             .paymentMethodsSingle
-            .map { $0.map { .suggested($0) } }
+            .map { paymentMethods in
+                paymentMethods.map { paymentMethod in
+                    .suggested(paymentMethod)
+                }
+            }
     }
 
     var methodTypes: Observable<[PaymentMethodType]> {
@@ -242,10 +251,22 @@ final class PaymentMethodTypesService: PaymentMethodTypesServiceAPI {
         }
     }
 
+    func eligiblePaymentMethods(
+        for currency: FiatCurrency
+    ) -> Single<[PaymentMethodType]> {
+        paymentMethodsService
+            .supportedPaymentMethods(for: currency)
+            .map { paymentMethods in
+                paymentMethods.map { paymentMethod in
+                    .suggested(paymentMethod)
+                }
+            }
+    }
+
     func fetchSupportedCurrenciesForBankTransactions(
         fiatCurrency: FiatCurrency
     ) -> Single<[FiatCurrency]> {
-        suggestedPaymentMethodTypes
+        eligiblePaymentMethods(for: fiatCurrency)
             .map { paymentMethods -> [PaymentMethodType] in
                 paymentMethods.filter {
                     guard case .fiat(let currency) = $0.currency else { return false }
