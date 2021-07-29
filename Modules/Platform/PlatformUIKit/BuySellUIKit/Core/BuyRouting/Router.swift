@@ -388,16 +388,6 @@ public final class Router: RouterAPI {
         return newKYCRouter
             .presentEmailVerificationIfNeeded(from: viewController)
             .mapError(RouterError.kyc)
-            .flatMap { value -> AnyPublisher<KYCRoutingResult, RouterError> in
-                Deferred {
-                    Future { completion in
-                        viewController.dismiss(animated: true) {
-                            completion(.success(value))
-                        }
-                    }
-                }
-                .eraseToAnyPublisher()
-            }
             .eraseToAnyPublisher()
     }
 
