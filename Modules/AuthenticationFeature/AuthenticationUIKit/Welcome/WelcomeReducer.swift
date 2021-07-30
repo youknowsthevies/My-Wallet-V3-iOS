@@ -13,8 +13,6 @@ public enum WelcomeAction: Equatable {
     case emailLogin(EmailLoginAction)
     case deeplinkReceived(URL)
     case requestedToDecryptWallet(String)
-    /// should only be used on internal builds
-    case manualPairing(ManualPairing.Action)
 }
 
 // MARK: - Properties
@@ -26,24 +24,16 @@ public struct WelcomeState: Equatable {
         case createWalletScreen
         case emailLoginScreen
         case recoverWalletScreen
-        /// this should only be used for internal builds
-        case guidLoginScreen
     }
 
     public var screenFlow: ScreenFlow
     public var buildVersion: String
     var emailLoginState: EmailLoginState?
 
-    /// should only be used on internal builds
-    var manualPairingState: ManualPairing.State?
-    var manualPairingEnabled: Bool
-
     public init() {
         emailLoginState = .init()
-        manualPairingState = nil
         buildVersion = ""
         screenFlow = .welcomeScreen
-        manualPairingEnabled = false
     }
 }
 
@@ -79,13 +69,6 @@ public let welcomeReducer = Reducer.combine(
                 )
             }
         ),
-    manualPairingReducer
-        .optional()
-        .pullback(
-            state: \.manualPairingState,
-            action: /WelcomeAction.manualPairing,
-            environment: { _ in ManualPairing.Environment() }
-        ),
     Reducer<
         WelcomeState,
         WelcomeAction,
@@ -94,17 +77,9 @@ public let welcomeReducer = Reducer.combine(
         switch action {
         case .start:
             state.buildVersion = environment.buildVersionProvider()
-            #if INTERNAL_BUILD
-            state.manualPairingEnabled = !environment.featureFlags.isEnabled(.disableGUIDLogin)
-            #endif
             return .none
         case .presentScreenFlow(let screenFlow):
             state.screenFlow = screenFlow
-            #if INTERNAL_BUILD
-            if screenFlow == .guidLoginScreen {
-                state.manualPairingState = .init()
-            }
-            #endif
             return .none
         case .deeplinkReceived(let url):
             // we currently only support deeplink if we're on the verify device screen
@@ -126,12 +101,6 @@ public let welcomeReducer = Reducer.combine(
             return Effect(value: .requestedToDecryptWallet(password))
         case .emailLogin:
             // handled in email login reducer
-            return .none
-        case .manualPairing(.closeButtonTapped):
-            state.screenFlow = .welcomeScreen
-            state.manualPairingState = nil
-            return .none
-        case .manualPairing:
             return .none
         }
     }

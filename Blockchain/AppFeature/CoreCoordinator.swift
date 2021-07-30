@@ -397,10 +397,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return Effect(
             value: .fetchWallet(password)
         )
-    case .onboarding(.welcomeScreen(.manualPairing(.authenticate(let password)))):
-        return Effect(
-            value: .fetchWallet(password)
-        )
     case .onboarding(.pin(.logout)),
          .loggedIn(.logout):
         // reset
