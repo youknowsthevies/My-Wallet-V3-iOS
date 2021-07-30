@@ -24,5 +24,8 @@ sh ./scripts/install-mockingbird.sh
 echo "Generating project"
 sh ./scripts/generate_projects.sh
 
+echo "Install Mocks"
+sh ./scripts/install-mocks.sh
+
 echo "Openning project"
 open Blockchain.xcworkspace
