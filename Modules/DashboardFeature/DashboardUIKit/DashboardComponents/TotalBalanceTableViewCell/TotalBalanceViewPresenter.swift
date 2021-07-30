@@ -46,6 +46,7 @@ final class TotalBalanceViewPresenter {
     }
 
     func refresh() {
+        balancePresenter.refresh()
         pieChartPresenter.refresh()
     }
 }
@@ -66,5 +67,9 @@ extension PortfolioBalanceChangeProvider: AssetPriceViewInteracting {
                     ))
                 }
             }
+    }
+
+    public func refresh() {
+        refreshBalance()
     }
 }

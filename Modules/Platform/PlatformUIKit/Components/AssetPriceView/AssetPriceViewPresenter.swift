@@ -55,4 +55,10 @@ public final class AssetPriceViewPresenter {
         self.descriptors = descriptors
         alignmentRelay = BehaviorRelay<UIStackView.Alignment>(value: alignment)
     }
+
+    // MARK: - Public Functions
+
+    public func refresh() {
+        interactor.refresh()
+    }
 }

@@ -20,16 +20,24 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     // MARK: - Exposed Properties
 
     public var changeObservable: Observable<ValueCalculationState<PortfolioBalanceChange>> {
-        _ = setup
-        return changeRelay.asObservable()
+        changeRelay
+            .asObservable()
     }
 
     // MARK: - Private Properties
 
     private lazy var setup: Void = {
-        Observable.combineLatest(fiatCurrencyService.fiatCurrencyObservable, coincore.allAccounts.asObservable())
+        Observable
+            .combineLatest(
+                fiatCurrencyService.fiatCurrencyObservable,
+                refreshRelay
+            )
+            .map(\.0)
+            .flatMap { [coincore] fiatCurrency in
+                Observable.zip(coincore.allAccounts.asObservable(), Observable.just(fiatCurrency))
+            }
             .flatMapLatest(weak: self) { (self, data) in
-                self.fetch(accountGroup: data.1, fiatCurrency: data.0)
+                self.fetch(accountGroup: data.0, fiatCurrency: data.1)
                     .map { .value($0) }
                     .catchErrorJustReturn(.calculating)
                     .asObservable()
@@ -73,6 +81,7 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     private let coincore: CoincoreAPI
     private let fiatCurrencyService: FiatCurrencyServiceAPI
     private let changeRelay = BehaviorRelay<ValueCalculationState<PortfolioBalanceChange>>(value: .calculating)
+    private let refreshRelay = PublishRelay<Void>()
     private let disposeBag = DisposeBag()
 
     // MARK: - Setup
@@ -83,5 +92,12 @@ public final class PortfolioBalanceChangeProvider: PortfolioBalanceChangeProvidi
     ) {
         self.coincore = coincore
         self.fiatCurrencyService = fiatCurrencyService
+        _ = setup
+    }
+
+    // MARK: - Public Functions
+
+    public func refreshBalance() {
+        refreshRelay.accept(())
     }
 }
