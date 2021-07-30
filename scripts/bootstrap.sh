@@ -19,10 +19,10 @@ echo "Running Recaptcha"
 sh ./scripts/recaptcha.sh
 
 echo "Install Mockingbird"
-sh /scripts/install-mockingbird.sh
+sh ./scripts/install-mockingbird.sh
 
 echo "Generating project"
-sh scripts/generate_projects.sh
+sh ./scripts/generate_projects.sh
 
 echo "Openning project"
 open Blockchain.xcworkspace
