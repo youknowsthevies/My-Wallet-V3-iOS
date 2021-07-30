@@ -656,7 +656,22 @@ public final class Router: RouterAPI {
                     )
                 }
         } else {
-            kycRouter.start(tier: .tier2, parentFlow: .simpleBuy, from: kycRootViewController)
+            tiersService
+                .tiers
+                .subscribe { [kycRouter] tiersResponse in
+                    kycRouter.start(
+                        tier: tiersResponse.latestApprovedTier,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                } onError: { [kycRouter] error in
+                    Logger.shared.error(String(describing: error))
+                    kycRouter.start(
+                        tier: .tier0,
+                        parentFlow: .simpleBuy,
+                        from: kycRootViewController
+                    )
+                }
         }
     }
 

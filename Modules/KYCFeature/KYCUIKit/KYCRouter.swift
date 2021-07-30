@@ -164,8 +164,13 @@ final class KYCRouter: KYCRouterAPI {
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier1Start)
         case .tier2:
             analyticsRecorder.record(event: AnalyticsEvents.KYC.kycTier2Start)
+            analyticsRecorder.record(
+                event: AnalyticsEvents.New.Onboarding.upgradeVerificationClicked(
+                    origin: .init(parentFlow),
+                    tier: tier.rawValue
+                )
+            )
         }
-        analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.upgradeVerificationClicked(origin: .init(parentFlow), tier: tier.rawValue))
 
         loadingViewPresenter.show(with: LocalizationConstants.loading)
         let userObservable = dataRepository.fetchNabuUser().asObservable()
@@ -201,7 +206,7 @@ final class KYCRouter: KYCRouterAPI {
 
                 // SDD Eligible users can buy but we only need to check for SDD during the buy flow.
                 // This is to avoid breaking Tier 2 upgrade paths (e.g., from Settings)
-                let shouldUseSDDFlags = parentFlow == .simpleBuy
+                let shouldUseSDDFlags = tier < .tier2 && parentFlow == .simpleBuy
                 let shouldCheckForSDDEligibility = shouldUseSDDFlags ? isSDDEligible : false
                 let shouldCheckForSDDVerification = shouldUseSDDFlags ? isSDDVerified : false
 
