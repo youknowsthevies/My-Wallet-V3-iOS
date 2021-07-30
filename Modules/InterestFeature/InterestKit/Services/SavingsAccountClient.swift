@@ -1,11 +1,18 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import NetworkKit
 import PlatformKit
 import RxSwift
+import ToolKit
 
-public protocol SavingsAccountClientAPI: AnyObject {
+protocol InterestAccountEligibilityClientAPI: AnyObject {
+    func fetchInterestAccountEligibilityResponse()
+        -> AnyPublisher<InterestEligibilityResponse, NetworkError>
+}
+
+protocol SavingsAccountClientAPI: InterestAccountEligibilityClientAPI {
     func balance(with fiatCurrency: FiatCurrency) -> Single<SavingsAccountBalanceResponse?>
     func limits(fiatCurrency: FiatCurrency) -> Single<SavingsAccountLimitsResponse>
     func rate(for currency: String) -> Single<SavingsAccountInterestRateResponse>
@@ -14,6 +21,7 @@ public protocol SavingsAccountClientAPI: AnyObject {
 final class SavingsAccountClient: SavingsAccountClientAPI {
 
     private enum Path {
+        static let interestEligibility = ["eligible", "product", "savings"]
         static let balance = ["accounts", "savings"]
         static let rate = ["savings", "rates"]
         static let limits = ["savings", "limits"]
@@ -40,6 +48,17 @@ final class SavingsAccountClient: SavingsAccountClientAPI {
     }
 
     // MARK: - SavingsAccountClientAPI
+
+    func fetchInterestAccountEligibilityResponse()
+        -> AnyPublisher<InterestEligibilityResponse, NetworkError>
+    {
+        let request = requestBuilder.get(
+            path: Path.interestEligibility,
+            authenticated: true
+        )!
+        return networkAdapter
+            .perform(request: request)
+    }
 
     func limits(fiatCurrency: FiatCurrency) -> Single<SavingsAccountLimitsResponse> {
         let parameters = [

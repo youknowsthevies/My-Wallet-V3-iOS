@@ -137,7 +137,7 @@ public final class NabuAnalyticsProvider: AnalyticsServiceProviderAPI {
                 guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
-                    if (Constants.allowedErrorCodes).contains(error.errorCode)
+                    if Constants.allowedErrorCodes.contains(error.errorCode)
                         || error.networkUnavailableReason != nil
                     {
                         self.fileCache.save(events: events)

@@ -4,6 +4,7 @@ import DIKit
 import ToolKit
 
 public protocol EnabledCurrenciesServiceAPI {
+    var allEnabledCurrencies: [CurrencyType] { get }
     var allEnabledCryptoCurrencies: [CryptoCurrency] { get }
     var allEnabledFiatCurrencies: [FiatCurrency] { get }
     /// This returns the supported currencies that a user can link a bank through a partner, eg Yodlee
@@ -81,6 +82,14 @@ final class EnabledCurrenciesService: EnabledCurrenciesServiceAPI {
 
     lazy var allEnabledCryptoCurrencies: [CryptoCurrency] = {
         (nonErc20Currencies + enabledOptionalCustodial + erc20Currencies).sorted()
+    }()
+
+    lazy var allEnabledCurrencies: [CurrencyType] = {
+        let crypto: [CurrencyType] = allEnabledCryptoCurrencies
+            .map { .crypto($0) }
+        let fiat: [CurrencyType] = allEnabledFiatCurrencies
+            .map { .fiat($0) }
+        return crypto + fiat
     }()
 
     let allEnabledFiatCurrencies: [FiatCurrency] = [.USD, .EUR, .GBP]
