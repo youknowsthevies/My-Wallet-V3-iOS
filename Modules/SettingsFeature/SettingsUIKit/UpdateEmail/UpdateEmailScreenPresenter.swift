@@ -1,5 +1,6 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import AnalyticsKit
 import DIKit
 import Localization
 import PlatformKit
@@ -55,7 +56,8 @@ final class UpdateEmailScreenPresenter {
 
     init(
         emailScreenInteractor: UpdateEmailScreenInteractor,
-        loadingViewPresenting: LoadingViewPresenting = resolve()
+        loadingViewPresenting: LoadingViewPresenting = resolve(),
+        analyticsRecoder: AnalyticsEventRecorderAPI = resolve()
     ) {
         interactor = emailScreenInteractor
         textField = .init(
@@ -72,14 +74,28 @@ final class UpdateEmailScreenPresenter {
             accessibility: .id(AccessibilityIDs.descriptionLabel)
         )
 
-        updateButtonViewModel = .primary(with: LocalizationIDs.update, accessibilityId: AccessibilityIDs.updateEmailButton)
-        resendButtonViewModel = .secondary(with: LocalizationIDs.resend, accessibilityId: AccessibilityIDs.resendEmailButton)
+        updateButtonViewModel = .primary(
+            with: LocalizationIDs.update,
+            accessibilityId: AccessibilityIDs.updateEmailButton
+        )
+        resendButtonViewModel = .secondary(
+            with: LocalizationIDs.resend,
+            accessibilityId: AccessibilityIDs.resendEmailButton
+        )
 
         resendButtonViewModel.tapRelay
+            .record(
+                analyticsEvent: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification),
+                using: analyticsRecoder
+            )
             .bindAndCatch(to: interactor.resendRelay)
             .disposed(by: disposeBag)
 
         updateButtonViewModel.tapRelay
+            .record(
+                analyticsEvent: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification),
+                using: analyticsRecoder
+            )
             .bindAndCatch(to: interactor.triggerRelay)
             .disposed(by: disposeBag)
 

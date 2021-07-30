@@ -202,7 +202,9 @@ let emailVerificationReducer = Reducer.combine(
                     break
                 }
             case .sendVerificationEmail:
-                environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
+                environment.analyticsRecorder.record(event:
+                    AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification)
+                )
             default:
                 break
             }
@@ -221,8 +223,10 @@ let emailVerificationReducer = Reducer.combine(
                 default:
                     break
                 }
-            case .didChangeEmailAddress:
-                environment.analyticsRecorder.record(event: AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification))
+            case .save:
+                environment.analyticsRecorder.record(event:
+                    AnalyticsEvents.New.Onboarding.emailVerificationRequested(origin: .verification)
+                )
             default:
                 break
             }

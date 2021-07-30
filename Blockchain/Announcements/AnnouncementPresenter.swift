@@ -380,6 +380,7 @@ extension AnnouncementPresenter {
             }
         )
     }
+
     /// Computes Send to Domains announcement for users with any wallet balance
     private func sendToDomains(hasWalletBalance: Bool) -> Announcement {
         SendToDomainsAnnouncement(

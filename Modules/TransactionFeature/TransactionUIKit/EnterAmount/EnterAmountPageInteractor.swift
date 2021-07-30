@@ -194,7 +194,7 @@ final class EnterAmountPageInteractor: PresentableInteractor<EnterAmountPagePres
         accountAuxiliaryViewInteractor
             .auxiliaryViewTapped
             .withLatestFrom(transactionState)
-            .subscribe(onNext: { [transactionModel, action] state in
+            .subscribe(onNext: { [transactionModel, action] _ in
                 switch action {
                 case .withdraw:
                     transactionModel.process(action: .showTargetSelection)
