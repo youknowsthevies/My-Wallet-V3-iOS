@@ -1603,6 +1603,8 @@ targets:
       Debug Dev: Config/AuthenticationKitConfig/AuthenticationKit-Dev.xcconfig
       Debug Production: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
       Debug Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
+      Debug Alpha: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
+      Release Alpha: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
       Release: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
       Release Internal: Config/AuthenticationKitConfig/AuthenticationKit-Production.xcconfig
       Release Staging: Config/AuthenticationKitConfig/AuthenticationKit-Staging.xcconfig
