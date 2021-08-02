@@ -13,6 +13,28 @@ struct CredentialsView: View {
     private let store: Store<CredentialsState, CredentialsAction>
     @ObservedObject private var viewStore: ViewStore<CredentialsState, CredentialsAction>
 
+    private var twoFAErrorMessage: String {
+        guard !viewStore.isAccountLocked else {
+            return EmailLoginString.TextFieldError.accountLocked
+        }
+        guard let twoFAState = viewStore.twoFAState,
+              twoFAState.isTwoFACodeIncorrect
+        else {
+            return ""
+        }
+        switch twoFAState.twoFACodeIncorrectContext {
+        case .incorrect:
+            return String(
+                format: EmailLoginString.TextFieldError.incorrectTwoFACode,
+                viewStore.twoFAState?.twoFACodeAttemptsLeft ?? 0
+            )
+        case .missingCode:
+            return EmailLoginString.TextFieldError.missingTwoFACode
+        case .none:
+            return ""
+        }
+    }
+
     @State private var isWalletIdentifierFirstResponder: Bool = false
     @State private var isPasswordFieldFirstResponder: Bool = false
     @State private var isTwoFAFieldFirstResponder: Bool = false
@@ -105,12 +127,7 @@ struct CredentialsView: View {
                         $0.textContentType = .oneTimeCode
                         $0.returnKeyType = .done
                     },
-                    errorMessage: viewStore.isAccountLocked ?
-                        EmailLoginString.TextFieldError.accountLocked :
-                        String(
-                            format: EmailLoginString.TextFieldError.incorrectTwoFACode,
-                            viewStore.twoFAState?.twoFACodeAttemptsLeft ?? 0
-                        ),
+                    errorMessage: twoFAErrorMessage,
                     onPaddingTapped: {
                         self.isWalletIdentifierFirstResponder = false
                         self.isPasswordFieldFirstResponder = false
@@ -230,7 +247,7 @@ struct CredentialsView: View {
         .onDisappear {
             viewStore.send(.didDisappear)
         }
-        .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .credentialsFailureAlert(.dismiss))
+        .alert(self.store.scope(state: \.credentialsFailureAlert), dismiss: .alert(.dismiss))
     }
 
     // MARK: - Private

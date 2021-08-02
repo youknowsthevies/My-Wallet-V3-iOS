@@ -8,6 +8,8 @@ import ToolKit
 
 // MARK: - Type
 
+private typealias EmailLoginLocalization = LocalizationConstants.EmailLogin
+
 public enum EmailLoginAction: Equatable {
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
@@ -18,7 +20,7 @@ public enum EmailLoginAction: Equatable {
     case didDisappear
     case didChangeEmailAddress(String)
     case didSendDeviceVerificationEmail(Result<EmptyValue, DeviceVerificationServiceError>)
-    case emailLoginFailureAlert(AlertAction)
+    case alert(AlertAction)
     case sendDeviceVerificationEmail
     case setVerifyDeviceScreenVisible(Bool)
     case verifyDevice(VerifyDeviceAction)
@@ -96,11 +98,18 @@ let emailLoginReducer = Reducer.combine(
             state.verifyDeviceState?.sendEmailButtonIsLoading = false
             if case .failure(let error) = response {
                 switch error {
-                case .recaptchaError:
-                    return Effect(value: .emailLoginFailureAlert(.show(title: "Recaptcha Error", message: error.localizedDescription)))
-                case .missingSessionToken:
-                    return Effect(value: .emailLoginFailureAlert(.show(title: "Missing Session Token", message: error.localizedDescription)))
-                case .networkError:
+                case .recaptchaError,
+                     .missingSessionToken:
+                    return Effect(
+                        value: .alert(
+                            .show(
+                                title: EmailLoginLocalization.Alerts.SignInError.title,
+                                message: EmailLoginLocalization.Alerts.SignInError.message
+                            )
+                        )
+                    )
+                case .networkError,
+                     .expiredEmailCode:
                     // still go to verify device screen if there is network error
                     break
                 }
@@ -108,18 +117,18 @@ let emailLoginReducer = Reducer.combine(
             state.verifyDeviceState = .init(emailAddress: state.emailAddress)
             return Effect(value: .setVerifyDeviceScreenVisible(true))
 
-        case .emailLoginFailureAlert(.show(let title, let message)):
+        case .alert(.show(let title, let message)):
             state.emailLoginFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
                 dismissButton: .default(
-                    TextState(LocalizationConstants.okString),
-                    send: .emailLoginFailureAlert(.dismiss)
+                    TextState(LocalizationConstants.continueString),
+                    send: .alert(.dismiss)
                 )
             )
             return .none
 
-        case .emailLoginFailureAlert(.dismiss):
+        case .alert(.dismiss):
             state.emailLoginFailureAlert = nil
             return .none
 

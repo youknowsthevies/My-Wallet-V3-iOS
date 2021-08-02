@@ -100,7 +100,7 @@ struct EmailLoginView: View {
             .whiteNavigationBarStyle()
             .hideBackButtonTitle()
         }
-        .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .emailLoginFailureAlert(.dismiss))
+        .alert(self.store.scope(state: \.emailLoginFailureAlert), dismiss: .alert(.dismiss))
         .onDisappear {
             self.viewStore.send(.didDisappear)
         }

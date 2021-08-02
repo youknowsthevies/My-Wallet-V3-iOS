@@ -4,6 +4,7 @@ import Combine
 import NetworkKit
 
 public enum DeviceVerificationServiceError: Error, Equatable {
+    case expiredEmailCode
     case missingSessionToken
     case recaptchaError(GoogleRecaptchaError)
     case networkError(NetworkError)

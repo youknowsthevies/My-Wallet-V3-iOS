@@ -3,6 +3,7 @@
 @testable import AuthenticationKit
 @testable import AuthenticationUIKit
 import ComposableArchitecture
+import Localization
 import ToolKit
 import XCTest
 
@@ -205,7 +206,23 @@ final class CredentialsReducerTests: XCTestCase {
                 state.twoFAState?.isTwoFACodeFieldVisible = true
                 state.isLoading = false
             },
-            .receive(.none),
+            .receive(
+                .alert(
+                    .show(
+                        title: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title,
+                        message: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message
+                    )
+                )
+            ) { state in
+                state.credentialsFailureAlert = AlertState(
+                    title: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.title),
+                    message: TextState(verbatim: LocalizationConstants.CredentialsForm.Alerts.SMSCode.Success.message),
+                    dismissButton: .default(
+                        TextState(LocalizationConstants.okString),
+                        send: .alert(.dismiss)
+                    )
+                )
+            },
             .do { self.mockMainQueue.advance() }
         )
     }
@@ -321,7 +338,8 @@ final class CredentialsReducerTests: XCTestCase {
             .receive(.hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))) { state in
                 state.hardwareKeyState?.isHardwareKeyCodeIncorrect = false
             },
-            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(false))) { state in
+            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(.none))) { state in
+                state.twoFAState?.twoFACodeIncorrectContext = .none
                 state.twoFAState?.isTwoFACodeIncorrect = false
             },
             .receive(.setTwoFAOrHardwareKeyVerified(true)) { state in
@@ -353,14 +371,16 @@ final class CredentialsReducerTests: XCTestCase {
             .receive(.hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))) { state in
                 state.hardwareKeyState?.isHardwareKeyCodeIncorrect = false
             },
-            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(false))) { state in
+            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(.none))) { state in
+                state.twoFAState?.twoFACodeIncorrectContext = .none
                 state.twoFAState?.isTwoFACodeIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
             .receive(.twoFA(.didChangeTwoFACodeAttemptsLeft(mockAttemptsLeft))) { state in
                 state.twoFAState?.twoFACodeAttemptsLeft = mockAttemptsLeft
             },
-            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(true))) { state in
+            .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(.incorrect))) { state in
+                state.twoFAState?.twoFACodeIncorrectContext = .incorrect
                 state.twoFAState?.isTwoFACodeIncorrect = true
                 state.isLoading = false
             }

@@ -11,6 +11,8 @@ import UIComponentsKit
 
 // MARK: - Type
 
+private typealias CredentialsLocalization = LocalizationConstants.CredentialsForm
+
 public enum CredentialsAction: Equatable {
     public enum AlertAction: Equatable {
         case show(title: String, message: String)
@@ -36,7 +38,7 @@ public enum CredentialsAction: Equatable {
     case walletPairing(WalletPairingAction)
     case setTwoFAOrHardwareKeyVerified(Bool)
     case accountLockedErrorVisibility(Bool)
-    case credentialsFailureAlert(AlertAction)
+    case alert(AlertAction)
     case none
 }
 
@@ -209,6 +211,16 @@ let credentialsReducer = Reducer.combine(
                         if case .failure(let error) = result {
                             // If failed, an `Authorize Log In` will be sent to user for manual authorization
                             environment.errorRecorder.error(error)
+                            // we only want to handle `.expiredEmailCode` case, silent other errors...
+                            guard error == .expiredEmailCode else {
+                                return .none
+                            }
+                            return .alert(
+                                .show(
+                                    title: CredentialsLocalization.Alerts.EmailAuthorizationAlert.title,
+                                    message: CredentialsLocalization.Alerts.EmailAuthorizationAlert.message
+                                )
+                            )
                         }
                         return .none
                     }
@@ -262,9 +274,13 @@ let credentialsReducer = Reducer.combine(
                             case .walletPayloadServiceError(.accountLocked):
                                 return .accountLockedErrorVisibility(true)
                             case .walletPayloadServiceError(let error):
-                                // TODO: Await design for error state
                                 environment.errorRecorder.error(error)
-                                return .credentialsFailureAlert(.show(title: "Wallet Payload Error", message: error.localizedDescription))
+                                return .alert(
+                                    .show(
+                                        title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                        message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                                    )
+                                )
                             case .twoFAWalletServiceError:
                                 fatalError("Shouldn't receive TwoFAService errors here")
                             }
@@ -285,7 +301,7 @@ let credentialsReducer = Reducer.combine(
             return .merge(
                 // clear error states
                 Effect(value: .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))),
-                Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(false))),
+                Effect(value: .twoFA(.incorrectTwoFACodeErrorVisibility(.none))),
                 environment
                     .loginService
                     .loginPublisher(
@@ -307,9 +323,14 @@ let credentialsReducer = Reducer.combine(
                                 case .accountLocked:
                                     return .accountLockedErrorVisibility(true)
                                 case .missingCode:
-                                    return .credentialsFailureAlert(.show(title: "Missing 2FA Code", message: error.localizedDescription))
+                                    return .twoFA(.incorrectTwoFACodeErrorVisibility(.missingCode))
                                 default:
-                                    return .credentialsFailureAlert(.show(title: "Two FA Error", message: error.localizedDescription))
+                                    return .alert(
+                                        .show(
+                                            title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                            message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                                        )
+                                    )
                                 }
                             case .walletPayloadServiceError:
                                 fatalError("Shouldn't receive WalletPayloadService errors here")
@@ -354,11 +375,20 @@ let credentialsReducer = Reducer.combine(
                     .catchToEffect()
                     .map { result -> CredentialsAction in
                         if case .failure(let error) = result {
-                            // TODO: Await design for error state
                             environment.errorRecorder.error(error)
-                            return .credentialsFailureAlert(.show(title: "Send SMS Failed", message: error.localizedDescription))
+                            return .alert(
+                                .show(
+                                    title: CredentialsLocalization.Alerts.SMSCode.Failure.title,
+                                    message: CredentialsLocalization.Alerts.SMSCode.Failure.message
+                                )
+                            )
                         }
-                        return .none
+                        return .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.SMSCode.Success.title,
+                                message: CredentialsLocalization.Alerts.SMSCode.Success.message
+                            )
+                        )
                     }
             )
 
@@ -370,9 +400,13 @@ let credentialsReducer = Reducer.combine(
                 .catchToEffect()
                 .map { result -> CredentialsAction in
                     if case .failure(let error) = result {
-                        // TODO: Await design for error state
                         environment.errorRecorder.error(error)
-                        return .credentialsFailureAlert(.show(title: "Session Token Error", message: error.localizedDescription))
+                        return .alert(
+                            .show(
+                                title: CredentialsLocalization.Alerts.GenericNetworkError.title,
+                                message: CredentialsLocalization.Alerts.GenericNetworkError.message
+                            )
+                        )
                     }
                     return .none
                 }
@@ -393,33 +427,41 @@ let credentialsReducer = Reducer.combine(
             state.isLoading = isVisible ? false : state.isLoading
             return .none
 
-        case .credentialsFailureAlert(.show(let title, let message)):
+        case .alert(.show(let title, let message)):
             state.isLoading = false
             state.credentialsFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
                 dismissButton: .default(
                     TextState(LocalizationConstants.okString),
-                    send: .credentialsFailureAlert(.dismiss)
+                    send: .alert(.dismiss)
                 )
             )
             return .none
 
-        case .credentialsFailureAlert(.dismiss):
+        case .alert(.dismiss):
             state.credentialsFailureAlert = nil
             return .none
 
-        case .twoFA(.twoFACodeFieldVisibility(let visible)),
-             .twoFA(.incorrectTwoFACodeErrorVisibility(let visible)):
+        case .twoFA(.twoFACodeFieldVisibility(let visible)):
             state.isLoading = visible ? false : state.isLoading
+            return .none
+        case .twoFA(.incorrectTwoFACodeErrorVisibility(let context)):
+            state.isLoading = context.hasError ? false : state.isLoading
             return .none
         case .hardwareKey(.hardwareKeyCodeFieldVisibility(let visible)),
              .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(let visible)):
             state.isLoading = visible ? false : state.isLoading
             return .none
 
-        case .password(.incorrectPasswordErrorVisibility(let visible)):
-            state.isLoading = visible ? false : state.isLoading
+        case .password(.incorrectPasswordErrorVisibility(true)):
+            state.isLoading = false
+            // reset state
+            state.twoFAState = .init()
+            state.hardwareKeyState = .init()
+            return .none
+        case .password(.incorrectPasswordErrorVisibility(false)):
+            state.isLoading = true
             return .none
 
         case .twoFA:

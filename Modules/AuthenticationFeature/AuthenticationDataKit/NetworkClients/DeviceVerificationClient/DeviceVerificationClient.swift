@@ -86,7 +86,7 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
     func authorizeApprove(
         sessionToken: String,
         emailCode: String
-    ) -> AnyPublisher<Void, NetworkError> {
+    ) -> AnyPublisher<AuthorizeApproveResponse, NetworkError> {
         let headers = [HeaderKey.cookie.rawValue: "SID=\(sessionToken)"]
         let parameters = [
             URLQueryItem(
