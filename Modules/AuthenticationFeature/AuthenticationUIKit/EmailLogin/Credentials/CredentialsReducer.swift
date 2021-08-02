@@ -54,7 +54,7 @@ public enum CredentialsContext: Equatable {
 }
 
 struct CredentialsState: Equatable {
-    var passwordState: PasswordState?
+    var passwordState: PasswordState
     var twoFAState: TwoFAState?
     var hardwareKeyState: HardwareKeyState?
     var emailAddress: String
@@ -129,7 +129,6 @@ struct CredentialsEnvironment {
 
 let credentialsReducer = Reducer.combine(
     passwordReducer
-        .optional()
         .pullback(
             state: \CredentialsState.passwordState,
             action: /CredentialsAction.password,
@@ -174,14 +173,9 @@ let credentialsReducer = Reducer.combine(
             state.emailCode = ""
             state.isTwoFACodeOrHardwareKeyVerified = false
             state.isAccountLocked = false
-            state.passwordState = nil
             state.twoFAState = nil
             state.hardwareKeyState = nil
             return .cancel(id: WalletPairingCancelations.WalletIdentifierPollingTimerId())
-
-        case .password, .twoFA, .hardwareKey:
-            // handled in respective reducers
-            return .none
 
         case .didChangeWalletIdentifier(let guid):
             state.walletGuid = guid
@@ -224,13 +218,13 @@ let credentialsReducer = Reducer.combine(
             guard !state.walletGuid.isEmpty else {
                 fatalError("GUID should not be empty")
             }
-            guard let passwordState = state.passwordState,
-                  let twoFAState = state.twoFAState,
+            guard let twoFAState = state.twoFAState,
                   let hardwareKeyState = state.hardwareKeyState
             else {
                 fatalError("States should not be nil")
             }
             state.isLoading = true
+            let password = state.passwordState.password
             return .merge(
                 // Clear error states
                 Effect(value: .accountLockedErrorVisibility(false)),
@@ -244,7 +238,7 @@ let credentialsReducer = Reducer.combine(
                     .map { result -> CredentialsAction in
                         switch result {
                         case .success:
-                            return .walletPairing(.decryptWalletWithPassword(passwordState.password))
+                            return .walletPairing(.decryptWalletWithPassword(password))
                         case .failure(let error):
                             switch error {
                             case .twoFactorOTPRequired(let type):
@@ -282,13 +276,12 @@ let credentialsReducer = Reducer.combine(
             guard !state.walletGuid.isEmpty else {
                 fatalError("GUID should not be empty")
             }
-            guard let passwordState = state.passwordState,
-                  let twoFAState = state.twoFAState,
+            guard let twoFAState = state.twoFAState,
                   let hardwareKeyState = state.hardwareKeyState
             else {
                 fatalError("States should not be nil")
             }
-            state.isLoading = false
+            state.isLoading = true
             return .merge(
                 // clear error states
                 Effect(value: .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))),
@@ -385,25 +378,23 @@ let credentialsReducer = Reducer.combine(
                 }
 
         case .setTwoFAOrHardwareKeyVerified(let isVerified):
-            guard let passwordState = state.passwordState else {
-                fatalError("Password state should not be nil")
-            }
             state.isTwoFACodeOrHardwareKeyVerified = isVerified
             guard isVerified else {
                 return .none
             }
+            state.isLoading = false
+            let password = state.passwordState.password
             return .merge(
-                Effect(value: .twoFA(.twoFACodeFieldVisibility(false))),
-                Effect(value: .hardwareKey(.hardwareKeyCodeFieldVisibility(false))),
-                Effect(value: .walletPairing(.decryptWalletWithPassword(passwordState.password)))
+                Effect(value: .walletPairing(.decryptWalletWithPassword(password)))
             )
 
         case .accountLockedErrorVisibility(let isVisible):
             state.isAccountLocked = isVisible
-            state.isLoading = false
+            state.isLoading = isVisible ? false : state.isLoading
             return .none
 
         case .credentialsFailureAlert(.show(let title, let message)):
+            state.isLoading = false
             state.credentialsFailureAlert = AlertState(
                 title: TextState(verbatim: title),
                 message: TextState(verbatim: message),
@@ -416,6 +407,26 @@ let credentialsReducer = Reducer.combine(
 
         case .credentialsFailureAlert(.dismiss):
             state.credentialsFailureAlert = nil
+            return .none
+
+        case .twoFA(.twoFACodeFieldVisibility(let visible)),
+             .twoFA(.incorrectTwoFACodeErrorVisibility(let visible)):
+            state.isLoading = visible ? false : state.isLoading
+            return .none
+        case .hardwareKey(.hardwareKeyCodeFieldVisibility(let visible)),
+             .hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(let visible)):
+            state.isLoading = visible ? false : state.isLoading
+            return .none
+
+        case .password(.incorrectPasswordErrorVisibility(let visible)):
+            state.isLoading = visible ? false : state.isLoading
+            return .none
+
+        case .twoFA:
+            return .none
+        case .hardwareKey:
+            return .none
+        case .password:
             return .none
 
         case .none:

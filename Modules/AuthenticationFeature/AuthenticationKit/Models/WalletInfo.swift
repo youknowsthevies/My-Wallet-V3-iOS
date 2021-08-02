@@ -30,8 +30,8 @@ public struct WalletInfo: Codable, Equatable {
     public let guid: String
     public let email: String
     public let emailCode: String
-    public let isMobileSetup: Bool
-    public let hasCloudBackup: Bool
+    public let isMobileSetup: Bool?
+    public let hasCloudBackup: Bool?
 
     // MARK: - Setup
 
@@ -39,13 +39,22 @@ public struct WalletInfo: Codable, Equatable {
         guid: String,
         email: String,
         emailCode: String,
-        isMobileSetup: Bool,
-        hasCloudBackup: Bool
+        isMobileSetup: Bool?,
+        hasCloudBackup: Bool?
     ) {
         self.guid = guid
         self.email = email
         self.emailCode = emailCode
         self.isMobileSetup = isMobileSetup
         self.hasCloudBackup = hasCloudBackup
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        guid = try values.decode(String.self, forKey: .guid)
+        email = try values.decode(String.self, forKey: .email)
+        emailCode = try values.decode(String.self, forKey: .emailCode)
+        isMobileSetup = try values.decodeIfPresent(Bool.self, forKey: .isMobileSetup)
+        hasCloudBackup = try values.decodeIfPresent(Bool.self, forKey: .hasCloudBackup)
     }
 }

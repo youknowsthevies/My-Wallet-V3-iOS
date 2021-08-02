@@ -38,6 +38,7 @@ public enum CoreAppAction: Equatable {
     case proceedToLoggedIn
     case appForegrounded
     case deeplink(DeeplinkOutcome)
+    case requirePin
     // Wallet Related Actions
     case walletInitialized
     case fetchWallet(String)
@@ -136,14 +137,15 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         guard environment.walletManager.wallet.isInitialized() else {
             // do nothing if we're on the authentication state,
             // meaning we either need to register, login or recover
-            guard let onboarding = state.onboarding,
-                  onboarding.welcomeState == nil
-            else {
+            guard state.isLoggedIn else {
                 return .none
             }
-            state.loggedIn = nil
-            state.onboarding = .init()
-            return Effect(value: .onboarding(.start))
+            // We need to send the `stop` action prior we show the pin entry,
+            // this clears any running operation from the logged-in state.
+            return .concatenate(
+                Effect(value: .loggedIn(.stop)),
+                Effect(value: .requirePin)
+            )
         }
         return .none
     case .deeplink(.handleLink(let content)) where content.context == .dynamicLinks:
@@ -204,7 +206,12 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         return .none
     case .deeplink(.ignore):
         return .none
+    case .requirePin:
+        state.loggedIn = nil
+        state.onboarding = .init()
+        return Effect(value: .onboarding(.start))
     case .fetchWallet(let password):
+        environment.loadingViewPresenter.showCircular()
         environment.walletManager.wallet.fetch(with: password)
         return Effect(value: .authenticate)
     case .authenticate:
@@ -238,6 +245,7 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
         // for context the underlying implementation of showing the circular loader
         // relies on attaching the loader to the top window's view!!, this is error-prone and there are cases
         // where the loader would not show above a presented view controller...
+        environment.loadingViewPresenter.hide()
         environment.loadingViewPresenter.showCircular()
         environment.blockchainSettings.guid = decryption.guid
         environment.blockchainSettings.sharedKey = decryption.sharedKey
@@ -386,10 +394,6 @@ let mainAppReducerCore = Reducer<CoreAppState, CoreAppAction, CoreAppEnvironment
             value: .initializeWallet
         )
     case .onboarding(.welcomeScreen(.requestedToDecryptWallet(let password))):
-        return Effect(
-            value: .fetchWallet(password)
-        )
-    case .onboarding(.welcomeScreen(.manualPairing(.authenticate(let password)))):
         return Effect(
             value: .fetchWallet(password)
         )

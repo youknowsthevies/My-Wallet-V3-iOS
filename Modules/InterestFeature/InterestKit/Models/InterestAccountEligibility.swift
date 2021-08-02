@@ -1,0 +1,49 @@
+// Copyright © Blockchain Luxembourg S.A. All rights reserved.
+
+import PlatformKit
+
+public struct InterestAccountEligibility {
+
+    public let currencyType: CurrencyType
+    public let isEligible: Bool
+    public let ineligibilityReason: InterestAccountIneligibilityReason
+
+    init(
+        currencyType: CurrencyType,
+        isEligible: Bool,
+        ineligibilityReason: InterestAccountIneligibilityReason
+    ) {
+        self.currencyType = currencyType
+        self.isEligible = isEligible
+        self.ineligibilityReason = ineligibilityReason
+    }
+
+    init(
+        currencyType: CurrencyType,
+        interestEligibility: InterestEligibility
+    ) {
+        self.currencyType = currencyType
+        isEligible = interestEligibility.isEligible
+        ineligibilityReason = .init(ineligibilityReason: interestEligibility.ineligibilityReason)
+    }
+
+    static func notEligible(currencyType: CurrencyType) -> InterestAccountEligibility {
+        .init(
+            currencyType: currencyType,
+            isEligible: false,
+            ineligibilityReason: .other
+        )
+    }
+}
+
+public enum InterestAccountIneligibilityReason: String {
+    case unsupportedRegion = "UNSUPPORTED_REGION"
+    case tierTooLow = "TIER_TOO_LOW"
+    case invalidAddress = "INVALID_ADDRESS"
+    case eligible = "NONE"
+    case other = "OTHER"
+
+    public init(ineligibilityReason: String?) {
+        self = .init(rawValue: ineligibilityReason ?? "NONE") ?? .eligible
+    }
+}

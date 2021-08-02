@@ -185,6 +185,8 @@ final class BitPayTransactionEngine: TransactionEngine {
                 transactionHex: transaction.txHash,
                 transactionSize: transaction.msgSize
             )
+            .asObservable()
+            .ignoreElements()
             .delay(.seconds(3), scheduler: MainScheduler.instance)
             .andThen(
                 bitpayRepository
@@ -194,6 +196,8 @@ final class BitPayTransactionEngine: TransactionEngine {
                         transactionHex: transaction.txHash,
                         transactionSize: transaction.msgSize
                     )
+                    .asObservable()
+                    .asSingle()
             )
             .map(\.memo)
     }

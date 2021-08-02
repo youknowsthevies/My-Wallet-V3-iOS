@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import NetworkKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class BitPayRepository: BitPayRepositoryAPI {
@@ -26,7 +27,7 @@ final class BitPayRepository: BitPayRepositoryAPI {
     func getBitPayPaymentRequest(
         invoiceId: String,
         currency: CryptoCurrency
-    ) -> Single<BitPayInvoiceTarget> {
+    ) -> AnyPublisher<BitPayInvoiceTarget, NetworkError> {
         client
             .bitpayPaymentRequest(invoiceId: invoiceId, currency: currency)
             .map { request -> BitPayInvoiceTarget in
@@ -42,8 +43,6 @@ final class BitPayRepository: BitPayRepositoryAPI {
                 )
             }
             .eraseToAnyPublisher()
-            .asObservable()
-            .asSingle()
     }
 
     func submitBitPayPayment(
@@ -51,7 +50,7 @@ final class BitPayRepository: BitPayRepositoryAPI {
         currency: CryptoCurrency,
         transactionHex: String,
         transactionSize: Int
-    ) -> Single<BitPayMemo> {
+    ) -> AnyPublisher<BitPayMemo, NetworkError> {
         client
             .postPayment(
                 invoiceId: invoiceId,
@@ -61,8 +60,6 @@ final class BitPayRepository: BitPayRepositoryAPI {
             )
             .map(BitPayMemo.init)
             .eraseToAnyPublisher()
-            .asObservable()
-            .asSingle()
     }
 
     func verifySignedTransaction(
@@ -70,7 +67,7 @@ final class BitPayRepository: BitPayRepositoryAPI {
         currency: CryptoCurrency,
         transactionHex: String,
         transactionSize: Int
-    ) -> Completable {
+    ) -> AnyPublisher<Void, NetworkError> {
         client
             .verifySignedTransaction(
                 invoiceId: invoiceId,
@@ -78,7 +75,5 @@ final class BitPayRepository: BitPayRepositoryAPI {
                 transactionHex: transactionHex,
                 transactionSize: transactionSize
             )
-            .asObservable()
-            .ignoreElements()
     }
 }

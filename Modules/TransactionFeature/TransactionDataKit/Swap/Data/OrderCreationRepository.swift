@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class OrderCreationRepository: OrderCreationRepositoryAPI {
@@ -25,7 +25,7 @@ final class OrderCreationRepository: OrderCreationRepositoryAPI {
         volume: MoneyValue,
         destinationAddress: String?,
         refundAddress: String?
-    ) -> Single<SwapOrder> {
+    ) -> AnyPublisher<SwapOrder, NabuNetworkError> {
         client
             .create(
                 direction: direction,
@@ -35,8 +35,7 @@ final class OrderCreationRepository: OrderCreationRepositoryAPI {
                 refundAddress: refundAddress
             )
             .map(SwapOrder.init)
-            .asObservable()
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 }
 

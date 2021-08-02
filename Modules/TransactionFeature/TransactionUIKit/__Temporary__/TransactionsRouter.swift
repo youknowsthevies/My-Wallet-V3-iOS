@@ -197,7 +197,7 @@ class LegacyBuyFlowPresenter {
                         )
                     )
                 )
-                .updateNavigationBarStyle()
+                .whiteNavigationBarStyle()
             }
             .navigationViewStyle(StackNavigationViewStyle())
         )

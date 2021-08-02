@@ -61,6 +61,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
         feeCache = CachedValue(configuration: .periodic(20))
         feeCache.setFetch(weak: self) { (self) -> Single<CustodialTransferFee> in
             self.transferRepository.fees()
+                .asObservable()
+                .asSingle()
         }
     }
 
@@ -148,6 +150,8 @@ final class TradingToOnChainTransactionEngine: TransactionEngine {
                 destination: target.address,
                 memo: target.memo
             )
+            .asObservable()
+            .asSingle()
             .map { identifier -> TransactionResult in
                 TransactionResult.hashed(txHash: identifier, amount: pendingTransaction.amount)
             }

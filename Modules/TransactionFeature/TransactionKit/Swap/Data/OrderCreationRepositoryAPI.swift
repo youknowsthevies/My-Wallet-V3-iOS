@@ -1,9 +1,7 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
-import RxSwift
-import ToolKit
 
 public protocol OrderCreationRepositoryAPI {
 
@@ -13,7 +11,7 @@ public protocol OrderCreationRepositoryAPI {
         volume: MoneyValue,
         destinationAddress: String?,
         refundAddress: String?
-    ) -> Single<SwapOrder>
+    ) -> AnyPublisher<SwapOrder, NabuNetworkError>
 }
 
 public protocol OrderUpdateRepositoryAPI {
@@ -21,5 +19,5 @@ public protocol OrderUpdateRepositoryAPI {
     func updateOrder(
         identifier: String,
         success: Bool
-    ) -> Completable
+    ) -> AnyPublisher<Void, NabuNetworkError>
 }

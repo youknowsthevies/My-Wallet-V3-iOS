@@ -59,10 +59,15 @@ final class EmailLoginReducerTests: XCTestCase {
                 state.emailAddress = validEmail
                 state.isEmailValid = true
             },
-            .send(.sendDeviceVerificationEmail),
+            .send(.sendDeviceVerificationEmail) { state in
+                state.isLoading = true
+                state.verifyDeviceState?.sendEmailButtonIsLoading = true
+            },
             .do { self.mockMainQueue.advance() },
             .receive(.didSendDeviceVerificationEmail(.success(.noValue))) { state in
                 state.verifyDeviceState = .init(emailAddress: validEmail)
+                state.isLoading = false
+                state.verifyDeviceState?.sendEmailButtonIsLoading = false
             },
             .receive(.setVerifyDeviceScreenVisible(true)) { state in
                 state.isVerifyDeviceScreenVisible = true

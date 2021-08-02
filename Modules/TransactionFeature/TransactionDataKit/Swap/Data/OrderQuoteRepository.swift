@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import ToolKit
 import TransactionKit
 
@@ -24,7 +24,7 @@ final class OrderQuoteRepository: OrderQuoteRepositoryAPI {
         direction: OrderDirection,
         sourceCurrencyType: CurrencyType,
         destinationCurrencyType: CurrencyType
-    ) -> Single<OrderQuotePayload> {
+    ) -> AnyPublisher<OrderQuotePayload, NabuNetworkError> {
         let request = OrderQuoteRequest(
             product: .brokerage,
             direction: direction,
@@ -35,7 +35,6 @@ final class OrderQuoteRepository: OrderQuoteRepositoryAPI {
         )
         return client.fetchQuoteResponse(with: request)
             .map(OrderQuotePayload.init)
-            .asObservable()
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 }

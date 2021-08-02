@@ -9,19 +9,20 @@ public struct FormTextFieldStyle: TextFieldStyle {
         trailing: 12
     )
     let borderWidth: CGFloat = 1
-    let isEditing: Bool
-    let isActive: Bool
-    let isError: Bool
+    let isPrefilledAndDisabled: Bool
+
+    @Binding var isFirstResponder: Bool
+    @Binding var isError: Bool
 
     public init(
-        isEditing: Bool = false,
-        isActive: Bool = true,
-        isError: Bool = false
+        isFirstResponder: Binding<Bool>,
+        isError: Binding<Bool>,
+        isPrefilledAndDisabled: Bool
     ) {
         // required for exposing the view to the external world
-        self.isEditing = isEditing
-        self.isActive = isActive
-        self.isError = isError
+        _isFirstResponder = isFirstResponder
+        _isError = isError
+        self.isPrefilledAndDisabled = isPrefilledAndDisabled
     }
 
     public func _body(configuration: TextField<Self._Label>) -> some View {
@@ -30,11 +31,19 @@ public struct FormTextFieldStyle: TextFieldStyle {
             .padding(paddingInsets)
             .overlay(
                 RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
-                    .stroke(isError ? Color.borderError : (isEditing ? Color.borderFocused : Color.borderPrimary), lineWidth: borderWidth)
+                    .stroke(
+                        isError ?
+                            Color.borderError :
+                            (isFirstResponder ? Color.borderFocused : Color.borderPrimary),
+                        lineWidth: borderWidth
+                    )
             )
             .background(
                 RoundedRectangle(cornerRadius: LayoutConstants.buttonCornerRadious)
-                    .fill(isActive ? Color.textFieldActiveBackground : Color.textFieldInactiveBackground)
+                    .fill(isPrefilledAndDisabled ?
+                        Color.textFieldPrefilledAndDisabledBackground :
+                        Color.viewPrimaryBackground
+                    )
             )
             .frame(minHeight: LayoutConstants.buttonMinHeight)
     }
@@ -45,10 +54,39 @@ struct FormTextFieldStyleDemoView: View {
 
     var body: some View {
         VStack {
-            TextField("Placeholder", text: .constant(""))
             TextField("Placeholder", text: .constant("Lorem ipsum"))
+                .textFieldStyle(
+                    FormTextFieldStyle(
+                        isFirstResponder: .constant(false),
+                        isError: .constant(false),
+                        isPrefilledAndDisabled: false
+                    )
+                )
+            TextField("Placeholder", text: .constant("Editing"))
+                .textFieldStyle(
+                    FormTextFieldStyle(
+                        isFirstResponder: .constant(true),
+                        isError: .constant(false),
+                        isPrefilledAndDisabled: false
+                    )
+                )
+            TextField("Placeholder", text: .constant("Error"))
+                .textFieldStyle(
+                    FormTextFieldStyle(
+                        isFirstResponder: .constant(false),
+                        isError: .constant(true),
+                        isPrefilledAndDisabled: false
+                    )
+                )
+            TextField("Placeholder", text: .constant("Prefilled and Disabled"))
+                .textFieldStyle(
+                    FormTextFieldStyle(
+                        isFirstResponder: .constant(false),
+                        isError: .constant(false),
+                        isPrefilledAndDisabled: true
+                    )
+                )
         }
-        .textFieldStyle(FormTextFieldStyle())
         .padding()
     }
 }

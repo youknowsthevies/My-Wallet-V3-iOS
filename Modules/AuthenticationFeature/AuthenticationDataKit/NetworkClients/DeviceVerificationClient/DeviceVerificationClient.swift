@@ -69,10 +69,16 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
                 value: AuthenticationKeys.googleRecaptchaSiteKey
             )
         ]
+        // TODO: Add this logic in a separate function later
+        var components = URLComponents()
+        components.queryItems = parameters
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        let data = components.percentEncodedQuery?.data(using: .utf8)
+
         let request = requestBuilder.post(
             path: Path.wallet,
-            parameters: parameters,
-            contentType: .json
+            body: data,
+            contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
     }
@@ -93,14 +99,20 @@ final class DeviceVerificationClient: DeviceVerificationClientAPI {
             ),
             URLQueryItem(
                 name: Parameters.AuthorizeApprove.token,
-                value: emailCode.addingPercentEncoding(withAllowedCharacters: .urlQueryItemSymbolsAllowed)
+                value: emailCode
             )
         ]
+        // TODO: Add this logic in a separate function later
+        var components = URLComponents()
+        components.queryItems = parameters
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
+        let data = components.percentEncodedQuery?.data(using: .utf8)
+
         let request = requestBuilder.post(
             path: Path.wallet,
-            parameters: parameters,
+            body: data,
             headers: headers,
-            contentType: .json
+            contentType: .formUrlEncoded
         )!
         return networkAdapter.perform(request: request)
     }

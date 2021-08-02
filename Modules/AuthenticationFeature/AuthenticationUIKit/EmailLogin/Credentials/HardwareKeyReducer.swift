@@ -6,6 +6,7 @@ import ComposableArchitecture
 
 public enum HardwareKeyAction: Equatable {
     case didChangeHardwareKeyCode(String)
+    case didChangeFocusedState(Bool)
     case hardwareKeyCodeFieldVisibility(Bool)
     case incorrectHardwareKeyCodeErrorVisibility(Bool)
 }
@@ -14,6 +15,7 @@ public enum HardwareKeyAction: Equatable {
 
 struct HardwareKeyState: Equatable {
     var hardwareKeyCode: String = ""
+    var isFocused: Bool = false
     var isHardwareKeyCodeFieldVisible = false
     var isHardwareKeyCodeIncorrect: Bool = false
 }
@@ -27,6 +29,9 @@ let hardwareKeyReducer = Reducer<
     switch action {
     case .didChangeHardwareKeyCode(let code):
         state.hardwareKeyCode = code
+        return .none
+    case .didChangeFocusedState(let isFocused):
+        state.isFocused = isFocused
         return .none
     case .hardwareKeyCodeFieldVisibility(let isVisible):
         state.hardwareKeyCode = ""

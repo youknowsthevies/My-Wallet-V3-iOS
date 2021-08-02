@@ -8,14 +8,14 @@ protocol NetworkAdapterAPI {
 }
 
 class NetworkAdapter: NetworkAdapterAPI {
-    let session: URLSession
+    let session: Session
 
-    init(session: URLSession = .shared) {
+    init(session: Session = URLSession.shared) {
         self.session = session
     }
 
     func performRequest(request: Request) -> AnyPublisher<Never, URLError> {
-        session.dataTaskPublisher(for: request.asURLRequest())
+        session.dataTaskPublisher(for: request)
             .ignoreOutput()
             .eraseToAnyPublisher()
     }

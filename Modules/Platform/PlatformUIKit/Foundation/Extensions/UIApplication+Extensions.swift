@@ -17,8 +17,12 @@ public protocol ExternalAppOpener: URLOpener {
 
 extension ExternalAppOpener {
 
+    public static var mailAppURLString: String {
+        "message://"
+    }
+
     public func openMailApp(completionHandler: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "message://") else {
+        guard let url = URL(string: UIApplication.mailAppURLString) else {
             completionHandler(false)
             return
         }
@@ -51,7 +55,7 @@ extension UIApplication {
     public func openMailApplication() {
         openMailApp { success in
             guard success else {
-                let message = String(format: LocalizationConstants.Errors.cannotOpenURLArg, "message://")
+                let message = String(format: LocalizationConstants.Errors.cannotOpenURLArg, UIApplication.mailAppURLString)
                 AlertViewPresenter.shared.standardError(message: message)
                 return
             }

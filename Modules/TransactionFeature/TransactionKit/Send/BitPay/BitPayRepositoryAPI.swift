@@ -1,8 +1,9 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
+import NetworkKit
 import PlatformKit
-import RxSwift
 import ToolKit
 
 public protocol BitPayRepositoryAPI {
@@ -10,19 +11,19 @@ public protocol BitPayRepositoryAPI {
     func getBitPayPaymentRequest(
         invoiceId: String,
         currency: CryptoCurrency
-    ) -> Single<BitPayInvoiceTarget>
+    ) -> AnyPublisher<BitPayInvoiceTarget, NetworkError>
 
     func submitBitPayPayment(
         invoiceId: String,
         currency: CryptoCurrency,
         transactionHex: String,
         transactionSize: Int
-    ) -> Single<BitPayMemo>
+    ) -> AnyPublisher<BitPayMemo, NetworkError>
 
     func verifySignedTransaction(
         invoiceId: String,
         currency: CryptoCurrency,
         transactionHex: String,
         transactionSize: Int
-    ) -> Completable
+    ) -> AnyPublisher<Void, NetworkError>
 }

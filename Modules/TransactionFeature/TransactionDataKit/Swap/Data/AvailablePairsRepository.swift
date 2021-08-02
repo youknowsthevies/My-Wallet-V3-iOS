@@ -2,19 +2,18 @@
 
 import Combine
 import DIKit
-import RxSwift
+import PlatformKit
 import TransactionKit
 
 final class AvailablePairsRepository: AvailablePairsRepositoryAPI {
 
     // MARK: - AvailablePairsRepositoryAPI
 
-    var availableOrderPairs: Single<[OrderPair]> {
+    var availableOrderPairs: AnyPublisher<[OrderPair], NabuNetworkError> {
         client.availableOrderPairs
             .map(\.pairs)
             .map { $0.compactMap(OrderPair.init(rawValue:)) }
-            .asObservable()
-            .asSingle()
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private properties

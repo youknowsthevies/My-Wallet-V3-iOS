@@ -16,6 +16,7 @@ public enum VerifyDeviceAction: Equatable {
     }
 
     case credentials(CredentialsAction)
+    case didAppear
     case didDisappear
     case fallbackToWalletIdentifier
     case didExtractWalletInfo(WalletInfo)
@@ -23,6 +24,7 @@ public enum VerifyDeviceAction: Equatable {
     case sendDeviceVerificationEmail
     case setCredentialsScreenVisible(Bool)
     case verifyDeviceFailureAlert(AlertAction)
+    case none
 }
 
 // MARK: - Properties
@@ -33,12 +35,14 @@ struct VerifyDeviceState: Equatable {
     var credentialsState: CredentialsState?
     var verifyDeviceFailureAlert: AlertState<VerifyDeviceAction>?
     var emailAddress: String
+    var sendEmailButtonIsLoading: Bool
 
     init(emailAddress: String) {
         self.emailAddress = emailAddress
         credentialsState = .init()
         isCredentialsScreenVisible = false
         credentialsContext = .none
+        sendEmailButtonIsLoading = false
     }
 }
 
@@ -78,6 +82,11 @@ let verifyDeviceReducer = Reducer.combine(
         VerifyDeviceEnvironment
     > { state, action, environment in
         switch action {
+        case .didAppear:
+            // making sure credentials view is not immediately pushed when going to verify device view
+            state.isCredentialsScreenVisible = false
+            return .none
+
         case .didDisappear:
             state.verifyDeviceFailureAlert = nil
             return .none
@@ -133,6 +142,8 @@ let verifyDeviceReducer = Reducer.combine(
 
         case .verifyDeviceFailureAlert(.dismiss):
             state.verifyDeviceFailureAlert = nil
+            return .none
+        case .none:
             return .none
         }
     }

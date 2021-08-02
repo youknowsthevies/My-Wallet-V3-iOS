@@ -1,16 +1,22 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
-import DIKit
+import Combine
 import PlatformKit
-import RxSwift
 
 public protocol OrderFetchingRepositoryAPI {
 
     func fetchTransaction(
         with transactionId: String
-    ) -> Single<SwapActivityItemEvent>
+    ) -> AnyPublisher<SwapActivityItemEvent, NabuNetworkError>
+}
+
+extension OrderFetchingRepositoryAPI {
 
     func fetchTransactionStatus(
         with transactionId: String
-    ) -> Single<SwapActivityItemEvent.EventStatus>
+    ) -> AnyPublisher<SwapActivityItemEvent.EventStatus, NabuNetworkError> {
+        fetchTransaction(with: transactionId)
+            .map(\.status)
+            .eraseToAnyPublisher()
+    }
 }

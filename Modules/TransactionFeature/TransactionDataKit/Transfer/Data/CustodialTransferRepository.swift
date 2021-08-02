@@ -1,8 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
 import PlatformKit
-import RxSwift
 import TransactionKit
 
 final class CustodialTransferRepository: CustodialTransferRepositoryAPI {
@@ -19,7 +19,11 @@ final class CustodialTransferRepository: CustodialTransferRepositoryAPI {
 
     // MARK: - CustodialTransferServiceAPI
 
-    func transfer(moneyValue: MoneyValue, destination: String, memo: String?) -> Single<CustodialWithdrawalIdentifier> {
+    func transfer(
+        moneyValue: MoneyValue,
+        destination: String,
+        memo: String?
+    ) -> AnyPublisher<CustodialWithdrawalIdentifier, NabuNetworkError> {
         client
             .send(
                 transferRequest: CustodialTransferRequest(
@@ -29,11 +33,9 @@ final class CustodialTransferRepository: CustodialTransferRepositoryAPI {
             )
             .map(\.identifier)
             .eraseToAnyPublisher()
-            .asObservable()
-            .asSingle()
     }
 
-    func fees() -> Single<CustodialTransferFee> {
+    func fees() -> AnyPublisher<CustodialTransferFee, NabuNetworkError> {
         client
             .custodialTransferFees()
             .map { response in
@@ -43,8 +45,6 @@ final class CustodialTransferRepository: CustodialTransferRepositoryAPI {
                 )
             }
             .eraseToAnyPublisher()
-            .asObservable()
-            .asSingle()
     }
 
     private func destinationAddress(with destination: String, memo: String?) -> String {

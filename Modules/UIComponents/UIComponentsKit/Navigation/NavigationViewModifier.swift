@@ -28,18 +28,41 @@ extension NavigationButton {
 
 extension View {
 
-    public func updateNavigationBarStyle() -> some View {
+    public func whiteNavigationBarStyle() -> some View {
         configureNavigationBar {
             $0.navigationBar.prefersLargeTitles = false
             $0.navigationBar.barTintColor = .white
-            $0.navigationBar.backItem?.backButtonTitle = ""
+            $0.navigationBar.titleTextAttributes = [
+                .foregroundColor: UIColor.black
+            ]
             $0.navigationBar.tintColor = UIColor.blue600
-            $0.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
             $0.navigationBar.shadowImage = UIImage() // remove shadow
         }
     }
 
-    public func leadingNavigationButton(_ navigationButton: NavigationButton, action: @escaping () -> Void) -> some View {
+    public func largeInlineNavigationBarTitle() -> some View {
+        configureNavigationBar {
+            $0.navigationBar.titleTextAttributes = [
+                .font: UIFont.main(.medium, 20)
+            ]
+        }
+    }
+
+    public func hideBackButtonTitle() -> some View {
+        configureNavigationBar {
+            $0.navigationBar.topItem?.backBarButtonItem = UIBarButtonItem(
+                title: "",
+                style: .plain,
+                target: nil,
+                action: nil
+            )
+        }
+    }
+
+    public func leadingNavigationButton(
+        _ navigationButton: NavigationButton,
+        action: @escaping () -> Void
+    ) -> some View {
         navigationBarItems(
             leading: HStack {
                 navigationButton.button(action: action)
@@ -47,7 +70,10 @@ extension View {
         )
     }
 
-    public func trailingNavigationButton(_ navigationButton: NavigationButton, action: @escaping () -> Void) -> some View {
+    public func trailingNavigationButton(
+        _ navigationButton: NavigationButton,
+        action: @escaping () -> Void
+    ) -> some View {
         navigationBarItems(
             trailing: HStack {
                 navigationButton.button(action: action)

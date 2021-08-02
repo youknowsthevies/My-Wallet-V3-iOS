@@ -25,6 +25,7 @@ public enum LoggedIn {
     public enum Action: Equatable {
         case none
         case start(LoggedIn.Context)
+        case stop
         case logout
         case deeplink(URIContent)
         case deeplinkHandled
@@ -178,6 +179,11 @@ let loggedInReducer = Reducer<
         state.displayLegacyBuyFlow = true
         return .none
     case .logout:
+        return .cancel(id: LoggedInIdentifier())
+    case .stop:
+        // We need to cancel any running operations if we require pin entry.
+        // Although this is the same as logout and .wallet(.authenticateForBiometrics)
+        // I wanted to have a distinct action for this.
         return .cancel(id: LoggedInIdentifier())
     case .wallet(.authenticateForBiometrics):
         return .cancel(id: LoggedInIdentifier())

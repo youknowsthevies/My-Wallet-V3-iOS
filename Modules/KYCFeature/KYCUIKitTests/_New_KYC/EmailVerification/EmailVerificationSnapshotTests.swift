@@ -303,7 +303,7 @@ final class EmailVerificationSnapshotTests: XCTestCase {
             )
             .trailingNavigationButton(.close, action: {})
             .navigationBarTitle("", displayMode: .inline)
-            .updateNavigationBarStyle()
+            .whiteNavigationBarStyle()
         }
         .navigationViewStyle(StackNavigationViewStyle())
     }

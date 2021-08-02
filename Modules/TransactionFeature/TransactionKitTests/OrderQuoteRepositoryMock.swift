@@ -1,14 +1,14 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import PlatformKit
-import RxSwift
 @testable import TransactionKit
 
 final class OrderQuoteRepositoryMock: TransactionKit.OrderQuoteRepositoryAPI {
 
     var underlying: EnabledCurrenciesServiceAPI!
 
-    var latestQuote: Single<OrderQuotePayload> {
+    var latestQuote: AnyPublisher<OrderQuotePayload, NabuNetworkError> {
         .just(OrderQuotePayload.btc_eth_quote_response)
     }
 
@@ -16,7 +16,7 @@ final class OrderQuoteRepositoryMock: TransactionKit.OrderQuoteRepositoryAPI {
         direction: OrderDirection,
         sourceCurrencyType: CurrencyType,
         destinationCurrencyType: CurrencyType
-    ) -> Single<OrderQuotePayload> {
+    ) -> AnyPublisher<OrderQuotePayload, NabuNetworkError> {
         latestQuote
     }
 

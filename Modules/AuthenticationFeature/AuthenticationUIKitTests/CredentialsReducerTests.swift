@@ -49,7 +49,6 @@ final class CredentialsReducerTests: XCTestCase {
 
     func test_verify_initial_state_is_correct() {
         let state = CredentialsState()
-        XCTAssertNotNil(state.passwordState)
         XCTAssertNotNil(state.twoFAState)
         XCTAssertNotNil(state.hardwareKeyState)
         XCTAssertEqual(state.emailAddress, "")
@@ -93,10 +92,9 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
             .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
@@ -129,10 +127,9 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
 
@@ -159,10 +156,9 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
                 state.isLoading = true
@@ -194,10 +190,9 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
 
@@ -208,6 +203,7 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.twoFA(.twoFACodeFieldVisibility(true))) { state in
                 state.twoFAState?.isTwoFACodeFieldVisible = true
+                state.isLoading = false
             },
             .receive(.none),
             .do { self.mockMainQueue.advance() }
@@ -236,16 +232,16 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
 
             // authentication with google auth required
             .receive(.twoFA(.twoFACodeFieldVisibility(true))) { state in
                 state.twoFAState?.isTwoFACodeFieldVisible = true
+                state.isLoading = false
             }
         )
     }
@@ -272,16 +268,16 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
 
             // authentication with yubikey required
             .receive(.hardwareKey(.hardwareKeyCodeFieldVisibility(true))) { state in
                 state.hardwareKeyState?.isHardwareKeyCodeFieldVisible = true
+                state.isLoading = false
             }
         )
     }
@@ -294,8 +290,7 @@ final class CredentialsReducerTests: XCTestCase {
          3. Reset error states
          4. Authenticate with 2FA, clear 2FA error states
          5. Set 2FA verified on success
-         6. Hide the 2FA/Hardware key field
-         7. Proceed to wallet decryption with password
+         6. Proceed to wallet decryption with password
          */
 
         // set 2FA required (e.g. sms)
@@ -315,10 +310,9 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.accountLockedErrorVisibility(false)) { state in
                 state.isAccountLocked = false
-                state.isLoading = false
             },
             .receive(.password(.incorrectPasswordErrorVisibility(false))) { state in
-                state.passwordState?.isPasswordIncorrect = false
+                state.passwordState.isPasswordIncorrect = false
             },
             .do { self.mockMainQueue.advance() },
 
@@ -332,12 +326,7 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.setTwoFAOrHardwareKeyVerified(true)) { state in
                 state.isTwoFACodeOrHardwareKeyVerified = true
-            },
-            .receive(.twoFA(.twoFACodeFieldVisibility(false))) { state in
-                state.twoFAState?.isTwoFACodeFieldVisible = false
-            },
-            .receive(.hardwareKey(.hardwareKeyCodeFieldVisibility(false))) { state in
-                state.hardwareKeyState?.isHardwareKeyCodeFieldVisible = false
+                state.isLoading = false
             },
             .receive(.walletPairing(.decryptWalletWithPassword(""))) { state in
                 state.isLoading = true
@@ -358,7 +347,9 @@ final class CredentialsReducerTests: XCTestCase {
         setupWalletInfoAndSessionToken()
 
         testStore.assert(
-            .send(.walletPairing(.authenticateWithTwoFAOrHardwareKey)),
+            .send(.walletPairing(.authenticateWithTwoFAOrHardwareKey)) { state in
+                state.isLoading = true
+            },
             .receive(.hardwareKey(.incorrectHardwareKeyCodeErrorVisibility(false))) { state in
                 state.hardwareKeyState?.isHardwareKeyCodeIncorrect = false
             },
@@ -371,6 +362,7 @@ final class CredentialsReducerTests: XCTestCase {
             },
             .receive(.twoFA(.incorrectTwoFACodeErrorVisibility(true))) { state in
                 state.twoFAState?.isTwoFACodeIncorrect = true
+                state.isLoading = false
             }
         )
     }

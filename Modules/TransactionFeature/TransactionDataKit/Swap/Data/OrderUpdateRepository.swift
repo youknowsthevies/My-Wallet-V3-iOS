@@ -1,7 +1,8 @@
 // Copyright © Blockchain Luxembourg S.A. All rights reserved.
 
+import Combine
 import DIKit
-import RxSwift
+import PlatformKit
 import TransactionKit
 
 final class OrderUpdateRepository: OrderUpdateRepositoryAPI {
@@ -21,13 +22,11 @@ final class OrderUpdateRepository: OrderUpdateRepositoryAPI {
     func updateOrder(
         identifier: String,
         success: Bool
-    ) -> Completable {
+    ) -> AnyPublisher<Void, NabuNetworkError> {
         client
             .updateOrder(
                 with: identifier,
                 success: success
             )
-            .asObservable()
-            .ignoreElements()
     }
 }
